@@ -1,10 +1,14 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { AssessmentWizard } from '@scf/core/features/assessments'
 import { OccupationSearch } from '@scf/core/features/career-assessment/components/OccupationSearch'
-import { api } from '@scf/core/utils/api'
+import {
+  useOccupationStatus,
+  useSaveCareerAssessmentMutation,
+} from '@scf/core/utils/onet-sdk-hooks'
 import { Plus, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
@@ -15,10 +19,10 @@ export function OccupationAssessmentWizard() {
   const router = useRouter()
   const toast = useToast()
 
-  const { data: status, isLoading, error } = api.onet.getOccupationStatus.useQuery()
+  const { data: status, isLoading, error } = useOccupationStatus()
   const [currentOccupation, setCurrentOccupation] = useState<string>('')
   const [targetOccupations, setTargetOccupations] = useState<string[]>([])
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Load existing occupations when status is available
   useEffect(() => {
@@ -28,10 +32,10 @@ export function OccupationAssessmentWizard() {
     }
   }, [status])
 
-  const saveMutation = api.onet.saveCareerAssessment.useMutation({
+  const saveMutation = useSaveCareerAssessmentMutation({
     onSuccess: () => {
       // Invalidate status queries to update drawer checkmarks
-      utils.onet.getOccupationStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'onet', 'occupation', 'status'] })
       toast.show({
           title: 'Saved',
           message: 'Your occupation preferences have been saved!',

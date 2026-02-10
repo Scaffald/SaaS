@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
 import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
@@ -10,7 +10,7 @@ import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 export function OccupationAssessmentWidget() {
   const router = useRouter()
 
-  const { data: status, isLoading } = api.onet.getOccupationStatus.useQuery()
+  const { data: status, isLoading } = useOccupationStatus()
 
   if (isLoading) {
     return (

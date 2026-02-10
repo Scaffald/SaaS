@@ -353,6 +353,20 @@ export type {
   UnfollowOrganizationResponse,
 } from './resources/employers.js'
 
+export type {
+  OccupationSearchResult,
+  SearchOccupationsParams,
+  SearchOccupationsResponse,
+  RIASECScores,
+  SaveCareerAssessmentParams,
+  SaveCareerAssessmentResponse,
+  CareerAssessmentStatus,
+  OccupationData,
+  GetOccupationParams,
+  RIASECStatus,
+  OccupationStatus,
+} from './resources/onet.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

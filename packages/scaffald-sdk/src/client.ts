@@ -25,6 +25,7 @@ import { ProfileCompletion } from './resources/profile-completion.js'
 import { ProfileImport } from './resources/profile-import.js'
 import { Notifications } from './resources/notifications.js'
 import { Employers } from './resources/employers.js'
+import { ONET } from './resources/onet.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -54,6 +55,7 @@ export class Scaffald {
   public readonly profileImport: ProfileImport
   public readonly notifications: Notifications
   public readonly employers: Employers
+  public readonly onet: ONET
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -91,6 +93,7 @@ export class Scaffald {
     this.profileImport = new ProfileImport(this.http)
     this.notifications = new Notifications(this.http)
     this.employers = new Employers(this.http)
+    this.onet = new ONET(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

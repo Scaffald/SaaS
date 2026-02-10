@@ -5,9 +5,10 @@ import {
   careerAssessmentDefaults,
   type RiasecScores,
 } from '@scf/core/features/career-assessment/config/career-assessment-schema'
-import { api } from '@scf/core/utils/api'
+import { useRIASECStatus, useSaveCareerAssessmentMutation } from '@scf/core/utils/onet-sdk-hooks'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Button, Stack } from '@unicornlove/beyond-ui'
 
@@ -18,9 +19,9 @@ export function RIASECAssessmentWizard() {
   const router = useRouter()
   const toast = useToast()
 
-  const { data: status, isLoading, error } = api.onet.getRIASECStatus.useQuery()
+  const { data: status, isLoading, error } = useRIASECStatus()
   const [scores, setScores] = useState<RiasecScores>(careerAssessmentDefaults.riasec_scores)
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Load existing scores when status is available
   useEffect(() => {
@@ -29,10 +30,10 @@ export function RIASECAssessmentWizard() {
     }
   }, [status])
 
-  const saveMutation = api.onet.saveCareerAssessment.useMutation({
+  const saveMutation = useSaveCareerAssessmentMutation({
     onSuccess: () => {
       // Invalidate status queries to update drawer checkmarks
-      utils.onet.getRIASECStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'onet', 'riasec', 'status'] })
       toast.show({
           title: 'Assessment Complete',
           message: 'Your career interests have been saved!',

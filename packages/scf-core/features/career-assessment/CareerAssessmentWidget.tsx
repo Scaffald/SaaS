@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useCareerAssessmentStatus,
+  useSaveCareerAssessmentMutation,
+} from '@scf/core/utils/onet-sdk-hooks'
 import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -32,10 +35,10 @@ export function CareerAssessmentWidget() {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = api.onet.getCareerAssessmentStatus.useQuery()
+  } = useCareerAssessmentStatus()
 
   // Save assessment mutation
-  const saveMutation = api.onet.saveCareerAssessment.useMutation({
+  const saveMutation = useSaveCareerAssessmentMutation({
     onSuccess: () => {
       toast.show({
           title: 'Career Assessment Complete',

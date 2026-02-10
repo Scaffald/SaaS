@@ -1,5 +1,6 @@
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { useSearchOccupations } from '@scf/core/utils/onet-sdk-hooks'
 import { useEffect, useRef, useState } from 'react'
 import { Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
@@ -46,7 +47,7 @@ export function OccupationSearch({
     data,
     isLoading,
     error: queryError,
-  } = api.onet.searchOccupations.useQuery(
+  } = useSearchOccupations(
     {
       query: debouncedSearch,
       limit: 10,
