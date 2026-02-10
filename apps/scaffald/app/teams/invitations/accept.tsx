@@ -1,15 +1,12 @@
 import { buildPath, ROUTES } from '@scf/core/constants/routes'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useRespondToTeamInvitationWithToken } from '@scaffald/sdk/react'
 import { AlertTriangle, CheckCircle, LogIn, XCircle } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 type InvitationAction = 'accept' | 'decline'
-type RespondInvitationOutput = inferRouterOutputs<AppRouter>['teams']['respondToInvitation']
 
 export default function AcceptTeamInvitationScreen() {
   const { token } = useLocalSearchParams<{ token?: string }>()
@@ -22,7 +19,7 @@ export default function AcceptTeamInvitationScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [resultTeamId, setResultTeamId] = useState<string | null>(null)
 
-  const respondMutation = api.teams.respondToInvitation.useMutation({
+  const respondMutation = useRespondToTeamInvitationWithToken({
     onError: (error: unknown) => {
       console.error('[teams] Invitation response failed', error)
       const message =
@@ -32,7 +29,7 @@ export default function AcceptTeamInvitationScreen() {
       setErrorMessage(message)
       setStatus('error')
     },
-    onSuccess: (result: RespondInvitationOutput) => {
+    onSuccess: (result) => {
       if (result.status === 'accepted') {
         setResultTeamId(result.teamId)
         setStatus('success')
@@ -63,9 +60,9 @@ export default function AcceptTeamInvitationScreen() {
     setErrorMessage(null)
 
     await respondMutation.mutateAsync({
+      token,
       action,
       responderId: session.user.id,
-      token,
     })
   }
 

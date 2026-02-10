@@ -11,6 +11,8 @@ import type {
   CreateJobAssignmentParams,
   ListMyInvitationsParams,
   RespondToInvitationParams,
+  RespondToInvitationWithTokenParams,
+  RespondToInvitationWithTokenResponse,
   TeamsListResponse,
   TeamResponse,
   TeamMembersListResponse,
@@ -20,6 +22,7 @@ import type {
   TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  RolesListResponse,
 } from '../types/teams.js'
 
 /**
@@ -272,6 +275,40 @@ export class Teams extends Resource {
     return this.del<DeleteResponse>(`/v1/teams/${id}/invitations/${invitationId}`)
   }
 
+  /**
+   * Resend a team invitation
+   *
+   * @param id - The team ID
+   * @param invitationId - The invitation ID
+   * @returns Confirmation of resend
+   *
+   * @example
+   * ```typescript
+   * await client.teams.resendInvitation('team_123', 'inv_456')
+   * ```
+   */
+  async resendInvitation(id: string, invitationId: string): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/invitations/${invitationId}/resend`, {})
+  }
+
+  // ===== Roles Management =====
+
+  /**
+   * List team roles for an organization
+   *
+   * @param organizationId - The organization ID
+   * @returns List of team roles
+   *
+   * @example
+   * ```typescript
+   * const { roles } = await client.teams.listRoles('org_123')
+   * console.log(`Found ${roles.length} team roles`)
+   * ```
+   */
+  async listRoles(organizationId: string): Promise<RolesListResponse> {
+    return this.get<RolesListResponse>(`/v1/teams/roles?organizationId=${organizationId}`)
+  }
+
   // ===== User-Facing Invitation Operations =====
 
   /**
@@ -321,6 +358,39 @@ export class Teams extends Resource {
     params: RespondToInvitationParams
   ): Promise<TeamInvitationResponse> {
     return this.post<TeamInvitationResponse>(`/v1/teams/invitations/${invitationId}/respond`, params)
+  }
+
+  /**
+   * Respond to an invitation using a token (public endpoint)
+   *
+   * @param params - Response parameters including token and action
+   * @returns Response status and team ID
+   *
+   * @remarks
+   * This endpoint does not require authentication - it's used for email invitation links.
+   * The token is validated server-side to identify the invitation.
+   *
+   * @example
+   * ```typescript
+   * // Accept an invitation from an email link
+   * const { status, teamId } = await client.teams.respondToInvitationWithToken({
+   *   token: 'invitation_token_from_email',
+   *   action: 'accept',
+   *   responderId: 'user_123'
+   * })
+   * console.log(`Invitation ${status}, team ID: ${teamId}`)
+   *
+   * // Decline an invitation
+   * await client.teams.respondToInvitationWithToken({
+   *   token: 'invitation_token_from_email',
+   *   action: 'decline'
+   * })
+   * ```
+   */
+  async respondToInvitationWithToken(
+    params: RespondToInvitationWithTokenParams
+  ): Promise<RespondToInvitationWithTokenResponse> {
+    return this.post<RespondToInvitationWithTokenResponse>('/v1/teams/invitations/respond', params)
   }
 
   // ===== Job Assignment Management =====

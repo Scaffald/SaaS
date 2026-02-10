@@ -75,6 +75,8 @@ export type {
   CreateJobAssignmentParams,
   ListMyInvitationsParams,
   RespondToInvitationParams,
+  RespondToInvitationWithTokenParams,
+  RespondToInvitationWithTokenResponse,
   TeamsListResponse,
   TeamResponse,
   TeamMembersListResponse,
@@ -84,6 +86,8 @@ export type {
   TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  RolesListResponse,
+  TeamRole,
 } from './types/teams.js'
 
 export type {

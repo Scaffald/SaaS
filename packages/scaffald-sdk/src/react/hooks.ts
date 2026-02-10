@@ -47,9 +47,12 @@ import type {
   TeamMemberResponse,
   TeamInvitationsListResponse,
   TeamInvitationResponse,
+  RespondToInvitationWithTokenParams,
+  RespondToInvitationWithTokenResponse,
   TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  RolesListResponse,
   ApiKey,
   ApiKeyCreated,
   CreateApiKeyParams,
@@ -1246,6 +1249,46 @@ export function useCancelTeamInvitation(
 }
 
 /**
+ * Hook to resend a team invitation
+ */
+export function useResendTeamInvitation(
+  options?: Omit<
+    UseMutationOptions<{ success: boolean }, Error, { teamId: string; invitationId: string }>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ teamId, invitationId }: { teamId: string; invitationId: string }) =>
+      client.teams.resendInvitation(teamId, invitationId),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['teams', variables.teamId, 'invitations'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to list team roles for an organization
+ */
+export function useTeamRoles(
+  organizationId: string,
+  options?: Omit<UseQueryOptions<RolesListResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['teams', 'roles', organizationId],
+    queryFn: () => client.teams.listRoles(organizationId),
+    enabled: !!organizationId,
+    staleTime: 5 * 60 * 1000, // 5 minutes - roles don't change often
+    ...options,
+  })
+}
+
+/**
  * Hook to list invitations sent to the current user
  *
  * @example
@@ -1331,6 +1374,59 @@ export function useRespondToTeamInvitation(
       client.teams.respondToInvitation(invitationId, params),
     onSuccess: () => {
       // Invalidate my invitations
+      queryClient.invalidateQueries({ queryKey: ['teams', 'invitations', 'mine'] })
+      // Invalidate teams list (user may now be a member of new team)
+      queryClient.invalidateQueries({ queryKey: ['teams'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to respond to a team invitation using a token (public endpoint)
+ *
+ * @remarks
+ * This hook is used for email invitation links and does not require authentication.
+ * The token is validated server-side to identify the invitation.
+ *
+ * @example
+ * ```tsx
+ * function AcceptInvitationPage() {
+ *   const { token } = useParams()
+ *   const { user } = useAuth()
+ *   const respondMutation = useRespondToTeamInvitationWithToken()
+ *
+ *   const handleAccept = async () => {
+ *     const { status, teamId } = await respondMutation.mutateAsync({
+ *       token,
+ *       action: 'accept',
+ *       responderId: user?.id
+ *     })
+ *
+ *     if (status === 'accepted') {
+ *       // Navigate to team page using your routing constants
+ *       // router.push(ROUTES.TEAMS.DETAIL(teamId))
+ *     }
+ *   }
+ *
+ *   return <button onClick={handleAccept}>Accept Invitation</button>
+ * }
+ * ```
+ */
+export function useRespondToTeamInvitationWithToken(
+  options?: Omit<
+    UseMutationOptions<RespondToInvitationWithTokenResponse, Error, RespondToInvitationWithTokenParams>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: RespondToInvitationWithTokenParams) =>
+      client.teams.respondToInvitationWithToken(params),
+    onSuccess: () => {
+      // Invalidate my invitations (user may now see fewer pending invitations)
       queryClient.invalidateQueries({ queryKey: ['teams', 'invitations', 'mine'] })
       // Invalidate teams list (user may now be a member of new team)
       queryClient.invalidateQueries({ queryKey: ['teams'] })

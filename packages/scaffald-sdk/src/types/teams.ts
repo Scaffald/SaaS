@@ -5,6 +5,9 @@ export interface TeamRole {
   id: string
   key: string
   name: string
+  description?: string | null
+  isDefault?: boolean
+  isSystem?: boolean
 }
 
 /**
@@ -245,6 +248,16 @@ export interface RespondToInvitationParams {
   action: 'accept' | 'decline'
 }
 
+/**
+ * Parameters for responding to an invitation with a token (public endpoint)
+ */
+export interface RespondToInvitationWithTokenParams {
+  token: string
+  action: 'accept' | 'decline'
+  responderId?: string
+  responseMetadata?: Record<string, unknown>
+}
+
 // ===== Response Types =====
 
 /**
@@ -290,6 +303,14 @@ export interface TeamInvitationResponse {
 }
 
 /**
+ * Response from token-based invitation response
+ */
+export interface RespondToInvitationWithTokenResponse {
+  status: 'accepted' | 'declined'
+  teamId: string
+}
+
+/**
  * Response from listing job assignments
  */
 export interface TeamJobAssignmentsListResponse {
@@ -308,4 +329,11 @@ export interface TeamJobAssignmentResponse {
  */
 export interface DeleteResponse {
   success: boolean
+}
+
+/**
+ * Response from list roles operation
+ */
+export interface RolesListResponse {
+  roles: TeamRole[]
 }
