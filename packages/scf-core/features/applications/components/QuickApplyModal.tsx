@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useCreateJobApplicationMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import type { ScreeningAnswers } from '@scf/schemas'
 import type { AddressResult } from '@unicornlove/beyond-ui'
 import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@unicornlove/beyond-ui'
@@ -98,11 +98,13 @@ export function QuickApplyModal({
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
   const toast = useToast()
 
-  const submitMutation = api.applications.submit.useMutation({
+  const submitMutation = useCreateJobApplicationMutation({
     onSuccess: (application: { id: string }) => {
       setShowSuccess(true)
-      toast.show('Application sent successfully', {
+      toast.show({
+        title: 'Application sent successfully',
         message: `Your application to ${jobTitle} has been submitted.`,
+        variant: 'success',
       })
       onSuccess?.(application.id)
       // Close modal after 2 seconds
@@ -113,9 +115,9 @@ export function QuickApplyModal({
     onError: (error: { message?: string }) => {
       const _message = error.message || 'Failed to submit application. Please try again.'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
       setIsSubmitting(false)
     },
   })

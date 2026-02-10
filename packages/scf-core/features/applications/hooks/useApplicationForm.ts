@@ -3,7 +3,6 @@ import {
   useMyApplicationForJob,
   useUpdateJobApplicationMutation,
 } from '@scf/core/utils/jobs-sdk-hooks'
-import { api } from '@scf/core/utils/api'
 import type {
   ApplicationCreateInput,
   ApplicationStepType,
@@ -49,11 +48,11 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     applicationId: existingApplicationId,
   })
 
-  // API mutations (applications router still tRPC; jobs application create/update via SDK)
-  const submitMutation = api.applications.submit.useMutation()
+  // API mutations (now fully SDK-based)
+  const submitMutation = useCreateJobApplicationMutation()
   const createDraftMutation = useCreateJobApplicationMutation()
   const updateMutation = useUpdateJobApplicationMutation()
-  const updateStepMutation = api.applications.updateStep.useMutation()
+  const updateStepMutation = useUpdateJobApplicationMutation()
 
   // Load existing application data if in edit mode (SDK)
   const { data: existingApp } = useMyApplicationForJob(jobId, {
@@ -166,9 +165,11 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       })
 
       await updateStepMutation.mutateAsync({
-        application_id: appId,
-        step: state.currentStep,
-        data,
+        id: appId,
+        params: {
+          ...data,
+          completed_steps: [...state.completedSteps, state.currentStep],
+        } as Parameters<typeof updateStepMutation.mutateAsync>[0]['params'],
       })
 
       setState((prev) => ({
