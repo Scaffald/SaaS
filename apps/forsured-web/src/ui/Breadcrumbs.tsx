@@ -1,26 +1,25 @@
 /**
- * Breadcrumbs wrapper - migrated from Tamagui to Beyond UI
+ * Breadcrumbs wrapper
  * Provides backwards-compatible API for existing code
  */
-import React from 'react';
-import { Home } from 'lucide-react';
-import {
-  Breadcrumb as BeyondBreadcrumb,
-  type BreadcrumbItemData,
-} from '@unicornlove/beyond-ui';
+import React from 'react'
+import { Home } from 'lucide-react'
+import { Breadcrumb as BeyondBreadcrumb, type BreadcrumbItemData } from '@unicornlove/beyond-ui'
+
+const HOME_PATH = '/' as const
 
 export interface BreadcrumbItem {
-  label: string;
-  href?: string;
-  onClick?: () => void;
-  icon?: React.ComponentType<{ size?: number; color?: string }>;
+  label: string
+  href?: string
+  onClick?: () => void
+  icon?: React.ComponentType<{ size?: number; color?: string }>
 }
 
 export interface BreadcrumbsProps {
-  items: BreadcrumbItem[];
-  showHome?: boolean;
-  separator?: React.ComponentType<{ size?: number; color?: string }>;
-  className?: string;
+  items: BreadcrumbItem[]
+  showHome?: boolean
+  separator?: React.ComponentType<{ size?: number; color?: string }>
+  className?: string
 }
 
 export default function Breadcrumbs({
@@ -32,23 +31,25 @@ export default function Breadcrumbs({
   // Build items array for Beyond UI
   const allItems: BreadcrumbItemData[] = showHome
     ? [
-        { label: 'Home', icon: <Home size={16} />, onPress: () => window.location.href = '/' },
+        { label: 'Home', icon: <Home size={16} />, onPress: () => (window.location.href = HOME_PATH) },
         ...items.map((item) => ({
           label: item.label,
           icon: item.icon ? <item.icon size={16} /> : undefined,
-          onPress: item.onClick || (item.href ? () => window.location.href = item.href! : undefined),
+          onPress:
+            item.onClick || (item.href ? () => (window.location.href = item.href!) : undefined),
           href: item.href,
         })),
       ]
     : items.map((item) => ({
         label: item.label,
         icon: item.icon ? <item.icon size={16} /> : undefined,
-        onPress: item.onClick || (item.href ? () => window.location.href = item.href! : undefined),
+        onPress:
+          item.onClick || (item.href ? () => (window.location.href = item.href!) : undefined),
         href: item.href,
-      }));
+      }))
 
   // Current index is the last item
-  const currentIndex = allItems.length - 1;
+  const currentIndex = allItems.length - 1
 
   return (
     <BeyondBreadcrumb
@@ -57,5 +58,5 @@ export default function Breadcrumbs({
       showHomeIcon={showHome}
       separator={separator ? <separator size={16} /> : undefined}
     />
-  );
+  )
 }

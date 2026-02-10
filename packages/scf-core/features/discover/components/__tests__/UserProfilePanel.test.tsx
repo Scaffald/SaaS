@@ -164,7 +164,7 @@ vi.mock('tamagui', () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   MapPin: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="map-pin-icon" data-size={size} data-color={color}>
       MapPin

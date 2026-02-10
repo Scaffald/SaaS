@@ -1,5 +1,3 @@
-import '../tamagui-web.css'
-
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { getVersionDebugPayload } from '@scf/core/constants/appVersion'
 import { loadThemePromise, Provider } from '@scf/core/provider'
@@ -21,10 +19,8 @@ SplashScreen.preventAutoHideAsync()
 
 export default function DashboardLayout() {
   const segments = useSegments()
-  const [fontLoaded] = useFonts({
-    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
-  })
+  // Using system fonts (Inter is a system font on modern platforms)
+  const [fontLoaded] = useFonts({})
 
   const [themeLoaded, setThemeLoaded] = useState(false)
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)

@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import type { AttachmentMetadata } from '@scf/schemas'
-import { ArrowLeft, CheckCircle2, Upload, X } from '@tamagui/lucide-icons'
+import { ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react-native'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
 import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

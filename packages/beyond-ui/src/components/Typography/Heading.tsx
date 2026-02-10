@@ -2,7 +2,7 @@
  * Heading component
  *
  * Semantic heading component (H1-H6) with design system typography tokens.
- * Replaces Tamagui's H1, H2, H3, H4, H5, H6 components.
+ * Semantic headings H1–H6 with design system tokens.
  */
 
 import { useMemo } from 'react'

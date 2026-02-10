@@ -3,7 +3,7 @@ import { OfficePageLayout } from '@scf/core/features/office/components/OfficePag
 import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { ExternalLink, Eye, RefreshCcw } from '@tamagui/lucide-icons'
+import { ExternalLink, Eye, RefreshCcw } from 'lucide-react-native'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'

@@ -1,5 +1,5 @@
 import { Popover } from '@unicornlove/beyond-ui'
-import { AlertCircle, Bell, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
+import { AlertCircle, Bell, Info, ShieldAlert, X } from 'lucide-react-native'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react'

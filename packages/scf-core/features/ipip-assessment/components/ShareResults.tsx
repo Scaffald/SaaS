@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
-import { Calendar, Copy, Lock, Share2, X } from '@tamagui/lucide-icons'
+import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
 import { Button, Separator, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'

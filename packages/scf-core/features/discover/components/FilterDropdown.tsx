@@ -1,5 +1,5 @@
 import { Popover, ToggleSwitch } from '@unicornlove/beyond-ui'
-import { ChevronDown, SlidersHorizontal } from '@tamagui/lucide-icons'
+import { ChevronDown, SlidersHorizontal } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Button, Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

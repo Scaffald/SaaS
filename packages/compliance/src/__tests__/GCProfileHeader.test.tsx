@@ -1,6 +1,6 @@
 /**
  * GCProfileHeader Component Tests
- * REQ-288: Tamagui UI Component Library
+ * REQ-288: Beyond UI Component Library
  */
 
 import { describe, it, expect, vi } from 'vitest'
@@ -30,7 +30,7 @@ vi.mock('tamagui', async () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Building: () => null,
   MapPin: () => null,
   Phone: () => null,

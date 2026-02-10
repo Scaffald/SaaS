@@ -1,7 +1,7 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
+import { ChevronsUpDown, Filter, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

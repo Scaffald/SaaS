@@ -10,7 +10,7 @@ import {
   UserPlus,
   Users,
   X,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

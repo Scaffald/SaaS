@@ -1,4 +1,4 @@
-import { Building } from '@tamagui/lucide-icons'
+import { Building } from 'lucide-react-native'
 import { type GetThemeValueForKey, Image, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getInitials } from '../utils/getInitials'
 

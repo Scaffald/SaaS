@@ -1,7 +1,7 @@
 import type { OrganizationLocation } from '@scf/schemas'
 import type { AddressResult } from '@unicornlove/beyond-ui'
 import { AddressAutocomplete } from '@unicornlove/beyond-ui'
-import { Plus, X } from '@tamagui/lucide-icons'
+import { Plus, X } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
 import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'

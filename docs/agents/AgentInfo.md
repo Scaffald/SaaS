@@ -24,8 +24,8 @@ Guidelines and policies for AI agents working on this codebase.
 
 ### Frontend
 - **React Native** (Expo SDK 52) - Primary mobile/web framework
-- **Tamagui** - Cross-platform UI components and styling
-- **Bento** - Complex UI patterns and components
+- **Beyond UI** - Cross-platform UI components and styling
+- **Bento** - Complex UI patterns and components (where used)
 - **Expo Router** - File-based routing for native apps
 - **React Query** - Data fetching and caching
 
@@ -52,7 +52,7 @@ UNI-Construct/
 ├── packages/
 │   ├── scf-core/              # @scf/core - Shared business logic and features
 │   │   └── features/              # Route-based feature organization
-│   ├── ui/                    # @unicornlove/ui - Cross-platform UI components
+│   ├── beyond-ui/             # @unicornlove/beyond-ui - Cross-platform UI components
 │   ├── supabase/          # @scf/supabase - Database, migrations, Edge Functions
 │   │   └── migrations/        # 001-137 (Scaffald) + 200-232 (Forsured)
 │   ├── forsured/              # @unicornlove/forsured - Zod schemas
@@ -145,8 +145,7 @@ pnpm test:schemas     # Test Zod schema definitions
 pnpm test:all         # Full test suite (integration + build)
 pnpm test:build       # Verify all packages build
 pnpm test:lint        # Lint, type check, and dependency checks
-pnpm test:integration # Integration tests (lint + typecheck + tamagui)
-pnpm test:tamagui     # Tamagui-specific checks
+pnpm test:integration # Integration tests (lint + typecheck)
 pnpm test:deps        # Dependency consistency and circular dependency checks
 
 # Development & debugging
@@ -190,15 +189,10 @@ pnpm supa:news:feeds      # Seed news feed data
 
 ### UI & Build Tools
 ```bash
-# Tamagui (UI framework)
-pnpm tamagui:check        # Check Tamagui configuration
-pnpm tamagui:upgrade      # Upgrade Tamagui to latest
-pnpm tamagui:upgrade:canary  # Upgrade to canary versions
-
-# UI package
+# UI package (Beyond UI)
 pnpm ui:check             # Check UI package compilation
 pnpm ui:optimize          # Optimize UI components
-pnpm --filter @unicornlove/ui watch  # Watch UI package changes
+pnpm --filter @unicornlove/beyond-ui build  # Build Beyond UI package
 ```
 
 ### Important Conventions
@@ -214,8 +208,7 @@ pnpm --filter @unicornlove/ui watch  # Watch UI package changes
 - **`@app/core`** (`packages/core/`): Business logic, features, and application code
   - `features/`: Route-based feature modules (`<feature>/<feature>-<child>-{left|right|screen}.tsx`)
   - `locales/`: Translation files and localization helpers
-- **`@unicornlove/ui`** (`packages/ui/`): Cross-platform UI components (Tamagui + Bento)
-  - Published to npm and consumed via package (see UI Package Hybrid Maintenance below)
+- **`@unicornlove/beyond-ui`** (`packages/beyond-ui/`): Cross-platform UI components
   - Shared across web and mobile platforms
 - **`@app/schemas`** (`packages/schemas/`): Zod validation schemas for API/database
 - **`@app/supabase`** (`packages/supabase/`): Database, migrations, and Edge Functions
@@ -378,7 +371,7 @@ pnpm check && pnpm build && pnpm check-deps
 - **Route naming**: `<parent>-<child>-{left|right|screen}.tsx` pattern
   - Use `pnpm gen route` to auto-generate properly structured route files
 - **No barrel files**: Direct imports to optimize build performance
-- **Cross-platform**: UI components in `packages/ui/` work on web and mobile
+- **Cross-platform**: UI components in `packages/beyond-ui/` work on web and mobile
 - **Avoid circular dependencies**: Run `pnpm check-circular-deps` to verify
 
 ## BrainGrid Integration (CRITICAL)
@@ -467,11 +460,7 @@ This project uses comprehensive Cursor rules located in `.cursor/rules/`. These 
   - Schema organization: `core` for app, `data`/`cms`/`onet` for reference
   - Migration structure and patterns (001-007 core, 008+ new features)
 - **`react-native.mdc`** (expo/, React Native files): Expo/React Native development
-- **`ui-development.mdc`** (packages/ui/): Tamagui components, cross-platform patterns
-- **`ui-package-hybrid.mdc`** (packages/ui/): CRITICAL - hybrid npm/workspace maintenance
-  - UI package is published to npm but developed locally
-  - Sync changes via `./packages/ui/scripts/sync-to-standalone.sh`
-  - See detailed docs in this rule
+- **`beyond-ui-properties.mdc`** (packages/beyond-ui/): Beyond UI components, tokens, cross-platform patterns
 - **`route-naming-convention.mdc`** (packages/core/features/): Dashboard route structure
   - Pattern: `<parent>-<child>-{left|right|screen}.tsx`
   - Use `pnpm gen route` to auto-generate
@@ -500,7 +489,7 @@ This project uses comprehensive Cursor rules located in `.cursor/rules/`. These 
 2. **Supabase**: Use migrations (never reset); respect schema organization (core/data/cms/onet)
 3. **tRPC**: Always validate with Zod; implement proper RLS checks
 4. **React**: Named imports only; no React.Fragment, no `any` types
-5. **UI Components**: Use Tamagui primitives; make cross-platform; document with JSDoc
+5. **UI Components**: Use Beyond UI components; make cross-platform; document with JSDoc
 6. **Routes**: Use naming convention; use generator; keep files under 300 lines
 7. **Monorepo**: Use workspace commands; avoid circular dependencies; use `affected:*` for CI
 8. **Testing**: Watch for hanging tests; use verbose flag when debugging
@@ -663,30 +652,10 @@ Mocks can hide real bugs in infrastructure, configuration, and integration point
 - External webhooks
 - Services we don't control
 
-## UI Package Hybrid Maintenance (CRITICAL)
+## UI (Beyond UI)
 
-**The `@unicornlove/ui` package uses a special hybrid maintenance approach:**
-
-### How It Works
-- **`packages/ui/`** in the monorepo: Primary development location (source of truth)
-- **Consumption**: Monorepo consumes `@unicornlove/ui@^1.0.1` from npm
-- **Workflow**: Edit locally → Sync to standalone → Publish → Consume via npm
-- **Modes**: Can run as npm package (default), linked workspace, or local dev
-
-### Development Workflow
-1. **Make changes** to `packages/ui/` in monorepo
-2. **Sync to standalone** (separate repo):
-   ```bash
-   ./packages/ui/scripts/sync-to-standalone.sh
-   ```
-3. **Publish** to npm from standalone repo
-4. **Update version** in monorepo's root package.json
-
-### Important Guidelines
-- **NEVER suggest deleting `packages/ui/`** - it's essential for development
-- **Reference**: `.cursor/rules/ui-package-hybrid.mdc` for complete details
-- **Components**: Use Tamagui vanilla primitives and Bento for complex patterns
-- **Cross-platform**: Ensure all components work on web, iOS, and Android
+- **Package**: `packages/beyond-ui/` — `@unicornlove/beyond-ui`. Use Beyond UI components; see `.cursor/rules/beyond-ui-properties.mdc` and `packages/beyond-ui/docs/API_CONVENTIONS.md`.
+- **Cross-platform**: Ensure components work on web, iOS, and Android.
 
 ## UI Alignment Policy
 
@@ -696,24 +665,16 @@ When building UI for `apps/forsured-web`, always reference and align with `apps/
 
 ### Guiding Principles
 
-1. **Shared UI Package**: Both apps consume `@unicornlove/ui` - use components from this package first
-2. **Theme System**: Use Scaffald's theme tokens and color system from `packages/ui/src/themes/scaffald-theme.ts`
+1. **Shared UI Package**: Both apps use Beyond UI (`@unicornlove/beyond-ui`) - use components from this package first
+2. **Theme System**: Use theme tokens and color system from the Beyond UI package
 3. **Component Patterns**: When a component exists in Scaffald, use the same approach in ForSured
 4. **Providers**: Prefer using shared providers from `@scf/core` when they fit ForSured's needs
-
-### Known Alignment Issues
-
-#### Theme Switcher (TODO)
-- **Issue**: ForSured's `ThemeSwitcher.tsx` uses `useTheme` from `@unicornlove/ui` but ForSured has its own `ThemeContext.tsx` that isn't integrated with Tamagui
-- **Scaffald Pattern**: Uses `useThemeSetting()` from `@scf/core/provider/theme/UniversalThemeProvider` with proper theme state management
-- **Fix Needed**: Either integrate ForSured's ThemeContext with Tamagui, or use Scaffald's UniversalThemeProvider
-- **Location**: `apps/forsured-web/src/components/Common/ThemeSwitcher.tsx`
 
 ### What To Check When Building ForSured UI
 
 1. Does this component exist in Scaffald? If yes, use the same pattern
-2. Are we using `@unicornlove/ui` components correctly?
-3. Are theme tokens being used consistently (e.g., `$color1`, `$blue7`)?
+2. Are we using `@unicornlove/beyond-ui` components correctly?
+3. Are theme tokens being used consistently?
 4. Is the component responsive and works on both light and dark themes?
 
 ## Common Development Patterns
@@ -751,23 +712,12 @@ pnpm gen route
 5. **Add Zod validation** schemas for inputs
 
 ### Creating UI Component
-1. **Location**: `packages/ui/src/components/`
-2. **Framework**: Use Tamagui primitives (`Button`, `Text`, `View`, `Stack`)
-3. **Complex patterns**: Use Bento components for complex UI patterns
+1. **Location**: `packages/beyond-ui/` (Beyond UI package)
+2. **Framework**: Use Beyond UI primitives (`Button`, `Text`, `View`, `Stack`)
+3. **Complex patterns**: Use Bento or shared patterns where applicable
 4. **Cross-platform**: Test on web, iOS, and Android
-5. **Export**: Add to appropriate index file (`index.ts`, `index.web.ts`, etc.)
-6. **Document**: Add JSDoc comments with prop descriptions
-   ```typescript
-   /**
-    * Button component - cross-platform compatible
-    * @param props - Standard button props
-    * @example
-    * <Button onPress={() => alert('Pressed!')}>Click me</Button>
-    */
-   export function Button({ children, ...props }: ButtonProps) {
-     return <Tamagui.Button {...props}>{children}</Tamagui.Button>;
-   }
-   ```
+5. **Export**: Add to appropriate index in the Beyond UI package
+6. **Document**: Add JSDoc comments with prop descriptions; see `packages/beyond-ui/docs/API_CONVENTIONS.md`
 
 ## Environment Setup
 
@@ -872,7 +822,7 @@ git push
 ```
 packages/
 ├── core/              @app/core - Features, business logic, routes
-├── ui/                @unicornlove/ui - Tamagui components (hybrid npm/workspace)
+├── beyond-ui/         @unicornlove/beyond-ui - UI components
 ├── schemas/           @app/schemas - Zod validation schemas
 ├── supabase/          @app/supabase - Database, migrations, tRPC functions
 ├── trpc/              @app/trpc - tRPC client and exports

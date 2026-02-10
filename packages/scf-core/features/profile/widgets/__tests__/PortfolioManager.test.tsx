@@ -301,7 +301,7 @@ vi.mock('tamagui', () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   // Icons used by PortfolioManager
   Plus: () => <span data-testid="plus-icon">Plus</span>,
   Edit3: () => <span data-testid="edit-icon">Edit3</span>,

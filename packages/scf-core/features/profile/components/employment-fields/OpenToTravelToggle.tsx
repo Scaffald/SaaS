@@ -1,6 +1,6 @@
 import { ToggleCard } from '@unicornlove/beyond-ui'
 import type { ToggleCardProps } from '@unicornlove/beyond-ui'
-import { Plane } from '@tamagui/lucide-icons'
+import { Plane } from 'lucide-react-native'
 
 export interface OpenToTravelToggleProps
   extends Omit<ToggleCardProps, 'icon' | 'title' | 'description'> {

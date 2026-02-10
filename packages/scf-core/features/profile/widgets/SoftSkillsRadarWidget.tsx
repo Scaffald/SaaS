@@ -15,7 +15,7 @@ import {
   ResponsiveModal,
   spacing,
 } from '@unicornlove/beyond-ui'
-import { Download } from '@tamagui/lucide-icons'
+import { Download } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useMemo, useState, type FC } from 'react'

@@ -53,6 +53,8 @@ export class HttpClient {
       requestHeaders['Authorization'] = `Bearer ${this.config.apiKey}`
     } else if (this.config.accessToken) {
       requestHeaders['Authorization'] = `Bearer ${this.config.accessToken}`
+    } else if (this.config.supabaseToken) {
+      requestHeaders['Authorization'] = `Bearer ${this.config.supabaseToken}`
     }
 
     if (method === 'POST' && idempotencyKey) {

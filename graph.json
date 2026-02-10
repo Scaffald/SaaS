@@ -1164,7 +1164,6 @@
           "name": "ui",
           "tags": [
             "npm:public",
-            "npm:tamagui",
             "npm:expo",
             "npm:react-native",
             "npm:ui",

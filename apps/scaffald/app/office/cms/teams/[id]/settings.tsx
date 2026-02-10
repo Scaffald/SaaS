@@ -1,16 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { TeamSettingsForm } from '@scf/core/features/office/components/TeamSettingsForm'
-import { api } from '@scf/core/utils/api'
+import { useTeam } from '@scaffald/sdk/react'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { ArrowLeft } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import { ArrowLeft } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
 
 const PERMITTED_ROLES = new Set(['super_admin', 'partner_admin', 'office', 'admin', 'manager'])
 
@@ -27,13 +22,10 @@ export default function OfficeTeamSettingsPage() {
     isFetching,
     error,
     refetch,
-  } = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeam(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   if (!teamId) {
     return (
@@ -70,7 +62,7 @@ export default function OfficeTeamSettingsPage() {
     )
   }
 
-  const team = teamData.team as TeamRecord
+  const team = teamData.team
   const metadata = (team.metadata as Record<string, unknown> | null) ?? {}
   const canEdit = !team.isArchived && roles.some((role: string) => PERMITTED_ROLES.has(role))
   const fallbackRoleId = team.defaultRoleId ?? team.defaultRole?.id ?? null

@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { NotificationTag } from '@unicornlove/beyond-ui'
-import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

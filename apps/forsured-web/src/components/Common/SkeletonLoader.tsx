@@ -1,29 +1,20 @@
 /**
  * SkeletonLoader - Loading skeleton component using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React from 'react';
-import {
-  Skeleton,
-  SkeletonText,
-  SkeletonCard,
-  Stack,
-  Row,
-} from '@unicornlove/beyond-ui';
+import React from 'react'
+import { Skeleton, SkeletonText, SkeletonCard, Stack, Row } from '@unicornlove/beyond-ui'
 
 interface SkeletonLoaderProps {
-  variant?: 'card' | 'table' | 'chart' | 'text';
-  count?: number;
+  variant?: 'card' | 'table' | 'chart' | 'text'
+  count?: number
 }
 
-export default function SkeletonLoader({
-  variant = 'card',
-  count = 1,
-}: SkeletonLoaderProps) {
+export default function SkeletonLoader({ variant = 'card', count = 1 }: SkeletonLoaderProps) {
   const renderSkeleton = () => {
     switch (variant) {
       case 'card':
-        return <SkeletonCard />;
+        return <SkeletonCard />
 
       case 'table':
         return (
@@ -45,7 +36,7 @@ export default function SkeletonLoader({
               ))}
             </Stack>
           </Stack>
-        );
+        )
 
       case 'chart':
         return (
@@ -61,15 +52,15 @@ export default function SkeletonLoader({
               ))}
             </Stack>
           </Stack>
-        );
+        )
 
       case 'text':
-        return <SkeletonText lines={3} />;
+        return <SkeletonText lines={3} />
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <>
@@ -79,7 +70,7 @@ export default function SkeletonLoader({
         </Stack>
       ))}
     </>
-  );
+  )
 }
 
 export function DashboardSkeleton() {
@@ -99,5 +90,5 @@ export function DashboardSkeleton() {
       <SkeletonLoader variant="chart" />
       <SkeletonLoader variant="table" />
     </Stack>
-  );
+  )
 }

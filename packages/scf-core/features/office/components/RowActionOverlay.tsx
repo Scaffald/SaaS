@@ -1,4 +1,4 @@
-import { Eye, Pencil, X } from '@tamagui/lucide-icons'
+import { Eye, Pencil, X } from 'lucide-react-native'
 import { useEffect, useRef } from 'react'
 import { Button, Row } from '@unicornlove/beyond-ui'
 import { DeleteButton } from './DeleteButton'

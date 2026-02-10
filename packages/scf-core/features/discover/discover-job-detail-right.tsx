@@ -21,7 +21,7 @@ import {
   Plane,
   Shield,
   TrendingUp,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
 import { useMemo } from 'react'

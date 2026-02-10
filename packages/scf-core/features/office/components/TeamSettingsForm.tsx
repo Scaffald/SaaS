@@ -1,7 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import { useUpdateTeam } from '@scaffald/sdk/react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Info } from '@tamagui/lucide-icons'
+import { Info } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
@@ -60,7 +60,6 @@ export function TeamSettingsForm({
   onSettingsSaved,
 }: TeamSettingsFormProps) {
   const toast = useToast()
-  const utils = api.useUtils()
 
   const [metadataState, setMetadataState] = useState<Record<string, unknown>>(
     () => (metadata ?? {}) as Record<string, unknown>
@@ -106,8 +105,8 @@ export function TeamSettingsForm({
   const watchedValues = watch()
   const debouncedValues = useDebounce(watchedValues, 800)
 
-  const updateMutation = api.teams.update.useMutation({
-    onSuccess: async () => {
+  const updateMutation = useUpdateTeam({
+    onSuccess: () => {
       setStatus('saved')
       lastSavedRef.current = JSON.stringify(debouncedValues)
       const committedMetadata = pendingMetadataRef.current ?? metadataState
@@ -116,17 +115,16 @@ export function TeamSettingsForm({
       if (onSettingsSaved) {
         onSettingsSaved(committedMetadata)
       }
-      await utils.teams.byId.invalidate({ teamId })
       setTimeout(() => setStatus('idle'), 2000)
     },
     onError: (error: unknown) => {
       setStatus('error')
       pendingMetadataRef.current = null
       toast.show({
-          title: 'Unable to update settings',
-          message: error instanceof Error ? error.message : 'Please try again shortly.',
-          variant: 'error',
-        })
+        title: 'Unable to update settings',
+        message: error instanceof Error ? error.message : 'Please try again shortly.',
+        variant: 'error',
+      })
     },
   })
 
@@ -151,9 +149,11 @@ export function TeamSettingsForm({
     setStatus('saving')
     pendingMetadataRef.current = nextMetadata
     updateMutation.mutate({
-      teamId,
-      // Metadata structure stored as JSON - compatible with mutation input
-      metadata: nextMetadata as unknown as Parameters<typeof updateMutation.mutate>[0]['metadata'],
+      id: teamId,
+      params: {
+        // Metadata structure stored as JSON - compatible with mutation input
+        metadata: nextMetadata,
+      },
     })
   }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])
 

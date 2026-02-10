@@ -1,6 +1,5 @@
 /**
  * Layout - Main application layout using Beyond UI
- * Migrated from Tamagui to Beyond UI
  *
  * Accessibility features:
  * - Skip link for keyboard users to bypass navigation

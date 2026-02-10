@@ -22,7 +22,7 @@ import {
   ToggleCard,
 } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
+import { Calendar, Car, Shield } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'

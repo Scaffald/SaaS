@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
+import { AlertCircle, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Button, Tabs, Text, Row, Stack } from '@unicornlove/beyond-ui'

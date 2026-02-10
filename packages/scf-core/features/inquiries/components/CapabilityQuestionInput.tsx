@@ -1,5 +1,5 @@
 import { Button, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
-import { Check, X } from '@tamagui/lucide-icons'
+import { Check, X } from 'lucide-react-native'
 import { useState } from 'react'
 
 interface CapabilityQuestionInputProps {

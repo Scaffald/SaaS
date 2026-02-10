@@ -1,6 +1,6 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from '@tamagui/lucide-icons'
+import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
 import { useLocalSearchParams } from 'expo-router'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

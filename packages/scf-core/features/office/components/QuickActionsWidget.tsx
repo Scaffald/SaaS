@@ -1,5 +1,5 @@
 import { DashboardWidget, Text } from '@unicornlove/beyond-ui'
-import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from '@tamagui/lucide-icons'
+import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { Button, Stack } from '@unicornlove/beyond-ui'
 

@@ -1,4 +1,4 @@
-import { Download } from '@tamagui/lucide-icons'
+import { Download } from 'lucide-react-native'
 import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 

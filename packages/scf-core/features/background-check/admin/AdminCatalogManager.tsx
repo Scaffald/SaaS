@@ -11,7 +11,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
-import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from '@tamagui/lucide-icons'
+import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useMemo, useState } from 'react'

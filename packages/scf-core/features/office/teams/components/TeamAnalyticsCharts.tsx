@@ -19,7 +19,7 @@ interface TeamAnalyticsChartsProps {
 
 export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsChartsProps) {
   const { width } = useWindowDimensions() // Keep for actual dimension calculations
-  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  // Breakpoint: 800px (small/medium layout)
   const isSmallScreen = width <= 800
   const now = useMemo(() => new Date(), [])
 

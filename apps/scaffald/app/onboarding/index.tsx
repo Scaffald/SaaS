@@ -12,9 +12,9 @@ import {
   Text,
   Row,
   Stack,
+  useToast,
 } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -41,7 +41,7 @@ import {
  */
 export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
   const router = useRouter()
 
   // Check prerequisites status
@@ -58,8 +58,10 @@ export default function OnboardingPage() {
   // Complete prerequisites mutation
   const completeMutation = api.prerequisites.complete.useMutation({
     onSuccess: () => {
-      toast.show('Profile Complete', {
+      toast.show({
+        title: 'Profile Complete',
         message: 'Your profile has been set up successfully!',
+        variant: 'success',
       })
       refetchStatus()
       // Redirect to dashboard immediately after completion
@@ -67,8 +69,10 @@ export default function OnboardingPage() {
     },
     onError: (error: { message?: string }) => {
       console.error('Error completing prerequisites:', error)
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to save profile. Please try again.',
+        variant: 'error',
       })
     },
   })

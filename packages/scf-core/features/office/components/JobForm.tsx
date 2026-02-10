@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useTeams } from '@scaffald/sdk/react'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AddressResult } from '@unicornlove/beyond-ui'
 import {
@@ -14,7 +14,7 @@ import {
 } from '@unicornlove/beyond-ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
-import { Eye, X } from '@tamagui/lucide-icons'
+import { Eye, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
@@ -256,14 +256,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   }
 
   const teamsQueryEnabled = Boolean(formData.organization_id)
-  const { data: teamsData, isLoading: teamsLoading } = api.teams.list.useQuery(
+  const { data: teamsData, isLoading: teamsLoading } = useTeams(
     {
       organizationId: formData.organization_id || undefined,
       includeArchived: false,
     },
     { enabled: teamsQueryEnabled }
   )
-  const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
+  const teams = (teamsData?.data ?? []) as Array<{ id: string; name: string | null }>
 
   useEffect(() => {
     if (formData.organization_id) {

@@ -1,5 +1,5 @@
 import { DiscoverCard } from '@unicornlove/beyond-ui'
-import { Building, MapPin, Users } from '@tamagui/lucide-icons'
+import { Building, MapPin, Users } from 'lucide-react-native'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from '@unicornlove/beyond-ui'
 import { Button, SizableText, Text, Row } from '@unicornlove/beyond-ui'

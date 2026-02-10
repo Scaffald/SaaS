@@ -14,7 +14,7 @@ import {
 import { DataTable } from '@scf/core/components/ui/DataTable'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
-import { Plus } from '@tamagui/lucide-icons'
+import { Plus } from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
 

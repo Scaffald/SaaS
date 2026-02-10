@@ -1,6 +1,6 @@
 /**
  * Row component types
- * Horizontal flex container that replaces Tamagui's XStack
+ * Horizontal flex container (Row) types
  */
 
 import type { ReactNode } from 'react'

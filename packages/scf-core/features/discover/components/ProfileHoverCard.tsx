@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Briefcase, Building2, ExternalLink, MapPin, User } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
 import { Button, Spinner, Text, View, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ProfileHoverCardProps {

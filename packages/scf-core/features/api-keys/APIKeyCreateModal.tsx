@@ -18,7 +18,7 @@ import {
   Checkbox,
   Spinner,
 } from '@unicornlove/beyond-ui'
-import { AlertCircle, CheckCircle, Copy } from '@tamagui/lucide-icons'
+import { AlertCircle, CheckCircle, Copy } from 'lucide-react-native'
 import { format, addMonths } from 'date-fns'
 
 interface APIKeyCreateModalProps {

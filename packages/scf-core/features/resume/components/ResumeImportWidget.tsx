@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
-import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
+import { FileText, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'

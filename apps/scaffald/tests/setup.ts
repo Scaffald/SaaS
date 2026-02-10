@@ -56,7 +56,7 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
 
 /**
  * Mock window.matchMedia for jsdom
- * Required for Tamagui components that use media queries
+ * Required for UI components that use media queries
  */
 const createMatchMediaMock = (query: string) => ({
   matches: false,
@@ -77,7 +77,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 /**
  * Mock ResizeObserver for jsdom
- * Required for some Tamagui components
+ * Required for some UI components
  */
 class ResizeObserverMock {
   observe() {}

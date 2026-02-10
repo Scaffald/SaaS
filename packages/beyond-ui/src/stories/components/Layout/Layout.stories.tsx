@@ -148,11 +148,11 @@ export const StackMigrationExample: StoryObj = {
   render: () => (
     <View style={{ gap: 24 }}>
       <View>
-        <Text style={styles.label}>Before (Tamagui YStack):</Text>
-        <Text style={styles.code}>{'<YStack gap="$4" padding="$3">...</YStack>'}</Text>
+        <Text style={styles.label}>Token-based (legacy):</Text>
+        <Text style={styles.code}>{'<Stack gap={16} padding={12}>...</Stack>'}</Text>
       </View>
       <View>
-        <Text style={styles.label}>After (Beyond UI Stack):</Text>
+        <Text style={styles.label}>Beyond UI Stack:</Text>
         <Stack gap={16} padding={12} backgroundColor={colors.gray[100]} borderRadius={8}>
           <LayoutBlock>Item 1</LayoutBlock>
           <LayoutBlock>Item 2</LayoutBlock>
@@ -244,13 +244,13 @@ export const RowMigrationExample: StoryObj = {
   render: () => (
     <View style={{ gap: 24 }}>
       <View>
-        <Text style={styles.label}>Before (Tamagui XStack):</Text>
+        <Text style={styles.label}>Row (legacy pattern):</Text>
         <Text style={styles.code}>
-          {'<XStack justifyContent="space-between" alignItems="center">...</XStack>'}
+          {'<Row justify="space-between" align="center">...</Row>'}
         </Text>
       </View>
       <View>
-        <Text style={styles.label}>After (Beyond UI Row):</Text>
+        <Text style={styles.label}>Beyond UI Row:</Text>
         <Row
           justify="space-between"
           align="center"

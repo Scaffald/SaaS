@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Briefcase, Mail, Shield, Users } from '@tamagui/lucide-icons'
+import { Briefcase, Mail, Shield, Users } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'

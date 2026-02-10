@@ -231,6 +231,20 @@ export interface CreateJobAssignmentParams {
   isPrimary?: boolean
 }
 
+/**
+ * Parameters for listing user's invitations
+ */
+export interface ListMyInvitationsParams {
+  status?: 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired'
+}
+
+/**
+ * Parameters for responding to an invitation
+ */
+export interface RespondToInvitationParams {
+  action: 'accept' | 'decline'
+}
+
 // ===== Response Types =====
 
 /**

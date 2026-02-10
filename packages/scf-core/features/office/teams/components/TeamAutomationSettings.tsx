@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useUpdateTeam } from '@scaffald/sdk/react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -57,7 +57,6 @@ export function TeamAutomationSettings({
   canEdit = true,
 }: TeamAutomationSettingsProps) {
   const toast = useToast()
-  const utils = api.useUtils()
 
   const initialState = useMemo<FormState>(
     () => ({
@@ -100,21 +99,21 @@ export function TeamAutomationSettings({
     lastCommittedRef.current = JSON.stringify(initialState)
   }, [initialState])
 
-  const updateMutation = api.teams.update.useMutation({
-    onSuccess: async () => {
+  const updateMutation = useUpdateTeam({
+    onSuccess: () => {
       lastCommittedRef.current = JSON.stringify(debouncedFormState)
       toast.show({
-          title: 'Automation updated',
-          message: 'Team automation preferences saved.',
-        })
-      await utils.teams.byId.invalidate({ teamId })
+        title: 'Automation updated',
+        message: 'Team automation preferences saved.',
+        variant: 'success',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
-          title: 'Unable to update automation settings',
-          variant: 'error',
-        })
+        title: 'Unable to update automation settings',
+        variant: 'error',
+      })
     },
   })
 
@@ -133,16 +132,18 @@ export function TeamAutomationSettings({
     }
 
     updateMutation.mutate({
-      teamId,
-      allowSelfJoin: debouncedFormState.allowSelfJoin,
-      autoAssignJobs: debouncedFormState.autoAssignJobs,
-      invitationExpirationDays: debouncedFormState.invitationExpirationDays,
-      workloadStrategy: debouncedFormState.workloadStrategy as
-        | 'manual'
-        | 'round_robin'
-        | 'load_balance',
-      workloadSettings: debouncedFormState.workloadSettings,
-      analyticsRefreshIntervalMinutes: debouncedFormState.analyticsRefreshIntervalMinutes,
+      id: teamId,
+      params: {
+        allowSelfJoin: debouncedFormState.allowSelfJoin,
+        autoAssignJobs: debouncedFormState.autoAssignJobs,
+        invitationExpirationDays: debouncedFormState.invitationExpirationDays,
+        workloadStrategy: debouncedFormState.workloadStrategy as
+          | 'manual'
+          | 'round_robin'
+          | 'load_balance',
+        workloadSettings: debouncedFormState.workloadSettings,
+        analyticsRefreshIntervalMinutes: debouncedFormState.analyticsRefreshIntervalMinutes,
+      },
     })
   }, [debouncedFormState, teamId, canEdit, updateMutation])
 

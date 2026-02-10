@@ -1,8 +1,13 @@
-import { api } from '@scf/core/utils/api'
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useRemoveTeamMember } from '@scaffald/sdk/react'
 import { useEffect, useState } from 'react'
-import { Button, Text, TextArea, Stack } from '@unicornlove/beyond-ui'
+import {
+  ResponsiveModal,
+  useToast,
+  Button,
+  Text,
+  TextArea,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 interface RemoveMemberModalProps {
   open: boolean
@@ -26,18 +31,23 @@ export function RemoveMemberModal({
   const toast = useToast()
   const [reason, setReason] = useState('')
 
-  const removeMemberMutation = api.teams.members.remove.useMutation({
+  const removeMemberMutation = useRemoveTeamMember({
     onSuccess: () => {
-      toast.show('Member removed', { message: `${member?.displayName ?? 'Member'} was removed.` })
+      toast.show({
+        title: 'Member removed',
+        message: `${member?.displayName ?? 'Member'} was removed.`,
+        variant: 'success',
+      })
       onOpenChange(false)
       onRemoved?.()
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'An error occurred'
+      const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to remove member',
-          variant: 'error',
-        })
+        title: 'Unable to remove member',
+        message,
+        variant: 'error',
+      })
     },
   })
 
@@ -48,11 +58,13 @@ export function RemoveMemberModal({
   }, [open])
 
   const handleRemove = async () => {
-    if (!member) return
+    if (!member?.userId) return
     await removeMemberMutation.mutateAsync({
-      teamMemberId: member.id,
       teamId,
-      reason: reason.trim() ? reason.trim() : undefined,
+      userId: member.userId,
+      params: {
+        reason: reason.trim() ? reason.trim() : undefined,
+      },
     })
   }
 

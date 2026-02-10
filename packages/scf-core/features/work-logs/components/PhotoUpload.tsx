@@ -1,5 +1,5 @@
 import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/beyond-ui'
-import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
+import { Camera, ImagePlus, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'

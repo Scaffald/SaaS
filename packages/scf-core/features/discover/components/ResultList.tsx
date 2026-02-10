@@ -1,5 +1,5 @@
 import { EmptyState, ErrorState, SkeletonList } from '@unicornlove/beyond-ui'
-import { Search } from '@tamagui/lucide-icons'
+import { Search } from 'lucide-react-native'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'

@@ -1,13 +1,13 @@
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
 import { api } from '@scf/core/utils/api'
-import { shadows } from '@unicornlove/beyond-ui'
+import { shadows, useThemeContext, useWindowDimensions, Row } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
-import { Menu } from '@tamagui/lucide-icons'
+import { Menu } from 'lucide-react-native'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
-import { useTheme, useWindowDimensions, Row } from '@unicornlove/beyond-ui'
 import { DrawerContent } from './DrawerContent'
 import { ScaffaldLogo } from '@scf/core/assets'
 
@@ -33,7 +33,7 @@ interface DrawerLayoutProps {
  */
 export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
   const { width } = useWindowDimensions()
-  const theme = useTheme()
+  const { theme } = useThemeContext()
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
@@ -133,7 +133,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           swipeEnabled: isSmall,
           headerShown: isSmall,
           headerStyle: {
-            backgroundColor: theme.blue1.val,
+            backgroundColor: colors.bg[theme].default,
             borderWidth: 0,
           },
           headerLeftContainerStyle: {
@@ -143,10 +143,10 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             paddingRight: 20,
           },
           headerTitleStyle: {
-            color: theme.color12.val,
+            color: colors.text[theme].primary,
           },
           drawerStyle: {
-            backgroundColor: theme.color3.val,
+            backgroundColor: colors.bg[theme].subtle,
             borderRightWidth: 0,
             borderRadius: 0,
             width: drawerWidth,

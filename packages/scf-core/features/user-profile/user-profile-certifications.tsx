@@ -1,4 +1,4 @@
-import { BadgeCheck, Calendar } from '@tamagui/lucide-icons'
+import { BadgeCheck, Calendar } from 'lucide-react-native'
 import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Certification {

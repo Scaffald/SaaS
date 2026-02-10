@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { ExternalLink } from '@tamagui/lucide-icons'
+import { ExternalLink } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

@@ -1,4 +1,4 @@
-import { Star } from '@tamagui/lucide-icons'
+import { Star } from 'lucide-react-native'
 import { Pressable } from 'react-native'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 

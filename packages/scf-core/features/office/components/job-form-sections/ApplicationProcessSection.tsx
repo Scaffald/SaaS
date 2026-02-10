@@ -8,7 +8,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
-import { Plus, X } from '@tamagui/lucide-icons'
+import { Plus, X } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, Label, Switch } from '@unicornlove/beyond-ui'
 

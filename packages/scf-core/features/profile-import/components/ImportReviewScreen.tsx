@@ -7,7 +7,7 @@ import {
   ListPlus,
   Loader2,
   RotateCcw,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import {
   Button,

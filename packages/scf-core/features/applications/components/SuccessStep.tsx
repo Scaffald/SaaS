@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { Check, ExternalLink, Home } from '@tamagui/lucide-icons'
+import { Check, ExternalLink, Home } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

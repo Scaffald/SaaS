@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle } from '@tamagui/lucide-icons'
+import { CheckCircle2, Circle } from 'lucide-react-native'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 // Mock soft skills - will be replaced with real data from API

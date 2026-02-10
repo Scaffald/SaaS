@@ -1,4 +1,4 @@
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ParentSkill } from '../../types/profile-skills-types'

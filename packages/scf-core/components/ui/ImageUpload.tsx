@@ -1,6 +1,6 @@
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { AlertCircle, Image as ImageIcon, Trash2, Upload } from '@tamagui/lucide-icons'
+import { AlertCircle, Image as ImageIcon, Trash2, Upload } from 'lucide-react-native'
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Image, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

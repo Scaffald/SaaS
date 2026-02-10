@@ -1,7 +1,7 @@
 import { DisputeBackgroundCheckContent } from '@scf/core/features/background-check'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { Stack as ExpoStack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'

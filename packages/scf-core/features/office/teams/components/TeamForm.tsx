@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useCreateTeam, useUpdateTeam } from '@scaffald/sdk/react'
 import {
   TEAM_INVITATION_POLICIES,
   TEAM_VISIBILITIES,
@@ -165,41 +165,41 @@ export function TeamForm({
     setValue('defaultRoleKey', defaultRole.key, { shouldValidate: true })
   }, [roles, getValues, setValue])
 
-  const createMutation = api.teams.create.useMutation({
-    onSuccess: (data: { team?: unknown }) => {
+  const createMutation = useCreateTeam({
+    onSuccess: (data) => {
       toast.show({
-          title: 'Success',
-          message: 'Team created successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Team created successfully',
+        variant: 'success',
+      })
       onSuccess?.(data?.team)
       router.push(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to create team'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
-  const updateMutation = api.teams.update.useMutation({
-    onSuccess: (data: { team?: unknown }) => {
+  const updateMutation = useUpdateTeam({
+    onSuccess: (data) => {
       toast.show({
-          title: 'Success',
-          message: 'Team updated successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Team updated successfully',
+        variant: 'success',
+      })
       onSuccess?.(data?.team)
       router.push(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to update team'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -254,8 +254,8 @@ export function TeamForm({
         return
       }
       await updateMutation.mutateAsync({
-        teamId,
-        ...payloadBase,
+        id: teamId,
+        params: payloadBase,
       })
     }
   }

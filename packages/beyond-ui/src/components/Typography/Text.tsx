@@ -2,7 +2,7 @@
  * Text component
  *
  * Flexible text component with size and weight variants.
- * Replaces Tamagui's SizableText component.
+ * Flexible text with size and weight variants.
  */
 
 import { useMemo } from 'react'

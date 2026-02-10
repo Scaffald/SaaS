@@ -1,6 +1,6 @@
 /**
  * Stack component
- * Vertical flex container that replaces Tamagui's YStack
+ * Vertical flex container
  *
  * Stack arranges its children in a vertical column with consistent spacing.
  * It's the primary layout component for vertical arrangements.

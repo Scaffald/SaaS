@@ -1,4 +1,4 @@
-import { Calendar, GraduationCap } from '@tamagui/lucide-icons'
+import { Calendar, GraduationCap } from 'lucide-react-native'
 import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Education {

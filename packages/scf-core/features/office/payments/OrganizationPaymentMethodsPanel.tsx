@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { CreditCard, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { CreditCard, Plus, Trash2 } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

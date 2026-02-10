@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons'
+import { Clock, RefreshCw, XCircle } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'

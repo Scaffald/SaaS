@@ -5,7 +5,7 @@ import {
   CertificationSearch,
 } from '@scf/core/components/certifications'
 import { Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@unicornlove/beyond-ui'
-import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
+import { Award, PlusCircle, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useState } from 'react'
 import {

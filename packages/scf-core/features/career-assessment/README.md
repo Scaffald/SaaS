@@ -312,7 +312,7 @@ See `docs/features/onet-roadmap.md` for complete roadmap.
 - **React Hook Form** - Form management
 - **Zod** - Schema validation
 - **tRPC** - Type-safe API
-- **Tamagui** - UI components
+- **Beyond UI** - UI components
 - **O*NET 30.0** - Occupation database (pre-seeded)
 
 ---

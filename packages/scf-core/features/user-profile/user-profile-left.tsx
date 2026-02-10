@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
-import { AlertTriangle, CheckCircle } from '@tamagui/lucide-icons'
+import { AlertTriangle, CheckCircle } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { resetProfileSyncError, useAdaptiveProfileSync } from '../profile/utils/profile-sync-store'

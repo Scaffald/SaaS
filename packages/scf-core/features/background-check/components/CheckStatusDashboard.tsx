@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
+import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'

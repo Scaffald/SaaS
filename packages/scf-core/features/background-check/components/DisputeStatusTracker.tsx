@@ -1,5 +1,5 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw } from 'lucide-react-native'
 import { useMemo } from 'react'
 import {
   Button,

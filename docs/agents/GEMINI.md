@@ -3,13 +3,13 @@
 
 ## Project Overview
 
-This is a [Tamagui](https://tamagui.dev), [solito](https://solito.dev), [Expo](https://expo.dev), and [Supabase](https://supabase.com) project. It is a monorepo managed with [pnpm](https://pnpm.io) and [Nx](https://nx.dev). The project includes a web app, an iOS app, and an Android app.
+This is a [Beyond UI](packages/beyond-ui/), [solito](https://solito.dev), [Expo](https://expo.dev), and [Supabase](https://supabase.com) project. It is a monorepo managed with [pnpm](https://pnpm.io) and [Nx](https://nx.dev). The project includes a web app, an iOS app, and an Android app.
 
 The project is structured as a monorepo with the following workspaces:
 
 -   `apps/expo`: The Expo app (iOS, Android, and Web)
 -   `packages/core`: Core business logic and types
--   `packages/ui`: Shared UI components
+-   `packages/beyond-ui`: Shared UI components (Beyond UI)
 -   `packages/supabase`: Supabase client and migrations
 -   `packages/schemas`: Zod schemas for validation
 

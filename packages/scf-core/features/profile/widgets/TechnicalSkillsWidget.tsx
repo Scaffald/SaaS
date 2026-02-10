@@ -8,7 +8,7 @@ import {
   LoadingState,
   spacing,
 } from '@unicornlove/beyond-ui'
-import { CheckCircle } from '@tamagui/lucide-icons'
+import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'

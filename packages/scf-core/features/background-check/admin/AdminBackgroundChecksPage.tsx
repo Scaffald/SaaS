@@ -3,7 +3,7 @@ import { OfficePageLayout } from '@scf/core/features/office/components/OfficePag
 import { api } from '@scf/core/utils/api'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
+import { AlertTriangle, ClipboardList, RefreshCcw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'

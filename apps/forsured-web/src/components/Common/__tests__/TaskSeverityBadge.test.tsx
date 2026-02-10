@@ -69,35 +69,35 @@ describe('TaskSeverityBadge', () => {
     it('should apply critical severity colors', () => {
       render(<TaskSeverityBadge severity="critical" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Critical')).toBeInTheDocument();
     });
 
     it('should apply high severity colors', () => {
       render(<TaskSeverityBadge severity="high" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('High')).toBeInTheDocument();
     });
 
     it('should apply medium severity colors', () => {
       render(<TaskSeverityBadge severity="medium" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Medium')).toBeInTheDocument();
     });
 
     it('should apply low severity colors', () => {
       render(<TaskSeverityBadge severity="low" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Low')).toBeInTheDocument();
     });
 
     it('should apply info severity colors', () => {
       render(<TaskSeverityBadge severity="info" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Info')).toBeInTheDocument();
     });
 

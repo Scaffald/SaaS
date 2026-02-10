@@ -1,6 +1,6 @@
 /**
  * PolicyStatusBadge Component Tests
- * REQ-288: Tamagui UI Component Library
+ * REQ-288: Beyond UI Component Library
  */
 
 import { describe, it, expect, vi } from 'vitest'
@@ -25,7 +25,7 @@ vi.mock('tamagui', async () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', async () => {
+vi.mock('lucide-react-native', async () => {
   const React = await import('react')
   return {
     Shield: () => React.createElement('svg', { 'data-testid': 'icon-shield' }),

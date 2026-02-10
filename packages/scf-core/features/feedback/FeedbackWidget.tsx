@@ -18,7 +18,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
-import { MessageCircle } from '@tamagui/lucide-icons'
+import { MessageCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import { useFeedbackContext } from './hooks/useFeedbackContext'

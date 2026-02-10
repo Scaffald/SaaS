@@ -1,6 +1,5 @@
 /**
  * LoadingSpinner - Loading spinner using Beyond UI
- * Migrated from Tamagui to Beyond UI
  */
 import { Stack, Spinner } from '@unicornlove/beyond-ui';
 

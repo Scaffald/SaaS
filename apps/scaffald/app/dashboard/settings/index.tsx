@@ -1,7 +1,7 @@
 import { SiteOverlapNotification } from '@scf/core/features/notifications/components/SiteOverlapNotification'
 import { AccountDeletionPanel } from '@scf/core/features/profile/components/AccountDeletionPanel'
 import { api } from '@scf/core/utils/api'
-import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
+import { AlertCircle, ExternalLink, Info, ShieldAlert } from 'lucide-react-native'
 import {
   Button,
   NotificationTag,

@@ -1,4 +1,4 @@
-import { Building, MapPin, Users } from '@tamagui/lucide-icons'
+import { Building, MapPin, Users } from 'lucide-react-native'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from '@unicornlove/beyond-ui'
 import { Text, Row } from '@unicornlove/beyond-ui'

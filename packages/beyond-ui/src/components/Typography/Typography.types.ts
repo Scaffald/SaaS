@@ -2,7 +2,7 @@
  * Typography component types
  *
  * Provides type definitions for Heading, Paragraph, Label, and Text components
- * that serve as replacements for Tamagui's H1-H6, Paragraph, and SizableText.
+ * for Heading, Paragraph, Label, and Text.
  */
 
 import type { TextProps as RNTextProps, TextStyle } from 'react-native'
@@ -130,7 +130,7 @@ export interface LabelProps extends BaseTextProps {
 
 /**
  * Text component props - flexible text with size/weight variants
- * Replaces Tamagui's SizableText
+ * Flexible text with size/weight variants
  *
  * @example
  * // Small muted text

@@ -7,6 +7,7 @@ import {
   TeamOverviewCard,
 } from '@scf/core/features/office/teams'
 import { api } from '@scf/core/utils/api'
+import { useTeam, useTeamMembers, useTeamInvitations } from '@scaffald/sdk/react'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@scf/supabase/client-types'
 import {
@@ -16,7 +17,7 @@ import {
   Pencil,
   RefreshCcw,
   UserPlus,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
@@ -24,10 +25,6 @@ import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
-type TeamMembersOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type TeamInvitationOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
 
@@ -45,41 +42,29 @@ export default function OfficeTeamDetailPage() {
     isFetching: isTeamFetching,
     error: teamError,
     refetch: refetchTeam,
-  } = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeam(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   const {
     data: membersData,
     isLoading: isMembersLoading,
     error: membersError,
     refetch: refetchMembers,
-  } = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeamMembers(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   const {
-    data: pendingInvitationsData,
+    data: invitationsData,
     isLoading: isInvitationsLoading,
     refetch: refetchPendingInvitations,
-  } = api.teams.invitations.list.useQuery(
-    {
-      status: 'pending',
-      teamId,
-    },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeamInvitations(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   const {
     data: jobsData,
@@ -99,7 +84,7 @@ export default function OfficeTeamDetailPage() {
   )
 
   const { roles } = useUserRoles()
-  const team = teamData?.team as TeamRecord | undefined
+  const team = teamData?.team
 
   if (!teamId) {
     return (
@@ -136,14 +121,12 @@ export default function OfficeTeamDetailPage() {
     )
   }
 
-  const members = (membersData?.members ?? []) as TeamMembersOutput['members']
-  const memberCount = Array.isArray(members) ? members.length : undefined
+  const members = membersData?.members ?? []
+  const memberCount = members.length
 
-  const pendingInvitations = (pendingInvitationsData?.invitations ??
-    []) as TeamInvitationOutput['invitations']
-  const pendingInvitationsCount = Array.isArray(pendingInvitations)
-    ? pendingInvitations.length
-    : undefined
+  const allInvitations = invitationsData?.invitations ?? []
+  const pendingInvitations = allInvitations.filter((inv) => inv.status === 'pending')
+  const pendingInvitationsCount = pendingInvitations.length
 
   const teamJobs = useMemo(() => {
     return ((jobsData?.jobs ?? []) as TeamJobRecord[]) ?? []

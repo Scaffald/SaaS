@@ -74,7 +74,7 @@ These principles apply universally across all projects. For detailed rules, see 
 
 - **Database**: See `frameworks/database/` for Prisma, Supabase, SQLAlchemy, Alembic
 - **Testing**: See `frameworks/testing/` for testing standards, organization, and tools
-- **UI**: See `frameworks/ui/` for Tailwind CSS and Tamagui
+- **UI**: See `frameworks/ui/` for Tailwind CSS and Beyond UI
 
 ## Cross-Cutting Topics
 

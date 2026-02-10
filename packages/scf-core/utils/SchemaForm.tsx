@@ -32,7 +32,7 @@ const TextFieldSchema = createUniqueFieldSchema(
   'text'
 )
 
-// Basic form fields using Tamagui Input
+// Basic form fields using Beyond UI / form input
 // Type inference limitation with @ts-react/form and Zod
 export const formFields = {
   text: {

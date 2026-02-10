@@ -1,4 +1,4 @@
-import { MapPin, Plus, Save } from '@tamagui/lucide-icons'
+import { MapPin, Plus, Save } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Controller, FormProvider } from 'react-hook-form'
 import { Platform } from 'react-native'

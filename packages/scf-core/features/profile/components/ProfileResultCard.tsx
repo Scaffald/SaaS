@@ -1,4 +1,4 @@
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { Button, Card, type CardProps, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

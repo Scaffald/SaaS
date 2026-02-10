@@ -1,6 +1,6 @@
 /**
  * Row component
- * Horizontal flex container that replaces Tamagui's XStack
+ * Horizontal flex container
  *
  * Row arranges its children in a horizontal row with consistent spacing.
  * It's the primary layout component for horizontal arrangements.

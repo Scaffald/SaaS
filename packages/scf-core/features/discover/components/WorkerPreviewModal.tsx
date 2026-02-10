@@ -22,7 +22,7 @@ import {
   UserMinus,
   UserPlus,
   X,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'

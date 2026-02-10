@@ -1,4 +1,4 @@
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react-native'
 import { Button, Text, Row } from '@unicornlove/beyond-ui'
 
 interface CertificationChipProps {

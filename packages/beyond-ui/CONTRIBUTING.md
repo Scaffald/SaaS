@@ -58,6 +58,6 @@ Thank you for your interest in contributing to **@unicornlove/beyond-ui**. This 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** – Design principles, package structure, styling, tokens, accessibility.
 - **[STYLING_GUIDE.md](./STYLING_GUIDE.md)** – How to use tokens and style factories.
 - **[docs/API_CONVENTIONS.md](./docs/API_CONVENTIONS.md)** – Prop naming and API consistency.
-- **[MIGRATION.md](./MIGRATION.md)** – Migrating from @unicornlove/ui (Tamagui) to beyond-ui.
+- Migrating from the legacy UI package: see docs and ARCHITECTURE for tokens and component mapping.
 
 If you have questions, open an issue or reach out to the maintainers.

@@ -10,7 +10,7 @@ import {
 } from '@unicornlove/beyond-ui'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronDown, Plus, X } from '@tamagui/lucide-icons'
+import { ChevronDown, Plus, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'

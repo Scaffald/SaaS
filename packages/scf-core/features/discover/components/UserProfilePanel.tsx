@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { ExternalLink, MapPin, User, X } from '@tamagui/lucide-icons'
+import { ExternalLink, MapPin, User, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { Avatar, Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

@@ -1,36 +1,38 @@
 /**
  * TaskHistoryTimeline Component Tests
- * REQ-288: Tamagui UI Component Library
+ * REQ-288: Beyond-UI Component Library
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-// Mock Tamagui before importing component
-vi.mock('tamagui', async () => {
+vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {
-    styled: (_component: unknown, config: Record<string, unknown>) => {
-      const StyledComponent = React.forwardRef<HTMLElement, Record<string, unknown>>(
-        ({ children, onPress, ...props }, ref) => {
-          const handleClick = (e: React.MouseEvent) => {
-            if (onPress) (onPress as (e: unknown) => void)(e)
-          }
-          return React.createElement('div', { ref, onClick: handleClick, 'data-name': config.name, ...props }, children)
-        }
-      )
-      StyledComponent.displayName = (config.name as string) || 'StyledComponent'
-      return StyledComponent
-    },
-    YStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'ystack', ...props }, children as React.ReactNode),
-    XStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'xstack', ...props }, children as React.ReactNode),
-    View: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children as React.ReactNode),
-    Text: ({ children, ...props }: Record<string, unknown>) => React.createElement('span', props, children as React.ReactNode),
+    Stack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children),
+    Row: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children),
+    Box: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children),
+    Text: ({ children, ...props }: Record<string, unknown>) => React.createElement('span', props, children),
+  }
+})
+
+vi.mock('@unicornlove/beyond-ui/tokens', () => ({
+  colors: { gray: {}, border: { default: '#eee' }, info: {}, success: {}, error: {}, warning: {}, violet: {}, orange: {} },
+  spacing: { 4: 4, 8: 8, 12: 12, 16: 16 },
+  borderRadius: { max: 999, xs: 6 },
+}))
+
+vi.mock('react-native', async () => {
+  const React = await import('react')
+  return {
+    Pressable: ({ children, onPress }: { children: React.ReactNode; onPress?: () => void }) =>
+      React.createElement('div', { onClick: onPress }, children),
+    View: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children),
   }
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   CheckCircle: () => null,
   Circle: () => null,
   Clock: () => null,

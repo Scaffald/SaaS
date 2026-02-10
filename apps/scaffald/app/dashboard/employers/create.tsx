@@ -2,7 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationRequestForm } from '@scf/core/features/organizations/components/OrganizationRequestForm'
-import { Building2, Info } from '@tamagui/lucide-icons'
+import { Building2, Info } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Row, Separator, Stack, Text } from '@unicornlove/beyond-ui'
 

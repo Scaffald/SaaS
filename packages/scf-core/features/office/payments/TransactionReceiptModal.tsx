@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { Dialog } from '@unicornlove/beyond-ui'
-import { Download, X } from '@tamagui/lucide-icons'
+import { Download, X } from 'lucide-react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type TransactionReceiptModalProps = {

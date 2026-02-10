@@ -1,5 +1,5 @@
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { memo, useMemo } from 'react'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

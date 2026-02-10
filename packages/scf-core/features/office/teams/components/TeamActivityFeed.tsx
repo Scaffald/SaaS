@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { MessageCircle, Send } from '@tamagui/lucide-icons'
+import { MessageCircle, Send } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'

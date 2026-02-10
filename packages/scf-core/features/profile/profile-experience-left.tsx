@@ -9,7 +9,7 @@ import {
   ResponsiveSelect,
 } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
+import { AlertTriangle, Check, CheckCircle, Plus, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'

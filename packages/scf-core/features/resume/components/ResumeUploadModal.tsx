@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { FileUpload, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
-import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide-icons'
+import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'

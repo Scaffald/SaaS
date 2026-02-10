@@ -94,7 +94,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Zap: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="zap-icon" data-size={size} data-color={color}>
       Zap

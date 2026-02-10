@@ -102,7 +102,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   useToast: () => ({ show: vi.fn() }),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,

@@ -3,7 +3,7 @@ import { PaymentIntentForm } from '@scf/core/features/payments/components/Paymen
 import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { CircleAlert } from '@tamagui/lucide-icons'
+import { CircleAlert } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'

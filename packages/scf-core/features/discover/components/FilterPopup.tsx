@@ -1,5 +1,5 @@
 import { ToggleSwitch } from '@unicornlove/beyond-ui'
-import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
+import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
 import { AnimatePresence, Button, Label, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

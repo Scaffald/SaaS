@@ -1,4 +1,4 @@
-import { ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ReviewStep8RecommendationProps {

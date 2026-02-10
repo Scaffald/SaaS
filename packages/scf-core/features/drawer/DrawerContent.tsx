@@ -15,7 +15,7 @@ import {
   PanelRightClose,
   Settings as SettingsIcon,
   Sun,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'

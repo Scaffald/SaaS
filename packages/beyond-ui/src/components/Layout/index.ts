@@ -2,7 +2,7 @@
  * Layout components
  *
  * A collection of layout primitives for building flexible UI layouts.
- * These components replace Tamagui's XStack, YStack, and other layout components.
+ * Layout primitives: Box, Stack, Row, Spacer, Separator.
  *
  * @example
  * ```tsx

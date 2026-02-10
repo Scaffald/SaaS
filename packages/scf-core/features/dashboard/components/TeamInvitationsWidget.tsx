@@ -1,16 +1,13 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { CheckCircle, Clock, Users, XCircle } from '@tamagui/lucide-icons'
+import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
+import type { TeamInvitation } from '@scaffald/sdk'
+import { CheckCircle, Clock, Users, XCircle } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
-type InvitationsOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['mine']
-type InvitationRecord = NonNullable<InvitationsOutput['invitations']>[number]
-type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
+type InvitationRecord = TeamInvitation
 
 interface TeamInvitationListProps {
   invitations: InvitationRecord[]
@@ -136,29 +133,32 @@ export function TeamInvitationsWidget() {
   const router = useRouter()
   const toast = useToast()
 
-  const invitationsQuery = api.teams.invitations.mine.useQuery(
+  const invitationsQuery = useMyTeamInvitations(
     { status: 'pending' },
     {
       staleTime: 30_000,
     }
   )
 
-  const respondMutation = api.teams.invitations.respond.useMutation({
-    onSuccess: (result: InvitationRespondOutput) => {
-      toast.show(result.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined', {
+  const respondMutation = useRespondToTeamInvitation({
+    onSuccess: (result) => {
+      const invitation = result.invitation
+      toast.show({
+        title: invitation.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined',
         message:
-          result.status === 'accepted'
+          invitation.status === 'accepted'
             ? 'You now have access to the team.'
             : 'You can accept again later if you change your mind.',
+        variant: invitation.status === 'accepted' ? 'success' : 'info',
       })
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Unable to respond to invitation'
       toast.show({
-          title: 'Unable to respond',
-          variant: 'error',
-        })
+        title: 'Unable to respond',
+        variant: 'error',
+      })
     },
   })
 
@@ -177,7 +177,7 @@ export function TeamInvitationsWidget() {
   const handleRespond = async (invitationId: string, action: 'accept' | 'decline') => {
     await respondMutation.mutateAsync({
       invitationId,
-      action,
+      params: { action },
     })
   }
 

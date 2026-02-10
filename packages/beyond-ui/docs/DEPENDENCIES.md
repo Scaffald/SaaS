@@ -21,7 +21,7 @@ All Storybook, testing, type, and build tools are **devDependencies**. They are 
 
 ## Policy
 
-1. **No required heavy runtimes** – No Tamagui, charting lib, rich-text editor, or map library as a required dependency.
+1. **No required heavy runtimes** – No theme compiler, charting lib, rich-text editor, or map library as a required dependency.
 2. **Optional/peer for platform or feature-specific libs** – React Native, Reanimated, Gesture Handler, and Safe Area are optional peers so web-only or minimal apps don’t pay the cost.
 3. **react-native-svg** – Currently a required peer for chart and SVG-based components. Making it optional would require runtime checks and fallbacks; for now it remains peer (and many RN apps already have it).
 4. **New features** – Prefer optional or peer dependencies for new capabilities (e.g. maps adapter, rich text, DnD). Document in this file when adding.

@@ -54,7 +54,7 @@ vi.mock('tamagui', () => ({
   H4: ({ children }: { children: ReactNode }) => <h4>{children}</h4>,
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Save: () => <span data-testid="save-icon" />,
 }))
 

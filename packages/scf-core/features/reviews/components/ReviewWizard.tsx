@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
+import { ChevronLeft, ChevronRight } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useReviewAutoSave } from '../hooks/useReviewAutoSave'

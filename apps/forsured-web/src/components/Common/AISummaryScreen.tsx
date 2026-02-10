@@ -1,27 +1,21 @@
 /**
  * AISummaryScreen - AI analysis summary screen using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React from 'react';
-import { Stack, Row, Text, Button, Chip } from '@unicornlove/beyond-ui';
-import {
-  CheckCircle,
-  AlertTriangle,
-  Sparkles,
-  TrendingUp,
-  FileCheck,
-} from 'lucide-react';
+import React from 'react'
+import { Stack, Row, Text, Button, Chip } from '@unicornlove/beyond-ui'
+import { CheckCircle, AlertTriangle, Sparkles, TrendingUp, FileCheck } from 'lucide-react'
 
 interface AISummaryScreenProps {
-  title: string;
-  whatWasAnalyzed: string;
-  keyFindings: string[];
-  confidence: number;
-  recommendations?: string[];
-  actionsTaken?: string[];
-  actionsRequiringReview?: string[];
-  onClose?: () => void;
-  onConfirm?: () => void;
+  title: string
+  whatWasAnalyzed: string
+  keyFindings: string[]
+  confidence: number
+  recommendations?: string[]
+  actionsTaken?: string[]
+  actionsRequiringReview?: string[]
+  onClose?: () => void
+  onConfirm?: () => void
 }
 
 const actionSectionStyles = {
@@ -35,7 +29,7 @@ const actionSectionStyles = {
     borderColor: 'var(--color-yellow-6)',
     textColor: 'var(--color-yellow-11)',
   },
-};
+}
 
 export default function AISummaryScreen({
   title,
@@ -49,10 +43,10 @@ export default function AISummaryScreen({
   onConfirm,
 }: AISummaryScreenProps) {
   const getConfidenceVariant = (conf: number): 'success' | 'warning' | 'error' => {
-    if (conf >= 90) return 'success';
-    if (conf >= 70) return 'warning';
-    return 'error';
-  };
+    if (conf >= 90) return 'success'
+    if (conf >= 70) return 'warning'
+    return 'error'
+  }
 
   return (
     <Stack gap={24}>
@@ -115,10 +109,7 @@ export default function AISummaryScreen({
           <Stack gap={8}>
             {keyFindings.map((finding, index) => (
               <Row key={index} alignItems="flex-start" gap={8}>
-                <CheckCircle
-                  size={16}
-                  style={{ marginTop: 2, flexShrink: 0 }}
-                />
+                <CheckCircle size={16} style={{ marginTop: 2, flexShrink: 0 }} />
                 <Text size="sm" muted style={{ flex: 1 }}>
                   {finding}
                 </Text>
@@ -162,7 +153,11 @@ export default function AISummaryScreen({
         >
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <CheckCircle size={16} />
-            <Text size="sm" weight="semibold" style={{ color: actionSectionStyles.success.textColor }}>
+            <Text
+              size="sm"
+              weight="semibold"
+              style={{ color: actionSectionStyles.success.textColor }}
+            >
               Actions Taken Automatically
             </Text>
           </Row>
@@ -189,7 +184,11 @@ export default function AISummaryScreen({
         >
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <AlertTriangle size={16} />
-            <Text size="sm" weight="semibold" style={{ color: actionSectionStyles.warning.textColor }}>
+            <Text
+              size="sm"
+              weight="semibold"
+              style={{ color: actionSectionStyles.warning.textColor }}
+            >
               Actions Requiring Review
             </Text>
           </Row>
@@ -225,5 +224,5 @@ export default function AISummaryScreen({
         </Row>
       )}
     </Stack>
-  );
+  )
 }

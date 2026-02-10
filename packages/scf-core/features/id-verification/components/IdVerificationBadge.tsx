@@ -1,4 +1,4 @@
-import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from '@tamagui/lucide-icons'
+import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from 'lucide-react-native'
 import { type GetThemeValueForKey, Text, Row } from '@unicornlove/beyond-ui'
 
 type BadgeStatus = 'active' | 'expired' | 'revoked' | null | undefined

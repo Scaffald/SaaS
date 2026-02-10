@@ -21,7 +21,7 @@ import {
   TabGroup,
   type SkillsChartDataset,
 } from '@unicornlove/beyond-ui'
-import { CheckCircle } from '@tamagui/lucide-icons'
+import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'

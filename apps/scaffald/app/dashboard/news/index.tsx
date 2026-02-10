@@ -3,10 +3,9 @@ import type { NewsItem } from '@scf/core/features/news'
 import { useAggregatedNews } from '@scf/core/features/news/hooks/useNewsFeed'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
+import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
 import {
   Button,
-  Card,
   spacing,
   Paragraph,
   Spinner,
@@ -46,7 +45,7 @@ const NewsCard = ({ title, description, image, footer, onPress, fullCardClickabl
       onPress={fullCardClickable ? onPress : undefined}
       style={({ pressed }) => [
         styles.newsCard,
-        { minHeight, backgroundColor: colors.background[theme].elevated },
+        { minHeight, backgroundColor: colors.bg[theme].subtle },
         pressed && styles.pressed,
       ]}
     >

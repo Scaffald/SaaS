@@ -73,6 +73,8 @@ export type {
   RemoveTeamMemberParams,
   InviteTeamMemberParams,
   CreateJobAssignmentParams,
+  ListMyInvitationsParams,
+  RespondToInvitationParams,
   TeamsListResponse,
   TeamResponse,
   TeamMembersListResponse,

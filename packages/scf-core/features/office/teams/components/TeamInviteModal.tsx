@@ -1,13 +1,13 @@
-import { api } from '@scf/core/utils/api'
 import {
   TEAM_INVITATION_TTL_DEFAULT,
   TEAM_INVITATION_TTL_MAX,
   TEAM_INVITATION_TTL_MIN,
 } from '@scf/schemas'
+import { useInviteTeamMember } from '@scaffald/sdk/react'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
-import { Mail, UserPlus } from '@tamagui/lucide-icons'
+import { Mail, UserPlus } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -56,10 +56,12 @@ export function TeamInviteModal({
 
   const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
 
-  const inviteMutation = api.teams.invitations.create.useMutation({
+  const inviteMutation = useInviteTeamMember({
     onSuccess: () => {
-      toast.show('Invitation sent', {
+      toast.show({
+        title: 'Invitation sent',
         message: inviteType === 'email' ? email : `${selectedUserName || 'Member'} can now join.`,
+        variant: 'success',
       })
       onOpenChange(false)
       onInvited?.()
@@ -67,9 +69,9 @@ export function TeamInviteModal({
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to send invitation',
-          variant: 'error',
-        })
+        title: 'Unable to send invitation',
+        variant: 'error',
+      })
     },
   })
 
@@ -136,11 +138,11 @@ export function TeamInviteModal({
 
     await inviteMutation.mutateAsync({
       teamId,
-      roleId,
-      email: inviteType === 'email' ? email.trim().toLowerCase() : undefined,
-      userId: inviteType === 'user' ? selectedUserId : undefined,
-      expiresAt: expiresAt.toISOString(),
-      message: message.trim() ? message.trim() : undefined,
+      params: {
+        email: inviteType === 'email' ? email.trim().toLowerCase() : '',
+        roleId,
+        message: message.trim() ? message.trim() : undefined,
+      },
     })
   }
 

@@ -1,7 +1,7 @@
 import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
 import { api } from '@scf/core/utils/api'
-import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from '@tamagui/lucide-icons'
+import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { Button, Text, Row } from '@unicornlove/beyond-ui'

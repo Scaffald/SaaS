@@ -7,7 +7,7 @@ import {
   Loader2,
   Network,
   UserPlus,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'

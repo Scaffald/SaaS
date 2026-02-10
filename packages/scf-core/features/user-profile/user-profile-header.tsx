@@ -1,4 +1,4 @@
-import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from '@tamagui/lucide-icons'
+import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from 'lucide-react-native'
 import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface UserProfileHeaderProps {

@@ -1,6 +1,6 @@
 import type { AddressResult } from '@unicornlove/beyond-ui'
 import { AddressAutocomplete } from '@unicornlove/beyond-ui'
-import { AlertCircle } from '@tamagui/lucide-icons'
+import { AlertCircle } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { AnimatePresence, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
-import { Eye } from '@tamagui/lucide-icons'
+import { Eye } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, H4, Image, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'

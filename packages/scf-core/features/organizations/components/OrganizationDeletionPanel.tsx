@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { useToast } from '@unicornlove/beyond-ui'
-import { AlertTriangle, Trash2 } from '@tamagui/lucide-icons'
+import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import { AlertDialog, Button, Card, Input, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 

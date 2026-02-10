@@ -22,8 +22,8 @@ export class Scaffald {
   public readonly webhooks: WebhooksManagement
 
   constructor(config: ScaffaldConfig) {
-    if (!config.apiKey && !config.accessToken) {
-      throw new Error('Either apiKey or accessToken must be provided')
+    if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
+      throw new Error('Either apiKey, accessToken, or supabaseToken must be provided')
     }
 
     const internalConfig: ScaffaldConfigInternal = {

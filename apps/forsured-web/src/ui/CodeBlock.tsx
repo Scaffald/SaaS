@@ -1,21 +1,21 @@
 /**
- * CodeBlock component - migrated from Tamagui to Beyond UI
+ * CodeBlock component
  * Custom component for code display with copy functionality
  *
  * Note: Beyond UI doesn't have a direct CodeBlock equivalent,
  * so this uses Beyond UI primitives for the implementation.
  */
-import React, { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
-import { View, Text as RNText, Pressable, StyleSheet, Platform } from 'react-native';
-import { Stack, Row, Button, Text, useThemeContext } from '@unicornlove/beyond-ui';
-import { colors } from '@unicornlove/beyond-ui';
+import React, { useState } from 'react'
+import { Copy, Check } from 'lucide-react'
+import { View, Text as RNText, Pressable, StyleSheet, Platform } from 'react-native'
+import { Stack, Row, Button, Text, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui'
 
 export interface CodeBlockProps {
-  code: string;
-  language?: string;
-  showLineNumbers?: boolean;
-  className?: string;
+  code: string
+  language?: string
+  showLineNumbers?: boolean
+  className?: string
 }
 
 export default function CodeBlock({
@@ -24,21 +24,21 @@ export default function CodeBlock({
   showLineNumbers = false,
   className = '',
 }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const { theme } = useThemeContext();
+  const [copied, setCopied] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const { theme } = useThemeContext()
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy code:', err);
+      console.error('Failed to copy code:', err)
     }
-  };
+  }
 
-  const lines = code.split('\n');
+  const lines = code.split('\n')
 
   const styles = StyleSheet.create({
     container: {
@@ -110,7 +110,7 @@ export default function CodeBlock({
       fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
       fontSize: 14,
     },
-  });
+  })
 
   return (
     <View
@@ -153,5 +153,5 @@ export default function CodeBlock({
         </View>
       </View>
     </View>
-  );
+  )
 }

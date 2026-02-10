@@ -5,7 +5,7 @@ import {
   SavingModal,
   SkeletonForm,
 } from '@unicornlove/beyond-ui'
-import { Check } from '@tamagui/lucide-icons'
+import { Check } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { InlineSkillSearch } from './components'

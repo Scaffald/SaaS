@@ -6,7 +6,7 @@ import {
 } from '@scf/core/features/office/teams'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { ArrowLeft, BarChart3 } from '@tamagui/lucide-icons'
+import { ArrowLeft, BarChart3 } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'

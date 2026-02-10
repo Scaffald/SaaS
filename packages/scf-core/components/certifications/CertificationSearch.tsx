@@ -1,4 +1,4 @@
-import { Award, Search } from '@tamagui/lucide-icons'
+import { Award, Search } from 'lucide-react-native'
 import { useEffect, useMemo, useState } from 'react'
 import { Card, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

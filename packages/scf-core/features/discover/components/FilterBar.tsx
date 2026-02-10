@@ -1,4 +1,4 @@
-import { List, RotateCcw, Search, SlidersHorizontal } from '@tamagui/lucide-icons'
+import { List, RotateCcw, Search, SlidersHorizontal } from 'lucide-react-native'
 import type { CSSProperties } from 'react'
 import { Button, Row } from '@unicornlove/beyond-ui'
 

@@ -8,7 +8,7 @@ import {
   DollarSign,
   ExternalLink,
   MapPin,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

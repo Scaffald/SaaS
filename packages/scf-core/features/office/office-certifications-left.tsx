@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, Save, X } from '@tamagui/lucide-icons'
+import { Plus, Save, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'

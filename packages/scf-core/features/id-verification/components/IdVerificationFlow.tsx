@@ -1,7 +1,7 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
-import { AlertCircle } from '@tamagui/lucide-icons'
+import { AlertCircle } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'

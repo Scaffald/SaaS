@@ -1,21 +1,19 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
+import { useTeams, useArchiveTeam } from '@scaffald/sdk/react'
+import type { TeamResponse } from '@scaffald/sdk'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
 type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
 
-type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
-type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]
+type TeamRecord = TeamResponse['data']
 
 type TeamRow = {
   id: string
@@ -65,11 +63,11 @@ export function OfficeTeamsList() {
   const toast = useToast()
   const [search, setSearch] = useState('')
 
-  const { data, isLoading, refetch } = api.teams.list.useQuery({
+  const { data, isLoading, refetch } = useTeams({
     includeArchived: false,
   })
 
-  const archiveMutation = api.teams.archive.useMutation({
+  const archiveMutation = useArchiveTeam({
     onSuccess: () => {
       toast.show({
           title: 'Team archived',
@@ -87,11 +85,11 @@ export function OfficeTeamsList() {
   })
 
   const teams: TeamRow[] = useMemo(() => {
-    if (!data?.teams?.length) {
+    if (!data?.data?.length) {
       return []
     }
 
-    return (data.teams as TeamRecord[]).map((team) => {
+    return (data.data as TeamRecord[]).map((team) => {
       const parsedVisibility = TEAM_VISIBILITIES.includes(team.visibility as TeamVisibility)
         ? (team.visibility as TeamVisibility)
         : 'organization'
@@ -133,8 +131,10 @@ export function OfficeTeamsList() {
 
   const handleRowDelete = async (team: TeamRow) => {
     await archiveTeam({
-      teamId: team.id,
-      reason: 'Archived from office dashboard',
+      id: team.id,
+      params: {
+        reason: 'Archived from office dashboard',
+      },
     })
   }
 

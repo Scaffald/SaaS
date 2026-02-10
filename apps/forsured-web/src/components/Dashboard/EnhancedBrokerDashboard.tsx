@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * EnhancedBrokerDashboard - Broker dashboard using Beyond UI
- * Migrated from Tamagui to Beyond UI
  * REQ-12: Manual user creation support
  */
 import { useState, useMemo } from 'react'

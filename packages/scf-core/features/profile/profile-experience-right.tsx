@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
-import { Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
+import { Briefcase, Calendar, MapPin, Pencil } from 'lucide-react-native'
 import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileEmptyState } from './components'
 import { useExperienceEdit } from './contexts/experience-edit-context'

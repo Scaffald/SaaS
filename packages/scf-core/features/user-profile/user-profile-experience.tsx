@@ -1,4 +1,4 @@
-import { Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
+import { Briefcase, Calendar, MapPin } from 'lucide-react-native'
 import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Experience {

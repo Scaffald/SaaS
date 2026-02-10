@@ -1,7 +1,7 @@
 import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { Chip, DiscoverCard, extractPlainText } from '@unicornlove/beyond-ui'
-import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'

@@ -1,6 +1,6 @@
 import type { CustomQuestionAnswer } from '@scf/schemas'
 import { ToggleSwitch } from '@unicornlove/beyond-ui'
-import { ArrowLeft } from '@tamagui/lucide-icons'
+import { ArrowLeft } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 

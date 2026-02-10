@@ -29,7 +29,7 @@
 
 ### Tech Stack
 
-- **Frontend**: React Native (Expo), React, Tamagui UI
+- **Frontend**: React Native (Expo), React, Beyond UI
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
 - **API**: tRPC (internal), REST API (external)
 - **Build**: pnpm workspaces, Nx, tsup
@@ -62,7 +62,7 @@ UNI-Construct/
 │   ├── scf-schemas/           # Zod schemas
 │   ├── scf-trpc/              # tRPC routers (internal API)
 │   ├── supabase/              # Database + Edge Functions
-│   ├── ui/                    # @unicornlove/ui - Tamagui components
+│   ├── beyond-ui/             # @unicornlove/beyond-ui - UI components
 │   ├── forsured/              # Forsured exports
 │   ├── insurance/             # Insurance components
 │   ├── compliance/            # Compliance features

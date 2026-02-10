@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
+import { AlertTriangle, ArrowRight, RefreshCcw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'

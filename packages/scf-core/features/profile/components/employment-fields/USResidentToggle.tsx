@@ -1,6 +1,6 @@
 import { ToggleCard } from '@unicornlove/beyond-ui'
 import type { ToggleCardProps } from '@unicornlove/beyond-ui'
-import { Flag } from '@tamagui/lucide-icons'
+import { Flag } from 'lucide-react-native'
 
 export interface USResidentToggleProps
   extends Omit<ToggleCardProps, 'icon' | 'title' | 'description'> {

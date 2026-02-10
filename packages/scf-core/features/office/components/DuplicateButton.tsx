@@ -1,4 +1,4 @@
-import { Copy } from '@tamagui/lucide-icons'
+import { Copy } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

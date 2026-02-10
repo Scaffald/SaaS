@@ -9,7 +9,7 @@
  */
 
 import { api } from '@scf/core/utils/api'
-import { Cloud, Database, HardDrive } from '@tamagui/lucide-icons'
+import { Cloud, Database, HardDrive } from 'lucide-react-native'
 import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
 import type { ComponentType } from 'react'
 import { useState, useEffect } from 'react'

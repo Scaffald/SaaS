@@ -1,7 +1,7 @@
 import type { ProfileWizardStepId } from '@scf/supabase/client-types'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
-import { LinearGradient } from '@tamagui/linear-gradient'
-import { ChevronLeft, ChevronRight, Sparkles } from '@tamagui/lucide-icons'
+import { LinearGradient } from 'expo-linear-gradient'
+import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react-native'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewStyle } from 'react-native'
 import {

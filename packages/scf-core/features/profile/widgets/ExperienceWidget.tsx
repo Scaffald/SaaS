@@ -8,7 +8,7 @@ import {
   LoadingState,
   spacing,
 } from '@unicornlove/beyond-ui'
-import { Briefcase } from '@tamagui/lucide-icons'
+import { Briefcase } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'

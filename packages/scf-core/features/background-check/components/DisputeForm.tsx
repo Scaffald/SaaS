@@ -1,5 +1,5 @@
 import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/beyond-ui'
-import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
+import { AlertCircle, Upload, X } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
 import {

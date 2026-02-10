@@ -17,7 +17,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Typography components for consistent text styling. Replaces Tamagui H1-H6, Paragraph, and SizableText.',
+          'Typography components for consistent text styling (Heading, Paragraph, Label, Text, Caption).',
       },
     },
   },
@@ -289,25 +289,16 @@ export const CaptionBasic: StoryObj = {
 }
 
 // ============================================================================
-// Migration Examples
+// API Example
 // ============================================================================
 
-export const MigrationFromTamagui: StoryObj = {
-  name: 'Migration - Tamagui to Beyond UI',
+export const TypographyAPIExample: StoryObj = {
+  name: 'Typography - API Example',
   render: () => (
     <Stack gap={24}>
       <View>
         <Text size="sm" color="secondary" style={styles.label}>
-          Before (Tamagui):
-        </Text>
-        <Text mono size="sm" style={styles.codeBlock}>
-          {'<H1>Page Title</H1>\n<H3>Section Title</H3>\n<Paragraph>Body text</Paragraph>\n<SizableText size="$4">Flexible text</SizableText>'}
-        </Text>
-      </View>
-
-      <View>
-        <Text size="sm" color="secondary" style={styles.label}>
-          After (Beyond UI):
+          Usage:
         </Text>
         <Stack gap={8} style={styles.demoBox}>
           <H1>Page Title</H1>

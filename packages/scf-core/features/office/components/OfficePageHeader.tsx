@@ -1,4 +1,4 @@
-import { Plus } from '@tamagui/lucide-icons'
+import { Plus } from 'lucide-react-native'
 import { Button, Input, Row } from '@unicornlove/beyond-ui'
 
 interface OfficePageHeaderProps {

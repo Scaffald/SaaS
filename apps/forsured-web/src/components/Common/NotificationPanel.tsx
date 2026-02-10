@@ -1,15 +1,15 @@
 /**
  * NotificationPanel - Notification panel using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React from 'react';
-import { Row, Stack, Text, Button } from '@unicornlove/beyond-ui';
-import { X, AlertTriangle, Clock, Info, AlertCircle } from 'lucide-react';
-import { Alert } from '../../types';
+import React from 'react'
+import { Row, Stack, Text, Button } from '@unicornlove/beyond-ui'
+import { X, AlertTriangle, Clock, Info, AlertCircle } from 'lucide-react'
+import { Alert } from '../../types'
 
 interface NotificationPanelProps {
-  alerts: Alert[];
-  onClose: () => void;
+  alerts: Alert[]
+  onClose: () => void
 }
 
 const severityStyles = {
@@ -29,37 +29,34 @@ const severityStyles = {
     borderLeftColor: 'var(--color-border)',
     backgroundColor: 'var(--color-background-hover)',
   },
-};
+}
 
-export default function NotificationPanel({
-  alerts,
-  onClose,
-}: NotificationPanelProps) {
+export default function NotificationPanel({ alerts, onClose }: NotificationPanelProps) {
   const getAlertIcon = (type: string, severity: string) => {
     switch (severity) {
       case 'critical':
-        return <AlertCircle size={20} />;
+        return <AlertCircle size={20} />
       case 'high':
-        return <AlertTriangle size={20} />;
+        return <AlertTriangle size={20} />
       case 'medium':
-        return <Info size={20} />;
+        return <Info size={20} />
       default:
-        return <Clock size={20} />;
+        return <Clock size={20} />
     }
-  };
+  }
 
   const getSeverityStyles = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return severityStyles.critical;
+        return severityStyles.critical
       case 'high':
-        return severityStyles.high;
+        return severityStyles.high
       case 'medium':
-        return severityStyles.medium;
+        return severityStyles.medium
       default:
-        return severityStyles.default;
+        return severityStyles.default
     }
-  };
+  }
 
   return (
     <Stack
@@ -86,11 +83,7 @@ export default function NotificationPanel({
         <Text size="lg" weight="semibold">
           Notifications
         </Text>
-        <Button
-          onPress={onClose}
-          variant="ghost"
-          style={{ padding: 4 }}
-        >
+        <Button onPress={onClose} variant="ghost" style={{ padding: 4 }}>
           <X size={20} />
         </Button>
       </Row>
@@ -110,7 +103,7 @@ export default function NotificationPanel({
         ) : (
           <Stack>
             {alerts.map((alert) => {
-              const styles = getSeverityStyles(alert.severity);
+              const styles = getSeverityStyles(alert.severity)
               return (
                 <Stack
                   key={alert.id}
@@ -139,11 +132,11 @@ export default function NotificationPanel({
                     </Stack>
                   </Row>
                 </Stack>
-              );
+              )
             })}
           </Stack>
         )}
       </Stack>
     </Stack>
-  );
+  )
 }

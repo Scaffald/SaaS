@@ -1,6 +1,6 @@
 /**
  * Stack component types
- * Vertical flex container that replaces Tamagui's YStack
+ * Vertical flex container (Stack) types
  */
 
 import type { ReactNode } from 'react'

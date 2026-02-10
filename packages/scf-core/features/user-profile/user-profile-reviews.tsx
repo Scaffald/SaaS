@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useRef } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

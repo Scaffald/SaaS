@@ -1,33 +1,34 @@
 import { TeamInvitationList } from '@scf/core/features/dashboard/components'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { RefreshCw } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import { RefreshCw } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-
-type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
+import { Button, Spinner, Text, Row, Stack, useToast } from '@unicornlove/beyond-ui'
+import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 
 export default function DashboardTeamInvitationsScreen() {
-  const toast = useToastController()
+  const toast = useToast()
 
-  const invitationsQuery = api.teams.invitations.mine.useQuery({ status: 'pending' })
+  const invitationsQuery = useMyTeamInvitations({ status: 'pending' })
 
-  const respondMutation = api.teams.invitations.respond.useMutation({
+  const respondMutation = useRespondToTeamInvitation({
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
-      toast.show('Unable to respond', { message })
+      toast.show({
+        title: 'Unable to respond',
+        message,
+        variant: 'error',
+      })
     },
-    onSuccess: (result: InvitationRespondOutput) => {
-      toast.show(result.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined', {
+    onSuccess: (result) => {
+      const invitation = result.invitation
+      toast.show({
+        title: invitation.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined',
         message:
-          result.status === 'accepted'
+          invitation.status === 'accepted'
             ? 'You now have access to the team.'
             : 'You can accept again later if needed.',
+        variant: invitation.status === 'accepted' ? 'success' : 'info',
       })
-      void invitationsQuery.refetch()
     },
   })
 
@@ -37,7 +38,7 @@ export default function DashboardTeamInvitationsScreen() {
   )
 
   const handleRespond = async (invitationId: string, action: 'accept' | 'decline') => {
-    await respondMutation.mutateAsync({ action, invitationId })
+    await respondMutation.mutateAsync({ invitationId, params: { action } })
   }
 
   const content = (

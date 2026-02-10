@@ -3,7 +3,7 @@ import type {
   IPIPResult,
   IPIPScore,
 } from '@scf/core/features/personality-assessment/lib/ipip'
-import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { ChevronDown, ChevronUp } from 'lucide-react-native'
 import { memo, useState } from 'react'
 import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'

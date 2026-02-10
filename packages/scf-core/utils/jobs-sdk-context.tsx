@@ -55,7 +55,7 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
   const client = useMemo(() => {
     if (!baseUrl) return null
     const token = session?.access_token?.trim()
-    const auth = token ? { accessToken: token } : anonKey ? { apiKey: anonKey } : null
+    const auth = token ? { supabaseToken: token } : anonKey ? { apiKey: anonKey } : null
     if (!auth) return null
     try {
       return new Scaffald({ ...auth, baseUrl })

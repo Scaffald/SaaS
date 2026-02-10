@@ -5,7 +5,7 @@
  * This avoids the complex react-native dependency chain that causes
  * parsing errors in vitest/jsdom.
  *
- * IMPORTANT: This mock does NOT import from tamagui to avoid react-native deps.
+ * This mock avoids the react-native dependency chain for vitest/jsdom.
  */
 import {
   forwardRef,

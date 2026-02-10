@@ -11,7 +11,7 @@ import {
 } from '@scf/core/features/office/teams'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
+import { AlertTriangle, RefreshCw, UserPlus } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

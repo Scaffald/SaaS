@@ -28,7 +28,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   ),
 }))
 
-vi.mock('@tamagui/linear-gradient', () => ({
+vi.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children }: { children?: ReactNode }) => (
     <div data-testid="linear-gradient">{children}</div>
   ),

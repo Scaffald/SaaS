@@ -1,4 +1,4 @@
-import { ArrowRight, Star, Trophy } from '@tamagui/lucide-icons'
+import { ArrowRight, Star, Trophy } from 'lucide-react-native'
 import { memo } from 'react'
 import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

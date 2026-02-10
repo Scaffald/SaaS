@@ -1,6 +1,5 @@
 /**
  * EnhancedManagerDashboard - Manager dashboard using Beyond UI
- * Migrated from Tamagui to Beyond UI
  * REQ-12: Manual user creation support
  */
 import { useState, useEffect, useMemo } from 'react'

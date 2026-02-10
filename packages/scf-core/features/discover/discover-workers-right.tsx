@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, Search, X } from '@tamagui/lucide-icons'
+import { Award, BadgeCheck, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Input, ScrollView, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'

@@ -1,10 +1,31 @@
 import type { IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
 import { BarChart, SkillsChart } from '@unicornlove/beyond-ui'
-import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'
+import { View } from 'react-native'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { DOMAIN_NAMES, DOMAIN_ORDER } from '../utils/domainGrouping'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
+
+// VisuallyHidden replacement - hides content visually but keeps it accessible to screen readers
+const VisuallyHidden = ({ children }: { children: React.ReactNode }) => (
+  <View
+    style={{
+      position: 'absolute',
+      width: 1,
+      height: 1,
+      margin: -1,
+      padding: 0,
+      overflow: 'hidden',
+      clip: 'rect(0, 0, 0, 0)',
+      whiteSpace: 'nowrap',
+      borderWidth: 0,
+    }}
+    accessibilityElementsHidden={false}
+    importantForAccessibility="yes"
+  >
+    {children}
+  </View>
+)
 
 export interface ArchetypeResult {
   archetype: string

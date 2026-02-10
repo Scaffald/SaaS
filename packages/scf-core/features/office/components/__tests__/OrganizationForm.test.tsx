@@ -306,7 +306,7 @@ vi.mock('tamagui', async () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   // Icons used by OrganizationForm
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,

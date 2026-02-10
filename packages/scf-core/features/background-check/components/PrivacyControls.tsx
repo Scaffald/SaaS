@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { Share2 } from '@tamagui/lucide-icons'
+import { Share2 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Alert } from 'react-native'
 import { Button, Separator, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'

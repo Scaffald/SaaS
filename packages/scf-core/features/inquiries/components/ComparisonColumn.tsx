@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { Check, MessageSquare } from '@tamagui/lucide-icons'
+import { Check, MessageSquare } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { Avatar, Card, type GetThemeValueForKey, Separator } from '@unicornlove/beyond-ui'

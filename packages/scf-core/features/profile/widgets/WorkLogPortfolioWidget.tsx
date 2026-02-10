@@ -1,7 +1,7 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
 import { api } from '@scf/core/utils/api'
-import { ShieldCheck } from '@tamagui/lucide-icons'
+import { ShieldCheck } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

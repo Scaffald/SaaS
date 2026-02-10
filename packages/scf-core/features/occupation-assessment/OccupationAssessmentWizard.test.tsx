@@ -125,7 +125,7 @@ vi.mock('@unicornlove/beyond-ui', async () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Plus: () => <span data-testid="plus-icon">+</span>,
   X: () => <span data-testid="x-icon">×</span>,
 }))

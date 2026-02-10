@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardWidget, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { ArrowRight } from '@tamagui/lucide-icons'
+import { ArrowRight } from 'lucide-react-native'
 import { Link, usePathname } from 'expo-router'
 
 type BackgroundCheckNavItem = {

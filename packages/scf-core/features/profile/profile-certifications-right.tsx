@@ -8,7 +8,7 @@ import {
   ExternalLink,
   Trash2,
   Upload,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'

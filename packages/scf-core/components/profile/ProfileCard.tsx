@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
+import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from '@unicornlove/beyond-ui'
@@ -82,7 +82,7 @@ export const ProfileCard = memo(
       forwardedRef
     ) => {
       // Use window dimensions for text truncation behavior
-      // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+      // Breakpoint: 800px (small/medium layout)
       const dimensions = useWindowDimensions()
       const titleNumberOfLines = dimensions.width <= 800 ? 3 : 2
       // Build metadata items

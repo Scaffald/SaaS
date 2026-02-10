@@ -1,6 +1,6 @@
 import { RangeSliderCard } from '@unicornlove/beyond-ui'
 import type { RangeSliderCardProps } from '@unicornlove/beyond-ui'
-import { Plane } from '@tamagui/lucide-icons'
+import { Plane } from 'lucide-react-native'
 
 export interface MaximumTravelDistanceCardProps
   extends Omit<

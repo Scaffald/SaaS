@@ -147,7 +147,7 @@ vi.mock('tamagui', () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Eye: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="eye-icon" data-size={size} data-color={color}>
       Eye

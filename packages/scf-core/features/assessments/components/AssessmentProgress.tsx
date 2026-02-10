@@ -1,4 +1,4 @@
-import { Check } from '@tamagui/lucide-icons'
+import { Check } from 'lucide-react-native'
 import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface AssessmentStep {

@@ -17,7 +17,7 @@ vi.mock('../../hooks/useResumeWizard', () => ({
   useResumeWizard: vi.fn(),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   // Icons used by ResumeImportWidget
   FileText: () => <span data-testid="icon-file-text" />,
   ShieldCheck: () => <span data-testid="icon-shield-check" />,

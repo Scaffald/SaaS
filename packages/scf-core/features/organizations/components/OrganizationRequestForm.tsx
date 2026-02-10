@@ -2,7 +2,7 @@ import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/nor
 import { api } from '@scf/core/utils/api'
 import { type OrganizationRequest, organizationRequestSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CheckCircle2, Loader2 } from '@tamagui/lucide-icons'
+import { CheckCircle2, Loader2 } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'

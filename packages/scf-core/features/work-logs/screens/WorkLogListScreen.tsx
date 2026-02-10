@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { api } from '@scf/core/utils/api'
-import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from '@tamagui/lucide-icons'
+import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { RefreshControl, ScrollView } from 'react-native'

@@ -99,7 +99,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Trophy: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="trophy-icon" data-size={size} data-color={color}>
       Trophy

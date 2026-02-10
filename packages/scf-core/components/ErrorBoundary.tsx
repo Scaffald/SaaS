@@ -3,6 +3,7 @@ import { Component } from 'react'
 
 import { ErrorFallback } from './ErrorFallback'
 import { logger } from '../utils/logger'
+import { captureException, setContext } from '../utils/sentry'
 
 type ErrorBoundaryContext = Record<string, unknown>
 
@@ -29,10 +30,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log to console in development
     if (__DEV__) {
       logger.error('ErrorBoundary caught error', error, errorInfo)
     }
 
+    // Set error context for Sentry
+    if (this.props.context) {
+      setContext('errorBoundary', this.props.context)
+    }
+
+    // Capture exception in Sentry with component stack
+    captureException(error, {
+      componentStack: errorInfo.componentStack,
+      ...this.props.context,
+    })
+
+    // Call custom error handler if provided
     this.props.onError?.(error, errorInfo)
   }
 

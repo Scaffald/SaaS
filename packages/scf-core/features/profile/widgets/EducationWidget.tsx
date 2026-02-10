@@ -8,7 +8,7 @@ import {
   LoadingState,
   spacing,
 } from '@unicornlove/beyond-ui'
-import { GraduationCap } from '@tamagui/lucide-icons'
+import { GraduationCap } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'

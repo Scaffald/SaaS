@@ -1,4 +1,4 @@
-import { Sparkles } from '@tamagui/lucide-icons'
+import { Sparkles } from 'lucide-react-native'
 import { Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface SkillCompletionProgressProps {

@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
-import { Check, Loader2, RefreshCw, X as XIcon } from '@tamagui/lucide-icons'
+import { Check, Loader2, RefreshCw, X as XIcon } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'

@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { ArrowDown, ArrowRight, ArrowUp } from '@tamagui/lucide-icons'
+import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react-native'
 import { useMemo, type FC } from 'react'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'

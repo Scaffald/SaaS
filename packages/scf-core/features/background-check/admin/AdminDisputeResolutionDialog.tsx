@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle } from '@tamagui/lucide-icons'
+import { AlertTriangle } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'

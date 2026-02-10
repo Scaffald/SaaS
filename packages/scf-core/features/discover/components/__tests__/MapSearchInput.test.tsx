@@ -89,7 +89,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   ),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   AlertCircle: () => <span data-testid="alert-icon" />,
 }))
 

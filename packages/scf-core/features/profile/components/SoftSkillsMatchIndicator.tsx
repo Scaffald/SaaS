@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, AlertCircle } from '@tamagui/lucide-icons'
+import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react-native'
 import type { FC } from 'react'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 

@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Loader2,
   Pencil,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

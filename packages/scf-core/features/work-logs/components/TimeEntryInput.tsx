@@ -1,4 +1,4 @@
-import { MinusCircle } from '@tamagui/lucide-icons'
+import { MinusCircle } from 'lucide-react-native'
 import { memo } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { Platform } from 'react-native'

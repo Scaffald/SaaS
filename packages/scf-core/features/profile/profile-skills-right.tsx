@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { ConfirmationDialog, DashboardWidget } from '@unicornlove/beyond-ui'
-import { Award } from '@tamagui/lucide-icons'
+import { Award } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { TRPCClientError } from '@trpc/client'
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'

@@ -7,7 +7,7 @@ import {
   Map as MapIcon,
   User,
   Users,
-} from '@tamagui/lucide-icons';
+} from 'lucide-react-native';
 import type { DrawerItemConfig } from './types';
 
 /**

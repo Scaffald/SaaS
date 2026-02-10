@@ -9,6 +9,8 @@ import type {
   RemoveTeamMemberParams,
   InviteTeamMemberParams,
   CreateJobAssignmentParams,
+  ListMyInvitationsParams,
+  RespondToInvitationParams,
   TeamsListResponse,
   TeamResponse,
   TeamMembersListResponse,
@@ -268,6 +270,57 @@ export class Teams extends Resource {
    */
   async cancelInvitation(id: string, invitationId: string): Promise<DeleteResponse> {
     return this.del<DeleteResponse>(`/v1/teams/${id}/invitations/${invitationId}`)
+  }
+
+  // ===== User-Facing Invitation Operations =====
+
+  /**
+   * List invitations sent to the current user
+   *
+   * @param params - Optional filtering parameters
+   * @returns List of invitations sent to the current user
+   *
+   * @example
+   * ```typescript
+   * // List all pending invitations
+   * const { invitations } = await client.teams.listMyInvitations({ status: 'pending' })
+   * console.log(`You have ${invitations.length} pending team invitations`)
+   *
+   * // List all invitations
+   * const { invitations: allInvitations } = await client.teams.listMyInvitations()
+   * ```
+   */
+  async listMyInvitations(params?: ListMyInvitationsParams): Promise<TeamInvitationsListResponse> {
+    const query = params?.status ? `?status=${params.status}` : ''
+    return this.get<TeamInvitationsListResponse>(`/v1/teams/invitations/mine${query}`)
+  }
+
+  /**
+   * Respond to a team invitation (accept or decline)
+   *
+   * @param invitationId - The invitation ID
+   * @param params - Response parameters (action: accept or decline)
+   * @returns The updated invitation
+   *
+   * @example
+   * ```typescript
+   * // Accept an invitation
+   * const { invitation } = await client.teams.respondToInvitation('inv_123', {
+   *   action: 'accept'
+   * })
+   * console.log(`You are now a member of team ${invitation.team?.name}`)
+   *
+   * // Decline an invitation
+   * await client.teams.respondToInvitation('inv_456', {
+   *   action: 'decline'
+   * })
+   * ```
+   */
+  async respondToInvitation(
+    invitationId: string,
+    params: RespondToInvitationParams
+  ): Promise<TeamInvitationResponse> {
+    return this.post<TeamInvitationResponse>(`/v1/teams/invitations/${invitationId}/respond`, params)
   }
 
   // ===== Job Assignment Management =====

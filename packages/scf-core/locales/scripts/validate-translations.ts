@@ -63,7 +63,7 @@ const loadRoutesConfig = (): RouteNode => {
     },
   );
   const safeRequire = (specifier: string) => {
-    if (specifier === "@tamagui/lucide-icons") {
+    if (specifier === "lucide-react-native") {
       return iconStub;
     }
     return localRequire(specifier);

@@ -1,6 +1,6 @@
 import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
-import { CheckCircle, ChevronRight, Circle } from '@tamagui/lucide-icons'
+import { CheckCircle, ChevronRight, Circle } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'

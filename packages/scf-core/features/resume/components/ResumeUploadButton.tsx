@@ -1,4 +1,4 @@
-import { UploadCloud } from '@tamagui/lucide-icons'
+import { UploadCloud } from 'lucide-react-native'
 import { Button, type ButtonProps } from '@unicornlove/beyond-ui'
 
 export interface ResumeUploadButtonProps extends Omit<ButtonProps, 'children' | 'text'> {

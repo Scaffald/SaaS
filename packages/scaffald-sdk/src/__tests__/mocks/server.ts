@@ -1066,6 +1066,125 @@ export const handlers = [
     })
   }),
 
+  // GET /v1/teams/invitations/mine - List my invitations
+  http.get(`${BASE_URL}/v1/teams/invitations/mine`, ({ request }) => {
+    const url = new URL(request.url)
+    const status = url.searchParams.get('status')
+
+    const allInvitations = [
+      {
+        id: 'inv_1',
+        teamId: 'team_1',
+        email: 'user@example.com',
+        invitedUserId: 'user_1',
+        roleId: 'role_1',
+        status: 'pending',
+        expiresAt: '2024-12-31T23:59:59Z',
+        acceptedAt: null,
+        declinedAt: null,
+        revokedAt: null,
+        sentAt: '2024-01-01T00:00:00Z',
+        notificationId: 'notif_1',
+        lastDeliveryStatus: 'delivered',
+        lastDeliveryError: null,
+        lastDeliveryChannels: ['email'],
+        createdAt: '2024-01-01T00:00:00Z',
+        createdBy: 'user_admin',
+        metadata: {},
+        role: {
+          id: 'role_1',
+          key: 'member',
+          name: 'Member',
+        },
+        team: {
+          id: 'team_1',
+          name: 'Engineering Hiring Team',
+          organizationId: 'org_1',
+          organizationName: 'Acme Corp',
+        },
+      },
+      {
+        id: 'inv_2',
+        teamId: 'team_2',
+        email: 'user@example.com',
+        invitedUserId: 'user_1',
+        roleId: 'role_1',
+        status: 'pending',
+        expiresAt: '2024-12-31T23:59:59Z',
+        acceptedAt: null,
+        declinedAt: null,
+        revokedAt: null,
+        sentAt: '2024-01-15T00:00:00Z',
+        notificationId: 'notif_2',
+        lastDeliveryStatus: 'delivered',
+        lastDeliveryError: null,
+        lastDeliveryChannels: ['email'],
+        createdAt: '2024-01-15T00:00:00Z',
+        createdBy: 'user_admin',
+        metadata: {},
+        role: {
+          id: 'role_1',
+          key: 'member',
+          name: 'Member',
+        },
+        team: {
+          id: 'team_2',
+          name: 'Design Team',
+          organizationId: 'org_1',
+          organizationName: 'Acme Corp',
+        },
+      },
+    ]
+
+    const filteredInvitations = status
+      ? allInvitations.filter((inv) => inv.status === status)
+      : allInvitations
+
+    return HttpResponse.json({
+      invitations: filteredInvitations,
+    })
+  }),
+
+  // POST /v1/teams/invitations/:invitationId/respond - Respond to invitation
+  http.post(`${BASE_URL}/v1/teams/invitations/:invitationId/respond`, async ({ params, request }) => {
+    const { invitationId } = params
+    const body = (await request.json()) as { action: 'accept' | 'decline' }
+
+    return HttpResponse.json({
+      invitation: {
+        id: invitationId,
+        teamId: 'team_1',
+        email: 'user@example.com',
+        invitedUserId: 'user_1',
+        roleId: 'role_1',
+        status: body.action === 'accept' ? 'accepted' : 'declined',
+        expiresAt: '2024-12-31T23:59:59Z',
+        acceptedAt: body.action === 'accept' ? new Date().toISOString() : null,
+        declinedAt: body.action === 'decline' ? new Date().toISOString() : null,
+        revokedAt: null,
+        sentAt: '2024-01-01T00:00:00Z',
+        notificationId: 'notif_1',
+        lastDeliveryStatus: 'delivered',
+        lastDeliveryError: null,
+        lastDeliveryChannels: ['email'],
+        createdAt: '2024-01-01T00:00:00Z',
+        createdBy: 'user_admin',
+        metadata: {},
+        role: {
+          id: 'role_1',
+          key: 'member',
+          name: 'Member',
+        },
+        team: {
+          id: 'team_1',
+          name: 'Engineering Hiring Team',
+          organizationId: 'org_1',
+          organizationName: 'Acme Corp',
+        },
+      },
+    })
+  }),
+
   // GET /v1/teams/:id/jobs - List team job assignments
   http.get(`${BASE_URL}/v1/teams/:id/jobs`, () => {
     return HttpResponse.json({

@@ -27,9 +27,7 @@
  * // Custom styled separator
  * <Separator thickness="medium" color="#000" />
  *
- * // Migration from Tamagui Separator:
- * // Before: <Separator vertical />
- * // After:  <Separator orientation="vertical" />
+ * // Vertical: <Separator orientation="vertical" />
  * ```
  */
 

@@ -1,4 +1,4 @@
-import { ShieldAlert, ShieldCheck, ShieldQuestion } from '@tamagui/lucide-icons'
+import { ShieldAlert, ShieldCheck, ShieldQuestion } from 'lucide-react-native'
 import { memo } from 'react'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { CONFIDENCE_BADGES, type ConfidenceLevel } from '../utils/importConfidence'

@@ -2,7 +2,7 @@
  * Typography components
  *
  * Export all typography components and types.
- * These replace Tamagui's H1-H6, Paragraph, and SizableText.
+ * Heading, Paragraph, Label, Text, Caption.
  */
 
 // Main components

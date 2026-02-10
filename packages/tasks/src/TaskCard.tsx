@@ -2,7 +2,9 @@
  * TaskCard - Individual task display card
  */
 
-import { styled, YStack, XStack, Text, View, type YStackProps } from 'tamagui'
+import { Stack, Row, Box, Text } from '@unicornlove/beyond-ui'
+import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
+import type { StackProps } from '@unicornlove/beyond-ui'
 import {
   CheckCircle,
   Circle,
@@ -12,12 +14,13 @@ import {
   User,
   ChevronRight,
   MessageSquare,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
+import { Pressable } from 'react-native'
 
 export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'completed' | 'blocked'
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent'
 
-export interface TaskCardProps extends Omit<YStackProps, 'children'> {
+export interface TaskCardProps extends Omit<StackProps, 'children'> {
   /** Task title */
   title: string
   /** Task description */
@@ -48,179 +51,42 @@ const statusConfig: Record<
 > = {
   todo: {
     label: 'To Do',
-    bgColor: '$gray3',
-    textColor: '$gray11',
+    bgColor: colors.gray[200],
+    textColor: colors.gray[700],
     icon: Circle,
   },
   'in-progress': {
     label: 'In Progress',
-    bgColor: '$blue3',
-    textColor: '$blue11',
+    bgColor: colors.info[100],
+    textColor: colors.info[700],
     icon: Clock,
   },
   review: {
     label: 'Review',
-    bgColor: '$purple3',
-    textColor: '$purple11',
+    bgColor: colors.violet[100],
+    textColor: colors.violet[700],
     icon: Clock,
   },
   completed: {
     label: 'Completed',
-    bgColor: '$green3',
-    textColor: '$green11',
+    bgColor: colors.success[100],
+    textColor: colors.success[700],
     icon: CheckCircle,
   },
   blocked: {
     label: 'Blocked',
-    bgColor: '$red3',
-    textColor: '$red11',
+    bgColor: colors.error[100],
+    textColor: colors.error[700],
     icon: AlertTriangle,
   },
 }
 
 const priorityConfig: Record<TaskPriority, { color: string; label: string }> = {
-  low: { color: '$gray9', label: 'Low' },
-  medium: { color: '$blue9', label: 'Medium' },
-  high: { color: '$orange9', label: 'High' },
-  urgent: { color: '$red9', label: 'Urgent' },
+  low: { color: colors.gray[500], label: 'Low' },
+  medium: { color: colors.info[600], label: 'Medium' },
+  high: { color: colors.orange[600], label: 'High' },
+  urgent: { color: colors.error[600], label: 'Urgent' },
 }
-
-const CardContainer = styled(YStack, {
-  name: 'TaskCard',
-  padding: '$3',
-  backgroundColor: '$background',
-  borderRadius: '$lg',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  gap: '$2',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    backgroundColor: '$color2',
-    borderColor: '$color6',
-  },
-
-  pressStyle: {
-    scale: 0.99,
-    backgroundColor: '$color3',
-  },
-})
-
-const CardHeader = styled(XStack, {
-  name: 'TaskCardHeader',
-  alignItems: 'flex-start',
-  gap: '$2',
-})
-
-const StatusIndicator = styled(XStack, {
-  name: 'TaskStatusIndicator',
-  width: 24,
-  height: 24,
-  borderRadius: '$full',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-
-  pressStyle: {
-    scale: 0.9,
-  },
-})
-
-const TaskContent = styled(YStack, {
-  name: 'TaskContent',
-  flex: 1,
-  gap: '$1',
-})
-
-const TaskTitle = styled(Text, {
-  name: 'TaskTitle',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color12',
-
-  variants: {
-    completed: {
-      true: {
-        textDecorationLine: 'line-through',
-        color: '$color9',
-      },
-    },
-  } as const,
-})
-
-const TaskDescription = styled(Text, {
-  name: 'TaskDescription',
-  fontSize: '$2',
-  color: '$color9',
-  numberOfLines: 2,
-})
-
-const PriorityIndicator = styled(View, {
-  name: 'TaskPriorityIndicator',
-  width: 4,
-  height: '100%',
-  borderRadius: 2,
-  position: 'absolute',
-  left: 0,
-  top: 0,
-  bottom: 0,
-})
-
-const MetaRow = styled(XStack, {
-  name: 'TaskMetaRow',
-  gap: '$3',
-  flexWrap: 'wrap',
-  alignItems: 'center',
-})
-
-const MetaItem = styled(XStack, {
-  name: 'TaskMetaItem',
-  alignItems: 'center',
-  gap: '$1',
-})
-
-const MetaText = styled(Text, {
-  name: 'TaskMetaText',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const DueText = styled(Text, {
-  name: 'TaskDueText',
-  fontSize: '$2',
-
-  variants: {
-    overdue: {
-      true: {
-        color: '$red11',
-        fontWeight: '500',
-      },
-      false: {
-        color: '$color9',
-      },
-    },
-  } as const,
-})
-
-const TagsRow = styled(XStack, {
-  name: 'TaskTagsRow',
-  gap: '$1',
-  flexWrap: 'wrap',
-})
-
-const TagBadge = styled(XStack, {
-  name: 'TaskTagBadge',
-  paddingHorizontal: '$2',
-  paddingVertical: 2,
-  borderRadius: '$full',
-  backgroundColor: '$color4',
-})
-
-const TagText = styled(Text, {
-  name: 'TaskTagText',
-  fontSize: '$1',
-  color: '$color10',
-})
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
@@ -266,55 +132,113 @@ export function TaskCard({
     }
   }
 
+  const isPriorityHighlight = priority === 'urgent' || priority === 'high'
+
   return (
-    <CardContainer onPress={onPress} {...props}>
-      {priority === 'urgent' || priority === 'high' ? (
-        <PriorityIndicator backgroundColor={priorityConf.color} />
-      ) : null}
+    <Pressable onPress={onPress}>
+      <Stack
+        style={{
+          padding: spacing[12],
+          backgroundColor: colors.bg?.primary ?? colors.gray[50],
+          borderRadius: borderRadius.l,
+          borderWidth: 1,
+          borderColor: colors.border?.default ?? colors.gray[200],
+          borderLeftWidth: isPriorityHighlight ? 4 : undefined,
+          borderLeftColor: isPriorityHighlight ? priorityConf.color : undefined,
+          gap: spacing[8],
+        }}
+        {...props}
+      >
+        <Row align="flex-start" gap={spacing[8]}>
+          <Pressable onPress={handleStatusToggle}>
+            <Box
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: borderRadius.max,
+                backgroundColor: config.bgColor,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <StatusIcon size={14} color={config.textColor} />
+            </Box>
+          </Pressable>
 
-      <CardHeader>
-        <StatusIndicator backgroundColor={config.bgColor} onPress={handleStatusToggle}>
-          <StatusIcon size={14} color={config.textColor} />
-        </StatusIndicator>
+          <Stack flex={1} gap={spacing[4]}>
+            <Text
+              size="md"
+              weight="medium"
+              style={{
+                color: status === 'completed' ? colors.gray[500] : colors.gray[800],
+                textDecorationLine: status === 'completed' ? 'line-through' : undefined,
+              }}
+            >
+              {title}
+            </Text>
+            {description && (
+              <Text size="sm" style={{ color: colors.gray[500], maxWidth: '100%' }} numberOfLines={2}>
+                {description}
+              </Text>
+            )}
+          </Stack>
 
-        <TaskContent>
-          <TaskTitle completed={status === 'completed'}>{title}</TaskTitle>
-          {description && <TaskDescription>{description}</TaskDescription>}
-        </TaskContent>
+          <ChevronRight size={16} color={colors.gray[400]} />
+        </Row>
 
-        <ChevronRight size={16} color="$color7" />
-      </CardHeader>
+        <Row gap={spacing[12]} wrap align="center">
+          {dueDate && (
+            <Row align="center" gap={spacing[4]}>
+              <Calendar size={12} color={overdue ? colors.error[700] : colors.gray[500]} />
+              <Text
+                size="sm"
+                style={{
+                  color: overdue ? colors.error[700] : colors.gray[500],
+                  fontWeight: overdue ? '500' : undefined,
+                }}
+              >
+                {formatDate(dueDate)}
+              </Text>
+            </Row>
+          )}
+          {assignee && (
+            <Row align="center" gap={spacing[4]}>
+              <User size={12} color={colors.gray[500]} />
+              <Text size="sm" style={{ color: colors.gray[500] }}>
+                {assignee}
+              </Text>
+            </Row>
+          )}
+          {commentCount !== undefined && commentCount > 0 && (
+            <Row align="center" gap={spacing[4]}>
+              <MessageSquare size={12} color={colors.gray[500]} />
+              <Text size="sm" style={{ color: colors.gray[500] }}>
+                {commentCount}
+              </Text>
+            </Row>
+          )}
+        </Row>
 
-      <MetaRow>
-        {dueDate && (
-          <MetaItem>
-            <Calendar size={12} color={overdue ? '$red11' : '$color9'} />
-            <DueText overdue={overdue}>{formatDate(dueDate)}</DueText>
-          </MetaItem>
+        {tags && tags.length > 0 && (
+          <Row gap={spacing[4]} wrap>
+            {tags.map((tag) => (
+              <Box
+                key={tag}
+                style={{
+                  paddingHorizontal: spacing[8],
+                  paddingVertical: 2,
+                  borderRadius: borderRadius.max,
+                  backgroundColor: colors.gray[200],
+                }}
+              >
+                <Text size="xs" style={{ color: colors.gray[600] }}>
+                  {tag}
+                </Text>
+              </Box>
+            ))}
+          </Row>
         )}
-        {assignee && (
-          <MetaItem>
-            <User size={12} color="$color9" />
-            <MetaText>{assignee}</MetaText>
-          </MetaItem>
-        )}
-        {commentCount !== undefined && commentCount > 0 && (
-          <MetaItem>
-            <MessageSquare size={12} color="$color9" />
-            <MetaText>{commentCount}</MetaText>
-          </MetaItem>
-        )}
-      </MetaRow>
-
-      {tags && tags.length > 0 && (
-        <TagsRow>
-          {tags.map((tag) => (
-            <TagBadge key={tag}>
-              <TagText>{tag}</TagText>
-            </TagBadge>
-          ))}
-        </TagsRow>
-      )}
-    </CardContainer>
+      </Stack>
+    </Pressable>
   )
 }

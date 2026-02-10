@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { RefreshCcw, X } from '@tamagui/lucide-icons'
+import { RefreshCcw, X } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

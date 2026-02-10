@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { extractPlainText, ResponsiveModal } from '@unicornlove/beyond-ui'
-import { Briefcase, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

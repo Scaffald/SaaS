@@ -26,9 +26,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tamagui/lucide-icons": "catalog:",
     "@unicornlove/beyond-ui": "workspace:*",
-    "tamagui": "catalog:"
+    "lucide-react-native": "^0.562.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",

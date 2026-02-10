@@ -1,4 +1,4 @@
-import { Check, Link } from '@tamagui/lucide-icons'
+import { Check, Link } from 'lucide-react-native'
 import { Button, Checkbox, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Certification {

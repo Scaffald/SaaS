@@ -4,7 +4,7 @@ import {
   TeamInviteModal,
   TeamMembersList,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
+import { useTeam } from '@scaffald/sdk/react'
 import {
   type TEAM_INVITATION_POLICIES,
   TEAM_VISIBILITIES,
@@ -28,12 +28,9 @@ export default function EditTeamPage() {
     return Array.isArray(value) ? value[0] : value
   }, [params.id])
 
-  const { data, isLoading, isFetching, error, refetch } = api.teams.byId.useQuery(
-    { teamId: teamId ?? '' },
-    {
-      enabled: Boolean(teamId),
-    }
-  )
+  const { data, isLoading, isFetching, error, refetch } = useTeam(teamId ?? '', {
+    enabled: Boolean(teamId),
+  })
 
   if (!teamId) {
     return (

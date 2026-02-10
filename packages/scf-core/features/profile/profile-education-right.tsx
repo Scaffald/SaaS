@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
-import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from '@tamagui/lucide-icons'
+import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

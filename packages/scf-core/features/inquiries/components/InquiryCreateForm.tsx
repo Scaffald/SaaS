@@ -12,7 +12,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
-import { Info } from '@tamagui/lucide-icons'
+import { Info } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, FormProvider } from 'react-hook-form'

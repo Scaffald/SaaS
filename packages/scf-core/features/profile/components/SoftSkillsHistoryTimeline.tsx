@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { SkillsChart } from '@unicornlove/beyond-ui'
-import { Calendar, TrendingUp } from '@tamagui/lucide-icons'
+import { Calendar, TrendingUp } from 'lucide-react-native'
 import { Button } from '@unicornlove/beyond-ui'
 import { useMemo, useState, type FC } from 'react'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

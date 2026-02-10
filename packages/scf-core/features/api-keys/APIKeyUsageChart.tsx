@@ -24,7 +24,7 @@ import {
   Clock,
   TrendingUp,
   XCircle,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { format } from 'date-fns'
 import { useAPIKeyUsage } from './hooks'
 

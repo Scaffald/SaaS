@@ -110,7 +110,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Crown: () => <span data-testid="crown-icon">Crown</span>,
   LogOut: () => <span data-testid="log-out-icon">LogOut</span>,
   Plus: () => <span data-testid="plus-icon">Plus</span>,

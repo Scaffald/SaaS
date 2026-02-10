@@ -27,10 +27,6 @@
     "@sentry/react": "^10.28.0",
     "@sentry/react-native": "^7.7.0",
     "@supabase/supabase-js": "catalog:",
-    "@tamagui/animations-react-native": "catalog:",
-    "@tamagui/font-inter": "catalog:",
-    "@tamagui/helpers-icon": "catalog:",
-    "@tamagui/lucide-icons": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-table": "catalog:",
     "@trpc/client": "catalog:",
@@ -73,7 +69,6 @@
     "rehype-parse": "^9.0.0",
     "superjson": "catalog:",
     "swr": "catalog:",
-    "tamagui": "catalog:",
     "zod": "catalog:",
     "zustand": "catalog:"
   },

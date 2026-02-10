@@ -1,9 +1,8 @@
-import type { IconProps } from '@tamagui/helpers-icon'
-import type { ComponentType } from 'react'
+import type { LucideIcon } from 'lucide-react-native'
 import { Text, Stack } from '@unicornlove/beyond-ui'
 
 interface ProfileEmptyStateProps {
-  icon: ComponentType<IconProps>
+  icon: LucideIcon
   message: string
 }
 

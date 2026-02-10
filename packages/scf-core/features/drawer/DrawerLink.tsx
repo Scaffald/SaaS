@@ -1,5 +1,5 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Check, ChevronRight, Clock } from '@tamagui/lucide-icons'
+import { Check, ChevronRight, Clock } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { Paragraph, Row, Stack } from '@unicornlove/beyond-ui'

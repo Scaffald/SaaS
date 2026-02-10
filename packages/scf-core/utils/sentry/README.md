@@ -2,6 +2,12 @@
 
 Complete error tracking, performance monitoring, and session replay setup for React Native (iOS/Android) and Web platforms.
 
+## Quick Links
+
+- **[Notification Setup Guide](./NOTIFICATIONS.md)** - Configure Slack and email alerts for errors
+- **[Android Setup](./ANDROID_SETUP.md)** - Native Android configuration
+- **[iOS Setup](./IOS_SETUP.md)** - Native iOS configuration
+
 ## Overview
 
 This implementation provides:

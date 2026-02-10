@@ -10,7 +10,7 @@ import {
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { api } from '@scf/core/utils/api'
 import { type BreadcrumbItem, DashboardWidget } from '@unicornlove/beyond-ui'
-import { LinearGradient } from '@tamagui/linear-gradient'
+import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { Animated, Easing } from 'react-native'

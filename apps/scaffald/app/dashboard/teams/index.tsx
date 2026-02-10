@@ -1,23 +1,21 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Users } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import { Users } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useTeams } from '@scaffald/sdk/react'
+import type { TeamResponse } from '@scaffald/sdk'
 
-type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
-type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]
+type TeamRecord = TeamResponse['data']
 
 export default function DashboardTeamsIndexPage() {
   const router = useRouter()
-  const { data, isLoading, error, refetch, isRefetching } = api.teams.list.useQuery({
+  const { data, isLoading, error, refetch, isRefetching } = useTeams({
     includeArchived: false,
   })
 
-  const teams = useMemo<TeamRecord[]>(() => (data?.teams ?? []) as TeamRecord[], [data?.teams])
+  const teams = useMemo<TeamRecord[]>(() => data?.data ?? [], [data?.data])
 
   const mainContent = (
     <Stack gap="$4">

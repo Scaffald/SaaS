@@ -1,4 +1,4 @@
-import { Send } from '@tamagui/lucide-icons'
+import { Send } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'

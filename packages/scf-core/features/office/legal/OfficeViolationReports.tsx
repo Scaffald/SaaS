@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { DataTable } from '@scf/core/components/ui'
-import { RefreshCw } from '@tamagui/lucide-icons'
+import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'

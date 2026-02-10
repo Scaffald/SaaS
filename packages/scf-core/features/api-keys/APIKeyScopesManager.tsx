@@ -18,7 +18,7 @@ import {
   Checkbox,
   ScrollView,
 } from '@unicornlove/beyond-ui'
-import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from '@tamagui/lucide-icons'
+import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from 'lucide-react-native'
 
 interface APIKeyScopesManagerProps {
   isOpen: boolean

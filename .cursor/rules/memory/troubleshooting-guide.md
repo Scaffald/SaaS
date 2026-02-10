@@ -184,38 +184,17 @@ scripts/check-circular-deps.sh packages/core/src
 
 ### UI and Styling Issues
 
-#### 1. Tamagui Styling Problems
+#### 1. Beyond UI / Theme Styling Problems
 **Symptoms**: Styles not applied, theme issues
 **Solutions**:
-```typescript
-// Ensure Tamagui provider is set up
-import { TamaguiProvider } from '@tamagui/core'
-import config from './tamagui.config'
-
-export function App() {
-  return (
-    <TamaguiProvider config={config}>
-      {/* Your app */}
-    </TamaguiProvider>
-  )
-}
-
-// Check theme configuration
-import { useTheme } from '@tamagui/core'
-
-export function Component() {
-  const theme = useTheme()
-  console.log('Current theme:', theme)
-  
-  return <Text color="$color">Text</Text>
-}
-```
+- Ensure the app is wrapped with the theme/UI provider from `@unicornlove/beyond-ui` or `@scf/core`.
+- Use design tokens and style factories from the Beyond UI package; see `packages/beyond-ui/STYLING_GUIDE.md` and `packages/beyond-ui/docs/API_CONVENTIONS.md`.
 
 #### 2. Cross-Platform Styling Issues
 **Symptoms**: Different appearance on web vs mobile
 **Solutions**:
-- Use platform-specific files (`.native.tsx`, `.web.tsx`)
-- Check Tamagui responsive breakpoints
+- Use platform-specific files (`.native.tsx`, `.web.tsx`) when needed
+- Use Beyond UI responsive utilities and breakpoints
 - Test on actual devices, not just simulators
 
 ### Performance Issues
@@ -429,7 +408,7 @@ git diff
 
 ### 3. Common Resources
 - [Expo Documentation](https://docs.expo.dev/)
-- [Tamagui Documentation](https://tamagui.dev/)
+- [Beyond UI](packages/beyond-ui/) – API conventions, STYLING_GUIDE, ARCHITECTURE
 - [Supabase Documentation](https://supabase.com/docs)
 - [tRPC Documentation](https://trpc.io/)
 - Project GitHub Issues and Discussions

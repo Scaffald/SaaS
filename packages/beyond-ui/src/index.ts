@@ -193,7 +193,7 @@ export type {
 export { Show, Hide, Responsive } from './components/Responsive'
 export type { ShowProps, HideProps, ResponsiveProps } from './components/Responsive'
 
-// Typography components (replaces Tamagui H1-H6, Paragraph, SizableText)
+// Typography components
 export { Heading, H1, H2, H3, H4, H5, H6, Paragraph, Label, Text, Caption } from './components/Typography'
 export type {
   HeadingProps,

@@ -1,6 +1,6 @@
 import { useUser } from '@scf/core/utils/useUser'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { Check, MessageSquare } from '@tamagui/lucide-icons'
+import { Check, MessageSquare } from 'lucide-react-native'
 import { useMemo } from 'react'
 
 interface InquiryStatusBadgesProps {

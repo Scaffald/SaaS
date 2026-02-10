@@ -1,5 +1,5 @@
 import { DiscoverCard } from '@unicornlove/beyond-ui'
-import { Briefcase, Building2, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, DollarSign, MapPin } from 'lucide-react-native'
 import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { JobMapPin } from '../hooks/useJobs'
 

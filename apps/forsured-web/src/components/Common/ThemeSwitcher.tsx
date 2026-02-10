@@ -1,42 +1,42 @@
 /**
  * ThemeSwitcher - Theme switcher using Beyond UI
- * Migrated from Tamagui to Beyond UI
- */
-import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Leaf } from 'lucide-react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
 
-type Theme = 'light' | 'dark' | 'earth';
+ */
+import React, { useState, useEffect } from 'react'
+import { Sun, Moon, Leaf } from 'lucide-react'
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
+
+type Theme = 'light' | 'dark' | 'earth'
 
 export default function ThemeSwitcher() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentThemeName, setCurrentThemeName] = useState<Theme>('light');
+  const [isOpen, setIsOpen] = useState(false)
+  const [currentThemeName, setCurrentThemeName] = useState<Theme>('light')
 
   useEffect(() => {
-    const storedTheme = document.documentElement.getAttribute('data-theme') as Theme;
+    const storedTheme = document.documentElement.getAttribute('data-theme') as Theme
     if (storedTheme) {
-      setCurrentThemeName(storedTheme);
+      setCurrentThemeName(storedTheme)
     }
-  }, []);
+  }, [])
 
   const themes: {
-    value: Theme;
-    label: string;
-    icon: React.ElementType;
-    color: string;
+    value: Theme
+    label: string
+    icon: React.ElementType
+    color: string
   }[] = [
     { value: 'light', label: 'Light', icon: Sun, color: 'rgb(59, 130, 246)' },
     { value: 'dark', label: 'Dark', icon: Moon, color: 'rgb(96, 165, 250)' },
     { value: 'earth', label: 'Earth', icon: Leaf, color: 'rgb(184, 97, 54)' },
-  ];
+  ]
 
-  const currentTheme = themes.find((t) => t.value === currentThemeName) || themes[0];
+  const currentTheme = themes.find((t) => t.value === currentThemeName) || themes[0]
 
   const handleThemeChange = (newTheme: Theme) => {
-    document.documentElement.setAttribute('data-theme', newTheme);
-    setCurrentThemeName(newTheme);
-    setIsOpen(false);
-  };
+    document.documentElement.setAttribute('data-theme', newTheme)
+    setCurrentThemeName(newTheme)
+    setIsOpen(false)
+  }
 
   return (
     <Stack
@@ -75,8 +75,8 @@ export default function ThemeSwitcher() {
               }}
             >
               {themes.map((t) => {
-                const Icon = t.icon;
-                const isActive = currentThemeName === t.value;
+                const Icon = t.icon
+                const isActive = currentThemeName === t.value
                 return (
                   <Button
                     key={t.value}
@@ -97,7 +97,7 @@ export default function ThemeSwitcher() {
                     <Icon size={20} color={isActive ? t.color : undefined} />
                     <Text weight="medium">{t.label}</Text>
                   </Button>
-                );
+                )
               })}
             </Stack>
           </>
@@ -115,12 +115,9 @@ export default function ThemeSwitcher() {
           }}
           aria-label="Change theme"
         >
-          <currentTheme.icon
-            size={24}
-            color={currentTheme.color}
-          />
+          <currentTheme.icon size={24} color={currentTheme.color} />
         </Button>
       </Stack>
     </Stack>
-  );
+  )
 }

@@ -1,7 +1,9 @@
+import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Home, RefreshCcw } from '@tamagui/lucide-icons'
+import { Home, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
 
 interface ErrorFallbackProps {
   error: Error | null
@@ -10,6 +12,7 @@ interface ErrorFallbackProps {
 
 export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
 
   const handleGoHome = () => {
     onReset()
@@ -19,44 +22,98 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
   return (
     <Stack
       flex={1}
-      justifyContent="center"
-      alignItems="center"
-      gap="$5"
-      paddingHorizontal="$4"
-      paddingVertical="$6"
+      justify="center"
+      align="center"
+      gap={spacing[8]}
+      paddingHorizontal={spacing[6]}
+      paddingVertical={spacing[10]}
+      style={{
+        backgroundColor: colors.bg[theme].default,
+      }}
     >
-      <Stack gap="$3" alignItems="center" style={{ maxWidth: 480 }} width="100%">
-        <Text fontSize="$9" fontWeight="700" style={{ textAlign: 'center' }}>
-          Something went wrong
-        </Text>
-        <Paragraph color="$color11" style={{ textAlign: 'center' }}>
-          We have been notified of the problem and are working on a fix. You can try again or head
-          back to the dashboard.
-        </Paragraph>
+      {/* Logo */}
+      <Stack align="center">
+        <ScaffaldLogo width={120} height={120} showWordmark={false} />
       </Stack>
 
+      {/* Error Message */}
+      <Stack gap={spacing[4]} align="center" style={{ maxWidth: 520 }}>
+        <Text
+          size="2xl"
+          weight="bold"
+          color={colors.text[theme].primary}
+          style={{ textAlign: 'center' }}
+        >
+          Something went wrong
+        </Text>
+        <Text
+          size="md"
+          color={colors.text[theme].secondary}
+          style={{ textAlign: 'center', lineHeight: 24 }}
+        >
+          We've been notified of this issue and are working on a fix. Try refreshing the page or
+          return to the dashboard.
+        </Text>
+      </Stack>
+
+      {/* Dev Error Details */}
       {__DEV__ && error ? (
         <Stack
-          width="100%"
-          backgroundColor="$red2"
-          borderColor="$red6"
-          borderWidth={1}
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          gap="$2"
-          style={{ borderRadius: 12 }}
+          style={{
+            maxWidth: 600,
+            width: '100%',
+            backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
+            borderColor: theme === 'light' ? colors.error[200] : colors.error[700],
+            borderWidth: 1,
+            borderRadius: 12,
+            padding: spacing[4],
+          }}
         >
-          <Text fontSize="$3" color="$red11" style={{ fontFamily: 'monospace' }}>
-            {error.message}
-          </Text>
+          <Stack gap={spacing[2]}>
+            <Text
+              size="sm"
+              weight="semibold"
+              style={{
+                fontFamily: 'monospace',
+                color: theme === 'light' ? colors.error[800] : colors.error[200],
+              }}
+            >
+              Error Details (Development Only):
+            </Text>
+            <Text
+              size="sm"
+              style={{
+                fontFamily: 'monospace',
+                lineHeight: 20,
+                color: theme === 'light' ? colors.error[700] : colors.error[300],
+              }}
+            >
+              {error.message}
+            </Text>
+            {error.stack ? (
+              <Text
+                size="xs"
+                color={colors.text[theme].tertiary}
+                style={{
+                  fontFamily: 'monospace',
+                  lineHeight: 18,
+                  maxHeight: 200,
+                  overflow: 'hidden',
+                }}
+              >
+                {error.stack.split('\n').slice(0, 5).join('\n')}
+              </Text>
+            ) : null}
+          </Stack>
         </Stack>
       ) : null}
 
-      <Row gap="$3">
-        <Button theme="blue" icon={RefreshCcw} onPress={onReset}>
+      {/* Action Buttons */}
+      <Row gap={spacing[3]}>
+        <Button variant="filled" color="primary" iconStart={RefreshCcw} onPress={onReset}>
           Try Again
         </Button>
-        <Button variant="outlined" icon={Home} onPress={handleGoHome}>
+        <Button variant="outline" color="gray" iconStart={Home} onPress={handleGoHome}>
           Go to Dashboard
         </Button>
       </Row>

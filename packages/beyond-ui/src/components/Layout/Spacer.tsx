@@ -33,11 +33,7 @@
  *   <Button>Right</Button>
  * </Row>
  *
- * // Migration from Tamagui Spacer:
- * // Before: <Spacer />
- * // After:  <Spacer />
- * // Before: <Spacer size="$4" />
- * // After:  <Spacer size={16} />
+ * // <Spacer /> or <Spacer size={16} />
  * ```
  */
 

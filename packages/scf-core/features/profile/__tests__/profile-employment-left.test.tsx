@@ -38,7 +38,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   }),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Flag: () => null,
   MapPin: () => null,
   Plane: () => null,

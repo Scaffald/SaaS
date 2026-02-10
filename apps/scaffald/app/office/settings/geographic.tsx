@@ -1,10 +1,9 @@
 import { supabase } from '@scf/core/utils/supabase/client'
-import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, Spinner, Text, Row, Stack, useToast } from '@unicornlove/beyond-ui'
 
 export default function GeographicSettingsPage() {
-  const toast = useToastController()
+  const toast = useToast()
   const [threshold, setThreshold] = useState<string>('2.0')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -31,7 +30,11 @@ export default function GeographicSettingsPage() {
         }
       } catch (error) {
         console.error('Failed to load threshold:', error)
-        toast.show('Error', { message: 'Failed to load current threshold setting' })
+        toast.show({
+          title: 'Error',
+          message: 'Failed to load current threshold setting',
+          variant: 'error',
+        })
       } finally {
         setIsLoading(false)
       }
@@ -45,8 +48,10 @@ export default function GeographicSettingsPage() {
 
     // Validate range
     if (Number.isNaN(numValue) || numValue < 0.1 || numValue > 10) {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: 'Threshold must be between 0.1% and 10%',
+        variant: 'error',
       })
       return
     }
@@ -61,12 +66,18 @@ export default function GeographicSettingsPage() {
 
       if (error) throw error
 
-      toast.show('Success', {
+      toast.show({
+        title: 'Success',
         message: 'Overlap threshold updated successfully',
+        variant: 'success',
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to save threshold'
-      toast.show('Error', { message })
+      toast.show({
+        title: 'Error',
+        message,
+        variant: 'error',
+      })
     } finally {
       setIsSaving(false)
     }

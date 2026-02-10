@@ -149,7 +149,7 @@ alias: [
 ### Helpers
 Test helpers are in `tests/infrastructure/vitest/helpers/`:
 
-- `tamagui-setup.tsx` - Tamagui provider setup for tests
+- `tamagui-setup.tsx` - Re-exports from theme-setup for backward compatibility; use Beyond UI theme for new tests
 - `form-setup.tsx` - React Hook Form provider setup for tests
 - `test-utils.tsx` - Enhanced render function with common providers
 - `README.md` - Complete documentation for all helpers
@@ -159,7 +159,7 @@ See `tests/infrastructure/vitest/helpers/README.md` for detailed usage examples.
 ### Mocks
 Shared mocks are in `tests/infrastructure/vitest/mocks/`:
 
-- `tamagui-complete.tsx` - Comprehensive Tamagui mock with all common components and icons
+- `tamagui-complete.tsx` - Legacy UI mock for backward compatibility; use Beyond UI for new tests
 - `expo-constants.ts` - Expo constants mock
 - `testing-library-react-native.ts` - React Native testing library mock
 - `supabase.ts` - Supabase client mock

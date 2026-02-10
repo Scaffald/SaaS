@@ -1,4 +1,4 @@
-import { ExternalLink, Link as LinkIcon, Upload, X } from '@tamagui/lucide-icons'
+import { ExternalLink, Link as LinkIcon, Upload, X } from 'lucide-react-native'
 import { type ChangeEvent, useState } from 'react'
 import { Button, Card, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

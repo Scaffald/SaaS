@@ -1,4 +1,4 @@
-import { Award } from '@tamagui/lucide-icons'
+import { Award } from 'lucide-react-native'
 import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Skill {

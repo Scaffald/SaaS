@@ -1,5 +1,5 @@
 import type { Boundary, Coordinate } from '@unicornlove/beyond-ui'
-import { Edit3, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { Edit3, Plus, Trash2 } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
 import { Button, Card, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

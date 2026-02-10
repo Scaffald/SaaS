@@ -1,7 +1,7 @@
 import { TeamForm } from '@scf/core/features/office/teams'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Check, ChevronDown } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'

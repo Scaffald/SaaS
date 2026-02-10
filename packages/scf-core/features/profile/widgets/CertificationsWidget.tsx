@@ -8,7 +8,7 @@ import {
   LoadingState,
   spacing,
 } from '@unicornlove/beyond-ui'
-import { Award, CheckCircle } from '@tamagui/lucide-icons'
+import { Award, CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'

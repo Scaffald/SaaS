@@ -7,7 +7,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   ChevronUp,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import {
   flexRender,

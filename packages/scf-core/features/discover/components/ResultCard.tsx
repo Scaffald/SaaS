@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { DiscoverCard } from '@unicornlove/beyond-ui'
-import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
+import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { forwardRef, memo } from 'react'

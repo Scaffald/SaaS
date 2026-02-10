@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Button, Dialog } from '@unicornlove/beyond-ui'
-import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
+import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'

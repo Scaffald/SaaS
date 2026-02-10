@@ -1,5 +1,5 @@
 import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@scf/schemas'
-import { Check, Edit3, FileText } from '@tamagui/lucide-icons'
+import { Check, Edit3, FileText } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Checkbox, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

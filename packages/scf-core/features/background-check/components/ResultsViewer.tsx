@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { api } from '@scf/core/utils/api'
-import { AlertTriangle, X as CloseIcon, DownloadCloud } from '@tamagui/lucide-icons'
+import { AlertTriangle, X as CloseIcon, DownloadCloud } from 'lucide-react-native'
 import { memo } from 'react'
 import { Alert } from 'react-native'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'

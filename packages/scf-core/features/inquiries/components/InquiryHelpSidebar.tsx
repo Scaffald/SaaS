@@ -1,5 +1,5 @@
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { HelpCircle, Info } from '@tamagui/lucide-icons'
+import { HelpCircle, Info } from 'lucide-react-native'
 
 export function InquiryHelpSidebar() {
   return (

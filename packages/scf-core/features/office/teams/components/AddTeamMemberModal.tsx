@@ -1,10 +1,10 @@
-import { api } from '@scf/core/utils/api'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useAddTeamMember } from '@scaffald/sdk/react'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
@@ -31,18 +31,22 @@ export function AddTeamMemberModal({
 
   const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
 
-  const addMemberMutation = api.teams.members.add.useMutation({
+  const addMemberMutation = useAddTeamMember({
     onSuccess: () => {
-      toast.show('Member added', { message: `${selectedUserName || 'User'} joined the team.` })
+      toast.show({
+        title: 'Member added',
+        message: `${selectedUserName || 'User'} joined the team.`,
+        variant: 'success',
+      })
       onOpenChange(false)
       onAdded?.()
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to add member',
-          variant: 'error',
-        })
+        title: 'Unable to add member',
+        variant: 'error',
+      })
     },
   })
 
@@ -73,8 +77,10 @@ export function AddTeamMemberModal({
 
     await addMemberMutation.mutateAsync({
       teamId,
-      userId: selectedUserId,
-      roleId,
+      params: {
+        userId: selectedUserId,
+        roleId,
+      },
     })
   }
 

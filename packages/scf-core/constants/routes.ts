@@ -24,7 +24,7 @@ import {
   HardDrive,
   ShieldCheck,
   Users,
-} from '@tamagui/lucide-icons';
+} from 'lucide-react-native';
 import type { TranslationKey } from '@scf/core/locales';
 import type { ComponentType } from 'react';
 

@@ -2,7 +2,7 @@ import { api } from '@scf/core/utils/api'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@unicornlove/beyond-ui'
-import { Download, Trash2 } from '@tamagui/lucide-icons'
+import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

@@ -8,7 +8,7 @@ import {
   MapPin,
   User,
   Users,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { type GetThemeValueForKey, Text, Row, Stack } from '@unicornlove/beyond-ui'

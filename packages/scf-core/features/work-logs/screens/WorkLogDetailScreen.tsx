@@ -11,7 +11,7 @@ import {
   MessageSquare,
   ShieldCheck,
   Users,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

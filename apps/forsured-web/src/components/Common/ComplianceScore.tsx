@@ -1,29 +1,29 @@
 /**
  * ComplianceScore - Compliance score display using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React from 'react';
-import { Row, Stack, Text } from '@unicornlove/beyond-ui';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import React from 'react'
+import { Row, Stack, Text } from '@unicornlove/beyond-ui'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 
 interface ComplianceScoreProps {
-  score: number;
-  trend?: 'up' | 'down' | 'stable';
-  size?: 'sm' | 'md' | 'lg';
-  showTrend?: boolean;
+  score: number
+  trend?: 'up' | 'down' | 'stable'
+  size?: 'sm' | 'md' | 'lg'
+  showTrend?: boolean
 }
 
 const sizeStyles = {
   sm: { width: 48, height: 48, fontSize: 16 },
   md: { width: 64, height: 64, fontSize: 20 },
   lg: { width: 80, height: 80, fontSize: 24 },
-};
+}
 
 const scoreColors = {
   high: { background: 'var(--color-green-3)', text: 'var(--color-green-11)' },
   medium: { background: 'var(--color-yellow-3)', text: 'var(--color-yellow-11)' },
   low: { background: 'var(--color-orange-3)', text: 'var(--color-orange-11)' },
-};
+}
 
 export default function ComplianceScore({
   score,
@@ -32,20 +32,20 @@ export default function ComplianceScore({
   showTrend = true,
 }: ComplianceScoreProps) {
   const getScoreVariant = (): 'high' | 'medium' | 'low' => {
-    if (score >= 90) return 'high';
-    if (score >= 70) return 'medium';
-    return 'low';
-  };
+    if (score >= 90) return 'high'
+    if (score >= 70) return 'medium'
+    return 'low'
+  }
 
   const trendIconSize = {
     sm: 14,
     md: 16,
     lg: 18,
-  };
+  }
 
-  const variant = getScoreVariant();
-  const { width, height, fontSize } = sizeStyles[size];
-  const colors = scoreColors[variant];
+  const variant = getScoreVariant()
+  const { width, height, fontSize } = sizeStyles[size]
+  const colors = scoreColors[variant]
 
   return (
     <Row alignItems="center" gap={12}>
@@ -84,5 +84,5 @@ export default function ComplianceScore({
         </Row>
       )}
     </Row>
-  );
+  )
 }

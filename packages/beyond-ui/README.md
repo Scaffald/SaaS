@@ -274,17 +274,15 @@ gradients.named['warm-flame'].colors  // ['#fb923c', '#fb7185']
 
 ## Documentation
 
-- [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) – Comparison with the Tamagui-based UI and when to use beyond-ui.
+- [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) – Rationale and when to use beyond-ui.
 - [Imports and exports](docs/IMPORTS_AND_EXPORTS.md) – Main entry vs subpath imports (`/tokens`, `/onboarding`) for tree-shaking.
-- [Theme migration (Tamagui → Beyond)](docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md) – Map Tamagui `$tokens` to beyond-ui tokens.
 - [Dependencies](docs/DEPENDENCIES.md) – Dependency policy and audit (required vs optional peers).
 - [ARCHITECTURE.md](ARCHITECTURE.md) – Design principles, tokens, component structure.
-- [MIGRATION.md](MIGRATION.md) – Migrating from @unicornlove/ui to beyond-ui.
 - [CONTRIBUTING.md](CONTRIBUTING.md) – How to contribute.
 
 ## Feature parity with @unicornlove/ui
 
-Beyond-UI is built to reach parity with the Tamagui-based `@unicornlove/ui` while staying dependency-light. The following areas are implemented or documented:
+Beyond-UI is built to replace the previous UI library while staying dependency-light. The following areas are implemented or documented:
 
 | Area | Status | Notes |
 |------|--------|--------|
@@ -294,7 +292,7 @@ Beyond-UI is built to reach parity with the Tamagui-based `@unicornlove/ui` whil
 | **Phase D** (domain) | ✅ | Address (AddressAutocomplete, AddressForm, LocationListInput), Maps, Rich text (minimal + TipTap as children), IconSelector, Charts (StackedBarChart, PopulationPyramid), NotificationTag; OfficeTabs/OfficeAccordion → [Tabs/Accordion](MIGRATION.md#officetabs-and-officeaccordion) |
 | **Phase E** (polish) | ✅ | CONTRIBUTING, CHANGELOG, WHY_BEYOND_UI, theme migration guide, dependency audit, subpath exports |
 
-See [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) and [MIGRATION.md](MIGRATION.md) for migration from ui to beyond-ui.
+See [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) for rationale and migration notes.
 
 ## Development Roadmap
 
@@ -338,4 +336,4 @@ MIT © Scaffald
 
 ## Related Packages
 
-- [`@unicornlove/ui`](../ui) - Current Tamagui-based UI library (legacy)
+- Legacy UI package has been superseded by Beyond UI.

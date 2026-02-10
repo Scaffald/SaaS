@@ -15,7 +15,7 @@ import {
   RotateCcw,
   SlidersHorizontal,
   X,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import {
@@ -50,7 +50,7 @@ const MAP_RECENTER_DELAY_MS = 360
 
 export const DiscoverMapScreen = () => {
   // Use window dimensions for conditional rendering
-  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  // Breakpoint: 800px (small/medium layout)
   // Native mobile is always treated as small screen
   const { width } = useWindowDimensions()
   const isNativeMobile = Platform.OS !== 'web'

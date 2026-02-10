@@ -9,7 +9,7 @@ import {
   DollarSign,
   MapPin,
   Users,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface JobData {

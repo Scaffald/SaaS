@@ -1,17 +1,17 @@
-import type { IconProps } from '@tamagui/helpers-icon'
 import {
   Award,
   Briefcase,
   ChevronRight,
   Clock,
   GraduationCap,
+  type LucideIcon,
   SlidersHorizontal,
   Sparkles,
   Upload,
   UserRound,
   Zap,
-} from '@tamagui/lucide-icons'
-import { type ComponentType, memo } from 'react'
+} from 'lucide-react-native'
+import { memo } from 'react'
 import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
@@ -39,7 +39,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
       0
     )
 
-  const STEP_ICONS: Record<string, ComponentType<IconProps>> = {
+  const STEP_ICONS: Record<string, LucideIcon> = {
     general: UserRound,
     skills: Sparkles,
     experience: Briefcase,

@@ -66,7 +66,7 @@ vi.mock('@scf/schemas', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Palette: () => <span data-testid="palette-icon">Palette</span>,
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
@@ -293,7 +293,7 @@ vi.mock('tamagui', async () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,
 }))

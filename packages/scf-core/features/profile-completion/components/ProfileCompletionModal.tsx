@@ -1,5 +1,5 @@
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
-import { PartyPopper, UploadCloud } from '@tamagui/lucide-icons'
+import { PartyPopper, UploadCloud } from 'lucide-react-native'
 import { memo } from 'react'
 import { Button, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

@@ -33,8 +33,18 @@ describe('HTTP Client', () => {
       expect(jobs).toBeDefined()
     })
 
+    it('should support Supabase token', async () => {
+      const clientWithSupabaseToken = new Scaffald({
+        supabaseToken: 'supabase_jwt_token_123',
+      })
+      const jobs = await clientWithSupabaseToken.jobs.list()
+      expect(jobs).toBeDefined()
+    })
+
     it('should throw error when no auth is provided', () => {
-      expect(() => new Scaffald({})).toThrow('Either apiKey or accessToken must be provided')
+      expect(() => new Scaffald({})).toThrow(
+        'Either apiKey, accessToken, or supabaseToken must be provided'
+      )
     })
   })
 

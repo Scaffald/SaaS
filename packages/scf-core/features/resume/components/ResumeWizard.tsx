@@ -8,7 +8,7 @@ import {
   CornerDownLeft,
   SkipForward,
   UploadCloud,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {

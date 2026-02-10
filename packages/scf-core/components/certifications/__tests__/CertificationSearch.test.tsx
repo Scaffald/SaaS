@@ -100,7 +100,7 @@ const mockTamagui = vi.hoisted(() => {
 
 vi.mock('tamagui', () => mockTamagui)
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Search: () => <span data-testid="icon-search" />,
   Award: () => <span data-testid="icon-award" />,
 }))

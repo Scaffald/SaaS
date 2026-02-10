@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { DiscoverCard } from '@unicornlove/beyond-ui'
-import { Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 

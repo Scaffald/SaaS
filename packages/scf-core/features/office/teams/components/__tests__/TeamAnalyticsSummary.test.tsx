@@ -89,7 +89,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   RefreshCw: () => <span data-testid="refresh-cw-icon">RefreshCw</span>,

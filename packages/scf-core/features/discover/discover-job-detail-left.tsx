@@ -6,7 +6,7 @@ import {
   useExternalJobs,
   useJobDetails,
 } from '@scf/core/utils/jobs-sdk-hooks'
-import { ExternalLink } from '@tamagui/lucide-icons'
+import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Button, Spinner, Text, Stack } from '@unicornlove/beyond-ui'

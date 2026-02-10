@@ -1,5 +1,5 @@
 import { DiscoverCard, extractPlainText } from '@unicornlove/beyond-ui'
-import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import { Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 

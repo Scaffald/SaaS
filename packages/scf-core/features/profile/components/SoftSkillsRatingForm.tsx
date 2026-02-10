@@ -6,7 +6,7 @@ import {
   ResponsiveModal,
   SaveStatusIndicator,
 } from '@unicornlove/beyond-ui'
-import { CheckCircle2 } from '@tamagui/lucide-icons'
+import { CheckCircle2 } from 'lucide-react-native'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import { useToast } from '@unicornlove/beyond-ui'

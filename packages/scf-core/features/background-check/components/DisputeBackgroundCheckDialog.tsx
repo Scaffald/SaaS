@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle } from '@tamagui/lucide-icons'
+import { AlertTriangle } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo } from 'react'
 import { Button, Dialog, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'

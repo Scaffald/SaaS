@@ -1,4 +1,4 @@
-import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from '@unicornlove/beyond-ui'
 import { Paragraph, Text, Row } from '@unicornlove/beyond-ui'

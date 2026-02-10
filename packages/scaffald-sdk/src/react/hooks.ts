@@ -1246,6 +1246,100 @@ export function useCancelTeamInvitation(
 }
 
 /**
+ * Hook to list invitations sent to the current user
+ *
+ * @example
+ * ```tsx
+ * function MyInvitations() {
+ *   const { data, isLoading } = useMyTeamInvitations({ status: 'pending' })
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       <h2>Pending Invitations</h2>
+ *       {data?.invitations.map(inv => (
+ *         <div key={inv.id}>
+ *           {inv.team?.name} - {inv.role?.name}
+ *         </div>
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useMyTeamInvitations(
+  params?: { status?: 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired' },
+  options?: Omit<UseQueryOptions<TeamInvitationsListResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['teams', 'invitations', 'mine', params],
+    queryFn: () => client.teams.listMyInvitations(params),
+    staleTime: 30 * 1000, // 30 seconds
+    ...options,
+  })
+}
+
+/**
+ * Hook to respond to a team invitation
+ *
+ * @example
+ * ```tsx
+ * function InvitationCard({ invitationId }: { invitationId: string }) {
+ *   const respondMutation = useRespondToTeamInvitation()
+ *
+ *   const handleAccept = async () => {
+ *     await respondMutation.mutateAsync({
+ *       invitationId,
+ *       params: { action: 'accept' }
+ *     })
+ *   }
+ *
+ *   const handleDecline = async () => {
+ *     await respondMutation.mutateAsync({
+ *       invitationId,
+ *       params: { action: 'decline' }
+ *     })
+ *   }
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={handleAccept}>Accept</button>
+ *       <button onClick={handleDecline}>Decline</button>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useRespondToTeamInvitation(
+  options?: Omit<
+    UseMutationOptions<
+      TeamInvitationResponse,
+      Error,
+      { invitationId: string; params: { action: 'accept' | 'decline' } }
+    >,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ invitationId, params }: { invitationId: string; params: { action: 'accept' | 'decline' } }) =>
+      client.teams.respondToInvitation(invitationId, params),
+    onSuccess: () => {
+      // Invalidate my invitations
+      queryClient.invalidateQueries({ queryKey: ['teams', 'invitations', 'mine'] })
+      // Invalidate teams list (user may now be a member of new team)
+      queryClient.invalidateQueries({ queryKey: ['teams'] })
+    },
+    ...options,
+  })
+}
+
+/**
  * Hook to list team job assignments
  */
 export function useTeamJobAssignments(

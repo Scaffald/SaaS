@@ -2,7 +2,7 @@
  * Paragraph component
  *
  * Body text component with size and weight variants.
- * Replaces Tamagui's Paragraph component.
+ * Body text with size and weight variants.
  */
 
 import { useMemo } from 'react'

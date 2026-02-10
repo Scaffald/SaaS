@@ -9,7 +9,7 @@ import {
   spacing,
 } from '@unicornlove/beyond-ui'
 import { randomUUID } from 'expo-crypto'
-import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'

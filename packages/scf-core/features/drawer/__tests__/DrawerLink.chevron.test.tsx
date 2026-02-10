@@ -21,7 +21,7 @@ vi.mock('expo-router', () => ({
   ),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   ChevronRight: () => <span data-testid="chevron-right" />,
   ChevronDown: () => <span data-testid="chevron-down" />,
   Check: () => <span data-testid="check" />,

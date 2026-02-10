@@ -1,5 +1,5 @@
 import { DashboardWidget } from '@unicornlove/beyond-ui'
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react-native'
 import { Button, Input, Label, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface SearchFilterWidgetProps {
