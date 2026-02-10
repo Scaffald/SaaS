@@ -4,6 +4,8 @@ import { api } from '@scf/core/utils/api'
 import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useExperience } from '@scf/core/utils/profile-experience-sdk-hooks'
 import { useEmployment } from '@scf/core/utils/profile-employment-sdk-hooks'
+import { useEducation } from '@scf/core/utils/profile-education-sdk-hooks'
+import { useUserCertificationTree } from '@scf/core/utils/profile-certifications-sdk-hooks'
 import { Button, ToggleCard, spacing } from '@unicornlove/beyond-ui'
 import {
   AlertCircle,
@@ -121,18 +123,15 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   const experienceQuery = useExperience({
     refetchOnWindowFocus: false,
   })
-  const educationQuery = api.profile.education.getEducation.useQuery(undefined, {
+  const educationQuery = useEducation({
     refetchOnWindowFocus: false,
   })
   const skillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const certificationsQuery = api.profile.certifications.getUserCertificationTree.useQuery(
-    undefined,
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+  const certificationsQuery = useUserCertificationTree({
+    refetchOnWindowFocus: false,
+  })
   const employmentQuery = useEmployment({
     refetchOnWindowFocus: false,
   })

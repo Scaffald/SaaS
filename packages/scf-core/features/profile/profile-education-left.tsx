@@ -1,4 +1,6 @@
 import { api } from '@scf/core/utils/api'
+import { useEducation, useEducationLevel, useSaveEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
@@ -111,33 +113,34 @@ export function ProfileEducationLeft({
   const toast = useToast()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
+  const queryClient = useQueryClient()
 
   // Queries
-  const educationQuery = api.profile.education.getEducation.useQuery()
-  const educationLevelQuery = api.profile.education.getEducationLevel.useQuery()
+  const educationQuery = useEducation()
+  const educationLevelQuery = useEducationLevel()
   const utils = api.useContext()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Mutations
-  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
+  const saveEducationMutation = useSaveEducationMutation({
     async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
-        utils.profile.education.getEducation.cancel(),
-        utils.profile.education.getEducationLevel.cancel(),
+        queryClient.cancelQueries({ queryKey: ['profiles', 'education'] }),
+        queryClient.cancelQueries({ queryKey: ['profiles', 'education', 'level'] }),
       ])
 
-      const previousEducation = utils.profile.education.getEducation.getData()
-      const previousLevel = utils.profile.education.getEducationLevel.getData()
+      const previousEducation = queryClient.getQueryData<EducationApiResponse>(['profiles', 'education'])
+      const previousLevel = queryClient.getQueryData<EducationLevelApiResponse>(['profiles', 'education', 'level'])
 
       // Type assertion needed because form data has required booleans but API allows null
       // Form data is compatible but has slightly different optionality
-      utils.profile.education.getEducation.setData(
-        undefined,
+      queryClient.setQueryData(
+        ['profiles', 'education'],
         (input.education_entries ?? []) as EducationApiResponse
       )
-      utils.profile.education.getEducationLevel.setData(undefined, {
+      queryClient.setQueryData(['profiles', 'education', 'level'], {
         education_level: input.education_level ?? null,
       })
 
@@ -149,10 +152,10 @@ export function ProfileEducationLeft({
     onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
-        utils.profile.education.getEducation.setData(undefined, context.previousEducation)
+        queryClient.setQueryData(['profiles', 'education'], context.previousEducation)
       }
       if (context?.previousLevel) {
-        utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
+        queryClient.setQueryData(['profiles', 'education', 'level'], context.previousLevel)
       }
       failProfileSync()
       toast.show({

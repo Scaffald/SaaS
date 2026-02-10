@@ -1,4 +1,9 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useUserCertificationTree,
+  useUpdateCertificationProofMutation,
+  useToggleSpecificCertificationMutation,
+} from '@scf/core/utils/profile-certifications-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
 import {
@@ -40,16 +45,20 @@ export function ProfileCertificationsRight() {
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({})
   const [urlInputs, setUrlInputs] = useState<Record<string, string>>({})
   const { highlights: recentlyChangedCerts } = useProfileCertificationsHighlight()
+  const queryClient = useQueryClient()
 
-  const { data: certTree, refetch: refetchTree } =
-    api.profile.certifications.getUserCertificationTree.useQuery()
+  const { data: certTree } = useUserCertificationTree()
 
-  const updateProof = api.profile.certifications.updateCertificationProof.useMutation({
-    onSuccess: () => refetchTree(),
+  const updateProof = useUpdateCertificationProofMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+    },
   })
 
-  const removeCert = api.profile.certifications.toggleSpecificCertification.useMutation({
-    onSuccess: () => refetchTree(),
+  const removeCert = useToggleSpecificCertificationMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+    },
   })
 
   // Get all certifications at all depth levels

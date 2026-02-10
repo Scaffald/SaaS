@@ -1,4 +1,5 @@
-import { api } from '@scf/core/utils/api'
+import { useEducation, useDeleteEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -19,13 +20,14 @@ interface ProfileEducationRightProps {
 export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProps = {}) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   // Query saved education data
-  const educationQuery = api.profile.education.getEducation.useQuery()
+  const educationQuery = useEducation()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Delete mutation
-  const deleteEducationMutation = api.profile.education.deleteEducation.useMutation({
+  const deleteEducationMutation = useDeleteEducationMutation({
     onError: (error: unknown) => {
       toast.show({
           title: 'Delete Failed',
@@ -40,7 +42,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
           title: 'Education Deleted',
           message: 'The education entry has been removed.',
         })
-      educationQuery.refetch()
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'education'] })
       setDeleteDialogOpen(null)
     },
   })
@@ -58,7 +60,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   }
 
   // Show loading state
-  if (educationQuery.isLoading) {
+  if (educationQuery.isPending) {
     return (
       <DashboardWidget>
         <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">

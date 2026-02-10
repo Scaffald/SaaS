@@ -18,6 +18,8 @@ import { WorkLogs } from './resources/work-logs.js'
 import { Skills } from './resources/skills.js'
 import { Experience } from './resources/experience.js'
 import { Employment } from './resources/employment.js'
+import { Education } from './resources/education.js'
+import { Certifications } from './resources/certifications.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -40,6 +42,8 @@ export class Scaffald {
   public readonly skills: Skills
   public readonly experience: Experience
   public readonly employment: Employment
+  public readonly education: Education
+  public readonly certifications: Certifications
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -70,6 +74,8 @@ export class Scaffald {
     this.skills = new Skills(this.http)
     this.experience = new Experience(this.http)
     this.employment = new Employment(this.http)
+    this.education = new Education(this.http)
+    this.certifications = new Certifications(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

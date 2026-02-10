@@ -1,4 +1,6 @@
 import { api } from '@scf/core/utils/api'
+import { useEducation, useSaveEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
@@ -57,13 +59,14 @@ export function EducationEntryEditModal({
   const { width } = useWindowDimensions()
   const _isMobile = width < 640
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')
   const [manualEntryMode, setManualEntryMode] = useState(false)
 
   // Queries
-  const educationQuery = api.profile.education.getEducation.useQuery()
+  const educationQuery = useEducation()
   const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
     {
       query: searchQuery,
@@ -77,13 +80,13 @@ export function EducationEntryEditModal({
   )
 
   // Mutations
-  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
+  const saveEducationMutation = useSaveEducationMutation({
     onSuccess: () => {
       toast.show({
           title: 'Education Updated',
           message: 'Your education entry has been updated successfully!',
         })
-      educationQuery.refetch()
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'education'] })
       onSuccess?.()
       onOpenChange(false)
     },

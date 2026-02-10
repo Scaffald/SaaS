@@ -1,5 +1,17 @@
 import { api } from '@scf/core/utils/api'
 import {
+  useUserCertificationTree,
+  useTopLevelCertifications,
+  useAddCertificationMutation,
+  useAddCategoryCertificationMutation,
+  useToggleSpecificCertificationMutation,
+  useRemoveTopLevelCertificationMutation,
+  useSaveCertificationsMutation,
+  useUploadCertificationFileMutation,
+  useCertificationChildren,
+} from '@scf/core/utils/profile-certifications-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import {
   CertificationCheckbox,
   CertificationChip,
   CertificationSearch,
@@ -145,12 +157,13 @@ export function ProfileCertificationsLeft({
   const {
     data: certTree,
     refetch: refetchTree,
-    isLoading: isLoadingTree,
-  } = api.profile.certifications.getUserCertificationTree.useQuery()
+    isPending: isLoadingTree,
+  } = useUserCertificationTree()
   const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { data: topLevelResults, isLoading: isLoadingSearch } =
-    api.profile.certifications.getTopLevelCertifications.useQuery(
+  const { data: topLevelResults, isPending: isLoadingSearch } =
+    useTopLevelCertifications(
       { search: searchQuery },
       {
         enabled: searchQuery.length > 0,
@@ -161,25 +174,33 @@ export function ProfileCertificationsLeft({
 
   // Mutations
   // Unified mutation for adding certifications at any depth level
-  const addCertification = api.profile.certifications.addCertification.useMutation({
-    onSuccess: () => refetchTree(),
+  const addCertification = useAddCertificationMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+    },
   })
 
   // Legacy mutations (kept for backwards compatibility with existing UI flows)
-  const addCategory = api.profile.certifications.addCategoryCertification.useMutation({
-    onSuccess: () => refetchTree(),
+  const addCategory = useAddCategoryCertificationMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+    },
   })
 
-  const toggleCert = api.profile.certifications.toggleSpecificCertification.useMutation({
-    onSuccess: () => refetchTree(),
+  const toggleCert = useToggleSpecificCertificationMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+    },
   })
 
-  const removeTopLevel = api.profile.certifications.removeTopLevelCertification.useMutation({
-    onSuccess: () => refetchTree(),
+  const removeTopLevel = useRemoveTopLevelCertificationMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+    },
   })
 
-  const saveCustomCertMutation = api.profile.certifications.saveCertifications.useMutation()
-  const uploadCustomFileMutation = api.profile.certifications.uploadCertificationFile.useMutation()
+  const saveCustomCertMutation = useSaveCertificationsMutation()
+  const uploadCustomFileMutation = useUploadCertificationFileMutation()
 
   const isSavingCustom = saveCustomCertMutation.isPending || uploadCustomFileMutation.isPending
   const syncStatus = useAdaptiveProfileSync(300)
@@ -843,7 +864,7 @@ function Depth1Categories({
   toggleCertMutation: { isPending: boolean }
   recentlyChangedCerts: Record<string, 'added' | 'removed'>
 }) {
-  const { data: childrenData } = api.profile.certifications.getCertificationChildren.useQuery(
+  const { data: childrenData } = useCertificationChildren(
     { parent_id: parentId },
     { enabled: true }
   )
@@ -916,7 +937,7 @@ function Depth2Certifications({
   toggleMutation: { isPending: boolean }
   recentlyChangedCerts: Record<string, 'added' | 'removed'>
 }) {
-  const { data: childrenData } = api.profile.certifications.getCertificationChildren.useQuery(
+  const { data: childrenData } = useCertificationChildren(
     { parent_id: parentId },
     { enabled: true }
   )

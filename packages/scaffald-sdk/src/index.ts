@@ -104,6 +104,44 @@ export type {
   UpdateEmploymentResponse,
 } from './resources/employment.js'
 
+export type {
+  EducationEntry,
+  EducationLevel,
+  SaveEducationParams,
+  SaveEducationResponse,
+  DeleteEducationParams,
+  DeleteEducationResponse,
+} from './resources/education.js'
+
+export type {
+  CertificationCatalog,
+  UserCertification,
+  GetTopLevelCertificationsParams,
+  GetTopLevelCertificationsResponse,
+  GetCertificationChildrenParams,
+  GetCertificationChildrenResponse,
+  UserCertificationTree,
+  AddCertificationParams,
+  AddCertificationResponse,
+  AddCategoryCertificationParams,
+  AddCategoryCertificationResponse,
+  ToggleSpecificCertificationParams,
+  ToggleSpecificCertificationResponse,
+  RemoveTopLevelCertificationParams,
+  RemoveTopLevelCertificationResponse,
+  UpdateCertificationProofParams,
+  UpdateCertificationProofResponse,
+  LegacyCertification,
+  SaveCertificationsParams,
+  SaveCertificationsResponse,
+  UploadCertificationFileParams,
+  UploadCertificationFileResponse,
+  DeleteCertificationFileParams,
+  DeleteCertificationFileResponse,
+  DeleteCertificationParams,
+  DeleteCertificationResponse,
+} from './resources/certifications.js'
+
 export type { Industry, IndustryListResponse } from './resources/industries.js'
 
 export type {
