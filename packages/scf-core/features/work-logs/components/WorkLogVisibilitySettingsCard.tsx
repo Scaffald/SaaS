@@ -1,6 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { api } from '@scf/core/utils/api'
+import { useWorkLogs, useUpdateWorkLogProfileVisibilityMutation } from '@scf/core/utils/work-logs-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { DashboardWidget, ToggleSwitch } from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -12,9 +13,9 @@ import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 export function WorkLogVisibilitySettingsCard() {
   const router = useRouter()
   const toast = useToast()
-  const trpcUtils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const listQuery = api.workLogs.list.useQuery(
+  const listQuery = useWorkLogs(
     {
       pageSize: 10,
       sortField: 'updated_at',
@@ -23,10 +24,10 @@ export function WorkLogVisibilitySettingsCard() {
     { staleTime: 30_000 }
   )
 
-  const updateProfileVisibilityMutation = api.workLogs.updateProfileVisibility.useMutation({
+  const updateProfileVisibilityMutation = useUpdateWorkLogProfileVisibilityMutation({
     onSuccess: async () => {
-      toast.show('Visibility updated')
-      await trpcUtils.workLogs.list.invalidate()
+      toast.show({ title: 'Visibility updated' })
+      await queryClient.invalidateQueries({ queryKey: ['workLogs', 'list'] })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : undefined
@@ -38,7 +39,7 @@ export function WorkLogVisibilitySettingsCard() {
     },
   })
 
-  const items: WorkLogListItem[] = listQuery.data?.items ?? []
+  const items: WorkLogListItem[] = listQuery.data?.workLogs ?? []
 
   return (
     <DashboardWidget>

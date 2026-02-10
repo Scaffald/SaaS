@@ -314,161 +314,105 @@ export class Inquiries extends Resource {
    * Get templates available for an application's organization
    */
   async getTemplates(applicationId: string): Promise<InquiryTemplate[]> {
-    return this.request<InquiryTemplate[]>({
-      method: 'GET',
-      path: '/inquiries/templates',
-      params: { applicationId },
-    })
+    return this.get<InquiryTemplate[]>('/inquiries/templates', { applicationId })
   }
 
   /**
    * Create a reusable inquiry template
    */
   async createTemplate(params: CreateTemplateParams): Promise<InquiryTemplate> {
-    return this.request<InquiryTemplate>({
-      method: 'POST',
-      path: '/inquiries/templates',
-      body: params,
-    })
+    return this.post<InquiryTemplate>('/inquiries/templates', params)
   }
 
   /**
    * Update an inquiry template
    */
   async updateTemplate(params: UpdateTemplateParams): Promise<InquiryTemplate> {
-    return this.request<InquiryTemplate>({
-      method: 'PATCH',
-      path: `/inquiries/templates/${params.templateId}`,
-      body: params,
-    })
+    return this.patch<InquiryTemplate>(`/inquiries/templates/${params.templateId}`, params)
   }
 
   /**
    * Delete an inquiry template
    */
   async deleteTemplate(templateId: string): Promise<{ success: boolean }> {
-    return this.request<{ success: boolean }>({
-      method: 'DELETE',
-      path: `/inquiries/templates/${templateId}`,
-    })
+    return this.del<{ success: boolean }>(`/inquiries/templates/${templateId}`)
   }
 
   /**
    * Apply a template and increment usage count
    */
   async applyTemplate(params: ApplyTemplateParams): Promise<ApplyTemplateResponse> {
-    return this.request<ApplyTemplateResponse>({
-      method: 'POST',
-      path: '/inquiries/templates/apply',
-      body: params,
-    })
+    return this.post<ApplyTemplateResponse>('/inquiries/templates/apply', params)
   }
 
   /**
    * Get smart defaults derived from the associated job
    */
   async getSmartDefaults(applicationId: string): Promise<SmartDefaults> {
-    return this.request<SmartDefaults>({
-      method: 'GET',
-      path: '/inquiries/smart-defaults',
-      params: { applicationId },
-    })
+    return this.get<SmartDefaults>('/inquiries/smart-defaults', { applicationId })
   }
 
   /**
    * Create a new inquiry for an application
    */
   async create(params: CreateInquiryParams): Promise<Inquiry> {
-    return this.request<Inquiry>({
-      method: 'POST',
-      path: '/inquiries',
-      body: params,
-    })
+    return this.post<Inquiry>('/inquiries', params)
   }
 
   /**
    * Create inquiries for multiple applications in bulk
    */
   async createBulk(params: CreateBulkInquiriesParams): Promise<BulkCreateResult> {
-    return this.request<BulkCreateResult>({
-      method: 'POST',
-      path: '/inquiries/bulk',
-      body: params,
-    })
+    return this.post<BulkCreateResult>('/inquiries/bulk', params)
   }
 
   /**
    * Get inquiry by application ID
    */
   async getByApplication(applicationId: string): Promise<InquiryDetails | null> {
-    return this.request<InquiryDetails | null>({
-      method: 'GET',
-      path: '/inquiries/by-application',
-      params: { applicationId },
-    })
+    return this.get<InquiryDetails | null>('/inquiries/by-application', { applicationId })
   }
 
   /**
    * Get multiple inquiries by IDs for comparison
    */
   async getMultiple(inquiryIds: string[]): Promise<InquiryDetails[]> {
-    return this.request<InquiryDetails[]>({
-      method: 'GET',
-      path: '/inquiries/multiple',
-      params: { inquiryIds: inquiryIds.join(',') },
-    })
+    return this.get<InquiryDetails[]>('/inquiries/multiple', { inquiryIds: inquiryIds.join(',') })
   }
 
   /**
    * Get inquiry history/audit trail
    */
   async getHistory(inquiryId: string): Promise<InquiryAuditLog[]> {
-    return this.request<InquiryAuditLog[]>({
-      method: 'GET',
-      path: `/inquiries/${inquiryId}/history`,
-    })
+    return this.get<InquiryAuditLog[]>(`/inquiries/${inquiryId}/history`)
   }
 
   /**
    * Send inquiry (change status from draft to sent)
    */
   async send(inquiryId: string): Promise<{ success: boolean }> {
-    return this.request<{ success: boolean }>({
-      method: 'POST',
-      path: `/inquiries/${inquiryId}/send`,
-    })
+    return this.post<{ success: boolean }>(`/inquiries/${inquiryId}/send`)
   }
 
   /**
    * Add comment to an inquiry section
    */
   async addComment(params: AddCommentParams): Promise<InquiryComment> {
-    return this.request<InquiryComment>({
-      method: 'POST',
-      path: `/inquiries/${params.inquiryId}/comments`,
-      body: params,
-    })
+    return this.post<InquiryComment>(`/inquiries/${params.inquiryId}/comments`, params)
   }
 
   /**
    * Mark comment as read
    */
   async markCommentRead(commentId: string): Promise<{ success: boolean }> {
-    return this.request<{ success: boolean }>({
-      method: 'PATCH',
-      path: `/inquiries/comments/${commentId}/read`,
-    })
+    return this.patch<{ success: boolean }>(`/inquiries/comments/${commentId}/read`)
   }
 
   /**
    * Accept a section of the inquiry (applicant only)
    */
   async acceptSection(params: AcceptSectionParams): Promise<AcceptSectionResponse> {
-    return this.request<AcceptSectionResponse>({
-      method: 'POST',
-      path: `/inquiries/${params.inquiryId}/sections/accept`,
-      body: params,
-    })
+    return this.post<AcceptSectionResponse>(`/inquiries/${params.inquiryId}/sections/accept`, params)
   }
 
   /**
@@ -477,32 +421,20 @@ export class Inquiries extends Resource {
   async submitCapabilityResponse(
     params: SubmitCapabilityResponseParams
   ): Promise<InquiryCapabilityResponse> {
-    return this.request<InquiryCapabilityResponse>({
-      method: 'POST',
-      path: `/inquiries/${params.inquiryId}/capabilities`,
-      body: params,
-    })
+    return this.post<InquiryCapabilityResponse>(`/inquiries/${params.inquiryId}/capabilities`, params)
   }
 
   /**
    * Update inquiry fields
    */
   async update(params: UpdateInquiryParams): Promise<Inquiry> {
-    return this.request<Inquiry>({
-      method: 'PATCH',
-      path: `/inquiries/${params.id}`,
-      body: params,
-    })
+    return this.patch<Inquiry>(`/inquiries/${params.id}`, params)
   }
 
   /**
    * Change inquiry status
    */
   async changeStatus(params: ChangeStatusParams): Promise<ChangeStatusResponse> {
-    return this.request<ChangeStatusResponse>({
-      method: 'POST',
-      path: `/inquiries/${params.inquiryId}/status`,
-      body: params,
-    })
+    return this.post<ChangeStatusResponse>(`/inquiries/${params.inquiryId}/status`, params)
   }
 }

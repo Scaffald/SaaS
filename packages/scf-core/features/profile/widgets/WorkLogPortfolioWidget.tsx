@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
-import { api } from '@scf/core/utils/api'
+import { usePublicWorkLogsFeed } from '@scf/core/utils/work-logs-sdk-hooks'
 import { ShieldCheck } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -10,12 +10,12 @@ interface WorkLogPortfolioWidgetProps {
 }
 
 export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) {
-  const { data, isLoading } = api.workLogs.publicProfileFeed.useQuery(
-    { userId, limit: 12 },
+  const { data, isLoading } = usePublicWorkLogsFeed(
+    userId ? { userId, limit: 12 } : undefined,
     { enabled: Boolean(userId), staleTime: 60_000 }
   )
 
-  const workLogs: PublicWorkLog[] = data?.workLogs ?? []
+  const workLogs: PublicWorkLog[] = data ?? []
 
   const groupedLogs = useMemo(() => {
     const groups = new Map<

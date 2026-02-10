@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { api } from '@scf/core/utils/api'
+import { useWorkLogs } from '@scf/core/utils/work-logs-sdk-hooks'
 import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
@@ -17,7 +17,7 @@ type IconRenderer = typeof Activity
 export function WorkLogListScreen() {
   const router = useRouter()
 
-  const listQuery = api.workLogs.list.useQuery(
+  const listQuery = useWorkLogs(
     {},
     {
       staleTime: 30_000,
@@ -47,7 +47,7 @@ export function WorkLogListScreen() {
   }, [listQuery])
 
   const aggregates = useMemo(() => listQuery.data?.aggregates ?? null, [listQuery.data])
-  const items: WorkLogListItem[] = listQuery.data?.items ?? []
+  const items: WorkLogListItem[] = listQuery.data?.workLogs ?? []
 
   return (
     <ScrollView
