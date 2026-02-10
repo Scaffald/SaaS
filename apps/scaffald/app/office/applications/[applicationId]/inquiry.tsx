@@ -1,6 +1,6 @@
 import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
-import { api } from '@scf/core/utils/api'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { Text, Stack, Spinner } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView } from 'react-native'
@@ -10,10 +10,7 @@ export default function OfficeApplicationInquiryRoute() {
   const applicationParam = typeof applicationId === 'string' ? applicationId : ''
   const enabled = applicationParam.length > 0
 
-  const { data, isLoading, error } = api.inquiries.getByApplication.useQuery(
-    { applicationId: applicationParam },
-    { enabled }
-  )
+  const { data, isLoading, error } = useInquiryByApplication(applicationParam, { enabled })
 
   if (!enabled) {
     return (

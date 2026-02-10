@@ -1,4 +1,10 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useInquiryTemplates,
+  useCreateInquiryTemplateMutation,
+  useApplyInquiryTemplateMutation,
+  useDeleteInquiryTemplateMutation,
+  useInquirySmartDefaults,
+} from '@scf/core/utils/inquiries-sdk-hooks'
 import type { InquiryCreateInput } from '@scf/schemas'
 import {
   Button,
@@ -153,10 +159,9 @@ export function InquiryCreateForm({
     data: templatesData,
     isLoading: isTemplatesLoading,
     refetch: refetchTemplates,
-  } = api.inquiries.getTemplatesForApplication.useQuery(
-    { applicationId },
-    { enabled: Boolean(applicationId) }
-  )
+  } = useInquiryTemplates(applicationId, {
+    enabled: Boolean(applicationId),
+  })
 
   const templates = templatesData ?? []
   type TemplateRow = {
@@ -168,17 +173,16 @@ export function InquiryCreateForm({
   }
   const templateList = templates as TemplateRow[]
 
-  const createTemplateMutation = api.inquiries.createTemplate.useMutation()
-  const applyTemplateMutation = api.inquiries.applyTemplate.useMutation()
-  const deleteTemplateMutation = api.inquiries.deleteTemplate.useMutation()
+  const createTemplateMutation = useCreateInquiryTemplateMutation()
+  const applyTemplateMutation = useApplyInquiryTemplateMutation()
+  const deleteTemplateMutation = useDeleteInquiryTemplateMutation()
 
-  const { data: smartDefaultsData, isLoading: isSmartDefaultsLoading } =
-    api.inquiries.getSmartDefaults.useQuery(
-      { applicationId },
-      {
-        enabled: mode === 'create',
-      }
-    )
+  const { data: smartDefaultsData, isLoading: isSmartDefaultsLoading } = useInquirySmartDefaults(
+    applicationId,
+    {
+      enabled: mode === 'create',
+    }
+  )
 
   const templateOptions = useMemo(
     () =>

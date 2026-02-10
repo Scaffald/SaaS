@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useCreateBulkInquiriesMutation } from '@scf/core/utils/inquiries-sdk-hooks'
 import { type BulkInquiryInput, bulkInquirySchema } from '@scf/schemas'
 import {
   Button,
@@ -81,30 +81,20 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     },
   })
 
-  const createBulk = api.inquiries.createBulk.useMutation({
-    onSuccess: (result: {
-      total: number
-      successful: number
-      failed: number
-      results: Array<{
-        applicationId: string
-        success: boolean
-        inquiryId?: string
-        error?: string
-      }>
-    }) => {
+  const createBulk = useCreateBulkInquiriesMutation({
+    onSuccess: (result) => {
       setBulkResults(result)
       setShowResults(true)
 
       if (result.failed > 0) {
-        toast.show('Bulk inquiry partially completed', {
+        toast.show({
+          title: 'Bulk inquiry partially completed',
           message: `Successfully sent to ${result.successful} candidates. ${result.failed} failed.`,
-          duration: 5000,
         })
       } else {
-        toast.show('Bulk inquiry sent', {
+        toast.show({
+          title: 'Bulk inquiry sent',
           message: `Successfully sent inquiry to ${result.successful} candidates.`,
-          duration: 3000,
         })
         // Close after successful completion
         setTimeout(() => {
@@ -112,11 +102,10 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
         }, 2000)
       }
     },
-    onError: (error: { message?: string }) => {
+    onError: (error) => {
       toast.show({
           title: 'Failed to send bulk inquiry',
           message: error.message ?? 'Please try again.',
-          duration: 5000,
           variant: 'error',
         })
     },

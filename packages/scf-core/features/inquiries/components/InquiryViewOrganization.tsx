@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
 import { ScrollView, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -57,9 +57,7 @@ export function InquiryViewOrganization({
   // Subscribe to real-time updates for this inquiry
   useInquirySubscription(inquiryId)
 
-  const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
-    applicationId,
-  })
+  const { data, isLoading, error } = useInquiryByApplication(applicationId)
 
   if (isLoading) {
     return (

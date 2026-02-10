@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useInquiryByApplication,
+  useAcceptInquirySectionMutation,
+  useSubmitCapabilityResponseMutation,
+} from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
 import { Button, Input, ScrollView, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -47,9 +51,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const [capabilityResponseState, setCapabilityResponseState] = useState<
     Record<string, { responseValue?: boolean; responseText?: string }>
   >({})
-  const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
-    applicationId,
-  })
+  const { data, isLoading, error } = useInquiryByApplication(applicationId)
 
   useEffect(() => {
     if (!data?.capabilityResponses) {
@@ -66,14 +68,14 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     setCapabilityResponseState(nextState)
   }, [data?.capabilityResponses])
 
-  const acceptSectionMutation = api.inquiries.acceptSection.useMutation({
+  const acceptSectionMutation = useAcceptInquirySectionMutation({
     onSuccess: () => {
       toast.show({
           title: 'Section accepted',
           message: 'You have accepted this section of the inquiry.',
         })
     },
-    onError: (error: { message?: string }) => {
+    onError: (error) => {
       toast.show({
           title: 'Failed to accept section',
           message: error.message ?? 'Please try again.',
@@ -82,7 +84,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     },
   })
 
-  const submitCapabilityResponseMutation = api.inquiries.submitCapabilityResponse.useMutation({
+  const submitCapabilityResponseMutation = useSubmitCapabilityResponseMutation({
     onSuccess: () => {
       toast.show({
           title: 'Response saved',
@@ -90,7 +92,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           variant: 'success',
         })
     },
-    onError: (error: { message?: string }) => {
+    onError: (error) => {
       toast.show({
           title: 'Failed to save response',
           message: error.message ?? 'Please try again.',

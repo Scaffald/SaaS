@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { InquiryViewCandidate } from '@scf/core/features/inquiries/components/InquiryViewCandidate'
-import { api } from '@scf/core/utils/api'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { Text, Stack, Spinner } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
 import type { ReactElement } from 'react'
@@ -11,10 +11,7 @@ export default function DashboardApplicationInquiryRoute() {
   const applicationParam = typeof applicationId === 'string' ? applicationId : ''
   const enabled = applicationParam.length > 0
 
-  const { data, isLoading, error } = api.inquiries.getByApplication.useQuery(
-    { applicationId: applicationParam },
-    { enabled }
-  )
+  const { data, isLoading, error } = useInquiryByApplication(applicationParam, { enabled })
 
   const breadcrumbs = [
     { route: ROUTES.DASHBOARD.APPLICATIONS },

@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useMultipleInquiries } from '@scf/core/utils/inquiries-sdk-hooks'
 import { Button, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
@@ -14,9 +14,7 @@ export function InquiryComparisonView({
   onClose,
   onRemoveInquiry,
 }: InquiryComparisonViewProps) {
-  const { data, isLoading, error } = api.inquiries.getMultiple.useQuery({
-    inquiryIds,
-  })
+  const { data, isLoading, error } = useMultipleInquiries(inquiryIds)
   const inquiries = data as InquiryComparisonRecord[] | undefined
 
   const differences = useMemo(() => {
