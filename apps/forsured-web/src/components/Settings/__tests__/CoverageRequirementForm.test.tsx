@@ -103,7 +103,7 @@ describe('CoverageRequirementForm', () => {
     it('should have default coverage type of general_liability', () => {
       render(<CoverageRequirementForm {...defaultProps} />);
 
-      // Tamagui Select displays the label text for the selected value
+      // Select displays the label text for the selected value
       // General Liability should be shown as the default selected value
       expect(screen.getByText('General Liability')).toBeInTheDocument();
     });
@@ -229,7 +229,7 @@ describe('CoverageRequirementForm', () => {
     it('should display coverage type options', () => {
       render(<CoverageRequirementForm {...defaultProps} />);
 
-      // Tamagui Select - verify the current selection is shown
+      // Select - verify the current selection is shown
       expect(screen.getByText('General Liability')).toBeInTheDocument();
     });
 
@@ -271,7 +271,7 @@ describe('CoverageRequirementForm', () => {
       const nameInput = getNameInput();
       fireEvent.change(nameInput, { target: { value: 'My Coverage Requirement' } });
 
-      // Use quick select for limit (Tamagui Select doesn't support fireEvent.change)
+          // Use quick select for limit (Select doesn't support fireEvent.change)
       fireEvent.click(screen.getByText('$2,000,000'));
 
       fireEvent.click(screen.getByRole('button', { name: /Create Requirement/i }));
@@ -279,7 +279,7 @@ describe('CoverageRequirementForm', () => {
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith({
           name: 'My Coverage Requirement',
-          coverage_type: 'general_liability', // Default value since we can't change Tamagui Select
+          coverage_type: 'general_liability', // Default value since we can't change Select
           minimum_limit: 2000000,
           required: true,
         });

@@ -10,7 +10,7 @@ interface ExtendedCSSProperties extends CSSProperties {
   WebkitBackdropFilter?: string
 }
 
-// Mock Tamagui components before import
+// Legacy UI mock (tamagui) before import
 vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {

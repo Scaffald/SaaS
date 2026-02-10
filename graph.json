@@ -841,7 +841,7 @@
                 "test:watch"
               ]
             },
-            "description": "Comprehensive UI component library for Tamagui and Expo. NOTE: Hybrid maintenance - developed in monorepo (packages/ui/), published from standalone repo. See AI_AGENTS_README.md and .cursor/rules/ui-package-hybrid.mdc for workflow.",
+            "description": "Comprehensive UI component library (Beyond UI and Expo). NOTE: Hybrid maintenance - developed in monorepo (packages/ui/), published from standalone repo. See AI_AGENTS_README.md and .cursor/rules/ui-package-hybrid.mdc for workflow.",
             "js": {
               "packageName": "@unicornlove/ui",
               "packageVersion": "1.0.0",

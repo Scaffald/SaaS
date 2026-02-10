@@ -218,7 +218,7 @@ describe('TaskViewToggle Component', () => {
       );
 
       const tablist = screen.getByRole('tablist');
-      // Tamagui uses atomic CSS classes, verify the component renders correctly
+      // Theme uses atomic CSS classes, verify the component renders correctly
       expect(tablist).toBeInTheDocument();
     });
   });

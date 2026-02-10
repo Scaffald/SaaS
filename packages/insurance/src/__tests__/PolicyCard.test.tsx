@@ -1,12 +1,11 @@
 /**
  * PolicyCard Component Tests
- * REQ-288: Beyond UI Component Library
  */
 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-// Mock Tamagui before importing component
+// Legacy UI mock (tamagui) before importing component
 vi.mock('tamagui', async () => {
   const React = await import('react')
   return {

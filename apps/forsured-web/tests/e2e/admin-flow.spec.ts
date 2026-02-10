@@ -507,7 +507,7 @@ test.describe('Admin User Flow', () => {
 
   test('Admin sidebar navigation works correctly', async ({ page }) => {
     // Verify all sidebar links are present and work
-    // Note: Tamagui's as="nav" may not render actual <nav> element on web,
+    // Note: UI's as="nav" may not render actual <nav> element on web,
     // so we use link text directly with getByRole or href-based selector
     const sidebarLinks = [
       { label: 'Dashboard', url: /admin\/dashboard/ },

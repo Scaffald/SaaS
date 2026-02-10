@@ -65,7 +65,7 @@ describe('RiskCalculationService', () => {
   });
 
   describe('getRiskColor', () => {
-    it('should return correct Tamagui color tokens', () => {
+    it('should return correct theme color tokens', () => {
       expect(service.getRiskColor('low')).toBe('$green10');
       expect(service.getRiskColor('medium')).toBe('$yellow10');
       expect(service.getRiskColor('high')).toBe('$orange10');
@@ -74,7 +74,7 @@ describe('RiskCalculationService', () => {
   });
 
   describe('getRiskBackgroundColor', () => {
-    it('should return correct Tamagui background color tokens', () => {
+    it('should return correct theme background color tokens', () => {
       expect(service.getRiskBackgroundColor('low')).toBe('$green3');
       expect(service.getRiskBackgroundColor('medium')).toBe('$yellow3');
       expect(service.getRiskBackgroundColor('high')).toBe('$orange3');

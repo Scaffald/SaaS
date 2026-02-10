@@ -227,7 +227,7 @@ vi.mock('../components', () => ({
   ),
 }))
 
-// Mock Tamagui components
+// Legacy UI mock (tamagui)
 vi.mock('tamagui', () => {
   const Stack = ({
     children,

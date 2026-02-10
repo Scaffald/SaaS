@@ -60,7 +60,7 @@ if (typeof File !== 'undefined' && !File.prototype.arrayBuffer) {
   };
 }
 
-// Mock window.matchMedia for Tamagui components (used by Select, etc.)
+// Mock window.matchMedia for theme/UI components (used by Select, etc.)
 if (typeof window !== 'undefined' && !window.matchMedia) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,

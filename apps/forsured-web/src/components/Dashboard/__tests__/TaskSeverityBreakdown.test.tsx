@@ -2,7 +2,7 @@
  * REQ-266: Task Correlation with Compliance Score
  * Tests for TaskSeverityBreakdown component
  * 
- * Note: Component uses Tamagui primitives which render with Tamagui-specific classes
+ * Note: Component uses theme primitives which render with theme-specific classes
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -150,7 +150,7 @@ describe('TaskSeverityBreakdown', () => {
 
       const { container } = render(<TaskSeverityBreakdown tasks={tasks} onClick={onClick} />);
 
-      // Tamagui components use onPress which renders with cursor:pointer when clickable
+      // Theme components use onPress which renders with cursor:pointer when clickable
       const widget = container.firstChild as HTMLElement;
       // Verify the component renders with cursor-pointer style (indicating it's clickable)
       expect(widget).toBeTruthy();

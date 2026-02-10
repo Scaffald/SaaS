@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import type { CSSProperties, ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-// Mock Tamagui components before import
+// Legacy UI mock (tamagui) before import
 vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {

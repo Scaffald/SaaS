@@ -1,14 +1,12 @@
 /**
  * GLSubLimitsTable Component Tests - @frs/insurance
- * REQ-280: Insurance Coverage Detail Requirements
- * TASK-3: Create GL Sub-Limits Display Component with Validation Indicators
  */
 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { GLSubLimitsTable, type GLSubLimitItem } from '../GLSubLimitsTable'
 
-// Mock Tamagui's styled components for testing
+// Legacy UI mock (tamagui styled) for testing
 vi.mock('tamagui', async () => {
   const React = await import('react')
   return {

@@ -7,7 +7,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ParticipantsFilter, type FilterOption } from '../ParticipantsFilter';
 
-// Mock Tamagui
+// Legacy UI mock (tamagui)
 vi.mock('tamagui', async () => {
   const React = await import('react');
   return {

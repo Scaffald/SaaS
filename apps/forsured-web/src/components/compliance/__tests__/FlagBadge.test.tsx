@@ -149,7 +149,7 @@ describe('FlagBadge Component', () => {
         />
       );
 
-      // Tamagui uses atomic CSS, check that badge renders with critical severity
+      // Theme uses atomic CSS, check that badge renders with critical severity
       expect(screen.getByLabelText(/Policy Flag: Critical severity/i)).toBeInTheDocument();
     });
 

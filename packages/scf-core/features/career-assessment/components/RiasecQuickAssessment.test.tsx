@@ -4,7 +4,7 @@ import { RiasecQuickAssessment } from './RiasecQuickAssessment'
 import { careerAssessmentDefaults, type RiasecScores } from '../config/career-assessment-schema'
 import { renderWithProviders } from '@test-helpers/test-utils'
 
-// Mock Tamagui components
+// Legacy UI mock (tamagui)
 vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {

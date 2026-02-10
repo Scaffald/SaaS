@@ -76,7 +76,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   ),
 }))
 
-// Mock Tamagui components
+// Legacy UI mock (tamagui)
 vi.mock('tamagui', () => {
   const Stack = ({
     children,

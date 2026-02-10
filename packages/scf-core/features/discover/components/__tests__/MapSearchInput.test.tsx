@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const selectHandler = vi.fn()
 const closeHandler = vi.fn()
 
-// Mock Tamagui before imports
+// Legacy UI mock (tamagui) before imports
 vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }

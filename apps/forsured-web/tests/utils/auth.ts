@@ -56,7 +56,7 @@ export async function waitForProfileReady(page: Page, userType: string, timeout 
   console.log(`[Auth] Waiting for profile to be ready (${userType})...`);
 
   try {
-    // Wait for dashboard content - Tamagui uses Text components, not semantic headings
+    // Wait for dashboard content - UI uses Text components, not semantic headings
     // We wait for the sidebar navigation OR dashboard text to be visible
     // These only render when ProtectedRoute allows access (profile loaded)
     await page.waitForFunction(

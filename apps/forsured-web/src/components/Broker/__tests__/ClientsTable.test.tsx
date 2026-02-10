@@ -97,7 +97,7 @@ describe('ClientsTable', () => {
       );
 
       const links = screen.getAllByTestId('client-name-link');
-      // Check that the link has blue color styling (Tamagui uses CSS variables)
+      // Check that the link has blue color styling (theme uses CSS variables)
       const linkStyle = window.getComputedStyle(links[0]);
       expect(linkStyle.color).toBeTruthy();
       // Verify link is rendered and clickable

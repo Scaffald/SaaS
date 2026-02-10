@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 const mockScrollToCard = vi.fn()
 
-// Mock Tamagui before imports
+// Legacy UI mock (tamagui) before imports
 vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }

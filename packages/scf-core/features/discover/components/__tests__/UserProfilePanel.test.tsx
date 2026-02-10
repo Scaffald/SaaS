@@ -75,7 +75,7 @@ vi.mock('@scf/core/constants/routes', () => ({
   },
 }))
 
-// Mock Tamagui components
+// Legacy UI mock (tamagui)
 vi.mock('tamagui', () => {
   const Stack = ({
     children,

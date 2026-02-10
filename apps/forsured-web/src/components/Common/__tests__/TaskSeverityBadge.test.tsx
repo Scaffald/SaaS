@@ -1,5 +1,5 @@
 /**
- * REQ-266: Task Correlation with Compliance Score
+ * Task severity and compliance correlation
  * Tests for TaskSeverityBadge component
  */
 
@@ -104,7 +104,7 @@ describe('TaskSeverityBadge', () => {
     it('should render with custom className prop', () => {
       render(<TaskSeverityBadge severity="critical" className="custom-class" />);
 
-      // Tamagui may not directly apply className - verify component renders correctly
+      // Theme components may not apply className - verify component renders correctly
       expect(screen.getByText('Critical')).toBeInTheDocument();
     });
   });
@@ -208,7 +208,7 @@ describe('CompactSeverityIndicator', () => {
   it('should render with custom className prop', () => {
     render(<CompactSeverityIndicator severity="high" className="custom-class" />);
 
-    // Verify component renders - Tamagui may not apply className directly
+    // Verify component renders - theme components may not apply className directly
     expect(document.querySelector('svg')).toBeInTheDocument();
   });
 });

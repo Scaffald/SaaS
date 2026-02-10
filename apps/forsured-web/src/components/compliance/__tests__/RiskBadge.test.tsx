@@ -70,7 +70,7 @@ describe('RiskBadge Component', () => {
   describe('Icon Display', () => {
     it('should show icon by default', () => {
       render(<RiskBadge level="critical" />);
-      // Icon should be rendered (we can't test SVG content directly with Tamagui)
+      // Icon should be rendered (we can't test SVG content directly here)
       expect(screen.getByText('CRITICAL')).toBeInTheDocument();
     });
 

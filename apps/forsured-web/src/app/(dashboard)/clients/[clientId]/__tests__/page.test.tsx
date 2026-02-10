@@ -318,7 +318,7 @@ describe('ClientProfilePage', () => {
       renderWithRouter();
 
       const gcLink = screen.getByTestId('gc-name-link');
-      // Tamagui uses color tokens, not className - just verify link exists
+      // Theme uses color tokens, not className - just verify link exists
       expect(gcLink).toBeInTheDocument();
     });
   });
@@ -493,7 +493,7 @@ describe('ClientProfilePage', () => {
       renderWithRouter();
 
       const container = screen.getByTestId('client-profile-container');
-      // Tamagui uses props instead of className - verify container exists
+      // Theme uses props instead of className - verify container exists
       expect(container).toBeInTheDocument();
     });
 
@@ -501,7 +501,7 @@ describe('ClientProfilePage', () => {
       renderWithRouter();
 
       const innerContainer = screen.getByTestId('client-profile-content');
-      // Tamagui uses maxWidth prop instead of className - verify container exists
+      // Theme uses maxWidth prop instead of className - verify container exists
       expect(innerContainer).toBeInTheDocument();
     });
   });
@@ -525,7 +525,7 @@ describe('ClientProfilePage', () => {
       const h1 = screen.getByRole('heading', { level: 1 });
       expect(h1).toHaveTextContent('Client Profile');
 
-      // Tamagui H3 components render as h3, not h2
+      // H3 components render as h3, not h2
       const h3s = screen.getAllByRole('heading', { level: 3 });
       expect(h3s.length).toBeGreaterThanOrEqual(3);
     });

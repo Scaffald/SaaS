@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import { vi } from 'vitest';
 
 /**
- * Comprehensive Tamagui mock that includes all commonly used components
- * This should be used in tests that need Tamagui components
+ * Legacy UI mock (Tamagui-compatible) for tests that still depend on it.
+ * New tests should use Beyond UI and theme-setup instead.
  */
 export const createTamaguiMock = () => {
   const createComponent =
