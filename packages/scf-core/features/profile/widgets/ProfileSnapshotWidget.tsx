@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
@@ -12,7 +13,7 @@ import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@unicor
  */
 export function ProfileSnapshotWidget() {
   const router = useRouter()
-  const { data: user } = api.profile.general.useUser.useQuery()
+  const { data: user } = useCurrentUser()
 
   // Fetch all data needed for snapshot
   const { data: generalInfo, isLoading: loadingGeneral } =

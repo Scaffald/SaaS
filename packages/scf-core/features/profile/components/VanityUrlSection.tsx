@@ -1,3 +1,5 @@
+import { useSlugHistory, useUpdateSlugMutation } from '@scf/core/utils/profile-general-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { api } from '@scf/core/utils/api'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
@@ -31,7 +33,7 @@ export function VanityUrlSection() {
     suggestions?: string[]
   }>({})
 
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Get current user's profile data
   const {
@@ -41,13 +43,13 @@ export function VanityUrlSection() {
   } = api.profile.widgets.getGeneralInfo.useQuery()
 
   // Get slug history
-  const { data: slugHistory, refetch: refetchHistory } =
-    api.profile.vanity.getSlugHistory.useQuery()
+  const { data: slugHistory, refetch: refetchHistory } = useSlugHistory()
 
   // Update slug
-  const updateSlugMutation = api.profile.vanity.updateSlug.useMutation({
+  const updateSlugMutation = useUpdateSlugMutation({
     onSuccess: (data: UpdateSlugResult) => {
-      toast.show('Vanity URL Updated', {
+      toast.show({
+        title: 'Vanity URL Updated',
         message: `Your profile URL has been updated to /u/${data.slug}`,
       })
       setIsEditing(false)
@@ -57,8 +59,7 @@ export function VanityUrlSection() {
       refetchProfile()
       refetchHistory()
       // Invalidate related queries
-      utils.profile.widgets.getGeneralInfo.invalidate()
-      utils.profile.vanity.getSlugHistory.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['profiles'] })
     },
     onError: (error: VanityMutationError) => {
       toast.show({
@@ -186,7 +187,7 @@ export function VanityUrlSection() {
 
     setIsUpdating(true)
     try {
-      await updateSlugMutation.mutateAsync({ slug: normalized })
+      await updateSlugMutation.mutateAsync(normalized)
     } catch (_error) {
       // Error handling is done in mutation onError
     } finally {

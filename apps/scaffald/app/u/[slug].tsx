@@ -10,6 +10,7 @@ import {
   WorkLogPortfolioWidget,
 } from '@scf/core/features/profile/widgets'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
+import { useProfileBySlug } from '@scf/core/utils/profile-general-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -32,8 +33,8 @@ export default function PublicUserProfilePage() {
     data: profileData,
     isLoading,
     error,
-  } = api.profile.vanity.bySlug.useQuery(
-    { slug: slug || '' },
+  } = useProfileBySlug(
+    slug || undefined,
     {
       enabled: !!slug,
       retry: false, // Don't retry on 404

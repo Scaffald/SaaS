@@ -1,6 +1,7 @@
 import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
+import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { supabase } from '@scf/core/utils/supabase/client'
@@ -71,7 +72,7 @@ export const DrawerContent = ({
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
-  const { data: generalProfile } = api.profile.general.getGeneral.useQuery(undefined, {
+  const { data: generalProfile } = useGeneralInfo({
     staleTime: 5 * 60 * 1000,
   })
   const isSmall = width < 1024

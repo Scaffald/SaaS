@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
@@ -134,7 +135,7 @@ export function NewsWidget({
   const headlineLimit = Math.max(1, maxItems)
   const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  const { data: user } = api.profile.general.useUser.useQuery()
+  const { data: user } = useCurrentUser()
   const userId = user?.id
 
   const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(
