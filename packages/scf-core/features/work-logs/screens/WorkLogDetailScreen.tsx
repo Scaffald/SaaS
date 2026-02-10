@@ -1,6 +1,20 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
+import {
+  useWorkLog,
+  useWorkLogConversation,
+  useWorkLogCollaborators,
+  useWorkLogProjectOptions,
+  useAddWorkLogCommentMutation,
+  useExportWorkLogMutation,
+  useAddWorkLogCollaboratorMutation,
+  useUpdateWorkLogCollaboratorMutation,
+  useRemoveWorkLogCollaboratorMutation,
+  useUpdateWorkLogProfileVisibilityMutation,
+  useUpdateWorkLogPhotoVisibilityMutation,
+} from '@scf/core/utils/work-logs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import { buildSkillLookup } from '../utils/data-normalizers'
 import { ToggleSwitch } from '@unicornlove/beyond-ui'
 import {
@@ -60,24 +74,24 @@ export function WorkLogDetailScreen() {
   const { workLogId } = useLocalSearchParams<{ workLogId: string }>()
   const router = useRouter()
   const toast = useToast()
-  const trpcUtils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const workLogQuery = api.workLogs.getById.useQuery(
-    { workLogId: String(workLogId) },
+  const workLogQuery = useWorkLog(
+    workLogId && typeof workLogId === 'string' ? workLogId : undefined,
     { enabled: Boolean(workLogId) }
   )
 
-  const conversationQuery = api.workLogs.getConversation.useQuery(
-    { workLogId: String(workLogId) },
+  const conversationQuery = useWorkLogConversation(
+    workLogId && typeof workLogId === 'string' ? workLogId : undefined,
     { enabled: Boolean(workLogId) }
   )
 
-  const collaboratorsQuery = api.workLogs.getCollaborators.useQuery(
-    { workLogId: String(workLogId) },
+  const collaboratorsQuery = useWorkLogCollaborators(
+    workLogId && typeof workLogId === 'string' ? workLogId : undefined,
     { enabled: Boolean(workLogId) }
   )
 
-  const projectOptionsQuery = api.workLogs.getProjectOptions.useQuery(undefined, {
+  const projectOptionsQuery = useWorkLogProjectOptions(undefined, {
     staleTime: 120_000,
   })
 
@@ -85,7 +99,7 @@ export function WorkLogDetailScreen() {
     staleTime: 120_000,
   })
 
-  const addCommentMutation = api.workLogs.addComment.useMutation({
+  const addCommentMutation = useAddWorkLogCommentMutation({
     onSuccess: () => {
       void conversationQuery.refetch()
       setCommentDraft('')
@@ -99,9 +113,10 @@ export function WorkLogDetailScreen() {
     },
   })
 
-  const exportMutation = api.workLogs.exportWorkLog.useMutation({
+  const exportMutation = useExportWorkLogMutation({
     onSuccess: async (data, variables) => {
-      toast.show('Export ready', {
+      toast.show({
+        title: 'Export ready',
         message: `Download ${variables.format.toUpperCase()} export.`,
       })
       if (data.downloadUrl) {
@@ -121,7 +136,7 @@ export function WorkLogDetailScreen() {
     },
   })
 
-  const addCollaboratorMutation = api.workLogs.addCollaborator.useMutation({
+  const addCollaboratorMutation = useAddWorkLogCollaboratorMutation({
     onSuccess: () => {
       setCollaboratorIdInput('')
       void collaboratorsQuery.refetch()
@@ -139,7 +154,7 @@ export function WorkLogDetailScreen() {
     },
   })
 
-  const updateCollaboratorMutation = api.workLogs.updateCollaborator.useMutation({
+  const updateCollaboratorMutation = useUpdateWorkLogCollaboratorMutation({
     onSuccess: () => {
       void collaboratorsQuery.refetch()
     },
@@ -152,7 +167,7 @@ export function WorkLogDetailScreen() {
     },
   })
 
-  const removeCollaboratorMutation = api.workLogs.removeCollaborator.useMutation({
+  const removeCollaboratorMutation = useRemoveWorkLogCollaboratorMutation({
     onSuccess: () => {
       void collaboratorsQuery.refetch()
       toast.show({
@@ -169,10 +184,13 @@ export function WorkLogDetailScreen() {
     },
   })
 
-  const updateProfileVisibilityMutation = api.workLogs.updateProfileVisibility.useMutation({
+  const updateProfileVisibilityMutation = useUpdateWorkLogProfileVisibilityMutation({
     onSuccess: async () => {
-      toast.show('Profile visibility updated')
-      await Promise.all([workLogQuery.refetch(), trpcUtils.workLogs.list.invalidate()])
+      toast.show({ title: 'Profile visibility updated' })
+      await Promise.all([
+        workLogQuery.refetch(),
+        queryClient.invalidateQueries({ queryKey: ['workLogs', 'list'] })
+      ])
     },
     onError: (error) => {
       toast.show({
@@ -183,9 +201,9 @@ export function WorkLogDetailScreen() {
     },
   })
 
-  const updatePhotoVisibilityMutation = api.workLogs.updatePhotoVisibility.useMutation({
+  const updatePhotoVisibilityMutation = useUpdateWorkLogPhotoVisibilityMutation({
     onSuccess: async () => {
-      toast.show('Photo visibility updated')
+      toast.show({ title: 'Photo visibility updated' })
       await workLogQuery.refetch()
     },
     onError: (error) => {
@@ -206,11 +224,11 @@ export function WorkLogDetailScreen() {
   const project = useMemo(() => {
     if (!workLog?.project_id) return null
     return (
-      projectOptionsQuery.data?.projects?.find(
+      projectOptionsQuery.data?.find(
         (candidate) => candidate.id === workLog.project_id
       ) ?? null
     )
-  }, [projectOptionsQuery.data?.projects, workLog?.project_id])
+  }, [projectOptionsQuery.data, workLog?.project_id])
 
   const totalHours = useMemo(() => {
     const raw = workLog?.total_hours
@@ -294,7 +312,7 @@ export function WorkLogDetailScreen() {
     }
     addCommentMutation.mutate({
       workLogId: String(workLogId),
-      message: commentDraft.trim(),
+      content: commentDraft.trim(),
     })
   }
 
@@ -315,32 +333,27 @@ export function WorkLogDetailScreen() {
     addCollaboratorMutation.mutate({
       workLogId: String(workLogId),
       collaboratorUserId: collaboratorIdInput.trim(),
-      permissionLevel: collaboratorPermission,
     })
   }
 
   const handleTogglePermission = (collaborator: CollaboratorRecord) => {
-    const collaboratorUserId = collaborator.collaborator_user_id
-    if (!collaboratorUserId) {
+    const collaboratorId = collaborator.id
+    if (!collaboratorId) {
       return
     }
     const nextLevel = collaborator.permission_level === 'edit' ? 'view' : 'edit'
     updateCollaboratorMutation.mutate({
-      workLogId: String(workLogId),
-      collaboratorUserId,
-      permissionLevel: nextLevel,
+      collaboratorId,
+      role: nextLevel,
     })
   }
 
   const handleRemoveCollaborator = (collaborator: CollaboratorRecord) => {
-    const collaboratorUserId = collaborator.collaborator_user_id
-    if (!collaboratorUserId) {
+    const collaboratorId = collaborator.id
+    if (!collaboratorId) {
       return
     }
-    removeCollaboratorMutation.mutate({
-      workLogId: String(workLogId),
-      collaboratorUserId,
-    })
+    removeCollaboratorMutation.mutate(collaboratorId)
   }
 
   const conversation = (conversationQuery.data ?? []) as ConversationEntryRecord[]
@@ -349,8 +362,8 @@ export function WorkLogDetailScreen() {
   const includeOnProfile = Boolean(workLog?.show_on_profile)
   const showDateRange = Boolean(workLog?.show_date_range_on_profile)
   const isPublicVisibility = workLog?.visibility === 'public'
-  const visibilityMutationPending = updateProfileVisibilityMutation.isLoading
-  const photoVisibilityMutationPending = updatePhotoVisibilityMutation.isLoading
+  const visibilityMutationPending = updateProfileVisibilityMutation.isPending
+  const photoVisibilityMutationPending = updatePhotoVisibilityMutation.isPending
 
   const handleShowOnProfileToggle = (next: boolean) => {
     if (!workLogId) return
@@ -376,10 +389,10 @@ export function WorkLogDetailScreen() {
     })
   }
 
-  const handlePhotoVisibilityToggle = (photoId: string, showOnProfileValue: boolean) => {
+  const handlePhotoVisibilityToggle = (photoId: string, visibility: 'private' | 'organization' | 'public') => {
     updatePhotoVisibilityMutation.mutate({
       photoId,
-      showOnProfile: showOnProfileValue,
+      visibility,
     })
   }
 
@@ -650,7 +663,7 @@ export function WorkLogDetailScreen() {
                     key={collaborator.id}
                     collaborator={collaborator}
                     isUpdating={
-                      updateCollaboratorMutation.isLoading || removeCollaboratorMutation.isLoading
+                      updateCollaboratorMutation.isPending || removeCollaboratorMutation.isPending
                     }
                     onTogglePermission={() => handleTogglePermission(collaborator)}
                     onRemove={() => handleRemoveCollaborator(collaborator)}
@@ -687,7 +700,7 @@ export function WorkLogDetailScreen() {
               <Button
                 size="$3"
                 icon={Users}
-                loading={addCollaboratorMutation.isLoading}
+                loading={addCollaboratorMutation.isPending}
                 onPress={handleAddCollaborator}
               >
                 Add collaborator
@@ -735,7 +748,7 @@ export function WorkLogDetailScreen() {
               <Button
                 size="$3"
                 icon={MessageSquare}
-                loading={addCommentMutation.isLoading}
+                loading={addCommentMutation.isPending}
                 onPress={handleAddComment}
               >
                 Post message
@@ -757,7 +770,7 @@ export function WorkLogDetailScreen() {
               <Button
                 size="$4"
                 icon={DownloadCloud}
-                loading={exportMutation.isLoading && exportMutation.variables?.format === 'pdf'}
+                loading={exportMutation.isPending && exportMutation.variables?.format === 'pdf'}
                 onPress={() =>
                   exportMutation.mutate({
                     workLogId: String(workLogId),
@@ -771,7 +784,7 @@ export function WorkLogDetailScreen() {
                 size="$4"
                 icon={DownloadCloud}
                 variant="outlined"
-                loading={exportMutation.isLoading && exportMutation.variables?.format === 'csv'}
+                loading={exportMutation.isPending && exportMutation.variables?.format === 'csv'}
                 onPress={() =>
                   exportMutation.mutate({
                     workLogId: String(workLogId),
