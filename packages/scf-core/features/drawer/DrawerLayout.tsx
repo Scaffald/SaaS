@@ -1,5 +1,11 @@
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
-import { api } from '@scf/core/utils/api'
+import {
+  useNotificationPreferences,
+  useNotifications,
+  useUnreadCount,
+  useMarkAsReadMutation,
+} from '@scf/core/utils/notifications-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { shadows, useThemeContext, useWindowDimensions, Row } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
@@ -37,7 +43,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
-  const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
+  const { data: preferencesData } = useNotificationPreferences({
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
   })
@@ -49,20 +55,20 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const { data: notificationsData, isLoading: _isLoadingNotifications } =
-    api.notifications.list.useQuery({ limit: 25 })
+  const { data: notificationsData, isPending: _isLoadingNotifications } =
+    useNotifications({ limit: 25 })
 
   // Fetch unread count
-  const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
+  const { data: unreadCountData } = useUnreadCount()
   const _unreadCount = unreadCountData?.count || 0
 
   // Mark as read mutation
-  const utils = api.useUtils()
-  const markAsReadMutation = api.notifications.markAsRead.useMutation({
+  const queryClient = useQueryClient()
+  const markAsReadMutation = useMarkAsReadMutation({
     onSuccess: () => {
       // Invalidate and refetch notifications and unread count
-      utils.notifications.list.invalidate()
-      utils.notifications.getUnreadCount.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
     },
   })
 

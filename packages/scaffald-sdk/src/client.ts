@@ -23,6 +23,7 @@ import { Certifications } from './resources/certifications.js'
 import { ProfileWidgets } from './resources/profile-widgets.js'
 import { ProfileCompletion } from './resources/profile-completion.js'
 import { ProfileImport } from './resources/profile-import.js'
+import { Notifications } from './resources/notifications.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -50,6 +51,7 @@ export class Scaffald {
   public readonly profileWidgets: ProfileWidgets
   public readonly profileCompletion: ProfileCompletion
   public readonly profileImport: ProfileImport
+  public readonly notifications: Notifications
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -85,6 +87,7 @@ export class Scaffald {
     this.profileWidgets = new ProfileWidgets(this.http)
     this.profileCompletion = new ProfileCompletion(this.http)
     this.profileImport = new ProfileImport(this.http)
+    this.notifications = new Notifications(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

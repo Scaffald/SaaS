@@ -1,6 +1,17 @@
 import { SiteOverlapNotification } from '@scf/core/features/notifications/components/SiteOverlapNotification'
 import { AccountDeletionPanel } from '@scf/core/features/profile/components/AccountDeletionPanel'
-import { api } from '@scf/core/utils/api'
+import {
+  useNotificationPreferences,
+  useSavePreferencesMutation,
+  useInfiniteNotifications,
+  useUnreadCount,
+  useNotificationDevices,
+  useMarkManyReadMutation,
+  useMarkManyUnreadMutation,
+  useArchiveManyMutation,
+  useRestoreManyMutation,
+} from '@scf/core/utils/notifications-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from 'lucide-react-native'
 import {
   Button,
@@ -158,28 +169,26 @@ function mapNotification(apiNotification: ApiNotification): NotificationItem {
 
 export default function NotificationsCenterScreen() {
   const router = useRouter()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const [filter, setFilter] = useState<'all' | 'unread' | 'archived'>('all')
-  const preferencesQuery = api.notifications.preferences.get.useQuery()
-  const savePreferencesMutation = api.notifications.preferences.save.useMutation({
+  const preferencesQuery = useNotificationPreferences()
+  const savePreferencesMutation = useSavePreferencesMutation({
     onSuccess: () => {
-      utils.notifications.preferences.get.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'preferences'] })
     },
   })
 
-  const notificationsQuery = api.notifications.list.useInfiniteQuery(
+  const notificationsQuery = useInfiniteNotifications(
     { limit: 25, status: filter },
     {
-      getNextPageParam: (lastPage: { nextCursor?: string | null }) =>
-        lastPage?.nextCursor ?? undefined,
       placeholderData: (previousData) => previousData,
     }
   )
 
-  const unreadCountQuery = api.notifications.getUnreadCount.useQuery(undefined, {
+  const unreadCountQuery = useUnreadCount({
     refetchOnMount: false,
   })
-  const devicesQuery = api.notifications.devices.list.useQuery(undefined, {
+  const devicesQuery = useNotificationDevices({
     refetchOnMount: false,
   })
 
@@ -194,26 +203,34 @@ export default function NotificationsCenterScreen() {
 
   const deviceRows: DeviceRow[] = devicesQuery.data ?? []
 
-  const markReadMutation = api.notifications.markManyRead.useMutation({
+  const markReadMutation = useMarkManyReadMutation({
     onSuccess: () => {
-      utils.notifications.list.invalidate()
-      utils.notifications.getUnreadCount.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
     },
   })
 
-  const markUnreadMutation = api.notifications.markManyUnread.useMutation({
+  const markUnreadMutation = useMarkManyUnreadMutation({
     onSuccess: () => {
-      utils.notifications.list.invalidate()
-      utils.notifications.getUnreadCount.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
     },
   })
 
-  const archiveMutation = api.notifications.archiveMany.useMutation({
-    onSuccess: () => utils.notifications.list.invalidate(),
+  const archiveMutation = useArchiveManyMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
+    },
   })
 
-  const restoreMutation = api.notifications.restoreMany.useMutation({
-    onSuccess: () => utils.notifications.list.invalidate(),
+  const restoreMutation = useRestoreManyMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
+    },
   })
 
   const notifications: NotificationItem[] = useMemo(

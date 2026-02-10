@@ -180,6 +180,31 @@ export type {
   ClearImportDataResponse,
 } from './resources/profile-import.js'
 
+export type {
+  NotificationStatus,
+  NotificationSeverity,
+  NotificationChannel,
+  DigestFrequency,
+  DevicePlatform,
+  Notification,
+  ListNotificationsParams,
+  ListNotificationsResponse,
+  UnreadCountResponse,
+  MarkAsReadParams,
+  MarkAsUnreadParams,
+  BulkIdsParams,
+  SuccessResponse,
+  MarkAllAsReadResponse,
+  QuietHours,
+  ChannelSettings,
+  TypeOverride,
+  NotificationPreferences,
+  SavePreferencesParams,
+  NotificationDevice,
+  RegisterDeviceParams,
+  RemoveDeviceParams,
+} from './resources/notifications.js'
+
 export type { Industry, IndustryListResponse } from './resources/industries.js'
 
 export type {
