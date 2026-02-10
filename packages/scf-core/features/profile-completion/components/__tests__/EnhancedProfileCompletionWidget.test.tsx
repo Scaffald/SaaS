@@ -22,7 +22,7 @@ vi.mock('../MilestoneBadge', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),

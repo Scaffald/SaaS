@@ -5,7 +5,7 @@ import { careerAssessmentDefaults, type RiasecScores } from '../config/career-as
 import { renderWithProviders } from '@test-helpers/test-utils'
 
 // Mock Tamagui components
-vi.mock('@unicornlove/ui', async () => {
+vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {
     Slider: {

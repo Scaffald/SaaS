@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const SelectChangeContext = createContext<(value: string) => void>(() => {})
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   Row: ({ children }: { children: ReactNode }) => <div data-testid="xstack">{children}</div>,
   Stack: ({ children }: { children: ReactNode }) => <div data-testid="ystack">{children}</div>,
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,

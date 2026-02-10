@@ -58,7 +58,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   Save: () => <span data-testid="save-icon" />,
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   IconSelector: ({
     value,
     onChange,

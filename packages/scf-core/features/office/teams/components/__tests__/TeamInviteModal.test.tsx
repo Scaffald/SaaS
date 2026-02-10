@@ -25,7 +25,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   useToast: () => ({ show: mockShow }),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   ResponsiveModal: ({
     open,
     children,

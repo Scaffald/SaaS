@@ -104,7 +104,7 @@ vi.mock('@scf/core/features/career-assessment/components/RiasecQuickAssessment',
 }))
 
 // Mock Button
-vi.mock('@unicornlove/ui', async () => {
+vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {
     Button: ({ children, onPress, disabled, ...props }: {

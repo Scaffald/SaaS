@@ -44,7 +44,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   }),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   AddressAutocomplete: ({
     value,
     onChange,

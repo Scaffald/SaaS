@@ -231,7 +231,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   ResponsiveSelect: ({
     value,
     onValueChange,

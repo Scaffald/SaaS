@@ -36,7 +36,7 @@ vi.mock('@scf/core/utils/api', () => ({
 }))
 
 // Mock Tamagui components
-vi.mock('@unicornlove/ui', async () => {
+vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {
     Input: ({ value, onChangeText, onFocus, onBlur, placeholder, disabled, ...props }: {

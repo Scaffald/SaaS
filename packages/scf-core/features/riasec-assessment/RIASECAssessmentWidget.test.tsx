@@ -23,7 +23,7 @@ vi.mock('@scf/core/utils/api', () => ({
 }))
 
 // Mock Tamagui components
-vi.mock('@unicornlove/ui', async () => {
+vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {
     Button: ({ children, onPress, ...props }: { children: React.ReactNode; onPress?: () => void; [key: string]: unknown }) => (

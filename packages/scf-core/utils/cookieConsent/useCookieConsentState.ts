@@ -1,6 +1,6 @@
 /**
  * Reads cookie consent state from storage (same key as the cookie consent UI provider).
- * Use this in AuthProvider so core does not depend on @unicornlove/ui for consent.
+ * Use this in AuthProvider so core does not depend on @unicornlove/beyond-ui for consent.
  * Requires CookieConsentProvider (or equivalent) to have written state to storage.
  */
 

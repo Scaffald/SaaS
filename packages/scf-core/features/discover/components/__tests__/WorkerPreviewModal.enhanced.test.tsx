@@ -83,7 +83,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   ResponsiveModal: (props: { children: ReactNode; open: boolean; title: string }) =>
     props.open ? (
       <div data-testid="worker-preview-modal">

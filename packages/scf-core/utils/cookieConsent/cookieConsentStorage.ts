@@ -1,7 +1,7 @@
 /**
  * Cookie consent storage reader used by useCookieConsentState.
  * Reads from the same key as the cookie consent UI provider (scf-cookie-consent)
- * so AuthProvider can use consent state without depending on @unicornlove/ui.
+ * so AuthProvider can use consent state without depending on @unicornlove/beyond-ui.
  */
 
 export const COOKIE_CONSENT_STORAGE_KEY = 'scf-cookie-consent'
