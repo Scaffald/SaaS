@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { usePendingConnections } from '@scf/core/utils/engagement-sdk-hooks'
 import { Tab, TabGroup } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
 import { Tabs, Text, Stack } from '@unicornlove/beyond-ui'
@@ -13,13 +13,11 @@ export function ConnectionsManagementPage() {
   const [activeTab, setActiveTab] = useState<TabValue>('connections')
 
   // Fetch pending requests count for badge
-  const { data: pendingRequests } = api.connections.getPendingRequests.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
+  const { data: pendingData } = usePendingConnections()
 
   const pendingReceivedCount = useMemo(
-    () => pendingRequests?.received.length || 0,
-    [pendingRequests?.received.length]
+    () => pendingData?.received.length || 0,
+    [pendingData?.received.length]
   )
 
   return (
