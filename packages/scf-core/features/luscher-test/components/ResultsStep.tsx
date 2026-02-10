@@ -1,6 +1,6 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useCallback, useEffect, useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 
 export interface ResultsStepProps {
   feedbackMessage?: string
@@ -169,9 +169,9 @@ export function ResultsStep({
   }, [canViewResults, interpretation, isLoadingInterpretation, loadError, loadInterpretation])
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
+    <Stack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
       {/* Feedback Message */}
-      <YStack
+      <Stack
         gap="$4"
         padding="$6"
         backgroundColor="$color2"
@@ -185,10 +185,10 @@ export function ResultsStep({
         <Text fontSize="$4" color="$color11" lineHeight="$5">
           {feedbackMessage}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Results Content */}
-      <YStack
+      <Stack
         gap="$4"
         padding="$6"
         backgroundColor="$color1"
@@ -215,7 +215,7 @@ export function ResultsStep({
         )}
 
         {interpretation && !isLoadingInterpretation && !loadError && (
-          <YStack gap="$3">
+          <Stack gap="$3">
             {interpretation.split('\n\n').map((paragraph, index) => {
               const paragraphKey = `${paragraph.slice(0, 50)}-${index}`
 
@@ -251,9 +251,9 @@ export function ResultsStep({
                 </Text>
               )
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

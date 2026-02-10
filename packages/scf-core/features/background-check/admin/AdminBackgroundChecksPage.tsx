@@ -8,8 +8,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, Spinner, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Tabs, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -191,7 +191,7 @@ export function AdminBackgroundChecksPage() {
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }) => (
-          <YStack>
+          <Stack>
             <Text fontSize="$3" fontWeight="600" color="$color12">
               {row.original.workerName}
             </Text>
@@ -200,7 +200,7 @@ export function AdminBackgroundChecksPage() {
                 {row.original.workerEmail}
               </Text>
             ) : null}
-          </YStack>
+          </Stack>
         ),
       },
       {
@@ -252,7 +252,7 @@ export function AdminBackgroundChecksPage() {
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }) => (
-          <YStack>
+          <Stack>
             <Text fontSize="$3" fontWeight="600" color="$color12">
               {row.original.workerName}
             </Text>
@@ -261,7 +261,7 @@ export function AdminBackgroundChecksPage() {
                 {row.original.workerEmail}
               </Text>
             ) : null}
-          </YStack>
+          </Stack>
         ),
       },
       {
@@ -315,18 +315,18 @@ export function AdminBackgroundChecksPage() {
 
   if (isLoadingRoles) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color11">
           Verifying admin access…
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!isAdmin) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           Admin access required
         </Text>
@@ -341,23 +341,23 @@ export function AdminBackgroundChecksPage() {
         >
           Go to organization background checks
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$4">
-        <YStack gap="$2">
+    <Stack flex={1} backgroundColor="$background">
+      <Stack padding="$4" gap="$4">
+        <Stack gap="$2">
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Background check administration
           </Text>
           <Text fontSize="$3" color="$color10">
             Review in-progress screenings, resolve disputes, and keep results compliant.
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack gap="$3" flexWrap="wrap">
+        <Row gap="$3" flexWrap="wrap">
           <Card
             padding="$3"
             backgroundColor="$color2"
@@ -403,7 +403,7 @@ export function AdminBackgroundChecksPage() {
               {summaryStats.total}
             </Text>
           </Card>
-        </XStack>
+        </Row>
 
         <Tabs
           value={activeTab}
@@ -417,7 +417,7 @@ export function AdminBackgroundChecksPage() {
             backgroundColor="$background"
             scrollable
           >
-            <XStack gap="$3" paddingHorizontal="$2">
+            <Row gap="$3" paddingHorizontal="$2">
               <Tabs.Tab
                 value="checks"
                 borderBottomWidth={activeTab === 'checks' ? 2 : 0}
@@ -463,13 +463,13 @@ export function AdminBackgroundChecksPage() {
               >
                 Audit Log
               </Tabs.Tab>
-            </XStack>
+            </Row>
           </Tabs.List>
         </Tabs>
 
         {activeTab === 'checks' ? (
-          <XStack gap="$3" flexWrap="wrap" justifyContent="space-between" alignItems="center">
-            <XStack gap="$2" alignItems="center">
+          <Row gap="$3" flexWrap="wrap" justifyContent="space-between" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <ResponsiveSelect
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as 'all' | BackgroundCheckStatus)}
@@ -488,7 +488,7 @@ export function AdminBackgroundChecksPage() {
               >
                 Refresh
               </Button>
-            </XStack>
+            </Row>
             <Button
               size="$3"
               variant="outlined"
@@ -496,11 +496,11 @@ export function AdminBackgroundChecksPage() {
             >
               Organization view
             </Button>
-          </XStack>
+          </Row>
         ) : null}
 
         {activeTab === 'disputes' ? (
-          <XStack gap="$2">
+          <Row gap="$2">
             <Button
               size="$3"
               variant="outlined"
@@ -510,9 +510,9 @@ export function AdminBackgroundChecksPage() {
             >
               Refresh disputes
             </Button>
-          </XStack>
+          </Row>
         ) : null}
-      </YStack>
+      </Stack>
 
       {activeTab === 'checks' ? (
         <OfficePageLayout
@@ -557,19 +557,19 @@ export function AdminBackgroundChecksPage() {
       ) : null}
 
       {activeTab === 'metrics' ? (
-        <YStack paddingHorizontal="$4" paddingBottom="$4">
+        <Stack paddingHorizontal="$4" paddingBottom="$4">
           <AdminMetricsPanel
             metrics={metricsQuery.data}
             isLoading={metricsQuery.isLoading}
             onRefresh={() => void metricsQuery.refetch()}
           />
-        </YStack>
+        </Stack>
       ) : null}
 
       {activeTab === 'catalog' ? (
-        <YStack paddingHorizontal="$4" paddingBottom="$4">
+        <Stack paddingHorizontal="$4" paddingBottom="$4">
           <AdminCatalogManager />
-        </YStack>
+        </Stack>
       ) : null}
 
       {activeTab === 'audit' ? (
@@ -603,6 +603,6 @@ export function AdminBackgroundChecksPage() {
         }}
         onResolved={() => setSelectedDispute(null)}
       />
-    </YStack>
+    </Stack>
   )
 }

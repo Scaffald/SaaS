@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api';
-import { useToastController } from '@tamagui/toast';
+import { useToast } from '@unicornlove/beyond-ui';
 import { useCallback, useMemo, useRef } from 'react';
 import type { ParentSkill } from '../types/profile-skills-types';
 import {
@@ -39,7 +39,7 @@ interface UseProfileSkillsMutationsReturn {
  * Handles adding, removing skills, and updating primary industry
  */
 export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
-  const toast = useToastController();
+  const toast = useToast();
   const utils = api.useContext();
 
   // Store skill details for optimistic updates (accessed in onMutate)
@@ -115,15 +115,18 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
         }
         // Clear ref on error
         pendingSkillDetailsRef.current = null;
-        toast.show("Error", {
+        toast.show({
+          title: "Error",
           message: error instanceof Error
             ? error.message
             : "Failed to add skill",
+          variant: 'error',
         });
         failProfileSync();
       },
       onSuccess: async () => {
-        toast.show("Skill Added", {
+        toast.show({
+          title: "Skill Added",
           message: "Skill has been added to your profile!",
         });
         // Invalidate to get real server data (replaces temporary ID)
@@ -154,16 +157,19 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
         startProfileSync();
       },
       onSuccess: async () => {
-        toast.show("Industry Updated", {
+        toast.show({
+          title: "Industry Updated",
           message: "Your primary industry has been updated",
         });
         await invalidateProfileQueries(utils);
       },
       onError: (error: unknown) => {
-        toast.show("Error", {
+        toast.show({
+          title: "Error",
           message: error instanceof Error
             ? error.message
             : "Failed to update industry",
+          variant: 'error',
         });
         failProfileSync();
       },

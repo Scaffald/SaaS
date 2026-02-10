@@ -1,7 +1,7 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
 import { api } from '@scf/core/utils/api'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/ui'
+import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/beyond-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useEffect, useMemo, useState } from 'react'
@@ -12,9 +12,9 @@ import {
   Tabs,
   Text,
   useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
@@ -213,7 +213,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     <>
       {/* Bulk Action Bar */}
       {selectedApplicationIds.size > 0 && (
-        <XStack
+        <Row
           gap="$3"
           padding="$3"
           backgroundColor="$blue2"
@@ -228,7 +228,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
             selected
           </Text>
-          <XStack gap="$2" flexWrap="wrap" $sm={{ width: '100%', flexDirection: 'column' }}>
+          <Row gap="$2" flexWrap="wrap" $sm={{ width: '100%', flexDirection: 'column' }}>
             <Button size="$3" variant="outlined" onPress={clearSelection} $sm={{ width: '100%' }}>
               Clear
             </Button>
@@ -257,8 +257,8 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             >
               Send Inquiry to {selectedApplicationIds.size}
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       )}
 
       <DndContext
@@ -274,7 +274,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}
           >
             <Tabs.List
-              separator={<YStack width="$1" />}
+              separator={<Stack width="$1" />}
               disablePassBorderRadius="bottom"
               aria-label="Kanban column navigation"
               $sm={{ flexWrap: 'wrap' }}
@@ -284,7 +284,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   <Text fontSize="$3" fontWeight="600" numberOfLines={1}>
                     {STATUS_LABELS[status]}
                   </Text>
-                  <YStack
+                  <Stack
                     backgroundColor="$color5"
                     paddingHorizontal="$2"
                     paddingVertical="$1"
@@ -294,7 +294,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     <Text fontSize="$1" fontWeight="600" color="$color11">
                       {groupedApplications[status].length}
                     </Text>
-                  </YStack>
+                  </Stack>
                 </Tabs.Tab>
               ))}
             </Tabs.List>
@@ -316,7 +316,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         ) : (
           // Desktop: Horizontal scrolling layout
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <XStack gap="$3" paddingBottom="$4">
+            <Row gap="$3" paddingBottom="$4">
               {STATUSES.map((status) => (
                 <StatusColumn
                   key={status}
@@ -329,7 +329,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   onToggleSelection={toggleApplicationSelection}
                 />
               ))}
-            </XStack>
+            </Row>
           </ScrollView>
         )}
 
@@ -419,7 +419,7 @@ function InquiryComparisonModal({
   }
 
   return (
-    <YStack
+    <Stack
       backgroundColor="$background"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
     >
@@ -428,7 +428,7 @@ function InquiryComparisonModal({
         onClose={onClose}
         onRemoveInquiry={onRemoveInquiry}
       />
-    </YStack>
+    </Stack>
   )
 }
 

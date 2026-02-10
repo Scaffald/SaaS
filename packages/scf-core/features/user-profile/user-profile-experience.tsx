@@ -1,5 +1,5 @@
 import { Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Experience {
   id: string
@@ -27,19 +27,19 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" padding="$5">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$4" padding="$5">
+        <Row gap="$2" alignItems="center">
           <Briefcase size={24} color="$blue10" />
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Work Experience
           </Text>
-        </XStack>
+        </Row>
 
-        <YStack gap="$3">
+        <Stack gap="$3">
           {experience.map((exp) => (
             <Card key={exp.id} bordered backgroundColor="$color2">
-              <YStack gap="$3" padding="$4">
-                <YStack gap="$1">
+              <Stack gap="$3" padding="$4">
+                <Stack gap="$1">
                   <Text fontSize="$6" fontWeight="700" color="$color12">
                     {exp.job_title}
                   </Text>
@@ -48,38 +48,38 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                       {exp.company_name}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <XStack gap="$3" flexWrap="wrap">
+                <Row gap="$3" flexWrap="wrap">
                   {(exp.start_date || exp.end_date) && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <Calendar size={16} color="$color10" />
                       <Text fontSize="$3" color="$color10">
                         {formatDate(exp.start_date)} -{' '}
                         {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
                   {exp.location && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <MapPin size={16} color="$color10" />
                       <Text fontSize="$3" color="$color10">
                         {exp.location}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
-                </XStack>
+                </Row>
 
                 {exp.description && (
                   <Text fontSize="$4" color="$color11" lineHeight={20}>
                     {exp.description}
                   </Text>
                 )}
-              </YStack>
+              </Stack>
             </Card>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

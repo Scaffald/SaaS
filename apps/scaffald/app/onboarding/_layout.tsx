@@ -4,7 +4,7 @@ import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { useRouter } from 'expo-router'
 import { Stack } from 'expo-router/stack'
 import { useEffect } from 'react'
-import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack as UIStack } from '@unicornlove/beyond-ui'
 
 export default function OnboardingLayout() {
   const { isLoading, user } = useProtectedRoute()
@@ -28,10 +28,10 @@ export default function OnboardingLayout() {
   // Show loading state while checking auth or prerequisites
   if (isLoading || isCheckingPrereqs) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center">
+      <UIStack flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
-        <Text marginTop="$4">Loading...</Text>
-      </Stack>
+        <Text marginTop={16}>Loading...</Text>
+      </UIStack>
     )
   }
 

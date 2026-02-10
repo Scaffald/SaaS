@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { Home, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Button, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ErrorFallbackProps {
   error: Error | null
@@ -17,7 +17,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
   }
 
   return (
-    <YStack
+    <Stack
       flex={1}
       justifyContent="center"
       alignItems="center"
@@ -25,7 +25,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
       paddingHorizontal="$4"
       paddingVertical="$6"
     >
-      <YStack gap="$3" alignItems="center" style={{ maxWidth: 480 }} width="100%">
+      <Stack gap="$3" alignItems="center" style={{ maxWidth: 480 }} width="100%">
         <Text fontSize="$9" fontWeight="700" style={{ textAlign: 'center' }}>
           Something went wrong
         </Text>
@@ -33,10 +33,10 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
           We have been notified of the problem and are working on a fix. You can try again or head
           back to the dashboard.
         </Paragraph>
-      </YStack>
+      </Stack>
 
       {__DEV__ && error ? (
-        <YStack
+        <Stack
           width="100%"
           backgroundColor="$red2"
           borderColor="$red6"
@@ -49,17 +49,17 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
           <Text fontSize="$3" color="$red11" style={{ fontFamily: 'monospace' }}>
             {error.message}
           </Text>
-        </YStack>
+        </Stack>
       ) : null}
 
-      <XStack gap="$3">
+      <Row gap="$3">
         <Button theme="blue" icon={RefreshCcw} onPress={onReset}>
           Try Again
         </Button>
         <Button variant="outlined" icon={Home} onPress={handleGoHome}>
           Go to Dashboard
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

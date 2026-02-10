@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { CooldownStep } from './components/CooldownStep'
 import { IPIPTestStep } from './components/IPIPTestStep'
 import { LuscherTestStep } from './components/LuscherTestStep'
@@ -46,17 +46,17 @@ export function PersonalityAssessmentWizard() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <Spinner size="large" />
         <Text color="$color11">Loading assessment...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <AlertCircle size={48} color="$red10" />
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading assessment
@@ -64,7 +64,7 @@ export function PersonalityAssessmentWizard() {
         <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
           {error.message || 'An unexpected error occurred'}
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -88,31 +88,31 @@ export function PersonalityAssessmentWizard() {
   const canGoPrevious = currentStep !== 'luscher1' && currentStep !== 'cooldown'
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <Stack flex={1} backgroundColor="$background">
       {/* Header */}
-      <YStack
+      <Stack
         padding="$4"
         backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
         gap="$3"
       >
-        <YStack gap="$1">
+        <Stack gap="$1">
           <Text fontSize="$7" fontWeight="bold" color="$color12">
             Personality Assessment
           </Text>
           <Text fontSize="$3" color="$color11">
             {stepInfo.description}
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Progress Indicator */}
         <ProgressIndicator currentStep={currentStep} completionScore={completionScore} />
-      </YStack>
+      </Stack>
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <YStack padding="$4" gap="$4">
+        <Stack padding="$4" gap="$4">
           {currentStep === 'luscher1' && (
             <LuscherTestStep
               step="luscher1"
@@ -225,7 +225,7 @@ export function PersonalityAssessmentWizard() {
           )}
 
           {currentStep === 'completed' && (
-            <YStack gap="$4" alignItems="center" padding="$8">
+            <Stack gap="$4" alignItems="center" padding="$8">
               <Text fontSize="$8" fontWeight="bold" color="$green10">
                 ✓ Assessment Complete!
               </Text>
@@ -233,15 +233,15 @@ export function PersonalityAssessmentWizard() {
                 Your personality assessment has been completed. You can view your results below.
               </Text>
               {assessment && <ResultsStep assessment={assessment} isReadOnly />}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {/* Navigation Footer */}
       {currentStep !== 'completed' && (
-        <YStack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <XStack gap="$3" justifyContent="space-between">
+        <Stack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <Row gap="$3" justifyContent="space-between">
             <Button
               size="$4"
               variant="outlined"
@@ -270,9 +270,9 @@ export function PersonalityAssessmentWizard() {
                 Next
               </Button>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

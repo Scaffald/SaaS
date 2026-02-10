@@ -2,7 +2,7 @@ import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider
 import { supabase } from '@scf/core/utils/supabase/client'
 import { LogOut, Moon, Sun } from '@tamagui/lucide-icons'
 import type { GestureResponderEvent } from 'react-native'
-import { Button, XStack } from '@unicornlove/ui'
+import { Button, Row } from '@unicornlove/beyond-ui'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer
@@ -29,7 +29,7 @@ export const DrawerFooter = () => {
   const isDark = resolvedTheme === 'dark'
 
   return (
-    <XStack
+    <Row
       paddingHorizontal="$4"
       paddingVertical="$3"
       borderTopWidth={1}
@@ -78,6 +78,6 @@ export const DrawerFooter = () => {
       >
         <LogOut size={20} color="$blue5" />
       </Button>
-    </XStack>
+    </Row>
   )
 }

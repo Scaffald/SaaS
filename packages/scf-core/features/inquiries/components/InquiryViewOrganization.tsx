@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { Check } from '@tamagui/lucide-icons'
 import { type ReactNode, useMemo } from 'react'
-import { Card } from '@unicornlove/ui'
+import { Card } from '@unicornlove/beyond-ui'
 import { InquiryCommentThread } from './InquiryCommentThread'
 
 interface InquiryViewOrganizationProps {
@@ -32,7 +32,7 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
   }
 
   return (
-    <XStack
+    <Row
       backgroundColor="$green9"
       paddingHorizontal="$3"
       paddingVertical="$1.5"
@@ -44,7 +44,7 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
       <Text fontSize="$3" color="white" fontWeight="500">
         Accepted on {formatDate(acceptedAt)}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -63,17 +63,17 @@ export function InquiryViewOrganization({
 
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="$4" alignItems="center" gap="$4">
         <Text>Loading inquiry...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error || !data || !data.inquiry) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="$4" alignItems="center" gap="$4">
         <Text color="$red10">Failed to load inquiry</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -129,11 +129,11 @@ export function InquiryViewOrganization({
   const jobTitle = providedJobTitle || 'Job'
 
   const NonNegotiableBadge = () => (
-    <XStack backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
+    <Row backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
       <Text fontSize="$1" color="$gray11" fontWeight="600">
         Non-negotiable
       </Text>
-    </XStack>
+    </Row>
   )
 
   const InquiryField = ({
@@ -145,15 +145,15 @@ export function InquiryViewOrganization({
     value: string | null | undefined
     negotiable: boolean
   }) => (
-    <XStack justifyContent="space-between" alignItems="center">
+    <Row justifyContent="space-between" alignItems="center">
       <Text fontSize="$3" color="$color11">
         {label}
       </Text>
-      <XStack alignItems="center" gap="$2">
+      <Row alignItems="center" gap="$2">
         <Text fontSize="$3">{value || 'Not specified'}</Text>
         {!negotiable && <NonNegotiableBadge />}
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   )
 
   const InquirySection = ({
@@ -173,19 +173,19 @@ export function InquiryViewOrganization({
     return (
       <Card padding="$4" gap="$3">
         {/* Section Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$6" fontWeight="600">
             {title}
           </Text>
           {section && (
             <AcceptanceBadge acceptedBy={section.accepted_by} acceptedAt={section.accepted_at} />
           )}
-        </XStack>
+        </Row>
 
         <Separator />
 
         {/* Section Content */}
-        <YStack gap="$3">{children}</YStack>
+        <Stack gap="$3">{children}</Stack>
 
         {/* Comment Thread */}
         <Separator />
@@ -200,13 +200,13 @@ export function InquiryViewOrganization({
 
   return (
     <ScrollView>
-      <YStack gap="$4" padding="$4" $sm={{ gap: '$6', padding: '$3' }}>
+      <Stack gap="$4" padding="$4" $sm={{ gap: '$6', padding: '$3' }}>
         {/* Header with Edit button */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$8" fontWeight="600">
             Inquiry
           </Text>
-        </XStack>
+        </Row>
         <Text fontSize="$4" color="$color11">
           {candidateName} - {jobTitle}
         </Text>
@@ -311,17 +311,17 @@ export function InquiryViewOrganization({
             />
           )}
           {inquiry.additional_notes && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" fontWeight="600" color="$color11">
                 Additional notes
               </Text>
               <Text fontSize="$3" color="$color12">
                 {inquiry.additional_notes}
               </Text>
-            </YStack>
+            </Stack>
           )}
         </InquirySection>
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

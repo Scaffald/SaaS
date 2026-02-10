@@ -1,10 +1,10 @@
 import { type FC, useMemo } from 'react'
-import { IndividualSkillRadarChart } from '@unicornlove/ui'
+import { IndividualSkillRadarChart } from '@unicornlove/beyond-ui'
 import type {
   SoftSkill,
   SoftSkillCategory,
 } from '@scf/core/features/profile/components/SoftSkillsCategoryTabs'
-import { Text, View, XStack, YStack } from '@unicornlove/ui'
+import { Text, View, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]
@@ -55,8 +55,8 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$4">
-        <XStack flexWrap="wrap" gap="$3" $md={{ gap: '$4' }}>
+      <Stack gap="$4" padding="$4">
+        <Row flexWrap="wrap" gap="$3" $md={{ gap: '$4' }}>
           {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
               key={key}
@@ -72,28 +72,28 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
               {/* Skeleton loader */}
             </View>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
   // Empty state
   if (filteredSkills.length === 0) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center" justifyContent="center" minHeight={300}>
+      <Stack gap="$4" padding="$4" alignItems="center" justifyContent="center" minHeight={300}>
         <Text fontSize="$5" fontWeight="600" color="$color11">
           No skills in this category
         </Text>
         <Text fontSize="$3" color="$color10">
           Skills will appear here once they're added to this category.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$4">
-      <XStack
+    <Stack gap="$4" padding="$4">
+      <Row
         flexWrap="wrap"
         gap="$3"
         $md={{
@@ -122,7 +122,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
             />
           </View>
         ))}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

@@ -3,11 +3,11 @@ import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Button, Spinner, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Spinner, Tabs, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { CandidateProfileTab } from './CandidateProfileTab'
@@ -122,7 +122,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const teamId = application.team?.id ?? null
   const teamIdForQuery = teamId ?? '00000000-0000-0000-0000-000000000000'
   const { user: currentUser } = useUser()
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   const membersQuery = api.teams.members.list.useQuery(
@@ -145,9 +145,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
   const assignMutation = api.teams.applications.assign.useMutation({
     onSuccess: async () => {
-      toast.show('Application assigned', {
-        message: 'You are now responsible for follow-up.',
-      })
+      toast.show({
+          title: 'Application assigned',
+          message: 'You are now responsible for follow-up.',
+        })
       if (teamId) {
         await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
         await utils.teams.analytics.comments.invalidate({
@@ -159,7 +160,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Unable to assign application'
-      toast.show('Unable to assign application', { message })
+      toast.show({
+          title: 'Unable to assign application',
+          variant: 'error',
+        })
     },
   })
 
@@ -189,7 +193,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       size="large"
     >
       {/* Candidate Header */}
-      <XStack gap="$3" alignItems="center">
+      <Row gap="$3" alignItems="center">
         <Avatar circular size="$6">
           <Avatar.Image src={application.candidate.photo} />
           <Avatar.Fallback backgroundColor="$blue9">
@@ -199,18 +203,18 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Avatar.Fallback>
         </Avatar>
 
-        <YStack flex={1}>
+        <Stack flex={1}>
           <Text fontSize="$4" opacity={0.7}>
             {application.candidate.title}
           </Text>
           <Text fontSize="$2" opacity={0.6} marginTop="$1">
             {application.candidate.location}
           </Text>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {/* Score Badge */}
-      <YStack
+      <Stack
         backgroundColor={scoreBg}
         paddingHorizontal="$4"
         paddingVertical="$3"
@@ -223,17 +227,17 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         <Text fontSize="$3" fontWeight="600" opacity={0.8}>
           Application Score
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Quick Actions */}
-      <XStack gap="$2">
+      <Row gap="$2">
         <Button theme="success" flex={1} size="$4">
           Advance to Interview
         </Button>
         <Button theme="error" flex={1} size="$4">
           Reject
         </Button>
-      </XStack>
+      </Row>
       <Button flex={1} size="$4">
         Send Message
       </Button>
@@ -255,7 +259,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         </Button>
       ) : null}
       {teamId ? (
-        <YStack gap="$1">
+        <Stack gap="$1">
           <Text fontSize="$3" opacity={0.6}>
             Current assignee
           </Text>
@@ -265,12 +269,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
                   ?.label ?? `User ${application.team?.assignedUserId.slice(0, 6)}`)
               : 'Unassigned'}
           </Text>
-        </YStack>
+        </Stack>
       ) : null}
 
       {/* Application Meta */}
-      <XStack gap="$4" flexWrap="wrap">
-        <YStack flex={1} width={150}>
+      <Row gap="$4" flexWrap="wrap">
+        <Stack flex={1} width={150}>
           <Text fontSize="$2" opacity={0.6}>
             Applied
           </Text>
@@ -281,24 +285,24 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
               year: 'numeric',
             })}
           </Text>
-        </YStack>
-        <YStack flex={1} width={150}>
+        </Stack>
+        <Stack flex={1} width={150}>
           <Text fontSize="$2" opacity={0.6}>
             Job
           </Text>
           <Text fontSize="$3" fontWeight="600">
             {application.job.title}
           </Text>
-        </YStack>
-        <YStack flex={1} width={150}>
+        </Stack>
+        <Stack flex={1} width={150}>
           <Text fontSize="$2" opacity={0.6}>
             Experience
           </Text>
           <Text fontSize="$3" fontWeight="600">
             {application.candidate.yearsExperience} years
           </Text>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {/* Tabs */}
       <Tabs
@@ -363,10 +367,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
         <Tabs.Content value="inquiry" paddingTop="$4">
           {inquiryMode === 'view' && isInquiryLoading && (
-            <YStack padding="$4" alignItems="center" gap="$4">
+            <Stack padding="$4" alignItems="center" gap="$4">
               <Spinner size="large" />
               <Text>Loading inquiry...</Text>
-            </YStack>
+            </Stack>
           )}
 
           {inquiryMode === 'view' && hasInquiry && inquiryData && (
@@ -400,19 +404,19 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           ) : null}
 
           {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-            <YStack padding="$4" gap="$3">
+            <Stack padding="$4" gap="$3">
               <Text color="$color11">No inquiry has been created for this candidate yet.</Text>
               <Button theme="blue" onPress={() => setInquiryMode('create')}>
                 Start Inquiry
               </Button>
-            </YStack>
+            </Stack>
           )}
 
           {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-            <YStack padding="$4" alignItems="center" gap="$4">
+            <Stack padding="$4" alignItems="center" gap="$4">
               <Spinner size="large" />
               <Text>Preparing inquiry for editing...</Text>
-            </YStack>
+            </Stack>
           )}
         </Tabs.Content>
       </Tabs>

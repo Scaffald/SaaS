@@ -1,6 +1,6 @@
 import { AssessmentProgress } from '@scf/core/features/assessments'
 import { useMemo } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 
@@ -44,15 +44,15 @@ export function ResumeStepsSidebar() {
   }, [completedStepIds, steps.length])
 
   return (
-    <YStack gap="$5" padding="$2" $md={{ padding: '$1' }}>
-      <YStack gap="$1">
+    <Stack gap="$5" padding="$2" $md={{ padding: '$1' }}>
+      <Stack gap="$1">
         <Text fontSize="$5" fontWeight="700">
           Resume Steps
         </Text>
         <Text fontSize="$3" color="$color10">
           Keep track of each resume section as you merge data into your profile.
         </Text>
-      </YStack>
+      </Stack>
 
       <AssessmentProgress
         steps={steps}
@@ -61,6 +61,6 @@ export function ResumeStepsSidebar() {
         completionScore={completionScore}
         orientation="vertical"
       />
-    </YStack>
+    </Stack>
   )
 }

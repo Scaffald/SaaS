@@ -9,8 +9,8 @@ global.confirm = mockConfirm
 
 // Mock toast
 const mockShow = vi.fn()
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mockShow,
   }),
 }))
@@ -291,8 +291,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <h4 {...rest}>{children}</h4>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Input,
     Image,

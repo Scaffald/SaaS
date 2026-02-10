@@ -4,7 +4,7 @@ import { AlertTriangle } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo } from 'react'
-import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -72,16 +72,16 @@ export function DisputeBackgroundCheckContent({
     check?.package?.display_name ?? check?.package?.slug ?? 'Background check package'
 
   return (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
+    <Stack gap="$4">
+      <Row justifyContent="space-between" alignItems="center">
+        <Stack gap="$1">
           <Text fontSize="$6" fontWeight="700">
             Dispute background check
           </Text>
           <Text fontSize="$2" color="$color10">
             Flag inaccurate information so our compliance team can investigate.
           </Text>
-        </YStack>
+        </Stack>
         {(renderHeaderAction?.({ isSubmitting, isUploading }) as ReactNode) ?? (
           <Button
             size="$2"
@@ -92,17 +92,17 @@ export function DisputeBackgroundCheckContent({
             Close
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {check ? (
         <>
-          <YStack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
-            <XStack gap="$2" alignItems="center">
+          <Stack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
+            <Row gap="$2" alignItems="center">
               <AlertTriangle size={18} color="$yellow10" />
               <Text fontSize="$3" fontWeight="600" color="$color12">
                 {statusMeta?.label ?? 'Background check'}
               </Text>
-            </XStack>
+            </Row>
             <Text fontSize="$2" color="$color10">
               Package:{' '}
               <Text fontWeight="600" color="$color12">
@@ -118,7 +118,7 @@ export function DisputeBackgroundCheckContent({
             <Text fontSize="$2" color="$color10">
               Disputes should focus on factual inaccuracies, missing context, or mismatched records.
             </Text>
-          </YStack>
+          </Stack>
 
           <DisputeStatusTracker
             disputes={disputes}
@@ -143,12 +143,12 @@ export function DisputeBackgroundCheckContent({
           />
         </>
       ) : (
-        <YStack gap="$3" alignItems="center" paddingVertical="$6">
+        <Stack gap="$3" alignItems="center" paddingVertical="$6">
           <Text fontSize="$3" color="$color10">
             Select a background check to review dispute information.
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

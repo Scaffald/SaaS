@@ -44,7 +44,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
+vi.mock('@unicornlove/beyond-ui', () => ({ useToast: () => toastMock }))
 
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
@@ -265,8 +265,8 @@ vi.mock('tamagui', async () => {
     <label htmlFor={htmlFor}>{children}</label>
   )
 
-  const YStack = ({ children }: { children: ReactNode }) => <div>{children}</div>
-  const XStack = ({ children }: { children: ReactNode }) => <div>{children}</div>
+  const Stack = ({ children }: { children: ReactNode }) => <div>{children}</div>
+  const Row = ({ children }: { children: ReactNode }) => <div>{children}</div>
   const ButtonBase = ({
     children,
     onPress,
@@ -293,8 +293,8 @@ vi.mock('tamagui', async () => {
     Select,
     Input,
     Label,
-    YStack,
-    XStack,
+    Stack,
+    Row,
     Button: ButtonBase,
     Text,
     Spinner,

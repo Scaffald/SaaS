@@ -2,7 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { api } from '@scf/core/utils/api'
 import { buildSkillLookup } from '../utils/data-normalizers'
-import { ToggleSwitch } from '@unicornlove/ui'
+import { ToggleSwitch } from '@unicornlove/beyond-ui'
 import {
   Activity,
   DownloadCloud,
@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   Users,
 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Alert, Linking, ScrollView } from 'react-native'
@@ -24,9 +24,9 @@ import {
   Separator,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 import { PhotoGallery } from '../components/PhotoGallery'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
@@ -59,7 +59,7 @@ interface ConversationEntryRecord {
 export function WorkLogDetailScreen() {
   const { workLogId } = useLocalSearchParams<{ workLogId: string }>()
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const trpcUtils = api.useContext()
 
   const workLogQuery = api.workLogs.getById.useQuery(
@@ -91,9 +91,11 @@ export function WorkLogDetailScreen() {
       setCommentDraft('')
     },
     onError: (error) => {
-      toast.show('Unable to add comment', {
-        message: error?.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to add comment',
+          message: error?.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -111,9 +113,11 @@ export function WorkLogDetailScreen() {
       }
     },
     onError: (error) => {
-      toast.show('Export failed', {
-        message: error?.message ?? 'Unable to export work log.',
-      })
+      toast.show({
+          title: 'Export failed',
+          message: error?.message ?? 'Unable to export work log.',
+          variant: 'error',
+        })
     },
   })
 
@@ -121,14 +125,17 @@ export function WorkLogDetailScreen() {
     onSuccess: () => {
       setCollaboratorIdInput('')
       void collaboratorsQuery.refetch()
-      toast.show('Collaborator added', {
-        message: 'They now have access to this work log.',
-      })
+      toast.show({
+          title: 'Collaborator added',
+          message: 'They now have access to this work log.',
+        })
     },
     onError: (error) => {
-      toast.show('Unable to add collaborator', {
-        message: error?.message ?? 'Check the user ID and try again.',
-      })
+      toast.show({
+          title: 'Unable to add collaborator',
+          message: error?.message ?? 'Check the user ID and try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -137,23 +144,28 @@ export function WorkLogDetailScreen() {
       void collaboratorsQuery.refetch()
     },
     onError: (error) => {
-      toast.show('Unable to update collaborator', {
-        message: error?.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to update collaborator',
+          message: error?.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
   const removeCollaboratorMutation = api.workLogs.removeCollaborator.useMutation({
     onSuccess: () => {
       void collaboratorsQuery.refetch()
-      toast.show('Collaborator removed', {
-        message: 'They no longer have access to this work log.',
-      })
+      toast.show({
+          title: 'Collaborator removed',
+          message: 'They no longer have access to this work log.',
+        })
     },
     onError: (error) => {
-      toast.show('Unable to remove collaborator', {
-        message: error?.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to remove collaborator',
+          message: error?.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -163,9 +175,11 @@ export function WorkLogDetailScreen() {
       await Promise.all([workLogQuery.refetch(), trpcUtils.workLogs.list.invalidate()])
     },
     onError: (error) => {
-      toast.show('Unable to update visibility', {
-        message: error?.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to update visibility',
+          message: error?.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -175,9 +189,11 @@ export function WorkLogDetailScreen() {
       await workLogQuery.refetch()
     },
     onError: (error) => {
-      toast.show('Unable to update photo', {
-        message: error?.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to update photo',
+          message: error?.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -249,16 +265,16 @@ export function WorkLogDetailScreen() {
 
   if (workLogQuery.isLoading) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center" gap="$3">
+      <Stack flex={1} justifyContent="center" alignItems="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color10">Loading work log…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!workLog) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center" gap="$3" padding="$4">
+      <Stack flex={1} justifyContent="center" alignItems="center" gap="$3" padding="$4">
         <Text fontSize="$6" fontWeight="700">
           Work log not found
         </Text>
@@ -268,7 +284,7 @@ export function WorkLogDetailScreen() {
         <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}>
           Back to work logs
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -284,9 +300,10 @@ export function WorkLogDetailScreen() {
 
   const handleAddCollaborator = () => {
     if (!collaboratorIdInput.trim()) {
-      toast.show('Enter a collaborator ID', {
-        message: 'Provide a valid user ID to grant access.',
-      })
+      toast.show({
+          title: 'Enter a collaborator ID',
+          message: 'Provide a valid user ID to grant access.',
+        })
       return
     }
 
@@ -338,9 +355,10 @@ export function WorkLogDetailScreen() {
   const handleShowOnProfileToggle = (next: boolean) => {
     if (!workLogId) return
     if (next && !isVerified) {
-      toast.show('Pending verification', {
-        message: 'Work logs must be verified before they can appear on your profile.',
-      })
+      toast.show({
+          title: 'Pending verification',
+          message: 'Work logs must be verified before they can appear on your profile.',
+        })
       return
     }
     updateProfileVisibilityMutation.mutate({
@@ -367,32 +385,32 @@ export function WorkLogDetailScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack padding="$4" gap="$4">
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <YStack gap="$1" flex={1}>
+      <Stack padding="$4" gap="$4">
+        <Stack gap="$2">
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack gap="$1" flex={1}>
               <Text fontSize="$7" fontWeight="700">
                 {project?.name ?? 'Work Log'}
               </Text>
               <Text color="$color10">
                 Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
-            </YStack>
+            </Stack>
             <Button size="$3" variant="outlined" icon={Edit} onPress={() => workLogQuery.refetch()}>
               Refresh
             </Button>
-          </XStack>
+          </Row>
           <Text color={getStatusColor(workLog.status)} fontWeight="600">
             {getStatusLabel(workLog.status)}
           </Text>
-        </YStack>
+        </Stack>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
+          <Stack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Summary
             </Text>
-            <XStack gap="$4" flexWrap="wrap">
+            <Row gap="$4" flexWrap="wrap">
               <SummaryMetric
                 icon={Activity}
                 label="Total hours"
@@ -408,19 +426,19 @@ export function WorkLogDetailScreen() {
                 label="Visibility"
                 value={workLog.visibility === 'public' ? 'Public' : 'Private'}
               />
-            </XStack>
+            </Row>
             <Separator />
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Description</Text>
               <Paragraph color="$color10">
                 {workLog.work_description || 'No description provided.'}
               </Paragraph>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
+          <Stack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Profile visibility
             </Text>
@@ -432,46 +450,46 @@ export function WorkLogDetailScreen() {
                 This work log must be verified before it can be shared publicly.
               </Paragraph>
             )}
-            <YStack gap="$4">
-              <XStack justifyContent="space-between" alignItems="center" gap="$4">
-                <YStack gap="$1" flex={1}>
+            <Stack gap="$4">
+              <Row justifyContent="space-between" alignItems="center" gap="$4">
+                <Stack gap="$1" flex={1}>
                   <Text fontWeight="600">Show on public profile</Text>
                   <Paragraph color="$color10">
                     Display this work log on your public profile. Only verified work is eligible.
                   </Paragraph>
-                </YStack>
+                </Stack>
                 <ToggleSwitch
                   checked={includeOnProfile}
                   disabled={!isVerified || visibilityMutationPending}
                   onCheckedChange={handleShowOnProfileToggle}
                   testID="work-log-profile-toggle"
                 />
-              </XStack>
+              </Row>
 
-              <XStack justifyContent="space-between" alignItems="center" gap="$4">
-                <YStack gap="$1" flex={1}>
+              <Row justifyContent="space-between" alignItems="center" gap="$4">
+                <Stack gap="$1" flex={1}>
                   <Text fontWeight="600">Show date on profile</Text>
                   <Paragraph color="$color10">
                     When enabled, the logged date is shown on your public profile.
                   </Paragraph>
-                </YStack>
+                </Stack>
                 <ToggleSwitch
                   checked={showDateRange}
                   disabled={!includeOnProfile || visibilityMutationPending}
                   onCheckedChange={handleShowDateRangeToggle}
                   testID="work-log-date-toggle"
                 />
-              </XStack>
+              </Row>
 
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack gap="$1">
+              <Row justifyContent="space-between" alignItems="center">
+                <Stack gap="$1">
                   <Text fontWeight="600">Verification status</Text>
                   <Paragraph color="$color10">
                     {isVerified
                       ? 'Verified entries display a “Verified by Scaffald” badge on your public profile.'
                       : 'Awaiting verification. Visibility controls unlock once this log is verified.'}
                   </Paragraph>
-                </YStack>
+                </Stack>
                 <Text
                   backgroundColor={isVerified ? '$green4' : '$yellow4'}
                   color={isVerified ? '$green11' : '$yellow11'}
@@ -482,33 +500,33 @@ export function WorkLogDetailScreen() {
                 >
                   {isVerified ? 'Verified' : 'Pending'}
                 </Text>
-              </XStack>
+              </Row>
 
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack gap="$1">
+              <Row justifyContent="space-between" alignItems="center">
+                <Stack gap="$1">
                   <Text fontWeight="600">Current visibility</Text>
                   <Paragraph color="$color10">
                     {isPublicVisibility
                       ? 'This work log is set to public visibility.'
                       : 'This work log is currently private.'}
                   </Paragraph>
-                </YStack>
-              </XStack>
-            </YStack>
-          </YStack>
+                </Stack>
+              </Row>
+            </Stack>
+          </Stack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
+          <Stack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Time entries
             </Text>
-            <YStack gap="$2">
+            <Stack gap="$2">
               {timeEntryItems.length === 0 ? (
                 <Paragraph color="$color10">No time entries recorded.</Paragraph>
               ) : (
                 timeEntryItems.map((entry) => (
-                  <XStack
+                  <Row
                     key={entry.key}
                     justifyContent="space-between"
                     backgroundColor="$color3"
@@ -520,24 +538,24 @@ export function WorkLogDetailScreen() {
                       {entry.start}–{entry.end}
                     </Text>
                     <Text color="$color10">{computeEntryHours(entry.start, entry.end)}h</Text>
-                  </XStack>
+                  </Row>
                 ))
               )}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
+          <Stack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Tasks completed
             </Text>
             {taskItems.length === 0 ? (
               <Paragraph color="$color10">No tasks recorded for this entry.</Paragraph>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {taskItems.map((task) => (
-                  <XStack
+                  <Row
                     key={task.key}
                     backgroundColor="$color3"
                     paddingHorizontal="$3"
@@ -545,9 +563,9 @@ export function WorkLogDetailScreen() {
                     borderRadius="$4"
                   >
                     <Text>{task.task}</Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
             <Separator />
             <Text fontSize="$6" fontWeight="700">
@@ -556,7 +574,7 @@ export function WorkLogDetailScreen() {
             {skillNames.length === 0 ? (
               <Paragraph color="$color10">No skills associated with this log.</Paragraph>
             ) : (
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap="$2" flexWrap="wrap">
                 {skillNames.map((skill) => (
                   <Text
                     key={skill}
@@ -568,14 +586,14 @@ export function WorkLogDetailScreen() {
                     {skill}
                   </Text>
                 ))}
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
         {photos.length > 0 && (
           <Card borderColor="$color6" borderWidth={1}>
-            <YStack gap="$3" padding="$3">
+            <Stack gap="$3" padding="$3">
               <Text fontSize="$6" fontWeight="700">
                 Photos
               </Text>
@@ -601,13 +619,13 @@ export function WorkLogDetailScreen() {
                   isRefreshingUrl: false,
                 }))}
               />
-            </YStack>
+            </Stack>
           </Card>
         )}
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$3" padding="$3">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="700">
                 Collaborators
               </Text>
@@ -619,11 +637,11 @@ export function WorkLogDetailScreen() {
               >
                 Refresh
               </Button>
-            </XStack>
+            </Row>
             <Paragraph color="$color10">
               Share this work log with teammates to give them edit or view access.
             </Paragraph>
-            <YStack gap="$2">
+            <Stack gap="$2">
               {collaborators.length === 0 ? (
                 <Paragraph color="$color10">No collaborators yet.</Paragraph>
               ) : (
@@ -639,16 +657,16 @@ export function WorkLogDetailScreen() {
                   />
                 ))
               )}
-            </YStack>
+            </Stack>
             <Separator />
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Add collaborator</Text>
               <Input
                 placeholder="Collaborator user ID"
                 value={collaboratorIdInput}
                 onChangeText={setCollaboratorIdInput}
               />
-              <XStack gap="$2">
+              <Row gap="$2">
                 <Button
                   flex={1}
                   size="$3"
@@ -665,7 +683,7 @@ export function WorkLogDetailScreen() {
                 >
                   Edit
                 </Button>
-              </XStack>
+              </Row>
               <Button
                 size="$3"
                 icon={Users}
@@ -674,13 +692,13 @@ export function WorkLogDetailScreen() {
               >
                 Add collaborator
               </Button>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$3" padding="$3">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="700">
                 Conversation
               </Text>
@@ -692,8 +710,8 @@ export function WorkLogDetailScreen() {
               >
                 Refresh
               </Button>
-            </XStack>
-            <YStack gap="$3">
+            </Row>
+            <Stack gap="$3">
               {conversation.length === 0 ? (
                 <Paragraph color="$color10">
                   No messages yet. Start the conversation to give additional context.
@@ -703,9 +721,9 @@ export function WorkLogDetailScreen() {
                   <ConversationEntry key={entry.id} entry={entry} currentUserId={workLog.user_id} />
                 ))
               )}
-            </YStack>
+            </Stack>
             <Separator />
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Add message</Text>
               <Input
                 multiline
@@ -722,12 +740,12 @@ export function WorkLogDetailScreen() {
               >
                 Post message
               </Button>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" padding="$3">
+          <Stack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Exports
             </Text>
@@ -735,7 +753,7 @@ export function WorkLogDetailScreen() {
               Generate a shareable export for reporting or offline records. Links expire after ten
               minutes.
             </Paragraph>
-            <XStack gap="$3" flexWrap="wrap">
+            <Row gap="$3" flexWrap="wrap">
               <Button
                 size="$4"
                 icon={DownloadCloud}
@@ -763,10 +781,10 @@ export function WorkLogDetailScreen() {
               >
                 Export CSV
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }
@@ -779,7 +797,7 @@ interface SummaryMetricProps {
 
 function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps) {
   return (
-    <XStack
+    <Row
       backgroundColor="$color3"
       paddingHorizontal="$3"
       paddingVertical="$2"
@@ -788,13 +806,13 @@ function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps
       alignItems="center"
     >
       <IconComponent size={16} color="currentColor" />
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontWeight="600">{value}</Text>
         <Text fontSize="$3" color="$color10">
           {label}
         </Text>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }
 
@@ -820,10 +838,10 @@ function CollaboratorRow({
 
   return (
     <Card borderWidth={1} borderColor="$color6">
-      <YStack gap="$2" padding="$3">
+      <Stack gap="$2" padding="$3">
         <Text fontWeight="600">{displayName}</Text>
         <Text color="$color10">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
-        <XStack gap="$2">
+        <Row gap="$2">
           <Button size="$3" variant="outlined" disabled={isUpdating} onPress={onTogglePermission}>
             Toggle permission
           </Button>
@@ -836,8 +854,8 @@ function CollaboratorRow({
           >
             Remove
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   )
 }
@@ -854,19 +872,19 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
   const isSystemMessage = entry.is_system_message === true
 
   return (
-    <YStack
+    <Stack
       backgroundColor={isSystemMessage ? '$color4' : isOwner ? '$color3' : '$color2'}
       paddingHorizontal="$3"
       paddingVertical="$2"
       borderRadius="$4"
       gap="$1"
     >
-      <XStack justifyContent="space-between">
+      <Row justifyContent="space-between">
         <Text fontWeight="600">{authorName}</Text>
         <Text color="$color10">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
-      </XStack>
+      </Row>
       <Paragraph>{entry.message}</Paragraph>
-    </YStack>
+    </Stack>
   )
 }
 

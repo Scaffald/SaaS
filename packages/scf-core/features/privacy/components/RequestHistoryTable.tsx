@@ -6,7 +6,7 @@
  * with status, dates, and download links
  */
 
-import { Text, XStack, YStack, Button } from '@unicornlove/ui'
+import { Text, Row, Stack, Button } from '@unicornlove/beyond-ui'
 
 /**
  * Request status type
@@ -93,7 +93,7 @@ function formatDate(dateString: string): string {
 function StatusBadge({ status }: { status: RequestStatus }) {
   const colors = STATUS_COLORS[status]
   return (
-    <XStack
+    <Row
       backgroundColor={colors.bg}
       paddingHorizontal="$2"
       paddingVertical="$1"
@@ -102,7 +102,7 @@ function StatusBadge({ status }: { status: RequestStatus }) {
       <Text fontSize="$2" color={colors.text} fontWeight="500" textTransform="capitalize">
         {status}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -122,7 +122,7 @@ function RequestRow({
   const canCancel = request.status === 'pending'
 
   return (
-    <XStack
+    <Row
       padding="$3"
       backgroundColor="$color2"
       borderRadius="$2"
@@ -133,45 +133,45 @@ function RequestRow({
       flexWrap="wrap"
     >
       {/* Type */}
-      <YStack flex={1} minWidth={120}>
+      <Stack flex={1} minWidth={120}>
         <Text fontSize="$2" color="$color10">
           Type
         </Text>
         <Text fontSize="$3" fontWeight="500">
           {TYPE_LABELS[request.type]}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Status */}
-      <YStack minWidth={100}>
+      <Stack minWidth={100}>
         <Text fontSize="$2" color="$color10">
           Status
         </Text>
         <StatusBadge status={request.status} />
-      </YStack>
+      </Stack>
 
       {/* Submitted Date */}
-      <YStack flex={1} minWidth={140}>
+      <Stack flex={1} minWidth={140}>
         <Text fontSize="$2" color="$color10">
           Submitted
         </Text>
         <Text fontSize="$3">
           {formatDate(request.created_at)}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Completed Date */}
-      <YStack flex={1} minWidth={140}>
+      <Stack flex={1} minWidth={140}>
         <Text fontSize="$2" color="$color10">
           Completed
         </Text>
         <Text fontSize="$3">
           {request.completed_at ? formatDate(request.completed_at) : '—'}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$2" minWidth={120} justifyContent="flex-end">
+      <Row gap="$2" minWidth={120} justifyContent="flex-end">
         {canDownload && (
           <Button
             size="$2"
@@ -189,8 +189,8 @@ function RequestRow({
             Cancel
           </Button>
         )}
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   )
 }
 
@@ -199,7 +199,7 @@ function RequestRow({
  */
 function EmptyState() {
   return (
-    <YStack
+    <Stack
       padding="$6"
       backgroundColor="$color2"
       borderRadius="$3"
@@ -215,7 +215,7 @@ function EmptyState() {
         When you submit a data export, deletion, or other privacy request,
         it will appear here so you can track its status.
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -234,9 +234,9 @@ export function RequestHistoryTable({
   }
 
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       {/* Header row - hidden on mobile */}
-      <XStack
+      <Row
         padding="$3"
         display="none"
         $gtMd={{ display: 'flex' }}
@@ -257,7 +257,7 @@ export function RequestHistoryTable({
         <Text fontSize="$2" color="$color10" fontWeight="600" minWidth={120} textAlign="right">
           Actions
         </Text>
-      </XStack>
+      </Row>
 
       {/* Request rows */}
       {requests.map((request) => (
@@ -274,7 +274,7 @@ export function RequestHistoryTable({
         Data export requests are processed within 45 days as required by CCPA.
         Completed exports are available for download for 30 days.
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 

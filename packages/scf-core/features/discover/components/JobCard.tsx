@@ -1,6 +1,6 @@
-import { DiscoverCard } from '@unicornlove/ui'
+import { DiscoverCard } from '@unicornlove/beyond-ui'
 import { Briefcase, Building2, DollarSign, MapPin } from '@tamagui/lucide-icons'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {
@@ -34,8 +34,8 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
   return (
     <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress}>
       {/* Job Title and Organization */}
-      <YStack gap="$1">
-        <XStack alignItems="center" gap="$2">
+      <Stack gap="$1">
+        <Row alignItems="center" gap="$2">
           <Briefcase size={16} color={isSelected ? '$yellow10' : '$color10'} />
           <Text
             fontSize="$4"
@@ -45,29 +45,29 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
           >
             {job.title}
           </Text>
-        </XStack>
+        </Row>
         {job.organization_name && (
-          <XStack alignItems="center" gap="$1.5" marginLeft="$6">
+          <Row alignItems="center" gap="$1.5" marginLeft="$6">
             <Building2 size={14} color="$color10" />
             <Text fontSize="$3" color="$color11" numberOfLines={1}>
               {job.organization_name}
             </Text>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
 
       {/* Location */}
       {job.location && (
-        <XStack alignItems="center" gap="$1.5">
+        <Row alignItems="center" gap="$1.5">
           <MapPin size={14} color={isSelected ? '$yellow10' : '$color10'} />
           <Text fontSize="$3" color="$color11" numberOfLines={1}>
             {job.location}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Employment Type and Level */}
-      <XStack gap="$2" flexWrap="wrap">
+      <Row gap="$2" flexWrap="wrap">
         {job.employment_type && (
           <Text
             fontSize="$2"
@@ -104,16 +104,16 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
             {job.position_level}
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {/* Salary Range */}
       {salaryRange && (
-        <XStack alignItems="center" gap="$1.5">
+        <Row alignItems="center" gap="$1.5">
           <DollarSign size={14} color={isSelected ? '$yellow10' : '$green10'} />
           <Text fontSize="$3" fontWeight="600" color="$green10">
             {salaryRange}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* View Details Button */}

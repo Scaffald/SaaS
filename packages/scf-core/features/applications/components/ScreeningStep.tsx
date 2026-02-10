@@ -1,8 +1,8 @@
 import type { ScreeningAnswers } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete, ResponsiveSelect } from '@unicornlove/ui'
+import type { AddressResult } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete, ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Button, Input, Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 const EARLIEST_START_DATE_OPTIONS = [
   { label: 'Immediately', value: 'Immediately' },
@@ -111,19 +111,19 @@ export function ScreeningStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={600} padding="$4">
+    <Stack gap="$6" width="100%" maxWidth={600} padding="$4">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
           Basic Information
         </Text>
         <Text fontSize="$4" color="$color11">
           Please provide some basic information to help us match you with this position.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Current Location */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
           Your current location <Text color="$red10">*</Text>
         </Label>
@@ -169,14 +169,14 @@ export function ScreeningStep({
             {errors.current_location}
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       {/* Willing to Relocate */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label fontSize="$4" fontWeight="600">
           Are you willing to relocate? <Text color="$red10">*</Text>
         </Label>
-        <XStack gap="$3">
+        <Row gap="$3">
           <Button
             flex={1}
             size="$4"
@@ -201,11 +201,11 @@ export function ScreeningStep({
           >
             No
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Years of Experience */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
           Years of experience <Text color="$red10">*</Text>
         </Label>
@@ -231,15 +231,15 @@ export function ScreeningStep({
         <Text fontSize="$2" color="$color10">
           Include all relevant work experience, including internships and part-time roles
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Required Skills (Display Only) */}
       {requiredSkills.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label fontSize="$4" fontWeight="600">
             Required skills
           </Label>
-          <YStack
+          <Stack
             padding="$3"
             backgroundColor="$gray3"
             borderRadius="$3"
@@ -249,17 +249,17 @@ export function ScreeningStep({
             <Text fontSize="$3" color="$color11">
               {requiredSkills.join(', ')}
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Optional Skills (Display Only) */}
       {optionalSkills.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label fontSize="$4" fontWeight="600">
             Optional skills
           </Label>
-          <YStack
+          <Stack
             padding="$3"
             backgroundColor="$gray3"
             borderRadius="$3"
@@ -269,16 +269,16 @@ export function ScreeningStep({
             <Text fontSize="$3" color="$color11">
               {optionalSkills.join(', ')}
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Work Authorization */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label fontSize="$4" fontWeight="600">
           Are you authorized to work legally in the US? <Text color="$red10">*</Text>
         </Label>
-        <XStack gap="$3">
+        <Row gap="$3">
           <Button
             flex={1}
             size="$4"
@@ -309,16 +309,16 @@ export function ScreeningStep({
           >
             No
           </Button>
-        </XStack>
+        </Row>
         {errors.is_authorized_to_work && (
           <Text fontSize="$2" color="$red10">
             {errors.is_authorized_to_work}
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       {/* Earliest Start Date */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
           Earliest start date <Text color="$red10">*</Text>
         </Label>
@@ -337,7 +337,7 @@ export function ScreeningStep({
             label: option.label,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {/* Continue Button */}
       <Button
@@ -349,7 +349,7 @@ export function ScreeningStep({
       >
         {isSubmitting ? 'Saving...' : 'Continue'}
       </Button>
-    </YStack>
+    </Stack>
   )
 
   /**

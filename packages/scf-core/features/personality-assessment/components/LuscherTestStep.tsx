@@ -1,7 +1,7 @@
-import { Button } from '@unicornlove/ui'
+import { Button } from '@unicornlove/beyond-ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
@@ -73,8 +73,8 @@ export function LuscherTestStep({
   const remaining = 8 - selectedOrder.length
 
   return (
-    <YStack gap="$6" maxWidth={800} width="100%" marginHorizontal="auto">
-      <YStack gap="$2" alignItems="center">
+    <Stack gap="$6" maxWidth={800} width="100%" marginHorizontal="auto">
+      <Stack gap="$2" alignItems="center">
         <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
@@ -86,12 +86,12 @@ export function LuscherTestStep({
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
-      <YStack gap="$3" width="100%">
+      <Stack gap="$3" width="100%">
         {/* Mobile: 2 columns, 4 rows */}
-        <XStack
+        <Row
           gap="$3"
           flexWrap="wrap"
           justifyContent="center"
@@ -102,7 +102,7 @@ export function LuscherTestStep({
             const isSelected = selectedOrder.includes(color.value)
 
             return (
-              <YStack
+              <Stack
                 key={String(color.key)}
                 gap="$2"
                 alignItems="center"
@@ -117,7 +117,7 @@ export function LuscherTestStep({
                 minWidth={120}
                 pointerEvents={isSelected ? 'none' : 'auto'}
               >
-                <YStack
+                <Stack
                   width="100%"
                   aspectRatio={1}
                   maxWidth={200}
@@ -131,13 +131,13 @@ export function LuscherTestStep({
                   shadowOpacity={0.1}
                   shadowRadius={4}
                 />
-              </YStack>
+              </Stack>
             )
           })}
-        </XStack>
+        </Row>
 
         {/* Desktop: 4 columns, 2 rows */}
-        <XStack
+        <Row
           gap="$3"
           flexWrap="wrap"
           justifyContent="center"
@@ -148,7 +148,7 @@ export function LuscherTestStep({
             const isSelected = selectedOrder.includes(color.value)
 
             return (
-              <YStack
+              <Stack
                 key={String(color.key)}
                 gap="$2"
                 alignItems="center"
@@ -163,7 +163,7 @@ export function LuscherTestStep({
                 minWidth={150}
                 pointerEvents={isSelected ? 'none' : 'auto'}
               >
-                <YStack
+                <Stack
                   width="100%"
                   aspectRatio={1}
                   maxWidth={250}
@@ -177,20 +177,20 @@ export function LuscherTestStep({
                   shadowOpacity={0.1}
                   shadowRadius={4}
                 />
-              </YStack>
+              </Stack>
             )
           })}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
-        <XStack justifyContent="center">
+        <Row justifyContent="center">
           <Button variant="primary" size="$4" onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
-import { Dialog } from '@unicornlove/ui'
+import { Dialog } from '@unicornlove/beyond-ui'
 import { Download, X } from '@tamagui/lucide-icons'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type TransactionReceiptModalProps = {
   transactionId: string
@@ -81,59 +81,59 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           <Dialog.Description>View and download receipt for this transaction.</Dialog.Description>
 
           {receiptQuery.isLoading ? (
-            <YStack alignItems="center" paddingVertical="$6" gap="$3">
+            <Stack alignItems="center" paddingVertical="$6" gap="$3">
               <Spinner size="large" />
               <Text color="$color10">Loading receipt…</Text>
-            </YStack>
+            </Stack>
           ) : receiptQuery.error ? (
             <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
               <Text color="$red11">Failed to load receipt: {receiptQuery.error.message}</Text>
             </Card>
           ) : receiptQuery.data ? (
-            <YStack gap="$4">
+            <Stack gap="$4">
               <Card
                 padding="$4"
                 backgroundColor="$color2"
                 borderColor="$borderColor"
                 borderWidth={1}
               >
-                <YStack gap="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
+                <Stack gap="$3">
+                  <Row justifyContent="space-between" alignItems="center">
                     <Text fontSize="$5" fontWeight="700">
                       {receiptQuery.data.receiptNumber}
                     </Text>
                     <Text fontSize="$4" fontWeight="600" color="$green11">
                       {receiptQuery.data.amount}
                     </Text>
-                  </XStack>
-                  <YStack gap="$2">
-                    <XStack justifyContent="space-between">
+                  </Row>
+                  <Stack gap="$2">
+                    <Row justifyContent="space-between">
                       <Text color="$color10">Date:</Text>
                       <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
+                    </Row>
+                    <Row justifyContent="space-between">
                       <Text color="$color10">Organization:</Text>
                       <Text>{receiptQuery.data.organizationName}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
+                    </Row>
+                    <Row justifyContent="space-between">
                       <Text color="$color10">Type:</Text>
                       <Text>{receiptQuery.data.transactionType}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
+                    </Row>
+                    <Row justifyContent="space-between">
                       <Text color="$color10">Status:</Text>
                       <Text fontWeight="600">{receiptQuery.data.status}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
+                    </Row>
+                    <Row justifyContent="space-between">
                       <Text color="$color10">Payment Intent:</Text>
                       <Text fontSize="$2" style={{ fontFamily: 'monospace' }}>
                         {receiptQuery.data.stripePaymentIntentId}
                       </Text>
-                    </XStack>
-                  </YStack>
-                </YStack>
+                    </Row>
+                  </Stack>
+                </Stack>
               </Card>
 
-              <XStack gap="$2" justifyContent="flex-end">
+              <Row gap="$2" justifyContent="flex-end">
                 <Button
                   size="$4"
                   variant="outlined"
@@ -145,8 +145,8 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                 <Button size="$4" variant="outlined" icon={X} onPress={() => onOpenChange(false)}>
                   Close
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ) : null}
         </Dialog.Content>
       </Dialog.Portal>

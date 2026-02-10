@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
@@ -13,9 +13,9 @@ import {
   Switch,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type ProjectFormData = {
   name: string
@@ -51,7 +51,7 @@ const VISIBILITY_OPTIONS = [
 
 export function ProjectForm({ mode, projectId, initialData, onSuccess }: ProjectFormProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const { data: organizationsData } = useAllOrganizations()
 
   const { data: projectData } = api.projects.get.useQuery(
@@ -115,7 +115,10 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           location_visibility: formData.location_visibility,
           location_visibility_override: formData.location_visibility_override,
         })
-        toast.show('Project created successfully', { variant: 'success' })
+        toast.show({
+          title: 'Project created successfully',
+          variant: 'success',
+        })
         router.push(ROUTES.OFFICE.CMS.PROJECTS.path)
       } else if (projectId) {
         await updateMutation.mutateAsync({
@@ -128,7 +131,10 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           location_visibility: formData.location_visibility,
           location_visibility_override: formData.location_visibility_override,
         })
-        toast.show('Project updated successfully', { variant: 'success' })
+        toast.show({
+          title: 'Project updated successfully',
+          variant: 'success',
+        })
         onSuccess?.()
         router.back()
       }
@@ -141,14 +147,14 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   const isLoading = createMutation.isPending || updateMutation.isPending
 
   return (
-    <YStack gap="$4" padding="$4" style={{ maxWidth: 800 }} marginHorizontal="auto">
+    <Stack gap="$4" padding="$4" style={{ maxWidth: 800 }} marginHorizontal="auto">
       <Text fontSize="$8" fontWeight="600">
         {mode === 'create' ? 'Create Project' : 'Edit Project'}
       </Text>
 
       <Card padding="$4" gap="$4">
-        <YStack gap="$4">
-          <YStack gap="$2">
+        <Stack gap="$4">
+          <Stack gap="$2">
             <Text fontWeight="600">Organization</Text>
             {organizationsData?.organizations && (
               <ResponsiveSelect
@@ -165,18 +171,18 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 )}
               />
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Project Name *</Text>
             <Input
               value={formData.name}
               onChangeText={(value) => setFormData((prev) => ({ ...prev, name: value }))}
               placeholder="Enter project name"
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Description</Text>
             <TextArea
               value={formData.description}
@@ -184,10 +190,10 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               placeholder="Enter project description"
               style={{ minHeight: 100 }}
             />
-          </YStack>
+          </Stack>
 
-          <XStack gap="$4">
-            <YStack gap="$2" flex={1}>
+          <Row gap="$4">
+            <Stack gap="$2" flex={1}>
               <Text fontWeight="600">Status</Text>
               <ResponsiveSelect
                 value={formData.status}
@@ -207,32 +213,32 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                   label: option.label,
                 }))}
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2" flex={1}>
+            <Stack gap="$2" flex={1}>
               <Text fontWeight="600">Start Date</Text>
               <Input
                 value={formData.start_date}
                 onChangeText={(value) => setFormData((prev) => ({ ...prev, start_date: value }))}
                 placeholder="YYYY-MM-DD"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2" flex={1}>
+            <Stack gap="$2" flex={1}>
               <Text fontWeight="600">End Date</Text>
               <Input
                 value={formData.end_date}
                 onChangeText={(value) => setFormData((prev) => ({ ...prev, end_date: value }))}
                 placeholder="YYYY-MM-DD"
               />
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-            <YStack gap="$4">
+            <Stack gap="$4">
               <Text fontWeight="600">Location Visibility Settings</Text>
 
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Switch
                   checked={formData.location_visibility_override}
                   onCheckedChange={(checked) =>
@@ -240,17 +246,17 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                   }
                 />
                 <Text>Override organization's global setting</Text>
-              </XStack>
+              </Row>
 
               {formData.location_visibility_override && (
-                <YStack gap="$2" padding="$2" backgroundColor="$yellow3" borderRadius="$2">
+                <Stack gap="$2" padding="$2" backgroundColor="$yellow3" borderRadius="$2">
                   <Text fontSize="$2" color="$yellow11">
                     ⚠️ This overrides your organization's global setting
                   </Text>
-                </YStack>
+                </Stack>
               )}
 
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontWeight="600">Visibility Level</Text>
                 <ResponsiveSelect
                   value={formData.location_visibility}
@@ -279,11 +285,11 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                   {formData.location_visibility === 'private' &&
                     'Only project team and admins see exact locations'}
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </Card>
 
-          <XStack gap="$4" justifyContent="flex-end">
+          <Row gap="$4" justifyContent="flex-end">
             <Button variant="outlined" onPress={() => router.back()} disabled={isLoading}>
               Cancel
             </Button>
@@ -294,9 +300,9 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             >
               {isLoading ? <Spinner /> : mode === 'create' ? 'Create Project' : 'Save Changes'}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

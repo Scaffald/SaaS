@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useRouter } from 'expo-router'
-import { ScrollView, Spinner, Text, YStack } from '@unicornlove/ui'
+import { ScrollView, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 import { type Employer, EmployerCard } from './components/EmployerCard'
 
 interface DiscoverEmployersLeftProps {
@@ -21,31 +21,31 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
         <Text marginTop="$2" color="$color11">
           Loading employers...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (employers.length === 0) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           No employers found
         </Text>
         <Text fontSize="$4" color="$color11">
           Try adjusting your filters or search query
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" padding="$4">
+      <Stack gap="$3" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           {employers.length} {employers.length === 1 ? 'Employer' : 'Employers'}
         </Text>
@@ -53,7 +53,7 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
         {employers.map((employer: Employer) => (
           <EmployerCard key={employer.id} employer={employer} onViewDetails={handleViewDetails} />
         ))}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

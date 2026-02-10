@@ -10,13 +10,13 @@ import {
   DashboardWidget,
   LocationListInput,
   ToggleCard,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
@@ -53,7 +53,7 @@ export function EmploymentSection({
   readOnly = false,
 }: EmploymentSectionProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   // Determine which tRPC endpoints to use based on mode
   const useQuery =
@@ -66,35 +66,39 @@ export function EmploymentSection({
       ? () =>
           api.office.updateUserEmployment.useMutation({
             onSuccess: () => {
-              toast.show('Employment Updated', {
-                message: 'Employment preferences have been saved successfully!',
-              })
+              toast.show({
+          title: 'Employment Updated',
+          message: 'Employment preferences have been saved successfully!',
+        })
               refetch()
             },
             onError: (error: unknown) => {
               console.error('Error saving employment:', error)
               const message =
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
-              toast.show('Error', {
-                message,
-              })
+              toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
             },
           })
       : () =>
           api.profile.employment.updateEmployment.useMutation({
             onSuccess: () => {
-              toast.show('Employment Updated', {
-                message: 'Your employment preferences have been saved successfully!',
-              })
+              toast.show({
+          title: 'Employment Updated',
+          message: 'Your employment preferences have been saved successfully!',
+        })
               refetch()
             },
             onError: (error: unknown) => {
               console.error('Error saving employment:', error)
               const message =
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
-              toast.show('Error', {
-                message,
-              })
+              toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
             },
           })
 
@@ -158,24 +162,24 @@ export function EmploymentSection({
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <Stack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text>Loading employment preferences...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Hourly Rate */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Hourly Rate ($)</Text>
           <Controller
             name="hourly_rate"
             control={control}
             render={({ field }) => (
-              <XStack gap="$3" alignItems="center">
+              <Row gap="$3" alignItems="center">
                 <Input
                   flex={1}
                   placeholder="Enter your hourly rate"
@@ -189,7 +193,7 @@ export function EmploymentSection({
                   editable={!readOnly}
                   opacity={readOnly ? 0.7 : 1}
                 />
-              </XStack>
+              </Row>
             )}
           />
           {errors.hourly_rate && (
@@ -197,10 +201,10 @@ export function EmploymentSection({
               {errors.hourly_rate.message}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Preferred Work Locations */}
-        <YStack gap="$3" paddingVertical="$3">
+        <Stack gap="$3" paddingVertical="$3">
           <Text fontWeight="600">Preferred Work Locations</Text>
           <Controller
             name="preferred_work_locations"
@@ -218,10 +222,10 @@ export function EmploymentSection({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
         {/* Travel Preferences */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontWeight="600">Travel Preferences</Text>
           <Controller
             name="open_to_travel"
@@ -239,10 +243,10 @@ export function EmploymentSection({
             )}
           />
           <Controller name="travel_distance_miles" control={control} render={() => <></>} />
-        </YStack>
+        </Stack>
 
         {/* Residency */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontWeight="600">Residency</Text>
           <Controller
             name="us_resident"
@@ -266,10 +270,10 @@ export function EmploymentSection({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
         {/* Drivers License */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontWeight="600">Driver's License</Text>
           <Controller
             name="drivers_license_classes"
@@ -297,9 +301,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <YStack gap="$2" paddingTop="$2">
+                    <Stack gap="$2" paddingTop="$2">
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                        <XStack key={license} gap="$3" alignItems="center">
+                        <Row key={license} gap="$3" alignItems="center">
                           <CustomCheckbox
                             checked={field.value?.includes(license) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -336,18 +340,18 @@ export function EmploymentSection({
                               ? "Class D (standard driver's license)"
                               : `Class ${license}`}
                           </Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
+                    </Stack>
                   }
                 />
               )
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Military Status */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontWeight="600">Military Status</Text>
           <Controller
             name="military_status"
@@ -372,9 +376,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <YStack gap="$2" paddingTop="$2">
+                    <Stack gap="$2" paddingTop="$2">
                       {MILITARY_STATUS_OPTIONS.map((status) => (
-                        <XStack key={status} gap="$3" alignItems="center">
+                        <Row key={status} gap="$3" alignItems="center">
                           <CustomCheckbox
                             checked={field.value?.includes(status) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -390,18 +394,18 @@ export function EmploymentSection({
                             aria-label={status}
                           />
                           <Text>{status}</Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
+                    </Stack>
                   }
                 />
               )
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Availability */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontWeight="600">Availability</Text>
           <Controller
             name="availability"
@@ -426,9 +430,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <YStack gap="$2" paddingTop="$2">
+                    <Stack gap="$2" paddingTop="$2">
                       {AVAILABILITY_OPTIONS.map((option) => (
-                        <XStack key={option} gap="$3" alignItems="center">
+                        <Row key={option} gap="$3" alignItems="center">
                           <CustomCheckbox
                             checked={field.value?.includes(option) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -444,19 +448,19 @@ export function EmploymentSection({
                             aria-label={option}
                           />
                           <Text>{option}</Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
+                    </Stack>
                   }
                 />
               )
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Save Button */}
         {!readOnly && (
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <Row justifyContent="flex-end" paddingTop="$4">
             <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}
@@ -478,9 +482,9 @@ export function EmploymentSection({
               </AnimatePresence>
               <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

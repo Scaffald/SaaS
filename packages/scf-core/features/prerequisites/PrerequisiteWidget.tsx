@@ -6,13 +6,13 @@ import {
   DashboardWidget,
   ResponsiveSelect,
   spacing,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
-import { Input, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
@@ -34,7 +34,7 @@ import {
  */
 export function PrerequisiteWidget() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   // Check prerequisites status
   const {
@@ -50,16 +50,20 @@ export function PrerequisiteWidget() {
   // Complete prerequisites mutation
   const completeMutation = api.prerequisites.complete.useMutation({
     onSuccess: () => {
-      toast.show('Profile Complete', {
-        message: 'Your profile has been set up successfully!',
-      })
+      toast.show({
+          title: 'Profile Complete',
+          message: 'Your profile has been set up successfully!',
+          variant: 'success',
+        })
       refetchStatus()
     },
     onError: (error: { message?: string }) => {
       console.error('Error completing prerequisites:', error)
-      toast.show('Error', {
-        message: error.message || 'Failed to save profile. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to save profile. Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -131,27 +135,27 @@ export function PrerequisiteWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
+      <Stack gap={spacing.md}>
+        <Stack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Complete Your Profile
           </Text>
           <Text fontSize="$3" color="$color11">
             Please complete these required fields to continue using Scaffald
           </Text>
-        </YStack>
+        </Stack>
 
         {isCheckingStatus ? (
-          <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
+          <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
             <Spinner size="large" color="$blue7" />
             <Text color="$color11">Loading...</Text>
-          </YStack>
+          </Stack>
         ) : (
           <>
             {/* 1. Name Fields */}
-            <YStack gap="$3">
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
+            <Stack gap="$3">
+              <Row gap="$3">
+                <Stack gap="$2" flex={1}>
                   <Text fontWeight="600">First Name *</Text>
                   <Controller
                     name="first_name"
@@ -170,9 +174,9 @@ export function PrerequisiteWidget() {
                       {errors.first_name.message}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
+                <Stack gap="$2" flex={1}>
                   <Text fontWeight="600">Last Name *</Text>
                   <Controller
                     name="last_name"
@@ -191,14 +195,14 @@ export function PrerequisiteWidget() {
                       {errors.last_name.message}
                     </Text>
                   )}
-                </YStack>
-              </XStack>
-            </YStack>
+                </Stack>
+              </Row>
+            </Stack>
 
             <Separator />
 
             {/* 2. Address */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Address *</Text>
               <Text fontSize="$2" color="$color11" marginBottom="$2">
                 Search and select your home address
@@ -219,20 +223,20 @@ export function PrerequisiteWidget() {
                     errors.address.zip?.message}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* 3. User Types */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">I am a (select all that apply) *</Text>
               <Controller
                 name="user_types"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     {USER_TYPE_OPTIONS.map((option) => (
-                      <XStack key={option.value} gap="$3" alignItems="center">
+                      <Row key={option.value} gap="$3" alignItems="center">
                         <CustomCheckbox
                           checked={field.value?.includes(option.value as UserType)}
                           onCheckedChange={(checked: boolean) => {
@@ -268,9 +272,9 @@ export function PrerequisiteWidget() {
                             {option.label}
                           </Text>
                         </Pressable>
-                      </XStack>
+                      </Row>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
               />
               {errors.user_types && (
@@ -278,23 +282,23 @@ export function PrerequisiteWidget() {
                   {errors.user_types.message}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* 4. Primary Industry */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Primary Industry *</Text>
               <Controller
                 name="industry_id"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     {isLoadingIndustries ? (
-                      <XStack gap="$2" alignItems="center">
+                      <Row gap="$2" alignItems="center">
                         <Spinner size="small" />
                         <Text color="$color11">Loading industries...</Text>
-                      </XStack>
+                      </Row>
                     ) : industriesData?.industries && industriesData.industries.length > 0 ? (
                       <ResponsiveSelect
                         value={field.value || ''}
@@ -312,7 +316,7 @@ export function PrerequisiteWidget() {
                         No industries available
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 )}
               />
               {errors.industry_id && (
@@ -320,12 +324,12 @@ export function PrerequisiteWidget() {
                   {errors.industry_id.message}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* 5. Legal Agreements */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Legal Agreements *</Text>
 
               {/* Privacy Policy */}
@@ -333,8 +337,8 @@ export function PrerequisiteWidget() {
                 name="accepts_privacy_policy"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
-                    <XStack gap="$3" alignItems="center">
+                  <Stack gap="$2">
+                    <Row gap="$3" alignItems="center">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -366,13 +370,13 @@ export function PrerequisiteWidget() {
                           </Text>
                         </Text>
                       </Pressable>
-                    </XStack>
+                    </Row>
                     {errors.accepts_privacy_policy && (
                       <Text color="$red10" fontSize="$2">
                         {errors.accepts_privacy_policy.message}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 )}
               />
 
@@ -381,8 +385,8 @@ export function PrerequisiteWidget() {
                 name="accepts_terms_of_service"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
-                    <XStack gap="$3" alignItems="center">
+                  <Stack gap="$2">
+                    <Row gap="$3" alignItems="center">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -414,16 +418,16 @@ export function PrerequisiteWidget() {
                           </Text>
                         </Text>
                       </Pressable>
-                    </XStack>
+                    </Row>
                     {errors.accepts_terms_of_service && (
                       <Text color="$red10" fontSize="$2">
                         {errors.accepts_terms_of_service.message}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 )}
               />
-            </YStack>
+            </Stack>
 
             {/* Submit Button */}
             <Button
@@ -435,17 +439,17 @@ export function PrerequisiteWidget() {
               marginTop={spacing.xs}
             >
               {isSubmitting ? (
-                <XStack gap={spacing.xs} alignItems="center">
+                <Row gap={spacing.xs} alignItems="center">
                   <Spinner size="small" color="white" />
                   <Button.Text>Completing...</Button.Text>
-                </XStack>
+                </Row>
               ) : (
                 <Button.Text>Complete Profile</Button.Text>
               )}
             </Button>
           </>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

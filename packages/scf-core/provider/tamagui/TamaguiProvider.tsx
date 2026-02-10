@@ -3,7 +3,7 @@ import {
   isWeb,
   TamaguiProvider as TamaguiProviderOG,
   useDidFinishSSR,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import type { ReactNode } from 'react'
 import { useRootTheme, useThemeSetting } from '../theme/UniversalThemeProvider'
 

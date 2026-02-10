@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, Row, Stack } from '@unicornlove/beyond-ui'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 
@@ -20,10 +20,10 @@ export const AssessmentsLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
         {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop="$3" />}
 
-        <XStack
+        <Row
           gap="$3"
           paddingHorizontal="$3"
           paddingTop="$3"
@@ -36,7 +36,7 @@ export const AssessmentsLayout = ({
           }}
         >
           {hasLeftContent && (
-            <YStack
+            <Stack
               width="100%"
               $md={{
                 width: hasBothColumns ? undefined : '100%',
@@ -45,10 +45,10 @@ export const AssessmentsLayout = ({
               }}
             >
               {leftContent}
-            </YStack>
+            </Stack>
           )}
           {hasRightContent && (
-            <YStack
+            <Stack
               width="100%"
               $md={{
                 width: hasBothColumns ? undefined : '100%',
@@ -57,10 +57,10 @@ export const AssessmentsLayout = ({
               }}
             >
               {rightContent}
-            </YStack>
+            </Stack>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }

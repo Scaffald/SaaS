@@ -38,8 +38,8 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mockShowToast,
   }),
 }))

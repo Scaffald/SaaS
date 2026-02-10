@@ -1,6 +1,6 @@
 import { Eye, Pencil, X } from '@tamagui/lucide-icons'
 import { useEffect, useRef } from 'react'
-import { Button, XStack } from '@unicornlove/ui'
+import { Button, Row } from '@unicornlove/beyond-ui'
 import { DeleteButton } from './DeleteButton'
 import { DuplicateButton } from './DuplicateButton'
 
@@ -103,7 +103,7 @@ export function RowActionOverlay<TData>({
   }
 
   return (
-    <XStack
+    <Row
       ref={overlayRef}
       position="absolute"
       backgroundColor="$color2"
@@ -162,6 +162,6 @@ export function RowActionOverlay<TData>({
       <Button size="$2" variant="outlined" icon={X} onPress={onClose}>
         Close
       </Button>
-    </XStack>
+    </Row>
   )
 }

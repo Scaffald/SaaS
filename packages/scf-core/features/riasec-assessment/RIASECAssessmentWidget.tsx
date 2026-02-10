@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * RIASECAssessmentWidget - Dashboard widget CTA for RIASEC Career Interests
@@ -15,10 +15,10 @@ export function RIASECAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -33,15 +33,15 @@ export function RIASECAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
+      <Stack gap={spacing.md}>
+        <Stack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Career Interests
           </Text>
           <Text fontSize="$3" color="$color11">
             Rate your interest in 6 career dimensions to discover careers that match your interests.
           </Text>
-        </YStack>
+        </Stack>
 
         <Button variant="primary" onPress={handleStart} size="$5">
           <Button.Text>Start Interest Assessment</Button.Text>
@@ -50,7 +50,7 @@ export function RIASECAssessmentWidget() {
         <Text fontSize="$2" color="$color11">
           Takes about 2-3 minutes
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

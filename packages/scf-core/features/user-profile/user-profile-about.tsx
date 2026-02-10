@@ -1,4 +1,4 @@
-import { Card, Text, YStack } from '@unicornlove/ui'
+import { Card, Text, Stack } from '@unicornlove/beyond-ui'
 
 interface UserProfileAboutProps {
   bio: string
@@ -7,14 +7,14 @@ interface UserProfileAboutProps {
 export function UserProfileAbout({ bio }: UserProfileAboutProps) {
   return (
     <Card elevate bordered>
-      <YStack gap="$3" padding="$5">
+      <Stack gap="$3" padding="$5">
         <Text fontSize="$7" fontWeight="700" color="$color12">
           About
         </Text>
         <Text fontSize="$5" color="$color11" lineHeight={24}>
           {bio}
         </Text>
-      </YStack>
+      </Stack>
     </Card>
   )
 }

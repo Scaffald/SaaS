@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface StepNavigationProps {
   canGoBack: boolean
@@ -33,8 +33,8 @@ export function StepNavigation({
   footerSlot,
 }: StepNavigationProps) {
   return (
-    <YStack gap="$3">
-      <XStack gap="$3" flexWrap="wrap">
+    <Stack gap="$3">
+      <Row gap="$3" flexWrap="wrap">
         <Button size="$4" flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
           {isLastStep ? 'Finish' : nextLabel}
         </Button>
@@ -47,9 +47,9 @@ export function StepNavigation({
         >
           {backLabel}
         </Button>
-      </XStack>
+      </Row>
 
-      <XStack justifyContent="space-between" flexWrap="wrap" gap="$2">
+      <Row justifyContent="space-between" flexWrap="wrap" gap="$2">
         {onSkip && (
           <Button size="$3" variant="outlined" chromeless onPress={onSkip} disabled={isSaving}>
             {skipLabel}
@@ -61,7 +61,7 @@ export function StepNavigation({
             {saveLabel}
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {isSaving && (
         <Text fontSize="$2" color="$color10" aria-live="polite">
@@ -70,6 +70,6 @@ export function StepNavigation({
       )}
 
       {footerSlot}
-    </YStack>
+    </Stack>
   )
 }

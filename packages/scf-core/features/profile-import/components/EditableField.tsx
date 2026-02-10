@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Input, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import { toConfidenceLevel } from '../utils/importConfidence'
 import { ConfidenceBadge } from './ConfidenceBadge'
 
@@ -30,14 +30,14 @@ export const EditableField = memo(function EditableField({
   const inputValue = value ?? ''
 
   return (
-    <YStack gap="$2">
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap="$2">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontWeight="600">
           {label}
           {required ? ' *' : ''}
         </Text>
         <ConfidenceBadge level={confidenceLevel} />
-      </XStack>
+      </Row>
 
       {fieldType === 'textarea' ? (
         <TextArea
@@ -55,6 +55,6 @@ export const EditableField = memo(function EditableField({
           {error}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 })

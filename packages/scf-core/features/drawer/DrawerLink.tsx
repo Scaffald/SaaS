@@ -2,7 +2,7 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { Check, ChevronRight, Clock } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useCallback, useMemo } from 'react'
-import { Paragraph, XStack, YStack } from '@unicornlove/ui'
+import { Paragraph, Row, Stack } from '@unicornlove/beyond-ui'
 import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
@@ -42,7 +42,7 @@ export const DrawerLink = ({
 
   const renderContent = useCallback(() => {
     const iconWrapper = (
-      <XStack
+      <Row
         alignItems="center"
         justifyContent="center"
         width={collapsed ? 48 : 32}
@@ -51,7 +51,7 @@ export const DrawerLink = ({
         backgroundColor={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
       >
         {renderIcon()}
-      </XStack>
+      </Row>
     )
 
     if (collapsed) {
@@ -59,12 +59,12 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack alignItems="center" gap="$3">
+      <Row alignItems="center" gap="$3">
         {iconWrapper}
         <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
           {title}
         </Paragraph>
-      </XStack>
+      </Row>
     )
   }, [active, collapsed, renderIcon, title])
 
@@ -74,9 +74,9 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack alignItems="center" gap="$2">
+      <Row alignItems="center" gap="$2">
         {item.badge && (
-          <XStack
+          <Row
             paddingHorizontal="$2"
             paddingVertical="$1"
             borderRadius="$10"
@@ -87,10 +87,10 @@ export const DrawerLink = ({
             <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
               {item.badge}
             </Paragraph>
-          </XStack>
+          </Row>
         )}
         {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="$color10" />}
-      </XStack>
+      </Row>
     )
   }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable])
 
@@ -101,7 +101,7 @@ export const DrawerLink = ({
   if (item.disabled) {
     if (collapsed) {
       return (
-        <XStack
+        <Row
           alignItems="center"
           justifyContent="center"
           width={56}
@@ -112,12 +112,12 @@ export const DrawerLink = ({
           cursor="not-allowed"
         >
           {renderIcon()}
-        </XStack>
+        </Row>
       )
     }
 
     return (
-      <XStack
+      <Row
         alignItems="center"
         gap="$3"
         paddingHorizontal="$3"
@@ -130,14 +130,14 @@ export const DrawerLink = ({
         <Paragraph size="$3" fontWeight="500" color="$color12">
           {title}
         </Paragraph>
-      </XStack>
+      </Row>
     )
   }
 
   if (collapsed && depth === 0) {
     return (
       <Link href={item.href} asChild>
-        <XStack
+        <Row
           width={56}
           height={56}
           borderRadius="$8"
@@ -149,7 +149,7 @@ export const DrawerLink = ({
           cursor="pointer"
         >
           {renderIcon()}
-        </XStack>
+        </Row>
       </Link>
     )
   }
@@ -157,7 +157,7 @@ export const DrawerLink = ({
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
-        <XStack
+        <Row
           alignItems="center"
           borderRadius="$4"
           gap="$3"
@@ -177,16 +177,16 @@ export const DrawerLink = ({
           ) : item.isCompleted ? (
             <Check size={16} color="$green9" />
           ) : null}
-        </XStack>
+        </Row>
       </Link>
     )
   }
 
   if (isManualExpandable) {
     return (
-      <YStack flex={1}>
+      <Stack flex={1}>
         <Link href={item.href} asChild>
-          <XStack
+          <Row
             alignItems="center"
             justifyContent="space-between"
             paddingHorizontal="$3"
@@ -200,10 +200,10 @@ export const DrawerLink = ({
           >
             {renderContent()}
             {renderRightSide()}
-          </XStack>
+          </Row>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+          <Stack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -216,17 +216,17 @@ export const DrawerLink = ({
                 isCollapsed={collapsed}
               />
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   if (isAutoExpandable) {
     return (
-      <YStack flex={1}>
+      <Stack flex={1}>
         <Link href={item.href} asChild>
-          <XStack
+          <Row
             alignItems="center"
             justifyContent="space-between"
             paddingHorizontal="$3"
@@ -240,10 +240,10 @@ export const DrawerLink = ({
           >
             {renderContent()}
             {renderRightSide()}
-          </XStack>
+          </Row>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+          <Stack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -256,17 +256,17 @@ export const DrawerLink = ({
                 isCollapsed={collapsed}
               />
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   if (item.subItems && item.subItems.length > 0) {
     return (
-      <YStack flex={1}>
+      <Stack flex={1}>
         <Link href={item.href} asChild>
-          <XStack
+          <Row
             alignItems="center"
             justifyContent="space-between"
             paddingHorizontal="$3"
@@ -280,9 +280,9 @@ export const DrawerLink = ({
           >
             {renderContent()}
             {renderRightSide()}
-          </XStack>
+          </Row>
         </Link>
-        <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+        <Stack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
           {item.subItems.map((subItem) => (
             <DrawerLink
               key={subItem.key}
@@ -295,14 +295,14 @@ export const DrawerLink = ({
               isCollapsed={collapsed}
             />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
     <Link href={item.href} asChild>
-      <XStack
+      <Row
         alignItems="center"
         justifyContent="space-between"
         paddingHorizontal="$3"
@@ -316,7 +316,7 @@ export const DrawerLink = ({
       >
         {renderContent()}
         {renderRightSide()}
-      </XStack>
+      </Row>
     </Link>
   )
 }

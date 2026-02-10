@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
   ArrowDown,
   ArrowUp,
@@ -12,7 +12,7 @@ import {
   X,
 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Profile Activity Widget
@@ -80,15 +80,15 @@ export function ProfileActivityWidget() {
         Profile Activity
       </Text>
       {isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
+        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading activity...</Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$4">
+        <Stack gap="$4">
           {/* 30-Day View Trend */}
           {viewAnalytics && (
-            <YStack
+            <Stack
               gap="$2"
               backgroundColor="$blue2"
               padding="$3"
@@ -96,18 +96,18 @@ export function ProfileActivityWidget() {
               borderWidth={1}
               borderColor="$blue6"
             >
-              <XStack alignItems="center" gap="$2">
+              <Row alignItems="center" gap="$2">
                 <Eye size={18} color="$blue10" />
                 <Text fontSize="$4" fontWeight="600" color="$blue11">
                   Profile Views (30 days)
                 </Text>
-              </XStack>
-              <XStack alignItems="baseline" gap="$2">
+              </Row>
+              <Row alignItems="baseline" gap="$2">
                 <Text fontSize="$7" fontWeight="700" color="$blue11">
                   {viewAnalytics.views30d}
                 </Text>
                 {viewAnalytics.trend !== 0 && (
-                  <XStack alignItems="center" gap="$1">
+                  <Row alignItems="center" gap="$1">
                     {viewAnalytics.trend > 0 ? (
                       <ArrowUp size={16} color="$green10" />
                     ) : (
@@ -120,39 +120,39 @@ export function ProfileActivityWidget() {
                     >
                       {Math.abs(viewAnalytics.trend).toFixed(1)}%
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </XStack>
+              </Row>
               {viewAnalytics.viewsTotal > 0 && (
                 <Text fontSize="$2" color="$blue10">
                   {viewAnalytics.viewsTotal} total views
                 </Text>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {/* Recent Profile Views */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack alignItems="center" gap="$2">
+          <Stack gap="$2">
+            <Row justifyContent="space-between" alignItems="center">
+              <Row alignItems="center" gap="$2">
                 <Eye size={18} color="$color12" />
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   Recent Views
                 </Text>
-              </XStack>
+              </Row>
               {profileViews && profileViews.total > 0 && (
                 <Button size="$2" variant="outlined" onPress={handleViewAllProfileViews}>
                   View All
                 </Button>
               )}
-            </XStack>
+            </Row>
 
             {!profileViews || profileViews.views.length === 0 ? (
               <Text fontSize="$3" color="$color10" fontStyle="italic">
                 No profile views yet
               </Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {profileViews.views.slice(0, 5).map(
                   (view: {
                     id: string
@@ -163,7 +163,7 @@ export function ProfileActivityWidget() {
                     } | null
                     viewed_at?: string
                   }) => (
-                    <XStack key={view.id} alignItems="center" gap="$2">
+                    <Row key={view.id} alignItems="center" gap="$2">
                       <Avatar circular size={32}>
                         {view.viewer?.avatar_url ? (
                           <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
@@ -177,7 +177,7 @@ export function ProfileActivityWidget() {
                           </Avatar.Fallback>
                         )}
                       </Avatar>
-                      <YStack flex={1} gap="$1">
+                      <Stack flex={1} gap="$1">
                         <Text fontSize="$3" fontWeight="600" color="$color12">
                           {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
                         </Text>
@@ -189,33 +189,33 @@ export function ProfileActivityWidget() {
                             })}
                           </Text>
                         )}
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
                   )
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* New Followers */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack alignItems="center" gap="$2">
+          <Stack gap="$2">
+            <Row justifyContent="space-between" alignItems="center">
+              <Row alignItems="center" gap="$2">
                 <UserPlus size={18} color="$color12" />
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   New Followers
                 </Text>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
 
             {!followers || followers.length === 0 ? (
               <Text fontSize="$3" color="$color10" fontStyle="italic">
                 No followers yet
               </Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {followers.slice(0, 5).map(
                   (follow: {
                     id: string
@@ -226,7 +226,7 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <XStack key={follow.id} alignItems="center" gap="$2">
+                    <Row key={follow.id} alignItems="center" gap="$2">
                       <Avatar circular size={32}>
                         {follow.user?.avatar_url ? (
                           <Avatar.Image source={{ uri: follow.user.avatar_url }} />
@@ -240,7 +240,7 @@ export function ProfileActivityWidget() {
                           </Avatar.Fallback>
                         )}
                       </Avatar>
-                      <YStack flex={1} gap="$1">
+                      <Stack flex={1} gap="$1">
                         <Text fontSize="$3" fontWeight="600" color="$color12">
                           {follow.user?.display_name || follow.user?.username || 'User'}
                         </Text>
@@ -252,26 +252,26 @@ export function ProfileActivityWidget() {
                             })}
                           </Text>
                         )}
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
                   )
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Pending Connection Requests */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack alignItems="center" gap="$2">
+          <Stack gap="$2">
+            <Row justifyContent="space-between" alignItems="center">
+              <Row alignItems="center" gap="$2">
                 <Users size={18} color="$color12" />
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   Pending Requests
                 </Text>
                 {pendingRequests && pendingRequests.received.length > 0 && (
-                  <XStack
+                  <Row
                     backgroundColor="$orange3"
                     paddingHorizontal="$2"
                     paddingVertical="$0.5"
@@ -282,20 +282,20 @@ export function ProfileActivityWidget() {
                     <Text fontSize="$2" fontWeight="700" color="$orange11">
                       {pendingRequests.received.length}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </XStack>
+              </Row>
               <Button size="$2" variant="outlined" onPress={handleManageConnections}>
                 Manage
               </Button>
-            </XStack>
+            </Row>
 
             {!pendingRequests || pendingRequests.received.length === 0 ? (
               <Text fontSize="$3" color="$color10" fontStyle="italic">
                 No pending requests
               </Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {pendingRequests.received.slice(0, 3).map(
                   (request: {
                     id: string
@@ -306,13 +306,13 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <XStack
+                    <Row
                       key={request.id}
                       alignItems="center"
                       gap="$2"
                       justifyContent="space-between"
                     >
-                      <XStack alignItems="center" gap="$2" flex={1}>
+                      <Row alignItems="center" gap="$2" flex={1}>
                         <Avatar circular size={32}>
                           {request.user?.avatar_url ? (
                             <Avatar.Image source={{ uri: request.user.avatar_url }} />
@@ -326,7 +326,7 @@ export function ProfileActivityWidget() {
                             </Avatar.Fallback>
                           )}
                         </Avatar>
-                        <YStack flex={1} gap="$1">
+                        <Stack flex={1} gap="$1">
                           <Text fontSize="$3" fontWeight="600" color="$color12">
                             {request.user?.display_name || request.user?.username || 'User'}
                           </Text>
@@ -338,9 +338,9 @@ export function ProfileActivityWidget() {
                               })}
                             </Text>
                           )}
-                        </YStack>
-                      </XStack>
-                      <XStack gap="$1">
+                        </Stack>
+                      </Row>
+                      <Row gap="$1">
                         <Button
                           size="$2"
                           circular
@@ -361,8 +361,8 @@ export function ProfileActivityWidget() {
                             acceptRequestMutation.isPending || declineRequestMutation.isPending
                           }
                         />
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                   )
                 )}
                 {pendingRequests.received.length > 3 && (
@@ -374,10 +374,10 @@ export function ProfileActivityWidget() {
                     </Text>
                   </>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
     </DashboardWidget>
   )

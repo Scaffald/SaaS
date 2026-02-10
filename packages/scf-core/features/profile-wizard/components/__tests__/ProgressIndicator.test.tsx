@@ -51,8 +51,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <div data-testid="separator" data-vertical={vertical} {...rest} />
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Progress,
     Separator,

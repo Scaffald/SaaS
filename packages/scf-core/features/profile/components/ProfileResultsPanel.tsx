@@ -1,6 +1,6 @@
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, YStack, type YStackProps } from '@unicornlove/ui'
+import { ScrollView, Spinner, Text, Stack, type YStackProps } from '@unicornlove/beyond-ui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */
@@ -49,7 +49,7 @@ export function ProfileResultsPanel({
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
-        <YStack gap="$4" {...props}>
+        <Stack gap="$4" {...props}>
           {title && (
             <Text fontWeight="600" fontSize="$5">
               {title}
@@ -57,21 +57,21 @@ export function ProfileResultsPanel({
           )}
 
           {isLoading ? (
-            <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
+            <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
               <Spinner size="large" />
               <Text color="$color11">Loading...</Text>
-            </YStack>
+            </Stack>
           ) : isEmpty ? (
-            <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
+            <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
               {EmptyIcon && <EmptyIcon size={48} color="$color11" />}
               <Text color="$color11" textAlign="center">
                 {emptyMessage || 'No items added yet'}
               </Text>
-            </YStack>
+            </Stack>
           ) : (
             children
           )}
-        </YStack>
+        </Stack>
       </DashboardWidget>
     </ScrollView>
   )

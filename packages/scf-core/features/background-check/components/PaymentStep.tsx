@@ -1,6 +1,6 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@unicornlove/beyond-ui'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -51,8 +51,8 @@ export const PaymentStep = memo(function PaymentStep({
   const canCreateSession = Boolean(payment.costCents && selectedPackage)
 
   return (
-    <YStack gap="$4" flex={1}>
-      <YStack gap="$2">
+    <Stack gap="$4" flex={1}>
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           Payment & Authorization
         </Text>
@@ -60,9 +60,9 @@ export const PaymentStep = memo(function PaymentStep({
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+      <Stack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
         <Text fontSize="$2" color="$color11">
           Total Due
         </Text>
@@ -72,12 +72,12 @@ export const PaymentStep = memo(function PaymentStep({
         <Text fontSize="$2" color="$color10">
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
-      </YStack>
+      </Stack>
 
       {submitError && (
-        <YStack backgroundColor="$red3" padding="$3" borderRadius="$3">
+        <Stack backgroundColor="$red3" padding="$3" borderRadius="$3">
           <Text color="$red11">{submitError.message}</Text>
-        </YStack>
+        </Stack>
       )}
 
       {!paymentSession && (
@@ -101,6 +101,6 @@ export const PaymentStep = memo(function PaymentStep({
           onSuccess={(paymentIntentId) => onPaymentSuccess(paymentIntentId)}
         />
       )}
-    </YStack>
+    </Stack>
   )
 })

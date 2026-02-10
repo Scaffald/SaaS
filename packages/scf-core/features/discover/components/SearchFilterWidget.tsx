@@ -1,6 +1,6 @@
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { X } from '@tamagui/lucide-icons'
-import { Button, Input, Label, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Label, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface SearchFilterWidgetProps {
   /** Title displayed in the header */
@@ -52,8 +52,8 @@ export function SearchFilterWidget({
   activeFiltersContent,
 }: SearchFilterWidgetProps) {
   const headerSection = (
-    <YStack gap={subtitle ? '$2' : '$1'}>
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap={subtitle ? '$2' : '$1'}>
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           {title}
         </Text>
@@ -62,17 +62,17 @@ export function SearchFilterWidget({
             Clear
           </Button>
         )}
-      </XStack>
+      </Row>
       {subtitle && (
         <Text fontSize="$3" color="$color11">
           {subtitle}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 
   const searchSection = (
-    <YStack gap={searchLabel ? '$2' : '$2'}>
+    <Stack gap={searchLabel ? '$2' : '$2'}>
       {searchLabel && (
         <Label htmlFor="search" fontSize="$4" fontWeight="600" color="$color12">
           {searchLabel}
@@ -85,18 +85,18 @@ export function SearchFilterWidget({
         onChangeText={onSearchChange}
         size="$4"
       />
-    </YStack>
+    </Stack>
   )
 
   const defaultActiveFiltersContent = searchQuery && (
-    <XStack gap="$2" alignItems="center">
+    <Row gap="$2" alignItems="center">
       <Text fontSize="$3" color="$color11">
         Search:
       </Text>
       <Text fontSize="$3" fontWeight="600" color="$blue10">
         {searchQuery}
       </Text>
-    </XStack>
+    </Row>
   )
 
   const shouldShowActiveFilters =
@@ -106,12 +106,12 @@ export function SearchFilterWidget({
   const activeFiltersSection = shouldShowActiveFilters && (
     <>
       <Separator />
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Active Filters
         </Text>
         {activeFiltersContent !== undefined ? activeFiltersContent : defaultActiveFiltersContent}
-      </YStack>
+      </Stack>
     </>
   )
 

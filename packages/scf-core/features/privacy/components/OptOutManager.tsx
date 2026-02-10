@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack, Spinner } from '@unicornlove/ui'
+import { Button, Text, Row, Stack, Spinner } from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
 
 /**
@@ -103,7 +103,7 @@ function ToggleSwitch({
   disabled?: boolean
 }) {
   return (
-    <XStack
+    <Row
       width={50}
       height={28}
       borderRadius={14}
@@ -113,7 +113,7 @@ function ToggleSwitch({
       opacity={disabled ? 0.5 : 1}
       onPress={disabled ? undefined : () => onChange(!checked)}
     >
-      <YStack
+      <Stack
         width={24}
         height={24}
         borderRadius={12}
@@ -121,7 +121,7 @@ function ToggleSwitch({
         marginLeft={checked ? 22 : 0}
         animation="quick"
       />
-    </XStack>
+    </Row>
   )
 }
 
@@ -144,7 +144,7 @@ function OptOutRow({
   const isGPCOptOut = status?.source === 'gpc'
 
   return (
-    <YStack
+    <Stack
       padding="$4"
       backgroundColor="$color2"
       borderRadius="$3"
@@ -152,17 +152,17 @@ function OptOutRow({
       borderColor="$borderColor"
       gap="$3"
     >
-      <XStack justifyContent="space-between" alignItems="flex-start">
-        <YStack flex={1} gap="$1" marginRight="$4">
+      <Row justifyContent="space-between" alignItems="flex-start">
+        <Stack flex={1} gap="$1" marginRight="$4">
           <Text fontSize="$4" fontWeight="600">
             {info.title}
           </Text>
           <Text fontSize="$3" color="$color11">
             {info.description}
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack alignItems="center" gap="$1">
+        <Stack alignItems="center" gap="$1">
           <ToggleSwitch
             checked={isOptedOut}
             onChange={(checked) => onToggle(category, checked)}
@@ -171,21 +171,21 @@ function OptOutRow({
           <Text fontSize="$2" color={isOptedOut ? '$green10' : '$color10'}>
             {isOptedOut ? 'Opted Out' : 'Opted In'}
           </Text>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {/* Status info */}
       {status?.opted_out_at && (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {isGPCOptOut ? 'Via GPC signal' : 'Manual opt-out'} on{' '}
             {formatDate(status.opted_out_at)}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {isGPCOptOut && (
-        <XStack
+        <Row
           padding="$2"
           backgroundColor="$blue2"
           borderRadius="$2"
@@ -194,14 +194,14 @@ function OptOutRow({
             This opt-out was automatically applied based on your browser&apos;s Global Privacy
             Control (GPC) signal. To change this setting, disable GPC in your browser.
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Legal basis */}
       <Text fontSize="$2" color="$color9">
         Legal basis: {info.legalBasis}
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -261,7 +261,7 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
 
   if (error) {
     return (
-      <YStack padding="$4" gap="$4" alignItems="center">
+      <Stack padding="$4" gap="$4" alignItems="center">
         <Text color="$red10" fontSize="$4">
           Error loading opt-out preferences
         </Text>
@@ -269,14 +269,14 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
         <Button onPress={() => refetch()} variant="outlined">
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$4">
+    <Stack gap="$4" padding="$4">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="600">
           Manage Opt-Out Preferences
         </Text>
@@ -284,11 +284,11 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
           Control how your personal information is used and shared. Your choices here are
           protected under the California Consumer Privacy Act (CCPA).
         </Text>
-      </YStack>
+      </Stack>
 
       {/* GPC Detection Banner */}
       {hasGPC && (
-        <XStack
+        <Row
           padding="$3"
           backgroundColor="$green2"
           borderRadius="$3"
@@ -297,7 +297,7 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
           gap="$2"
           alignItems="center"
         >
-          <YStack
+          <Stack
             width={24}
             height={24}
             borderRadius={12}
@@ -308,8 +308,8 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
             <Text color="white" fontSize="$2" fontWeight="bold">
               ✓
             </Text>
-          </YStack>
-          <YStack flex={1}>
+          </Stack>
+          <Stack flex={1}>
             <Text fontSize="$3" fontWeight="600" color="$green11">
               Global Privacy Control Detected
             </Text>
@@ -317,19 +317,19 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
               Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal
               and have automatically opted you out of data sale and sharing.
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       )}
 
       {/* Loading state */}
       {isLoading ? (
-        <XStack padding="$6" justifyContent="center">
+        <Row padding="$6" justifyContent="center">
           <Spinner size="large" />
-        </XStack>
+        </Row>
       ) : (
         <>
           {/* Opt-out categories */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             <OptOutRow
               category="sale"
               status={statusMap.sale}
@@ -354,10 +354,10 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
               onToggle={handleToggle}
               isPending={pendingCategory === 'sensitive_data'}
             />
-          </YStack>
+          </Stack>
 
           {/* Opt-out all button */}
-          <XStack gap="$3" justifyContent="center" marginTop="$2">
+          <Row gap="$3" justifyContent="center" marginTop="$2">
             <Button
               size="$4"
               onPress={() => {
@@ -377,12 +377,12 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
             >
               Opt Out of All
             </Button>
-          </XStack>
+          </Row>
         </>
       )}
 
       {/* Non-discrimination notice */}
-      <YStack
+      <Stack
         padding="$3"
         backgroundColor="$color3"
         borderRadius="$2"
@@ -393,10 +393,10 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
           against you for exercising any of your privacy rights. You will receive the same
           service and pricing regardless of your privacy choices.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Info about processing */}
-      <YStack gap="$2" marginTop="$2">
+      <Stack gap="$2" marginTop="$2">
         <Text fontSize="$3" fontWeight="500">
           How Opt-Outs Work
         </Text>
@@ -413,17 +413,17 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
           • If you use GPC, your opt-out will be automatically applied across all participating
           sites
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Close button */}
       {onClose && (
-        <XStack justifyContent="flex-end" marginTop="$4">
+        <Row justifyContent="flex-end" marginTop="$4">
           <Button variant="outlined" onPress={onClose}>
             Close
           </Button>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 }
 

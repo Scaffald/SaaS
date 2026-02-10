@@ -3,7 +3,7 @@ import {
   FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
 } from '@scf/schemas/feedback'
-import type { UploadSelection } from '@unicornlove/ui'
+import type { UploadSelection } from '@unicornlove/beyond-ui'
 import {
   Button,
   FieldError,
@@ -15,9 +15,9 @@ import {
   Separator,
   Text,
   UploadSurface,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { MessageCircle } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -110,7 +110,7 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <YStack position="absolute" bottom="$4" right="$4" style={{ zIndex: 1000 }}>
+      <Stack position="absolute" bottom="$4" right="$4" style={{ zIndex: 1000 }}>
         <Button
           size="$6"
           circular
@@ -126,7 +126,7 @@ export function FeedbackWidget() {
           Feedback
         </Button>
         {pendingCount > 0 ? (
-          <YStack
+          <Stack
             marginTop="$2"
             paddingHorizontal="$3"
             paddingVertical="$2"
@@ -141,9 +141,9 @@ export function FeedbackWidget() {
                 ? "1 submission will sync when you're online."
                 : `${pendingCount} submissions will sync when you're online.`}
             </Text>
-          </YStack>
+          </Stack>
         ) : null}
-      </YStack>
+      </Stack>
 
       <ResponsiveModal
         open={isModalOpen}
@@ -152,16 +152,16 @@ export function FeedbackWidget() {
         size="medium"
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          <YStack gap="$4" paddingHorizontal="$2" paddingVertical="$2">
+          <Stack gap="$4" paddingHorizontal="$2" paddingVertical="$2">
             <Paragraph color="$color11">{INSTRUCTIONS}</Paragraph>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Feedback Type</Text>
               <Controller
                 control={form.control}
                 name="feedbackType"
                 render={({ field: { value, onChange } }) => (
-                  <XStack gap="$2">
+                  <Row gap="$2">
                     {(['bug', 'feature', 'comment'] as const).map((type) => {
                       const isActive = value === type
                       return (
@@ -180,13 +180,13 @@ export function FeedbackWidget() {
                         </Button>
                       )
                     })}
-                  </XStack>
+                  </Row>
                 )}
               />
               <FieldError message={form.formState.errors.feedbackType?.message} />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Feedback Details</Text>
               <Controller
                 control={form.control}
@@ -209,7 +209,7 @@ export function FeedbackWidget() {
                   />
                 )}
               />
-              <XStack justifyContent="space-between" alignItems="center">
+              <Row justifyContent="space-between" alignItems="center">
                 <FieldError
                   message={
                     form.formState.errors.feedbackText?.message ??
@@ -221,10 +221,10 @@ export function FeedbackWidget() {
                 <Text color={isBelowMinimum ? '$red9' : '$color9'} fontSize="$2">
                   {formatCharacterCounter(characterCount)}
                 </Text>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Screenshot (optional)</Text>
               <UploadSurface
                 accept={ACCEPT_TYPES}
@@ -235,7 +235,7 @@ export function FeedbackWidget() {
                 }}
               >
                 {({ open, getInputProps, getRootProps, isDragActive, isProcessing }) => (
-                  <YStack
+                  <Stack
                     {...getRootProps()}
                     borderWidth={1}
                     borderStyle="dashed"
@@ -258,12 +258,12 @@ export function FeedbackWidget() {
                     <Button size="$2" marginTop="$2" onPress={open}>
                       Choose File
                     </Button>
-                  </YStack>
+                  </Stack>
                 )}
               </UploadSurface>
 
               {screenshot ? (
-                <YStack
+                <Stack
                   marginTop="$3"
                   borderWidth={1}
                   borderColor="$color6"
@@ -278,7 +278,7 @@ export function FeedbackWidget() {
                       resizeMode="cover"
                     />
                   ) : null}
-                  <XStack
+                  <Row
                     paddingHorizontal="$3"
                     paddingVertical="$2"
                     alignItems="center"
@@ -286,7 +286,7 @@ export function FeedbackWidget() {
                     backgroundColor="$color2"
                     gap="$2"
                   >
-                    <YStack flex={1}>
+                    <Stack flex={1}>
                       <Text numberOfLines={1} fontWeight="600">
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
@@ -295,19 +295,19 @@ export function FeedbackWidget() {
                           ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
                       </Text>
-                    </YStack>
+                    </Stack>
                     <Button size="$2" variant="outlined" onPress={handleRemoveScreenshot}>
                       Remove
                     </Button>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               ) : null}
-            </YStack>
+            </Stack>
 
             <Separator />
 
-            <XStack alignItems="center" justifyContent="space-between" gap="$3">
-              <YStack gap="$1">
+            <Row alignItems="center" justifyContent="space-between" gap="$3">
+              <Stack gap="$1">
                 <Text fontSize="$2" color="$color9">
                   Captured context:
                 </Text>
@@ -319,7 +319,7 @@ export function FeedbackWidget() {
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}
                 </Text>
-              </YStack>
+              </Stack>
 
               <Button
                 size="$2"
@@ -331,7 +331,7 @@ export function FeedbackWidget() {
               >
                 {isProcessingQueue ? 'Syncing…' : 'Retry Pending'}
               </Button>
-            </XStack>
+            </Row>
 
             <Button
               size="$4"
@@ -340,7 +340,7 @@ export function FeedbackWidget() {
             >
               {isSubmitting ? 'Submitting…' : 'Submit Feedback'}
             </Button>
-          </YStack>
+          </Stack>
         </ScrollView>
       </ResponsiveModal>
     </>

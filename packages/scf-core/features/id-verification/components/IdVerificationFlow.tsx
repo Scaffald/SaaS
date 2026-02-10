@@ -2,10 +2,10 @@ import { PaymentIntentForm } from '@scf/core/features/payments/components/Paymen
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import { AlertCircle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 type PricingRow = {
@@ -43,7 +43,7 @@ const formatDuration = (value?: string | null) => {
 
 export function IdVerificationContent() {
   const { user } = useUser()
-  const toast = useToastController()
+  const toast = useToast()
 
   const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
@@ -81,17 +81,19 @@ export function IdVerificationContent() {
 
   const handleCreatePaymentSession = async () => {
     if (!user) {
-      toast.show('Sign in required', {
-        message: 'Please sign in again before starting verification.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Sign in required',
+          message: 'Please sign in again before starting verification.',
+          variant: 'error',
+        })
       return
     }
 
     if (!selectedPricing) {
-      toast.show('Select a plan', {
-        message: 'Choose a verification option to continue.',
-      })
+      toast.show({
+          title: 'Select a plan',
+          message: 'Choose a verification option to continue.',
+        })
       return
     }
 
@@ -103,37 +105,45 @@ export function IdVerificationContent() {
         pricingId: selectedPricing.id,
       })
       setPaymentSession(response)
-      toast.show('Secure payment ready', {
-        message: 'Enter your card details below to continue.',
-      })
+      toast.show({
+          title: 'Secure payment ready',
+          message: 'Enter your card details below to continue.',
+        })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to start payment. Try again.'
       setRequestError(message)
-      toast.show('Payment setup failed', { message, type: 'error' })
+      toast.show({
+          title: 'Payment setup failed',
+          variant: 'error',
+        })
     }
   }
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
     try {
       await confirmVerification.mutateAsync({ paymentIntentId })
-      toast.show('Verification scheduled', {
-        message: "We're creating your Persona inquiry now.",
-      })
+      toast.show({
+          title: 'Verification scheduled',
+          message: "We're creating your Persona inquiry now.",
+        })
       setPaymentSession(null)
       void currentVerificationQuery.refetch()
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Unable to confirm payment with Stripe.'
-      toast.show('Payment confirmation failed', { message, type: 'error' })
+      toast.show({
+          title: 'Payment confirmation failed',
+          variant: 'error',
+        })
     }
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {statusCard}
 
       <Card padding="$4" bordered>
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             Why verify your identity?
           </Text>
@@ -141,12 +151,12 @@ export function IdVerificationContent() {
             Verified profiles are highlighted across search, inquiries, and background checks,
             giving organizations confidence that you are who you say you are.
           </Text>
-          <YStack gap="$1" marginTop="$2">
+          <Stack gap="$1" marginTop="$2">
             <Text color="$color11">• Badge displayed on your profile and worker cards</Text>
             <Text color="$color11">• Valid for 6 months with automated reminders</Text>
             <Text color="$color11">• Powered by Persona, the same provider used by banks</Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </Card>
 
       <PricingSection
@@ -171,15 +181,15 @@ export function IdVerificationContent() {
         }}
         onPaymentSuccess={handlePaymentSuccess}
       />
-    </YStack>
+    </Stack>
   )
 }
 
 export function IdVerificationRight() {
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <Card padding="$4" bordered>
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             What happens after payment?
           </Text>
@@ -188,16 +198,16 @@ export function IdVerificationRight() {
             receive an email and in-app notification with a secure link to upload your government ID
             and selfie. Most verifications finish within a few minutes.
           </Text>
-          <YStack gap="$1">
+          <Stack gap="$1">
             <Text color="$color11">1. Complete the Persona flow on web or mobile</Text>
             <Text color="$color11">2. Persona confirms the authenticity of your ID</Text>
             <Text color="$color11">3. Your badge updates instantly across the platform</Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </Card>
 
       <Card padding="$4" bordered backgroundColor="$blue2" borderColor="$blue6">
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$blue12">
             Need help?
           </Text>
@@ -205,21 +215,21 @@ export function IdVerificationRight() {
             Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
             to request a bulk verification plan for your organization.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
 export function IdVerificationFlow() {
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <Stack flex={1} backgroundColor="$background">
       <ScrollView flex={1}>
-        <YStack gap="$4" paddingHorizontal="$4" paddingBottom="$8">
+        <Stack gap="$4" paddingHorizontal="$4" paddingBottom="$8">
           <IdVerificationContent />
-        </YStack>
+        </Stack>
       </ScrollView>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -229,10 +239,10 @@ function renderStatusCard(
   if (queryReturn.isLoading) {
     return (
       <Card padding="$4" bordered>
-        <YStack gap="$2">
+        <Stack gap="$2">
           <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">Loading your verification badge…</Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
@@ -240,14 +250,14 @@ function renderStatusCard(
   if (queryReturn.isError) {
     return (
       <Card padding="$4" bordered backgroundColor="$red2" borderColor="$red6">
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600" color="$red12">
             Unable to load badge
           </Text>
           <Text color="$red11">
             {queryReturn.error?.message ?? 'Please refresh to try loading your verification badge.'}
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
@@ -264,19 +274,19 @@ function renderStatusCard(
   if (!badge) {
     return (
       <Card padding="$4" bordered>
-        <YStack gap="$2">
+        <Stack gap="$2">
           <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">
             Purchase a verification to unlock the "Verified Identity" badge on your profile.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
 
   return (
     <Card padding="$4" bordered>
-      <YStack gap="$2">
+      <Stack gap="$2">
         <IdVerificationBadge
           status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
           badgeExpiresAt={badge.badgeExpiresAt}
@@ -294,7 +304,7 @@ function renderStatusCard(
           Verified on {formatDate(badge.verifiedAt ?? '')} • Level:{' '}
           {badge.verificationLevel ?? 'N/A'}
         </Text>
-      </YStack>
+      </Stack>
     </Card>
   )
 }
@@ -315,10 +325,10 @@ function PricingSection({
   if (isLoading) {
     return (
       <Card padding="$4" bordered>
-        <YStack gap="$2" alignItems="center">
+        <Stack gap="$2" alignItems="center">
           <Spinner size="small" />
           <Text color="$color11">Loading verification options…</Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
@@ -326,24 +336,24 @@ function PricingSection({
   if (pricingOptions.length === 0) {
     return (
       <Card padding="$4" bordered backgroundColor="$color2" borderColor="$borderColor">
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             Verification temporarily unavailable
           </Text>
           <Text color="$color11">
             Pricing hasn’t been published yet. Check back soon or contact support@scaffald.com.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
 
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       <Text fontSize="$5" fontWeight="600">
         Choose a verification option
       </Text>
-      <YStack gap="$3">
+      <Stack gap="$3">
         {pricingOptions.map((plan) => {
           const isActive = plan.id === selectedPricingId
           return (
@@ -356,15 +366,15 @@ function PricingSection({
               borderColor={isActive ? '$blue8' : '$borderColor'}
               onPress={() => onSelectPlan(plan.id)}
             >
-              <YStack gap="$2">
-                <XStack justifyContent="space-between" alignItems="center">
+              <Stack gap="$2">
+                <Row justifyContent="space-between" alignItems="center">
                   <Text fontSize="$4" fontWeight="600">
                     {plan.name}
                   </Text>
                   <Text fontSize="$5" fontWeight="700">
                     {formatCurrency(plan.priceCents)}
                   </Text>
-                </XStack>
+                </Row>
                 {plan.description && (
                   <Text color="$color11" fontSize="$3">
                     {plan.description}
@@ -378,12 +388,12 @@ function PricingSection({
                 >
                   {isActive ? 'Selected' : 'Select this option'}
                 </Button>
-              </YStack>
+              </Stack>
             </Card>
           )
         })}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 
@@ -409,8 +419,8 @@ function PaymentSection({
   onPaymentSuccess,
 }: PaymentSectionProps) {
   return (
-    <YStack gap="$3">
-      <YStack gap="$1">
+    <Stack gap="$3">
+      <Stack gap="$1">
         <Text fontSize="$5" fontWeight="600">
           Secure payment
         </Text>
@@ -418,10 +428,10 @@ function PaymentSection({
           Charges are non-refundable and processed via Stripe. Your badge will update immediately
           after Persona confirms your identity.
         </Text>
-      </YStack>
+      </Stack>
 
       {requestError && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$3"
           backgroundColor="$red2"
@@ -429,11 +439,11 @@ function PaymentSection({
           borderWidth={1}
           borderRadius="$4"
         >
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <AlertCircle size={18} color="$red11" />
             <Text color="$red11">{requestError}</Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {!paymentSession && (
@@ -448,7 +458,7 @@ function PaymentSection({
       )}
 
       {paymentSession && (
-        <YStack gap="$3">
+        <Stack gap="$3">
           <PaymentIntentForm
             clientSecret={paymentSession.clientSecret}
             amountCents={paymentSession.amountCents}
@@ -460,8 +470,8 @@ function PaymentSection({
           <Button size="$3" variant="outlined" disabled={isConfirming} onPress={onResetSession}>
             Start over
           </Button>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

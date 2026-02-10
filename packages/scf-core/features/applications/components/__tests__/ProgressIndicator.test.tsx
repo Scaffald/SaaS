@@ -147,7 +147,7 @@ describe('ProgressIndicator', () => {
       />
     )
 
-    // Connector lines are rendered as YStack elements with height={2}
+    // Connector lines are rendered as Stack elements with height={2}
     // We should have 3 connector lines for 4 steps
     const lines = container.querySelectorAll('[height="2"]')
     expect(lines.length).toBeGreaterThanOrEqual(0) // Lines may be styled differently

@@ -5,7 +5,7 @@ import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollow
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { api } from '@scf/core/utils/api'
 import { useAdaptiveLoading } from '@scf/core/utils/useAdaptiveLoading'
-import { ResponsiveModal } from '@unicornlove/ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import {
   Award,
   BadgeCheck,
@@ -23,10 +23,10 @@ import {
   UserPlus,
   X,
 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -88,7 +88,7 @@ type EducationEntry = {
  */
 export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreviewModalProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const { session } = useAuth()
   const currentUserId = session?.user?.id
   const utils = api.useUtils()
@@ -109,14 +109,17 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request sent', {
-        message: 'Your connection request has been sent.',
-      })
+      toast.show({
+          title: 'Connection request sent',
+          message: 'Your connection request has been sent.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to send request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to send request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -128,14 +131,17 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection accepted', {
-        message: 'You are now connected.',
-      })
+      toast.show({
+          title: 'Connection accepted',
+          message: 'You are now connected.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to accept request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to accept request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -147,9 +153,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       utils.connections.getPendingRequests.invalidate()
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to decline request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to decline request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -160,14 +168,17 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     },
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
-      toast.show('Following', {
-        message: 'You are now following this user.',
-      })
+      toast.show({
+          title: 'Following',
+          message: 'You are now following this user.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to follow', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to follow',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -177,14 +188,17 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     },
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
-      toast.show('Unfollowed', {
-        message: 'You are no longer following this user.',
-      })
+      toast.show({
+          title: 'Unfollowed',
+          message: 'You are no longer following this user.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to unfollow', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to unfollow',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -294,9 +308,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
-      toast.show('Unable to load profile', {
-        message: 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to load profile',
+          message: 'Please try again.',
+          variant: 'error',
+        })
     }
   }
 
@@ -333,24 +349,24 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       size="medium"
     >
       {showLoading ? (
-        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
+        <Stack paddingVertical="$8" alignItems="center" justifyContent="center">
           <Spinner size="large" color="$blue10" />
           <Text marginTop="$4" color="$color11">
             Loading profile...
           </Text>
-        </YStack>
+        </Stack>
       ) : isLoading ? null : !profile ? (
-        <YStack paddingVertical="$8" alignItems="center">
+        <Stack paddingVertical="$8" alignItems="center">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Profile not found
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
           {/* Profile Header */}
-          <YStack gap="$2" alignItems="center">
+          <Stack gap="$2" alignItems="center">
             {profile.avatar_url ? (
-              <YStack
+              <Stack
                 width={96}
                 height={96}
                 borderRadius="$10"
@@ -362,9 +378,9 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   alt={profile.name || 'Worker'}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-              </YStack>
+              </Stack>
             ) : (
-              <YStack
+              <Stack
                 width={96}
                 height={96}
                 borderRadius="$10"
@@ -373,10 +389,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 justifyContent="center"
               >
                 <User size={48} color="$blue10" />
-              </YStack>
+              </Stack>
             )}
 
-            <YStack gap="$2" alignItems="center">
+            <Stack gap="$2" alignItems="center">
               <Text fontSize="$8" fontWeight="700" color="$color12">
                 {profile.name}
               </Text>
@@ -385,11 +401,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   {profile.headline}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             {/* Scaffald Score Badge */}
             {profile.gamified_score !== null && (
-              <XStack
+              <Row
                 backgroundColor="$blue2"
                 paddingHorizontal="$4"
                 paddingVertical="$2"
@@ -406,30 +422,30 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Text fontSize="$3" color="$blue10">
                   Scaffald Score
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Quick Info */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             {profile.location && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <MapPin size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {profile.location}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {profile.hourly_rate_cents && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <DollarSign size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {formatHourlyRate(profile.hourly_rate_cents)}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {resolveYearsOfExperience(
@@ -437,7 +453,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 ? profile.calculatedYearsOfExperience
                 : (profile.years_of_experience ?? null)
             ) !== null && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Award size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {resolveYearsOfExperience(
@@ -447,11 +463,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   )}{' '}
                   years experience
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {profile.open_to_work && (
-              <XStack
+              <Row
                 backgroundColor="$green3"
                 paddingHorizontal="$3"
                 paddingVertical="$1.5"
@@ -460,22 +476,22 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Text fontSize="$3" fontWeight="600" color="$green11">
                   Available for Work
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* Bio */}
           {profile.bio && (
             <>
               <Separator />
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   About
                 </Text>
                 <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
                   {profile.bio}
                 </Text>
-              </YStack>
+              </Stack>
             </>
           )}
 
@@ -483,21 +499,21 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topSkills.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$2">
+              <Stack gap="$2">
+                <Row alignItems="center" gap="$2" justifyContent="space-between">
+                  <Row alignItems="center" gap="$2">
                     <Award size={18} color="$color12" />
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       Top Skills
                     </Text>
-                  </XStack>
+                  </Row>
                   {skills.length > 10 && (
                     <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
                       View All ({skills.length})
                     </Button>
                   )}
-                </XStack>
-                <YStack gap="$2">
+                </Row>
+                <Stack gap="$2">
                   {topSkills.map((skill: EnrichedSkill) => {
                     const label =
                       typeof skill.label === 'string'
@@ -506,35 +522,35 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           ? `${skill.displayCode} · ${skill.name}`
                           : skill.name
                     return (
-                      <XStack key={skill.id} justifyContent="space-between" alignItems="center">
+                      <Row key={skill.id} justifyContent="space-between" alignItems="center">
                         <Text fontSize="$4" color="$color11">
                           {label}
                         </Text>
-                        <XStack gap="$2" alignItems="center">
-                          <YStack
+                        <Row gap="$2" alignItems="center">
+                          <Stack
                             width={100}
                             height={8}
                             backgroundColor="$color4"
                             borderRadius="$2"
                             overflow="hidden"
                           >
-                            <YStack
+                            <Stack
                               width={`${skill.proficiency}%`}
                               height="100%"
                               backgroundColor="$blue10"
                             />
-                          </YStack>
-                          <YStack minWidth={30}>
+                          </Stack>
+                          <Stack minWidth={30}>
                             <Text fontSize="$3" color="$color10">
                               {skill.proficiency}%
                             </Text>
-                          </YStack>
-                        </XStack>
-                      </XStack>
+                          </Stack>
+                        </Row>
+                      </Row>
                     )
                   })}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -542,23 +558,23 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topCertifications.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$2">
+              <Stack gap="$2">
+                <Row alignItems="center" gap="$2" justifyContent="space-between">
+                  <Row alignItems="center" gap="$2">
                     <BadgeCheck size={18} color="$color12" />
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       Certifications
                     </Text>
-                  </XStack>
+                  </Row>
                   {certifications.length > 5 && (
                     <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
                       View All ({certifications.length})
                     </Button>
                   )}
-                </XStack>
-                <YStack gap="$2">
+                </Row>
+                <Stack gap="$2">
                   {topCertifications.map((cert: Certification) => (
-                    <YStack key={cert.id} gap="$1">
+                    <Stack key={cert.id} gap="$1">
                       <Text fontSize="$4" fontWeight="600" color="$color12">
                         {cert.name}
                       </Text>
@@ -567,10 +583,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                         {cert.issue_date &&
                           ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
                       </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -578,33 +594,33 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {recentExperience.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$2">
+              <Stack gap="$2">
+                <Row alignItems="center" gap="$2" justifyContent="space-between">
+                  <Row alignItems="center" gap="$2">
                     <Briefcase size={18} color="$color12" />
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       Recent Experience
                     </Text>
-                  </XStack>
+                  </Row>
                   {experience.length > 3 && (
                     <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
                       View All ({experience.length})
                     </Button>
                   )}
-                </XStack>
-                <YStack gap="$2">
+                </Row>
+                <Stack gap="$2">
                   {recentExperience.map((exp: ExperienceEntry) => (
-                    <YStack key={exp.id} gap="$1">
+                    <Stack key={exp.id} gap="$1">
                       <Text fontSize="$4" fontWeight="600" color="$color12">
                         {exp.job_title} at {exp.company_name}
                       </Text>
                       <Text fontSize="$3" color="$color10">
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current ?? false)}
                       </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -612,16 +628,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topEducation.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2">
+              <Stack gap="$2">
+                <Row alignItems="center" gap="$2">
                   <GraduationCap size={18} color="$color12" />
                   <Text fontSize="$5" fontWeight="600" color="$color12">
                     Education
                   </Text>
-                </XStack>
-                <YStack gap="$2">
+                </Row>
+                <Stack gap="$2">
                   {topEducation.map((edu: EducationEntry) => (
-                    <YStack key={edu.id} gap="$1">
+                    <Stack key={edu.id} gap="$1">
                       <Text fontSize="$4" fontWeight="600" color="$color12">
                         {edu.degree_type} {edu.degree_name}
                       </Text>
@@ -629,10 +645,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                         {edu.university_name}
                         {edu.graduation_year && ` • ${edu.graduation_year}`}
                       </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -641,7 +657,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {/* Connect and Follow Buttons (only for other users' profiles) */}
           {!isOwnProfile && userId && (
             <>
-              <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+              <Row gap="$2" flexWrap="wrap" justifyContent="center">
                 {/* Connect Button */}
                 {connectionButtonState && (
                   <>
@@ -717,13 +733,13 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                       {isFollowMutating ? 'Unfollowing...' : 'Following'}
                     </Button>
                   ))}
-              </XStack>
+              </Row>
               <Separator />
             </>
           )}
 
           {/* CTA Buttons */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             {typeof window !== 'undefined' && (
               <Button
                 size="$5"
@@ -743,7 +759,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             >
               View Full Profile
             </Button>
-          </YStack>
+          </Stack>
         </>
       )}
     </ResponsiveModal>

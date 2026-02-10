@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Tabs, XStack } from '@unicornlove/ui'
+import { Tabs, Row } from '@unicornlove/beyond-ui'
 
 export interface ImportSectionTab {
   id: string
@@ -27,7 +27,7 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
         backgroundColor="$background"
         scrollable
       >
-        <XStack gap="$3" paddingHorizontal="$2">
+        <Row gap="$3" paddingHorizontal="$2">
           {sections.map((section) => (
             <Tabs.Tab
               key={section.id}
@@ -40,7 +40,7 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
               {section.label} ({section.count})
             </Tabs.Tab>
           ))}
-        </XStack>
+        </Row>
       </Tabs.List>
     </Tabs>
   )

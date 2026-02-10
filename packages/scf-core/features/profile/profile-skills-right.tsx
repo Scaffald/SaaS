@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { ConfirmationDialog, DashboardWidget } from '@unicornlove/ui'
+import { ConfirmationDialog, DashboardWidget } from '@unicornlove/beyond-ui'
 import { Award } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { TRPCClientError } from '@trpc/client'
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileResultCard, ProfileResultsPanel } from './components'
 import { SkillCompletionProgress } from './components/skills/SkillCompletionProgress'
 import { SkillGuidanceWidget } from './components/skills/SkillGuidanceWidget'
@@ -16,7 +16,7 @@ import { useProfileSkillsContext } from './profile-skills-context'
  * Display user's saved skills with remove capability
  */
 export function ProfileSkillsRight() {
-  const toast = useToastController()
+  const toast = useToast()
   const {
     industryDisplayName,
     skillGuidance,
@@ -48,9 +48,10 @@ export function ProfileSkillsRight() {
       await Promise.all([utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()])
       // Clear removing state after cache invalidation
       setRemovingSkillId(null)
-      toast.show('Skill Removed', {
-        message: 'Skill removed from your profile',
-      })
+      toast.show({
+          title: 'Skill Removed',
+          message: 'Skill removed from your profile',
+        })
     },
     onError: (error: unknown) => {
       // Fade skill back in by clearing removing state
@@ -95,9 +96,11 @@ export function ProfileSkillsRight() {
         }
       }
 
-      toast.show('Error', {
-        message: errorMessage,
-      })
+      toast.show({
+          title: 'Error',
+          message: errorMessage,
+          variant: 'error',
+        })
     },
   })
 
@@ -112,9 +115,10 @@ export function ProfileSkillsRight() {
 
     // Prevent concurrent removals
     if (removingSkillId !== null) {
-      toast.show('Please Wait', {
-        message: 'Please wait for the current removal to complete',
-      })
+      toast.show({
+          title: 'Please Wait',
+          message: 'Please wait for the current removal to complete',
+        })
       setConfirmRemoveSkillId(null)
       return
     }
@@ -194,7 +198,7 @@ export function ProfileSkillsRight() {
   const skillName = skillToRemove?.skill_details?.name || 'this skill'
 
   return (
-    <YStack gap="$4" flex={1}>
+    <Stack gap="$4" flex={1}>
       <ConfirmationDialog
         open={confirmRemoveSkillId !== null}
         onOpenChange={(open) => {
@@ -211,7 +215,7 @@ export function ProfileSkillsRight() {
         isLoading={removeSkillMutation.isPending}
       />
       <DashboardWidget>
-        <YStack gap="$3">
+        <Stack gap="$3">
           <SkillCompletionProgress
             skillCount={skillCount}
             hasMinimumSkills={hasMinimumSkills}
@@ -223,7 +227,7 @@ export function ProfileSkillsRight() {
             skillGuidance={skillGuidance}
             onSuggestionSelect={handleSuggestionSelect}
           />
-        </YStack>
+        </Stack>
       </DashboardWidget>
 
       <ProfileResultsPanel
@@ -233,7 +237,7 @@ export function ProfileSkillsRight() {
         emptyIcon={Award as ComponentType<{ size?: number; color?: string }>}
         emptyMessage="No skills added yet. Use the form on the left to add your first skill."
       >
-        <YStack gap="$3">
+        <Stack gap="$3">
           {userSkills.map(
             (skill: {
               id: string
@@ -244,7 +248,7 @@ export function ProfileSkillsRight() {
               } | null
               proficiency_level: number | null
             }) => (
-              <YStack
+              <Stack
                 key={skill.id}
                 animation="quick"
                 opacity={removingSkillId === skill.id ? 0 : 1}
@@ -259,7 +263,7 @@ export function ProfileSkillsRight() {
                   isNew={newSkillId === skill.id}
                 >
                   {/* Skill Name and Code */}
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Text fontSize="$4" fontWeight="600">
                       {skill.skill_details?.name || 'Unknown Skill'}
                     </Text>
@@ -270,8 +274,8 @@ export function ProfileSkillsRight() {
                     )}
 
                     {/* Proficiency Level */}
-                    <XStack justifyContent="space-between" alignItems="center" paddingTop="$2">
-                      <YStack gap="$1">
+                    <Row justifyContent="space-between" alignItems="center" paddingTop="$2">
+                      <Stack gap="$1">
                         <Text fontSize="$2" color="$color11">
                           Proficiency
                         </Text>
@@ -279,15 +283,15 @@ export function ProfileSkillsRight() {
                           {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)
                         </Text>
-                      </YStack>
-                    </XStack>
-                  </YStack>
+                      </Stack>
+                    </Row>
+                  </Stack>
                 </ProfileResultCard>
-              </YStack>
+              </Stack>
             )
           )}
-        </YStack>
+        </Stack>
       </ProfileResultsPanel>
-    </YStack>
+    </Stack>
   )
 }

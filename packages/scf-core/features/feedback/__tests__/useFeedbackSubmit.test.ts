@@ -20,8 +20,8 @@ const storageMocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@tamagui/toast", () => ({
-  useToastController: () => ({
+vi.mock("@unicornlove/beyond-ui", () => ({
+  useToast: () => ({
     show: toastShow,
   }),
 }));

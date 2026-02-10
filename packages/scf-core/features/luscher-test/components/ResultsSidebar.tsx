@@ -1,6 +1,6 @@
 import { Award, Clock } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface ResultsSidebarProps {
   xpAwarded?: number
@@ -82,9 +82,9 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
   }, [nextAvailableAt])
 
   return (
-    <YStack gap="$5">
+    <Stack gap="$5">
       {xpAwarded > 0 && (
-        <YStack
+        <Stack
           gap="$3"
           padding="$4"
           backgroundColor="$green2"
@@ -92,19 +92,19 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
           borderWidth={1}
           borderColor="$green7"
         >
-          <XStack gap="$3" alignItems="center">
+          <Row gap="$3" alignItems="center">
             <Award size={24} color="$green10" />
             <Text fontSize="$5" fontWeight="600" color="$green11">
               +{xpAwarded} Frequency XP
             </Text>
-          </XStack>
+          </Row>
           <Text fontSize="$3" color="$green10">
             You earned Frequency XP for completing this assessment.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
-      <YStack
+      <Stack
         gap="$4"
         padding="$6"
         backgroundColor="$blue2"
@@ -112,13 +112,13 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
         borderWidth={1}
         borderColor="$blue7"
       >
-        <XStack gap="$3" alignItems="center">
+        <Row gap="$3" alignItems="center">
           <Clock size={24} color="$blue10" />
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Test Availability
           </Text>
-        </XStack>
-        <YStack gap="$2">
+        </Row>
+        <Stack gap="$2">
           <Text fontSize="$4" color="$color11">
             This test can be taken once every 7 days.
           </Text>
@@ -139,8 +139,8 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
               The test is available now.
             </Text>
           )}
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

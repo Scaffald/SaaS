@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, spacing } from '@unicornlove/ui'
+import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ResumeUploadButton } from './ResumeUploadButton'
 import { ResumeUploadModal } from './ResumeUploadModal'
 
@@ -34,9 +34,9 @@ export function ResumeImportWidget() {
   return (
     <>
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack gap={spacing.md} alignItems="center">
-            <YStack
+        <Stack gap={spacing.md}>
+          <Row gap={spacing.md} alignItems="center">
+            <Stack
               width={48}
               height={48}
               alignItems="center"
@@ -45,31 +45,31 @@ export function ResumeImportWidget() {
               borderRadius="$4"
             >
               <FileText color="$blue10" size={26} />
-            </YStack>
-            <YStack gap="$1">
+            </Stack>
+            <Stack gap="$1">
               <Text fontSize="$5" fontWeight="700" color="$color12">
                 Import Your Resume
               </Text>
               <Text color="$color11">
                 Upload a PDF or Word document and we’ll auto-fill your profile details for you.
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
-          <YStack gap="$2">
-            <XStack gap="$2" alignItems="center">
+          <Stack gap="$2">
+            <Row gap="$2" alignItems="center">
               <ShieldCheck size={18} color="$green10" />
               <Text fontSize="$2" color="$green11">
                 Files stay private — only you can access your resume.
               </Text>
-            </XStack>
+            </Row>
             <Text fontSize="$2" color="$color10">
               Accepted formats: PDF, DOC, DOCX. Maximum size: 1MB.
             </Text>
-          </YStack>
+          </Stack>
 
           <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size="$4" />
-        </YStack>
+        </Stack>
       </DashboardWidget>
 
       <ResumeUploadModal

@@ -1,9 +1,9 @@
 import { ControlledAddressForm } from '@scf/core/forms'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 import type { EmploymentPreferencesStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -124,8 +124,8 @@ export function EmploymentPrefsStep({
   }
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Share your work preferences
         </Text>
@@ -133,9 +133,9 @@ export function EmploymentPrefsStep({
           Help employers match you with the right opportunities by adding where, how, and when you
           prefer to work.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Preferred work location</Text>
         <Controller
           control={control}
@@ -148,9 +148,9 @@ export function EmploymentPrefsStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <ControlledAddressForm
           control={control}
           name="location"
@@ -171,10 +171,10 @@ export function EmploymentPrefsStep({
             }
           }}
         />
-      </YStack>
+      </Stack>
 
-      <XStack gap="$3" flexWrap="wrap">
-        <YStack flex={1} gap="$2" minWidth={160}>
+      <Row gap="$3" flexWrap="wrap">
+        <Stack flex={1} gap="$2" minWidth={160}>
           <Text fontWeight="600">Availability</Text>
           <Controller
             control={control}
@@ -191,9 +191,9 @@ export function EmploymentPrefsStep({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$2" minWidth={160}>
+        <Stack flex={1} gap="$2" minWidth={160}>
           <Text fontWeight="600">Preferred hourly rate</Text>
           <Controller
             control={control}
@@ -207,10 +207,10 @@ export function EmploymentPrefsStep({
               />
             )}
           />
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Work environment</Text>
         <Controller
           control={control}
@@ -227,7 +227,7 @@ export function EmploymentPrefsStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
       <StepNavigation
         canGoBack
@@ -240,7 +240,7 @@ export function EmploymentPrefsStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Next: Education"
       />
-    </YStack>
+    </Stack>
   )
 }
 

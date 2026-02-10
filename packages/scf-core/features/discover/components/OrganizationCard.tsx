@@ -1,8 +1,8 @@
-import { DiscoverCard } from '@unicornlove/ui'
+import { DiscoverCard } from '@unicornlove/beyond-ui'
 import { Building, MapPin, Users } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Button, SizableText, Text, XStack } from '@unicornlove/ui'
+import type { TamaguiElement } from '@unicornlove/beyond-ui'
+import { Button, SizableText, Text, Row } from '@unicornlove/beyond-ui'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 
 type OrganizationCardProps = {
@@ -21,8 +21,8 @@ export const OrganizationCard = memo(
           isSelected={isSelected}
           onPress={() => onSelect(organization.id)}
         >
-          <XStack justifyContent="space-between" alignItems="center">
-            <XStack alignItems="center" gap="$2" flex={1}>
+          <Row justifyContent="space-between" alignItems="center">
+            <Row alignItems="center" gap="$2" flex={1}>
               <Building size={20} color={isSelected ? '$color1' : '$blue11'} />
               <SizableText
                 size="$5"
@@ -32,26 +32,26 @@ export const OrganizationCard = memo(
               >
                 {organization.name}
               </SizableText>
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
 
           {organization.address && (
-            <XStack alignItems="center" gap="$1">
+            <Row alignItems="center" gap="$1">
               <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
                 {organization.address.city}
                 {organization.address.state && `, ${organization.address.state}`}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {organization.employeeCount && (
-            <XStack alignItems="center" gap="$1">
+            <Row alignItems="center" gap="$1">
               <Users size={14} color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
                 {organization.employeeCount} employees
               </Text>
-            </XStack>
+            </Row>
           )}
 
           <Button

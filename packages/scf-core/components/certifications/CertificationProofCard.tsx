@@ -1,6 +1,6 @@
 import { ExternalLink, Link as LinkIcon, Upload, X } from '@tamagui/lucide-icons'
 import { type ChangeEvent, useState } from 'react'
-import { Button, Card, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface CertificationProofCardProps {
   certificationTitle: string
@@ -60,19 +60,19 @@ export function CertificationProofCard({
 
   return (
     <Card padding="$4" bordered>
-      <YStack gap="$4">
-        <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+      <Stack gap="$4">
+        <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text fontWeight="600" fontSize="$5">
             Add Proof
           </Text>
           <Button size="$2" circular chromeless icon={X} onPress={onClose} />
-        </XStack>
+        </Row>
 
         <Text fontSize="$3" color="$color11">
           {certificationTitle}
         </Text>
 
-        <XStack gap="$2">
+        <Row gap="$2">
           <Button
             flex={1}
             variant="outlined"
@@ -89,10 +89,10 @@ export function CertificationProofCard({
           >
             Upload File
           </Button>
-        </XStack>
+        </Row>
 
         {mode === 'url' ? (
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Input
               placeholder="https://example.com/certificate.pdf"
               value={urlInput}
@@ -105,9 +105,9 @@ export function CertificationProofCard({
             >
               {uploading ? 'Saving...' : 'Save Link'}
             </Button>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Button
               onPress={() => document.getElementById('cert-file-input')?.click()}
               disabled={uploading}
@@ -125,15 +125,15 @@ export function CertificationProofCard({
             <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
               Accepted formats: PDF, JPG, PNG
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {proofValue && (
-          <YStack gap="$2" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
+          <Stack gap="$2" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
             <Text fontSize="$3" fontWeight="600">
               Current Proof
             </Text>
-            <XStack gap="$2" style={{ alignItems: 'center' }}>
+            <Row gap="$2" style={{ alignItems: 'center' }}>
               <Button
                 size="$2"
                 flex={1}
@@ -154,10 +154,10 @@ export function CertificationProofCard({
                   Remove
                 </Button>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   )
 }

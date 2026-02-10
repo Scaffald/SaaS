@@ -2,7 +2,7 @@ import { api } from '@scf/core/utils/api'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface FollowerData {
   user?: {
@@ -49,7 +49,7 @@ export function FollowersList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
@@ -64,7 +64,7 @@ export function FollowersList() {
               <Text fontSize="$3" fontWeight="500">
                 {name}
               </Text>
-            </XStack>
+            </Row>
           )
         },
       },
@@ -94,15 +94,15 @@ export function FollowersList() {
 
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
+      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading followers…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <Input
         placeholder="Search followers..."
         value={searchTerm}
@@ -111,7 +111,7 @@ export function FollowersList() {
       />
 
       {filteredFollowers.length === 0 ? (
-        <YStack
+        <Stack
           gap="$3"
           borderWidth={1}
           borderColor="$borderColor"
@@ -128,7 +128,7 @@ export function FollowersList() {
               ? 'No followers match your search.'
               : "You don't have any followers yet. Build your profile to attract followers."}
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <DataTable
           columns={columns}
@@ -137,6 +137,6 @@ export function FollowersList() {
           emptyMessage="No followers found"
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

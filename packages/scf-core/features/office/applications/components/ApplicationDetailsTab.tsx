@@ -1,5 +1,5 @@
 import { Download } from '@tamagui/lucide-icons'
-import { Button, Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface ApplicationDetailsTabProps {
@@ -8,38 +8,38 @@ interface ApplicationDetailsTabProps {
 
 export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProps) => {
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {/* Screening Answers */}
       <Card padding="$4" backgroundColor="$color2">
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Screening Questions
         </Text>
-        <YStack gap="$3">
-          <XStack justifyContent="space-between">
+        <Stack gap="$3">
+          <Row justifyContent="space-between">
             <Text opacity={0.7}>Current Location</Text>
             <Text fontWeight="600">{application.screeningAnswers.currentLocation}</Text>
-          </XStack>
-          <XStack justifyContent="space-between">
+          </Row>
+          <Row justifyContent="space-between">
             <Text opacity={0.7}>Willing to Relocate</Text>
             <Text fontWeight="600">
               {application.screeningAnswers.willingToRelocate ? 'Yes' : 'No'}
             </Text>
-          </XStack>
-          <XStack justifyContent="space-between">
+          </Row>
+          <Row justifyContent="space-between">
             <Text opacity={0.7}>Years of Experience</Text>
             <Text fontWeight="600">{application.screeningAnswers.yearsExperience}</Text>
-          </XStack>
-          <XStack justifyContent="space-between">
+          </Row>
+          <Row justifyContent="space-between">
             <Text opacity={0.7}>Authorized to Work</Text>
             <Text fontWeight="600">
               {application.screeningAnswers.isAuthorizedToWork ? 'Yes' : 'No'}
             </Text>
-          </XStack>
-          <XStack justifyContent="space-between">
+          </Row>
+          <Row justifyContent="space-between">
             <Text opacity={0.7}>Earliest Start Date</Text>
             <Text fontWeight="600">{application.screeningAnswers.earliestStartDate}</Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
 
       {/* Custom Questions */}
@@ -48,9 +48,9 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
           <Text fontSize="$5" fontWeight="600" marginBottom="$3">
             Custom Questions
           </Text>
-          <YStack gap="$4">
+          <Stack gap="$4">
             {application.customAnswers.map((qa, index) => (
-              <YStack key={`qa-${qa.question}-${index}`} gap="$2">
+              <Stack key={`qa-${qa.question}-${index}`} gap="$2">
                 <Text fontWeight="600" fontSize="$3">
                   {qa.question}
                 </Text>
@@ -58,11 +58,11 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {qa.answer}
                 </Text>
                 {index < application.customAnswers.length - 1 && (
-                  <YStack height={1} backgroundColor="$color5" marginTop="$2" />
+                  <Stack height={1} backgroundColor="$color5" marginTop="$2" />
                 )}
-              </YStack>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         </Card>
       )}
 
@@ -71,68 +71,68 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Attachments
         </Text>
-        <YStack gap="$2">
+        <Stack gap="$2">
           {application.attachments.resume && (
-            <XStack
+            <Row
               justifyContent="space-between"
               alignItems="center"
               padding="$3"
               backgroundColor="$color3"
               borderRadius="$3"
             >
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <Text fontWeight="600">Resume</Text>
                 <Text fontSize="$2" opacity={0.7}>
                   {application.attachments.resume.filename} •{' '}
                   {(application.attachments.resume.size / 1024).toFixed(0)} KB
                 </Text>
-              </YStack>
+              </Stack>
               <Button size="$3" icon={Download} chromeless>
                 Download
               </Button>
-            </XStack>
+            </Row>
           )}
           {application.attachments.coverLetter && (
-            <XStack
+            <Row
               justifyContent="space-between"
               alignItems="center"
               padding="$3"
               backgroundColor="$color3"
               borderRadius="$3"
             >
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <Text fontWeight="600">Cover Letter</Text>
                 <Text fontSize="$2" opacity={0.7}>
                   {application.attachments.coverLetter.filename} •{' '}
                   {(application.attachments.coverLetter.size / 1024).toFixed(0)} KB
                 </Text>
-              </YStack>
+              </Stack>
               <Button size="$3" icon={Download} chromeless>
                 Download
               </Button>
-            </XStack>
+            </Row>
           )}
           {application.attachments.portfolio && (
-            <XStack
+            <Row
               justifyContent="space-between"
               alignItems="center"
               padding="$3"
               backgroundColor="$color3"
               borderRadius="$3"
             >
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <Text fontWeight="600">Portfolio</Text>
                 <Text fontSize="$2" opacity={0.7}>
                   {application.attachments.portfolio.filename} •{' '}
                   {(application.attachments.portfolio.size / 1024).toFixed(0)} KB
                 </Text>
-              </YStack>
+              </Stack>
               <Button size="$3" icon={Download} chromeless>
                 Download
               </Button>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Stage History */}
@@ -140,11 +140,11 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Application Timeline
         </Text>
-        <YStack gap="$3">
+        <Stack gap="$3">
           {application.stageHistory.map((history, index) => (
-            <XStack key={`history-${history.changedAt}-${index}`} gap="$3">
-              <YStack width={3} backgroundColor="$blue9" borderRadius="$2" />
-              <YStack flex={1} gap="$1">
+            <Row key={`history-${history.changedAt}-${index}`} gap="$3">
+              <Stack width={3} backgroundColor="$blue9" borderRadius="$2" />
+              <Stack flex={1} gap="$1">
                 <Text fontWeight="600" textTransform="capitalize">
                   {history.toStage}
                 </Text>
@@ -162,11 +162,11 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                     {history.reason}
                   </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           ))}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 type CommentsOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['comments']
 type CommentRecord = NonNullable<CommentsOutput['comments']>[number]
@@ -25,7 +25,7 @@ export function TeamCommentThread({
   applicationId,
   mentionOptions = [],
 }: TeamCommentThreadProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
   const [commentBody, setCommentBody] = useState('')
   const [selectedMentionId, setSelectedMentionId] = useState<string | null>(null)
@@ -52,11 +52,17 @@ export function TeamCommentThread({
       setSelectedMentionId(null)
       await utils.teams.analytics.comments.invalidate({ teamId, applicationId, limit: 50 })
       await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
-      toast.show('Comment posted', { message: 'Your update was shared with the team.' })
+      toast.show({
+          title: 'Comment posted',
+          message: 'Your update was shared with the team.',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to post comment', { message })
+      toast.show({
+          title: 'Unable to post comment',
+          variant: 'error',
+        })
     },
   })
 
@@ -89,19 +95,19 @@ export function TeamCommentThread({
       paddingHorizontal="$3"
       $md={{ paddingHorizontal: undefined }}
     >
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$2">
+        <Row gap="$2" alignItems="center">
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
           <Text fontSize="$5" fontWeight="700" accessibilityRole="header">
             Team discussion
           </Text>
-        </XStack>
+        </Row>
         <Text color="$color11" fontSize="$3">
           Share updates with your team. Mentions notify teammates instantly.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
+      <Stack gap="$3">
         <TextArea
           value={commentBody}
           onChangeText={setCommentBody}
@@ -114,7 +120,7 @@ export function TeamCommentThread({
         />
 
         {mentionOptions.length > 0 ? (
-          <XStack
+          <Row
             gap="$2"
             flexWrap="wrap"
             flexDirection="column"
@@ -143,7 +149,7 @@ export function TeamCommentThread({
                 @{option.label}
               </Button>
             ))}
-          </XStack>
+          </Row>
         ) : null}
 
         {mentionLabel ? (
@@ -152,7 +158,7 @@ export function TeamCommentThread({
           </Text>
         ) : null}
 
-        <XStack justifyContent="flex-end">
+        <Row justifyContent="flex-end">
           <Button
             size="$3"
             icon={Send}
@@ -167,21 +173,21 @@ export function TeamCommentThread({
           >
             {isSubmitting ? <Spinner size="small" color="$color1" /> : 'Post comment'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {commentsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
+        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading discussion…</Text>
-        </YStack>
+        </Stack>
       ) : comments.length === 0 ? (
-        <YStack gap="$1">
+        <Stack gap="$1">
           <Text fontWeight="600">No comments yet</Text>
           <Text color="$color11">Start the conversation by leaving the first comment.</Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {comments.map((comment) => {
             const actorName =
               comment.actorDisplayName ?? comment.actorUserId?.slice(0, 6) ?? 'Team member'
@@ -199,7 +205,7 @@ export function TeamCommentThread({
               .join('. ')
 
             return (
-              <YStack
+              <Stack
                 key={comment.id}
                 gap="$1"
                 borderBottomWidth={1}
@@ -220,10 +226,10 @@ export function TeamCommentThread({
                     Mentions: {mentionNames.join(', ')}
                   </Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )
           })}
-        </YStack>
+        </Stack>
       )}
     </Card>
   )

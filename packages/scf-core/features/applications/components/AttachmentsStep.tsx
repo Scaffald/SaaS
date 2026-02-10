@@ -2,7 +2,7 @@ import { api } from '@scf/core/utils/api'
 import type { AttachmentMetadata } from '@scf/schemas'
 import { ArrowLeft, CheckCircle2, Upload, X } from '@tamagui/lucide-icons'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
 
@@ -296,20 +296,20 @@ export function AttachmentsStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <Stack gap="$6" width="100%" maxWidth={800} padding="$4">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
           Upload Documents
         </Text>
         <Text fontSize="$4" color="$color11">
           Upload your resume and any additional documents to support your application.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Resume Upload */}
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$3">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Resume
           </Text>
@@ -318,10 +318,10 @@ export function AttachmentsStep({
               Required
             </Text>
           )}
-        </XStack>
+        </Row>
 
         {getAttachment('resume') ? (
-          <XStack
+          <Row
             padding="$4"
             borderRadius="$4"
             borderWidth={2}
@@ -331,17 +331,17 @@ export function AttachmentsStep({
             alignItems="center"
             gap="$3"
           >
-            <XStack gap="$3" alignItems="center" flex={1}>
+            <Row gap="$3" alignItems="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   {getAttachment('resume')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
                   {formatFileSize(getAttachment('resume')?.size ?? 0)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
             <Button
               size="$3"
               circular
@@ -350,10 +350,10 @@ export function AttachmentsStep({
               onPress={() => handleFileRemove('resume')}
               disabled={isSubmitting || uploading.resume}
             />
-          </XStack>
+          </Row>
         ) : uploading.resume ? (
-          <YStack gap="$2">
-            <YStack
+          <Stack gap="$2">
+            <Stack
               padding="$6"
               borderRadius="$4"
               borderWidth={2}
@@ -363,7 +363,7 @@ export function AttachmentsStep({
               gap="$3"
             >
               <Upload size={32} color="$blue10" />
-              <YStack gap="$2" width="100%">
+              <Stack gap="$2" width="100%">
                 <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
                   Uploading...
                 </Text>
@@ -373,13 +373,13 @@ export function AttachmentsStep({
                 <Text fontSize="$2" color="$color11" textAlign="center">
                   {uploadProgress.resume || 0}%
                 </Text>
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <label htmlFor="resume-upload">
-              <YStack
+              <Stack
                 asChild
                 padding="$6"
                 borderRadius="$4"
@@ -402,16 +402,16 @@ export function AttachmentsStep({
                   style={{ width: '100%' }}
                 >
                   <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" alignItems="center">
+                  <Stack gap="$1" alignItems="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Choose a file or drag it here
                     </Text>
                     <Text fontSize="$3" color="$color11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
-                  </YStack>
+                  </Stack>
                 </section>
-              </YStack>
+              </Stack>
             </label>
             <input
               ref={(el) => {
@@ -432,23 +432,23 @@ export function AttachmentsStep({
                 {errors.resume}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Cover Letter Upload (Optional) */}
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$3">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Cover Letter
           </Text>
           <Text fontSize="$3" color="$color11">
             Optional
           </Text>
-        </XStack>
+        </Row>
 
         {getAttachment('cover_letter') ? (
-          <XStack
+          <Row
             padding="$4"
             borderRadius="$4"
             borderWidth={2}
@@ -458,17 +458,17 @@ export function AttachmentsStep({
             alignItems="center"
             gap="$3"
           >
-            <XStack gap="$3" alignItems="center" flex={1}>
+            <Row gap="$3" alignItems="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   {getAttachment('cover_letter')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
                   {formatFileSize(getAttachment('cover_letter')?.size ?? 0)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
             <Button
               size="$3"
               circular
@@ -477,10 +477,10 @@ export function AttachmentsStep({
               onPress={() => handleFileRemove('cover_letter')}
               disabled={isSubmitting || uploading.cover_letter}
             />
-          </XStack>
+          </Row>
         ) : uploading.cover_letter ? (
-          <YStack gap="$2">
-            <YStack
+          <Stack gap="$2">
+            <Stack
               padding="$6"
               borderRadius="$4"
               borderWidth={2}
@@ -490,7 +490,7 @@ export function AttachmentsStep({
               gap="$3"
             >
               <Upload size={32} color="$blue10" />
-              <YStack gap="$2" width="100%">
+              <Stack gap="$2" width="100%">
                 <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
                   Uploading...
                 </Text>
@@ -504,13 +504,13 @@ export function AttachmentsStep({
                 <Text fontSize="$2" color="$color11" textAlign="center">
                   {uploadProgress.cover_letter || 0}%
                 </Text>
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <label htmlFor="cover-letter-upload">
-              <YStack
+              <Stack
                 asChild
                 padding="$6"
                 borderRadius="$4"
@@ -537,16 +537,16 @@ export function AttachmentsStep({
                   style={{ width: '100%' }}
                 >
                   <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" alignItems="center">
+                  <Stack gap="$1" alignItems="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Choose a file or drag it here
                     </Text>
                     <Text fontSize="$3" color="$color11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
-                  </YStack>
+                  </Stack>
                 </section>
-              </YStack>
+              </Stack>
             </label>
             <input
               ref={(el) => {
@@ -567,23 +567,23 @@ export function AttachmentsStep({
                 {errors.cover_letter}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Portfolio Upload (Optional) */}
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$3">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Portfolio / Work Samples
           </Text>
           <Text fontSize="$3" color="$color11">
             Optional
           </Text>
-        </XStack>
+        </Row>
 
         {getAttachment('portfolio') ? (
-          <XStack
+          <Row
             padding="$4"
             borderRadius="$4"
             borderWidth={2}
@@ -593,17 +593,17 @@ export function AttachmentsStep({
             alignItems="center"
             gap="$3"
           >
-            <XStack gap="$3" alignItems="center" flex={1}>
+            <Row gap="$3" alignItems="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   {getAttachment('portfolio')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
                   {formatFileSize(getAttachment('portfolio')?.size ?? 0)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
             <Button
               size="$3"
               circular
@@ -612,10 +612,10 @@ export function AttachmentsStep({
               onPress={() => handleFileRemove('portfolio')}
               disabled={isSubmitting || uploading.portfolio}
             />
-          </XStack>
+          </Row>
         ) : uploading.portfolio ? (
-          <YStack gap="$2">
-            <YStack
+          <Stack gap="$2">
+            <Stack
               padding="$6"
               borderRadius="$4"
               borderWidth={2}
@@ -625,7 +625,7 @@ export function AttachmentsStep({
               gap="$3"
             >
               <Upload size={32} color="$blue10" />
-              <YStack gap="$2" width="100%">
+              <Stack gap="$2" width="100%">
                 <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
                   Uploading...
                 </Text>
@@ -635,13 +635,13 @@ export function AttachmentsStep({
                 <Text fontSize="$2" color="$color11" textAlign="center">
                   {uploadProgress.portfolio || 0}%
                 </Text>
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <label htmlFor="portfolio-upload">
-              <YStack
+              <Stack
                 asChild
                 padding="$6"
                 borderRadius="$4"
@@ -668,16 +668,16 @@ export function AttachmentsStep({
                   style={{ width: '100%' }}
                 >
                   <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" alignItems="center">
+                  <Stack gap="$1" alignItems="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Choose a file or drag it here
                     </Text>
                     <Text fontSize="$3" color="$color11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
-                  </YStack>
+                  </Stack>
                 </section>
-              </YStack>
+              </Stack>
             </label>
             <input
               ref={(el) => {
@@ -698,12 +698,12 @@ export function AttachmentsStep({
                 {errors.portfolio}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Info Box */}
-      <YStack
+      <Stack
         padding="$4"
         borderRadius="$4"
         backgroundColor="$blue2"
@@ -714,10 +714,10 @@ export function AttachmentsStep({
           💡 Tip: Make sure your documents are up-to-date and clearly showcase your relevant
           experience and skills for this position.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justifyContent="space-between" marginTop="$4">
+      <Row gap="$3" justifyContent="space-between" marginTop="$4">
         <Button
           size="$4"
           variant="outlined"
@@ -735,7 +735,7 @@ export function AttachmentsStep({
         >
           {isSubmitting ? 'Saving...' : 'Continue to Review'}
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

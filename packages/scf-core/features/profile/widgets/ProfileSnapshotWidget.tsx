@@ -1,9 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, spacing } from '@unicornlove/ui'
+import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * ProfileSnapshotWidget
@@ -50,10 +50,10 @@ export function ProfileSnapshotWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading profile...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -61,9 +61,9 @@ export function ProfileSnapshotWidget() {
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
           <Text color="$color11">Profile data unavailable</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -110,9 +110,9 @@ export function ProfileSnapshotWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <H4>Profile</H4>
           <Button
             size="$2"
@@ -122,10 +122,10 @@ export function ProfileSnapshotWidget() {
           >
             View Full Profile
           </Button>
-        </XStack>
+        </Row>
 
         {/* Avatar & Name Section */}
-        <YStack gap="$3" alignItems="center">
+        <Stack gap="$3" alignItems="center">
           <Avatar circular size="$8">
             <Avatar.Image
               source={{
@@ -135,22 +135,22 @@ export function ProfileSnapshotWidget() {
             <Avatar.Fallback backgroundColor="$color6" />
           </Avatar>
 
-          <YStack gap="$1" alignItems="center">
+          <Stack gap="$1" alignItems="center">
             <Text fontSize="$5" fontWeight="600">
               {displayName}
             </Text>
             {generalInfo.headline && (
-              <YStack alignItems="center">
+              <Stack alignItems="center">
                 <Text color="$color11" fontSize="$2">
                   {generalInfo.headline}
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {/* Open to Work Badge */}
           {generalInfo.open_to_work && (
-            <XStack
+            <Row
               backgroundColor="$green3"
               paddingHorizontal="$3"
               paddingVertical="$1.5"
@@ -161,13 +161,13 @@ export function ProfileSnapshotWidget() {
               <Text color="$green11" fontSize="$2" fontWeight="600">
                 Open to Work
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
 
         {/* Current Role */}
         {currentRole && (
-          <YStack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
+          <Stack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
             <Text fontSize="$2" color="$color10">
               Current Role
             </Text>
@@ -177,33 +177,33 @@ export function ProfileSnapshotWidget() {
             <Text fontSize="$2" color="$color11">
               {currentRole.company_name}
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {/* Stats Grid */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$3" fontWeight="600">
             Profile Stats
           </Text>
 
           {/* Completion Bar */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between">
+          <Stack gap="$2">
+            <Row justifyContent="space-between">
               <Text fontSize="$2" color="$color11">
                 Completion
               </Text>
               <Text fontSize="$2" fontWeight="600">
                 {completion}%
               </Text>
-            </XStack>
+            </Row>
             <Progress value={completion} max={100}>
               <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
             </Progress>
-          </YStack>
+          </Stack>
 
           {/* Stats Row */}
-          <XStack gap={spacing.sm} flexWrap="wrap">
-            <YStack
+          <Row gap={spacing.sm} flexWrap="wrap">
+            <Stack
               gap="$1"
               flex={1}
               minWidth={80}
@@ -218,9 +218,9 @@ export function ProfileSnapshotWidget() {
               <Text fontSize="$1" color="$color11">
                 Skills
               </Text>
-            </YStack>
+            </Stack>
 
-            <YStack
+            <Stack
               gap="$1"
               flex={1}
               minWidth={80}
@@ -235,9 +235,9 @@ export function ProfileSnapshotWidget() {
               <Text fontSize="$1" color="$color11">
                 Certs
               </Text>
-            </YStack>
+            </Stack>
 
-            <YStack
+            <Stack
               gap="$1"
               flex={1}
               minWidth={80}
@@ -252,14 +252,14 @@ export function ProfileSnapshotWidget() {
               <Text fontSize="$1" color="$color11">
                 Years
               </Text>
-            </YStack>
-          </XStack>
-        </YStack>
+            </Stack>
+          </Row>
+        </Stack>
 
         {/* Top Skills Preview */}
         {topSkills.length > 0 && (
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$2">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$3" fontWeight="600">
                 Top Skills
               </Text>
@@ -270,8 +270,8 @@ export function ProfileSnapshotWidget() {
               >
                 View All
               </Button>
-            </XStack>
-            <XStack gap="$2" flexWrap="wrap">
+            </Row>
+            <Row gap="$2" flexWrap="wrap">
               {topSkills.map((skill: Record<string, unknown>) => {
                 const displayCode = typeof skill.displayCode === 'string' ? skill.displayCode : null
                 const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
@@ -283,7 +283,7 @@ export function ProfileSnapshotWidget() {
                       : skillName
 
                 return (
-                  <XStack
+                  <Row
                     key={skill.id as string}
                     backgroundColor="$color3"
                     paddingHorizontal="$2.5"
@@ -298,15 +298,15 @@ export function ProfileSnapshotWidget() {
                       </Text>
                     )}
                     <Text fontSize="$2">{chipLabel}</Text>
-                  </XStack>
+                  </Row>
                 )
               })}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {/* Quick Actions */}
-        <YStack gap={spacing.xs}>
+        <Stack gap={spacing.xs}>
           <Button
             variant="primary"
             size="$3"
@@ -316,14 +316,14 @@ export function ProfileSnapshotWidget() {
             Edit Profile
           </Button>
           {completion < 100 && (
-            <YStack alignItems="center">
+            <Stack alignItems="center">
               <Text fontSize="$1" color="$color11">
                 Complete your profile to attract more opportunities
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DashboardWidget>
   )
 }

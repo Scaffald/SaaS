@@ -1,4 +1,4 @@
-import { Button, H2, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H2, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
@@ -169,43 +169,43 @@ export const OfficeApplicationsScreen = () => {
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
+      <Stack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
         <Spinner size="large" />
         <Text marginTop="$4" color="$color11">
           Loading applications...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Error state
   if (isError) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Text color="$red10" fontSize="$5" fontWeight="bold">
           Error Loading Applications
         </Text>
-        <YStack alignItems="center">
+        <Stack alignItems="center">
           <Text color="$color11" marginTop="$2">
             {error?.message || 'Failed to load applications. Please try again.'}
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" backgroundColor="$background">
+    <Stack flex={1} padding="$4" backgroundColor="$background">
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center" marginBottom="$4">
-        <YStack>
+      <Row justifyContent="space-between" alignItems="center" marginBottom="$4">
+        <Stack>
           <H2>Applications</H2>
           <Text color="$color11" fontSize="$3">
             {filteredApplications.length} total applications
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack gap="$2">
+        <Row gap="$2">
           <Button
             size="$3"
             onPress={() => setViewMode('kanban')}
@@ -220,8 +220,8 @@ export const OfficeApplicationsScreen = () => {
           >
             List
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Filters - Note: needs jobs list from API */}
       <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={[]} />
@@ -230,10 +230,10 @@ export const OfficeApplicationsScreen = () => {
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       ) : (
-        <YStack padding="$4">
+        <Stack padding="$4">
           <Text>List view coming soon...</Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

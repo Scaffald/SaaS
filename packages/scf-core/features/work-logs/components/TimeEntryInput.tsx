@@ -2,7 +2,7 @@ import { MinusCircle } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { Platform } from 'react-native'
-import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import type { CreateWorkLogInput } from '@scf/schemas'
 
@@ -39,7 +39,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   const rowError = errors.timeEntries?.[index]
 
   return (
-    <YStack
+    <Stack
       borderWidth={1}
       borderColor="$borderColor"
       borderRadius="$4"
@@ -47,8 +47,8 @@ export const TimeEntryInput = memo(function TimeEntryInput({
       gap="$2"
       backgroundColor="$background"
     >
-      <XStack gap="$3" alignItems="center">
-        <YStack flex={1} gap="$1">
+      <Row gap="$3" alignItems="center">
+        <Stack flex={1} gap="$1">
           <Text fontWeight="600" fontSize="$3">
             Start Time
           </Text>
@@ -70,9 +70,9 @@ export const TimeEntryInput = memo(function TimeEntryInput({
               {rowError.start.message}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$1">
+        <Stack flex={1} gap="$1">
           <Text fontWeight="600" fontSize="$3">
             End Time
           </Text>
@@ -94,7 +94,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
               {rowError.end.message}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         <Button
           size="$3"
@@ -105,13 +105,13 @@ export const TimeEntryInput = memo(function TimeEntryInput({
           accessibilityLabel="Remove time entry"
           style={{ alignSelf: 'flex-end' }}
         />
-      </XStack>
+      </Row>
 
       {typeof rowError?.message === 'string' && (
         <Text fontSize="$2" color="$red10">
           {rowError.message}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 })

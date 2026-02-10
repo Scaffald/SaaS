@@ -14,9 +14,9 @@ import {
   Progress,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type StorageAnalytics = inferRouterOutputs<AppRouter>['office']['storage']['analytics']
 
@@ -115,12 +115,12 @@ export function OfficeStorageDashboard() {
         cell: (info) => {
           const row = info.row.original
           return (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">{row.displayName}</Text>
               <Text color="$color10" fontSize="$2">
                 {row.username ? `@${row.username}` : row.userId.slice(0, 8)}
               </Text>
-            </YStack>
+            </Stack>
           )
         },
       }),
@@ -156,7 +156,7 @@ export function OfficeStorageDashboard() {
           const clamped = Math.min(Math.max(percent, 0), 200)
 
           return (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Progress value={clamped} max={100} backgroundColor="$color3" size="$1">
                 <Progress.Indicator
                   animation="bouncy"
@@ -166,7 +166,7 @@ export function OfficeStorageDashboard() {
               <Text fontSize="$2" color="$color10">
                 {formatPercent(percent)} of {formatBytes(row.storageLimitBytes)}
               </Text>
-            </YStack>
+            </Stack>
           )
         },
       }),
@@ -229,16 +229,16 @@ export function OfficeStorageDashboard() {
   const isLoading = analyticsQuery.isLoading
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
+    <Stack flex={1} padding="$4" gap="$4">
+      <Row justifyContent="space-between" alignItems="center">
+        <Stack>
           <Text fontSize="$7" fontWeight="700">
             Storage Analytics
           </Text>
           <Paragraph color="$color10">
             Monitor how workers consume storage across work logs, portfolios, and certifications.
           </Paragraph>
-        </YStack>
+        </Stack>
         <Button
           size="$3"
           variant="outlined"
@@ -248,16 +248,16 @@ export function OfficeStorageDashboard() {
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
       {isLoading ? (
-        <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+        <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
           <Spinner size="large" />
           <Text color="$color10">Loading storage metrics…</Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap="$3" flexWrap="wrap">
             {summaryCards.map((card) => (
               <Card
                 key={card.label}
@@ -268,7 +268,7 @@ export function OfficeStorageDashboard() {
                 width="100%"
                 maxWidth={320}
               >
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text color="$color10" fontSize="$2">
                     {card.label}
                   </Text>
@@ -280,37 +280,37 @@ export function OfficeStorageDashboard() {
                       {card.subtext}
                     </Text>
                   ) : null}
-                </YStack>
+                </Stack>
               </Card>
             ))}
-          </XStack>
+          </Row>
 
           <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600" fontSize="$4">
                 Usage breakdown
               </Text>
-              <YStack gap="$3">
+              <Stack gap="$3">
                 {breakdown.map((entry: StorageAnalytics['breakdown'][number]) => (
-                  <YStack key={entry.label} gap="$1">
-                    <XStack justifyContent="space-between" alignItems="center">
+                  <Stack key={entry.label} gap="$1">
+                    <Row justifyContent="space-between" alignItems="center">
                       <Text fontWeight="600">{entry.label}</Text>
                       <Text color="$color10" fontSize="$2">
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
-                    </XStack>
+                    </Row>
                     <Progress value={entry.percent} max={100} backgroundColor="$color3" size="$1">
                       <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
                     </Progress>
-                  </YStack>
+                  </Stack>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </Card>
 
           <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-            <YStack gap="$3">
-              <XStack justifyContent="space-between" alignItems="center">
+            <Stack gap="$3">
+              <Row justifyContent="space-between" alignItems="center">
                 <Text fontWeight="600" fontSize="$4">
                   Top users by storage consumption
                 </Text>
@@ -322,7 +322,7 @@ export function OfficeStorageDashboard() {
                 >
                   Refresh table
                 </Button>
-              </XStack>
+              </Row>
               <Input
                 placeholder="Search by name, username, or user ID…"
                 value={search}
@@ -335,10 +335,10 @@ export function OfficeStorageDashboard() {
                 pageSize={25}
                 emptyMessage="No storage usage records found"
               />
-            </YStack>
+            </Stack>
           </Card>
         </>
       )}
-    </YStack>
+    </Stack>
   )
 }

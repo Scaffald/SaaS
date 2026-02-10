@@ -1,5 +1,5 @@
 import { useUser } from '@scf/core/utils/useUser'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 
@@ -48,10 +48,10 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
   }
 
   return (
-    <XStack gap="$1" flexWrap="wrap" marginTop="$2">
+    <Row gap="$1" flexWrap="wrap" marginTop="$2">
       {/* Unread comments badge */}
       {unreadComments > 0 && (
-        <XStack
+        <Row
           backgroundColor="$blue3"
           paddingHorizontal="$2"
           paddingVertical="$1"
@@ -63,12 +63,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           <Text fontSize="$1" color="$blue10" fontWeight="500">
             {unreadComments}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* All accepted badge */}
       {allAccepted && (
-        <XStack
+        <Row
           backgroundColor="$green9"
           paddingHorizontal="$2"
           paddingVertical="$1"
@@ -80,12 +80,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           <Text fontSize="$1" color="white" fontWeight="600">
             Check completed
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Pending sections badge */}
       {pendingSections > 0 && !allAccepted && (
-        <YStack
+        <Stack
           backgroundColor="$gray3"
           paddingHorizontal="$2"
           paddingVertical="$1"
@@ -94,12 +94,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           <Text fontSize="$1" color="$gray11" fontWeight="500">
             {pendingSections} Pending
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
-        <YStack
+        <Stack
           backgroundColor="$green3"
           paddingHorizontal="$2"
           paddingVertical="$1"
@@ -108,12 +108,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           <Text fontSize="$1" color="$green10" fontWeight="500">
             {acceptedSections} Completed
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Pending checks badge */}
       {hasPendingChecks && (
-        <YStack
+        <Stack
           backgroundColor="$gray3"
           paddingHorizontal="$2"
           paddingVertical="$1"
@@ -122,12 +122,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           <Text fontSize="$1" color="$gray11" fontWeight="500">
             Pending checks
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Progress indicator */}
       {!allAccepted && (
-        <YStack
+        <Stack
           backgroundColor="$blue2"
           paddingHorizontal="$2"
           paddingVertical="$1"
@@ -136,8 +136,8 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           <Text fontSize="$1" color="$blue11" fontWeight="500">
             {acceptedSections}/{totalSections}
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </XStack>
+    </Row>
   )
 }

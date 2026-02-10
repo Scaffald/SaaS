@@ -1,4 +1,4 @@
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface CandidateProfileTabProps {
@@ -33,34 +33,34 @@ export const CandidateProfileTab = ({
     lockReason ?? 'Pay the upfront success fee to unlock email and phone details.'
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {/* Contact Info */}
       <Card padding="$4" backgroundColor="$color2">
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Contact Information
         </Text>
         {isContactLocked ? (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text color="$orange11" fontWeight="600">
               Contact details locked
             </Text>
             <Text color="$color11">{lockedMessage}</Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
-            <XStack justifyContent="space-between">
+          <Stack gap="$2">
+            <Row justifyContent="space-between">
               <Text opacity={0.7}>Email</Text>
               <Text fontWeight="600">{resolvedEmail}</Text>
-            </XStack>
-            <XStack justifyContent="space-between">
+            </Row>
+            <Row justifyContent="space-between">
               <Text opacity={0.7}>Phone</Text>
               <Text fontWeight="600">{resolvedPhone}</Text>
-            </XStack>
-            <XStack justifyContent="space-between">
+            </Row>
+            <Row justifyContent="space-between">
               <Text opacity={0.7}>Location</Text>
               <Text fontWeight="600">{resolvedLocation}</Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
       </Card>
 
@@ -69,15 +69,15 @@ export const CandidateProfileTab = ({
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Skills
         </Text>
-        <YStack gap="$3">
+        <Stack gap="$3">
           {candidate.skills.map((skill, index) => (
-            <XStack
+            <Row
               key={`skill-${skill.name}-${index}`}
               justifyContent="space-between"
               alignItems="center"
             >
               <Text fontWeight="600">{skill.name}</Text>
-              <YStack
+              <Stack
                 backgroundColor={
                   skill.proficiency === 'expert'
                     ? '$green3'
@@ -107,10 +107,10 @@ export const CandidateProfileTab = ({
                 >
                   {skill.proficiency}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           ))}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Certifications */}
@@ -118,11 +118,11 @@ export const CandidateProfileTab = ({
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Certifications
         </Text>
-        <YStack gap="$3">
+        <Stack gap="$3">
           {candidate.certifications.map((cert, index) => (
-            <YStack key={`cert-${cert.name}-${index}`} gap="$1">
+            <Stack key={`cert-${cert.name}-${index}`} gap="$1">
               <Text fontWeight="600">{cert.name}</Text>
-              <XStack gap="$2">
+              <Row gap="$2">
                 {cert.state && (
                   <Text fontSize="$2" opacity={0.7}>
                     State: {cert.state}
@@ -133,10 +133,10 @@ export const CandidateProfileTab = ({
                     Issued: {new Date(cert.issueDate).toLocaleDateString()}
                   </Text>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Experience */}
@@ -144,9 +144,9 @@ export const CandidateProfileTab = ({
         <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Work Experience
         </Text>
-        <YStack gap="$4">
+        <Stack gap="$4">
           {candidate.experience.map((exp, index) => (
-            <YStack key={`exp-${exp.company}-${exp.title}-${index}`} gap="$2">
+            <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap="$2">
               <Text fontSize="$4" fontWeight="600">
                 {exp.title}
               </Text>
@@ -160,12 +160,12 @@ export const CandidateProfileTab = ({
                 {exp.description}
               </Text>
               {index < candidate.experience.length - 1 && (
-                <YStack height={1} backgroundColor="$color5" marginTop="$2" />
+                <Stack height={1} backgroundColor="$color5" marginTop="$2" />
               )}
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

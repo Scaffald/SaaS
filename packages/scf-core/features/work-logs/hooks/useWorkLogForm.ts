@@ -2,7 +2,7 @@ import { api } from '@scf/core/utils/api';
 import { useWorkLogLocation } from '@scf/core/utils/location/useWorkLogLocation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useToastController } from '@tamagui/toast';
+import { useToast } from '@unicornlove/beyond-ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
@@ -127,7 +127,7 @@ export const useWorkLogForm = ({
   autoSaveEnabled = true,
   onSubmitSuccess,
 }: UseWorkLogFormOptions = {}): UseWorkLogFormReturn => {
-  const toast = useToastController();
+  const toast = useToast();
   const netInfo = useNetInfo();
   const isOnline = netInfo.isConnected !== false &&
     netInfo.isInternetReachable !== false;
@@ -446,11 +446,12 @@ export const useWorkLogForm = ({
   const submitHandler = handleSubmit(async (values) => {
     const payload = createWorkLogSchema.safeParse(values);
     if (!payload.success) {
-      toast.show("Unable to submit", {
-        message: payload.error.issues[0]?.message ??
+      toast.show({
+          title: "Unable to submit",
+          message: payload.error.issues[0]?.message ??
           "Please resolve validation errors and try again.",
-        type: "error",
-      });
+          variant: 'error',
+        });
       setAutoSaveStatus({
         state: "invalid",
         message: payload.error.issues[0]?.message ??
@@ -480,10 +481,10 @@ export const useWorkLogForm = ({
         });
         setOfflineDraftId(draft.id);
 
-        toast.show('Saved offline', {
-          message:
-            "You're offline. We'll sync the work log when you're back online.",
-          type: 'info',
+        toast.show({
+          title: 'Saved offline',
+          message: "You're offline. We'll sync the work log when you're back online.",
+          variant: 'info',
         });
         return;
       }
@@ -506,18 +507,19 @@ export const useWorkLogForm = ({
         onSubmitSuccess?.(currentId);
       }
 
-      toast.show("Work Log Saved", {
-        message: "Your work log draft has been saved successfully.",
-        type: "success",
-      });
+      toast.show({
+          title: "Work Log Saved",
+          message: "Your work log draft has been saved successfully.",
+          variant: 'success',
+        });
     } catch (error) {
       const message = error instanceof Error
         ? error.message
         : 'Failed to save work log.';
-      toast.show("Save Failed", {
-        message,
-        type: "error",
-      });
+      toast.show({
+          title: "Save Failed",
+          variant: 'error',
+        });
       setAutoSaveStatus({
         state: "error",
         message,
@@ -530,10 +532,11 @@ export const useWorkLogForm = ({
   const captureLocation = useCallback(async () => {
     const result = await location.requestLocation();
     if (!result) {
-      toast.show("Location", {
-        message: "Unable to capture location. Check permissions and try again.",
-        type: "error",
-      });
+      toast.show({
+          title: "Location",
+          message: "Unable to capture location. Check permissions and try again.",
+          variant: 'error',
+        });
       return;
     }
 

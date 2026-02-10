@@ -4,7 +4,7 @@ import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import { CheckStatusCard } from './CheckStatusCard'
 import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'
@@ -87,28 +87,28 @@ export function CheckStatusDashboard() {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <Stack flex={1} backgroundColor="$background">
       <ScrollView flex={1}>
-        <YStack gap="$4" paddingHorizontal="$4" paddingBottom="$6">
-          <YStack
+        <Stack gap="$4" paddingHorizontal="$4" paddingBottom="$6">
+          <Stack
             gap="$3"
             padding="$4"
             backgroundColor="$background"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
           >
-            <XStack gap="$3" alignItems="center">
+            <Row gap="$3" alignItems="center">
               <ShieldCheck size={28} color="$blue10" />
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   Background check dashboard
                 </Text>
                 <Text fontSize="$2" color="$color10">
                   Track your screenings, monitor progress, and manage who can see your results.
                 </Text>
-              </YStack>
-            </XStack>
-            <XStack gap="$2" flexWrap="wrap">
+              </Stack>
+            </Row>
+            <Row gap="$2" flexWrap="wrap">
               {FILTER_DEFINITIONS.map((filter) => {
                 const isActive = activeFilter === filter.value
                 return (
@@ -127,20 +127,20 @@ export function CheckStatusDashboard() {
                   </Button>
                 )
               })}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {checksQuery.isLoading && (
-            <YStack gap="$2" alignItems="center" paddingVertical="$6">
+            <Stack gap="$2" alignItems="center" paddingVertical="$6">
               <Spinner size="large" color="$color11" />
               <Text fontSize="$3" color="$color10">
                 Loading your background checks…
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           {checksQuery.isError && (
-            <YStack
+            <Stack
               gap="$3"
               padding="$4"
               backgroundColor="$color2"
@@ -159,11 +159,11 @@ export function CheckStatusDashboard() {
               >
                 Retry
               </Button>
-            </YStack>
+            </Stack>
           )}
 
           {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
-            <YStack
+            <Stack
               gap="$3"
               padding="$4"
               backgroundColor="$color2"
@@ -177,7 +177,7 @@ export function CheckStatusDashboard() {
               <Button size="$3" theme="blue" onPress={handleStartNewCheck}>
                 Start a background check
               </Button>
-            </YStack>
+            </Stack>
           )}
 
           {filteredChecks.map((check: BackgroundCheckSummary) => (
@@ -196,7 +196,7 @@ export function CheckStatusDashboard() {
             />
           ))}
 
-          <YStack
+          <Stack
             gap="$2"
             padding="$3"
             backgroundColor="$color2"
@@ -213,10 +213,10 @@ export function CheckStatusDashboard() {
             <Button size="$3" theme="blue" onPress={handleStartNewCheck}>
               Start background check
             </Button>
-          </YStack>
+          </Stack>
 
           {selectedCheckId && (
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Separator />
               <ResultsViewer
                 checkId={selectedCheckId}
@@ -230,9 +230,9 @@ export function CheckStatusDashboard() {
                   }
                 }}
               />
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {isWeb && (
@@ -250,6 +250,6 @@ export function CheckStatusDashboard() {
           }}
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

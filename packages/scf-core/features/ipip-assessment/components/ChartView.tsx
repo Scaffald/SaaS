@@ -1,8 +1,8 @@
 import type { IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
-import { BarChart, SkillsChart } from '@unicornlove/ui'
+import { BarChart, SkillsChart } from '@unicornlove/beyond-ui'
 import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { DOMAIN_NAMES, DOMAIN_ORDER } from '../utils/domainGrouping'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
 
@@ -33,11 +33,11 @@ export function ChartView({
   // Handle missing data gracefully
   if (!scores && completedDomains === 0) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center">
+      <Stack gap="$4" padding="$4" alignItems="center">
         <Text fontSize="$4" color="$color11">
           No chart data available yet. Complete at least one domain to see visualizations.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -84,7 +84,7 @@ export function ChartView({
   }, [radarData])
 
   return (
-    <YStack gap="$6" width="100%">
+    <Stack gap="$6" width="100%">
       {/* Accessible summary for assistive technologies */}
       <VisuallyHidden>
         <Text>
@@ -94,7 +94,7 @@ export function ChartView({
 
       {/* Archetype Badge */}
       {isComplete && archetype && (
-        <YStack
+        <Stack
           gap="$3"
           padding="$5"
           backgroundColor="$blue2"
@@ -110,20 +110,20 @@ export function ChartView({
             {archetype.name}
           </Text>
           {archetype.confidence !== undefined && (
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Text fontSize="$4" color="$blue10">
                 Confidence:
               </Text>
               <Text fontSize="$5" fontWeight="600" color="$blue11">
                 {archetype.confidence}%
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
       )}
 
       {/* Big Five Radar Chart */}
-      <YStack
+      <Stack
         gap="$3"
         padding="$4"
         backgroundColor="$color2"
@@ -137,7 +137,7 @@ export function ChartView({
         <Text fontSize="$3" color="$color11">
           Your scores across the five major personality domains (0-100%)
         </Text>
-        <YStack alignItems="center" padding="$4">
+        <Stack alignItems="center" padding="$4">
           <SkillsChart
             datasets={[
               {
@@ -163,15 +163,15 @@ export function ChartView({
             labelTextSize={12}
             showDots={true}
           />
-        </YStack>
+        </Stack>
         {/* Domain Labels with Scores */}
-        <YStack gap="$2" marginTop="$2">
+        <Stack gap="$2" marginTop="$2">
           {topTraits.map((trait) => {
             const resultColor =
               trait.result === 'high' ? '$green10' : trait.result === 'low' ? '$blue10' : '$gray10'
 
             return (
-              <XStack
+              <Row
                 key={trait.domainName}
                 justifyContent="space-between"
                 alignItems="center"
@@ -182,22 +182,22 @@ export function ChartView({
                 <Text fontSize="$4" fontWeight="500" color="$color12">
                   {trait.domainName}
                 </Text>
-                <XStack gap="$3" alignItems="center">
+                <Row gap="$3" alignItems="center">
                   <Text fontSize="$3" color="$color10">
                     {trait.value}%
                   </Text>
                   <Text fontSize="$2" fontWeight="600" color={resultColor}>
                     {trait.result.toUpperCase()}
                   </Text>
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
             )
           })}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Facet Bars for Each Domain */}
-      <YStack gap="$4">
+      <Stack gap="$4">
         {DOMAIN_ORDER.map((domain) => {
           const domainScore = scores?.[domain]
           const domainName = DOMAIN_NAMES[domain]
@@ -206,7 +206,7 @@ export function ChartView({
 
           if (!domainIsComplete || !domainScore?.facet) {
             return (
-              <YStack
+              <Stack
                 key={domain}
                 gap="$2"
                 padding="$4"
@@ -223,7 +223,7 @@ export function ChartView({
                 <Text fontSize="$3" color="$gray9">
                   Complete {domainName} questions to see facet details.
                 </Text>
-              </YStack>
+              </Stack>
             )
           }
 
@@ -244,7 +244,7 @@ export function ChartView({
           })
 
           return (
-            <YStack
+            <Stack
               key={domain}
               gap="$3"
               padding="$4"
@@ -272,7 +272,7 @@ export function ChartView({
                 roundedBottom={true}
               />
               {/* Facet Labels */}
-              <XStack flexWrap="wrap" gap="$2" marginTop="$2">
+              <Row flexWrap="wrap" gap="$2" marginTop="$2">
                 {facetKeys.map((facetKey) => {
                   const facet = domainScore.facet[facetKey as keyof typeof domainScore.facet]
                   if (!facet) return null
@@ -284,7 +284,7 @@ export function ChartView({
                     result === 'high' ? '$green10' : result === 'low' ? '$blue10' : '$gray10'
 
                   return (
-                    <XStack
+                    <Row
                       key={facetKey}
                       gap="$2"
                       padding="$2"
@@ -300,18 +300,18 @@ export function ChartView({
                       <Text fontSize="$2" color={resultColor}>
                         {percentage}%
                       </Text>
-                    </XStack>
+                    </Row>
                   )
                 })}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )
         })}
-      </YStack>
+      </Stack>
 
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$4"
           backgroundColor="$yellow2"
@@ -327,8 +327,8 @@ export function ChartView({
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype visualization.
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

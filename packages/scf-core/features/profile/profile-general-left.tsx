@@ -11,13 +11,13 @@ import {
   plainTextToTipTap,
   RichTextEditor,
   SkeletonForm,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { useSafeToast } from '@scf/core/hooks/useSafeToast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -220,17 +220,17 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         <SkeletonForm fields={6} />
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Avatar Section */}
-        <YStack gap="$3" alignItems="center">
+        <Stack gap="$3" alignItems="center">
           <Text fontWeight="600">Profile Photo</Text>
           <AvatarImagePicker
             value={getAvatarUrl(avatarPath) || ''}
@@ -278,11 +278,11 @@ export function ProfileGeneralLeft() {
               Uploading avatar...
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Name Fields */}
-        <XStack gap="$3">
-          <YStack gap="$2" flex={1}>
+        <Row gap="$3">
+          <Stack gap="$2" flex={1}>
             <Text fontWeight="600">First Name *</Text>
             <Controller
               name="first_name"
@@ -306,9 +306,9 @@ export function ProfileGeneralLeft() {
                 {errors.first_name.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" flex={1}>
+          <Stack gap="$2" flex={1}>
             <Text fontWeight="600">Last Name *</Text>
             <Controller
               name="last_name"
@@ -332,11 +332,11 @@ export function ProfileGeneralLeft() {
                 {errors.last_name.message}
               </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* About Section - Rich Text Editor */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">About</Text>
           <Controller
             name="about"
@@ -362,10 +362,10 @@ export function ProfileGeneralLeft() {
               )
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Contact Information */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Phone</Text>
           <Controller
             name="phone"
@@ -380,9 +380,9 @@ export function ProfileGeneralLeft() {
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Email (Read-only)</Text>
           <Controller
             name="email"
@@ -404,7 +404,7 @@ export function ProfileGeneralLeft() {
           <Text color="$color10" fontSize="$2">
             Email changes must be made through account settings
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Home Address with Smart Autocomplete */}
         <ControlledAddressForm
@@ -418,7 +418,7 @@ export function ProfileGeneralLeft() {
         />
 
         {/* Action Buttons */}
-        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+        <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
           <Button
             variant="outlined"
             disabled={!isDirty}
@@ -451,7 +451,7 @@ export function ProfileGeneralLeft() {
             </AnimatePresence>
             <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
           </Button>
-        </XStack>
+        </Row>
 
         {/* Cancel Confirmation Dialog */}
         <ConfirmationDialog
@@ -469,7 +469,7 @@ export function ProfileGeneralLeft() {
             }
           }}
         />
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

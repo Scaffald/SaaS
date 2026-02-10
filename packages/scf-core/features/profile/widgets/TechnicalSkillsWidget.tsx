@@ -7,10 +7,10 @@ import {
   Heading,
   LoadingState,
   spacing,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
@@ -61,7 +61,7 @@ export function TechnicalSkillsWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -76,7 +76,7 @@ export function TechnicalSkillsWidget({
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -109,9 +109,9 @@ export function TechnicalSkillsWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Technical Skills</Heading>
           {showEdit && (
             <Button
@@ -124,7 +124,7 @@ export function TechnicalSkillsWidget({
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {/* Skills Content */}
         {skills.length === 0 ? (
@@ -143,20 +143,20 @@ export function TechnicalSkillsWidget({
             }
           />
         ) : (
-          <YStack gap="$4">
+          <Stack gap="$4">
             {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
-              <YStack key={taxonomy} gap="$2">
+              <Stack key={taxonomy} gap="$2">
                 {/* Taxonomy Header */}
                 <Text fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase">
                   {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                 </Text>
 
                 {/* Skills in this taxonomy */}
-                <XStack gap="$2" flexWrap="wrap">
+                <Row gap="$2" flexWrap="wrap">
                   {groupedSkills[taxonomy]
                     .slice(0, showCompact ? 5 : undefined)
                     .map((skill: EnrichedUserSkill) => (
-                      <XStack
+                      <Row
                         key={skill.id}
                         backgroundColor="$blue2"
                         paddingHorizontal="$3"
@@ -168,12 +168,12 @@ export function TechnicalSkillsWidget({
                         alignItems="center"
                       >
                         {skill.verified && <CheckCircle size={14} color="$blue11" />}
-                        <YStack gap="$0.5">
+                        <Stack gap="$0.5">
                           <Text fontSize="$2" fontWeight="500" color="$blue11">
                             {skill.name}
                           </Text>
                           {!showCompact && (
-                            <XStack gap="$2">
+                            <Row gap="$2">
                               {skill.proficiency > 0 && (
                                 <Text fontSize="$1" color="$blue10">
                                   {getProficiencyLabel(skill.proficiency)}
@@ -184,13 +184,13 @@ export function TechnicalSkillsWidget({
                                   • {skill.yearsExperience}y
                                 </Text>
                               )}
-                            </XStack>
+                            </Row>
                           )}
-                        </YStack>
-                      </XStack>
+                        </Stack>
+                      </Row>
                     ))}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             ))}
 
             {/* Show More link for compact view */}
@@ -207,9 +207,9 @@ export function TechnicalSkillsWidget({
                 View all {skills.length} skills →
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

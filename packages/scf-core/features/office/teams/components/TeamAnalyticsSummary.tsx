@@ -3,8 +3,8 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface TeamAnalyticsSummaryProps {
   teamId: string
@@ -109,12 +109,12 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       : null
 
   return (
-    <YStack gap="$3">
-      <XStack gap="$2" alignItems="center" justifyContent="space-between" flexWrap="wrap">
+    <Stack gap="$3">
+      <Row gap="$2" alignItems="center" justifyContent="space-between" flexWrap="wrap">
         <Text fontSize="$6" fontWeight="700">
           Analytics summary
         </Text>
-        <XStack gap="$2" alignItems="center" flexWrap="wrap">
+        <Row gap="$2" alignItems="center" flexWrap="wrap">
           <ResponsiveSelect
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
@@ -134,24 +134,24 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
           >
             Refresh
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {analyticsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
+        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading analytics…</Text>
-        </YStack>
+        </Stack>
       ) : metrics.length === 0 ? (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">No analytics yet</Text>
           <Text color="$color11">
             Metrics will appear once the team starts reviewing invitations and applications.
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$3">
-          <XStack gap="$3" flexWrap="wrap">
+        <Stack gap="$3">
+          <Row gap="$3" flexWrap="wrap">
             <StatTile label="Active members (avg)">{formatNumber(membersActiveAvg)}</StatTile>
             <StatTile label="Active jobs (latest)">{formatNumber(jobsActiveLatest)}</StatTile>
             <StatTile label="Applications reviewed">
@@ -168,21 +168,21 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
                 ? workloadPressureLatest.toFixed(2)
                 : '—'}
             </StatTile>
-          </XStack>
+          </Row>
           {trendDescription ? (
             <Text fontSize="$3" color="$color10">
               {trendDescription}
             </Text>
           ) : null}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
 function StatTile({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <YStack
+    <Stack
       gap="$1"
       borderWidth={1}
       borderColor="$borderColor"
@@ -198,6 +198,6 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
       <Text fontSize="$5" fontWeight="700">
         {children}
       </Text>
-    </YStack>
+    </Stack>
   )
 }

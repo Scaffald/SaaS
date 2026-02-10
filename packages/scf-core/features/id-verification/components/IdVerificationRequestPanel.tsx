@@ -3,11 +3,11 @@ import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { CreditCard, RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Input, Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Input, Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
@@ -38,7 +38,7 @@ export function IdVerificationRequestPanel({
   selectedOrganizationId,
   onOrganizationChange,
 }: IdVerificationRequestPanelProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   const { data: organizationsData } = useAllOrganizations()
@@ -84,28 +84,29 @@ export function IdVerificationRequestPanel({
   const requestVerification = api.idVerification.requestVerification.useMutation({
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Unable to create payment'
-      toast.show('Unable to create payment', {
-        message,
-        type: 'error',
-      })
+      toast.show({
+          title: 'Unable to create payment',
+          variant: 'error',
+        })
     },
   })
 
   const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation({
     onSuccess: async () => {
-      toast.show('Verification requested', {
-        message: 'Worker receives a Persona link immediately.',
-        type: 'success',
-      })
+      toast.show({
+          title: 'Verification requested',
+          message: 'Worker receives a Persona link immediately.',
+          variant: 'success',
+        })
       await utils.idVerification.listVerifications.invalidate()
       resetForm()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Payment confirmation failed'
-      toast.show('Payment confirmation failed', {
-        message,
-        type: 'error',
-      })
+      toast.show({
+          title: 'Payment confirmation failed',
+          variant: 'error',
+        })
     },
   })
 
@@ -120,18 +121,20 @@ export function IdVerificationRequestPanel({
 
   const createPaymentSession = async () => {
     if (!organizationId) {
-      toast.show('Select an organization', {
-        message: 'Choose which organization should be billed.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Select an organization',
+          message: 'Choose which organization should be billed.',
+          variant: 'error',
+        })
       return
     }
 
     if (!selectedWorkerId || !selectedPricingId) {
-      toast.show('Missing details', {
-        message: 'Select a worker and pricing plan to continue.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Missing details',
+          message: 'Select a worker and pricing plan to continue.',
+          variant: 'error',
+        })
       return
     }
 
@@ -164,17 +167,17 @@ export function IdVerificationRequestPanel({
   const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
-    <YStack gap="$4" padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-      <YStack gap="$1">
+    <Stack gap="$4" padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
+      <Stack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Trigger Verification
         </Text>
         <Text fontSize="$3" color="$color11">
           Collect payment and generate a Persona inquiry on behalf of an organization.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="idv-organization">Organization</Label>
         <ResponsiveSelect
           value={organizationId ?? '__none__'}
@@ -194,9 +197,9 @@ export function IdVerificationRequestPanel({
             })),
           ]}
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="idv-worker">Worker</Label>
         <Input
           id="idv-worker-search"
@@ -223,9 +226,9 @@ export function IdVerificationRequestPanel({
                 }))
           }
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="idv-pricing">Verification plan</Label>
         <ResponsiveSelect
           value={selectedPricingId ?? ''}
@@ -243,7 +246,7 @@ export function IdVerificationRequestPanel({
             label: `${option.name} · ${formatCurrency(option.priceCents)}`,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {!paymentSession ? (
         <Button
@@ -290,19 +293,19 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
+        <Row gap="$2" alignItems="center">
           <ShieldCheck size={16} color="$color11" />
           <Text fontWeight="600" color="$color12">
             What happens next?
           </Text>
-        </XStack>
+        </Row>
         <Text fontSize="$3" color="$color11">
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s
           profile details. They receive an email and in-app notification with a secure link to
           upload their government ID. Most verifications finish within minutes.
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
-import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@unicornlove/beyond-ui'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean
@@ -39,7 +39,7 @@ export function DistributionVisibilitySection({
   }
 
   return (
-    <YStack
+    <Stack
       gap="$4"
       padding="$4"
       backgroundColor="$background"
@@ -55,22 +55,22 @@ export function DistributionVisibilitySection({
       </Text>
 
       {/* Is Featured */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Featured job</Label>
           <Text fontSize="$2" color="$color10">
             Highlight this job in listings
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.is_featured || false}
           onCheckedChange={(checked) => handleChange('is_featured', checked)}
           aria-label="Featured job"
         />
-      </XStack>
+      </Row>
 
       {localState.is_featured && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label>Featured until</Label>
           <Input
             placeholder="YYYY-MM-DD"
@@ -80,11 +80,11 @@ export function DistributionVisibilitySection({
           <Text fontSize="$2" color="$color10">
             Date when featured status expires
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* SEO Keywords */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>SEO keywords</Label>
         <Input
           placeholder="e.g. construction, foreman, supervisor"
@@ -100,10 +100,10 @@ export function DistributionVisibilitySection({
         <Text fontSize="$2" color="$color10">
           Comma-separated keywords for search optimization
         </Text>
-      </YStack>
+      </Stack>
 
       {/* External Application URL */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>External application URL</Label>
         <Input
           placeholder="https://example.com/apply"
@@ -113,7 +113,7 @@ export function DistributionVisibilitySection({
         <Text fontSize="$2" color="$color10">
           Redirect to external ATS for applications
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

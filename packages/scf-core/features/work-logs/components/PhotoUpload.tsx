@@ -1,6 +1,6 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/ui'
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/beyond-ui'
 import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
@@ -12,9 +12,9 @@ import {
   Spinner,
   Text,
   View,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { type UploadCandidate, usePhotoUpload } from '../hooks/usePhotoUpload'
 import type { WorkLogPhotoType } from '../types/photos'
 import { PhotoGallery } from './PhotoGallery'
@@ -45,7 +45,7 @@ export interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ workLogId }: PhotoUploadProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const {
     isReady,
     photos,
@@ -82,11 +82,11 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
   const ensureReady = useCallback(() => {
     if (!isReady) {
-      toast.show('Save Draft First', {
-        message:
-          'Photos can be added after the work log draft has been saved. Please wait for auto-save to finish.',
-        type: 'info',
-      })
+      toast.show({
+          title: 'Save Draft First',
+          message: 'Photos can be added after the work log draft has been saved. Please wait for auto-save to finish.',
+          variant: 'info',
+        })
       return false
     }
     if (!canUploadMore) {
@@ -104,10 +104,11 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       if (selection.platform === 'web') {
         const file = selection.file
         if (!file) {
-          toast.show('Upload Failed', {
-            message: 'Unable to process the selected file.',
-            type: 'error',
-          })
+          toast.show({
+          title: 'Upload Failed',
+          message: 'Unable to process the selected file.',
+          variant: 'error',
+        })
           return null
         }
         return {
@@ -125,9 +126,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
       const asset = selection.asset
       if (!asset?.uri) {
-        toast.show('Upload Failed', {
+        toast.show({
+          title: 'Upload Failed',
           message: 'Unable to process the selected photo.',
-          type: 'error',
+          variant: 'error',
         })
         return null
       }
@@ -174,10 +176,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       const { status } = await ImagePicker.requestCameraPermissionsAsync()
 
       if (status !== 'granted') {
-        toast.show('Camera Permission Required', {
-          message:
-            'Camera access is needed to capture photos. Please enable it in your device settings.',
-          type: 'warning',
+        toast.show({
+          title: 'Camera Permission Required',
+          message: 'Camera access is needed to capture photos. Please enable it in your device settings.',
+          variant: 'warning',
         })
         return
       }
@@ -212,18 +214,19 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       resetForm()
     } catch (error) {
       console.error('[PhotoUpload] Camera capture failed', error)
-      toast.show('Capture Failed', {
-        message: 'Unable to capture photo. Please try again.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Capture Failed',
+          message: 'Unable to capture photo. Please try again.',
+          variant: 'error',
+        })
     } finally {
       setIsCapturing(false)
     }
   }, [caption, ensureReady, photoType, showOnProfile, toast, uploadPhoto, resetForm])
 
   return (
-    <YStack gap="$4">
-      <YStack
+    <Stack gap="$4">
+      <Stack
         borderWidth={1}
         borderColor="$borderColor"
         borderRadius="$4"
@@ -231,7 +234,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         gap="$3"
         backgroundColor="$color2"
       >
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="700" fontSize="$5">
             Work Log Photos
           </Text>
@@ -239,17 +242,17 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
             Add up to {maxPhotos} photos documenting your work. Individual files must be 2MB or
             less.
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$2">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontWeight="600" fontSize="$3">
               Storage Usage
             </Text>
             <Text fontSize="$2" color="$color10">
               {formatStorageSummary(storageUsage.usedBytes, storageUsage.limitBytes)}
             </Text>
-          </XStack>
+          </Row>
           <View height={10} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
             <View
               height="100%"
@@ -257,10 +260,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               backgroundColor={usagePercent > 90 ? '$red9' : '$blue9'}
             />
           </View>
-        </YStack>
+        </Stack>
 
         {!isReady ? (
-          <YStack
+          <Stack
             borderWidth={1}
             borderColor="$orange8"
             backgroundColor="$orange2"
@@ -276,10 +279,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               Photos can be added after the work log draft is saved. Keep filling out the form and
               we&apos;ll enable uploads automatically.
             </Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$3">
-            <YStack gap="$2">
+          <Stack gap="$3">
+            <Stack gap="$2">
               <Text fontWeight="600" fontSize="$3">
                 Photo Details
               </Text>
@@ -298,15 +301,15 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   label: option.label,
                 }))}
               />
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Checkbox
                   checked={showOnProfile}
                   onCheckedChange={(value) => setShowOnProfile(Boolean(value))}
                   size="$3"
                 />
                 <Text fontSize="$3">Show on my public profile when verified</Text>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
             <Separator />
 
@@ -314,12 +317,15 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               disabled={isUploading || isCapturing || !canUploadMore}
               accept="image/jpeg,image/png,image/webp"
               maxSizeBytes={2 * 1024 * 1024}
-              onError={(message) => toast.show('Upload Failed', { message, type: 'error' })}
+              onError={(message) => toast.show({
+          title: 'Upload Failed',
+          variant: 'error',
+        })}
               onSelect={handleUploadSelection}
             >
               {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => (
-                <YStack gap="$3">
-                  <YStack
+                <Stack gap="$3">
+                  <Stack
                     {...(getRootProps() as Record<string, unknown>)}
                     padding="$4"
                     backgroundColor={isDragActive ? '$blue3' : '$color1'}
@@ -344,9 +350,9 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                     <Text fontSize="$2" color="$color11">
                       or tap below to browse your device
                     </Text>
-                  </YStack>
+                  </Stack>
 
-                  <XStack gap="$2">
+                  <Row gap="$2">
                     <Button
                       flex={1}
                       icon={UploadCloud}
@@ -367,24 +373,24 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                         {isCapturing ? 'Opening…' : 'Capture Photo'}
                       </Button>
                     )}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               )}
             </UploadSurface>
 
             {(isUploading || uploadProgress > 0) && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontSize="$2" color="$color11">
                   Upload progress
                 </Text>
                 <View height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
                   <View height="100%" width={`${uploadProgress}%`} backgroundColor="$blue9" />
                 </View>
-              </YStack>
+              </Stack>
             )}
 
             {uploadError ? (
-              <YStack
+              <Stack
                 borderWidth={1}
                 borderColor="$red8"
                 backgroundColor="$red3"
@@ -393,17 +399,17 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 paddingVertical="$2"
               >
                 <Text color="$red11">{uploadError}</Text>
-              </YStack>
+              </Stack>
             ) : null}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {isLoadingPhotos ? (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Spinner />
           <Text>Loading photos…</Text>
-        </XStack>
+        </Row>
       ) : (
         <PhotoGallery
           photos={photos}
@@ -418,6 +424,6 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
           onDelete={deletePhoto}
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

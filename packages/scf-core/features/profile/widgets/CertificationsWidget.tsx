@@ -7,11 +7,11 @@ import {
   Heading,
   LoadingState,
   spacing,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { Award, CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
 
@@ -59,7 +59,7 @@ export function CertificationsWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load certifications</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -74,7 +74,7 @@ export function CertificationsWidget({
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -95,9 +95,9 @@ export function CertificationsWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Certifications</Heading>
           {showEdit && (
             <Button
@@ -108,7 +108,7 @@ export function CertificationsWidget({
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {certifications.length === 0 ? (
           <EmptyState
@@ -127,21 +127,21 @@ export function CertificationsWidget({
             }
           />
         ) : (
-          <YStack gap="$4">
+          <Stack gap="$4">
             {/* Active Certifications */}
             {activeCerts.length > 0 && (
-              <YStack gap="$3">
+              <Stack gap="$3">
                 {activeCerts
                   .slice(0, showCompact ? 3 : undefined)
                   .map((cert: UserCertification, index: number) => (
-                    <YStack key={cert.id} gap="$2">
+                    <Stack key={cert.id} gap="$2">
                       {/* Certification Name & Organization */}
-                      <YStack gap="$1">
-                        <XStack gap="$2" alignItems="center">
+                      <Stack gap="$1">
+                        <Row gap="$2" alignItems="center">
                           <Text fontSize="$4" fontWeight="600">
                             {cert.name}
                           </Text>
-                          <XStack
+                          <Row
                             backgroundColor="$blue2"
                             paddingHorizontal="$2"
                             paddingVertical="$0.5"
@@ -153,56 +153,56 @@ export function CertificationsWidget({
                             <Text color="$blue11" fontSize="$1" fontWeight="600" marginLeft="$1">
                               Active
                             </Text>
-                          </XStack>
-                        </XStack>
+                          </Row>
+                        </Row>
                         {cert.issuing_organization && (
                           <Text fontSize="$3" color="$color11">
                             {cert.issuing_organization}
                           </Text>
                         )}
-                      </YStack>
+                      </Stack>
 
                       {/* Dates */}
-                      <XStack gap="$4" flexWrap="wrap">
+                      <Row gap="$4" flexWrap="wrap">
                         {cert.issue_date && (
-                          <YStack gap="$1">
+                          <Stack gap="$1">
                             <Text fontSize="$2" color="$color10">
                               Issued
                             </Text>
                             <Text fontSize="$2">{formatDate(cert.issue_date)}</Text>
-                          </YStack>
+                          </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
-                          <YStack gap="$1">
+                          <Stack gap="$1">
                             <Text fontSize="$2" color="$color10">
                               Expires
                             </Text>
                             <Text fontSize="$2">{formatDate(cert.expiration_date)}</Text>
-                          </YStack>
+                          </Stack>
                         )}
                         {cert.does_not_expire && (
-                          <YStack gap="$1">
+                          <Stack gap="$1">
                             <Text fontSize="$2" color="$color10">
                               Validity
                             </Text>
                             <Text fontSize="$2">No Expiration</Text>
-                          </YStack>
+                          </Stack>
                         )}
-                      </XStack>
+                      </Row>
 
                       {/* Credential Details */}
                       {!showCompact && (cert.credential_id || cert.credential_url) && (
-                        <XStack gap="$4" flexWrap="wrap">
+                        <Row gap="$4" flexWrap="wrap">
                           {cert.credential_id && (
-                            <YStack gap="$1">
+                            <Stack gap="$1">
                               <Text fontSize="$2" color="$color10">
                                 Credential ID
                               </Text>
                               <Text fontSize="$2">{cert.credential_id}</Text>
-                            </YStack>
+                            </Stack>
                           )}
                           {cert.credential_url && (
-                            <YStack gap="$1">
+                            <Stack gap="$1">
                               <Text fontSize="$2" color="$color10">
                                 Verification
                               </Text>
@@ -216,31 +216,31 @@ export function CertificationsWidget({
                               >
                                 View Certificate →
                               </Text>
-                            </YStack>
+                            </Stack>
                           )}
-                        </XStack>
+                        </Row>
                       )}
 
                       {/* Separator */}
                       {index < activeCerts.length - 1 && <Separator marginVertical="$2" />}
-                    </YStack>
+                    </Stack>
                   ))}
-              </YStack>
+              </Stack>
             )}
 
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontSize="$3" fontWeight="600" color="$color11">
                   Expired ({expiredCerts.length})
                 </Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
-                  <YStack key={cert.id} gap="$1" opacity={0.6}>
-                    <XStack gap="$2" alignItems="center">
+                  <Stack key={cert.id} gap="$1" opacity={0.6}>
+                    <Row gap="$2" alignItems="center">
                       <Text fontSize="$3" fontWeight="600">
                         {cert.name}
                       </Text>
-                      <XStack
+                      <Row
                         backgroundColor="$color3"
                         paddingHorizontal="$2"
                         paddingVertical="$0.5"
@@ -251,16 +251,16 @@ export function CertificationsWidget({
                         <Text color="$color10" fontSize="$1" fontWeight="600">
                           Expired
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                     {cert.issuing_organization && (
                       <Text fontSize="$2" color="$color11">
                         {cert.issuing_organization}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 ))}
-              </YStack>
+              </Stack>
             )}
 
             {/* Show More link for compact view */}
@@ -277,9 +277,9 @@ export function CertificationsWidget({
                 View all {certifications.length} certifications →
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

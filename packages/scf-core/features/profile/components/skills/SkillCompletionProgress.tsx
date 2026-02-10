@@ -1,5 +1,5 @@
 import { Sparkles } from '@tamagui/lucide-icons'
-import { Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface SkillCompletionProgressProps {
   /** Current skill count */
@@ -20,7 +20,7 @@ export function SkillCompletionProgress({
   completionPercent,
 }: SkillCompletionProgressProps) {
   return (
-    <YStack
+    <Stack
       padding="$4"
       gap="$3"
       backgroundColor="$blue2"
@@ -28,9 +28,9 @@ export function SkillCompletionProgress({
       borderColor="$blue5"
       borderRadius="$4"
     >
-      <XStack gap="$3" alignItems="center">
+      <Row gap="$3" alignItems="center">
         <Sparkles size={20} color="$blue10" />
-        <YStack gap="$1" flex={1}>
+        <Stack gap="$1" flex={1}>
           <Text fontWeight="600" color="$blue11">
             {hasMinimumSkills
               ? `Great! You've added ${skillCount} skill${skillCount === 1 ? '' : 's'}.`
@@ -39,22 +39,22 @@ export function SkillCompletionProgress({
           <Text fontSize="$2" color="$blue11">
             Add role-specific, safety, and leadership skills to improve your match rate.
           </Text>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <YStack gap="$2">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$2">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$2" color="$blue11">
             Skill section completeness
           </Text>
           <Text fontSize="$2" fontWeight="600" color="$blue11">
             {completionPercent}%
           </Text>
-        </XStack>
+        </Row>
         <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="$2">
           <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />
         </Progress>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

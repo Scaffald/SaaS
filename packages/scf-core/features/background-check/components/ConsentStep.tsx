@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Switch, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Switch, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 import type { ConsentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -35,8 +35,8 @@ export const ConsentStep = memo(function ConsentStep({
   }, [])
 
   return (
-    <YStack gap="$4" flex={1}>
-      <YStack gap="$2">
+    <Stack gap="$4" flex={1}>
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           Consent & Disclosures
         </Text>
@@ -44,30 +44,30 @@ export const ConsentStep = memo(function ConsentStep({
           Please review the disclosure and confirm your consent to continue with the background
           check.
         </Text>
-      </YStack>
+      </Stack>
 
       <ScrollView flex={1}>
-        <YStack gap="$4" paddingBottom="$6">
-          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+        <Stack gap="$4" paddingBottom="$6">
+          <Stack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
             <Text fontSize="$4" fontWeight="bold" color="$color12">
               FCRA Disclosure
             </Text>
             <Text fontSize="$3" color="$color11">
               {FCRA_DISCLOSURE.trim()}
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+          <Stack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
             <Text fontSize="$4" fontWeight="bold" color="$color12">
               Summary of Rights
             </Text>
             <Text fontSize="$3" color="$color11">
               {SUMMARY_OF_RIGHTS.trim()}
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <XStack gap="$3" alignItems="center">
+          <Stack gap="$3">
+            <Row gap="$3" alignItems="center">
               <Switch
                 size="$3"
                 checked={consent.acceptsDisclosure}
@@ -82,9 +82,9 @@ export const ConsentStep = memo(function ConsentStep({
               <Text fontSize="$3" color="$color12">
                 I have read and authorize the background check.
               </Text>
-            </XStack>
+            </Row>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$2" color="$color11">
                 Electronic Signature
               </Text>
@@ -109,14 +109,14 @@ export const ConsentStep = memo(function ConsentStep({
               <Text fontSize="$2" color="$color9">
                 Type your full name as it appears on government-issued identification.
               </Text>
-            </YStack>
-          </YStack>
-        </YStack>
+            </Stack>
+          </Stack>
+        </Stack>
       </ScrollView>
 
       <Button size="$4" theme="blue" disabled={!canContinue} onPress={onContinue}>
         Continue
       </Button>
-    </YStack>
+    </Stack>
   )
 })

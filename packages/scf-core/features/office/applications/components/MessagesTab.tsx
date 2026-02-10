@@ -1,8 +1,8 @@
 import { Send } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 
 interface MessagesTabProps {
   applicationId: string
@@ -19,7 +19,7 @@ interface Message {
 
 export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   const [newMessage, setNewMessage] = useState('')
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   // Fetch messages
@@ -35,9 +35,11 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       utils.applications.getMessages.invalidate({ applicationId })
     },
     onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to send message',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to send message',
+          variant: 'error',
+        })
     },
   })
 
@@ -68,18 +70,18 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text fontSize="$3" opacity={0.7}>
           Loading messages...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack gap="$3" padding="$4">
+      <Stack gap="$3" padding="$4">
         <Card padding="$4" backgroundColor="$red3">
           <Text fontSize="$3" color="$red10" fontWeight="600">
             Error loading messages
@@ -88,14 +90,14 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {/* Message Thread */}
-      <YStack gap="$3">
+      <Stack gap="$3">
         {transformedMessages.length === 0 ? (
           <Card padding="$4" backgroundColor="$color2">
             <Text fontSize="$3" opacity={0.7} textAlign="center">
@@ -111,7 +113,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
               alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
             >
-              <XStack justifyContent="space-between" alignItems="center" marginBottom="$2" gap="$3">
+              <Row justifyContent="space-between" alignItems="center" marginBottom="$2" gap="$3">
                 <Text fontWeight="600" fontSize="$3">
                   {message.senderName}
                 </Text>
@@ -123,21 +125,21 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
                     minute: '2-digit',
                   })}
                 </Text>
-              </XStack>
+              </Row>
 
               <Text fontSize="$3">{message.content}</Text>
 
               {!message.isRead && message.sender === 'candidate' && (
-                <YStack marginTop="$2">
+                <Stack marginTop="$2">
                   <Text fontSize="$2" color="$red10" fontWeight="600">
                     Unread
                   </Text>
-                </YStack>
+                </Stack>
               )}
             </Card>
           ))
         )}
-      </YStack>
+      </Stack>
 
       {/* Send Message */}
       <Card padding="$4" backgroundColor="$color2">
@@ -162,6 +164,6 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
         </Button>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

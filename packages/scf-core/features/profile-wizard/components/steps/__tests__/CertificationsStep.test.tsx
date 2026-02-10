@@ -187,8 +187,8 @@ vi.mock('tamagui', () => {
   ;(Card as any).Header = CardHeader
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Input,
     Button,
     Text,

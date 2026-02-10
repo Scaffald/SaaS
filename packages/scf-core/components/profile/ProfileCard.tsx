@@ -1,8 +1,8 @@
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Paragraph, Text, XStack, useWindowDimensions } from '@unicornlove/ui'
+import type { TamaguiElement } from '@unicornlove/beyond-ui'
+import { Paragraph, Text, Row, useWindowDimensions } from '@unicornlove/beyond-ui'
 import {
   CardBadges,
   CardHeader,
@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 
 /**
  * Profile card badge configuration
@@ -179,10 +179,10 @@ export const ProfileCard = memo(
           }}
         >
           {/* Header with score badge */}
-          <XStack justifyContent="space-between" alignItems="center">
+          <Row justifyContent="space-between" alignItems="center">
             <CardHeader title={name} isSelected={isSelected} icon={avatar} />
             {score && (
-              <XStack
+              <Row
                 alignItems="center"
                 gap="$1"
                 backgroundColor="$blue3"
@@ -194,9 +194,9 @@ export const ProfileCard = memo(
                 <Text color="$blue11" fontWeight="700" fontSize="$2">
                   {score}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </XStack>
+          </Row>
 
           {/* Title/Role */}
           <Paragraph
@@ -214,9 +214,9 @@ export const ProfileCard = memo(
 
           {/* Profile badges (certifications, achievements, etc.) */}
           {profileBadgeConfigs.length > 0 && (
-            <XStack gap="$1" flexWrap="wrap">
+            <Row gap="$1" flexWrap="wrap">
               {profileBadgeConfigs.map((badgeConfig) => (
-                <XStack
+                <Row
                   key={badgeConfig.key}
                   alignItems="center"
                   gap="$1"
@@ -240,9 +240,9 @@ export const ProfileCard = memo(
                   >
                     {badgeConfig.label}
                   </Text>
-                </XStack>
+                </Row>
               ))}
-            </XStack>
+            </Row>
           )}
 
           {/* Skills and certifications */}

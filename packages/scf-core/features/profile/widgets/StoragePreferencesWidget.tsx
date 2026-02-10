@@ -10,10 +10,10 @@
 
 import { api } from '@scf/core/utils/api'
 import { Cloud, Database, HardDrive } from '@tamagui/lucide-icons'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
 import type { ComponentType } from 'react'
 import { useState, useEffect } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type StorageBackend = 'supabase' | 'dropbox' | 'google_drive'
 
@@ -89,27 +89,27 @@ export function StoragePreferencesWidget() {
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load storage preferences</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <YStack gap="$1">
+        <Row justifyContent="space-between" alignItems="center">
+          <Stack gap="$1">
             <Heading variant="h4">Document Storage</Heading>
             <Text fontSize="$2" color="$color10">
               Choose where your documents are stored
             </Text>
-          </YStack>
+          </Stack>
           {hasChanges && (
             <Button
               variant="primary"
@@ -120,16 +120,16 @@ export function StoragePreferencesWidget() {
               {mutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {/* Storage Options */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           {STORAGE_OPTIONS.map((option) => {
             const isSelected = selectedPreference === option.value
             const IconComponent = option.icon
 
             return (
-              <XStack
+              <Row
                 key={option.value}
                 padding="$4"
                 borderRadius="$4"
@@ -143,7 +143,7 @@ export function StoragePreferencesWidget() {
                 gap="$3"
                 alignItems="center"
               >
-                <XStack
+                <Row
                   width={48}
                   height={48}
                   borderRadius="$3"
@@ -155,15 +155,15 @@ export function StoragePreferencesWidget() {
                     size={24}
                     color={isSelected ? '$blue10' : '$color11'}
                   />
-                </XStack>
+                </Row>
 
-                <YStack flex={1} gap="$1">
-                  <XStack alignItems="center" gap="$2">
+                <Stack flex={1} gap="$1">
+                  <Row alignItems="center" gap="$2">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       {option.label}
                     </Text>
                     {!option.available && (
-                      <XStack
+                      <Row
                         backgroundColor="$yellow4"
                         paddingHorizontal="$2"
                         paddingVertical="$1"
@@ -172,10 +172,10 @@ export function StoragePreferencesWidget() {
                         <Text fontSize="$1" color="$yellow11" fontWeight="600">
                           COMING SOON
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
                     {isSelected && option.available && (
-                      <XStack
+                      <Row
                         backgroundColor="$green4"
                         paddingHorizontal="$2"
                         paddingVertical="$1"
@@ -184,17 +184,17 @@ export function StoragePreferencesWidget() {
                         <Text fontSize="$1" color="$green11" fontWeight="600">
                           ACTIVE
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
                   <Text fontSize="$2" color="$color10">
                     {option.description}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             )
           })}
-        </YStack>
+        </Stack>
 
         {/* Status Messages */}
         {mutation.isSuccess && (
@@ -209,7 +209,7 @@ export function StoragePreferencesWidget() {
         )}
 
         {/* Info Note */}
-        <YStack
+        <Stack
           backgroundColor="$blue2"
           padding="$3"
           borderRadius="$3"
@@ -220,8 +220,8 @@ export function StoragePreferencesWidget() {
             Note: Existing documents will remain in their current storage location.
             Only new documents will use your selected preference.
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DashboardWidget>
   )
 }

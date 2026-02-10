@@ -1,8 +1,8 @@
 import { Trash2 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { Dialog } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Dialog } from '@unicornlove/beyond-ui'
 
 interface DeleteButtonProps {
   /**
@@ -53,7 +53,7 @@ export function DeleteButton({
 }: DeleteButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   const handleDelete = async () => {
     setIsDeleting(true)
@@ -94,14 +94,14 @@ export function DeleteButton({
               Are you sure you want to delete <Text fontWeight="600">"{itemName}"</Text>?
             </Dialog.Description>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text color="$red10" fontSize="$3">
                 This action cannot be undone. This will permanently delete the {itemType} and all
                 associated data.
               </Text>
-            </YStack>
+            </Stack>
 
-            <XStack gap="$3" alignItems="center" justifyContent="flex-end">
+            <Row gap="$3" alignItems="center" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button variant="outlined" disabled={isDeleting}>
                   Cancel
@@ -116,7 +116,7 @@ export function DeleteButton({
               >
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </Button>
-            </XStack>
+            </Row>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog>

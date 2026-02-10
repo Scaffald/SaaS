@@ -3,7 +3,7 @@
  * REQ-10 Task 11: User can view and revoke authorized OAuth apps
  */
 
-import { Button, Card, Paragraph, SizableText, XStack, YStack, AlertDialog, Separator } from '@unicornlove/ui'
+import { Button, Card, Paragraph, SizableText, Row, Stack, AlertDialog, Separator } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 import type { OAuthApp } from '@scf/schemas/oauth'
@@ -24,27 +24,27 @@ export function AuthorizedAppsList() {
 
   if (consentsQuery.isLoading) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
+      <Stack flex={1} padding="$4" gap="$4">
         <SizableText>Loading authorized apps...</SizableText>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} gap="$4" data-testid="authorized-apps-list">
+    <Stack flex={1} gap="$4" data-testid="authorized-apps-list">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <SizableText size="$6" fontWeight="600">
           Authorized Applications
         </SizableText>
         <Paragraph size="$3" color="$color11">
           These apps have access to your Scaffald account. You can revoke access at any time.
         </Paragraph>
-      </YStack>
+      </Stack>
 
       {/* Apps List */}
       {consents.length > 0 ? (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {consents.map((consent) => {
             const app = consent.oauth_app as OAuthApp | undefined
             const grantedAt = new Date(consent.granted_at)
@@ -52,10 +52,10 @@ export function AuthorizedAppsList() {
 
             return (
               <Card key={consent.id} padding="$4" data-testid={`authorized-app-${consent.id}`}>
-                <XStack gap="$4" alignItems="flex-start">
+                <Row gap="$4" alignItems="flex-start">
                   {/* App Logo */}
                   {app?.logo_url && (
-                    <YStack
+                    <Stack
                       width={64}
                       height={64}
                       borderRadius="$2"
@@ -67,12 +67,12 @@ export function AuthorizedAppsList() {
                         alt={app.display_name}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
-                    </YStack>
+                    </Stack>
                   )}
 
                   {/* App Info */}
-                  <YStack flex={1} gap="$3">
-                    <YStack gap="$1">
+                  <Stack flex={1} gap="$3">
+                    <Stack gap="$1">
                       <SizableText size="$5" fontWeight="600" data-testid="authorized-app-name">
                         {app?.display_name || 'Unknown App'}
                       </SizableText>
@@ -86,31 +86,31 @@ export function AuthorizedAppsList() {
                           {app.homepage_url}
                         </SizableText>
                       )}
-                    </YStack>
+                    </Stack>
 
                     <Separator />
 
                     {/* Scopes */}
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       <SizableText size="$3" fontWeight="600">
                         Permissions
                       </SizableText>
-                      <YStack gap="$1">
+                      <Stack gap="$1">
                         {consent.granted_scopes.map((scope) => (
-                          <XStack key={scope} gap="$2" alignItems="center">
+                          <Row key={scope} gap="$2" alignItems="center">
                             <SizableText size="$1" color="$color11">
                               •
                             </SizableText>
                             <SizableText size="$2" color="$color11">
                               {scope}
                             </SizableText>
-                          </XStack>
+                          </Row>
                         ))}
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
 
                     {/* Metadata */}
-                    <YStack gap="$1">
+                    <Stack gap="$1">
                       <SizableText size="$2" color="$color11">
                         Authorized on {grantedAt.toLocaleDateString()}
                       </SizableText>
@@ -119,8 +119,8 @@ export function AuthorizedAppsList() {
                           Expires on {expiresAt.toLocaleDateString()}
                         </SizableText>
                       )}
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
 
                   {/* Actions */}
                   <Button
@@ -130,21 +130,21 @@ export function AuthorizedAppsList() {
                   >
                     Revoke Access
                   </Button>
-                </XStack>
+                </Row>
               </Card>
             )
           })}
-        </YStack>
+        </Stack>
       ) : (
         <Card padding="$6" data-testid="no-authorized-apps">
-          <YStack gap="$3" alignItems="center">
+          <Stack gap="$3" alignItems="center">
             <SizableText size="$5" fontWeight="600">
               No Authorized Apps
             </SizableText>
             <Paragraph size="$3" color="$color11" textAlign="center">
               You haven't authorized any third-party applications to access your account yet.
             </Paragraph>
-          </YStack>
+          </Stack>
         </Card>
       )}
 
@@ -153,24 +153,24 @@ export function AuthorizedAppsList() {
         <AlertDialog.Portal>
           <AlertDialog.Overlay />
           <AlertDialog.Content>
-            <YStack gap="$4">
-              <YStack gap="$2">
+            <Stack gap="$4">
+              <Stack gap="$2">
                 <AlertDialog.Title>Revoke App Access</AlertDialog.Title>
                 <AlertDialog.Description>
                   Are you sure you want to revoke access for{' '}
                   <strong>{(appToRevoke?.oauth_app as OAuthApp | undefined)?.display_name}</strong>? This will:
                 </AlertDialog.Description>
-              </YStack>
+              </Stack>
 
-              <YStack gap="$2" paddingLeft="$4">
+              <Stack gap="$2" paddingLeft="$4">
                 <Paragraph size="$3">• Immediately invalidate all access tokens</Paragraph>
                 <Paragraph size="$3">• Prevent the app from accessing your data</Paragraph>
                 <Paragraph size="$3">
                   • Require you to re-authorize if you want to use the app again
                 </Paragraph>
-              </YStack>
+              </Stack>
 
-              <XStack gap="$3" justifyContent="flex-end">
+              <Row gap="$3" justifyContent="flex-end">
                 <AlertDialog.Cancel asChild>
                   <Button variant="outlined">Cancel</Button>
                 </AlertDialog.Cancel>
@@ -183,11 +183,11 @@ export function AuthorizedAppsList() {
                 >
                   Revoke Access
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </AlertDialog.Content>
         </AlertDialog.Portal>
       </AlertDialog>
-    </YStack>
+    </Stack>
   )
 }

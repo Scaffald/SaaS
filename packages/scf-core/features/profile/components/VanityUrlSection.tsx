@@ -1,11 +1,11 @@
 import { api } from '@scf/core/utils/api'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
-import { Button, DashboardWidget } from '@unicornlove/ui'
+import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
 import { AlertCircle, Check, Clock, Copy } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
-import { H4, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { H4, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type UpdateSlugResult = {
   success: boolean
@@ -20,7 +20,7 @@ type VanityMutationError = { message?: string }
  * Allows users to view and update their profile slug for vanity URLs
  */
 export function VanityUrlSection() {
-  const toast = useToastController()
+  const toast = useToast()
   const [slugInput, setSlugInput] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
@@ -61,9 +61,11 @@ export function VanityUrlSection() {
       utils.profile.vanity.getSlugHistory.invalidate()
     },
     onError: (error: VanityMutationError) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to update vanity URL. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to update vanity URL. Please try again.',
+          variant: 'error',
+        })
       setIsUpdating(false)
     },
   })
@@ -144,13 +146,16 @@ export function VanityUrlSection() {
     const success = await copyToClipboard(vanityUrl)
 
     if (success) {
-      toast.show('Copied!', {
-        message: 'Profile URL copied to clipboard',
-      })
+      toast.show({
+          title: 'Copied!',
+          message: 'Profile URL copied to clipboard',
+        })
     } else {
-      toast.show('Error', {
-        message: 'Failed to copy URL to clipboard',
-      })
+      toast.show({
+          title: 'Error',
+          message: 'Failed to copy URL to clipboard',
+          variant: 'error',
+        })
     }
   }
 
@@ -158,16 +163,19 @@ export function VanityUrlSection() {
     const normalized = slugInput.toLowerCase().trim()
 
     if (!isSlugValid(normalized)) {
-      toast.show('Invalid Vanity URL', {
-        message: 'Please enter a valid vanity URL (3-50 characters, alphanumeric and dashes only)',
-      })
+      toast.show({
+          title: 'Invalid Vanity URL',
+          message: 'Please enter a valid vanity URL (3-50 characters, alphanumeric and dashes only)',
+          variant: 'error',
+        })
       return
     }
 
     if (isReservedSlug(normalized)) {
-      toast.show('Reserved Vanity URL', {
-        message: 'This vanity URL is reserved and cannot be used',
-      })
+      toast.show({
+          title: 'Reserved Vanity URL',
+          message: 'This vanity URL is reserved and cannot be used',
+        })
       return
     }
 
@@ -200,30 +208,30 @@ export function VanityUrlSection() {
   if (isLoadingProfile) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" padding="$4">
+        <Stack alignItems="center" padding="$4">
           <Spinner size="small" />
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <Stack gap="$4">
+        <Stack gap="$2">
           <H4>Vanity URL</H4>
           <Text color="$color10" fontSize="$3">
             Customize your public profile URL to make it easier to share
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Current URL Display */}
         {vanityUrl && !isEditing && (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600" fontSize="$3">
               Your Profile URL
             </Text>
-            <XStack
+            <Row
               gap="$2"
               alignItems="center"
               padding="$3"
@@ -246,13 +254,13 @@ export function VanityUrlSection() {
               <Button size="$3" icon={Copy} onPress={handleCopyUrl} variant="outlined">
                 Copy
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {/* Vanity URL Input */}
-        <YStack gap="$2">
-          <XStack alignItems="center" justifyContent="space-between">
+        <Stack gap="$2">
+          <Row alignItems="center" justifyContent="space-between">
             <Text fontWeight="600" fontSize="$3">
               Profile Vanity URL
             </Text>
@@ -265,11 +273,11 @@ export function VanityUrlSection() {
                 {daysRemaining && daysRemaining > 0 ? 'Change Unavailable' : 'Edit'}
               </Button>
             )}
-          </XStack>
+          </Row>
 
           {isEditing ? (
-            <YStack gap="$2">
-              <XStack gap="$2" alignItems="center">
+            <Stack gap="$2">
+              <Row gap="$2" alignItems="center">
                 <Text fontSize="$2" color="$color10">
                   /u/
                 </Text>
@@ -289,33 +297,33 @@ export function VanityUrlSection() {
                   }
                 />
                 {isChecking && <Spinner size="small" />}
-              </XStack>
+              </Row>
 
               {/* Availability Status */}
               {slugInput && (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   {availabilityStatus.checking ? (
                     <Text fontSize="$2" color="$color10">
                       Checking availability...
                     </Text>
                   ) : availabilityStatus.available === true ? (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <Check size={16} color="$green10" />
                       <Text fontSize="$2" color="$green10">
                         Available
                       </Text>
-                    </XStack>
+                    </Row>
                   ) : availabilityStatus.available === false ? (
-                    <YStack gap="$1">
-                      <XStack gap="$2" alignItems="center">
+                    <Stack gap="$1">
+                      <Row gap="$2" alignItems="center">
                         <AlertCircle size={16} color="$red10" />
                         <Text fontSize="$2" color="$red10">
                           Not available
                         </Text>
-                      </XStack>
+                      </Row>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
-                          <YStack gap="$1" marginLeft="$4">
+                          <Stack gap="$1" marginLeft="$4">
                             <Text fontSize="$2" color="$color10">
                               Suggestions:
                             </Text>
@@ -331,9 +339,9 @@ export function VanityUrlSection() {
                                 {suggestion}
                               </Button>
                             ))}
-                          </YStack>
+                          </Stack>
                         )}
-                    </YStack>
+                    </Stack>
                   ) : !isSlugValid(slugInput.toLowerCase().trim()) ? (
                     <Text fontSize="$2" color="$red10">
                       Invalid format. Use 3-50 characters, alphanumeric and dashes only.
@@ -343,11 +351,11 @@ export function VanityUrlSection() {
                       This vanity URL is reserved and cannot be used.
                     </Text>
                   ) : null}
-                </YStack>
+                </Stack>
               )}
 
               {/* Action Buttons */}
-              <XStack gap="$2" justifyContent="flex-end">
+              <Row gap="$2" justifyContent="flex-end">
                 <Button size="$3" variant="outlined" onPress={handleCancel} disabled={isUpdating}>
                   Cancel
                 </Button>
@@ -364,10 +372,10 @@ export function VanityUrlSection() {
                 >
                   {isUpdating ? <Spinner size="small" /> : 'Save'}
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ) : (
-            <XStack
+            <Row
               gap="$2"
               alignItems="center"
               padding="$3"
@@ -379,13 +387,13 @@ export function VanityUrlSection() {
               <Text flex={1} style={{ fontFamily: 'monospace' }} fontSize="$3" color="$color11">
                 {currentSlug || 'No vanity URL set'}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
 
         {/* Cooldown Information */}
         {daysRemaining && daysRemaining > 0 && nextChangeAllowed && (
-          <XStack
+          <Row
             gap="$2"
             alignItems="center"
             padding="$3"
@@ -395,7 +403,7 @@ export function VanityUrlSection() {
             borderColor="$yellow7"
           >
             <Clock size={16} color="$orange10" />
-            <YStack flex={1} gap="$1">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$2" fontWeight="600" color="$yellow11">
                 Vanity URL Change Cooldown
               </Text>
@@ -404,17 +412,17 @@ export function VanityUrlSection() {
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
                 )
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         )}
 
         {/* Slug History */}
         {slugHistory?.history && slugHistory.history.length > 0 && (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600" fontSize="$3">
               Change History
             </Text>
-            <YStack gap="$1">
+            <Stack gap="$1">
               {(
                 slugHistory.history as Array<{
                   changed_at: string
@@ -424,7 +432,7 @@ export function VanityUrlSection() {
               )
                 .slice(0, 5)
                 .map((entry) => (
-                  <XStack
+                  <Row
                     key={`${entry.changed_at}-${entry.new_slug}`}
                     gap="$2"
                     padding="$2"
@@ -437,12 +445,12 @@ export function VanityUrlSection() {
                     <Text fontSize="$2" color="$color8">
                       {new Date(entry.changed_at).toLocaleDateString()}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

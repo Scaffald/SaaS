@@ -23,8 +23,8 @@ vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: { id: 'user-1' } }),
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({ show: vi.fn() }),
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({ show: vi.fn() }),
 }))
 
 vi.mock('react-native-reanimated/src/component/FlatList', () => ({

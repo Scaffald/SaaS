@@ -7,11 +7,11 @@ import {
   LoadingState,
   ResponsiveModal,
   spacing,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'
 
@@ -92,7 +92,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} alignItems="center" paddingVertical="$6">
+        <Stack gap={spacing.md} alignItems="center" paddingVertical="$6">
           <Text color="$red10">Failed to load reviews</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -107,7 +107,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -116,8 +116,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     return (
       <>
         <DashboardWidget>
-          <YStack gap={spacing.md}>
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap={spacing.md}>
+            <Row justifyContent="space-between" alignItems="center">
               <Heading variant="h4">Reviews & Ratings</Heading>
               {canLeaveReview && (
                 <Button
@@ -129,8 +129,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   Leave Review
                 </Button>
               )}
-            </XStack>
-            <YStack alignItems="center" justifyContent="center" minHeight={150} gap="$2">
+            </Row>
+            <Stack alignItems="center" justifyContent="center" minHeight={150} gap="$2">
               <Text fontSize="$5" color="$color10">
                 No reviews yet
               </Text>
@@ -139,8 +139,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   Be the first to leave a review
                 </Text>
               )}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </DashboardWidget>
 
         {canLeaveReview && (
@@ -192,9 +192,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   return (
     <>
       <DashboardWidget>
-        <YStack gap={spacing.md}>
+        <Stack gap={spacing.md}>
           {/* Header */}
-          <XStack justifyContent="space-between" alignItems="center">
+          <Row justifyContent="space-between" alignItems="center">
             <Heading variant="h4">Reviews & Ratings</Heading>
             {canLeaveReview && (
               <Button
@@ -206,17 +206,17 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                 Leave Review
               </Button>
             )}
-          </XStack>
+          </Row>
 
           {/* Rating Summary */}
           <Card bordered backgroundColor="$color2">
-            <YStack gap="$3" padding="$4">
-              <XStack gap="$4" alignItems="center">
-                <YStack alignItems="center">
+            <Stack gap="$3" padding="$4">
+              <Row gap="$4" alignItems="center">
+                <Stack alignItems="center">
                   <Text fontSize="$10" fontWeight="700" color="$color12">
                     {overallRating.toFixed(1)}
                   </Text>
-                  <XStack gap="$1">
+                  <Row gap="$1">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={randomUUID()}
@@ -225,18 +225,18 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                         fill={i < Math.floor(overallRating) ? '$yellow10' : 'transparent'}
                       />
                     ))}
-                  </XStack>
+                  </Row>
                   <Text fontSize="$3" color="$color10">
                     {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                   </Text>
-                </YStack>
+                </Stack>
 
                 {Object.keys(avgByCategory).length > 0 && !showCompact && (
-                  <YStack flex={1} gap="$2">
+                  <Stack flex={1} gap="$2">
                     {Object.entries(avgByCategory).map(([category, data]) => {
                       const categoryData = data as { sum: number; count: number }
                       return (
-                        <XStack key={category} gap="$2" alignItems="center">
+                        <Row key={category} gap="$2" alignItems="center">
                           <Text
                             fontSize="$3"
                             color="$color11"
@@ -245,31 +245,31 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           >
                             {category}
                           </Text>
-                          <XStack
+                          <Row
                             flex={1}
                             height={6}
                             backgroundColor="$color3"
                             borderRadius="$2"
                             overflow="hidden"
                           >
-                            <XStack
+                            <Row
                               width={`${(categoryData.sum / categoryData.count / 5) * 100}%`}
                               backgroundColor="$yellow10"
                             />
-                          </XStack>
+                          </Row>
                           <Text fontSize="$3" color="$color10" width={30}>
                             {(categoryData.sum / categoryData.count).toFixed(1)}
                           </Text>
-                        </XStack>
+                        </Row>
                       )
                     })}
-                  </YStack>
+                  </Stack>
                 )}
-              </XStack>
+              </Row>
 
               {/* Recommend Stats */}
-              <XStack gap="$3" justifyContent="center">
-                <XStack
+              <Row gap="$3" justifyContent="center">
+                <Row
                   gap="$2"
                   alignItems="center"
                   paddingHorizontal="$3"
@@ -281,8 +281,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   <Text fontSize="$4" fontWeight="600" color="$green11">
                     {recommendCount} Recommend
                   </Text>
-                </XStack>
-                <XStack
+                </Row>
+                <Row
                   gap="$2"
                   alignItems="center"
                   paddingHorizontal="$3"
@@ -294,26 +294,26 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   <Text fontSize="$4" fontWeight="600" color="$red11">
                     {notRecommendCount} Don't Recommend
                   </Text>
-                </XStack>
-              </XStack>
-            </YStack>
+                </Row>
+              </Row>
+            </Stack>
           </Card>
 
           {/* Reviews List */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontSize="$5" fontWeight="700" color="$color12">
               Reviews ({totalReviews})
             </Text>
             {reviewsToShow.map((review: Review) => (
               <Card key={review.id} bordered backgroundColor="$color2">
-                <YStack gap="$3" padding="$4">
-                  <XStack justifyContent="space-between" alignItems="flex-start">
-                    <YStack gap="$1">
-                      <XStack gap="$2" alignItems="center">
+                <Stack gap="$3" padding="$4">
+                  <Row justifyContent="space-between" alignItems="flex-start">
+                    <Stack gap="$1">
+                      <Row gap="$2" alignItems="center">
                         <Text fontSize="$5" fontWeight="700" color="$color12">
                           Anonymous Reviewer
                         </Text>
-                        <XStack
+                        <Row
                           gap="$1"
                           alignItems="center"
                           paddingHorizontal="$2"
@@ -325,17 +325,17 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           <Text fontSize="$1" color="$blue11" fontWeight="600">
                             VERIFIED
                           </Text>
-                        </XStack>
-                      </XStack>
-                    </YStack>
+                        </Row>
+                      </Row>
+                    </Stack>
                     <Text fontSize="$3" color="$color10">
                       {new Date(review.created_at).toLocaleDateString()}
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {/* Overall Rating */}
                   {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                    <XStack gap="$1">
+                    <Row gap="$1">
                       {[...Array(5)].map((_, i) => {
                         const avgRating =
                           review.review_category_ratings.reduce(
@@ -351,7 +351,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           />
                         )
                       })}
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Comment */}
@@ -363,7 +363,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
 
                   {/* Recommendation */}
                   {review.reaction !== null && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       {review.reaction === 1 ? (
                         <>
                           <ThumbsUp size={16} color="$green11" />
@@ -379,9 +379,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           </Text>
                         </>
                       )}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               </Card>
             ))}
 
@@ -390,8 +390,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                 + {reviews.length - 2} more reviews
               </Text>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
 
       {/* Review Modal */}

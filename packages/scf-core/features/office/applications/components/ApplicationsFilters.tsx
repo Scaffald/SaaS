@@ -1,4 +1,4 @@
-import { Button, ResponsiveSelect, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ResponsiveSelect, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
 
 interface ApplicationsFiltersProps {
@@ -25,7 +25,7 @@ export const ApplicationsFilters = ({
   jobs,
 }: ApplicationsFiltersProps) => {
   return (
-    <XStack
+    <Row
       gap="$3"
       paddingVertical="$3"
       paddingHorizontal="$4"
@@ -35,7 +35,7 @@ export const ApplicationsFilters = ({
       flexWrap="wrap"
     >
       {/* Job Filter */}
-      <YStack width={200}>
+      <Stack width={200}>
         <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
           Filter by Job
         </Text>
@@ -57,10 +57,10 @@ export const ApplicationsFilters = ({
           ]}
           triggerProps={{ width: 200 }}
         />
-      </YStack>
+      </Stack>
 
       {/* Status Filter */}
-      <YStack width={200}>
+      <Stack width={200}>
         <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
           Filter by Status
         </Text>
@@ -84,11 +84,11 @@ export const ApplicationsFilters = ({
           ]}
           triggerProps={{ width: 200 }}
         />
-      </YStack>
+      </Stack>
 
       {/* Clear Filters */}
       {(filters.jobId || filters.status || filters.minScore > 0) && (
-        <YStack justifyContent="flex-end">
+        <Stack justifyContent="flex-end">
           <Button
             size="$3"
             chromeless
@@ -102,8 +102,8 @@ export const ApplicationsFilters = ({
           >
             Clear Filters
           </Button>
-        </YStack>
+        </Stack>
       )}
-    </XStack>
+    </Row>
   )
 }

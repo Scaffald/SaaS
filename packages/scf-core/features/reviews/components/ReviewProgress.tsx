@@ -1,5 +1,5 @@
 import { Check } from '@tamagui/lucide-icons'
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ReviewProgressProps {
   currentStep: number
@@ -8,23 +8,23 @@ interface ReviewProgressProps {
 
 export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps) {
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {/* Step Counter */}
-      <XStack justifyContent="center">
+      <Row justifyContent="center">
         <Text fontSize="$5" fontWeight="600" color="$color11">
           Step {currentStep} of {totalSteps}
         </Text>
-      </XStack>
+      </Row>
 
       {/* Progress Dots */}
-      <XStack gap="$2" justifyContent="center" alignItems="center">
+      <Row gap="$2" justifyContent="center" alignItems="center">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1
           const isCompleted = stepNumber < currentStep
           const isCurrent = stepNumber === currentStep
 
           return (
-            <XStack key={stepNumber} alignItems="center" gap="$2">
+            <Row key={stepNumber} alignItems="center" gap="$2">
               <Circle
                 size={32}
                 backgroundColor={isCompleted ? '$green10' : isCurrent ? '$blue10' : '$color5'}
@@ -40,25 +40,25 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
                 )}
               </Circle>
               {index < totalSteps - 1 && (
-                <XStack
+                <Row
                   width={24}
                   height={2}
                   backgroundColor={isCompleted ? '$green10' : '$color5'}
                 />
               )}
-            </XStack>
+            </Row>
           )
         })}
-      </XStack>
+      </Row>
 
       {/* Progress Bar */}
-      <YStack width="100%" height={6} backgroundColor="$color3" borderRadius="$2" overflow="hidden">
-        <XStack
+      <Stack width="100%" height={6} backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+        <Row
           width={`${(currentStep / totalSteps) * 100}%`}
           height="100%"
           backgroundColor="$blue10"
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

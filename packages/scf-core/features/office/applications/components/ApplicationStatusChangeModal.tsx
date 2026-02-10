@@ -5,12 +5,12 @@ import {
   ResponsiveModal,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
-import { Card, TextArea } from '@unicornlove/ui'
+import { Card, TextArea } from '@unicornlove/beyond-ui'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 
@@ -46,7 +46,7 @@ export const ApplicationStatusChangeModal = ({
   application,
 }: ApplicationStatusChangeModalProps) => {
   const [reason, setReason] = useState('')
-  const toast = useToastController()
+  const toast = useToast()
   const successFeeMutation = api.successFees.createSuccessFee.useMutation()
   const confirmUpfrontPaymentMutation = api.successFees.confirmUpfrontPayment.useMutation()
 
@@ -212,17 +212,20 @@ export const ApplicationStatusChangeModal = ({
       })
       // TODO: Capture signed legal acknowledgement + generated PDF once available.
       setPaymentCompleted(true)
-      toast.show('Upfront fee paid', { message: 'Hire confirmed successfully.' })
+      toast.show({
+          title: 'Upfront fee paid',
+          message: 'Hire confirmed successfully.',
+        })
       await successFeeStatusQuery.refetch()
       await onConfirm(reason)
       setReason('')
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to confirm payment.'
       setPaymentError(message)
-      toast.show('Payment confirmation failed', {
-        message,
-        type: 'error',
-      })
+      toast.show({
+          title: 'Payment confirmation failed',
+          variant: 'error',
+        })
     } finally {
       setIsProcessingPayment(false)
     }
@@ -239,9 +242,9 @@ export const ApplicationStatusChangeModal = ({
       }}
       title={isRejection ? 'Reject Application' : 'Mark as Hired'}
     >
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         {/* Confirmation message */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             {isRejection ? `Reject ${candidateName}?` : `Mark ${candidateName} as Hired?`}
           </Text>
@@ -250,10 +253,10 @@ export const ApplicationStatusChangeModal = ({
             <Text fontWeight="600">{STATUS_LABELS[fromStatus]}</Text> to{' '}
             <Text fontWeight="600">{STATUS_LABELS[toStatus]}</Text>
           </Text>
-        </YStack>
+        </Stack>
 
         {isHire && (
-          <YStack gap="$3">
+          <Stack gap="$3">
             <HireSummaryCard
               hireSummary={hireSummary}
               isProcessing={initializingIntent}
@@ -264,12 +267,12 @@ export const ApplicationStatusChangeModal = ({
             />
 
             {initializingIntent && !paymentCompleted && (
-              <YStack gap="$1" alignItems="center">
+              <Stack gap="$1" alignItems="center">
                 <Spinner size="small" />
                 <Text color="$color11" fontSize="$3">
                   Preparing payment form…
                 </Text>
-              </YStack>
+              </Stack>
             )}
 
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
@@ -289,14 +292,14 @@ export const ApplicationStatusChangeModal = ({
               intentState?.clientSecret &&
               hireSummary &&
               successFeeStatus?.status !== 'upfront_paid' && (
-                <YStack gap="$3">
+                <Stack gap="$3">
                   <Card
                     padding="$3"
                     backgroundColor="$color2"
                     borderColor="$borderColor"
                     borderWidth={1}
                   >
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <CustomCheckbox
                         aria-label="Acknowledge success-fee agreement"
                         checked={legalAccepted}
@@ -305,7 +308,7 @@ export const ApplicationStatusChangeModal = ({
                       <Text flex={1} fontSize="$3" color="$color11">
                         {legalCopy}
                       </Text>
-                    </XStack>
+                    </Row>
                   </Card>
                   <PaymentIntentForm
                     clientSecret={intentState.clientSecret}
@@ -315,13 +318,13 @@ export const ApplicationStatusChangeModal = ({
                     disabled={!legalAccepted || paymentCompleted || isProcessingPayment}
                     onSuccess={handlePaymentSuccess}
                   />
-                </YStack>
+                </Stack>
               )}
-          </YStack>
+          </Stack>
         )}
 
         {/* Reason input */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             {isRejection ? 'Reason for rejection' : 'Notes (optional)'}
             {isRejection && <Text color="$red10"> *</Text>}
@@ -343,10 +346,10 @@ export const ApplicationStatusChangeModal = ({
               Rejection reason is required
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Action buttons */}
-        <XStack gap="$3" marginLeft="auto">
+        <Row gap="$3" marginLeft="auto">
           <Button
             data-testid="status-change-cancel-button"
             variant="outlined"
@@ -368,8 +371,8 @@ export const ApplicationStatusChangeModal = ({
               {isLoading ? 'Processing...' : isRejection ? 'Reject Application' : 'Confirm Hire'}
             </Button>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ResponsiveModal>
   )
 }
@@ -517,29 +520,29 @@ function HireSummaryCard({
 
   return (
     <Card padding="$4" borderWidth={1} borderColor="$borderColor">
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$4" fontWeight="600">
           Success Fee Overview
         </Text>
-        <XStack justifyContent="space-between">
+        <Row justifyContent="space-between">
           <Text color="$color11">Total Hire Value</Text>
           <Text fontWeight="600">
             {currencyFormatter.format(hireSummary.totalHireValueCents / 100)}
           </Text>
-        </XStack>
-        <XStack justifyContent="space-between">
+        </Row>
+        <Row justifyContent="space-between">
           <Text color="$color11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
           <Text fontWeight="600">
             {currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}
           </Text>
-        </XStack>
-        <XStack justifyContent="space-between">
+        </Row>
+        <Row justifyContent="space-between">
           <Text color="$color11">Final ({hireSummary.finalPercentage}%)</Text>
           <Text fontWeight="600">
             {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due{' '}
             {hireSummary.finalDueDate}
           </Text>
-        </XStack>
+        </Row>
         {isProcessing && (
           <Text fontSize="$2" color="$color11">
             Creating payment intent...
@@ -565,7 +568,7 @@ function HireSummaryCard({
                 .replace(/_/g, ' ')}
             </Text>
           )}
-      </YStack>
+      </Stack>
     </Card>
   )
 }

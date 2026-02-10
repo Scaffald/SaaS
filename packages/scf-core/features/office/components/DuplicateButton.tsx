@@ -1,8 +1,8 @@
 import { Copy } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { Dialog } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Dialog } from '@unicornlove/beyond-ui'
 
 interface DuplicateButtonProps {
   /**
@@ -53,7 +53,7 @@ export function DuplicateButton({
 }: DuplicateButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isDuplicating, setIsDuplicating] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   const handleDuplicate = async () => {
     setIsDuplicating(true)
@@ -95,14 +95,14 @@ export function DuplicateButton({
               Create a copy of <Text fontWeight="600">"{itemName}"</Text>?
             </Dialog.Description>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text color="$color11" fontSize="$3">
                 A new {itemType} will be created as a draft with "(Copy)" appended to the title. All
                 settings, requirements, and team assignments will be copied.
               </Text>
-            </YStack>
+            </Stack>
 
-            <XStack gap="$3" alignItems="center" justifyContent="flex-end">
+            <Row gap="$3" alignItems="center" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button variant="outlined" disabled={isDuplicating}>
                   Cancel
@@ -116,7 +116,7 @@ export function DuplicateButton({
               >
                 {isDuplicating ? 'Duplicating...' : 'Duplicate'}
               </Button>
-            </XStack>
+            </Row>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog>

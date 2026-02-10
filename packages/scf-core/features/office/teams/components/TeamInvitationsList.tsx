@@ -2,20 +2,20 @@ import { api } from '@scf/core/utils/api'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import {
   Button,
   Card,
   type GetThemeValueForKey,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
 type InvitationRecord = NonNullable<InvitationsListOutput['invitations']>[number]
@@ -48,7 +48,7 @@ export function TeamInvitationsList({
   refreshKey,
   headerAction,
 }: TeamInvitationsListProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending')
 
   const invitationsQuery = api.teams.invitations.list.useQuery(
@@ -63,23 +63,35 @@ export function TeamInvitationsList({
 
   const resendMutation = api.teams.invitations.resend.useMutation({
     onSuccess: () => {
-      toast.show('Invitation resent', { message: 'The invitation email has been resent.' })
+      toast.show({
+          title: 'Invitation resent',
+          message: 'The invitation email has been resent.',
+        })
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to resend invitation', { message })
+      toast.show({
+          title: 'Unable to resend invitation',
+          variant: 'error',
+        })
     },
   })
 
   const cancelMutation = api.teams.invitations.cancel.useMutation({
     onSuccess: () => {
-      toast.show('Invitation cancelled', { message: 'The invitation can no longer be accepted.' })
+      toast.show({
+          title: 'Invitation cancelled',
+          message: 'The invitation can no longer be accepted.',
+        })
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to cancel invitation', { message })
+      toast.show({
+          title: 'Unable to cancel invitation',
+          variant: 'error',
+        })
     },
   })
 
@@ -109,8 +121,8 @@ export function TeamInvitationsList({
   }
 
   return (
-    <YStack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
+    <Stack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+      <Row
         justifyContent="space-between"
         alignItems="flex-start"
         flexWrap="wrap"
@@ -125,7 +137,7 @@ export function TeamInvitationsList({
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Invitations
         </Text>
-        <XStack
+        <Row
           gap="$2"
           alignItems="flex-start"
           flexDirection="column"
@@ -137,7 +149,7 @@ export function TeamInvitationsList({
           }}
         >
           {headerAction}
-          <YStack width="100%" $md={{ width: undefined }}>
+          <Stack width="100%" $md={{ width: undefined }}>
             <ResponsiveSelect
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
@@ -159,17 +171,17 @@ export function TeamInvitationsList({
                 flex: 1,
               }}
             />
-          </YStack>
-        </XStack>
-      </XStack>
+          </Stack>
+        </Row>
+      </Row>
 
       {invitationsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
+        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Loading invitations…</Text>
-        </YStack>
+        </Stack>
       ) : invitations.length === 0 ? (
-        <YStack
+        <Stack
           gap="$2"
           borderWidth={1}
           borderColor="$borderColor"
@@ -182,9 +194,9 @@ export function TeamInvitationsList({
             Invite teammates to collaborate on hiring. Invitations will appear here with their
             status.
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {invitations.map((invitation) => {
             const statusLabel =
               STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status
@@ -231,8 +243,8 @@ export function TeamInvitationsList({
                 accessibilityRole="summary"
                 accessibilityLabel={`Invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'} · Status ${statusLabel}${invitation.role?.name ? ` · Role ${invitation.role.name}` : ''}`}
               >
-                <XStack justifyContent="space-between" alignItems="center">
-                  <YStack gap="$1">
+                <Row justifyContent="space-between" alignItems="center">
+                  <Stack gap="$1">
                     <Text fontWeight="600">
                       {invitation.email
                         ? invitation.email
@@ -240,20 +252,20 @@ export function TeamInvitationsList({
                           ? `Existing member (${invitation.invitedUserId})`
                           : 'Invitation'}
                     </Text>
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <Clock size={16} color="$color11" />
                       <Text fontSize="$3" color="$color11">
                         Sent {sentAt ?? 'recently'}
                         {expiresAt ? ` · Expires ${expiresAt}` : null}
                       </Text>
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
                   <Text fontSize="$3" fontWeight="600" color={statusColor}>
                     {statusLabel}
                   </Text>
-                </XStack>
+                </Row>
 
-                <XStack
+                <Row
                   gap="$2"
                   flexDirection="column"
                   alignItems="stretch"
@@ -268,10 +280,10 @@ export function TeamInvitationsList({
                   <Text fontSize="$3" fontWeight="500">
                     {invitation.role?.name ?? 'Member'}
                   </Text>
-                </XStack>
+                </Row>
 
                 {lastDeliveryStatus ? (
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Text fontSize="$3" color="$color11">
                       Delivery status:{' '}
                       <Text fontWeight="600" color="$color12">
@@ -289,10 +301,10 @@ export function TeamInvitationsList({
                         Last error: {lastDeliveryError}
                       </Text>
                     ) : null}
-                  </YStack>
+                  </Stack>
                 ) : null}
 
-                <XStack
+                <Row
                   gap="$2"
                   flexDirection="column"
                   alignItems="stretch"
@@ -307,9 +319,9 @@ export function TeamInvitationsList({
                   <Text fontSize="$3">
                     {invitation.email ? 'Email invitation' : 'Existing member'}
                   </Text>
-                </XStack>
+                </Row>
 
-                <XStack
+                <Row
                   gap="$2"
                   justifyContent="flex-start"
                   flexWrap="wrap"
@@ -346,12 +358,12 @@ export function TeamInvitationsList({
                   >
                     Cancel
                   </Button>
-                </XStack>
+                </Row>
               </Card>
             )
           })}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

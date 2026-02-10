@@ -1,8 +1,8 @@
-import { MonthYearPicker, ToggleSwitch } from '@unicornlove/ui'
+import { MonthYearPicker, ToggleSwitch } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 import type { EducationStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -83,8 +83,8 @@ export function EducationStep({
   }
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Highest education
         </Text>
@@ -92,9 +92,9 @@ export function EducationStep({
           Add your latest degree or training program. This section is optional but strengthens your
           profile.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Degree or credential</Text>
         <Controller
           control={control}
@@ -107,9 +107,9 @@ export function EducationStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Institution</Text>
         <Controller
           control={control}
@@ -122,10 +122,10 @@ export function EducationStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
-      <XStack gap="$3">
-        <YStack flex={1} gap="$2">
+      <Row gap="$3">
+        <Stack flex={1} gap="$2">
           <Controller
             control={control}
             name="startDate"
@@ -137,9 +137,9 @@ export function EducationStep({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$2">
+        <Stack flex={1} gap="$2">
           <Controller
             control={control}
             name="endDate"
@@ -152,10 +152,10 @@ export function EducationStep({
               />
             )}
           />
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <Controller
           control={control}
           name="isCurrent"
@@ -168,7 +168,7 @@ export function EducationStep({
           )}
         />
         <Text fontSize="$3">I am currently enrolled</Text>
-      </XStack>
+      </Row>
 
       <StepNavigation
         canGoBack
@@ -181,7 +181,7 @@ export function EducationStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Finish"
       />
-    </YStack>
+    </Stack>
   )
 }
 

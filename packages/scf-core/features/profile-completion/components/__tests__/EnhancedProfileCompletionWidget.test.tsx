@@ -117,8 +117,8 @@ vi.mock('tamagui', () => {
   )
 
   return {
-    YStack: createStack('ystack'),
-    XStack: createStack('xstack'),
+    Stack: createStack('ystack'),
+    Row: createStack('xstack'),
     Card,
     CardHeader: Card.Header,
     Button,

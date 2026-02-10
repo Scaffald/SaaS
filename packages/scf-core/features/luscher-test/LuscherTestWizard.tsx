@@ -2,9 +2,9 @@ import { AssessmentProgress, AssessmentWizard } from '@scf/core/features/assessm
 import { LuscherTestStep } from '@scf/core/features/personality-assessment/components/LuscherTestStep'
 import { api } from '@scf/core/utils/api'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
@@ -14,7 +14,7 @@ type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
  * Combines Test 1 and Test 2 into a single flow with intro, cooldown, and results
  */
 export function LuscherTestWizard() {
-  const toast = useToastController()
+  const toast = useToast()
 
   const [currentStep, setCurrentStep] = useState<TestStep>('intro')
   const [luscher1Choices, setLuscher1Choices] = useState<number[]>([])
@@ -46,9 +46,11 @@ export function LuscherTestWizard() {
       setCurrentStep('cooldown')
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to save test. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to save test. Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -63,9 +65,11 @@ export function LuscherTestWizard() {
       setCurrentStep('results')
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to save test. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to save test. Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -194,15 +198,15 @@ export function LuscherTestWizard() {
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
   const railContent = (
-    <YStack gap="$5" padding="$2" $md={{ padding: '$1' }}>
-      <YStack gap="$1">
+    <Stack gap="$5" padding="$2" $md={{ padding: '$1' }}>
+      <Stack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Weekly Pulse
         </Text>
         <Text fontSize="$3" color="$color10">
           Track your focus and readiness through five quick moments.
         </Text>
-      </YStack>
+      </Stack>
 
       {!showResultsSidebar && (
         <AssessmentProgress
@@ -217,7 +221,7 @@ export function LuscherTestWizard() {
       {showResultsSidebar && (
         <ResultsSidebar xpAwarded={5} nextAvailableAt={availability?.nextAvailableAt || null} />
       )}
-    </YStack>
+    </Stack>
   )
 
   const wizardContent = (

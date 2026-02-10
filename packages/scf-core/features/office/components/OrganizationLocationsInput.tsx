@@ -1,10 +1,10 @@
 import type { OrganizationLocation } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete } from '@unicornlove/ui'
+import type { AddressResult } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete } from '@unicornlove/beyond-ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
-import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]
@@ -129,20 +129,20 @@ export function OrganizationLocationsInput({
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {/* Label and Help Text */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Locations *</Text>
         <Text fontSize="$3" color="$color11" lineHeight="$1">
           Add one or more locations for this organization
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Location Inputs */}
-      <YStack gap="$4">
+      <Stack gap="$4">
         {value.length > 0 ? (
           value.map((location, index) => (
-            <YStack
+            <Stack
               key={locationIds[index]}
               gap="$2"
               padding="$3"
@@ -151,7 +151,7 @@ export function OrganizationLocationsInput({
               borderColor="$borderColor"
             >
               {/* Location Name */}
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontSize="$3" fontWeight="500">
                   Location Name
                 </Text>
@@ -161,10 +161,10 @@ export function OrganizationLocationsInput({
                   placeholder={index === 0 ? 'e.g., Headquarters' : `Location ${index + 1}`}
                   disabled={disabled}
                 />
-              </YStack>
+              </Stack>
 
               {/* Location Address */}
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontSize="$3" fontWeight="500">
                   Address
                 </Text>
@@ -180,10 +180,10 @@ export function OrganizationLocationsInput({
                   minLength={3}
                   maxResults={8}
                 />
-              </YStack>
+              </Stack>
 
               {/* Remove Button */}
-              <XStack justifyContent="flex-end">
+              <Row justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   size="$3"
@@ -197,12 +197,12 @@ export function OrganizationLocationsInput({
                   </Button.Icon>
                   <Button.Text color="$red10">Remove Location</Button.Text>
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <YStack padding="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
+          <Stack padding="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
             <Text color="$color11">No locations added yet</Text>
             <Button
               variant="outlined"
@@ -217,9 +217,9 @@ export function OrganizationLocationsInput({
               </Button.Icon>
               <Button.Text color="$color11">Add First Location</Button.Text>
             </Button>
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Add Another Location Button */}
       {value.length > 0 && (
@@ -245,6 +245,6 @@ export function OrganizationLocationsInput({
           {errors}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

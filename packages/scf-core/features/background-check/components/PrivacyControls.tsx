@@ -2,7 +2,7 @@ import { api } from '@scf/core/utils/api'
 import { Share2 } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Alert } from 'react-native'
-import { Button, Separator, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import type { BackgroundCheckDetail } from './status.utils'
 
@@ -98,8 +98,8 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
   const isSaving = updatePrivacyMutation.isPending
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Privacy controls
         </Text>
@@ -107,9 +107,9 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           Manage who can see your background check results. These settings apply across the
           platform.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack
+      <Stack
         gap="$3"
         padding="$3"
         backgroundColor="$color2"
@@ -117,15 +117,15 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack justifyContent="space-between" alignItems="center">
-          <YStack flex={1} gap="$1" paddingRight="$3">
+        <Row justifyContent="space-between" alignItems="center">
+          <Stack flex={1} gap="$1" paddingRight="$3">
             <Text fontSize="$3" fontWeight="500" color="$color12">
               Show verified badge
             </Text>
             <Text fontSize="$2" color="$color10">
               Allow organizations to see a verified badge that your background check is current.
             </Text>
-          </YStack>
+          </Stack>
           <Switch
             size="$3"
             checked={sharePublicly}
@@ -134,11 +134,11 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           >
             <Switch.Thumb />
           </Switch>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$3">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$3" fontWeight="500" color="$color12">
             Shared with organizations
           </Text>
@@ -156,11 +156,11 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           >
             Share
           </Button>
-        </XStack>
+        </Row>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           {organizationIds.length === 0 && (
-            <YStack
+            <Stack
               gap="$1"
               padding="$3"
               backgroundColor="$color2"
@@ -171,11 +171,11 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
               <Text fontSize="$2" color="$color10">
                 No organizations currently have access to view your results.
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           {organizationIds.map((organizationId) => (
-            <XStack
+            <Row
               key={organizationId}
               justifyContent="space-between"
               alignItems="center"
@@ -197,16 +197,16 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
               >
                 Revoke
               </Button>
-            </XStack>
+            </Row>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       <Separator />
 
       <Text fontSize="$2" color="$color9">
         Tip: Only share your results with trusted organizations. You can revoke access at any time.
       </Text>
-    </YStack>
+    </Stack>
   )
 }

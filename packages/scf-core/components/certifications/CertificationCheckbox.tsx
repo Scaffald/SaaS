@@ -1,5 +1,5 @@
 import { Check, Link } from '@tamagui/lucide-icons'
-import { Button, Checkbox, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Checkbox, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Certification {
   id: string
@@ -29,15 +29,15 @@ export function CertificationCheckbox({
   disabled = false,
 }: CertificationCheckboxProps) {
   return (
-    <YStack gap="$2">
-      <XStack gap="$3" style={{ alignItems: 'flex-start' }}>
+    <Stack gap="$2">
+      <Row gap="$3" style={{ alignItems: 'flex-start' }}>
         <Checkbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} size="$4">
           <Checkbox.Indicator>
             <Check />
           </Checkbox.Indicator>
         </Checkbox>
 
-        <YStack flex={1} gap="$1">
+        <Stack flex={1} gap="$1">
           <Text fontWeight={checked ? '600' : '400'} fontSize="$3">
             {certification.title}
           </Text>
@@ -46,14 +46,14 @@ export function CertificationCheckbox({
               {certification.description}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {checked && onAddProof && (
           <Button size="$2" variant="outlined" icon={Link} onPress={onAddProof} disabled={disabled}>
             {hasProof ? 'View Proof' : 'Add Proof'}
           </Button>
         )}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

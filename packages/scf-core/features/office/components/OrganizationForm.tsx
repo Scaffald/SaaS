@@ -6,12 +6,12 @@ import { isSlugValid } from '@scf/core/utils/slugify'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { organizationCreateSchema, type OrganizationCreate } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
@@ -35,7 +35,7 @@ type SlugAvailabilityState =
 
 export function OrganizationForm({ mode, organizationId, initialData }: OrganizationFormProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
   const [isLoading, setIsLoading] = useState(false)
   const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([])
@@ -55,7 +55,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         setIndustries(data || [])
       } catch (error) {
         console.error('Failed to fetch industries:', error)
-        toast.show('Error', { message: 'Failed to load industries' })
+        toast.show({
+          title: 'Error',
+          message: 'Failed to load industries',
+          variant: 'error',
+        })
       }
     }
 
@@ -186,25 +190,37 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
   const createMutation = api.office.createOrganization.useMutation({
     onSuccess: () => {
-      toast.show('Success', { message: 'Organization created successfully' })
+      toast.show({
+          title: 'Success',
+          message: 'Organization created successfully',
+          variant: 'success',
+        })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
-        message: error instanceof Error ? error.message : 'Failed to create organization',
-      })
+      toast.show({
+          title: 'Error',
+          message: error instanceof Error ? error.message : 'Failed to create organization',
+          variant: 'error',
+        })
     },
   })
 
   const updateMutation = api.office.updateOrganization.useMutation({
     onSuccess: () => {
-      toast.show('Success', { message: 'Organization updated successfully' })
+      toast.show({
+          title: 'Success',
+          message: 'Organization updated successfully',
+          variant: 'success',
+        })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
-        message: error instanceof Error ? error.message : 'Failed to update organization',
-      })
+      toast.show({
+          title: 'Error',
+          message: error instanceof Error ? error.message : 'Failed to update organization',
+          variant: 'error',
+        })
     },
   })
 
@@ -242,7 +258,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="name"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Name *</Text>
             <Input
               testID="org-form-name"
@@ -256,7 +272,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 {errors.name.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -265,7 +281,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="slug"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Vanity URL *</Text>
             <Input
               testID="org-form-slug"
@@ -285,12 +301,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Text>
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Spinner size="small" />
                 <Text fontSize="$2" color="$color11">
                   Checking availability...
                 </Text>
-              </XStack>
+              </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
               <Text color="$green10" fontSize="$2">
@@ -303,12 +319,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Text>
             )}
             {slugStatus.state === 'taken' && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text color="$red10" fontSize="$2">
                   {slugStatus.message}
                 </Text>
                 {slugStatus.suggestions?.length ? (
-                  <XStack gap="$2" flexWrap="wrap">
+                  <Row gap="$2" flexWrap="wrap">
                     {slugStatus.suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
@@ -319,16 +335,16 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                         {suggestion}
                       </Button>
                     ))}
-                  </XStack>
+                  </Row>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
             {slugStatus.state === 'error' && (
               <Text color="$orange10" fontSize="$2">
                 {slugStatus.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -360,7 +376,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="logo_url"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Logo URL</Text>
             <Input
               testID="org-form-logo-url"
@@ -374,7 +390,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 {errors.logo_url.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -383,7 +399,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="visibility"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Visibility</Text>
             <ResponsiveSelect
               value={field.value}
@@ -401,7 +417,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 {errors.visibility.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -410,7 +426,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="locations"
         control={control}
         render={({ field }) => (
-          <YStack data-testid="org-form-locations">
+          <Stack data-testid="org-form-locations">
             <OrganizationLocationsInput
               value={field.value}
               onChange={field.onChange}
@@ -419,7 +435,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               provider="mapbox"
               apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
             />
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -444,7 +460,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       )}
 
       {/* Submit buttons */}
-      <XStack
+      <Row
         justifyContent="flex-end"
         gap="$2"
         marginTop="$4"
@@ -471,7 +487,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>
-      </XStack>
+      </Row>
     </ScrollView>
   )
 }

@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * PersonalityAssessmentWidget - Dashboard widget for personality assessment
@@ -22,10 +22,10 @@ export function PersonalityAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -60,8 +60,8 @@ export function PersonalityAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
+      <Stack gap={spacing.md}>
+        <Stack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Personality Assessment
           </Text>
@@ -69,26 +69,26 @@ export function PersonalityAssessmentWidget() {
             Discover your personality traits through a comprehensive assessment including color
             psychology and personality questions.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Progress Display */}
         {hasStarted && (
-          <YStack gap={spacing.xs}>
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap={spacing.xs}>
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 {getStepLabel(currentStep)}
               </Text>
               <Text fontSize="$4" fontWeight="bold" color="$blue8">
                 {completionScore}%
               </Text>
-            </XStack>
+            </Row>
             <Progress value={completionScore} max={100}>
               <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
             </Progress>
             <Text fontSize="$2" color="$color11">
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {/* Action Button */}
@@ -109,7 +109,7 @@ export function PersonalityAssessmentWidget() {
             questions.
           </Text>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

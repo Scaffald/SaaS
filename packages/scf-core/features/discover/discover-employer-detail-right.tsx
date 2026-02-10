@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
   BellPlus,
   Briefcase,
@@ -8,9 +8,9 @@ import {
   Network,
   UserPlus,
 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
-import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type OrganizationIdentifier = { organizationId: string }
 
@@ -60,7 +60,7 @@ type DiscoverEmployerDetailRightProps = {
  * Renders engagement CTAs for an employer, including follow and employment claim actions.
  */
 export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDetailRightProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useContext()
 
   const { data: employer, isLoading } = api.employers.getEmployerById.useQuery(
@@ -107,9 +107,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       if (context?.previous) {
         utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
       }
-      toast.show('Unable to follow', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to follow',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
     onSuccess: (data: FollowMutationResult, variables: OrganizationIdentifier) => {
       utils.employers.getOrganizationFollowStatus.setData(variables, {
@@ -148,9 +150,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       if (context?.previous) {
         utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
       }
-      toast.show('Unable to unfollow', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to unfollow',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
     onSuccess: (_data: { success: boolean }, variables: OrganizationIdentifier) => {
       utils.employers.getOrganizationFollowStatus.setData(variables, {
@@ -159,9 +163,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: null,
       })
 
-      toast.show('Unfollowed', {
-        message: 'We removed this organization from your followed list.',
-      })
+      toast.show({
+          title: 'Unfollowed',
+          message: 'We removed this organization from your followed list.',
+        })
     },
   })
 
@@ -202,9 +207,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       if (context?.previous) {
         utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
       }
-      toast.show('Unable to link employment', {
-        message: error.message ?? 'Please try again shortly.',
-      })
+      toast.show({
+          title: 'Unable to link employment',
+          message: error.message ?? 'Please try again shortly.',
+          variant: 'error',
+        })
     },
     onSuccess: (data: ClaimMutationResult, variables: OrganizationIdentifier) => {
       const experience = data.experience ?? null
@@ -257,9 +264,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       if (context?.previous) {
         utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
       }
-      toast.show('Unable to remove link', {
-        message: error.message ?? 'Please try again shortly.',
-      })
+      toast.show({
+          title: 'Unable to remove link',
+          message: error.message ?? 'Please try again shortly.',
+          variant: 'error',
+        })
     },
     onSuccess: (data: { removed: boolean }, variables: OrganizationIdentifier) => {
       if (!data.removed) {
@@ -274,9 +283,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         })
       }
 
-      toast.show('Employment link removed', {
-        message: 'You are no longer connected to this organization.',
-      })
+      toast.show({
+          title: 'Employment link removed',
+          message: 'You are no longer connected to this organization.',
+        })
     },
     onSettled: async (
       _data: { removed: boolean } | undefined,
@@ -328,28 +338,28 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
   return (
     <DashboardWidget gap="$4">
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$2">
+        <Row gap="$2" alignItems="center">
           <Network size={18} color="$blue10" />
           <Text fontSize="$5" fontWeight="700" color="$color12">
             Stay Connected
           </Text>
-        </XStack>
+        </Row>
         <Text fontSize="$3" color="$color11">
           Follow {organizationName} to get updates or claim your role to link your profile to the
           team.
         </Text>
-      </YStack>
+      </Stack>
 
       <Separator />
 
       {isLoading ? (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Loader2 size={16} color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Loading organization context...
           </Text>
-        </XStack>
+        </Row>
       ) : (
         <OrganizationSnapshot
           name={organizationName}
@@ -361,7 +371,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Separator />
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Button
           size="$4"
           icon={followButtonIcon}
@@ -379,23 +389,23 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         >
           {employmentButtonLabel}
         </Button>
-      </YStack>
+      </Stack>
 
       <Separator />
 
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$2">
+        <Row gap="$2" alignItems="center">
           <BellPlus size={16} color="$color10" />
           <Text fontSize="$3" fontWeight="600" color="$color10">
             What happens next?
           </Text>
-        </XStack>
+        </Row>
         <Text fontSize="$2" color="$color10">
           Following keeps you updated as teams post new opportunities or updates. Linking your
           employment adds the organization to your profile immediately so recruiters can see your
           affiliation right away.
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }
@@ -414,13 +424,13 @@ function OrganizationSnapshot({
   jobsLoading,
 }: OrganizationSnapshotProps) {
   return (
-    <YStack gap="$2">
-      <XStack gap="$2" alignItems="center">
+    <Stack gap="$2">
+      <Row gap="$2" alignItems="center">
         <CheckCircle2 size={16} color="$green10" />
         <Text fontSize="$3" fontWeight="600" color="$green10">
           {name}
         </Text>
-      </XStack>
+      </Row>
       {createdAt && (
         <Text fontSize="$2" color="$color10">
           Onboarded {createdAt}
@@ -433,6 +443,6 @@ function OrganizationSnapshot({
             ? `${openJobs} active ${openJobs === 1 ? 'role' : 'roles'}`
             : 'Open roles data unavailable'}
       </Text>
-    </YStack>
+    </Stack>
   )
 }

@@ -2,12 +2,12 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { Eye, EyeOff, Pencil } from '@tamagui/lucide-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, H2, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H2, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
 type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
@@ -85,7 +85,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
       const hasOverride = info.row.original.location_visibility_override
 
       return (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Icon size={16} />
           <Text>{label}</Text>
           {hasOverride && (
@@ -93,7 +93,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
               (Override)
             </Text>
           )}
-        </XStack>
+        </Row>
       )
     },
   }),
@@ -127,20 +127,20 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack flex={1} padding="$4" gap="$4">
+        <Stack flex={1} padding="$4" gap="$4">
           {showHeader && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <H2>Projects</H2>
               <Text fontSize="$4" color="$gray11">
                 Manage construction projects with geographic data
               </Text>
-            </YStack>
+            </Stack>
           )}
-          <YStack gap="$4">
-            <XStack gap="$4" alignItems="center" justifyContent="space-between" flexWrap="wrap">
-              <XStack gap="$4" alignItems="center" flexWrap="wrap">
+          <Stack gap="$4">
+            <Row gap="$4" alignItems="center" justifyContent="space-between" flexWrap="wrap">
+              <Row gap="$4" alignItems="center" flexWrap="wrap">
                 {organizationsData && (
-                  <XStack width={200}>
+                  <Row width={200}>
                     <ResponsiveSelect
                       value={selectedOrg || ''}
                       onValueChange={setSelectedOrg}
@@ -156,10 +156,10 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                         ),
                       ]}
                     />
-                  </XStack>
+                  </Row>
                 )}
 
-                <XStack width={150}>
+                <Row width={150}>
                   <ResponsiveSelect
                     value={statusFilter || ''}
                     onValueChange={setStatusFilter}
@@ -173,8 +173,8 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                       { value: 'on_hold', label: 'On Hold' },
                     ]}
                   />
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
 
               <Button
                 onPress={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
@@ -183,16 +183,16 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
               >
                 Create Project
               </Button>
-            </XStack>
+            </Row>
 
             {isLoading ? (
               <Text>Loading projects...</Text>
             ) : projects.length === 0 ? (
               <Text>No projects found</Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {projects.map((project: (typeof projects)[0]) => (
-                  <XStack
+                  <Row
                     key={project.id}
                     padding="$4"
                     backgroundColor="$background"
@@ -202,13 +202,13 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <YStack gap="$1" flex={1}>
+                    <Stack gap="$1" flex={1}>
                       <Text fontWeight="600">{project.name}</Text>
                       <Text fontSize="$2" color="$gray10">
                         {project.organization?.name || 'No organization'} • {project.status}
                       </Text>
-                    </YStack>
-                    <XStack gap="$2" alignItems="center">
+                    </Stack>
+                    <Row gap="$2" alignItems="center">
                       {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                       <Button
                         size="$2"
@@ -221,13 +221,13 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                       >
                         Edit
                       </Button>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       }
       rightContent={
         <QuickActionsWidget

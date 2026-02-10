@@ -2,12 +2,12 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
@@ -62,7 +62,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>): ColumnDef<TeamRow
 
 export function OfficeTeamsList() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [search, setSearch] = useState('')
 
   const { data, isLoading, refetch } = api.teams.list.useQuery({
@@ -71,14 +71,18 @@ export function OfficeTeamsList() {
 
   const archiveMutation = api.teams.archive.useMutation({
     onSuccess: () => {
-      toast.show('Team archived', { message: 'The team is no longer visible to members.' })
+      toast.show({
+          title: 'Team archived',
+          message: 'The team is no longer visible to members.',
+        })
       void refetch()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Please try again shortly.'
-      toast.show('Unable to archive team', {
-        message,
-      })
+      toast.show({
+          title: 'Unable to archive team',
+          variant: 'error',
+        })
     },
   })
 
@@ -165,7 +169,7 @@ export function OfficeTeamsList() {
       }
       afterContent={
         archiveMutation.isPending ? (
-          <YStack
+          <Stack
             backgroundColor="$color2"
             padding="$3"
             borderRadius="$4"
@@ -174,11 +178,11 @@ export function OfficeTeamsList() {
             marginBottom="$4"
             style={{ alignSelf: 'flex-end' }}
           >
-            <XStack gap="$3" alignItems="center">
+            <Row gap="$3" alignItems="center">
               <Spinner size="small" />
               <Text>Archiving team...</Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         ) : null
       }
     />

@@ -219,8 +219,8 @@ vi.mock('tamagui', () => {
   )
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Input,
     Text,
     Paragraph,

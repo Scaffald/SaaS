@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -108,8 +108,8 @@ export function SimpleSkillAutocomplete({
   )
 
   return (
-    <YStack gap="$2" style={{ zIndex: 1000 }}>
-      <YStack position="relative">
+    <Stack gap="$2" style={{ zIndex: 1000 }}>
+      <Stack position="relative">
         <Input
           value={value}
           onChangeText={(text) => {
@@ -139,7 +139,7 @@ export function SimpleSkillAutocomplete({
             icon={X}
           />
         )}
-      </YStack>
+      </Stack>
 
       {/* Results Dropdown */}
       {showResults && (value.length >= 2 || results.length > 0) && (
@@ -156,19 +156,19 @@ export function SimpleSkillAutocomplete({
           backgroundColor="$background"
         >
           <ScrollView>
-            <YStack>
+            <Stack>
               {isLoading || isSearching ? (
-                <YStack padding="$4" alignItems="center" justifyContent="center">
+                <Stack padding="$4" alignItems="center" justifyContent="center">
                   <Spinner size="small" />
                   <Text fontSize="$2" color="$color11" marginTop="$2">
                     Searching...
                   </Text>
-                </YStack>
+                </Stack>
               ) : results.length > 0 ? (
                 results.map((skill) => {
                   const isExisting = existingSkillIds.includes(skill.id)
                   return (
-                    <YStack
+                    <Stack
                       key={skill.id}
                       padding="$3"
                       pressStyle={{ backgroundColor: '$backgroundHover' }}
@@ -177,33 +177,33 @@ export function SimpleSkillAutocomplete({
                       borderBottomColor="$borderColor"
                       opacity={isExisting ? 0.6 : 1}
                     >
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack flex={1}>
+                      <Row justifyContent="space-between" alignItems="center">
+                        <Stack flex={1}>
                           <Text fontWeight="600">{skill.name}</Text>
                           {skill.code && (
                             <Text fontSize="$2" color="$color11">
                               {skill.code}
                             </Text>
                           )}
-                        </YStack>
+                        </Stack>
                         {isExisting && (
                           <Text fontSize="$2" color="$blue9" fontWeight="600">
                             Added
                           </Text>
                         )}
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
                   )
                 })
               ) : (
-                <YStack padding="$4" alignItems="center">
+                <Stack padding="$4" alignItems="center">
                   <Text color="$color11">No skills found</Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </ScrollView>
         </Card>
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,5 +1,5 @@
-import { DashboardWidget } from '@unicornlove/ui'
-import { H3, Text } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { H3, Text } from '@unicornlove/beyond-ui'
 
 interface ProfileRightPanelProps {
   title: string

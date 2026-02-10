@@ -7,10 +7,10 @@ import {
   MonthYearPicker,
   ResponsiveModal,
   ResponsiveSelect,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
@@ -20,9 +20,9 @@ import {
   Text,
   TextArea,
   useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { DEGREE_TYPE_OPTIONS, singleEducationEntrySchema } from '../config'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
 import { normalizeEducationEntry } from '../utils/education-entry'
@@ -56,7 +56,7 @@ export function EducationEntryEditModal({
   const originalDataRef = useRef<EducationEntryFormValues | null>(null)
   const { width } = useWindowDimensions()
   const _isMobile = width < 640
-  const toast = useToastController()
+  const toast = useToast()
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -79,9 +79,10 @@ export function EducationEntryEditModal({
   // Mutations
   const saveEducationMutation = api.profile.education.saveEducation.useMutation({
     onSuccess: () => {
-      toast.show('Education Updated', {
-        message: 'Your education entry has been updated successfully!',
-      })
+      toast.show({
+          title: 'Education Updated',
+          message: 'Your education entry has been updated successfully!',
+        })
       educationQuery.refetch()
       onSuccess?.()
       onOpenChange(false)
@@ -91,9 +92,10 @@ export function EducationEntryEditModal({
         error instanceof Error
           ? error.message
           : 'Failed to update education entry. Please try again.'
-      toast.show('Error', {
-        message,
-      })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     },
   })
 
@@ -170,9 +172,9 @@ export function EducationEntryEditModal({
         title="Edit Education Entry"
         size="large"
       >
-        <YStack gap="$4" padding="$4">
+        <Stack gap="$4" padding="$4">
           {/* Institution */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text>Institution *</Text>
             <Controller
               name="university_id"
@@ -183,7 +185,7 @@ export function EducationEntryEditModal({
                   control={control}
                   render={({ field: nameField }) => {
                     return (
-                      <YStack gap="$2">
+                      <Stack gap="$2">
                         {!manualEntryMode ? (
                           <>
                             <UniversityAutocomplete
@@ -240,16 +242,16 @@ export function EducationEntryEditModal({
                             </Button>
                           </>
                         )}
-                      </YStack>
+                      </Stack>
                     )
                   }}
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Degree Type */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text>Degree Type</Text>
             <Controller
               name="degree_type"
@@ -296,10 +298,10 @@ export function EducationEntryEditModal({
                 )
               }}
             />
-          </YStack>
+          </Stack>
 
           {/* Field of Study */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text>Field of Study</Text>
             <Controller
               name="field_of_study"
@@ -312,10 +314,10 @@ export function EducationEntryEditModal({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* GPA */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text>GPA (Optional)</Text>
             <Controller
               name="gpa"
@@ -388,12 +390,12 @@ export function EducationEntryEditModal({
                 )
               }}
             />
-          </YStack>
+          </Stack>
 
           {/* Start and End Dates */}
-          <YStack gap="$2">
-            <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
-              <YStack gap="$2" flex={1}>
+          <Stack gap="$2">
+            <Row gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
+              <Stack gap="$2" flex={1}>
                 <Controller
                   name="start_date"
                   control={control}
@@ -409,8 +411,8 @@ export function EducationEntryEditModal({
                     />
                   )}
                 />
-              </YStack>
-              <YStack gap="$2" flex={1}>
+              </Stack>
+              <Stack gap="$2" flex={1}>
                 <Controller
                   name="end_date"
                   control={control}
@@ -427,8 +429,8 @@ export function EducationEntryEditModal({
                     />
                   )}
                 />
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
             {/* Currently Enrolled Checkbox */}
             <Controller
@@ -448,7 +450,7 @@ export function EducationEntryEditModal({
                 }
 
                 return (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <CustomCheckbox
                       checked={isCurrent}
                       onCheckedChange={handleChange}
@@ -456,7 +458,7 @@ export function EducationEntryEditModal({
                       aria-label="Currently enrolled"
                     />
                     <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
-                  </XStack>
+                  </Row>
                 )
               }}
             />
@@ -479,10 +481,10 @@ export function EducationEntryEditModal({
                 )}
               />
             )}
-          </YStack>
+          </Stack>
 
           {/* Description */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text>Description</Text>
             <Controller
               name="description"
@@ -499,10 +501,10 @@ export function EducationEntryEditModal({
                 </>
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Action Buttons */}
-          <XStack
+          <Row
             justifyContent="flex-end"
             gap="$3"
             paddingTop="$4"
@@ -528,16 +530,16 @@ export function EducationEntryEditModal({
               $md={{ height: undefined, width: undefined }}
             >
               {isLoading ? (
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <Spinner size="small" />
                   <Text>Saving...</Text>
-                </XStack>
+                </Row>
               ) : (
                 'Save Changes'
               )}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </ResponsiveModal>
 
       {/* Cancel Confirmation Dialog */}

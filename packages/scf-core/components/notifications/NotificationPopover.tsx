@@ -1,4 +1,4 @@
-import { Popover } from '@unicornlove/ui'
+import { Popover } from '@unicornlove/beyond-ui'
 import { AlertCircle, Bell, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
@@ -12,9 +12,9 @@ import {
   type StackProps,
   Text,
   type TextProps,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 export interface NotificationItem {
   id: string
@@ -61,7 +61,7 @@ const CHANNEL_PILL_STYLE = {
 
 function Pill({ label, backgroundColor, color }: PillProps) {
   return (
-    <XStack
+    <Row
       backgroundColor={backgroundColor}
       paddingHorizontal="$2"
       paddingVertical="$1"
@@ -71,7 +71,7 @@ function Pill({ label, backgroundColor, color }: PillProps) {
       <Text fontSize="$1" fontWeight="600" color={color}>
         {label}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -245,7 +245,7 @@ export function NotificationPopover({
         >
           <Bell size={20} />
           {unreadCount > 0 && (
-            <YStack
+            <Stack
               position="absolute"
               top={-4}
               right={-4}
@@ -261,7 +261,7 @@ export function NotificationPopover({
               <Text fontSize="$1" fontWeight="600" color="white">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </Text>
-            </YStack>
+            </Stack>
           )}
         </Button>
       </Popover.Trigger>
@@ -274,20 +274,20 @@ export function NotificationPopover({
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       >
         {/* Header */}
-        <XStack
+        <Row
           justifyContent="space-between"
           alignItems="center"
           padding="$4"
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
         >
-          <XStack alignItems="center" gap="$3">
+          <Row alignItems="center" gap="$3">
             <Bell size={20} color="$color11" />
             <Text id="notifications-title" fontSize="$5" fontWeight="700" color="$color12">
               Notifications
             </Text>
-          </XStack>
-          <XStack>
+          </Row>
+          <Row>
             <Button
               size="$2"
               circular
@@ -297,17 +297,17 @@ export function NotificationPopover({
               borderWidth={0}
               aria-label="Close notifications"
             />
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {/* Content */}
         {isLoading ? (
-          <YStack padding="$4" alignItems="center" gap="$3">
+          <Stack padding="$4" alignItems="center" gap="$3">
             <Spinner size="small" color="$color10" />
             <Text color="$color11">Loading notifications...</Text>
-          </YStack>
+          </Stack>
         ) : notifications.length === 0 ? (
-          <YStack padding="$4" alignItems="center" gap="$3">
+          <Stack padding="$4" alignItems="center" gap="$3">
             <Bell size={32} color="$color8" opacity={0.5} />
             <Text color="$color11" style={{ textAlign: 'center' }}>
               No notifications
@@ -315,14 +315,14 @@ export function NotificationPopover({
             <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
               You're all caught up!
             </Text>
-          </YStack>
+          </Stack>
         ) : (
           <ScrollView maxHeight={320} showsVerticalScrollIndicator={false}>
-            <YStack>
+            <Stack>
               {/* Unread Section */}
               {unreadNotifications.length > 0 && (
                 <>
-                  <XStack
+                  <Row
                     padding="$3"
                     paddingHorizontal="$4"
                     backgroundColor="$color2"
@@ -332,14 +332,14 @@ export function NotificationPopover({
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       Unread ({unreadNotifications.length})
                     </Text>
-                  </XStack>
-                  <YStack>
+                  </Row>
+                  <Stack>
                     {unreadNotifications.map((notification, index) => {
                       const IconComponent = getNotificationIcon(notification.severity)
                       const iconColor = getNotificationColor(notification.severity)
 
                       return (
-                        <YStack key={notification.id}>
+                        <Stack key={notification.id}>
                           <Card
                             role="menuitem"
                             tabIndex={0}
@@ -354,10 +354,10 @@ export function NotificationPopover({
                             cursor="pointer"
                             aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <XStack gap="$3" alignItems="flex-start">
+                            <Row gap="$3" alignItems="flex-start">
                               <IconComponent size={18} color={iconColor} />
-                              <YStack flex={1} gap="$2">
-                                <XStack
+                              <Stack flex={1} gap="$2">
+                                <Row
                                   justifyContent="space-between"
                                   alignItems="flex-start"
                                   gap="$2"
@@ -371,14 +371,14 @@ export function NotificationPopover({
                                   >
                                     {notification.title}
                                   </Text>
-                                  <YStack
+                                  <Stack
                                     width={6}
                                     height={6}
                                     backgroundColor="$blue9"
                                     borderRadius="$10"
                                     marginTop="$1"
                                   />
-                                </XStack>
+                                </Row>
                                 <Text
                                   fontSize="$2"
                                   color="$color11"
@@ -387,7 +387,7 @@ export function NotificationPopover({
                                 >
                                   {notification.preview}
                                 </Text>
-                                <XStack gap="$2" alignItems="center" marginTop="$1">
+                                <Row gap="$2" alignItems="center" marginTop="$1">
                                   <Text fontSize="$1" color="$color10">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
@@ -405,7 +405,7 @@ export function NotificationPopover({
                                       color={CHANNEL_PILL_STYLE.color}
                                     />
                                   )}
-                                </XStack>
+                                </Row>
                                 {notification.ctaLabel && (
                                   <Button
                                     size="$2"
@@ -416,16 +416,16 @@ export function NotificationPopover({
                                     {notification.ctaLabel}
                                   </Button>
                                 )}
-                              </YStack>
-                            </XStack>
+                              </Stack>
+                            </Row>
                           </Card>
                           {index < unreadNotifications.length - 1 && (
                             <Separator backgroundColor="$borderColor" />
                           )}
-                        </YStack>
+                        </Stack>
                       )
                     })}
-                  </YStack>
+                  </Stack>
                 </>
               )}
 
@@ -437,7 +437,7 @@ export function NotificationPopover({
               {/* Read Section */}
               {readNotifications.length > 0 && (
                 <>
-                  <XStack
+                  <Row
                     padding="$3"
                     paddingHorizontal="$4"
                     backgroundColor="$color2"
@@ -447,14 +447,14 @@ export function NotificationPopover({
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       Read
                     </Text>
-                  </XStack>
-                  <YStack>
+                  </Row>
+                  <Stack>
                     {readNotifications.map((notification, index) => {
                       const IconComponent = getNotificationIcon(notification.severity)
                       const iconColor = getNotificationColor(notification.severity)
 
                       return (
-                        <YStack key={notification.id}>
+                        <Stack key={notification.id}>
                           <Card
                             role="menuitem"
                             tabIndex={0}
@@ -469,9 +469,9 @@ export function NotificationPopover({
                             cursor="pointer"
                             aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <XStack gap="$3" alignItems="flex-start">
+                            <Row gap="$3" alignItems="flex-start">
                               <IconComponent size={18} color={iconColor} />
-                              <YStack flex={1} gap="$2">
+                              <Stack flex={1} gap="$2">
                                 <Text
                                   fontSize="$3"
                                   fontWeight="normal"
@@ -488,7 +488,7 @@ export function NotificationPopover({
                                 >
                                   {notification.preview}
                                 </Text>
-                                <XStack gap="$2" alignItems="center" marginTop="$1">
+                                <Row gap="$2" alignItems="center" marginTop="$1">
                                   <Text fontSize="$1" color="$color10">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
@@ -506,7 +506,7 @@ export function NotificationPopover({
                                       color={CHANNEL_PILL_STYLE.color}
                                     />
                                   )}
-                                </XStack>
+                                </Row>
                                 {notification.ctaLabel && (
                                   <Button
                                     size="$2"
@@ -517,19 +517,19 @@ export function NotificationPopover({
                                     {notification.ctaLabel}
                                   </Button>
                                 )}
-                              </YStack>
-                            </XStack>
+                              </Stack>
+                            </Row>
                           </Card>
                           {index < readNotifications.length - 1 && (
                             <Separator backgroundColor="$borderColor" />
                           )}
-                        </YStack>
+                        </Stack>
                       )
                     })}
-                  </YStack>
+                  </Stack>
                 </>
               )}
-            </YStack>
+            </Stack>
           </ScrollView>
         )}
       </Popover.Content>

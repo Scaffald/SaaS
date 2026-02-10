@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
@@ -9,9 +9,9 @@ import {
   Spinner,
   Switch,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 function formatDate(value?: string | null): string | null {
   if (!value) return null
@@ -24,7 +24,7 @@ function formatDate(value?: string | null): string | null {
 }
 
 export function StripeSettingsPage() {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useContext()
 
   const { data, isLoading } = api.stripeSettings.getSettings.useQuery(undefined, {
@@ -34,33 +34,54 @@ export function StripeSettingsPage() {
   const updatePublishableKey = api.stripeSettings.updatePublishableKey.useMutation({
     onSuccess: async () => {
       await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Publishable key updated' })
+      toast.show({
+          title: 'Success',
+          message: 'Publishable key updated',
+          variant: 'success',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to update publishable key'
-      toast.show('Error', { message })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     },
   })
 
   const updateApiKey = api.stripeSettings.updateApiKey.useMutation({
     onSuccess: async () => {
       await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Secret key stored securely' })
+      toast.show({
+          title: 'Success',
+          message: 'Secret key stored securely',
+          variant: 'success',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to store API secret'
-      toast.show('Error', { message })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     },
   })
 
   const updateWebhookSecret = api.stripeSettings.updateWebhookSecret.useMutation({
     onSuccess: async () => {
       await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Webhook secret stored securely' })
+      toast.show({
+          title: 'Success',
+          message: 'Webhook secret stored securely',
+          variant: 'success',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to store webhook secret'
-      toast.show('Error', { message })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     },
   })
 
@@ -70,18 +91,28 @@ export function StripeSettingsPage() {
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to update mode'
-      toast.show('Error', { message })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     },
   })
 
   const testConnection = api.stripeSettings.testConnection.useMutation({
     onSuccess: async () => {
       await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Stripe connection verified' })
+      toast.show({
+          title: 'Success',
+          message: 'Stripe connection verified',
+          variant: 'success',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Stripe connection test failed'
-      toast.show('Error', { message })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     },
   })
 
@@ -102,43 +133,52 @@ export function StripeSettingsPage() {
     const canCopy = typeof navigator !== 'undefined' && Boolean(navigator?.clipboard?.writeText)
 
     if (!canCopy) {
-      toast.show('Error', {
-        message: 'Clipboard access is not available on this device.',
-      })
+      toast.show({
+          title: 'Error',
+          message: 'Clipboard access is not available on this device.',
+          variant: 'error',
+        })
       return
     }
 
     try {
       await navigator.clipboard.writeText(webhookUrl)
-      toast.show('Copied', { message: 'Webhook endpoint copied to clipboard' })
+      toast.show({
+          title: 'Copied',
+          message: 'Webhook endpoint copied to clipboard',
+        })
     } catch {
-      toast.show('Error', { message: 'Unable to copy to clipboard' })
+      toast.show({
+          title: 'Error',
+          message: 'Unable to copy to clipboard',
+          variant: 'error',
+        })
     }
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text>Loading Stripe settings…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <YStack gap="$2">
+    <Stack flex={1} padding="$4" gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="700">
           Stripe Payments
         </Text>
         <Paragraph size="$4" color="$color11">
           Manage API keys, webhook secrets, and connection diagnostics for the Stripe integration.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$4" style={{ maxWidth: 720, width: '100%' }}>
+      <Stack gap="$4" style={{ maxWidth: 720, width: '100%' }}>
         <Card padding="$4" gap="$4">
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Publishable Key
             </Text>
@@ -153,7 +193,7 @@ export function StripeSettingsPage() {
               autoCorrect={false}
               placeholder="pk_live_..."
             />
-            <XStack gap="$2" justifyContent="flex-end">
+            <Row gap="$2" justifyContent="flex-end">
               <Button
                 backgroundColor="$blue9"
                 color="$color1"
@@ -166,12 +206,12 @@ export function StripeSettingsPage() {
               >
                 {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
 
         <Card padding="$4" gap="$4">
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Secret Keys
             </Text>
@@ -179,10 +219,10 @@ export function StripeSettingsPage() {
               Secrets are encrypted with Supabase Vault. They are never returned by the API after
               storage.
             </Paragraph>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <YStack gap="$2">
+          <Stack gap="$3">
+            <Stack gap="$2">
               <Text fontWeight="600">Stripe API Secret</Text>
               <Input
                 value={apiSecret}
@@ -192,7 +232,7 @@ export function StripeSettingsPage() {
                 secureTextEntry
                 placeholder="sk_live_..."
               />
-              <XStack gap="$2" justifyContent="flex-end">
+              <Row gap="$2" justifyContent="flex-end">
                 <Button
                   backgroundColor="$green9"
                   color="$color1"
@@ -204,7 +244,7 @@ export function StripeSettingsPage() {
                 >
                   {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
                 </Button>
-              </XStack>
+              </Row>
               {data?.hasApiKey ? (
                 <Text fontSize="$2" color="$green10">
                   ✓ Secret stored in Vault
@@ -214,9 +254,9 @@ export function StripeSettingsPage() {
                   API secret not configured
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Webhook Signing Secret</Text>
               <Input
                 value={webhookSecret}
@@ -226,7 +266,7 @@ export function StripeSettingsPage() {
                 secureTextEntry
                 placeholder="whsec_..."
               />
-              <XStack gap="$2" justifyContent="flex-end">
+              <Row gap="$2" justifyContent="flex-end">
                 <Button
                   backgroundColor="$green9"
                   color="$color1"
@@ -238,7 +278,7 @@ export function StripeSettingsPage() {
                 >
                   {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
                 </Button>
-              </XStack>
+              </Row>
               {data?.hasWebhookSecret ? (
                 <Text fontSize="$2" color="$green10">
                   ✓ Webhook secret stored
@@ -248,12 +288,12 @@ export function StripeSettingsPage() {
                   Webhook secret not configured
                 </Text>
               )}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         <Card padding="$4" gap="$4">
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Webhook Endpoint
             </Text>
@@ -261,24 +301,24 @@ export function StripeSettingsPage() {
               Configure this URL inside the Stripe Dashboard and supply the signing secret above.
             </Paragraph>
             <Input value={webhookUrl} editable={false} />
-            <XStack gap="$2">
+            <Row gap="$2">
               <Button variant="outlined" flex={1} onPress={handleCopyWebhook}>
                 Copy Endpoint
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
 
         <Card padding="$4" gap="$4">
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Test Mode
             </Text>
             <Paragraph size="$3" color="$color10">
               Toggle between live and test credentials without redeploying the backend.
             </Paragraph>
-          </YStack>
-          <XStack gap="$3" alignItems="center">
+          </Stack>
+          <Row gap="$3" alignItems="center">
             <Switch
               id="stripe-test-mode"
               checked={data?.testMode ?? true}
@@ -292,11 +332,11 @@ export function StripeSettingsPage() {
               <Switch.Thumb />
             </Switch>
             <Text>{(data?.testMode ?? true) ? 'Test mode' : 'Live mode'}</Text>
-          </XStack>
+          </Row>
         </Card>
 
         <Card padding="$4" gap="$4">
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Connection Diagnostics
             </Text>
@@ -304,9 +344,9 @@ export function StripeSettingsPage() {
               Validates the current secret by calling Stripe. Fails if the API key lacks required
               permissions.
             </Paragraph>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$3" color="$color11">
               Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
             </Text>
@@ -315,9 +355,9 @@ export function StripeSettingsPage() {
                 {data.lastTestedError}
               </Paragraph>
             ) : null}
-          </YStack>
+          </Stack>
 
-          <XStack gap="$2" justifyContent="flex-end">
+          <Row gap="$2" justifyContent="flex-end">
             <Button
               backgroundColor="$blue9"
               color="$color1"
@@ -326,10 +366,10 @@ export function StripeSettingsPage() {
             >
               {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
             </Button>
-          </XStack>
+          </Row>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 

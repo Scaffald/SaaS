@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Button, Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
 import { useReviewDraft } from '../hooks/useReviewDraft'
 import { ReviewProgress } from './ReviewProgress'
@@ -187,17 +187,17 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
   if (isCreatingDraft || !reviewId) {
     return (
       <Card elevate bordered>
-        <YStack gap="$4" padding="$5" minHeight={600} justifyContent="center" alignItems="center">
+        <Stack gap="$4" padding="$5" minHeight={600} justifyContent="center" alignItems="center">
           <Text fontSize="$6" color="$color11">
             Preparing review form...
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$5">
+    <Stack gap="$4" padding="$5">
       {/* Progress Indicator */}
       <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
       <Text fontSize="$6" fontWeight="700" color="$color12">
@@ -206,7 +206,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
 
       {/* Step Content */}
       <Card backgroundColor="$color2" bordered>
-        <YStack padding="$5" minHeight={400} gap="$4">
+        <Stack padding="$5" minHeight={400} gap="$4">
           {/* Step 1: Technical Skills Rating */}
           {reviewDraft.currentStep === 1 && (
             <ReviewStep1Skills
@@ -288,11 +288,11 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
               onChange={reviewDraft.updateRecommendation}
             />
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justifyContent="space-between">
+      <Row gap="$3" justifyContent="space-between">
         <Button
           size="$4"
           variant="outlined"
@@ -304,7 +304,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
           Back
         </Button>
 
-        <XStack gap="$2">
+        <Row gap="$2">
           <Button size="$4" variant="outlined" onPress={onCancel}>
             Save & Exit
           </Button>
@@ -324,15 +324,15 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
               Continue
             </Button>
           )}
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Auto-save Indicator */}
-      <XStack justifyContent="center">
+      <Row justifyContent="center">
         <Text fontSize="$3" color="$color10">
           {reviewDraft.hasUnsavedChanges ? '💾 Saving...' : '✓ All changes saved'}
         </Text>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

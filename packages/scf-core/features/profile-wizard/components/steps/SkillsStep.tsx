@@ -4,7 +4,7 @@ import {
 } from '@scf/core/features/profile/components/InlineSkillSearch'
 import { api } from '@scf/core/utils/api'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Button, Card, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
@@ -174,8 +174,8 @@ export function SkillsStep({
   const guidanceId = useId()
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Spotlight your strengths
         </Text>
@@ -183,9 +183,9 @@ export function SkillsStep({
           Add 3-5 core skills that best represent your expertise. Recruiters use these to match you
           with opportunities.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontWeight="600">
           Selected Skills ({skills.length}/{MAX_SKILLS})
         </Text>
@@ -198,17 +198,17 @@ export function SkillsStep({
             </Card.Header>
           </Card>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             {skills.map((skill) => (
               <Card key={skill.id} bordered backgroundColor="$color2">
                 <Card.Header gap="$2">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack gap="$1">
+                  <Row justifyContent="space-between" alignItems="center">
+                    <Stack gap="$1">
                       <Text fontWeight="600">{skill.name}</Text>
                       <Text fontSize="$2" color="$color11">
                         {skill.taxonomy.toUpperCase()} • Proficiency {skill.proficiency}/5
                       </Text>
-                    </YStack>
+                    </Stack>
                     <Button
                       size="$2"
                       variant="outlined"
@@ -217,18 +217,18 @@ export function SkillsStep({
                     >
                       Remove
                     </Button>
-                  </XStack>
+                  </Row>
                 </Card.Header>
               </Card>
             ))}
-          </YStack>
+          </Stack>
         )}
         <Paragraph id={guidanceId} fontSize="$2" color="$color10" aria-live="polite">
           {guidance}
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
+      <Stack gap="$3">
         <InlineSkillSearch
           onSearchSkills={handleSearchSkills}
           onSelectSkill={handleSelectSkill}
@@ -241,7 +241,7 @@ export function SkillsStep({
             more later from your full profile.
           </Paragraph>
         )}
-      </YStack>
+      </Stack>
 
       <StepNavigation
         canGoBack
@@ -254,6 +254,6 @@ export function SkillsStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Next: Experience"
       />
-    </YStack>
+    </Stack>
   )
 }

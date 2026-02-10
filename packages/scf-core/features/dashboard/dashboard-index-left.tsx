@@ -1,5 +1,5 @@
 import { InquiryOverviewWidget } from '@scf/core/features/inquiries/components/InquiryOverviewWidget'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@unicornlove/beyond-ui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { ProfileSnapshotWidget, SoftSkillsComparisonWidget } from '../profile/widgets'
@@ -12,7 +12,7 @@ import { RIASECAssessmentWidget } from '../riasec-assessment'
  */
 export function DashboardIndexLeft() {
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {/* <ResumeImportWidget /> */}
       {/* <ProfileCompletionExperience /> */}
       <ProfileSnapshotWidget />
@@ -21,6 +21,6 @@ export function DashboardIndexLeft() {
       <IPIPAssessmentWidget />
       <RIASECAssessmentWidget />
       <OccupationAssessmentWidget />
-    </YStack>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { IPIPAnswer } from '../lib/ipip'
 import { getResults, getScore, type IPIPScores } from '../lib/ipip'
 
@@ -71,10 +71,10 @@ export function ResultsStep({
   const hasReport = assessment.ai_report && assessment.ai_report.length > 0
 
   return (
-    <YStack gap="$6" width="100%" style={{ maxWidth: 900, alignSelf: 'center' }}>
+    <Stack gap="$6" width="100%" style={{ maxWidth: 900, alignSelf: 'center' }}>
       {/* AI Report Section */}
       {hasReport && (
-        <YStack
+        <Stack
           gap="$4"
           padding="$6"
           backgroundColor="$color2"
@@ -85,7 +85,7 @@ export function ResultsStep({
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Personality Report
           </Text>
-          <YStack gap="$3">
+          <Stack gap="$3">
             {assessment.ai_report?.split('\n').map((line, index) => (
               <Text
                 key={`report-line-${index}-${line.slice(0, 10)}`}
@@ -96,18 +96,18 @@ export function ResultsStep({
                 {line}
               </Text>
             ))}
-          </YStack>
+          </Stack>
           {assessment.ai_report_generated_at && (
             <Text fontSize="$2" color="$color10" marginTop="$2">
               Generated on {new Date(assessment.ai_report_generated_at).toLocaleDateString()}
             </Text>
           )}
-        </YStack>
+        </Stack>
       )}
 
       {/* Generate Report Button */}
       {!hasReport && !isReadOnly && onGenerateReport && (
-        <YStack
+        <Stack
           gap="$4"
           padding="$6"
           backgroundColor="$blue2"
@@ -130,23 +130,23 @@ export function ResultsStep({
           >
             {generatingReport || isLoading ? 'Generating...' : 'Generate Report'}
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       {/* IPIP Scores Section */}
       {ipipScores && (
-        <YStack gap="$4">
+        <Stack gap="$4">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Personality Traits (Big Five)
           </Text>
-          <YStack gap="$4">
+          <Stack gap="$4">
             {Object.entries(results).map(([domain, domainResult]) => {
               const domainKey = domain as keyof typeof results
               const score = ipipScores[domainKey]
               if (!score) return null
 
               return (
-                <YStack
+                <Stack
                   key={domain}
                   gap="$3"
                   padding="$4"
@@ -155,11 +155,11 @@ export function ResultsStep({
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <XStack justifyContent="space-between" alignItems="center">
+                  <Row justifyContent="space-between" alignItems="center">
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       {domainResult.title}
                     </Text>
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <Text fontSize="$4" color="$color11">
                         Score: {score.score}
                       </Text>
@@ -176,34 +176,34 @@ export function ResultsStep({
                       >
                         ({score.result})
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                   <Text fontSize="$3" color="$color11">
                     {domainResult.summary}
                   </Text>
-                  <YStack gap="$2" marginTop="$2">
+                  <Stack gap="$2" marginTop="$2">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Your Result:
                     </Text>
                     <Text fontSize="$3" color="$color11" lineHeight="$4">
                       {domainResult.results[score.result].text}
                     </Text>
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* No Results State */}
       {!ipipScores && !hasReport && (
-        <YStack gap="$4" alignItems="center" padding="$8">
+        <Stack gap="$4" alignItems="center" padding="$8">
           <Text fontSize="$5" color="$color11" style={{ textAlign: 'center' }}>
             Complete the assessment to see your results.
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

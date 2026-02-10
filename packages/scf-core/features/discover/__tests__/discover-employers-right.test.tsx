@@ -241,7 +241,7 @@ describe('DiscoverEmployersRight - Chip Functionality', () => {
     expect(wrapper).toHaveAttribute('cursor', 'not-allowed')
   })
 
-  it('wraps chips correctly in XStack with flexWrap', () => {
+  it('wraps chips correctly in Row with flexWrap', () => {
     render(
       renderChipsSection({
         selectedIndustries: ['Construction', 'Manufacturing', 'Technology'],

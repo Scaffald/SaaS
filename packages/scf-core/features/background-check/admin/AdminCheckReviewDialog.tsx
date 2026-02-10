@@ -1,12 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, Dialog } from '@unicornlove/ui'
+import { Button, Dialog } from '@unicornlove/beyond-ui'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import {
   Input,
   Label,
@@ -15,9 +15,9 @@ import {
   Switch,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { CheckProgressTracker } from '../components/CheckProgressTracker'
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -119,7 +119,7 @@ export function AdminCheckReviewDialog({
   onOpenChange,
   onUpdated,
 }: AdminCheckReviewDialogProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
   const checkId = check?.id ?? null
 
@@ -169,9 +169,10 @@ export function AdminCheckReviewDialog({
 
   const mutation = api.backgroundChecks.adminUpdateStatus.useMutation({
     onSuccess: async () => {
-      toast.show('Background check updated', {
-        message: 'Status changes have been saved and notifications queued.',
-      })
+      toast.show({
+          title: 'Background check updated',
+          message: 'Status changes have been saved and notifications queued.',
+        })
       await Promise.all([
         utils.backgroundChecks.adminListChecks.invalidate(),
         utils.backgroundChecks.adminListDisputes.invalidate(),
@@ -184,10 +185,11 @@ export function AdminCheckReviewDialog({
       onUpdated()
     },
     onError: (error: unknown) => {
-      toast.show('Unable to update background check', {
-        message: error instanceof Error ? error.message : 'Please try again shortly.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Unable to update background check',
+          message: error instanceof Error ? error.message : 'Please try again shortly.',
+          variant: 'error',
+        })
     },
     onSettled: () => {
       setIsSubmitting(false)
@@ -232,9 +234,10 @@ export function AdminCheckReviewDialog({
         },
         {
           onSuccess: async () => {
-            toast.show('Privacy settings updated', {
-              message: 'Visibility preferences have been saved.',
-            })
+            toast.show({
+          title: 'Privacy settings updated',
+          message: 'Visibility preferences have been saved.',
+        })
             await utils.backgroundChecks.adminGetCheck.invalidate({
               background_check_id: detailedCheck.id,
             })
@@ -242,10 +245,11 @@ export function AdminCheckReviewDialog({
           onError: (error: unknown) => {
             setSharePublicly(previousShare)
             setSharedOrganizations(previousOrgIds)
-            toast.show('Unable to update privacy settings', {
-              message: error instanceof Error ? error.message : 'Please try again shortly.',
-              type: 'error',
-            })
+            toast.show({
+          title: 'Unable to update privacy settings',
+          message: error instanceof Error ? error.message : 'Please try again shortly.',
+          variant: 'error',
+        })
           },
         }
       )
@@ -275,16 +279,18 @@ export function AdminCheckReviewDialog({
         { document_id: documentId },
         {
           onSuccess: ({ signedUrl }: { signedUrl: string }) => {
-            toast.show('Document ready', {
-              message: 'Opening the document in a new window.',
-            })
+            toast.show({
+          title: 'Document ready',
+          message: 'Opening the document in a new window.',
+        })
             openSignedUrl(signedUrl)
           },
           onError: (error: unknown) => {
-            toast.show('Unable to open document', {
-              message: error instanceof Error ? error.message : 'Please try again shortly.',
-              type: 'error',
-            })
+            toast.show({
+          title: 'Unable to open document',
+          message: error instanceof Error ? error.message : 'Please try again shortly.',
+          variant: 'error',
+        })
           },
         }
       )
@@ -338,8 +344,8 @@ export function AdminCheckReviewDialog({
           exitStyle={{ opacity: 0, scale: 0.95 }}
           style={{ width: '96%', maxWidth: 780, maxHeight: '85%' }}
         >
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
               <Dialog.Title fontSize="$6" fontWeight="700">
                 Review background check
               </Dialog.Title>
@@ -348,23 +354,23 @@ export function AdminCheckReviewDialog({
                   Close
                 </Button>
               </Dialog.Close>
-            </XStack>
+            </Row>
 
             {!checkId ? (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
+              <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Text fontSize="$3" color="$color10">
                   Select a background check to review the full details.
                 </Text>
-              </YStack>
+              </Stack>
             ) : detailQuery.isLoading || detailQuery.isFetching ? (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
+              <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Spinner size="large" />
                 <Text fontSize="$3" color="$color10">
                   Loading background check…
                 </Text>
-              </YStack>
+              </Stack>
             ) : detailQuery.isError ? (
-              <YStack
+              <Stack
                 gap="$3"
                 padding="$4"
                 backgroundColor="$color2"
@@ -376,22 +382,22 @@ export function AdminCheckReviewDialog({
                   We couldn't load this background check. Please try again.
                 </Text>
                 <Button size="$3" variant="outlined" onPress={() => detailQuery.refetch()}>
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <RefreshCcw size={16} />
                     <Text fontSize="$2">Retry</Text>
-                  </XStack>
+                  </Row>
                 </Button>
-              </YStack>
+              </Stack>
             ) : !detailedCheck ? (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
+              <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Spinner size="large" />
                 <Text fontSize="$3" color="$color10">
                   Preparing detailed background check information…
                 </Text>
-              </YStack>
+              </Stack>
             ) : (
-              <YStack gap="$4">
-                <YStack
+              <Stack gap="$4">
+                <Stack
                   gap="$3"
                   padding="$3"
                   backgroundColor="$color2"
@@ -399,7 +405,7 @@ export function AdminCheckReviewDialog({
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       {workerName}
                     </Text>
@@ -413,8 +419,8 @@ export function AdminCheckReviewDialog({
                         Organization: {organizationName}
                       </Text>
                     ) : null}
-                  </YStack>
-                  <XStack gap="$3" flexWrap="wrap">
+                  </Stack>
+                  <Row gap="$3" flexWrap="wrap">
                     <Text fontSize="$2" color="$color10">
                       Package:{' '}
                       <Text fontWeight="600" color="$color12">
@@ -441,9 +447,9 @@ export function AdminCheckReviewDialog({
                         Expires: {formatDateTime(detailedCheck.expires_at)}
                       </Text>
                     ) : null}
-                  </XStack>
+                  </Row>
                   {statusMeta && statusColors ? (
-                    <XStack
+                    <Row
                       paddingHorizontal="$3"
                       paddingVertical="$1"
                       backgroundColor={statusColors.background}
@@ -458,9 +464,9 @@ export function AdminCheckReviewDialog({
                       <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
                         {statusMeta.label}
                       </Text>
-                    </XStack>
+                    </Row>
                   ) : null}
-                </YStack>
+                </Stack>
 
                 <CheckProgressTracker
                   status={detailedCheck.status}
@@ -477,8 +483,8 @@ export function AdminCheckReviewDialog({
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <YStack gap="$1">
+                <Stack gap="$3">
+                  <Stack gap="$1">
                     <Label>Status</Label>
                     <ResponsiveSelect
                       value={status}
@@ -493,9 +499,9 @@ export function AdminCheckReviewDialog({
                         }
                       })}
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Label htmlFor="admin-check-summary">Summary</Label>
                     <TextArea
                       id="admin-check-summary"
@@ -504,9 +510,9 @@ export function AdminCheckReviewDialog({
                       onChangeText={setSummary}
                       placeholder="Provide a concise summary of the findings and decision."
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Label htmlFor="admin-check-notes">Internal notes</Label>
                     <TextArea
                       id="admin-check-notes"
@@ -515,9 +521,9 @@ export function AdminCheckReviewDialog({
                       onChangeText={setNotes}
                       placeholder="Optional internal notes. These are stored with the status history."
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Label htmlFor="admin-check-expires">Expiration (UTC)</Label>
                     <Input
                       id="admin-check-expires"
@@ -528,12 +534,12 @@ export function AdminCheckReviewDialog({
                     <Text fontSize="$1" color="$color9">
                       Leave blank to clear expiration.
                     </Text>
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
+                <Stack gap="$3">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Provider summary
                   </Text>
@@ -552,31 +558,31 @@ export function AdminCheckReviewDialog({
                     editable={false}
                     backgroundColor="$color2"
                   />
-                </YStack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
+                <Stack gap="$3">
+                  <Row justifyContent="space-between" alignItems="center">
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       Supporting documents
                     </Text>
                     <Text fontSize="$2" color="$color10">
                       {documents.length} {documents.length === 1 ? 'document' : 'documents'}
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {documents.length === 0 ? (
                     <Text fontSize="$2" color="$color10">
                       No documents uploaded for this background check.
                     </Text>
                   ) : (
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       {documents.map((document) => {
                         const isDocumentLoading =
                           isDownloadingDocument && downloadingDocumentId === document.id
                         return (
-                          <XStack
+                          <Row
                             key={document.id}
                             justifyContent="space-between"
                             alignItems="center"
@@ -587,21 +593,21 @@ export function AdminCheckReviewDialog({
                             borderColor="$borderColor"
                             gap="$3"
                           >
-                            <YStack gap="$1" flex={1}>
+                            <Stack gap="$1" flex={1}>
                               <Text fontSize="$3" fontWeight="500" color="$color12">
                                 {document.file_name ?? document.document_type ?? 'Document'}
                               </Text>
                               <Text fontSize="$2" color="$color10">
                                 Uploaded {formatDateTime(document.uploaded_at)}
                               </Text>
-                            </YStack>
+                            </Stack>
                             <Button
                               size="$2"
                               variant="outlined"
                               disabled={isDocumentLoading}
                               onPress={() => handleDownloadDocument(document.id)}
                             >
-                              <XStack gap="$2" alignItems="center">
+                              <Row gap="$2" alignItems="center">
                                 {isDocumentLoading ? (
                                   <Spinner size="small" />
                                 ) : (
@@ -610,23 +616,23 @@ export function AdminCheckReviewDialog({
                                 <Text fontSize="$2">
                                   {isDocumentLoading ? 'Preparing…' : 'View'}
                                 </Text>
-                              </XStack>
+                              </Row>
                             </Button>
-                          </XStack>
+                          </Row>
                         )
                       })}
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
+                <Stack gap="$3">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Privacy controls
                   </Text>
 
-                  <YStack
+                  <Stack
                     gap="$3"
                     padding="$3"
                     backgroundColor="$color2"
@@ -634,15 +640,15 @@ export function AdminCheckReviewDialog({
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <XStack justifyContent="space-between" alignItems="center">
-                      <YStack gap="$1" flex={1} paddingRight="$3">
+                    <Row justifyContent="space-between" alignItems="center">
+                      <Stack gap="$1" flex={1} paddingRight="$3">
                         <Text fontSize="$3" fontWeight="500" color="$color12">
                           Show verified badge
                         </Text>
                         <Text fontSize="$2" color="$color10">
                           Allow organizations to see that this worker's background check is current.
                         </Text>
-                      </YStack>
+                      </Stack>
                       <Switch
                         size="$3"
                         checked={sharePublicly}
@@ -653,15 +659,15 @@ export function AdminCheckReviewDialog({
                       >
                         <Switch.Thumb />
                       </Switch>
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
 
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Shared with organizations
                     </Text>
                     {sharedOrganizations.length === 0 ? (
-                      <YStack
+                      <Stack
                         padding="$3"
                         backgroundColor="$color2"
                         borderRadius="$3"
@@ -671,11 +677,11 @@ export function AdminCheckReviewDialog({
                         <Text fontSize="$2" color="$color10">
                           No organizations currently have access to this background check.
                         </Text>
-                      </YStack>
+                      </Stack>
                     ) : (
-                      <YStack gap="$2">
+                      <Stack gap="$2">
                         {sharedOrganizations.map((organizationId) => (
-                          <XStack
+                          <Row
                             key={organizationId}
                             justifyContent="space-between"
                             alignItems="center"
@@ -701,23 +707,23 @@ export function AdminCheckReviewDialog({
                             >
                               Revoke
                             </Button>
-                          </XStack>
+                          </Row>
                         ))}
-                      </YStack>
+                      </Stack>
                     )}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
 
                 {disputes.length > 0 ? (
                   <>
                     <Separator />
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       <Text fontSize="$3" fontWeight="600" color="$color12">
                         Disputes
                       </Text>
-                      <YStack gap="$2">
+                      <Stack gap="$2">
                         {disputes.map((dispute) => (
-                          <YStack
+                          <Stack
                             key={dispute.id}
                             gap="$1"
                             padding="$3"
@@ -747,21 +753,21 @@ export function AdminCheckReviewDialog({
                                 Details: {dispute.dispute_details}
                               </Text>
                             ) : null}
-                          </YStack>
+                          </Stack>
                         ))}
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
                   </>
                 ) : null}
 
                 {statusHistory.length > 0 ? (
                   <>
                     <Separator />
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       <Text fontSize="$3" fontWeight="600" color="$color12">
                         Status history
                       </Text>
-                      <YStack gap="$2" overflow="scroll" style={{ maxHeight: 200 }}>
+                      <Stack gap="$2" overflow="scroll" style={{ maxHeight: 200 }}>
                         {statusHistory
                           .slice()
                           .reverse()
@@ -770,7 +776,7 @@ export function AdminCheckReviewDialog({
                               ? getStatusMetadata(entry.status as BackgroundCheckStatus)
                               : null
                             return (
-                              <YStack
+                              <Stack
                                 key={`${entry?.occurred_at ?? index}`}
                                 borderWidth={1}
                                 borderColor="$borderColor"
@@ -792,19 +798,19 @@ export function AdminCheckReviewDialog({
                                     Notes: {entry.notes}
                                   </Text>
                                 ) : null}
-                              </YStack>
+                              </Stack>
                             )
                           })}
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
                   </>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
 
             <Separator />
 
-            <XStack gap="$2" justifyContent="flex-end">
+            <Row gap="$2" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button size="$3" variant="outlined" disabled={isSubmitting}>
                   Cancel
@@ -812,16 +818,16 @@ export function AdminCheckReviewDialog({
               </Dialog.Close>
               <Button size="$3" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
                 {isSubmitting ? (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <Spinner size="small" color="$color1" />
                     <Text color="$color1">Saving…</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   'Save changes'
                 )}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

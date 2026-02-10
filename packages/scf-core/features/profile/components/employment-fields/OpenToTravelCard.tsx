@@ -1,7 +1,7 @@
-import { ToggleCard } from '@unicornlove/ui'
-import type { ToggleCardProps } from '@unicornlove/ui'
+import { ToggleCard } from '@unicornlove/beyond-ui'
+import type { ToggleCardProps } from '@unicornlove/beyond-ui'
 import { Plane } from '@tamagui/lucide-icons'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@unicornlove/beyond-ui'
 import { MaximumTravelDistanceCard } from './MaximumTravelDistanceCard'
 
 export interface OpenToTravelCardProps
@@ -47,7 +47,7 @@ export function OpenToTravelCard({
       disabled={disabled}
       expandedContent={
         checked && onTravelDistanceChange ? (
-          <YStack gap="$2" paddingTop="$3">
+          <Stack gap="$2" paddingTop="$3">
             <MaximumTravelDistanceCard
               value={travelDistanceValue}
               onValueChange={onTravelDistanceChange}
@@ -56,7 +56,7 @@ export function OpenToTravelCard({
               step={travelDistanceStep}
               disabled={disabled}
             />
-          </YStack>
+          </Stack>
         ) : undefined
       }
       {...toggleCardProps}

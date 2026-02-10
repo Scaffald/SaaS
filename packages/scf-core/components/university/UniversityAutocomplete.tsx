@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { SizableText, YStack } from '@unicornlove/ui'
-import { SearchSelect, type SearchSelectOption } from '@unicornlove/ui'
+import { SizableText, Stack } from '@unicornlove/beyond-ui'
+import { SearchSelect, type SearchSelectOption } from '@unicornlove/beyond-ui'
 
 export interface University {
   id: string
@@ -98,7 +98,7 @@ export function UniversityAutocomplete({
   // Custom render function for university results
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
-      <YStack gap="$1" flex={1} alignItems="flex-start">
+      <Stack gap="$1" flex={1} alignItems="flex-start">
         <SizableText fontSize="$4" color="$color12" numberOfLines={1} fontWeight="600">
           {option.raw.name}
         </SizableText>
@@ -107,7 +107,7 @@ export function UniversityAutocomplete({
             {option.raw.country}
           </SizableText>
         )}
-      </YStack>
+      </Stack>
     ),
     []
   )

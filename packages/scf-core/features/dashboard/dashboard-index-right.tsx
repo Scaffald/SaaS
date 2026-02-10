@@ -3,13 +3,13 @@ import {
   TeamInvitationsWidget,
 } from '@scf/core/features/dashboard/components'
 import { NewsWidget } from '@scf/core/features/news'
-import { DashboardWidget, StackedCards } from '@unicornlove/ui'
-import { H4, Text, YStack } from '@unicornlove/ui'
+import { DashboardWidget, StackedCards } from '@unicornlove/beyond-ui'
+import { H4, Text, Stack } from '@unicornlove/beyond-ui'
 
 const profileTipCards = [
   {
     children: (
-      <YStack gap="$3">
+      <Stack gap="$3">
         <H4 color="$color">📸 Add a Profile Photo</H4>
         <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
           Did you know that profiles with a photo are dramatically more visible?
@@ -19,12 +19,12 @@ const profileTipCards = [
           more messages. A simple upload could make the difference between getting passed over or
           getting noticed.
         </Text>
-      </YStack>
+      </Stack>
     ),
   },
   {
     children: (
-      <YStack gap="$3">
+      <Stack gap="$3">
         <H4 color="$color">⏱ First Impressions</H4>
         <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
           Make Every Second Count
@@ -34,12 +34,12 @@ const profileTipCards = [
           scan. Having your basic details like name, email, and phone filled out ensures they don't
           miss something important about you in those crucial first moments.
         </Text>
-      </YStack>
+      </Stack>
     ),
   },
   {
     children: (
-      <YStack gap="$3">
+      <Stack gap="$3">
         <H4 color="$color">🎖 Verified Credentials</H4>
         <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
           Verified Details Build Trust
@@ -50,14 +50,14 @@ const profileTipCards = [
           employment by about 6 percentage points compared to those who didn't. Trust really does
           make a measurable difference.
         </Text>
-      </YStack>
+      </Stack>
     ),
   },
 ]
 
 export function DashboardIndexRight() {
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <ProfileActivityWidget />
       <StackedCards
         cards={profileTipCards}
@@ -68,6 +68,6 @@ export function DashboardIndexRight() {
       />
       <TeamInvitationsWidget />
       <NewsWidget industry="construction" maxItems={10} />
-    </YStack>
+    </Stack>
   )
 }

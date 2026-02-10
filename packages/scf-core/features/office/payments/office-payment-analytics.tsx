@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type PaymentAnalytics = inferRouterOutputs<AppRouter>['payments']['adminGetAnalytics']
 
@@ -118,16 +118,16 @@ export function OfficePaymentAnalytics() {
   const isLoading = analyticsQuery.isLoading
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
+    <Stack flex={1} padding="$4" gap="$4">
+      <Row justifyContent="space-between" alignItems="center">
+        <Stack>
           <Text fontSize="$7" fontWeight="700">
             Payment Analytics
           </Text>
           <Text color="$color10" fontSize="$3">
             Monitor payment transactions, revenue, and failure rates across all services.
           </Text>
-        </YStack>
+        </Stack>
         <Button
           size="$3"
           variant="outlined"
@@ -137,16 +137,16 @@ export function OfficePaymentAnalytics() {
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
       {isLoading ? (
-        <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+        <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
           <Spinner size="large" />
           <Text color="$color10">Loading payment metrics…</Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap="$3" flexWrap="wrap">
             {summaryCards.map((card) => (
               <Card
                 key={card.label}
@@ -157,7 +157,7 @@ export function OfficePaymentAnalytics() {
                 width="100%"
                 maxWidth={280}
               >
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text color="$color10" fontSize="$2">
                     {card.label}
                   </Text>
@@ -169,49 +169,49 @@ export function OfficePaymentAnalytics() {
                       {card.subtext}
                     </Text>
                   ) : null}
-                </YStack>
+                </Stack>
               </Card>
             ))}
-          </XStack>
+          </Row>
 
           {typeBreakdown.length > 0 && (
             <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontWeight="600" fontSize="$4">
                   Revenue by Transaction Type
                 </Text>
-                <YStack gap="$3">
+                <Stack gap="$3">
                   {typeBreakdown.map((entry) => (
-                    <YStack key={entry.type} gap="$1">
-                      <XStack justifyContent="space-between" alignItems="center">
+                    <Stack key={entry.type} gap="$1">
+                      <Row justifyContent="space-between" alignItems="center">
                         <Text fontWeight="600">{entry.label}</Text>
                         <Text color="$color10" fontSize="$2">
                           {formatCurrency(entry.revenue)} · {entry.count} transactions
                         </Text>
-                      </XStack>
-                      <XStack gap="$2">
+                      </Row>
+                      <Row gap="$2">
                         <Text fontSize="$2" color="$color10">
                           {entry.succeeded} succeeded, {entry.failed} failed
                         </Text>
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </Card>
           )}
 
           {failedQueue.length > 0 && (
             <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="$4">
-              <YStack gap="$3">
-                <XStack justifyContent="space-between" alignItems="center">
+              <Stack gap="$3">
+                <Row justifyContent="space-between" alignItems="center">
                   <Text fontWeight="600" fontSize="$4" color="$red11">
                     Failed Transactions Queue
                   </Text>
                   <Text color="$red11" fontSize="$3">
                     {failedQueue.length} failed
                   </Text>
-                </XStack>
+                </Row>
                 <DataTable
                   columns={columns}
                   data={failedQueue}
@@ -219,11 +219,11 @@ export function OfficePaymentAnalytics() {
                   pageSize={10}
                   emptyMessage="No failed transactions"
                 />
-              </YStack>
+              </Stack>
             </Card>
           )}
         </>
       )}
-    </YStack>
+    </Stack>
   )
 }

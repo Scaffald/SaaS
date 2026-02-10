@@ -1,6 +1,6 @@
 import { Award, Search } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
-import { Card, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Certification {
   id: string
@@ -114,7 +114,7 @@ export function CertificationSearch({
     ]
     const bgColor = (colors[depth] || '$gray9') as '$blue9' | '$green9' | '$purple9' | '$gray9'
     return (
-      <XStack
+      <Row
         backgroundColor={bgColor}
         paddingHorizontal="$2"
         paddingVertical="$0.5"
@@ -125,12 +125,12 @@ export function CertificationSearch({
         <Text color="$background" fontSize="$1" fontWeight="600">
           {labels[depth] || `Depth ${depth}`}
         </Text>
-      </XStack>
+      </Row>
     )
   }
 
   return (
-    <YStack gap="$2" position="relative">
+    <Stack gap="$2" position="relative">
       <Text fontWeight="600" fontSize="$4">
         Search Certifications
       </Text>
@@ -164,11 +164,11 @@ export function CertificationSearch({
         >
           <ScrollView height={400}>
             {isLoading ? (
-              <YStack padding="$4" alignItems="center" gap="$2">
+              <Stack padding="$4" alignItems="center" gap="$2">
                 <Text color="$color11">Searching...</Text>
-              </YStack>
+              </Stack>
             ) : filteredResults.length === 0 ? (
-              <YStack padding="$4" alignItems="center" gap="$2">
+              <Stack padding="$4" alignItems="center" gap="$2">
                 {searchQuery.length > 0 ? (
                   <>
                     <Search size={32} color="$color11" />
@@ -186,13 +186,13 @@ export function CertificationSearch({
                     </Text>
                   </>
                 )}
-              </YStack>
+              </Stack>
             ) : (
-              <YStack>
+              <Stack>
                 {/* Depth 0 - Top Level */}
                 {groupedResults.depth0.length > 0 && (
-                  <YStack>
-                    <XStack
+                  <Stack>
+                    <Row
                       padding="$3"
                       backgroundColor="$color3"
                       borderBottomWidth={1}
@@ -205,7 +205,7 @@ export function CertificationSearch({
                       <Text fontWeight="600" fontSize="$3" color="$color11">
                         Top Level Categories
                       </Text>
-                    </XStack>
+                    </Row>
                     {groupedResults.depth0.map((cert) => (
                       <Card
                         key={cert.id}
@@ -219,28 +219,28 @@ export function CertificationSearch({
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-0"
                       >
-                        <YStack gap="$2">
-                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                        <Stack gap="$2">
+                          <Row gap="$2" alignItems="center" flexWrap="wrap">
                             <Text fontWeight="600" flex={1}>
                               {cert.title}
                             </Text>
                             <DepthBadge depth={cert.depth} />
-                          </XStack>
+                          </Row>
                           {cert.description && (
                             <Text fontSize="$2" color="$color11" numberOfLines={2}>
                               {cert.description}
                             </Text>
                           )}
-                        </YStack>
+                        </Stack>
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
 
                 {/* Depth 1 - Categories grouped by parent */}
                 {Object.entries(groupedResults.depth1ByParent).map(([parentId, certs]) => (
-                  <YStack key={parentId}>
-                    <XStack
+                  <Stack key={parentId}>
+                    <Row
                       padding="$3"
                       backgroundColor="$color3"
                       borderBottomWidth={1}
@@ -255,7 +255,7 @@ export function CertificationSearch({
                           ? 'Categories'
                           : `${getParentTitle(parentId)} > Categories`}
                       </Text>
-                    </XStack>
+                    </Row>
                     {certs.map((cert) => (
                       <Card
                         key={cert.id}
@@ -269,28 +269,28 @@ export function CertificationSearch({
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-1"
                       >
-                        <YStack gap="$2">
-                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                        <Stack gap="$2">
+                          <Row gap="$2" alignItems="center" flexWrap="wrap">
                             <Text fontWeight="600" flex={1}>
                               {cert.title}
                             </Text>
                             <DepthBadge depth={cert.depth} />
-                          </XStack>
+                          </Row>
                           {cert.description && (
                             <Text fontSize="$2" color="$color11" numberOfLines={2}>
                               {cert.description}
                             </Text>
                           )}
-                        </YStack>
+                        </Stack>
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 ))}
 
                 {/* Depth 2 - Specific certifications grouped by parent */}
                 {Object.entries(groupedResults.depth2ByParent).map(([parentId, certs]) => (
-                  <YStack key={parentId}>
-                    <XStack
+                  <Stack key={parentId}>
+                    <Row
                       padding="$3"
                       backgroundColor="$color3"
                       borderBottomWidth={1}
@@ -305,7 +305,7 @@ export function CertificationSearch({
                           ? 'Specific Certifications'
                           : `${getParentTitle(parentId)} > Certifications`}
                       </Text>
-                    </XStack>
+                    </Row>
                     {certs.map((cert) => {
                       // Build hierarchy path
                       const hierarchyPath = cert.parent_title
@@ -325,34 +325,34 @@ export function CertificationSearch({
                           onPress={() => handleSelect(cert)}
                           testID="cert-search-card-2"
                         >
-                          <YStack gap="$2">
-                            <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                              <YStack flex={1} gap="$1">
+                          <Stack gap="$2">
+                            <Row gap="$2" alignItems="center" flexWrap="wrap">
+                              <Stack flex={1} gap="$1">
                                 <Text fontWeight="600">{cert.title}</Text>
                                 {cert.parent_title && (
                                   <Text fontSize="$2" color="$color10">
                                     {hierarchyPath}
                                   </Text>
                                 )}
-                              </YStack>
+                              </Stack>
                               <DepthBadge depth={cert.depth} />
-                            </XStack>
+                            </Row>
                             {cert.description && (
                               <Text fontSize="$2" color="$color11" numberOfLines={2}>
                                 {cert.description}
                               </Text>
                             )}
-                          </YStack>
+                          </Stack>
                         </Card>
                       )
                     })}
-                  </YStack>
+                  </Stack>
                 ))}
-              </YStack>
+              </Stack>
             )}
           </ScrollView>
         </Card>
       )}
-    </YStack>
+    </Stack>
   )
 }

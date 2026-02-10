@@ -1,10 +1,10 @@
-import { DashboardWidget, spacing, Text, YStack } from '@unicornlove/ui'
+import { DashboardWidget, spacing, Text, Stack } from '@unicornlove/beyond-ui'
 
 export const AssessmentsLandingRight = () => {
   return (
     <DashboardWidget gap={spacing.md} elevated>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
+      <Stack gap={spacing.md}>
+        <Stack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Why assessments matter
           </Text>
@@ -12,10 +12,10 @@ export const AssessmentsLandingRight = () => {
             Your answers create a shared language for coaches, managers, and teammates to understand
             where you are today and how to help you grow.
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack gap={spacing.sm}>
-          <YStack gap={spacing.xs}>
+        <Stack gap={spacing.sm}>
+          <Stack gap={spacing.xs}>
             <Text fontSize="$4" fontWeight="600" color="$color12">
               Build a complete profile
             </Text>
@@ -23,9 +23,9 @@ export const AssessmentsLandingRight = () => {
               Each assessment fills in part of your strengths map—from how you process feedback to
               which environments fuel your energy.
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap={spacing.xs}>
+          <Stack gap={spacing.xs}>
             <Text fontSize="$4" fontWeight="600" color="$color12">
               Drive better matches
             </Text>
@@ -33,9 +33,9 @@ export const AssessmentsLandingRight = () => {
               The more signal we have, the better we can tailor role recommendations, coaching
               plans, and development sprints that resonate with you.
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap={spacing.xs}>
+          <Stack gap={spacing.xs}>
             <Text fontSize="$4" fontWeight="600" color="$color12">
               Share actionable insights
             </Text>
@@ -43,14 +43,14 @@ export const AssessmentsLandingRight = () => {
               Summaries flow into your dossier and team dashboards so collaborators know how to
               support you before the next conversation.
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         <Text fontSize="$2" color="$color11">
           Tip: You can retake most assessments anytime your goals change—your latest results will be
           saved and compared with your historical trends.
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

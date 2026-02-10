@@ -20,14 +20,14 @@ import {
   LocationListInput,
   SkeletonForm,
   ToggleCard,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Label, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { AnimatePresence, Input, Label, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,
@@ -114,12 +114,12 @@ function MultiSelectToggleField({
       onCheckedChange={(checked) => handleToggleChange(Boolean(checked))}
       testID={testID}
       expandedContent={
-        <YStack gap="$2" paddingTop="$2">
+        <Stack gap="$2" paddingTop="$2">
           {options.map((option) => {
             const checkboxId = `${name}-${option.replace(/\s+/g, '-').toLowerCase()}`
             const isChecked = selectedValues.includes(option)
             return (
-              <XStack key={option} gap="$3" alignItems="center">
+              <Row key={option} gap="$3" alignItems="center">
                 <CustomCheckbox
                   aria-label={option}
                   checked={isChecked}
@@ -129,10 +129,10 @@ function MultiSelectToggleField({
                 <Label cursor="pointer" onPress={() => handleOptionChange(option, !isChecked)}>
                   {option}
                 </Label>
-              </XStack>
+              </Row>
             )
           })}
-        </YStack>
+        </Stack>
       }
     />
   )
@@ -146,7 +146,7 @@ export function ProfileEmploymentLeft() {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useContext()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
@@ -179,17 +179,19 @@ export function ProfileEmploymentLeft() {
         utils.profile.employment.getEmployment.setData(undefined, context.previousEmployment)
       }
       failProfileSync()
-      toast.show('Error', {
-        message:
-          error instanceof Error
+      toast.show({
+          title: 'Error',
+          message: error instanceof Error
             ? error.message
             : 'Failed to save employment preferences. Please try again.',
-      })
+          variant: 'error',
+        })
     },
     onSuccess: async () => {
-      toast.show('Employment Updated', {
-        message: 'Your employment preferences have been saved successfully!',
-      })
+      toast.show({
+          title: 'Employment Updated',
+          message: 'Your employment preferences have been saved successfully!',
+        })
       await utils.profile.employment.getEmployment.invalidate()
     },
     onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
@@ -289,9 +291,11 @@ export function ProfileEmploymentLeft() {
         type: 'manual',
         message: 'Please select at least one license class',
       })
-      toast.show('Validation Error', {
-        message: 'Please select at least one license class',
-      })
+      toast.show({
+          title: 'Validation Error',
+          message: 'Please select at least one license class',
+          variant: 'error',
+        })
       return
     }
 
@@ -304,9 +308,11 @@ export function ProfileEmploymentLeft() {
         type: 'manual',
         message: 'Please select a travel distance',
       })
-      toast.show('Validation Error', {
-        message: 'Please select a travel distance',
-      })
+      toast.show({
+          title: 'Validation Error',
+          message: 'Please select a travel distance',
+          variant: 'error',
+        })
       return
     }
 
@@ -326,9 +332,11 @@ export function ProfileEmploymentLeft() {
   const onFormError = (formErrors: typeof errors) => {
     console.error('❌ Form validation failed!')
     console.error('Validation errors:', JSON.stringify(formErrors, null, 2))
-    toast.show('Validation Error', {
-      message: 'Please check the form for errors',
-    })
+    toast.show({
+          title: 'Validation Error',
+          message: 'Please check the form for errors',
+          variant: 'error',
+        })
   }
 
   // Debug: Log errors whenever they change
@@ -340,19 +348,19 @@ export function ProfileEmploymentLeft() {
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         <SkeletonForm fields={5} />
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack>
+    <Stack>
       <DashboardWidget>
-        <YStack gap="$4" padding="$4" flex={1}>
+        <Stack gap="$4" padding="$4" flex={1}>
           {/* Debug: Show validation errors */}
           {Object.keys(errors).length > 0 && (
-            <YStack
+            <Stack
               backgroundColor="$red2"
               padding="$3"
               borderRadius="$4"
@@ -367,18 +375,18 @@ export function ProfileEmploymentLeft() {
                   • {key}: {error?.message?.toString() || 'Invalid value'}
                 </Text>
               ))}
-            </YStack>
+            </Stack>
           )}
 
-          <YStack gap="$4">
+          <Stack gap="$4">
             {/* Hourly Rate */}
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Hourly Rate ($)</Text>
               <Controller
                 name="hourly_rate"
                 control={control}
                 render={({ field }) => (
-                  <XStack gap="$3" alignItems="center">
+                  <Row gap="$3" alignItems="center">
                     <Input
                       flex={1}
                       placeholder="Enter your hourly rate"
@@ -390,7 +398,7 @@ export function ProfileEmploymentLeft() {
                       keyboardType="numeric"
                       borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                     />
-                  </XStack>
+                  </Row>
                 )}
               />
               {errors.hourly_rate && (
@@ -398,10 +406,10 @@ export function ProfileEmploymentLeft() {
                   {errors.hourly_rate.message}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             {/* Preferred Work Locations */}
-            <YStack gap="$3" paddingVertical="$3">
+            <Stack gap="$3" paddingVertical="$3">
               <Text fontWeight="600">Preferred Work Locations</Text>
               <Controller
                 name="preferred_work_locations"
@@ -418,10 +426,10 @@ export function ProfileEmploymentLeft() {
                   />
                 )}
               />
-            </YStack>
+            </Stack>
 
             {/* Travel Preferences */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Travel Preferences</Text>
               <Controller
                 name="open_to_travel"
@@ -443,10 +451,10 @@ export function ProfileEmploymentLeft() {
                   {errors.travel_distance_miles.message?.toString()}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             {/* Residency */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Residency</Text>
               <Controller
                 name="us_resident"
@@ -468,7 +476,7 @@ export function ProfileEmploymentLeft() {
                   />
                 )}
               />
-            </YStack>
+            </Stack>
             {errors.us_resident && (
               <Text color="$red10" fontSize="$2">
                 {errors.us_resident.message?.toString()}
@@ -476,7 +484,7 @@ export function ProfileEmploymentLeft() {
             )}
 
             {/* Drivers License */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Driver's License</Text>
               <MultiSelectToggleField
                 control={control}
@@ -495,10 +503,10 @@ export function ProfileEmploymentLeft() {
                   {errors.drivers_license_classes.message?.toString()}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             {/* Military Status */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Military Status</Text>
               <MultiSelectToggleField
                 control={control}
@@ -509,10 +517,10 @@ export function ProfileEmploymentLeft() {
                 options={MILITARY_STATUS_OPTIONS}
                 testID="military-status-toggle"
               />
-            </YStack>
+            </Stack>
 
             {/* Availability */}
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600">Availability</Text>
               <MultiSelectToggleField
                 control={control}
@@ -523,10 +531,10 @@ export function ProfileEmploymentLeft() {
                 options={AVAILABILITY_OPTIONS}
                 testID="availability-toggle"
               />
-            </YStack>
+            </Stack>
 
             {/* Action Buttons */}
-            <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+            <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
               <Button
                 variant="outlined"
                 disabled={!isDirty}
@@ -559,7 +567,7 @@ export function ProfileEmploymentLeft() {
                 </AnimatePresence>
                 <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
               </Button>
-            </XStack>
+            </Row>
 
             {/* Cancel Confirmation Dialog */}
             <ConfirmationDialog
@@ -577,9 +585,9 @@ export function ProfileEmploymentLeft() {
                 }
               }}
             />
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
-    </YStack>
+    </Stack>
   )
 }

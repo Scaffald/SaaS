@@ -1,8 +1,8 @@
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete } from '@unicornlove/ui'
+import type { AddressResult } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete } from '@unicornlove/beyond-ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { AnimatePresence, Text, XStack, YStack } from '@unicornlove/ui'
+import { AnimatePresence, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type MapSearchInputProps = {
   isVisible: boolean
@@ -72,7 +72,7 @@ export const MapSearchInput = ({
   return (
     <AnimatePresence>
       {isVisible && (
-        <XStack
+        <Row
           position="absolute"
           top={100}
           left={0}
@@ -113,7 +113,7 @@ export const MapSearchInput = ({
               }}
             />
           ) : (
-            <YStack
+            <Stack
               style={{ minWidth: 250, width: '100%' }}
               backgroundColor="$background"
               padding="$4"
@@ -126,18 +126,18 @@ export const MapSearchInput = ({
               shadowRadius={12}
               gap="$2"
             >
-              <XStack alignItems="center" gap="$2">
+              <Row alignItems="center" gap="$2">
                 <AlertCircle size={18} color="$red10" />
                 <Text fontSize="$3" color="$red10" fontWeight="600">
                   Map Search Unavailable
                 </Text>
-              </XStack>
+              </Row>
               <Text fontSize="$2" color="$color10">
                 {tokenValidation.error}
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </XStack>
+        </Row>
       )}
     </AnimatePresence>
   )

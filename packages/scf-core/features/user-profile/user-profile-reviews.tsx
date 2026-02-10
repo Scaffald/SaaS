@@ -3,7 +3,7 @@ import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useRef } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface CategoryRating {
   category: string
@@ -77,10 +77,10 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   if (isLoading) {
     return (
       <Card elevate bordered>
-        <YStack gap="$4" padding="$5" alignItems="center" justifyContent="center" minHeight={400}>
+        <Stack gap="$4" padding="$5" alignItems="center" justifyContent="center" minHeight={400}>
           <Spinner size="large" />
           <Text color="$color10">Loading reviews...</Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
@@ -88,31 +88,31 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   if (!reviewsData || reviews.length === 0) {
     return (
       <Card elevate bordered>
-        <YStack gap="$4" padding="$5">
-          <XStack justifyContent="space-between" alignItems="center">
-            <XStack gap="$2" alignItems="center">
+        <Stack gap="$4" padding="$5">
+          <Row justifyContent="space-between" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Star size={24} color="$blue10" fill="$blue10" />
               <Text fontSize="$7" fontWeight="700" color="$color12">
                 Reviews & Ratings
               </Text>
-            </XStack>
+            </Row>
             {onLeaveReview && (
               <Button size="$3" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
                 Leave Review
               </Button>
             )}
-          </XStack>
-          <YStack alignItems="center" justifyContent="center" minHeight={200} gap="$3">
+          </Row>
+          <Stack alignItems="center" justifyContent="center" minHeight={200} gap="$3">
             <Text fontSize="$6" color="$color10">
               No reviews yet
             </Text>
-            <YStack alignItems="center">
+            <Stack alignItems="center">
               <Text fontSize="$4" color="$color9">
                 Be the first to leave a review for this user
               </Text>
-            </YStack>
-          </YStack>
-        </YStack>
+            </Stack>
+          </Stack>
+        </Stack>
       </Card>
     )
   }
@@ -144,31 +144,31 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" padding="$5">
+      <Stack gap="$4" padding="$5">
         {/* Header with Leave Review Button */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <XStack gap="$2" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Star size={24} color="$blue10" fill="$blue10" />
             <Text fontSize="$7" fontWeight="700" color="$color12">
               Reviews & Ratings
             </Text>
-          </XStack>
+          </Row>
           {onLeaveReview && (
             <Button size="$3" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {/* Rating Summary */}
         <Card bordered backgroundColor="$color2">
-          <YStack gap="$3" padding="$4">
-            <XStack gap="$4" alignItems="center">
-              <YStack alignItems="center">
+          <Stack gap="$3" padding="$4">
+            <Row gap="$4" alignItems="center">
+              <Stack alignItems="center">
                 <Text fontSize="$10" fontWeight="700" color="$color12">
                   {overallRating.toFixed(1)}
                 </Text>
-                <XStack gap="$1">
+                <Row gap="$1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={randomUUID()}
@@ -177,43 +177,43 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                       fill={i < Math.floor(overallRating) ? '$yellow10' : 'transparent'}
                     />
                   ))}
-                </XStack>
+                </Row>
                 <Text fontSize="$3" color="$color10">
                   {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                 </Text>
-              </YStack>
+              </Stack>
 
               {Object.keys(avgByCategory).length > 0 && (
-                <YStack flex={1} gap="$2">
+                <Stack flex={1} gap="$2">
                   {Object.entries(avgByCategory).map(([category, data]) => (
-                    <XStack key={category} gap="$2" alignItems="center">
+                    <Row key={category} gap="$2" alignItems="center">
                       <Text fontSize="$3" color="$color11" width={100} textTransform="capitalize">
                         {category}
                       </Text>
-                      <XStack
+                      <Row
                         flex={1}
                         height={6}
                         backgroundColor="$color3"
                         borderRadius="$2"
                         overflow="hidden"
                       >
-                        <XStack
+                        <Row
                           width={`${(data.sum / data.count / 5) * 100}%`}
                           backgroundColor="$yellow10"
                         />
-                      </XStack>
+                      </Row>
                       <Text fontSize="$3" color="$color10" width={30}>
                         {(data.sum / data.count).toFixed(1)}
                       </Text>
-                    </XStack>
+                    </Row>
                   ))}
-                </YStack>
+                </Stack>
               )}
-            </XStack>
+            </Row>
 
             {/* Recommend Stats */}
-            <XStack gap="$3" justifyContent="center">
-              <XStack
+            <Row gap="$3" justifyContent="center">
+              <Row
                 gap="$2"
                 alignItems="center"
                 paddingHorizontal="$3"
@@ -225,8 +225,8 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                 <Text fontSize="$4" fontWeight="600" color="$green11">
                   {recommendCount} Recommend
                 </Text>
-              </XStack>
-              <XStack
+              </Row>
+              <Row
                 gap="$2"
                 alignItems="center"
                 paddingHorizontal="$3"
@@ -238,26 +238,26 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                 <Text fontSize="$4" fontWeight="600" color="$red11">
                   {notRecommendCount} Don't Recommend
                 </Text>
-              </XStack>
-            </XStack>
-          </YStack>
+              </Row>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Reviews List */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Reviews ({totalReviews})
           </Text>
           {reviews.map((review: Review) => (
             <Card key={review.id} bordered backgroundColor="$color2">
-              <YStack gap="$3" padding="$4">
-                <XStack justifyContent="space-between" alignItems="flex-start">
-                  <YStack gap="$1">
-                    <XStack gap="$2" alignItems="center">
+              <Stack gap="$3" padding="$4">
+                <Row justifyContent="space-between" alignItems="flex-start">
+                  <Stack gap="$1">
+                    <Row gap="$2" alignItems="center">
                       <Text fontSize="$5" fontWeight="700" color="$color12">
                         Anonymous Reviewer
                       </Text>
-                      <XStack
+                      <Row
                         gap="$1"
                         alignItems="center"
                         paddingHorizontal="$2"
@@ -269,17 +269,17 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                         <Text fontSize="$1" color="$blue11" fontWeight="600">
                           VERIFIED
                         </Text>
-                      </XStack>
-                    </XStack>
-                  </YStack>
+                      </Row>
+                    </Row>
+                  </Stack>
                   <Text fontSize="$3" color="$color10">
                     {new Date(review.created_at).toLocaleDateString()}
                   </Text>
-                </XStack>
+                </Row>
 
                 {/* Overall Rating */}
                 {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                  <XStack gap="$1">
+                  <Row gap="$1">
                     {[...Array(5)].map((_, i) => {
                       const avgRating =
                         review.review_category_ratings.reduce(
@@ -295,7 +295,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                         />
                       )
                     })}
-                  </XStack>
+                  </Row>
                 )}
 
                 {/* Comment */}
@@ -307,7 +307,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
                 {/* Recommendation */}
                 {review.reaction !== null && (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     {review.reaction === 1 ? (
                       <>
                         <ThumbsUp size={16} color="$green11" />
@@ -323,13 +323,13 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                         </Text>
                       </>
                     )}
-                  </XStack>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
             </Card>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

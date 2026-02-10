@@ -1,4 +1,4 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/ui'
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/beyond-ui'
 import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
@@ -11,9 +11,9 @@ import {
   Separator,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 import type { DisputeAttachment, DisputeFormValues, DisputeReasonOption } from '../hooks/useDispute'
 
@@ -66,8 +66,8 @@ export function DisputeForm({
 
   return (
     <FormProvider {...form}>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <Stack gap="$4">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="700" color="$color12">
             Submit a dispute
           </Text>
@@ -75,7 +75,7 @@ export function DisputeForm({
             Share what needs review and, if helpful, include supporting documents so our compliance
             team can investigate quickly.
           </Text>
-        </YStack>
+        </Stack>
 
         {hasActiveDispute ? (
           <Card
@@ -101,7 +101,7 @@ export function DisputeForm({
             control={form.control}
             name="reason"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Label htmlFor="dispute-reason">What needs review?</Label>
                 <ResponsiveSelect
                   value={value || ''}
@@ -114,7 +114,7 @@ export function DisputeForm({
                     label: option.label,
                   }))}
                 />
-              </YStack>
+              </Stack>
             )}
           />
 
@@ -123,7 +123,7 @@ export function DisputeForm({
               control={form.control}
               name="otherReason"
               render={({ field: { value, onChange }, fieldState: { error } }) => (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Label htmlFor="dispute-other-reason">Describe the issue</Label>
                   <Input
                     id="dispute-other-reason"
@@ -137,7 +137,7 @@ export function DisputeForm({
                       {error.message}
                     </Text>
                   ) : null}
-                </YStack>
+                </Stack>
               )}
             />
           ) : null}
@@ -146,7 +146,7 @@ export function DisputeForm({
             control={form.control}
             name="details"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Label htmlFor="dispute-details">Explain what’s incorrect</Label>
                 <TextArea
                   id="dispute-details"
@@ -164,12 +164,12 @@ export function DisputeForm({
                     {error.message}
                   </Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
           />
         </Fieldset>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Supporting documents (optional)
           </Text>
@@ -187,7 +187,7 @@ export function DisputeForm({
             }}
           >
             {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => (
-              <YStack
+              <Stack
                 {...getRootProps()}
                 borderWidth={1}
                 borderColor={isDragActive ? '$blue8' : '$borderColor'}
@@ -217,12 +217,12 @@ export function DisputeForm({
                 <Text fontSize="$1" color="$color9">
                   Accepted: PDF, PNG, JPG • Max 10MB each
                 </Text>
-              </YStack>
+              </Stack>
             )}
           </UploadSurface>
 
           {attachmentError ? (
-            <XStack
+            <Row
               gap="$2"
               alignItems="center"
               paddingHorizontal="$3"
@@ -234,14 +234,14 @@ export function DisputeForm({
               <Text fontSize="$2" color="$red10">
                 {attachmentError}
               </Text>
-            </XStack>
+            </Row>
           ) : null}
 
           {attachments.length > 0 ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Separator />
               {attachments.map((attachment) => (
-                <XStack
+                <Row
                   key={attachment.id}
                   backgroundColor="$color2"
                   borderColor="$borderColor"
@@ -253,14 +253,14 @@ export function DisputeForm({
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <YStack flex={1} gap="$1">
+                  <Stack flex={1} gap="$1">
                     <Text fontSize="$3" fontWeight="600" color="$color12" numberOfLines={1}>
                       {attachment.name}
                     </Text>
                     <Text fontSize="$2" color="$color10">
                       {attachment.mimeType.toUpperCase()} • {formatFileSize(attachment.size)}
                     </Text>
-                  </YStack>
+                  </Stack>
                   <Button
                     size="$2"
                     variant="outlined"
@@ -269,14 +269,14 @@ export function DisputeForm({
                   >
                     Remove
                   </Button>
-                </XStack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           ) : null}
-        </YStack>
+        </Stack>
 
         {submissionError ? (
-          <XStack
+          <Row
             gap="$2"
             alignItems="center"
             paddingHorizontal="$3"
@@ -288,10 +288,10 @@ export function DisputeForm({
             <Text fontSize="$2" color="$red10">
               {submissionError}
             </Text>
-          </XStack>
+          </Row>
         ) : null}
 
-        <XStack gap="$2" justifyContent="flex-end">
+        <Row gap="$2" justifyContent="flex-end">
           <Button
             size="$3"
             theme="blue"
@@ -305,8 +305,8 @@ export function DisputeForm({
           >
             {isSubmitting || isUploading ? 'Submitting…' : 'Submit dispute'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </FormProvider>
   )
 }

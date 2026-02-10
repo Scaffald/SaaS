@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { Check, ExternalLink, Home } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface SuccessStepProps {
   /**
@@ -67,7 +67,7 @@ export function SuccessStep({
   }
 
   return (
-    <YStack
+    <Stack
       gap="$6"
       width="100%"
       maxWidth={600}
@@ -77,7 +77,7 @@ export function SuccessStep({
       aria-label="Application submitted successfully"
     >
       {/* Success Icon */}
-      <YStack
+      <Stack
         width={80}
         height={80}
         borderRadius="$12"
@@ -89,10 +89,10 @@ export function SuccessStep({
         aria-hidden={true}
       >
         <Check size={48} color="$green10" />
-      </YStack>
+      </Stack>
 
       {/* Success Message */}
-      <YStack gap="$2" alignItems="center">
+      <Stack gap="$2" alignItems="center">
         <Text fontSize="$9" fontWeight="700" color="$color12" textAlign="center">
           Application Submitted Successfully!
         </Text>
@@ -102,20 +102,20 @@ export function SuccessStep({
         <Text fontSize="$4" color="$gray11" textAlign="center" marginTop="$2">
           Your application has been received and is under review
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Application ID */}
-      <YStack gap="$2" alignItems="center" marginTop="$4">
+      <Stack gap="$2" alignItems="center" marginTop="$4">
         <Text fontSize="$3" fontWeight="600" color="$blue10">
           Application ID: {formattedId}
         </Text>
         <Text fontSize="$2" color="$gray11" textAlign="center">
           You will receive an email confirmation shortly
         </Text>
-      </YStack>
+      </Stack>
 
       {/* What Happens Next */}
-      <YStack
+      <Stack
         gap="$3"
         padding="$4"
         backgroundColor="$background"
@@ -129,15 +129,15 @@ export function SuccessStep({
           What happens next:
         </Text>
 
-        <YStack gap="$3" marginTop="$2">
+        <Stack gap="$3" marginTop="$2">
           <NextStepItem text="Our team will review your application within 3-5 business days" />
           <NextStepItem text="You'll receive an email update on your application status" />
           <NextStepItem text="If selected, we'll contact you to schedule an interview" />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Action Buttons */}
-      <XStack
+      <Row
         gap="$3"
         width="100%"
         marginTop="$8"
@@ -183,8 +183,8 @@ export function SuccessStep({
         >
           Return to Dashboard
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }
 
@@ -193,13 +193,13 @@ export function SuccessStep({
  */
 function NextStepItem({ text }: { text: string }) {
   return (
-    <XStack gap="$3" alignItems="flex-start">
+    <Row gap="$3" alignItems="flex-start">
       <Text fontSize="$3" color="$gray11" marginTop="$1">
         •
       </Text>
       <Text fontSize="$3" color="$gray11" flex={1} lineHeight="$1">
         {text}
       </Text>
-    </XStack>
+    </Row>
   )
 }

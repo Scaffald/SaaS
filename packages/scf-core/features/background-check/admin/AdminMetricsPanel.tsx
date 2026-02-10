@@ -1,7 +1,7 @@
 import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type MetricsSummary = RouterOutputs['backgroundChecks']['adminGetMetrics']
@@ -15,12 +15,12 @@ interface AdminMetricsPanelProps {
 export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetricsPanelProps) {
   if (isLoading) {
     return (
-      <YStack gap="$3" alignItems="center" paddingVertical="$6">
+      <Stack gap="$3" alignItems="center" paddingVertical="$6">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color10">
           Loading metrics…
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -48,8 +48,8 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
   }
 
   return (
-    <YStack gap="$4">
-      <XStack gap="$3" flexWrap="wrap">
+    <Stack gap="$4">
+      <Row gap="$3" flexWrap="wrap">
         <MetricCard
           title="Checks in system"
           value={metrics.totals.checks}
@@ -70,11 +70,11 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
           value={metrics.totals.completed}
           description="Checks completed and ready to share"
         />
-      </XStack>
+      </Row>
 
       <Separator />
 
-      <XStack flexWrap="wrap" gap="$3">
+      <Row flexWrap="wrap" gap="$3">
         <Card
           flexBasis={260}
           flexGrow={1}
@@ -88,12 +88,12 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Dispute status
           </Text>
-          <YStack gap="$2">
+          <Stack gap="$2">
             <DisputeMetric label="Pending review" value={metrics.disputes.pending} tone="warning" />
             <DisputeMetric label="Under review" value={metrics.disputes.under_review} tone="info" />
             <DisputeMetric label="Resolved" value={metrics.disputes.resolved} tone="success" />
             <DisputeMetric label="Upheld" value={metrics.disputes.upheld} tone="neutral" />
-          </YStack>
+          </Stack>
         </Card>
 
         <Card
@@ -116,7 +116,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
             Based on fully completed checks in the system.
           </Text>
         </Card>
-      </XStack>
+      </Row>
 
       <Card
         padding="$4"
@@ -126,22 +126,22 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         borderWidth={1}
         borderRadius="$4"
       >
-        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
+        <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Package distribution
           </Text>
           <Button variant="outlined" size="$2" icon={RefreshCcw} onPress={onRefresh}>
             Refresh
           </Button>
-        </XStack>
-        <YStack gap="$2">
+        </Row>
+        <Stack gap="$2">
           {metrics.packageDistribution.length === 0 ? (
             <Text fontSize="$2" color="$color10">
               No package usage data available yet.
             </Text>
           ) : (
             metrics.packageDistribution.map((item: { label: string; count: number }) => (
-              <XStack
+              <Row
                 key={item.label}
                 justifyContent="space-between"
                 alignItems="center"
@@ -158,12 +158,12 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
                 <Text fontSize="$3" fontWeight="600" color="$color12">
                   {item.count}
                 </Text>
-              </XStack>
+              </Row>
             ))
           )}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -213,13 +213,13 @@ function DisputeMetric({ label, value, tone }: DisputeMetricProps) {
   } as const
 
   return (
-    <XStack justifyContent="space-between" alignItems="center">
+    <Row justifyContent="space-between" alignItems="center">
       <Text fontSize="$2" color="$color10">
         {label}
       </Text>
       <Text fontSize="$3" fontWeight="600" color={toneColors[tone]}>
         {value}
       </Text>
-    </XStack>
+    </Row>
   )
 }

@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@scf/schemas'
-import { Table } from '@unicornlove/ui'
+import { Table } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -13,9 +13,9 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import {
   useInviteOrganizationMember,
   useOrganizationInvites,
@@ -74,15 +74,15 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
   }, [activity])
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <Card bordered padding="$4" gap="$4">
         <H4>Invite a member</H4>
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Controller
             control={form.control}
             name="email"
             render={({ field, fieldState }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Email</Text>
                 <Input
                   value={field.value}
@@ -94,47 +94,47 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                     {fieldState.error?.message}
                   </Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="roleName"
             render={({ field }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Role</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="message"
             render={({ field }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Message (optional)</Text>
                 <TextArea
                   value={field.value ?? ''}
                   onChangeText={(value) => field.onChange(value ?? '')}
                 />
-              </YStack>
+              </Stack>
             )}
           />
           <Button onPress={() => void onSubmit()} disabled={isSubmitting}>
             {isSubmitting ? 'Sending invite…' : 'Send Invitation'}
           </Button>
-        </YStack>
+        </Stack>
       </Card>
 
       <Card bordered padding="$4" gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <H4>Members</H4>
           {membersLoading ? (
             <Spinner />
           ) : (
             <Text color="$color10">{activeMembers.length} total</Text>
           )}
-        </XStack>
+        </Row>
         <Separator />
         {membersLoading ? (
           <Paragraph>Loading members…</Paragraph>
@@ -186,21 +186,21 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       </Card>
 
       <Card bordered padding="$4" gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? (
             <Spinner />
           ) : (
             <Text color="$color10">{pendingInvites.length} pending</Text>
           )}
-        </XStack>
+        </Row>
         <Separator />
         {invitesLoading ? (
           <Paragraph>Loading invitations…</Paragraph>
         ) : pendingInvites.length === 0 ? (
           <Paragraph color="$color10">No pending invitations</Paragraph>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             {pendingInvites.map(
               (invite: {
                 id: string
@@ -208,18 +208,18 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 role_name?: string | null
                 status: string
               }) => (
-                <XStack key={invite.id} justifyContent="space-between" alignItems="center">
-                  <YStack>
+                <Row key={invite.id} justifyContent="space-between" alignItems="center">
+                  <Stack>
                     <Text fontWeight="600">{invite.invitee_email}</Text>
                     <Paragraph color="$color10">{invite.role_name ?? 'member'}</Paragraph>
-                  </YStack>
+                  </Stack>
                   <Text color="$color10">{invite.status}</Text>
-                </XStack>
+                </Row>
               )
             )}
-          </YStack>
+          </Stack>
         )}
       </Card>
-    </YStack>
+    </Stack>
   )
 }

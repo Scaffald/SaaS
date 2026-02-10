@@ -105,7 +105,7 @@ vi.mock('tamagui', () => {
   }
 
   return {
-    XStack: MockXStack,
+    Row: MockXStack,
     Button: MockButton,
   }
 })

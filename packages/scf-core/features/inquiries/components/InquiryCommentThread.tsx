@@ -1,11 +1,11 @@
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { MessageSquare, Send } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
-import { Avatar } from '@unicornlove/ui'
+import { Avatar } from '@unicornlove/beyond-ui'
 
 interface InquiryCommentThreadProps {
   inquiryId: string
@@ -24,21 +24,24 @@ export function InquiryCommentThread({
   sectionName,
   comments,
 }: InquiryCommentThreadProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const { user: currentUser } = useUser()
   const [newComment, setNewComment] = useState('')
 
   const addCommentMutation = api.inquiries.addComment.useMutation({
     onSuccess: () => {
       setNewComment('')
-      toast.show('Comment added', {
-        message: 'Your comment has been added to this section.',
-      })
+      toast.show({
+          title: 'Comment added',
+          message: 'Your comment has been added to this section.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Failed to add comment', {
-        message: error.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Failed to add comment',
+          message: error.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -99,10 +102,10 @@ export function InquiryCommentThread({
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {/* Comments List */}
       {comments.length > 0 && (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {comments.map((comment) => {
             const isUnread =
               currentUser &&
@@ -111,7 +114,7 @@ export function InquiryCommentThread({
             const isFromCurrentUser = currentUser && comment.sender_id === currentUser.id
 
             return (
-              <XStack
+              <Row
                 key={comment.id}
                 gap="$3"
                 padding="$3"
@@ -127,15 +130,15 @@ export function InquiryCommentThread({
                     </Text>
                   </Avatar.Fallback>
                 </Avatar>
-                <YStack flex={1} gap="$1">
-                  <XStack justifyContent="space-between" alignItems="center">
+                <Stack flex={1} gap="$1">
+                  <Row justifyContent="space-between" alignItems="center">
                     <Text fontSize="$2" fontWeight="600" color="$color11">
                       {isFromCurrentUser ? 'You' : 'Organization'}
                     </Text>
                     <Text fontSize="$1" color="$color10">
                       {formatTimestamp(comment.created_at)}
                     </Text>
-                  </XStack>
+                  </Row>
                   <Text fontSize="$3" color="$color12">
                     {comment.content}
                   </Text>
@@ -149,16 +152,16 @@ export function InquiryCommentThread({
                       Mark as read
                     </Button>
                   )}
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             )
           })}
-        </YStack>
+        </Stack>
       )}
 
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
-        <XStack
+        <Row
           alignItems="center"
           gap="$2"
           padding="$2"
@@ -169,12 +172,12 @@ export function InquiryCommentThread({
           <Text fontSize="$2" color="$blue11" fontWeight="600">
             {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Add Comment Input */}
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="flex-end">
+      <Stack gap="$2">
+        <Row gap="$2" alignItems="flex-end">
           <Input
             flex={1}
             placeholder="Add a comment..."
@@ -192,8 +195,8 @@ export function InquiryCommentThread({
           >
             {addCommentMutation.isPending ? 'Sending...' : 'Send'}
           </Button>
-        </XStack>
-      </YStack>
-    </YStack>
+        </Row>
+      </Stack>
+    </Stack>
   )
 }

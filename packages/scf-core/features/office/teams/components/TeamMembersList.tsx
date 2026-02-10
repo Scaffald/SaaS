@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Crown, LogOut, Plus, UserMinus } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -15,9 +15,9 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 import { AddTeamMemberModal } from './AddTeamMemberModal'
@@ -47,7 +47,7 @@ interface TeamMember {
 }
 
 export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [memberToRemove, setMemberToRemove] = useState<TeamMember | null>(null)
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false)
@@ -74,29 +74,37 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
 
   const transferOwnershipMutation = api.teams.members.transferOwnership.useMutation({
     onSuccess: () => {
-      toast.show('Ownership transferred', {
-        message: 'Team ownership has been updated.',
-      })
+      toast.show({
+          title: 'Ownership transferred',
+          message: 'Team ownership has been updated.',
+        })
       void membersQuery.refetch()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to transfer ownership', { message })
+      toast.show({
+          title: 'Unable to transfer ownership',
+          variant: 'error',
+        })
     },
   })
 
   const selfRemoveMutation = api.teams.members.selfRemove.useMutation({
     onSuccess: () => {
-      toast.show('You left the team', {
-        message: 'Redirecting to teams list.',
-      })
+      toast.show({
+          title: 'You left the team',
+          message: 'Redirecting to teams list.',
+        })
       setLeaveReason('')
       setIsLeaveDialogOpen(false)
       router.replace(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to leave team', { message })
+      toast.show({
+          title: 'Unable to leave team',
+          variant: 'error',
+        })
       setIsLeaveDialogOpen(false)
     },
   })
@@ -136,12 +144,18 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   }
 
   const handleMemberAdded = () => {
-    toast.show('Member added', { message: 'The team roster has been updated.' })
+    toast.show({
+          title: 'Member added',
+          message: 'The team roster has been updated.',
+        })
     membersQuery.refetch()
   }
 
   const handleMemberRemoved = () => {
-    toast.show('Member removed', { message: 'The member no longer has access to this team.' })
+    toast.show({
+          title: 'Member removed',
+          message: 'The member no longer has access to this team.',
+        })
     setMemberToRemove(null)
     membersQuery.refetch()
   }
@@ -166,8 +180,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const workloadErrorMessage = workloadQuery.error?.message ?? null
 
   return (
-    <YStack gap="$4" flex={1} paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
+    <Stack gap="$4" flex={1} paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+      <Row
         justifyContent="space-between"
         alignItems="flex-start"
         gap="$3"
@@ -193,15 +207,15 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         >
           Add Member
         </Button>
-      </XStack>
+      </Row>
 
       {isLoadingMembers ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$8" gap="$2">
+        <Stack alignItems="center" justifyContent="center" paddingVertical="$8" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading team members…</Text>
-        </YStack>
+        </Stack>
       ) : hasMembers ? (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {workloadErrorMessage ? (
             <Text color="$red10" fontSize="$3">
               Unable to load workload snapshots: {workloadErrorMessage}
@@ -234,7 +248,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 accessibilityLabel={`${member.displayName ?? 'Team member'} · Role ${memberRoleName} · Status ${memberStatusLabel}`}
                 width="100%"
               >
-                <XStack
+                <Row
                   gap="$3"
                   alignItems="flex-start"
                   justifyContent="space-between"
@@ -245,7 +259,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     flexDirection: 'row',
                   }}
                 >
-                  <XStack
+                  <Row
                     gap="$3"
                     width="100%"
                     flexDirection="column"
@@ -262,16 +276,16 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       />
                       <Avatar.Fallback>{member.displayName?.[0] ?? '?'}</Avatar.Fallback>
                     </Avatar>
-                    <YStack>
+                    <Stack>
                       <Text fontWeight="600">{member.displayName}</Text>
                       {member.username ? (
                         <Text fontSize="$3" color="$color11">
                           @{member.username}
                         </Text>
                       ) : null}
-                    </YStack>
-                  </XStack>
-                  <XStack
+                    </Stack>
+                  </Row>
+                  <Row
                     gap="$3"
                     flexWrap="wrap"
                     width="100%"
@@ -284,7 +298,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       items: 'center',
                     }}
                   >
-                    <YStack width="100%" $md={{ width: undefined }}>
+                    <Stack width="100%" $md={{ width: undefined }}>
                       <TeamMemberRoleSelect
                         teamId={teamId}
                         teamMemberId={member.id}
@@ -294,7 +308,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                         onRoleChanged={handleRoleChange}
                         fullWidth={true}
                       />
-                    </YStack>
+                    </Stack>
                     {canTransferToMember ? (
                       <Button
                         size="$2"
@@ -333,13 +347,13 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     >
                       Remove
                     </Button>
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
                 <Text fontSize="$3" color="$color11">
                   Status: {memberStatusLabel}
                 </Text>
                 {workload ? (
-                  <XStack gap="$3" flexWrap="wrap">
+                  <Row gap="$3" flexWrap="wrap">
                     <Text fontSize="$2" color="$color10">
                       Active: {workload.activeAssignments}
                     </Text>
@@ -359,14 +373,14 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                         Availability: {availabilityLabel}
                       </Text>
                     ) : null}
-                  </XStack>
+                  </Row>
                 ) : null}
               </Card>
             )
           })}
-        </YStack>
+        </Stack>
       ) : (
-        <YStack
+        <Stack
           gap="$2"
           borderWidth={1}
           borderColor="$borderColor"
@@ -378,7 +392,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           <Text color="$color11">
             Add collaborators to this team to manage jobs and applications together.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {viewerMembership ? (
@@ -441,7 +455,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               You will lose access to jobs, applications, and notifications for this team. This
               action cannot be undone.
             </AlertDialog.Description>
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" color="$color11">
                 Optional reason
               </Text>
@@ -453,8 +467,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 accessibilityLabel="Reason for leaving the team"
                 accessibilityHint="Optional message sent to the team about your departure"
               />
-            </YStack>
-            <XStack gap="$3" justifyContent="flex-end">
+            </Stack>
+            <Row gap="$3" justifyContent="flex-end">
               <AlertDialog.Cancel asChild>
                 <Button variant="outlined">Cancel</Button>
               </AlertDialog.Cancel>
@@ -473,10 +487,10 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                   )}
                 </Button>
               </AlertDialog.Action>
-            </XStack>
+            </Row>
           </AlertDialog.Content>
         </AlertDialog.Portal>
       </AlertDialog>
-    </YStack>
+    </Stack>
   )
 }

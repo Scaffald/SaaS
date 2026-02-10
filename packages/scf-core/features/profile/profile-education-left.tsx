@@ -7,11 +7,11 @@ import {
   FieldError,
   MonthYearPicker,
   Popover,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown, Plus, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import {
@@ -23,9 +23,9 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import {
   createNewEducationEntry,
   DEGREE_TYPE_OPTIONS,
@@ -108,7 +108,7 @@ export function ProfileEducationLeft({
   const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
   const originalDataRef = useRef<EducationProfileFormData | null>(null)
   const entryRefs = useRef<Record<string, HTMLElement | null>>({})
-  const toast = useToastController()
+  const toast = useToast()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
 
@@ -155,17 +155,20 @@ export function ProfileEducationLeft({
         utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
       }
       failProfileSync()
-      toast.show('Save Failed', {
-        message:
-          error instanceof Error
+      toast.show({
+          title: 'Save Failed',
+          message: error instanceof Error
             ? error.message
             : 'Failed to save education entry. Please try again.',
-      })
+          variant: 'error',
+        })
     },
     onSuccess: () => {
-      toast.show('Education Saved', {
-        message: 'Your education history has been updated successfully!',
-      })
+      toast.show({
+          title: 'Education Saved',
+          message: 'Your education history has been updated successfully!',
+          variant: 'success',
+        })
     },
     onSettled: (_data: SaveEducationOutput | undefined, error: unknown) => {
       if (!error) {
@@ -457,10 +460,10 @@ export function ProfileEducationLeft({
   if (educationQuery.isLoading || educationLevelQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading education data...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -469,10 +472,10 @@ export function ProfileEducationLeft({
   if (educationQuery.isError || educationLevelQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load education data</Text>
           <Button onPress={() => educationQuery.refetch()}>Retry</Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -482,7 +485,7 @@ export function ProfileEducationLeft({
       <H4>Education Background</H4>
 
       {errorSummary.length > 0 && (
-        <YStack
+        <Stack
           role="alert"
           marginTop="$2"
           marginBottom="$2"
@@ -496,19 +499,19 @@ export function ProfileEducationLeft({
           <Text fontWeight="600" color="$red11">
             Please resolve the following issues:
           </Text>
-          <YStack gap="$1">
+          <Stack gap="$1">
             {errorSummary.map((message) => (
               <Text key={message} color="$red11" fontSize="$3">
                 • {message}
               </Text>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Education Level */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Highest Education Level</Text>
           <Controller
             name="education_level"
@@ -528,16 +531,16 @@ export function ProfileEducationLeft({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
         {/* Education Entries */}
-        <YStack gap="$3">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$3">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Education History</Text>
             <Button size="$3" onPress={addEducationEntry} icon={Plus}>
               Add Education
             </Button>
-          </XStack>
+          </Row>
 
           {fields.map((field, index) => {
             const entryErrors = educationEntryFieldErrors[index]
@@ -560,11 +563,11 @@ export function ProfileEducationLeft({
             }
 
             return (
-              <YStack
+              <Stack
                 key={field.id}
                 ref={(el) => {
                   if (el) {
-                    // YStack ref is compatible with HTMLElement for scroll operations
+                    // Stack ref is compatible with HTMLElement for scroll operations
                     entryRefs.current[entryId] = el as HTMLElement
                   }
                 }}
@@ -575,17 +578,17 @@ export function ProfileEducationLeft({
                 backgroundColor={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
                 borderRadius="$4"
               >
-                <XStack justifyContent="space-between" alignItems="center">
+                <Row justifyContent="space-between" alignItems="center">
                   <Text fontWeight="600">
                     {entryData?.id ? 'Edit Education' : `Education ${index + 1}`}
                   </Text>
                   <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                     Remove
                   </Button>
-                </XStack>
+                </Row>
 
                 {/* Institution */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text>Institution *</Text>
                   <Controller
                     name={`education_entries.${index}.university_id`}
@@ -597,7 +600,7 @@ export function ProfileEducationLeft({
                         render={({ field: nameField }) => {
                           const isManualMode = manualEntryMode[index] ?? false
                           return (
-                            <YStack gap="$2">
+                            <Stack gap="$2">
                               {!isManualMode ? (
                                 <>
                                   <UniversityAutocomplete
@@ -667,16 +670,16 @@ export function ProfileEducationLeft({
                                   </Button>
                                 </>
                               )}
-                            </YStack>
+                            </Stack>
                           )
                         }}
                       />
                     )}
                   />
-                </YStack>
+                </Stack>
 
                 {/* Degree Type */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text>Degree Type</Text>
                   <Controller
                     name={`education_entries.${index}.degree_type`}
@@ -732,10 +735,10 @@ export function ProfileEducationLeft({
                       )
                     }}
                   />
-                </YStack>
+                </Stack>
 
                 {/* Field of Study */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text>Field of Study</Text>
                   <Controller
                     name={`education_entries.${index}.field_of_study`}
@@ -750,10 +753,10 @@ export function ProfileEducationLeft({
                       />
                     )}
                   />
-                </YStack>
+                </Stack>
 
                 {/* GPA */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text>GPA (Optional)</Text>
                   <Controller
                     name={`education_entries.${index}.gpa`}
@@ -828,12 +831,12 @@ export function ProfileEducationLeft({
                       )
                     }}
                   />
-                </YStack>
+                </Stack>
 
                 {/* Start and End Dates */}
-                <YStack gap="$2">
-                  <XStack gap="$3">
-                    <YStack gap="$2" flex={1}>
+                <Stack gap="$2">
+                  <Row gap="$3">
+                    <Stack gap="$2" flex={1}>
                       <Controller
                         name={`education_entries.${index}.start_date`}
                         control={control}
@@ -850,8 +853,8 @@ export function ProfileEducationLeft({
                           />
                         )}
                       />
-                    </YStack>
-                    <YStack gap="$2" flex={1}>
+                    </Stack>
+                    <Stack gap="$2" flex={1}>
                       <Controller
                         name={`education_entries.${index}.end_date`}
                         control={control}
@@ -869,8 +872,8 @@ export function ProfileEducationLeft({
                           />
                         )}
                       />
-                    </YStack>
-                  </XStack>
+                    </Stack>
+                  </Row>
 
                   {/* Currently Enrolled Checkbox */}
                   <Controller
@@ -894,7 +897,7 @@ export function ProfileEducationLeft({
                       }
 
                       return (
-                        <XStack gap="$2" alignItems="center">
+                        <Row gap="$2" alignItems="center">
                           <CustomCheckbox
                             checked={isCurrent}
                             onCheckedChange={handleChange}
@@ -902,7 +905,7 @@ export function ProfileEducationLeft({
                             aria-label="Currently enrolled"
                           />
                           <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
-                        </XStack>
+                        </Row>
                       )
                     }}
                   />
@@ -934,10 +937,10 @@ export function ProfileEducationLeft({
                       </>
                     )}
                   />
-                </YStack>
+                </Stack>
 
                 {/* Description */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text>Description</Text>
                   <Controller
                     name={`education_entries.${index}.description`}
@@ -954,20 +957,20 @@ export function ProfileEducationLeft({
                       </>
                     )}
                   />
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             )
           })}
 
           {fields.length === 0 && (
-            <YStack padding="$4" alignItems="center" gap="$2">
+            <Stack padding="$4" alignItems="center" gap="$2">
               <Text color="$color11">No education entries added yet</Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Action Buttons */}
-        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+        <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
           <Button
             variant="outlined"
             disabled={!isDirty}
@@ -984,7 +987,7 @@ export function ProfileEducationLeft({
           >
             {isSyncing ? 'Saving...' : 'Save Changes'}
           </Button>
-        </XStack>
+        </Row>
 
         {/* Cancel Confirmation Dialog */}
         <ConfirmationDialog
@@ -1002,7 +1005,7 @@ export function ProfileEducationLeft({
             }
           }}
         />
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }
@@ -1101,7 +1104,7 @@ function SmartSelect({
   const displayLabel = selectedOption?.label ?? placeholder ?? 'Select'
 
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       <Popover open={open} onOpenChange={handleOpenChange}>
         <Popover.Trigger asChild>
           <Button
@@ -1134,7 +1137,7 @@ function SmartSelect({
           }}
         >
           <ScrollView style={{ maxHeight: 280 }}>
-            <YStack gap="$1">
+            <Stack gap="$1">
               {allowClear && (
                 <Button
                   size="$2"
@@ -1167,7 +1170,7 @@ function SmartSelect({
                   </Button>
                 )
               })}
-            </YStack>
+            </Stack>
           </ScrollView>
         </Popover.Content>
       </Popover>
@@ -1176,6 +1179,6 @@ function SmartSelect({
           {error}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

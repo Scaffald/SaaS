@@ -7,7 +7,7 @@ import {
   type FeedbackSubmitInput,
   feedbackUploadRequestSchema,
 } from '@scf/schemas/feedback';
-import { useToastController } from '@tamagui/toast';
+import { useToast } from '@unicornlove/beyond-ui';
 import { Buffer } from 'buffer';
 import { randomUUID } from 'expo-crypto';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -105,7 +105,7 @@ async function convertScreenshotToBase64(
 }
 
 export function useFeedbackSubmit(): UseFeedbackSubmitResult {
-  const toast = useToastController();
+  const toast = useToast();
   const submitMutation = api.feedback.submit.useMutation();
   const uploadUrlMutation = api.feedback.getUploadUrl.useMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -298,9 +298,10 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
 
         await ensureSubmission(payload, screenshotMeta);
 
-        toast.show("Feedback Submitted!", {
+        toast.show({
+          title: "Feedback Submitted!",
           message: "Thank you for helping us improve.",
-          type: "success",
+          variant: 'success',
         });
       } catch (error) {
         const message = error instanceof Error
@@ -308,11 +309,12 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
           : 'Unknown error';
 
         if (error instanceof z.ZodError) {
-          toast.show("Validation Error", {
-            message: error.issues[0]?.message ??
+          toast.show({
+          title: "Validation Error",
+          message: error.issues[0]?.message ??
               "Please review your submission.",
-            type: "error",
-          });
+          variant: 'error',
+        });
           setIsSubmitting(false);
           return;
         }
@@ -348,21 +350,22 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
             });
 
           await addPendingFeedback(pending);
-          toast.show("Submission Saved Locally", {
-            message:
-              'We couldn\'t reach the server. Your feedback will be submitted automatically once you\'re online.',
-            type: "warning",
-          });
+          toast.show({
+          title: "Submission Saved Locally",
+          message: 'We couldn\'t reach the server. Your feedback will be submitted automatically once you\'re online.',
+          variant: 'warning',
+        });
           void refreshPendingCount();
         } catch (queueError) {
           console.error(
             "[useFeedbackSubmit] Failed to persist pending feedback",
             queueError,
           );
-          toast.show("Submission Failed", {
-            message: message,
-            type: "error",
-          });
+          toast.show({
+          title: "Submission Failed",
+          message: message,
+          variant: 'error',
+        });
         }
       } finally {
         setIsSubmitting(false);

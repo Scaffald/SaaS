@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { UserMinus } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface FollowingData {
   user?: {
@@ -28,21 +28,25 @@ type Following = NonNullable<FollowingQueryResult['data']> extends Array<infer T
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')
   const utils = api.useUtils()
-  const toast = useToastController()
+  const toast = useToast()
 
   const { data: following, isLoading } = api.follows.getFollowing.useQuery()
 
   const unfollowMutation = api.follows.unfollowUser.useMutation({
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
-      toast.show('Success', {
-        message: 'Unfollowed successfully',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Unfollowed successfully',
+          variant: 'success',
+        })
     },
     onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to unfollow user',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to unfollow user',
+          variant: 'error',
+        })
     },
   })
 
@@ -78,7 +82,7 @@ export function FollowingList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
@@ -93,7 +97,7 @@ export function FollowingList() {
               <Text fontSize="$3" fontWeight="500">
                 {name}
               </Text>
-            </XStack>
+            </Row>
           )
         },
       },
@@ -141,15 +145,15 @@ export function FollowingList() {
 
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
+      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading following…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <Input
         placeholder="Search following..."
         value={searchTerm}
@@ -158,7 +162,7 @@ export function FollowingList() {
       />
 
       {filteredFollowing.length === 0 ? (
-        <YStack
+        <Stack
           gap="$3"
           borderWidth={1}
           borderColor="$borderColor"
@@ -175,7 +179,7 @@ export function FollowingList() {
               ? 'No users match your search.'
               : "You're not following anyone yet. Discover workers and start following them."}
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <DataTable
           columns={columns}
@@ -184,6 +188,6 @@ export function FollowingList() {
           emptyMessage="No users found"
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

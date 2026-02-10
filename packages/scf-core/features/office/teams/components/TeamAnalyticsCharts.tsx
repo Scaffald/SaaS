@@ -1,11 +1,11 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { BarChart, LineChart, PieChart } from '@unicornlove/ui'
+import { BarChart, LineChart, PieChart } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
-import { Card, Spinner, Text, YStack } from '@unicornlove/ui'
+import { Card, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 type OverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
 type MetricRecord = NonNullable<OverviewOutput['metrics']>[number]
@@ -146,10 +146,10 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
 
   if (isLoading && metrics.length === 0) {
     return (
-      <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$4">
+      <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$4">
         <Spinner size="large" />
         <Text color="$color11">Loading analytics data…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -174,7 +174,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <AnalyticsCard
         title="Applications reviewed"
         description="Recent daily totals for applications reviewed by this team."
@@ -187,7 +187,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             isSmallScreen ? { paddingVertical: 8, paddingRight: 24 } : undefined
           }
         >
-          <YStack
+          <Stack
             gap="$2"
             accessible
             accessibilityRole="image"
@@ -201,7 +201,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
               spacing={isSmallScreen ? 16 : 12}
               width={isSmallScreen ? Math.max(width - 80, 360) : undefined}
             />
-          </YStack>
+          </Stack>
         </ScrollView>
       </AnalyticsCard>
 
@@ -217,7 +217,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             isSmallScreen ? { paddingVertical: 8, paddingRight: 24 } : undefined
           }
         >
-          <YStack
+          <Stack
             gap="$2"
             accessible
             accessibilityRole="image"
@@ -230,7 +230,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
               height={220}
               width={isSmallScreen ? Math.max(width - 80, 360) : undefined}
             />
-          </YStack>
+          </Stack>
         </ScrollView>
       </AnalyticsCard>
 
@@ -250,7 +250,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
               isSmallScreen ? { paddingVertical: 8, paddingRight: 24 } : undefined
             }
           >
-            <YStack
+            <Stack
               gap="$2"
               accessible
               accessibilityRole="image"
@@ -265,18 +265,18 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
                 showValuesAsLabels
                 textColor="#111"
               />
-              <YStack gap="$1">
+              <Stack gap="$1">
                 {workloadBreakdown.map((entry) => (
                   <Text key={entry.text} fontSize="$2" color="$color11">
                     {entry.text}: {entry.value} assignments
                   </Text>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </ScrollView>
         )}
       </AnalyticsCard>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -301,7 +301,7 @@ function AnalyticsCard({
       padding="$4"
       gap="$3"
     >
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           {title}
         </Text>
@@ -315,7 +315,7 @@ function AnalyticsCard({
             {summary}
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
       {emptyMessage ? <Text color="$color11">{emptyMessage}</Text> : null}
       {children}
     </Card>

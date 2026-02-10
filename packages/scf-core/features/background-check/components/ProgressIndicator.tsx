@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import type { BackgroundCheckWizardStep } from '../hooks/useBackgroundCheckForm'
 
@@ -23,14 +23,14 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   const currentIndex = steps.indexOf(currentStep)
 
   return (
-    <XStack gap="$3" alignItems="center">
+    <Row gap="$3" alignItems="center">
       {steps.map((step, index) => {
         const isCompleted = index < currentIndex
         const isActive = index === currentIndex
         const variant = isActive ? '$color10' : isCompleted ? '$green9' : '$color6'
 
         return (
-          <YStack key={step} alignItems="center" gap="$1">
+          <Stack key={step} alignItems="center" gap="$1">
             <Circle
               size={36}
               backgroundColor={variant}
@@ -46,9 +46,9 @@ export const ProgressIndicator = memo(function ProgressIndicator({
             <Text fontSize="$2" color={isActive ? '$color12' : '$color10'}>
               {STEP_LABELS[step]}
             </Text>
-          </YStack>
+          </Stack>
         )
       })}
-    </XStack>
+    </Row>
   )
 })

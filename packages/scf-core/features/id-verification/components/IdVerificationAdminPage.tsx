@@ -7,7 +7,7 @@ import { RefreshCcw } from '@tamagui/lucide-icons'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import {
   Button,
   Card,
@@ -15,9 +15,9 @@ import {
   Spinner,
   Tabs,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type VerificationListResponse = RouterOutputs['idVerification']['listVerifications']
@@ -123,7 +123,7 @@ export function IdVerificationAdminPage({
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }: CellContext<VerificationItem, unknown>) => (
-          <YStack>
+          <Stack>
             <Text fontSize="$3" fontWeight="600" color="$color12">
               {row.original.workerName}
             </Text>
@@ -132,7 +132,7 @@ export function IdVerificationAdminPage({
                 {row.original.workerEmail}
               </Text>
             ) : null}
-          </YStack>
+          </Stack>
         ),
         meta: { width: '$20' },
       },
@@ -233,9 +233,9 @@ export function IdVerificationAdminPage({
   }
 
   return (
-    <YStack flex={1} gap="$4">
-      <YStack paddingHorizontal="$4" gap="$3">
-        <XStack gap="$3" flexWrap="wrap">
+    <Stack flex={1} gap="$4">
+      <Stack paddingHorizontal="$4" gap="$3">
+        <Row gap="$3" flexWrap="wrap">
           {[
             {
               label: 'Active badges',
@@ -274,9 +274,9 @@ export function IdVerificationAdminPage({
               </Text>
             </Card>
           ))}
-        </XStack>
+        </Row>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Badge status filter
           </Text>
@@ -300,9 +300,9 @@ export function IdVerificationAdminPage({
               ))}
             </Tabs.List>
           </Tabs>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Organization
           </Text>
@@ -325,16 +325,16 @@ export function IdVerificationAdminPage({
             ]}
           />
           {isLoadingOrganizations ? (
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Spinner size="small" />
               <Text fontSize="$2" color="$color11">
                 Loading organizations…
               </Text>
-            </XStack>
+            </Row>
           ) : null}
-        </YStack>
+        </Stack>
 
-        <XStack justifyContent="flex-end">
+        <Row justifyContent="flex-end">
           <Button
             size="$3"
             variant="outlined"
@@ -344,8 +344,8 @@ export function IdVerificationAdminPage({
           >
             Refresh
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       <OfficePageLayout
         title="ID Verifications"
@@ -366,6 +366,6 @@ export function IdVerificationAdminPage({
         itemType="verification"
         pageSize={25}
       />
-    </YStack>
+    </Stack>
   )
 }

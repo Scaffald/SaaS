@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { ExternalLink } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
@@ -33,7 +33,7 @@ const VISIBILITY_OPTIONS = [
 export function OrganizationProjectPrivacySettings({
   organizationId,
 }: OrganizationProjectPrivacySettingsProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const { data: orgData, isLoading } = api.organizations.getOrganization.useQuery(
     { id: organizationId },
     { enabled: !!organizationId }
@@ -60,10 +60,17 @@ export function OrganizationProjectPrivacySettings({
         organization_id: organizationId,
         default_project_location_visibility: selectedVisibility as ProjectLocationVisibility,
       })
-      toast.show('Success', { message: 'Location visibility setting updated' })
+      toast.show({
+          title: 'Success',
+          message: 'Location visibility setting updated',
+          variant: 'success',
+        })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update setting'
-      toast.show('Error', { message })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     }
   }
 
@@ -80,7 +87,7 @@ export function OrganizationProjectPrivacySettings({
 
   return (
     <Card padding="$4" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-      <YStack gap="$4">
+      <Stack gap="$4">
         <Text fontSize="$6" fontWeight="600">
           Project Location Privacy
         </Text>
@@ -89,7 +96,7 @@ export function OrganizationProjectPrivacySettings({
           this setting.
         </Text>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Default Project Location Visibility</Text>
           <ResponsiveSelect
             value={selectedVisibility}
@@ -100,10 +107,10 @@ export function OrganizationProjectPrivacySettings({
               label: option.label,
             }))}
           />
-        </YStack>
+        </Stack>
 
         <Card padding="$3" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600" fontSize="$3">
               Project Override Statistics
             </Text>
@@ -123,10 +130,10 @@ export function OrganizationProjectPrivacySettings({
                 View Projects with Overrides
               </Button>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
-        <XStack justifyContent="flex-end">
+        <Row justifyContent="flex-end">
           <Button
             theme="blue"
             onPress={handleSave}
@@ -137,8 +144,8 @@ export function OrganizationProjectPrivacySettings({
           >
             {updateMutation.isPending ? <Spinner /> : 'Save Setting'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   )
 }

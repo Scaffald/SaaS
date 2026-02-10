@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { extractPlainText, ResponsiveModal } from '@unicornlove/ui'
+import { extractPlainText, ResponsiveModal } from '@unicornlove/beyond-ui'
 import { Briefcase, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface OrganizationPreviewModalProps {
   organizationId: string | null
@@ -72,23 +72,23 @@ export function OrganizationPreviewModal({
       size="medium"
     >
       {isLoading ? (
-        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
+        <Stack paddingVertical="$8" alignItems="center" justifyContent="center">
           <Spinner size="large" color="$blue10" />
           <Text marginTop="$4" color="$color11">
             Loading organization details...
           </Text>
-        </YStack>
+        </Stack>
       ) : !organization ? (
-        <YStack paddingVertical="$8" alignItems="center">
+        <Stack paddingVertical="$8" alignItems="center">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Organization not found
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
           {/* Organization Header */}
-          <YStack gap="$3" alignItems="center">
-            <YStack
+          <Stack gap="$3" alignItems="center">
+            <Stack
               width={80}
               height={80}
               borderRadius="$6"
@@ -97,9 +97,9 @@ export function OrganizationPreviewModal({
               justifyContent="center"
             >
               <Building2 size={40} color="$blue10" />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2" alignItems="center">
+            <Stack gap="$2" alignItems="center">
               <Text fontSize="$8" fontWeight="700" color="$color12">
                 {organization.name}
               </Text>
@@ -108,11 +108,11 @@ export function OrganizationPreviewModal({
                   {organization.industry_name}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             {/* Open Jobs Badge */}
             {jobsCount > 0 && (
-              <XStack
+              <Row
                 backgroundColor="$green2"
                 paddingHorizontal="$4"
                 paddingVertical="$2"
@@ -126,34 +126,34 @@ export function OrganizationPreviewModal({
                 <Text fontSize="$4" fontWeight="700" color="$green11">
                   {jobsCount} Open {jobsCount === 1 ? 'Position' : 'Positions'}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Quick Info */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             {formatAddress(organization.address) && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <MapPin size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {formatAddress(organization.address)}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {organization.employee_count_range && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Users size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {organization.employee_count_range} employees
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {organization.is_verified && (
-              <XStack
+              <Row
                 backgroundColor="$blue3"
                 paddingHorizontal="$3"
                 paddingVertical="$1.5"
@@ -162,15 +162,15 @@ export function OrganizationPreviewModal({
                 <Text fontSize="$3" fontWeight="600" color="$blue11">
                   ✓ Verified Organization
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* Description */}
           {organization.description && (
             <>
               <Separator />
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   About
                 </Text>
@@ -179,7 +179,7 @@ export function OrganizationPreviewModal({
                     ? organization.description
                     : extractPlainText(organization.description as JSONContent)}
                 </Text>
-              </YStack>
+              </Stack>
             </>
           )}
 
@@ -187,7 +187,7 @@ export function OrganizationPreviewModal({
           {organization.website_url && (
             <>
               <Separator />
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <ExternalLink size={16} color="$blue10" />
                 <Text
                   fontSize="$4"
@@ -205,14 +205,14 @@ export function OrganizationPreviewModal({
                 >
                   {organization.website_url.replace(/^https?:\/\//, '')}
                 </Text>
-              </XStack>
+              </Row>
             </>
           )}
 
           <Separator />
 
           {/* CTA Buttons */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             {typeof window !== 'undefined' && (
               <Button
                 size="$5"
@@ -234,13 +234,13 @@ export function OrganizationPreviewModal({
                 View Open Positions ({jobsCount})
               </Button>
             ) : (
-              <YStack backgroundColor="$color3" padding="$3" borderRadius="$3" alignItems="center">
+              <Stack backgroundColor="$color3" padding="$3" borderRadius="$3" alignItems="center">
                 <Text fontSize="$4" color="$color11">
                   No open positions at this time
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </>
       )}
     </ResponsiveModal>

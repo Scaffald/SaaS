@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUser } from '@scf/core/utils/useUser'
-import { DashboardWidget, ResponsiveModal } from '@unicornlove/ui'
+import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Avatar, H4, Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, H4, Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { CertificationsWidget } from '../profile/widgets/CertificationsWidget'
 import { ExperienceWidget } from '../profile/widgets/ExperienceWidget'
 import { SkillsWidget } from '../profile/widgets/SkillsWidget'
@@ -110,21 +110,21 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
 
   return (
     <>
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Profile Snapshot Widget */}
         <DashboardWidget>
           {loadingGeneral ? (
-            <YStack gap="$4" alignItems="center" paddingVertical="$8">
+            <Stack gap="$4" alignItems="center" paddingVertical="$8">
               <Spinner size="large" />
               <Text color="$color11">Loading profile...</Text>
-            </YStack>
+            </Stack>
           ) : generalInfo ? (
-            <YStack gap="$4">
+            <Stack gap="$4">
               {/* Header */}
               <H4>Profile Overview</H4>
 
               {/* Avatar & Name Section */}
-              <YStack gap="$3" alignItems="center">
+              <Stack gap="$3" alignItems="center">
                 <Avatar circular size="$8">
                   <Avatar.Image
                     source={{
@@ -134,22 +134,22 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   <Avatar.Fallback backgroundColor="$color6" />
                 </Avatar>
 
-                <YStack gap="$1" alignItems="center">
+                <Stack gap="$1" alignItems="center">
                   <Text fontSize="$5" fontWeight="600">
                     {displayName}
                   </Text>
                   {generalInfo.headline && (
-                    <YStack alignItems="center">
+                    <Stack alignItems="center">
                       <Text color="$color11" fontSize="$2">
                         {generalInfo.headline}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Open to Work Badge */}
                 {generalInfo.open_to_work && (
-                  <XStack
+                  <Row
                     backgroundColor="$green3"
                     paddingHorizontal="$3"
                     paddingVertical="$1.5"
@@ -160,13 +160,13 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     <Text color="$green11" fontSize="$2" fontWeight="600">
                       Open to Work
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
 
               {/* Current Role */}
               {currentRole && (
-                <YStack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
+                <Stack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
                   <Text fontSize="$2" color="$color10">
                     Current Role
                   </Text>
@@ -176,33 +176,33 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   <Text fontSize="$2" color="$color11">
                     {currentRole.company_name}
                   </Text>
-                </YStack>
+                </Stack>
               )}
 
               {/* Stats Grid */}
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontSize="$3" fontWeight="600">
                   Profile Stats
                 </Text>
 
                 {/* Completion Bar */}
-                <YStack gap="$2">
-                  <XStack justifyContent="space-between">
+                <Stack gap="$2">
+                  <Row justifyContent="space-between">
                     <Text fontSize="$2" color="$color11">
                       Completion
                     </Text>
                     <Text fontSize="$2" fontWeight="600">
                       {completion}%
                     </Text>
-                  </XStack>
+                  </Row>
                   <Progress value={completion} max={100}>
                     <Progress.Indicator animation="bouncy" backgroundColor="$green9" />
                   </Progress>
-                </YStack>
+                </Stack>
 
                 {/* Stats Row */}
-                <XStack gap="$3" flexWrap="wrap">
-                  <YStack
+                <Row gap="$3" flexWrap="wrap">
+                  <Stack
                     gap="$1"
                     flex={1}
                     minWidth={80}
@@ -217,9 +217,9 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     <Text fontSize="$1" color="$color11">
                       Skills
                     </Text>
-                  </YStack>
+                  </Stack>
 
-                  <YStack
+                  <Stack
                     gap="$1"
                     flex={1}
                     minWidth={80}
@@ -234,9 +234,9 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     <Text fontSize="$1" color="$color11">
                       Certs
                     </Text>
-                  </YStack>
+                  </Stack>
 
-                  <YStack
+                  <Stack
                     gap="$1"
                     flex={1}
                     minWidth={80}
@@ -251,17 +251,17 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     <Text fontSize="$1" color="$color11">
                       Years
                     </Text>
-                  </YStack>
-                </XStack>
-              </YStack>
+                  </Stack>
+                </Row>
+              </Stack>
 
               {/* Top Skills Preview */}
               {topSkills.length > 0 && (
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text fontSize="$3" fontWeight="600">
                     Top Skills
                   </Text>
-                  <XStack gap="$2" flexWrap="wrap">
+                  <Row gap="$2" flexWrap="wrap">
                     {topSkills.map((skill: Record<string, unknown>) => {
                       const displayCode =
                         typeof skill.displayCode === 'string' ? skill.displayCode : null
@@ -274,7 +274,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                             : skillName
 
                       return (
-                        <XStack
+                        <Row
                           key={skill.id as string}
                           backgroundColor="$color3"
                           paddingHorizontal="$2.5"
@@ -289,13 +289,13 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                             </Text>
                           )}
                           <Text fontSize="$2">{chipLabel}</Text>
-                        </XStack>
+                        </Row>
                       )
                     })}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           ) : null}
         </DashboardWidget>
 
@@ -315,7 +315,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
             onLeaveReview={canLeaveReview ? handleLeaveReview : undefined}
           />
         </DashboardWidget>
-      </YStack>
+      </Stack>
 
       {/* Review Modal */}
       <ResponsiveModal

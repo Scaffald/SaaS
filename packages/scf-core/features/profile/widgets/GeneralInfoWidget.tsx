@@ -4,10 +4,10 @@ import { ReviewWizard } from '@scf/core/features/reviews/components/ReviewWizard
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/ui'
+import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
 import { MessageSquarePlus } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Avatar, Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
@@ -54,7 +54,7 @@ export function GeneralInfoWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load profile information</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -69,7 +69,7 @@ export function GeneralInfoWidget({
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -77,9 +77,9 @@ export function GeneralInfoWidget({
   if (!data) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$color11">No profile data available</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -117,11 +117,11 @@ export function GeneralInfoWidget({
   return (
     <>
       <DashboardWidget>
-        <YStack gap={spacing.md}>
+        <Stack gap={spacing.md}>
           {/* Header with Action Buttons */}
           {showButtons && (
-            <XStack justifyContent="flex-end" alignItems="center" marginBottom="$2">
-              <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
+            <Row justifyContent="flex-end" alignItems="center" marginBottom="$2">
+              <Row gap="$2" flexWrap="wrap" justifyContent="flex-end">
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ''}
                   isOwnProfile={isOwnProfile}
@@ -137,12 +137,12 @@ export function GeneralInfoWidget({
                     <Text>Add Review</Text>
                   </Button>
                 )}
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
 
           {/* Avatar & Name Section */}
-          <YStack gap="$3" alignItems="center">
+          <Stack gap="$3" alignItems="center">
             <Avatar circular size="$10">
               <Avatar.Image
                 source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
@@ -150,16 +150,16 @@ export function GeneralInfoWidget({
               <Avatar.Fallback backgroundColor="$color6" />
             </Avatar>
 
-            <YStack gap="$1" alignItems="center">
+            <Stack gap="$1" alignItems="center">
               <Text fontSize="$6" fontWeight="600">
                 {displayName}
               </Text>
               {data.headline && (
-                <YStack alignItems="center" maxWidth="100%">
+                <Stack alignItems="center" maxWidth="100%">
                   <Text color="$color11" fontSize="$3">
                     {data.headline}
                   </Text>
-                </YStack>
+                </Stack>
               )}
               {data.username && (
                 <Text color="$color10" fontSize="$2">
@@ -174,11 +174,11 @@ export function GeneralInfoWidget({
                   muted={false}
                 />
               )}
-            </YStack>
+            </Stack>
 
             {/* Status Badges */}
             {data.open_to_work && (
-              <XStack
+              <Row
                 backgroundColor="$blue2"
                 paddingHorizontal="$3"
                 paddingVertical="$1.5"
@@ -189,66 +189,66 @@ export function GeneralInfoWidget({
                 <Text color="$blue11" fontSize="$2" fontWeight="600">
                   Open to Work
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* About Section */}
           {data.about && variant === 'full' && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600" fontSize="$3">
                 About
               </Text>
               <Text color="$color11" fontSize="$3" lineHeight="$3">
                 {data.about}
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           {/* Contact Information (Private - only for own profile) */}
           {showPrivateInfo && data.privateData && variant === 'full' && (
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600" fontSize="$3">
                 Contact Information
               </Text>
 
               {data.privateData.email && (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$color10">
                     Email
                   </Text>
                   <Text fontSize="$3">{data.privateData.email}</Text>
-                </YStack>
+                </Stack>
               )}
 
               {data.privateData.phone && (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$color10">
                     Phone
                   </Text>
                   <Text fontSize="$3">{data.privateData.phone}</Text>
-                </YStack>
+                </Stack>
               )}
 
               {data.privateData.location && (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$color10">
                     Location
                   </Text>
                   <Text fontSize="$3">{data.privateData.location}</Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {/* Professional Details */}
           {variant === 'full' && (
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontWeight="600" fontSize="$3">
                 Professional Details
               </Text>
 
-              <XStack gap="$4" flexWrap="wrap">
+              <Row gap="$4" flexWrap="wrap">
                 {(() => {
                   const yearsValue =
                     typeof data.calculatedYearsOfExperience === 'number'
@@ -262,29 +262,29 @@ export function GeneralInfoWidget({
                       : null
                   if (formattedYears === null) return null
                   return (
-                    <YStack gap="$1" flex={1} minWidth={120}>
+                    <Stack gap="$1" flex={1} minWidth={120}>
                       <Text fontSize="$2" color="$color10">
                         Experience
                       </Text>
                       <Text fontSize="$3">
                         {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )
                 })()}
 
                 {data.industries && (
-                  <YStack gap="$1" flex={1} minWidth={120}>
+                  <Stack gap="$1" flex={1} minWidth={120}>
                     <Text fontSize="$2" color="$color10">
                       Industry
                     </Text>
                     <Text fontSize="$3">{data.industries.name}</Text>
-                  </YStack>
+                  </Stack>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </DashboardWidget>
 
       {/* Review Modal */}

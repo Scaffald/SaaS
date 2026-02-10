@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { type InquiryCreateInput, type InquiryUpdateInput, inquiryCreateSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
@@ -24,7 +24,7 @@ export function useInquiryEdit({
   initialData,
   onSuccess,
 }: UseInquiryEditOptions): UseInquiryEditReturn {
-  const toast = useToastController()
+  const toast = useToast()
   const queryClient = useQueryClient()
 
   const form = useForm<InquiryCreateInput>({
@@ -72,17 +72,20 @@ export function useInquiryEdit({
 
   const updateMutation = api.inquiries.update.useMutation({
     onSuccess: () => {
-      toast.show('Inquiry updated', {
-        message: 'The inquiry has been updated. The candidate will be notified if terms changed.',
-      })
+      toast.show({
+          title: 'Inquiry updated',
+          message: 'The inquiry has been updated. The candidate will be notified if terms changed.',
+        })
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: [['inquiries', 'getByApplication']] })
       onSuccess?.()
     },
     onError: (error: { message?: string }) => {
-      toast.show('Failed to update inquiry', {
-        message: error.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Failed to update inquiry',
+          message: error.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 

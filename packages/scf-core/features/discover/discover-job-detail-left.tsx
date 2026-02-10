@@ -9,7 +9,7 @@ import {
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -122,22 +122,22 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
         <Text marginTop="$2" color="$color11">
           Loading...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!job) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Job not found
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -146,8 +146,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (
-        <YStack flex={1} padding="$4" gap="$4">
-          <YStack gap="$3">
+        <Stack flex={1} padding="$4" gap="$4">
+          <Stack gap="$3">
             <Text fontSize="$6" fontWeight="700" color="$color12">
               Apply to {job.title}
             </Text>
@@ -155,7 +155,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
               This is a quick application. You'll answer a few screening questions and submit your
               application.
             </Text>
-          </YStack>
+          </Stack>
 
           <Button
             size="$5"
@@ -224,13 +224,13 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
               }}
             />
           )}
-        </YStack>
+        </Stack>
       )
     }
 
     // Full wizard flow
     return (
-      <YStack flex={1} height="100%">
+      <Stack flex={1} height="100%">
         <ApplicationWizard
           jobId={job.id}
           jobTitle={job.title}
@@ -263,15 +263,15 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         />
-      </YStack>
+      </Stack>
     )
   }
 
   // External job - show external link button
   if (isExternal && 'company_name' in job && job.url) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
-        <YStack gap="$3">
+      <Stack flex={1} padding="$4" gap="$4">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Apply to this Position
           </Text>
@@ -279,7 +279,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.
           </Text>
-        </YStack>
+        </Stack>
 
         <Button
           size="$5"
@@ -310,14 +310,14 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         >
           Back to Jobs
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   // External job without URL
   if (isExternal) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
         <Text fontSize="$5" fontWeight="600" color="$color11" textAlign="center">
           Application link not available
         </Text>
@@ -330,7 +330,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         >
           Back to Jobs
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 

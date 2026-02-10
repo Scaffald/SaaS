@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Progress, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import {
   type BackgroundCheckDetail,
@@ -101,30 +101,30 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   )
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap="$4">
+      <Stack gap="$2">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Overall progress
           </Text>
           <Text fontSize="$2" color="$color10">
             {progress}%
           </Text>
-        </XStack>
+        </Row>
         <Progress value={progress} max={100} backgroundColor="$color3" size="$2">
           <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
         </Progress>
         <Text fontSize="$2" color="$color10">
           {statusMeta.description}
         </Text>
-      </YStack>
+      </Stack>
 
       {normalizedComponents.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Component status
           </Text>
-          <YStack gap="$2">
+          <Stack gap="$2">
             {normalizedComponents.map((component) => {
               const componentStatusMeta =
                 typeof component.status === 'string'
@@ -134,7 +134,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                 ? getStatusToneColors(componentStatusMeta.tone)
                 : getStatusToneColors('neutral')
               return (
-                <XStack
+                <Row
                   key={component.id}
                   justifyContent="space-between"
                   alignItems="center"
@@ -144,7 +144,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <YStack gap="$1" flex={1}>
+                  <Stack gap="$1" flex={1}>
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       {component.label}
                     </Text>
@@ -153,9 +153,9 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                         Completed {formatDate(component.completedAt)}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                   {componentStatusMeta && (
-                    <XStack
+                    <Row
                       paddingHorizontal="$2"
                       paddingVertical="$1"
                       backgroundColor={componentColors.background}
@@ -166,35 +166,35 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                       <Text fontSize="$2" fontWeight="500" color={componentColors.text}>
                         {componentStatusMeta.label}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
-                </XStack>
+                </Row>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {normalizedHistory.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Recent activity
           </Text>
-          <YStack gap="$2">
+          <Stack gap="$2">
             {normalizedHistory.map((entry, index) => {
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
               const colors = getStatusToneColors(historyMeta.tone)
               return (
-                <XStack key={`${entry.status}-${index}`} gap="$3" alignItems="center">
-                  <YStack width={10} alignItems="center">
-                    <YStack
+                <Row key={`${entry.status}-${index}`} gap="$3" alignItems="center">
+                  <Stack width={10} alignItems="center">
+                    <Stack
                       width={2}
                       flex={1}
                       backgroundColor="$color5"
                       opacity={index === normalizedHistory.length - 1 ? 0 : 1}
                     />
-                  </YStack>
-                  <YStack
+                  </Stack>
+                  <Stack
                     flex={1}
                     padding="$3"
                     backgroundColor="$color2"
@@ -206,7 +206,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                     <Text fontSize="$3" fontWeight="500" color={colors.text}>
                       {historyMeta.label}
                     </Text>
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       {entry.occurredAt && (
                         <Text fontSize="$2" color="$color10">
                           {formatDate(entry.occurredAt)}
@@ -220,20 +220,20 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                           </Text>
                         </>
                       )}
-                    </XStack>
-                  </YStack>
-                </XStack>
+                    </Row>
+                  </Stack>
+                </Row>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$3" fontWeight="600" color="$color12">
           Key dates
         </Text>
-        <YStack gap="$1">
+        <Stack gap="$1">
           <Text fontSize="$2" color="$color10">
             Started: {formatDate(createdAt)}
           </Text>
@@ -252,8 +252,8 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
               Expires: {formatDate(expiresAt)}
             </Text>
           )}
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 })

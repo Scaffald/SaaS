@@ -5,7 +5,6 @@ import type { FC, ReactNode } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
-import { TamaguiProvider } from './tamagui'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
 import { ScaffaldJobsSdkProviderFromSession } from '../utils/jobs-sdk-context'
@@ -45,7 +44,6 @@ const compose = (providers: FC<{ children: ReactNode }>[]) =>
 
 const Providers = compose([
   UniversalThemeProvider,
-  TamaguiProvider,
   CookieConsentProvider,
   ToastProvider,
   QueryClientProvider,

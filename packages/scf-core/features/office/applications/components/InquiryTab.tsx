@@ -2,7 +2,7 @@ import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
 
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, YStack } from '@unicornlove/ui'
+import { Button, Stack } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 
 type InquiryQueryOutput = NonNullable<
@@ -29,13 +29,13 @@ export function InquiryTab({
   const { inquiry } = data
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {onEditInquiry && (
-        <YStack alignItems="flex-end">
+        <Stack alignItems="flex-end">
           <Button size="$3" variant="outlined" onPress={onEditInquiry}>
             {editLabel}
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       <InquiryViewOrganization
@@ -46,6 +46,6 @@ export function InquiryTab({
       />
 
       <InquiryHistoryTimeline inquiryId={inquiry.id} />
-    </YStack>
+    </Stack>
   )
 }

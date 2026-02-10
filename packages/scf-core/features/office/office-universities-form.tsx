@@ -1,11 +1,11 @@
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, H4, Input, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, H4, Input, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 
 const universitySchema = z.object({
@@ -46,7 +46,7 @@ export function OfficeUniversitiesForm({
   onCancel,
 }: OfficeUniversitiesFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   const {
     control,
@@ -70,32 +70,40 @@ export function OfficeUniversitiesForm({
   // Mutations
   const createMutation = api.office.universities.createUniversity.useMutation({
     onSuccess: () => {
-      toast.show('Success', {
-        message: 'University created successfully',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'University created successfully',
+          variant: 'success',
+        })
       reset()
       onUniversitySaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create university'
-      toast.show('Error', {
-        message: errorMessage,
-      })
+      toast.show({
+          title: 'Error',
+          message: errorMessage,
+          variant: 'error',
+        })
     },
   })
 
   const updateMutation = api.office.universities.updateUniversity.useMutation({
     onSuccess: () => {
-      toast.show('Success', {
-        message: 'University updated successfully',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'University updated successfully',
+          variant: 'success',
+        })
       onUniversitySaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update university'
-      toast.show('Error', {
-        message: errorMessage,
-      })
+      toast.show({
+          title: 'Error',
+          message: errorMessage,
+          variant: 'error',
+        })
     },
   })
 
@@ -172,8 +180,8 @@ export function OfficeUniversitiesForm({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4" padding="$4">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$4" padding="$4">
+        <Row justifyContent="space-between" alignItems="center">
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
             <Button
@@ -186,11 +194,11 @@ export function OfficeUniversitiesForm({
               Cancel
             </Button>
           )}
-        </XStack>
+        </Row>
 
-        <YStack gap="$4">
+        <Stack gap="$4">
           {/* Name */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Name <Text color="$red10">*</Text>
             </Text>
@@ -212,10 +220,10 @@ export function OfficeUniversitiesForm({
                 {errors.name.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Vanity URL */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Vanity URL <Text color="$red10">*</Text>
             </Text>
@@ -240,10 +248,10 @@ export function OfficeUniversitiesForm({
                 {errors.slug.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Country */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Country <Text color="$red10">*</Text>
             </Text>
@@ -265,10 +273,10 @@ export function OfficeUniversitiesForm({
                 {errors.country.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Alpha Two Code */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Country Code <Text color="$red10">*</Text>
             </Text>
@@ -294,10 +302,10 @@ export function OfficeUniversitiesForm({
                 {errors.alpha_two_code.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* State/Province */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">State/Province</Text>
             <Text fontSize="$2" color="$color11">
               Optional state or province (e.g. Massachusetts, Ontario)
@@ -314,10 +322,10 @@ export function OfficeUniversitiesForm({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Domains */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Domains</Text>
             <Text fontSize="$2" color="$color11">
               Email domains (comma-separated, e.g. harvard.edu, hbs.edu)
@@ -335,10 +343,10 @@ export function OfficeUniversitiesForm({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Web Pages */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Web Pages</Text>
             <Text fontSize="$2" color="$color11">
               Official websites (comma-separated URLs)
@@ -356,10 +364,10 @@ export function OfficeUniversitiesForm({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Submit Button */}
-          <XStack
+          <Row
             justifyContent="flex-end"
             paddingTop="$4"
             gap="$2"
@@ -389,9 +397,9 @@ export function OfficeUniversitiesForm({
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     </DashboardWidget>
   )
 }

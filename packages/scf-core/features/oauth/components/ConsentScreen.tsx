@@ -5,7 +5,7 @@
 
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
-import { Button, Card, Checkbox, Image, Paragraph, Separator, SizableText, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Checkbox, Image, Paragraph, Separator, SizableText, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 
 interface ConsentScreenProps {
@@ -89,10 +89,10 @@ export function ConsentScreen({
   }
 
   return (
-    <YStack flex={1} padding="$4" maxWidth={600} alignSelf="center" gap="$4">
+    <Stack flex={1} padding="$4" maxWidth={600} alignSelf="center" gap="$4">
       <Card padding="$4" gap="$4">
-        <YStack gap="$3">
-          <XStack gap="$3" alignItems="center">
+        <Stack gap="$3">
+          <Row gap="$3" alignItems="center">
             {app.logo_url && (
               <Image
                 source={{ uri: app.logo_url }}
@@ -102,7 +102,7 @@ export function ConsentScreen({
                 backgroundColor="$color3"
               />
             )}
-            <YStack flex={1} gap="$1">
+            <Stack flex={1} gap="$1">
               <SizableText size="$6" fontWeight="600">
                 {app.name} wants to access your Scaffald account
               </SizableText>
@@ -111,8 +111,8 @@ export function ConsentScreen({
                   {app.description}
                 </Paragraph>
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {app.homepage_url && (
             <Paragraph size="$2">
@@ -121,24 +121,24 @@ export function ConsentScreen({
               </a>
             </Paragraph>
           )}
-        </YStack>
+        </Stack>
 
         <Separator />
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <SizableText size="$4" fontWeight="600">
             Permissions Requested
           </SizableText>
-          <YStack gap="$2">
+          <Stack gap="$2">
             {requestedScopes.map((scope) => (
               <ScopePermissionItem key={scope} scope={scope} />
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         <Separator />
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <SizableText size="$3" color="$color11">
             Authorizing as {user?.email}
           </SizableText>
@@ -147,21 +147,21 @@ export function ConsentScreen({
             onCheckedChange={setRememberConsent}
             label="Remember this authorization (skip consent screen in the future)"
           />
-        </YStack>
+        </Stack>
 
         <Separator />
 
-        <XStack gap="$3" justifyContent="flex-end">
+        <Row gap="$3" justifyContent="flex-end">
           <Button variant="outlined" onPress={handleDeny} disabled={isSubmitting}>
             Deny
           </Button>
           <Button onPress={handleAuthorize} disabled={isSubmitting} loading={isSubmitting}>
             Authorize
           </Button>
-        </XStack>
+        </Row>
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
-          <YStack gap="$1">
+          <Stack gap="$1">
             <SizableText size="$1" color="$color11" textAlign="center">
               <a
                 href={app.privacy_policy_url}
@@ -177,10 +177,10 @@ export function ConsentScreen({
                 </a>
               )}
             </SizableText>
-          </YStack>
+          </Stack>
         )}
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -203,15 +203,15 @@ function ScopePermissionItem({ scope }: { scope: string }) {
   const description = scopeDescriptions[scope] || scope
 
   return (
-    <XStack gap="$2" alignItems="flex-start">
+    <Row gap="$2" alignItems="flex-start">
       <SizableText size="$3">•</SizableText>
-      <YStack flex={1}>
+      <Stack flex={1}>
         <SizableText size="$3">{description}</SizableText>
         <SizableText size="$1" color="$color11">
           {scope}
         </SizableText>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }
 

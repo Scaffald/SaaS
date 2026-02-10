@@ -1,13 +1,13 @@
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
 import { api } from '@scf/core/utils/api'
-import { shadows } from '@unicornlove/ui'
+import { shadows } from '@unicornlove/beyond-ui'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
-import { useTheme, useWindowDimensions, XStack } from '@unicornlove/ui'
+import { useTheme, useWindowDimensions, Row } from '@unicornlove/beyond-ui'
 import { DrawerContent } from './DrawerContent'
 import { ScaffaldLogo } from '@scf/core/assets'
 
@@ -166,9 +166,9 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             ) : null
           },
           headerRight: () => (
-            <XStack gap="$3" alignItems="center">
+            <Row gap="$3" alignItems="center">
               <ScaffaldLogo height={22} width={22} showWordmark={false} />
-            </XStack>
+            </Row>
           ),
         })}
         drawerContent={(props) => (

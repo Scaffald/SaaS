@@ -1,5 +1,5 @@
 import { Building } from '@tamagui/lucide-icons'
-import { type GetThemeValueForKey, Image, Text, XStack, YStack } from '@unicornlove/ui'
+import { type GetThemeValueForKey, Image, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {
@@ -48,7 +48,7 @@ export const ProfileAvatar = ({
   // If avatar URL exists and is not empty, show image
   if (avatarUrl && avatarUrl.trim() !== '') {
     return (
-      <XStack
+      <Row
         width={size}
         height={size}
         borderRadius="$12"
@@ -57,13 +57,13 @@ export const ProfileAvatar = ({
         borderColor="$borderColor"
       >
         <Image source={{ uri: avatarUrl }} width={size} height={size} resizeMode="cover" />
-      </XStack>
+      </Row>
     )
   }
 
   // Fallback: show initials or organization icon
   return (
-    <YStack
+    <Stack
       width={size}
       height={size}
       borderRadius="$12"
@@ -80,6 +80,6 @@ export const ProfileAvatar = ({
           {initials}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

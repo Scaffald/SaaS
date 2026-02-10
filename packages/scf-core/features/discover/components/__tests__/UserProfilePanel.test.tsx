@@ -43,8 +43,8 @@ vi.mock('expo-router', () => ({
 }))
 
 // Mock toast
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mockShow,
   }),
 }))
@@ -153,8 +153,8 @@ vi.mock('tamagui', () => {
   const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Button,
     Text,
     Card,

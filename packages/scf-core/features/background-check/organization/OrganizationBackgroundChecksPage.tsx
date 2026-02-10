@@ -8,8 +8,8 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Label, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Label, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import { getStatusMetadata } from '../components/status.utils'
 import { OrganizationCheckDetails } from './OrganizationCheckDetails'
@@ -135,7 +135,7 @@ export function OrganizationBackgroundChecksPage() {
           accessorKey: 'workerName',
           header: 'Worker',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
-            <YStack>
+            <Stack>
               <Text fontSize="$3" fontWeight="600" color="$color12">
                 {row.original.workerName}
               </Text>
@@ -144,7 +144,7 @@ export function OrganizationBackgroundChecksPage() {
                   {row.original.workerEmail}
                 </Text>
               ) : null}
-            </YStack>
+            </Stack>
           ),
           meta: {
             width: '$20',
@@ -201,32 +201,32 @@ export function OrganizationBackgroundChecksPage() {
 
   if (isLoadingOrganizations) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color11">
           Loading organizations…
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!organizations.length) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           No organizations available
         </Text>
         <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
           Create an organization before managing background checks.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1}>
-      <YStack padding="$4" gap="$3">
-        <YStack gap="$2">
+    <Stack flex={1}>
+      <Stack padding="$4" gap="$3">
+        <Stack gap="$2">
           <Label htmlFor="office-background-checks-organization">Organization</Label>
           <ResponsiveSelect
             value={selectedOrganizationId ?? ''}
@@ -246,9 +246,9 @@ export function OrganizationBackgroundChecksPage() {
               label: (org.name as string) ?? 'Untitled organization',
             }))}
           />
-        </YStack>
+        </Stack>
 
-        <XStack gap="$2" justifyContent="flex-end">
+        <Row gap="$2" justifyContent="flex-end">
           <Button
             size="$3"
             variant="outlined"
@@ -267,8 +267,8 @@ export function OrganizationBackgroundChecksPage() {
           >
             Request Check
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {selectedOrganizationId ? (
         <OfficePageLayout
@@ -290,25 +290,25 @@ export function OrganizationBackgroundChecksPage() {
           onRowView={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
-        <YStack flex={1} padding="$4" gap="$3" alignItems="center" justifyContent="center">
+        <Stack flex={1} padding="$4" gap="$3" alignItems="center" justifyContent="center">
           <Text fontSize="$5" fontWeight="700" color="$color12">
             Select an organization to view background checks
           </Text>
           <Text fontSize="$3" color="$color11">
             Choose an organization above to manage screening requests and results.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {selectedCheckId ? (
-        <YStack paddingHorizontal="$4" paddingBottom="$6" gap="$3">
+        <Stack paddingHorizontal="$4" paddingBottom="$6" gap="$3">
           <OrganizationCheckDetails
             checkId={selectedCheckId}
             summary={rows.find((row: CheckRow) => row.id === selectedCheckId)?.raw}
             onClose={() => setSelectedCheckId(null)}
           />
-        </YStack>
+        </Stack>
       ) : null}
-    </YStack>
+    </Stack>
   )
 }

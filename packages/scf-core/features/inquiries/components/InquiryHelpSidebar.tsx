@@ -1,19 +1,19 @@
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { HelpCircle, Info } from '@tamagui/lucide-icons'
 
 export function InquiryHelpSidebar() {
   return (
-    <YStack gap="$4">
-      <XStack alignItems="center" gap="$2">
+    <Stack gap="$4">
+      <Row alignItems="center" gap="$2">
         <HelpCircle size={20} color="$color11" />
         <Text fontSize="$5" fontWeight="700">
           Help & Tips
         </Text>
-      </XStack>
+      </Row>
 
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Employment Section Help */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Employment Terms
           </Text>
@@ -21,10 +21,10 @@ export function InquiryHelpSidebar() {
             Specify the employment type, schedule, and working hours. Mark fields as non-negotiable
             to indicate they cannot be changed.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Compensation Section Help */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Compensation
           </Text>
@@ -32,10 +32,10 @@ export function InquiryHelpSidebar() {
             Enter a single rate or a range (e.g., $30-40). The candidate will see your proposed
             compensation terms.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Capabilities Section Help */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Capabilities
           </Text>
@@ -43,10 +43,10 @@ export function InquiryHelpSidebar() {
             Indicate required capabilities such as endurance. The candidate will need to respond to
             these questions.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Other Section Help */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Additional Terms
           </Text>
@@ -54,22 +54,22 @@ export function InquiryHelpSidebar() {
             Specify any additional requirements such as travel, overtime, or driver's license. Add
             notes to provide context.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Negotiation Help */}
-        <YStack gap="$2" padding="$3" backgroundColor="$blue2" borderRadius="$3">
-          <XStack alignItems="center" gap="$2">
+        <Stack gap="$2" padding="$3" backgroundColor="$blue2" borderRadius="$3">
+          <Row alignItems="center" gap="$2">
             <Info size={16} color="$blue10" />
             <Text fontSize="$4" fontWeight="600" color="$blue11">
               About Negotiation
             </Text>
-          </XStack>
+          </Row>
           <Text fontSize="$3" color="$blue11">
             Fields marked as negotiable can be discussed with the candidate. Non-negotiable fields
             are fixed and cannot be changed.
           </Text>
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

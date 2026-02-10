@@ -1,8 +1,8 @@
 import type { CustomQuestionAnswer } from '@scf/schemas'
-import { ToggleSwitch } from '@unicornlove/ui'
+import { ToggleSwitch } from '@unicornlove/beyond-ui'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface CustomQuestion {
   id: string
@@ -219,20 +219,20 @@ export function CustomQuestionsStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <Stack gap="$6" width="100%" maxWidth={800} padding="$4">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
           Additional Questions
         </Text>
         <Text fontSize="$4" color="$color11">
           The employer has requested additional information
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Validation Summary */}
       {Object.entries(errors).some(([, error]) => error !== undefined) && (
-        <YStack
+        <Stack
           padding="$4"
           borderRadius="$4"
           backgroundColor="$red2"
@@ -243,7 +243,7 @@ export function CustomQuestionsStep({
           <Text fontSize="$4" fontWeight="600" color="$red11">
             Please complete the following:
           </Text>
-          <YStack gap="$1">
+          <Stack gap="$1">
             {Object.entries(errors)
               .filter(([, error]) => error !== undefined)
               .map(([questionId, error]) => {
@@ -254,14 +254,14 @@ export function CustomQuestionsStep({
                   </Text>
                 )
               })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Questions */}
-      <YStack gap="$5">
+      <Stack gap="$5">
         {questions.map((question, index) => (
-          <YStack key={question.id} gap="$2">
+          <Stack key={question.id} gap="$2">
             <Label fontSize="$4" fontWeight="600">
               {index + 1}. {question.question}
               {question.required && (
@@ -273,7 +273,7 @@ export function CustomQuestionsStep({
 
             {/* Short Text Input */}
             {question.type === 'short_text' && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Input
                   value={(getAnswer(question.id) as string) || ''}
                   onChangeText={(text) =>
@@ -290,7 +290,7 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <XStack justifyContent="flex-end">
+                <Row justifyContent="flex-end">
                   <Text
                     fontSize="$2"
                     color={
@@ -299,13 +299,13 @@ export function CustomQuestionsStep({
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
                   </Text>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
             {/* Long Text Input */}
             {question.type === 'long_text' && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <TextArea
                   value={(getAnswer(question.id) as string) || ''}
                   onChangeText={(text) =>
@@ -323,7 +323,7 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <XStack justifyContent="flex-end">
+                <Row justifyContent="flex-end">
                   <Text
                     fontSize="$2"
                     color={
@@ -332,15 +332,15 @@ export function CustomQuestionsStep({
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
                   </Text>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
             {/* Single Choice (Radio Buttons) */}
             {question.type === 'single_choice' && question.options && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {question.options.map((option) => (
-                  <XStack
+                  <Row
                     key={option}
                     gap="$3"
                     alignItems="center"
@@ -362,7 +362,7 @@ export function CustomQuestionsStep({
                     cursor="pointer"
                     disabled={isSubmitting}
                   >
-                    <YStack
+                    <Stack
                       width={20}
                       height={20}
                       borderRadius="$12"
@@ -373,31 +373,31 @@ export function CustomQuestionsStep({
                       backgroundColor="$background"
                     >
                       {getAnswer(question.id) === option && (
-                        <YStack
+                        <Stack
                           width={12}
                           height={12}
                           borderRadius="$12"
                           backgroundColor="$blue9"
                         />
                       )}
-                    </YStack>
+                    </Stack>
                     <Text fontSize="$3" color="$color12" flex={1}>
                       {option}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
 
             {/* Multiple Choice (Checkboxes) */}
             {question.type === 'multiple_choice' && question.options && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {question.options.map((option) => {
                   const currentAnswers = (getAnswer(question.id) as string[]) || []
                   const isSelected = currentAnswers.includes(option)
 
                   return (
-                    <XStack
+                    <Row
                       key={option}
                       gap="$3"
                       alignItems="center"
@@ -418,7 +418,7 @@ export function CustomQuestionsStep({
                       cursor="pointer"
                       disabled={isSubmitting}
                     >
-                      <YStack
+                      <Stack
                         width={20}
                         height={20}
                         borderRadius="$2"
@@ -433,19 +433,19 @@ export function CustomQuestionsStep({
                             ✓
                           </Text>
                         )}
-                      </YStack>
+                      </Stack>
                       <Text fontSize="$3" color="$color12" flex={1}>
                         {option}
                       </Text>
-                    </XStack>
+                    </Row>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Yes/No Toggle */}
             {question.type === 'yes_no' && (
-              <XStack gap="$4" alignItems="center">
+              <Row gap="$4" alignItems="center">
                 <ToggleSwitch
                   checked={(getAnswer(question.id) as boolean) || false}
                   onCheckedChange={(checked) =>
@@ -457,7 +457,7 @@ export function CustomQuestionsStep({
                 <Text fontSize="$3" color="$color11">
                   {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {/* Error Message */}
@@ -466,13 +466,13 @@ export function CustomQuestionsStep({
                 {errors[question.id]}
               </Text>
             )}
-          </YStack>
+          </Stack>
         ))}
-      </YStack>
+      </Stack>
 
       {/* No Questions Message */}
       {questions.length === 0 && (
-        <YStack
+        <Stack
           padding="$6"
           alignItems="center"
           gap="$2"
@@ -487,11 +487,11 @@ export function CustomQuestionsStep({
           <Text fontSize="$3" color="$color10" textAlign="center">
             You can proceed to the next step.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justifyContent="space-between" marginTop="$4">
+      <Row gap="$3" justifyContent="space-between" marginTop="$4">
         <Button
           size="$4"
           variant="outlined"
@@ -509,7 +509,7 @@ export function CustomQuestionsStep({
         >
           {isSubmitting ? 'Saving...' : 'Continue'}
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Label, TextArea } from '@unicornlove/ui'
+import { Label, TextArea } from '@unicornlove/beyond-ui'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string
@@ -71,7 +71,7 @@ export function CompensationBenefitsSection({
   }
 
   return (
-    <YStack
+    <Stack
       gap="$4"
       padding="$4"
       backgroundColor="$background"
@@ -87,7 +87,7 @@ export function CompensationBenefitsSection({
       </Text>
 
       {/* Benefits Summary */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>Benefits summary</Label>
         <TextArea
           placeholder="Describe health insurance, PTO, retirement plans, etc."
@@ -95,25 +95,25 @@ export function CompensationBenefitsSection({
           onChangeText={(text) => handleChange('benefits_summary', text || undefined)}
           height={100}
         />
-      </YStack>
+      </Stack>
 
       {/* Bonus Structure */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Has bonus structure</Label>
           <Text fontSize="$2" color="$color10">
             Performance or other bonus opportunities
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.has_bonus_structure || false}
           onCheckedChange={(checked) => handleChange('has_bonus_structure', checked)}
           aria-label="Has bonus structure"
         />
-      </XStack>
+      </Row>
 
       {localState.has_bonus_structure && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label>Bonus details</Label>
           <TextArea
             placeholder="Describe bonus structure, eligibility, and potential amounts"
@@ -121,26 +121,26 @@ export function CompensationBenefitsSection({
             onChangeText={(text) => handleChange('bonus_details', text || undefined)}
             height={80}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Equity */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Has equity compensation</Label>
           <Text fontSize="$2" color="$color10">
             Stock options, RSUs, or other equity
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.has_equity || false}
           onCheckedChange={(checked) => handleChange('has_equity', checked)}
           aria-label="Has equity compensation"
         />
-      </XStack>
+      </Row>
 
       {localState.has_equity && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label>Equity details</Label>
           <TextArea
             placeholder="Describe equity compensation structure"
@@ -148,11 +148,11 @@ export function CompensationBenefitsSection({
             onChangeText={(text) => handleChange('equity_details', text || undefined)}
             height={80}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Sign-on Bonus */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>Sign-on bonus ($)</Label>
         <Input
           placeholder="0.00"
@@ -165,25 +165,25 @@ export function CompensationBenefitsSection({
             handleChange('sign_on_bonus_cents', value > 0 ? Math.round(value * 100) : undefined)
           }}
         />
-      </YStack>
+      </Stack>
 
       {/* Relocation Package */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Has relocation package</Label>
           <Text fontSize="$2" color="$color10">
             Relocation assistance available
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.has_relocation_package || false}
           onCheckedChange={(checked) => handleChange('has_relocation_package', checked)}
           aria-label="Has relocation package"
         />
-      </XStack>
+      </Row>
 
       {localState.has_relocation_package && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label>Relocation package details</Label>
           <TextArea
             placeholder="Describe relocation assistance offered"
@@ -191,26 +191,26 @@ export function CompensationBenefitsSection({
             onChangeText={(text) => handleChange('relocation_package_details', text || undefined)}
             height={80}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Overtime Eligible */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Overtime eligible</Label>
           <Text fontSize="$2" color="$color10">
             Position eligible for overtime pay
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.overtime_eligible || false}
           onCheckedChange={(checked) => handleChange('overtime_eligible', checked)}
           aria-label="Overtime eligible"
         />
-      </XStack>
+      </Row>
 
       {/* Pay Frequency */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>Pay frequency</Label>
         <ResponsiveSelect
           value={localState.pay_frequency || ''}
@@ -221,7 +221,7 @@ export function CompensationBenefitsSection({
             label: freq.label,
           }))}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

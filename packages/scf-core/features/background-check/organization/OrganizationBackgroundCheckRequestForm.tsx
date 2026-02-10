@@ -4,13 +4,13 @@ import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { CircleAlert } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Input, Label, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -42,7 +42,7 @@ const getPackageTier = (pkg: PackageSummary | null) => {
 
 export function OrganizationBackgroundCheckRequestForm() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   const params = useLocalSearchParams<{ organizationId?: string | string[] }>()
@@ -140,9 +140,10 @@ export function OrganizationBackgroundCheckRequestForm() {
         payment_intent_id: paymentIntentId,
       })
 
-      toast.show('Background check requested', {
-        message: 'Worker has been invited to start their background check.',
-      })
+      toast.show({
+          title: 'Background check requested',
+          message: 'Worker has been invited to start their background check.',
+        })
 
       const orgId = organizationId
       if (orgId) {
@@ -157,7 +158,10 @@ export function OrganizationBackgroundCheckRequestForm() {
       setPaymentSession(null)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to confirm payment.'
-      toast.show('Payment confirmation failed', { message, type: 'error' })
+      toast.show({
+          title: 'Payment confirmation failed',
+          variant: 'error',
+        })
     }
   }
 
@@ -167,17 +171,24 @@ export function OrganizationBackgroundCheckRequestForm() {
     }
 
     if (!organizationId) {
-      toast.show('Select an organization', {
-        message: 'Choose an organization before requesting a check.',
-      })
+      toast.show({
+          title: 'Select an organization',
+          message: 'Choose an organization before requesting a check.',
+        })
       return
     }
     if (!selectedPackage) {
-      toast.show('Select a package', { message: 'Choose a background check package to continue.' })
+      toast.show({
+          title: 'Select a package',
+          message: 'Choose a background check package to continue.',
+        })
       return
     }
     if (!selectedWorkerId) {
-      toast.show('Select a worker', { message: 'Choose the worker you want to screen.' })
+      toast.show({
+          title: 'Select a worker',
+          message: 'Choose the worker you want to screen.',
+        })
       return
     }
 
@@ -202,44 +213,48 @@ export function OrganizationBackgroundCheckRequestForm() {
       })
 
       setPaymentSession(response)
-      toast.show('Payment required', {
-        message: 'Enter billing details to submit this background check.',
-      })
+      toast.show({
+          title: 'Payment required',
+          message: 'Enter billing details to submit this background check.',
+        })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to create payment session.'
       setRequestError(message)
-      toast.show('Unable to start payment', { message, type: 'error' })
+      toast.show({
+          title: 'Unable to start payment',
+          variant: 'error',
+        })
     }
   }
 
   if (isLoadingOrganizations || isLoadingPackages) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color11">
           Loading options…
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!organizations.length) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           No organizations available
         </Text>
         <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
           Create an organization before requesting a background check.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <YStack flex={1} gap="$4" paddingHorizontal="$4" paddingVertical="$6">
-        <YStack gap="$1">
+      <Stack flex={1} gap="$4" paddingHorizontal="$4" paddingVertical="$6">
+        <Stack gap="$1">
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Request Background Check
           </Text>
@@ -247,10 +262,10 @@ export function OrganizationBackgroundCheckRequestForm() {
             Invite a worker to complete the required screening package on behalf of your
             organization.
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
-          <YStack gap="$2">
+        <Stack gap="$3">
+          <Stack gap="$2">
             <Label htmlFor="org-select">Organization</Label>
             <ResponsiveSelect
               value={organizationId ?? ''}
@@ -270,9 +285,9 @@ export function OrganizationBackgroundCheckRequestForm() {
                 label: (org.name as string) ?? 'Untitled organization',
               }))}
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Label htmlFor="package-select">Background check package</Label>
             <ResponsiveSelect
               value={selectedPackageId ?? ''}
@@ -293,9 +308,9 @@ export function OrganizationBackgroundCheckRequestForm() {
                 {selectedPackage.description}
               </Text>
             ) : null}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Label htmlFor="worker-search">Worker</Label>
             <Input
               id="worker-search"
@@ -330,9 +345,9 @@ export function OrganizationBackgroundCheckRequestForm() {
                     })
               }
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Label htmlFor="job-select">Related job (optional)</Label>
             <ResponsiveSelect
               value={selectedJobId ?? ''}
@@ -351,9 +366,9 @@ export function OrganizationBackgroundCheckRequestForm() {
                 })),
               ]}
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Label htmlFor="additional-notes">Internal notes (optional)</Label>
             <TextArea
               id="additional-notes"
@@ -362,15 +377,15 @@ export function OrganizationBackgroundCheckRequestForm() {
               onChangeText={setNotes}
               rows={4}
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
-            <XStack gap="$2" alignItems="center">
+          <Stack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
+            <Row gap="$2" alignItems="center">
               <CircleAlert size={18} color="$color11" />
               <Text fontSize="$3" fontWeight="600" color="$color12">
                 Cost summary
               </Text>
-            </XStack>
+            </Row>
             <Text fontSize="$3" color="$color11">
               Package cost:{' '}
               <Text fontWeight="700" color="$color12">
@@ -381,16 +396,16 @@ export function OrganizationBackgroundCheckRequestForm() {
               Charges are collected immediately via Stripe. Screenings are submitted after payment
               succeeds.
             </Text>
-          </YStack>
+          </Stack>
 
           {requestError && (
-            <YStack backgroundColor="$red3" padding="$3" borderRadius="$4">
+            <Stack backgroundColor="$red3" padding="$3" borderRadius="$4">
               <Text color="$red11">{requestError}</Text>
-            </YStack>
+            </Stack>
           )}
 
           {paymentSession && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Complete payment
               </Text>
@@ -402,11 +417,11 @@ export function OrganizationBackgroundCheckRequestForm() {
                 disabled={confirmPaymentMutation.isPending}
                 onSuccess={handlePaymentSuccess}
               />
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
-        <XStack gap="$3">
+        <Row gap="$3">
           <Button
             flex={1}
             size="$4"
@@ -427,7 +442,7 @@ export function OrganizationBackgroundCheckRequestForm() {
               {requestPaymentMutation.isPending ? 'Preparing payment…' : 'Continue to payment'}
             </Button>
           )}
-        </XStack>
+        </Row>
         {paymentSession && (
           <Button
             size="$3"
@@ -444,7 +459,7 @@ export function OrganizationBackgroundCheckRequestForm() {
             Reset payment form
           </Button>
         )}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

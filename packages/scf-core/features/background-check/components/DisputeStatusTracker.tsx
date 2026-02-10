@@ -8,9 +8,9 @@ import {
   Separator,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
 
@@ -98,12 +98,12 @@ export function DisputeStatusTracker({
 
   if (isLoading) {
     return (
-      <YStack gap="$2" alignItems="center" paddingVertical="$4">
+      <Stack gap="$2" alignItems="center" paddingVertical="$4">
         <Spinner size="small" color="$color10" />
         <Text fontSize="$2" color="$color10">
           Loading dispute history…
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -131,8 +131,8 @@ export function DisputeStatusTracker({
   const toneColors = TONE_COLORS[statusMeta.tone]
 
   return (
-    <YStack gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap="$3">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Dispute status
         </Text>
@@ -145,9 +145,9 @@ export function DisputeStatusTracker({
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
-      <YStack
+      <Stack
         gap="$2"
         padding="$3"
         backgroundColor={toneColors.background}
@@ -168,7 +168,7 @@ export function DisputeStatusTracker({
         <Text fontSize="$2" color={toneColors.text}>
           Reason: {latestDispute.dispute_reason}
         </Text>
-      </YStack>
+      </Stack>
 
       <Card
         backgroundColor="$color2"
@@ -190,12 +190,12 @@ export function DisputeStatusTracker({
 
         <Separator />
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           {disputes.map((dispute) => {
             const meta = getStatusMetadata(dispute.status)
             const colors = TONE_COLORS[meta.tone]
             return (
-              <YStack
+              <Stack
                 key={dispute.id}
                 backgroundColor="$background"
                 borderColor="$borderColor"
@@ -205,7 +205,7 @@ export function DisputeStatusTracker({
                 paddingVertical="$2"
                 gap="$1"
               >
-                <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                <Row gap="$2" alignItems="center" flexWrap="wrap">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     {meta.label}
                   </Text>
@@ -213,7 +213,7 @@ export function DisputeStatusTracker({
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>
-                </XStack>
+                </Row>
                 <Text fontSize="$2" color="$color10">
                   Reason: {dispute.dispute_reason}
                 </Text>
@@ -226,11 +226,11 @@ export function DisputeStatusTracker({
                     {dispute.resolution_notes ? ` — ${dispute.resolution_notes}` : ''}
                   </Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )
           })}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

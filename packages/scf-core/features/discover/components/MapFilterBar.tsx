@@ -1,8 +1,8 @@
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete } from '@unicornlove/ui'
+import type { AddressResult } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete } from '@unicornlove/beyond-ui'
 import { List, RotateCcw } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -86,7 +86,7 @@ export const MapFilterBar = ({
   )
 
   return (
-    <XStack
+    <Row
       width="100%"
       paddingHorizontal="$4"
       paddingVertical="$3"
@@ -98,7 +98,7 @@ export const MapFilterBar = ({
     >
       {/* Search Input */}
       {tokenValidation.valid ? (
-        <YStack flex={1} minWidth={200}>
+        <Stack flex={1} minWidth={200}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
@@ -119,9 +119,9 @@ export const MapFilterBar = ({
               borderRadius: '$4',
             }}
           />
-        </YStack>
+        </Stack>
       ) : (
-        <YStack
+        <Stack
           flex={1}
           minWidth={200}
           backgroundColor="$background"
@@ -131,15 +131,15 @@ export const MapFilterBar = ({
           borderColor="$red8"
           gap="$2"
         >
-          <XStack alignItems="center" gap="$2">
+          <Row alignItems="center" gap="$2">
             <Text fontSize="$3" color="$red10" fontWeight="600">
               Map Search Unavailable
             </Text>
-          </XStack>
+          </Row>
           <Text fontSize="$2" color="$color10">
             {tokenValidation.error}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Filter Dropdown */}
@@ -183,6 +183,6 @@ export const MapFilterBar = ({
         pressStyle={{ backgroundColor: '$backgroundPress' }}
         aria-label="Reset filters and search"
       />
-    </XStack>
+    </Row>
   )
 }

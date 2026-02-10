@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Briefcase, Building2, ExternalLink, MapPin, User } from '@tamagui/lucide-icons'
-import { Button, Spinner, Text, View, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, View, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ProfileHoverCardProps {
   /** Pin ID (user ID or organization ID) */
@@ -110,16 +110,16 @@ export function ProfileHoverCard({
       onMouseLeave={onHoverCardLeave}
     >
       {isLoading ? (
-        <YStack alignItems="center" paddingVertical="$4" gap="$2">
+        <Stack alignItems="center" paddingVertical="$4" gap="$2">
           <Spinner size="small" color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Loading...
           </Text>
-        </YStack>
+        </Stack>
       ) : pinType === 'worker' && workerPreview ? (
-        <YStack gap="$2">
+        <Stack gap="$2">
           {/* Header with avatar and name */}
-          <XStack gap="$3" alignItems="center">
+          <Row gap="$3" alignItems="center">
             {avatarUrl ? (
               <View
                 width={48}
@@ -146,7 +146,7 @@ export function ProfileHoverCard({
                 <User size={24} color="$blue10" />
               </View>
             )}
-            <YStack flex={1} gap="$1">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
                 {workerPreview.displayName}
               </Text>
@@ -155,7 +155,7 @@ export function ProfileHoverCard({
                   {workerPreview.headline}
                 </Text>
               )}
-            </YStack>
+            </Stack>
             {profileUrl ? (
               <Button
                 size="$2"
@@ -166,21 +166,21 @@ export function ProfileHoverCard({
                 onPress={handleOpenProfile}
               />
             ) : null}
-          </XStack>
+          </Row>
 
           {/* Location */}
           {workerPreview.location && (
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <MapPin size={14} color="$color10" />
               <Text fontSize="$3" color="$color11" numberOfLines={1}>
                 {workerPreview.location}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {/* Top Skills */}
           {workerPreview.topSkills && workerPreview.topSkills.length > 0 && (
-            <XStack gap="$1" flexWrap="wrap">
+            <Row gap="$1" flexWrap="wrap">
               {workerPreview.topSkills
                 .slice(0, 3)
                 .map((skill: (typeof workerPreview.topSkills)[0]) => {
@@ -208,13 +208,13 @@ export function ProfileHoverCard({
                   +{workerPreview.topSkills.length - 3} more
                 </Text>
               )}
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
       ) : pinType === 'organization' && organization ? (
-        <YStack gap="$2">
+        <Stack gap="$2">
           {/* Header with icon and name */}
-          <XStack gap="$3" alignItems="center">
+          <Row gap="$3" alignItems="center">
             <View
               width={48}
               height={48}
@@ -225,7 +225,7 @@ export function ProfileHoverCard({
             >
               <Building2 size={24} color="$blue10" />
             </View>
-            <YStack flex={1} gap="$1">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
                 {organization.name}
               </Text>
@@ -234,7 +234,7 @@ export function ProfileHoverCard({
                   {organization.industry_name}
                 </Text>
               )}
-            </YStack>
+            </Stack>
             {profileUrl ? (
               <Button
                 size="$2"
@@ -245,13 +245,13 @@ export function ProfileHoverCard({
                 onPress={handleOpenProfile}
               />
             ) : null}
-          </XStack>
+          </Row>
 
           {/* Location */}
           {organization.address &&
             typeof organization.address === 'object' &&
             'city' in organization.address && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <MapPin size={14} color="$color10" />
                 <Text fontSize="$3" color="$color11" numberOfLines={1}>
                   {[
@@ -261,28 +261,28 @@ export function ProfileHoverCard({
                     .filter(Boolean)
                     .join(', ')}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
           {/* Key Metrics */}
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap="$3" flexWrap="wrap">
             {jobsCount > 0 && (
-              <XStack gap="$1" alignItems="center">
+              <Row gap="$1" alignItems="center">
                 <Briefcase size={14} color="$green10" />
                 <Text fontSize="$2" color="$color11">
                   {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
                 </Text>
-              </XStack>
+              </Row>
             )}
             {organization.employee_count_range && (
-              <XStack gap="$1" alignItems="center">
+              <Row gap="$1" alignItems="center">
                 <Text fontSize="$2" color="$color11">
                   {organization.employee_count_range}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       ) : null}
     </View>
   )

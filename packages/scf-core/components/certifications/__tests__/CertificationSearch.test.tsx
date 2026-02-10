@@ -89,8 +89,8 @@ const mockTamagui = vi.hoisted(() => {
   return {
     Input,
     Text,
-    YStack: createComponent(),
-    XStack: createComponent(),
+    Stack: createComponent(),
+    Row: createComponent(),
     ScrollView: ({ children }: { children?: ReactNode }) => (
       <div data-testid="scroll-view">{children}</div>
     ),

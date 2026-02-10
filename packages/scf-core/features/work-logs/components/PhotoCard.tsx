@@ -1,7 +1,7 @@
 import { Check, Edit3, Eye, EyeOff, Tag, Trash2, X } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import {
   Button,
   Image,
@@ -11,9 +11,9 @@ import {
   Spinner,
   Text,
   View,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 
@@ -132,7 +132,7 @@ export function PhotoCard({
   }
 
   return (
-    <YStack
+    <Stack
       borderWidth={1}
       borderColor="$borderColor"
       borderRadius="$4"
@@ -144,7 +144,7 @@ export function PhotoCard({
         {photo.signedUrl ? (
           <Image source={{ uri: photo.signedUrl }} width="100%" height="100%" resizeMode="cover" />
         ) : (
-          <YStack
+          <Stack
             position="absolute"
             justifyContent="center"
             alignItems="center"
@@ -155,10 +155,10 @@ export function PhotoCard({
             backgroundColor="$color3"
           >
             <Spinner color="$color10" />
-          </YStack>
+          </Stack>
         )}
         {(photo.isRefreshingUrl || isDeleting) && (
-          <YStack
+          <Stack
             position="absolute"
             top={0}
             right={0}
@@ -173,19 +173,19 @@ export function PhotoCard({
             <SizableText color="white" size="$3">
               {isDeleting ? 'Removing…' : 'Refreshing…'}
             </SizableText>
-          </YStack>
+          </Stack>
         )}
       </View>
 
-      <YStack gap="$3" padding="$3">
-        <XStack alignItems="center" justifyContent="space-between" gap="$3">
-          <XStack gap="$2" alignItems="center">
+      <Stack gap="$3" padding="$3">
+        <Row alignItems="center" justifyContent="space-between" gap="$3">
+          <Row gap="$2" alignItems="center">
             <Tag size={16} color="$color10" />
             <Text fontWeight="600" fontSize="$3">
               {typeOption?.label ?? 'Uncategorized'}
             </Text>
-          </XStack>
-          <XStack gap="$2">
+          </Row>
+          <Row gap="$2">
             {canToggleVisibility ? (
               <Button
                 size="$2"
@@ -212,15 +212,15 @@ export function PhotoCard({
                 Delete
               </Button>
             ) : null}
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600" fontSize="$3">
             Caption
           </Text>
           {canEditCaption && isEditingCaption ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Input
                 value={captionDraft}
                 onChangeText={setCaptionDraft}
@@ -228,7 +228,7 @@ export function PhotoCard({
                 multiline
                 numberOfLines={Platform.select({ web: undefined, default: 3 })}
               />
-              <XStack gap="$2">
+              <Row gap="$2">
                 <Button
                   size="$2"
                   icon={Check}
@@ -246,10 +246,10 @@ export function PhotoCard({
                 >
                   Cancel
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ) : canEditCaption ? (
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
                 {photo.caption ?? 'No caption provided.'}
               </Text>
@@ -262,17 +262,17 @@ export function PhotoCard({
               >
                 Edit
               </Button>
-            </XStack>
+            </Row>
           ) : (
             <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
               {photo.caption ?? 'No caption provided.'}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         <Separator />
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600" fontSize="$3">
             Photo Type
           </Text>
@@ -291,11 +291,11 @@ export function PhotoCard({
           ) : (
             <Text color="$color10">{typeOption?.label ?? 'Uncategorized'}</Text>
           )}
-        </YStack>
+        </Stack>
 
         <Separator />
 
-        <YStack gap="$1">
+        <Stack gap="$1">
           <Text fontWeight="600" fontSize="$3">
             Details
           </Text>
@@ -312,8 +312,8 @@ export function PhotoCard({
               Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}
             </Text>
           ) : null}
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

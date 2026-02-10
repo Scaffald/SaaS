@@ -17,9 +17,9 @@ import {
   ScrollView,
   Separator,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { useImportData } from '../hooks/useImportData'
 import { toConfidenceLevel } from '../utils/importConfidence'
 import { ConfidenceBadge } from './ConfidenceBadge'
@@ -110,16 +110,16 @@ export function ImportReviewScreen() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center">
+      <Stack gap="$4" padding="$4" alignItems="center">
         <Loader2 size={32} color="$color10" />
         <Text color="$color11">Retrieving imported data...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isError || !importData) {
     return (
-      <YStack gap="$3" padding="$4" alignItems="center">
+      <Stack gap="$3" padding="$4" alignItems="center">
         <FileWarning size={32} color="$red10" />
         <Text color="$red11" fontWeight="600">
           We couldn’t load your import data
@@ -130,7 +130,7 @@ export function ImportReviewScreen() {
         <Button size="$4" onPress={() => refetch()}>
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -290,21 +290,21 @@ export function ImportReviewScreen() {
   }
 
   return (
-    <YStack gap="$4" padding="$4">
+    <Stack gap="$4" padding="$4">
       <Card bordered backgroundColor="$color2">
         <Card.Header padded gap="$3">
-          <XStack gap="$3" alignItems="flex-start" flexWrap="wrap">
+          <Row gap="$3" alignItems="flex-start" flexWrap="wrap">
             <Info size={20} color="$blue10" />
-            <YStack flex={1} gap="$2">
-              <XStack gap="$2" alignItems="center">
+            <Stack flex={1} gap="$2">
+              <Row gap="$2" alignItems="center">
                 <H5>Imported data overview</H5>
-              </XStack>
+              </Row>
               <Paragraph color="$color11">
                 Review and confirm the details we extracted. You can import everything, bring over a
                 subset, or clear the import and start again.
               </Paragraph>
-              <XStack gap="$3" flexWrap="wrap">
-                <XStack gap="$2" alignItems="center">
+              <Row gap="$3" flexWrap="wrap">
+                <Row gap="$2" alignItems="center">
                   <Clock
                     size={16}
                     color={expiresInLabel?.status === 'expired' ? '$red10' : '$blue10'}
@@ -315,7 +315,7 @@ export function ImportReviewScreen() {
                   >
                     {expiresInLabel?.label ?? 'Expires 24 hours after upload'}
                   </Text>
-                </XStack>
+                </Row>
                 {storedAtLabel && <Text color="$color10">Uploaded {storedAtLabel}</Text>}
                 <Text color="$color10">
                   Source:{' '}
@@ -329,20 +329,20 @@ export function ImportReviewScreen() {
                     {totalItems}
                   </Text>
                 </Text>
-              </XStack>
-            </YStack>
-          </XStack>
+              </Row>
+            </Stack>
+          </Row>
         </Card.Header>
       </Card>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Review Imported Data
         </Text>
         <Text color="$color11">
           Select the items you’d like to import. We’ll highlight anything that might need attention.
         </Text>
-      </YStack>
+      </Stack>
 
       <ImportSectionTabs
         sections={sectionTabs}
@@ -353,7 +353,7 @@ export function ImportReviewScreen() {
       <Separator />
 
       <ScrollView flex={1}>
-        <YStack gap="$3" marginTop="$3">
+        <Stack gap="$3" marginTop="$3">
           {currentSection?.items.length === 0 && (
             <Card bordered padding="$4" backgroundColor="$color2">
               <Card.Header>
@@ -370,7 +370,7 @@ export function ImportReviewScreen() {
             return (
               <Card bordered key={item.id} backgroundColor={isSelected ? '$color3' : '$background'}>
                 <Card.Header gap="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
+                  <Row justifyContent="space-between" alignItems="center">
                     <ConfidenceBadge level={confidenceLevel} />
                     <Button
                       size="$2"
@@ -379,8 +379,8 @@ export function ImportReviewScreen() {
                     >
                       {isSelected ? 'Selected' : 'Select'}
                     </Button>
-                  </XStack>
-                  <YStack gap="$2">
+                  </Row>
+                  <Stack gap="$2">
                     {'jobTitle' in item && (
                       <EditableField
                         label="Job Title"
@@ -430,18 +430,18 @@ export function ImportReviewScreen() {
                         confidenceScore={item.confidenceScore}
                       />
                     )}
-                  </YStack>
+                  </Stack>
                 </Card.Header>
               </Card>
             )
           })}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <Separator />
 
-      <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-        <XStack gap="$2" flexWrap="wrap">
+      <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
+        <Row gap="$2" flexWrap="wrap">
           <Button
             size="$3"
             variant="outlined"
@@ -459,8 +459,8 @@ export function ImportReviewScreen() {
           >
             Select all
           </Button>
-        </XStack>
-        <XStack gap="$3" alignItems="center" flexWrap="wrap">
+        </Row>
+        <Row gap="$3" alignItems="center" flexWrap="wrap">
           <Text color="$color10" aria-live="polite">
             Selected {selectedCount} of {totalItems}
           </Text>
@@ -489,8 +489,8 @@ export function ImportReviewScreen() {
           >
             Import selected ({selectedCount})
           </Button>
-        </XStack>
-      </XStack>
-    </YStack>
+        </Row>
+      </Row>
+    </Stack>
   )
 }

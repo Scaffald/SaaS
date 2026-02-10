@@ -1,5 +1,5 @@
-import type { ChecklistItemType } from '@unicornlove/ui'
-import { Checklist, DashboardWidget } from '@unicornlove/ui'
+import type { ChecklistItemType } from '@unicornlove/beyond-ui'
+import { Checklist, DashboardWidget } from '@unicornlove/beyond-ui'
 import { useProfileCompletion } from './useProfileCompletion'
 
 export interface ProfileCompletionWidgetProps {

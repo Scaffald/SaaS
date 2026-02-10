@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { NotificationTag } from '@unicornlove/ui'
+import { NotificationTag } from '@unicornlove/beyond-ui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface NotificationDelivery {
   id: string
@@ -79,18 +79,18 @@ export function OfficeNotificationsConsole() {
   const digestItems = (digestQuery.data ?? []) as DigestQueueItem[]
 
   return (
-    <YStack gap="$6">
-      <YStack gap="$2">
+    <Stack gap="$6">
+      <Stack gap="$2">
         <Text fontSize="$9" fontWeight="700">
           Notification Operations
         </Text>
         <Text fontSize="$3" color="$color10">
           Monitor delivery workers, inspect failures, and triage digest backlogs.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$3">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$7" fontWeight="600">
             Delivery Queue
           </Text>
@@ -103,9 +103,9 @@ export function OfficeNotificationsConsole() {
           >
             Refresh
           </Button>
-        </XStack>
+        </Row>
 
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap="$2" flexWrap="wrap">
           {DELIVERY_STATUSES.map((value) => {
             const isActive = status === value
 
@@ -124,21 +124,21 @@ export function OfficeNotificationsConsole() {
               </Button>
             )
           })}
-        </XStack>
+        </Row>
 
         {deliveriesQuery.isLoading ? (
-          <YStack alignItems="center" gap="$3" marginTop="$4">
+          <Stack alignItems="center" gap="$3" marginTop="$4">
             <Spinner size="large" color="$color10" />
             <Text color="$color10">Loading deliveries…</Text>
-          </YStack>
+          </Stack>
         ) : deliveries.length === 0 ? (
-          <YStack gap="$3" alignItems="center" marginTop="$4">
+          <Stack gap="$3" alignItems="center" marginTop="$4">
             <AlertCircle size={32} color="$color8" />
             <Text color="$color10">No deliveries match this filter.</Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-            <XStack backgroundColor="$color2" padding="$3" gap="$3">
+          <Stack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+            <Row backgroundColor="$color2" padding="$3" gap="$3">
               <Text flex={2} fontWeight="600">
                 Notification
               </Text>
@@ -157,7 +157,7 @@ export function OfficeNotificationsConsole() {
               <Text flex={1} fontWeight="600">
                 Updated
               </Text>
-            </XStack>
+            </Row>
 
             {deliveries.map((delivery, index) => {
               const notification = delivery.notification
@@ -165,25 +165,25 @@ export function OfficeNotificationsConsole() {
               const tagTheme = severityThemeMap[severity]
 
               return (
-                <YStack
+                <Stack
                   key={delivery.id}
                   backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                   padding="$3"
                 >
-                  <XStack gap="$3" alignItems="center">
-                    <YStack flex={2} gap="$1">
-                      <XStack gap="$2" alignItems="center">
+                  <Row gap="$3" alignItems="center">
+                    <Stack flex={2} gap="$1">
+                      <Row gap="$2" alignItems="center">
                         <Text fontWeight="600" color="$color12" numberOfLines={1}>
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
                         <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                           {severity.toUpperCase()}
                         </NotificationTag>
-                      </XStack>
+                      </Row>
                       <Text fontSize="$2" color="$color10" numberOfLines={2}>
                         {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
-                    </YStack>
+                    </Stack>
                     <Text flex={1} color="$color11">
                       {formatChannel(delivery.channel)}
                     </Text>
@@ -205,18 +205,18 @@ export function OfficeNotificationsConsole() {
                     <Text flex={1} color="$color10">
                       {formatDate(delivery.updated_at)}
                     </Text>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               )
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       <Separator backgroundColor="$color3" />
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$3">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$7" fontWeight="600">
             Digest Backlog
           </Text>
@@ -229,21 +229,21 @@ export function OfficeNotificationsConsole() {
           >
             Refresh
           </Button>
-        </XStack>
+        </Row>
 
         {digestQuery.isLoading ? (
-          <YStack alignItems="center" gap="$3" marginTop="$4">
+          <Stack alignItems="center" gap="$3" marginTop="$4">
             <Spinner size="large" color="$color10" />
             <Text color="$color10">Loading digest queue…</Text>
-          </YStack>
+          </Stack>
         ) : digestItems.length === 0 ? (
-          <YStack gap="$3" alignItems="center" marginTop="$4">
+          <Stack gap="$3" alignItems="center" marginTop="$4">
             <AlertCircle size={32} color="$color8" />
             <Text color="$color10">Digest queue is empty.</Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-            <XStack backgroundColor="$color2" padding="$3" gap="$3">
+          <Stack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+            <Row backgroundColor="$color2" padding="$3" gap="$3">
               <Text flex={1} fontWeight="600">
                 User ID
               </Text>
@@ -262,10 +262,10 @@ export function OfficeNotificationsConsole() {
               <Text flex={1} fontWeight="600">
                 Last event
               </Text>
-            </XStack>
+            </Row>
 
             {digestItems.map((item, index) => (
-              <XStack
+              <Row
                 key={item.id}
                 gap="$3"
                 padding="$3"
@@ -292,12 +292,12 @@ export function OfficeNotificationsConsole() {
                 <Text flex={1} color="$color10">
                   {formatDate(item.last_event_at)}
                 </Text>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 

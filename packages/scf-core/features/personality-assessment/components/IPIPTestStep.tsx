@@ -7,7 +7,7 @@ import {
   QUESTIONS_PER_DOMAIN,
 } from '@scf/core/features/ipip-assessment/utils/domainGrouping'
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   getChoices,
   getQuestions,
@@ -140,7 +140,7 @@ export function IPIPTestStep({
 
   if (isComplete) {
     return (
-      <YStack
+      <Stack
         gap="$6"
         width="100%"
         alignItems="center"
@@ -153,25 +153,25 @@ export function IPIPTestStep({
         <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!currentQuestion) {
     return (
-      <YStack gap="$4" alignItems="center" padding="$8">
+      <Stack gap="$4" alignItems="center" padding="$8">
         <Text fontSize="$5" color="$color11">
           Loading question...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+    <Stack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Domain Header */}
       {currentDomain && (
-        <XStack
+        <Row
           gap="$2"
           padding="$4"
           backgroundColor="$blue2"
@@ -181,37 +181,37 @@ export function IPIPTestStep({
           justifyContent="space-between"
           alignItems="center"
         >
-          <YStack gap="$1">
+          <Stack gap="$1">
             <Text fontSize="$5" fontWeight="bold" color="$blue11">
               {DOMAIN_NAMES[currentDomain]}
             </Text>
             <Text fontSize="$3" color="$blue10">
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
-          </YStack>
+          </Stack>
           <Text fontSize="$5" fontWeight="600" color="$blue11">
             {domainProgress}%
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Progress Bar */}
-      <YStack gap="$2">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$2">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Question {currentIndex + 1} of 120
           </Text>
           <Text fontSize="$3" color="$color11">
             {overallProgress}%
           </Text>
-        </XStack>
+        </Row>
         <Progress value={overallProgress} max={100}>
           <Progress.Indicator animation="bouncy" />
         </Progress>
-      </YStack>
+      </Stack>
 
       {/* Question */}
-      <YStack
+      <Stack
         gap="$4"
         padding="$6"
         backgroundColor="$color2"
@@ -228,10 +228,10 @@ export function IPIPTestStep({
         >
           I {currentQuestion.text.toLowerCase()}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Choices */}
-      <YStack gap="$3">
+      <Stack gap="$3">
         {[...currentChoices].reverse().map((choice) => (
           <Button
             key={`${currentQuestion.id}-${choice.score}`}
@@ -248,10 +248,10 @@ export function IPIPTestStep({
             </Text>
           </Button>
         ))}
-      </YStack>
+      </Stack>
 
       {/* Navigation */}
-      <XStack gap="$3" justifyContent="space-between">
+      <Row gap="$3" justifyContent="space-between">
         <Button
           size="$4"
           variant="outlined"
@@ -263,7 +263,7 @@ export function IPIPTestStep({
         <Text fontSize="$3" color="$color11" style={{ alignSelf: 'center' }}>
           {answers.length} answers saved
         </Text>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

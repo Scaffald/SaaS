@@ -1,4 +1,4 @@
-import { Card, Paragraph, Text, XStack } from '@unicornlove/ui'
+import { Card, Paragraph, Text, Row } from '@unicornlove/beyond-ui'
 import type { TalentProfile } from '../types'
 
 interface ProfileSummaryCardProps {
@@ -31,7 +31,7 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
         {profile.name}
       </Text>
 
-      <XStack gap="$2" alignItems="center" flexWrap="wrap">
+      <Row gap="$2" alignItems="center" flexWrap="wrap">
         <Paragraph fontSize="$2" color="$color11">
           {profile.experienceYears} years
         </Paragraph>
@@ -39,10 +39,10 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
         <Paragraph fontSize="$2" color="$color11" fontWeight="600">
           ${profile.hourlyRate}/hr
         </Paragraph>
-      </XStack>
+      </Row>
 
       {profile.skills && profile.skills.length > 0 && (
-        <XStack gap="$1" flexWrap="wrap">
+        <Row gap="$1" flexWrap="wrap">
           {profile.skills.slice(0, 3).map((skill) => (
             <Text
               key={skill}
@@ -61,7 +61,7 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
               +{profile.skills.length - 3} more
             </Text>
           )}
-        </XStack>
+        </Row>
       )}
     </Card>
   )

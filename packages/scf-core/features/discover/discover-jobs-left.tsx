@@ -4,9 +4,9 @@ import {
   usePublishedJobs,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
-import { extractPlainText, SkeletonList } from '@unicornlove/ui'
+import { extractPlainText, SkeletonList } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
-import { ScrollView, Text, YStack } from '@unicornlove/ui'
+import { ScrollView, Text, Stack } from '@unicornlove/beyond-ui'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 
@@ -187,28 +187,28 @@ export function DiscoverJobsLeft({
   // Handle soft skills assessment required state
   if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Complete Your Assessment
         </Text>
         <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
           Complete your soft skills assessment to filter and sort jobs by match score.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} padding="$4">
+      <Stack flex={1} padding="$4">
         <SkeletonList count={5} gap="$3" variant="job" />
-      </YStack>
+      </Stack>
     )
   }
 
   if (filteredJobs.length === 0) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           No jobs found
         </Text>
@@ -217,13 +217,13 @@ export function DiscoverJobsLeft({
             ? 'No jobs match your soft skills filter criteria'
             : 'Try adjusting your filters or search query'}
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" padding="$4">
+      <Stack gap="$3" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
         </Text>
@@ -241,7 +241,7 @@ export function DiscoverJobsLeft({
             />
           )
         })}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

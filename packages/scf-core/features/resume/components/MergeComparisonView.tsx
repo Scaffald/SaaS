@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import type { ResumeMergeStrategy, ResumeWizardSection } from '../hooks/useResumeWizard'
 
@@ -27,28 +27,28 @@ const STRATEGY_LABELS: Record<ResumeMergeStrategy, string> = {
 export function MergeComparisonView({ sections, isLoading = false }: MergeComparisonViewProps) {
   if (isLoading) {
     return (
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <Spinner size="small" />
         <Text color="$color11">Loading current profile data…</Text>
-      </XStack>
+      </Row>
     )
   }
 
   if (sections.length === 0) {
     return (
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Nothing to review</Text>
         <Text color="$color11">
           We didn’t detect any changes to compare. You can still finish the wizard to exit.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {sections.map((section) => (
-        <YStack
+        <Stack
           key={section.id}
           gap="$3"
           padding="$3"
@@ -57,12 +57,12 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
           backgroundColor="$color2"
           borderRadius="$4"
         >
-          <XStack justifyContent="space-between" alignItems="center" gap="$2" flexWrap="wrap">
+          <Row justifyContent="space-between" alignItems="center" gap="$2" flexWrap="wrap">
             <Text fontWeight="700" fontSize="$4">
               {section.label}
             </Text>
             <StrategyPill strategy={section.strategy} />
-          </XStack>
+          </Row>
 
           {section.notes ? (
             <Text color="$color11" fontSize="$2">
@@ -70,17 +70,17 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
             </Text>
           ) : null}
 
-          <XStack gap="$4" flexWrap="wrap">
+          <Row gap="$4" flexWrap="wrap">
             <SummaryColumn title="Current profile" alignItems={section.existingItems} />
             <SummaryColumn
               title="Incoming from resume"
               alignItems={section.incomingItems}
               highlight={section.hasIncoming}
             />
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       ))}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -94,7 +94,7 @@ function SummaryColumn({
   highlight?: boolean
 }) {
   return (
-    <YStack
+    <Stack
       gap="$2"
       flex={1}
       padding="$2"
@@ -112,13 +112,13 @@ function SummaryColumn({
           </Fragment>
         ))
       )}
-    </YStack>
+    </Stack>
   )
 }
 
 function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
   return (
-    <YStack
+    <Stack
       paddingHorizontal="$3"
       paddingVertical="$1"
       borderRadius="$3"
@@ -133,6 +133,6 @@ function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
       >
         {STRATEGY_LABELS[strategy]}
       </Text>
-    </YStack>
+    </Stack>
   )
 }

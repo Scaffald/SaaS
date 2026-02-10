@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
-import type { AddressResult } from '@unicornlove/ui'
+import type { AddressResult } from '@unicornlove/beyond-ui'
 import {
   AddressForm,
   Button,
@@ -9,16 +9,16 @@ import {
   ScrollView,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { Card, Switch } from '@unicornlove/ui'
+import { Card, Switch } from '@unicornlove/beyond-ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import {
   ApplicationProcessSection,
@@ -165,7 +165,7 @@ type JobFormProps = {
 
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const { data: organizationsData } = useAllOrganizations()
 
   const initialTeamIds =
@@ -367,25 +367,37 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   const createJob = api.office.createJob.useMutation({
     onSuccess: () => {
-      toast.show('Job created successfully', { variant: 'success' })
+      toast.show({
+          title: 'Job created successfully',
+          variant: 'success',
+        })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show(`Error: ${message}`, { variant: 'error' })
+      toast.show({
+          title: `Error: ${message}`,
+          variant: 'error',
+        })
     },
   })
 
   const updateJob = api.office.updateJob.useMutation({
     onSuccess: () => {
-      toast.show('Job updated successfully', { variant: 'success' })
+      toast.show({
+          title: 'Job updated successfully',
+          variant: 'success',
+        })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show(`Error: ${message}`, { variant: 'error' })
+      toast.show({
+          title: `Error: ${message}`,
+          variant: 'error',
+        })
     },
   })
 
@@ -618,7 +630,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     const selectedSkills = Array.from(selectedSkillsMap.values())
 
     return (
-      <YStack gap="$2" position="relative">
+      <Stack gap="$2" position="relative">
         <Input
           placeholder={placeholder}
           value={searchQuery}
@@ -630,9 +642,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           disabled={disabled}
         />
         {selectedSkillIds.length > 0 && (
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap="$2" flexWrap="wrap">
             {selectedSkills.map((skill) => (
-              <XStack
+              <Row
                 key={skill.id}
                 backgroundColor="$gray3"
                 paddingHorizontal="$2"
@@ -651,9 +663,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 >
                   <X size={12} />
                 </Button>
-              </XStack>
+              </Row>
             ))}
-          </XStack>
+          </Row>
         )}
         {showResults && availableResults.length > 0 && (
           <Card
@@ -667,7 +679,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             overflow="hidden"
           >
             <ScrollView height={300}>
-              <YStack>
+              <Stack>
                 {availableResults.map((skill) => (
                   <Button
                     key={skill.id}
@@ -679,11 +691,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     <Text>{skill.name}</Text>
                   </Button>
                 ))}
-              </YStack>
+              </Stack>
             </ScrollView>
           </Card>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
@@ -780,7 +792,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     const selectedCerts = Array.from(selectedCertsMap.values())
 
     return (
-      <YStack gap="$2" position="relative">
+      <Stack gap="$2" position="relative">
         <Input
           placeholder={placeholder}
           value={searchQuery}
@@ -792,9 +804,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           disabled={disabled}
         />
         {selectedCertificationIds.length > 0 && (
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap="$2" flexWrap="wrap">
             {selectedCerts.map((cert) => (
-              <XStack
+              <Row
                 key={cert.id}
                 backgroundColor="$gray3"
                 paddingHorizontal="$2"
@@ -813,9 +825,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 >
                   <X size={12} />
                 </Button>
-              </XStack>
+              </Row>
             ))}
-          </XStack>
+          </Row>
         )}
         {showResults && availableResults.length > 0 && (
           <Card
@@ -829,7 +841,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             overflow="hidden"
           >
             <ScrollView height={300}>
-              <YStack>
+              <Stack>
                 {availableResults.map((cert) => (
                   <Button
                     key={cert.id}
@@ -841,19 +853,19 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     <Text>{cert.name}</Text>
                   </Button>
                 ))}
-              </YStack>
+              </Stack>
             </ScrollView>
           </Card>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView>
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         {/* Organization Selector */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Organization *</Text>
           <ResponsiveSelect
             testID="job-organization-select"
@@ -866,10 +878,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               label: org.name,
             }))}
           />
-        </YStack>
+        </Stack>
 
         {/* Details Section */}
-        <YStack
+        <Stack
           gap="$4"
           padding="$4"
           backgroundColor="$background"
@@ -882,7 +894,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Text>
 
           {/* Title */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Job title *</Text>
             <Input
               data-testid="job-title-input"
@@ -891,10 +903,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               onChangeText={(text: string) => setFormData({ ...formData, title: text })}
               disabled={isLoading}
             />
-          </YStack>
+          </Stack>
 
           {/* Description */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Job description *</Text>
             <RichTextEditor
               data-testid="job-description-input"
@@ -908,10 +920,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               showCharacterCount
               minHeight={200}
             />
-          </YStack>
+          </Stack>
 
           {/* Location with Smart Autocomplete */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Location *</Text>
             <AddressForm
               mode="hybrid"
@@ -946,7 +958,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 })
               }}
             />
-          </YStack>
+          </Stack>
 
           {/* Minimum Elevate Score */}
           <ScoreThresholdSection
@@ -955,7 +967,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           />
 
           {/* Elevate Teams */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Elevate Teams</Text>
             {!formData.organization_id ? (
               <Text fontSize="$2" color="$color10">
@@ -989,11 +1001,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <Text fontSize="$2" color="$color10">
               Not visible on job posting
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {/* Application Section */}
-        <YStack
+        <Stack
           gap="$4"
           padding="$4"
           backgroundColor="$background"
@@ -1016,7 +1028,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           />
 
           {/* Required Skills */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Required skills</Text>
             <JobSkillsInput
               selectedSkillIds={formData.skill_ids || []}
@@ -1025,10 +1037,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               placeholder="Search and add skills"
               disabled={isLoading}
             />
-          </YStack>
+          </Stack>
 
           {/* Optional Skills */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Optional skills</Text>
             <JobSkillsInput
               selectedSkillIds={[]}
@@ -1037,10 +1049,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               placeholder="Search and add skills"
               disabled={isLoading}
             />
-          </YStack>
+          </Stack>
 
           {/* Required Certificates */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Required certificates</Text>
             <JobCertificationsInput
               selectedCertificationIds={formData.certification_ids || []}
@@ -1051,7 +1063,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               placeholder="Search certificates"
               disabled={isLoading}
             />
-          </YStack>
+          </Stack>
 
           {/* Auto-Rejection Section */}
           <AutoRejectionSection
@@ -1059,7 +1071,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             criteria={formData.auto_reject_criteria || {}}
             onUpdate={handleAutoRejectUpdate}
           />
-        </YStack>
+        </Stack>
 
         {/* Additional Sections (keep existing advanced sections) */}
         <JobMetadataSection
@@ -1154,7 +1166,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         />
 
         {/* Schedule Publish Section */}
-        <YStack
+        <Stack
           gap="$3"
           padding="$4"
           backgroundColor="$color2"
@@ -1162,15 +1174,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <XStack gap="$3" alignItems="center" justifyContent="space-between">
-            <YStack flex={1} gap="$1">
+          <Row gap="$3" alignItems="center" justifyContent="space-between">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Schedule Publish
               </Text>
               <Text fontSize="$2" color="$color11">
                 Set a date and time to automatically publish this job
               </Text>
-            </YStack>
+            </Stack>
             <Switch
               checked={!!formData.scheduled_publish_at}
               onCheckedChange={(checked) => {
@@ -1193,9 +1205,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             >
               <Switch.Thumb />
             </Switch>
-          </XStack>
+          </Row>
           {formData.scheduled_publish_at && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" fontWeight="600" color="$color11">
                 Publish Date & Time
               </Text>
@@ -1234,12 +1246,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 {formData.scheduled_publish_at &&
                   `Will be published on ${new Date(formData.scheduled_publish_at).toLocaleString()}`}
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Actions */}
-        <XStack
+        <Row
           gap="$3"
           paddingTop="$4"
           $sm={{ flexDirection: 'column' }}
@@ -1308,11 +1320,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {isLoading && <Spinner />}
             {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
           </Button>
-        </XStack>
+        </Row>
         {jobId && (
           <JobPreviewModal jobId={jobId} open={previewOpen} onOpenChange={setPreviewOpen} />
         )}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

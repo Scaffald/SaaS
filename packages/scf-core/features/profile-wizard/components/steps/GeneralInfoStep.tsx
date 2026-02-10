@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Input, Paragraph, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 import type { GeneralInfoStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -89,8 +89,8 @@ export function GeneralInfoStep({
   }
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Tell us about yourself
         </Text>
@@ -98,10 +98,10 @@ export function GeneralInfoStep({
           Add a friendly introduction. This helps employers quickly understand who you are and what
           you bring to the table.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <XStack gap="$3" flexWrap="wrap">
-        <YStack flex={1} minWidth={150} gap="$2">
+      <Row gap="$3" flexWrap="wrap">
+        <Stack flex={1} minWidth={150} gap="$2">
           <Text fontWeight="600">First Name *</Text>
           <Controller
             control={control}
@@ -121,9 +121,9 @@ export function GeneralInfoStep({
               {errors.firstName.message}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} minWidth={150} gap="$2">
+        <Stack flex={1} minWidth={150} gap="$2">
           <Text fontWeight="600">Last Name *</Text>
           <Controller
             control={control}
@@ -143,10 +143,10 @@ export function GeneralInfoStep({
               {errors.lastName.message}
             </Text>
           )}
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Professional Headline *</Text>
         <Controller
           control={control}
@@ -165,9 +165,9 @@ export function GeneralInfoStep({
             {errors.headline.message}
           </Text>
         )}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Short Bio</Text>
         <Controller
           control={control}
@@ -186,7 +186,7 @@ export function GeneralInfoStep({
         <Text fontSize="$2" color="$color10">
           Keep it short and friendly—1-2 sentences is perfect.
         </Text>
-      </YStack>
+      </Stack>
 
       <StepNavigation
         canGoBack={false}
@@ -199,6 +199,6 @@ export function GeneralInfoStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Next: Skills"
       />
-    </YStack>
+    </Stack>
   )
 }

@@ -1,9 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ResumeUploadButton, ResumeUploadModal } from '@scf/core/features/resume'
-import { DashboardWidget, spacing } from '@unicornlove/ui'
+import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { H3, H4, Text, YStack } from '@unicornlove/ui'
+import { H3, H4, Text, Stack } from '@unicornlove/beyond-ui'
 import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**
@@ -26,7 +26,7 @@ export function ProfileGeneralRight() {
 
   return (
     <>
-      <YStack gap="$4">
+      <Stack gap="$4">
         <DashboardWidget>
           <H3>General Information</H3>
           <Text color="$color11" fontSize="$3">
@@ -35,7 +35,7 @@ export function ProfileGeneralRight() {
         </DashboardWidget>
 
         <DashboardWidget>
-          <YStack gap={spacing.sm}>
+          <Stack gap={spacing.sm}>
             <H4>Import from your resume</H4>
             <Text color="$color11" fontSize="$3">
               Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the
@@ -45,13 +45,13 @@ export function ProfileGeneralRight() {
               Accepted formats: PDF, DOC, DOCX. You can re-import your resume at any time.
             </Text>
             <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="$4" />
-          </YStack>
+          </Stack>
         </DashboardWidget>
 
         <VanityUrlSection />
         {/* TODO: Uncomment this when we implement fully */}
         {/* <WorkLogVisibilitySettingsCard /> */}
-      </YStack>
+      </Stack>
 
       <ResumeUploadModal
         open={resumeModalOpen}

@@ -1,6 +1,6 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, DashboardWidget, spacing, Text, YStack } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing, Text, Stack } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {
@@ -55,19 +55,19 @@ export const AssessmentsLandingLeft = () => {
   const router = useRouter()
 
   return (
-    <YStack gap={spacing.lg}>
+    <Stack gap={spacing.lg}>
       {ASSESSMENT_LANDING_CARDS.map(
         ({ key, title, description, ctaLabel, route, estimatedTime }) => (
           <DashboardWidget key={key} gap={spacing.md}>
-            <YStack gap={spacing.sm}>
-              <YStack gap={spacing.xs}>
+            <Stack gap={spacing.sm}>
+              <Stack gap={spacing.xs}>
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   {title}
                 </Text>
                 <Text fontSize="$3" color="$color11">
                   {description}
                 </Text>
-              </YStack>
+              </Stack>
 
               <Button
                 variant="primary"
@@ -85,10 +85,10 @@ export const AssessmentsLandingLeft = () => {
                   {estimatedTime}
                 </Text>
               ) : null}
-            </YStack>
+            </Stack>
           </DashboardWidget>
         )
       )}
-    </YStack>
+    </Stack>
   )
 }

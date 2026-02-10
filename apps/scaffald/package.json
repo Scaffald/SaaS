@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@babel/runtime": "catalog:",
+    "@hookform/resolvers": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@react-native-community/netinfo": "catalog:",
     "@react-native-google-signin/google-signin": "catalog:",
@@ -87,6 +88,7 @@
     "i18n-js": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-hook-form": "catalog:",
     "react-native": "0.83.1",
     "react-native-dotenv": "catalog:",
     "react-native-gesture-handler": "~2.30.0",

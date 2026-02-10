@@ -1,6 +1,6 @@
-import { CustomCheckbox } from '@unicornlove/ui'
+import { CustomCheckbox } from '@unicornlove/beyond-ui'
 import { useCallback } from 'react'
-import { Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 import { SimpleSkillAutocomplete } from './SimpleSkillAutocomplete'
 
@@ -54,15 +54,15 @@ export function SkillSearchForm({
   )
 
   return (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap="$4">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontWeight="600" fontSize="$4">
           Search for Skills
         </Text>
 
         {/* Taxonomy Checkboxes */}
-        <XStack gap="$3" alignItems="center">
-          <XStack gap="$2" alignItems="center">
+        <Row gap="$3" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <CustomCheckbox
               checked={searchCSI}
               onCheckedChange={onSearchCSIChange}
@@ -72,9 +72,9 @@ export function SkillSearchForm({
             <Label fontSize="$2" onPress={() => onSearchCSIChange(!searchCSI)}>
               CSI
             </Label>
-          </XStack>
+          </Row>
 
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <CustomCheckbox
               checked={searchONET}
               onCheckedChange={onSearchONETChange}
@@ -84,9 +84,9 @@ export function SkillSearchForm({
             <Label fontSize="$2" onPress={() => onSearchONETChange(!searchONET)}>
               O*NET
             </Label>
-          </XStack>
-        </XStack>
-      </XStack>
+          </Row>
+        </Row>
+      </Row>
 
       {/* Simple Skill Autocomplete Component */}
       <SimpleSkillAutocomplete
@@ -98,6 +98,6 @@ export function SkillSearchForm({
         placeholder="Search for a skill (e.g., Concrete, Plumbing)..."
         existingSkillIds={existingSkillIds}
       />
-    </YStack>
+    </Stack>
   )
 }

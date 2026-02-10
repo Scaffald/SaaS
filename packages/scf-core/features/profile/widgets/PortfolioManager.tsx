@@ -1,12 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/ui'
+import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
 import { ImageUpload } from '@scf/core/components/ui'
 import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
 import { useCallback, useState } from 'react'
-import { H4, Image, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { H4, Image, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
 import type { ProfileWidgetProps } from './types'
 
@@ -149,7 +149,7 @@ const parsePortfolioItems = (data: unknown): PortfolioItem[] => {
  * @param variant - Display variant (always 'full' for manager)
  */
 export function PortfolioManager({ userId }: ProfileWidgetProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [formData, setFormData] = useState<PortfolioFormState>(() => createDefaultFormState())
@@ -168,14 +168,17 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
       utils.portfolio.list.invalidate()
       setIsAdding(false)
       setFormData(createDefaultFormState())
-      toast.show('Portfolio Item Added', {
-        message: 'Your portfolio item has been added successfully.',
-      })
+      toast.show({
+          title: 'Portfolio Item Added',
+          message: 'Your portfolio item has been added successfully.',
+        })
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
-        message: getErrorMessage(error, 'Failed to add portfolio item'),
-      })
+      toast.show({
+          title: 'Error',
+          message: getErrorMessage(error, 'Operation failed'),
+          variant: 'error',
+        })
     },
   })
 
@@ -184,28 +187,34 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
       utils.portfolio.list.invalidate()
       setEditingId(null)
       setFormData(createDefaultFormState())
-      toast.show('Portfolio Item Updated', {
-        message: 'Your portfolio item has been updated successfully.',
-      })
+      toast.show({
+          title: 'Portfolio Item Updated',
+          message: 'Your portfolio item has been updated successfully.',
+        })
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
-        message: getErrorMessage(error, 'Failed to update portfolio item'),
-      })
+      toast.show({
+          title: 'Error',
+          message: getErrorMessage(error, 'Operation failed'),
+          variant: 'error',
+        })
     },
   })
 
   const deleteMutation = api.portfolio.delete.useMutation({
     onSuccess: () => {
       utils.portfolio.list.invalidate()
-      toast.show('Portfolio Item Deleted', {
-        message: 'Your portfolio item has been removed.',
-      })
+      toast.show({
+          title: 'Portfolio Item Deleted',
+          message: 'Your portfolio item has been removed.',
+        })
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
-        message: getErrorMessage(error, 'Failed to delete portfolio item'),
-      })
+      toast.show({
+          title: 'Error',
+          message: getErrorMessage(error, 'Operation failed'),
+          variant: 'error',
+        })
     },
   })
 
@@ -214,14 +223,17 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
   const reorderMutation = api.portfolio.reorder.useMutation({
     onSuccess: () => {
       utils.portfolio.list.invalidate()
-      toast.show('Portfolio Reordered', {
-        message: 'Your portfolio items have been reordered.',
-      })
+      toast.show({
+          title: 'Portfolio Reordered',
+          message: 'Your portfolio items have been reordered.',
+        })
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
-        message: getErrorMessage(error, 'Failed to reorder portfolio items'),
-      })
+      toast.show({
+          title: 'Error',
+          message: getErrorMessage(error, 'Operation failed'),
+          variant: 'error',
+        })
     },
   })
 
@@ -247,9 +259,11 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
   // Handle save
   const handleSave = useCallback(() => {
     if (!formData.title.trim()) {
-      toast.show('Error', {
-        message: 'Please enter a title for your portfolio item.',
-      })
+      toast.show({
+          title: 'Error',
+          message: 'Please enter a title for your portfolio item.',
+          variant: 'error',
+        })
       return
     }
 
@@ -346,16 +360,20 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             }))
           } catch (error) {
             console.error('Error uploading image:', error)
-            toast.show('Error', {
-              message: getErrorMessage(error, 'Failed to upload image. Please try again.'),
-            })
+            toast.show({
+          title: 'Error',
+          message: getErrorMessage(error, 'Operation failed'),
+          variant: 'error',
+        })
           }
         }
         reader.readAsDataURL(blob)
       } catch (error) {
         console.error('Error processing image:', error)
-        toast.show('Error', {
-          message: getErrorMessage(error, 'Failed to process image. Please try again.'),
+        toast.show({
+          title: 'Error',
+          message: getErrorMessage(error, 'Operation failed'),
+          variant: 'error',
         })
       }
     },
@@ -371,7 +389,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
         <H4>Manage Portfolio</H4>
 
         {!isEditing ? (
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontSize="$3" color="$color11">
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
@@ -385,18 +403,18 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             >
               Add Portfolio Item
             </Button>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center">
               <H4>{editingId ? 'Edit Portfolio Item' : 'Add Portfolio Item'}</H4>
               <Button size="$2" variant="outlined" onPress={handleCancel}>
                 Cancel
               </Button>
-            </XStack>
+            </Row>
 
             {/* Title */}
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" fontWeight="600">
                 Title *
               </Text>
@@ -405,10 +423,10 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 value={formData.title}
                 onChangeText={(text) => setFormData((prev) => ({ ...prev, title: text }))}
               />
-            </YStack>
+            </Stack>
 
             {/* Description */}
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" fontWeight="600">
                 Description
               </Text>
@@ -418,10 +436,10 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 onChange={(content) => setFormData((prev) => ({ ...prev, description: content }))}
                 placeholder="Describe your project, work sample, or achievement..."
               />
-            </YStack>
+            </Stack>
 
             {/* Image Upload */}
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" fontWeight="600">
                 Image
               </Text>
@@ -432,10 +450,10 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 pathPrefix={userId ? `${userId}/portfolio` : undefined}
                 maxSizeMB={5}
               />
-            </YStack>
+            </Stack>
 
             {/* Save Button */}
-            <XStack gap="$2" justifyContent="flex-end">
+            <Row gap="$2" justifyContent="flex-end">
               <Button variant="outlined" onPress={handleCancel}>
                 Cancel
               </Button>
@@ -446,8 +464,8 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
               >
                 {editingId ? 'Update' : 'Add'} Portfolio Item
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
       </ProfileFormPanel>
 
@@ -459,7 +477,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
         emptyIcon={PortfolioEmptyStateIcon}
         emptyMessage="No portfolio items yet. Add your first item to showcase your work."
       >
-        <YStack gap="$3">
+        <Stack gap="$3">
           {portfolioItems.map((item, index) => {
             const imageUrl = item.file_path
               ? getStorageUrl('portfolio', item.file_path)
@@ -471,7 +489,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 onRemove={deleteMutation.isPending ? undefined : () => handleDelete(item.id)}
                 removeDisabled={deleteMutation.isPending}
                 actions={
-                  <XStack gap="$2">
+                  <Row gap="$2">
                     {/* Reorder buttons */}
                     <Button
                       size="$2"
@@ -495,10 +513,10 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                       onPress={() => handleEdit(item)}
                       disabled={isEditing}
                     />
-                  </XStack>
+                  </Row>
                 }
               >
-                <YStack gap="$3">
+                <Stack gap="$3">
                   {imageUrl && (
                     <Image
                       source={{ uri: imageUrl }}
@@ -508,7 +526,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                       borderRadius="$3"
                     />
                   )}
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Text fontSize="$4" fontWeight="600">
                       {item.title}
                     </Text>
@@ -517,12 +535,12 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                         {getDescriptionPreview(item.description)}
                       </Text>
                     )}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               </ProfileResultCard>
             )
           })}
-        </YStack>
+        </Stack>
       </ProfileResultsPanel>
     </>
   )

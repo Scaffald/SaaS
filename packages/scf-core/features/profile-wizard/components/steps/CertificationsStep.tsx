@@ -1,7 +1,7 @@
-import { MonthYearPicker } from '@unicornlove/ui'
+import { MonthYearPicker } from '@unicornlove/beyond-ui'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useId, useMemo, useState } from 'react'
-import { Button, Card, Input, Label, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Label, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { CertificationEntry, CertificationsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
@@ -95,29 +95,29 @@ export function CertificationsStep({
   }, [hasMinimum])
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Add certifications & licenses
         </Text>
         <Paragraph id={guidanceId} color="$color11" aria-live="polite">
           {helperCopy}
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
+      <Stack gap="$3">
         {certifications.map((cert) => (
           <Card key={cert.id ?? cert.name} bordered backgroundColor="$color2">
             <Card.Header padded gap="$2">
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack gap="$1">
+              <Row justifyContent="space-between" alignItems="center">
+                <Stack gap="$1">
                   <Text fontWeight="600">{cert.name}</Text>
                   {cert.issuer && (
                     <Text fontSize="$2" color="$color10">
                       {cert.issuer}
                     </Text>
                   )}
-                  <XStack gap="$2">
+                  <Row gap="$2">
                     {cert.issuedOn && (
                       <Text fontSize="$2" color="$color10">
                         Issued {formatDisplayDate(cert.issuedOn)}
@@ -128,8 +128,8 @@ export function CertificationsStep({
                         • Expires {formatDisplayDate(cert.expiresOn)}
                       </Text>
                     )}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
                 <Button
                   size="$2"
                   variant="outlined"
@@ -138,14 +138,14 @@ export function CertificationsStep({
                 >
                   Remove
                 </Button>
-              </XStack>
+              </Row>
             </Card.Header>
           </Card>
         ))}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
-        <YStack gap="$2">
+      <Stack gap="$3">
+        <Stack gap="$2">
           <Label htmlFor={certNameId} fontWeight="600">
             Certification name
           </Label>
@@ -155,8 +155,8 @@ export function CertificationsStep({
             value={name}
             onChangeText={setName}
           />
-        </YStack>
-        <YStack gap="$2">
+        </Stack>
+        <Stack gap="$2">
           <Label htmlFor={issuerId} fontWeight="600">
             Issuing organization
           </Label>
@@ -166,19 +166,19 @@ export function CertificationsStep({
             value={issuer}
             onChangeText={setIssuer}
           />
-        </YStack>
-        <XStack gap="$3">
-          <YStack flex={1} gap="$2">
+        </Stack>
+        <Row gap="$3">
+          <Stack flex={1} gap="$2">
             <MonthYearPicker label="Issued on" value={issuedOn} onChange={setIssuedOn} />
-          </YStack>
-          <YStack flex={1} gap="$2">
+          </Stack>
+          <Stack flex={1} gap="$2">
             <MonthYearPicker label="Expires on" value={expiresOn} onChange={setExpiresOn} />
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
         <Button onPress={addCertification} disabled={!name.trim() || !issuer.trim()}>
           Add Certification
         </Button>
-      </YStack>
+      </Stack>
 
       <StepNavigation
         canGoBack
@@ -192,7 +192,7 @@ export function CertificationsStep({
         nextLabel="Next: Preferences"
         skipLabel="Skip Certifications"
       />
-    </YStack>
+    </Stack>
   )
 }
 

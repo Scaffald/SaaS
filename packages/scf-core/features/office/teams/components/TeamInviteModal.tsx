@@ -4,11 +4,11 @@ import {
   TEAM_INVITATION_TTL_MAX,
   TEAM_INVITATION_TTL_MIN,
 } from '@scf/schemas'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { Mail, UserPlus } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
@@ -18,9 +18,9 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
@@ -43,7 +43,7 @@ export function TeamInviteModal({
   defaultRoleId,
   onInvited,
 }: TeamInviteModalProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [inviteType, setInviteType] = useState<InviteType>('email')
   const [email, setEmail] = useState('')
   const [selectedUserId, setSelectedUserId] = useState<string>('')
@@ -66,7 +66,10 @@ export function TeamInviteModal({
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to send invitation', { message })
+      toast.show({
+          title: 'Unable to send invitation',
+          variant: 'error',
+        })
     },
   })
 
@@ -153,8 +156,8 @@ export function TeamInviteModal({
       title="Invite team member"
       testID="modal"
     >
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <Stack gap="$4">
+        <Stack gap="$2">
           <Text color="$color11">{inviteTypeDescription}</Text>
           <RadioGroup
             value={inviteType}
@@ -162,19 +165,19 @@ export function TeamInviteModal({
             orientation="horizontal"
             gap="$3"
           >
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <RadioGroup.Item value="email" id="invite-email" size="$3" />
               <Label htmlFor="invite-email">Email invite</Label>
-            </XStack>
-            <XStack gap="$2" alignItems="center">
+            </Row>
+            <Row gap="$2" alignItems="center">
               <RadioGroup.Item value="user" id="invite-user" size="$3" />
               <Label htmlFor="invite-user">Existing member</Label>
-            </XStack>
+            </Row>
           </RadioGroup>
-        </YStack>
+        </Stack>
 
         {inviteType === 'email' ? (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Label htmlFor="team-invite-email">Email</Label>
             <Input
               id="team-invite-email"
@@ -197,9 +200,9 @@ export function TeamInviteModal({
                 {formError}
               </Text>
             ) : null}
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Label>Organization member</Label>
             <UserSearch
               value={selectedUserId}
@@ -215,16 +218,16 @@ export function TeamInviteModal({
               disabled={inviteMutation.isPending}
               error={formError ?? undefined}
             />
-          </YStack>
+          </Stack>
         )}
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label>Team role</Label>
           {isLoadingRoles ? (
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Spinner size="small" />
               <Text color="$color11">Loading roles…</Text>
-            </XStack>
+            </Row>
           ) : roleOptions.length === 0 ? (
             <Text color="$color11">No roles are configured for this organization.</Text>
           ) : (
@@ -239,9 +242,9 @@ export function TeamInviteModal({
               }))}
             />
           )}
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label htmlFor="team-invite-message">Message (optional)</Label>
           <TextArea
             id="team-invite-message"
@@ -251,9 +254,9 @@ export function TeamInviteModal({
             rows={3}
             disabled={inviteMutation.isPending}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label htmlFor="team-invite-expiry">Invitation expires in (days)</Label>
           <Input
             id="team-invite-expiry"
@@ -273,7 +276,7 @@ export function TeamInviteModal({
             Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN},
             maximum {TEAM_INVITATION_TTL_MAX}.
           </Text>
-        </YStack>
+        </Stack>
 
         {formErrorSource === 'general' && formError ? (
           <Text color="$red10" fontSize="$3">
@@ -281,7 +284,7 @@ export function TeamInviteModal({
           </Text>
         ) : null}
 
-        <XStack gap="$3" justifyContent="flex-end">
+        <Row gap="$3" justifyContent="flex-end">
           <Button
             variant="outlined"
             disabled={inviteMutation.isPending}
@@ -302,8 +305,8 @@ export function TeamInviteModal({
               'Send Invitation'
             )}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ResponsiveModal>
   )
 }

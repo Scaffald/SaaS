@@ -1,7 +1,7 @@
-import { DashboardWidget, Text } from '@unicornlove/ui'
+import { DashboardWidget, Text } from '@unicornlove/beyond-ui'
 import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, YStack } from '@unicornlove/ui'
+import { Button, Stack } from '@unicornlove/beyond-ui'
 
 export interface QuickActionsWidgetProps {
   /** Context of the page (determines which actions to show) */
@@ -58,7 +58,7 @@ export function QuickActionsWidget({
   additionalActions,
 }: QuickActionsWidgetProps) {
   const renderListActions = () => (
-    <YStack gap="$2">
+    <Stack gap="$2">
       {onCreate && (
         <Button theme="info" icon={ArrowRightCircle} onPress={onCreate}>
           Create {resourceName}
@@ -70,11 +70,11 @@ export function QuickActionsWidget({
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderCreateActions = () => (
-    <YStack gap="$2">
+    <Stack gap="$2">
       {onSave && (
         <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
           Save
@@ -86,11 +86,11 @@ export function QuickActionsWidget({
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderEditActions = () => (
-    <YStack gap="$2">
+    <Stack gap="$2">
       {onSave && (
         <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
           Save Changes
@@ -107,11 +107,11 @@ export function QuickActionsWidget({
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderDetailActions = () => (
-    <YStack gap="$2">
+    <Stack gap="$2">
       {onEdit && (
         <Button theme="info" icon={Pencil} onPress={onEdit}>
           Edit
@@ -128,7 +128,7 @@ export function QuickActionsWidget({
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderActions = () => {

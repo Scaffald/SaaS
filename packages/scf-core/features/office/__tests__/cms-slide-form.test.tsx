@@ -48,8 +48,8 @@ vi.mock('tamagui', () => ({
   }) => (
     <textarea value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
   ),
-  XStack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  YStack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  Row: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  Stack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
   H4: ({ children }: { children: ReactNode }) => <h4>{children}</h4>,
 }))

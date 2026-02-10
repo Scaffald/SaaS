@@ -1,14 +1,14 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DraggableCard, DroppableColumn } from '@unicornlove/ui'
+import { DraggableCard, DroppableColumn } from '@unicornlove/beyond-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { type GetThemeValueForKey, Text, XStack, YStack, useToastController } from '@unicornlove/ui'
+import { type GetThemeValueForKey, Text, Row, Stack, useToast } from '@unicornlove/beyond-ui'
 import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
 
@@ -40,7 +40,7 @@ interface JobsKanbanBoardProps {
 
 export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [updatingJobId, setUpdatingJobId] = useState<string | null>(null)
 
@@ -52,10 +52,11 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
     onError: (error: unknown) => {
       logger.error('Failed to update job status', error, { context: 'JobsKanbanBoard' })
       setUpdatingJobId(null)
-      toast.show('Failed to update job status. Please try again.', {
-        type: 'error',
-        duration: 5000,
-      })
+      toast.show({
+          title: 'Failed to update job status. Please try again.',
+          variant: 'error',
+          duration: 5000,
+        })
     },
   })
 
@@ -123,7 +124,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       onDragCancel={handleDragCancel}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$3" paddingBottom="$4" paddingHorizontal="$4">
+        <Row gap="$3" paddingBottom="$4" paddingHorizontal="$4">
           {STATUSES.map((status) => (
             <StatusColumn
               key={status}
@@ -135,14 +136,14 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
               isUpdating={updatingJobId !== null}
             />
           ))}
-        </XStack>
+        </Row>
       </ScrollView>
 
       <DragOverlay>
         {activeJob ? (
-          <YStack width={300} opacity={0.9}>
+          <Stack width={300} opacity={0.9}>
             <JobCard job={activeJob} onPress={() => {}} />
-          </YStack>
+          </Stack>
         ) : null}
       </DragOverlay>
     </DndContext>
@@ -161,7 +162,7 @@ interface StatusColumnProps {
 function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: StatusColumnProps) {
   return (
     <DroppableColumn id={status} alignItems={jobs.map((job) => job.id)}>
-      <YStack
+      <Stack
         data-testid={`kanban-column-${status}`}
         width={320}
         backgroundColor="$color2"
@@ -171,14 +172,14 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
         borderColor="$borderColor"
       >
         {/* Column Header */}
-        <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-          <XStack gap="$2" alignItems="center">
-            <YStack width={8} height={8} borderRadius="$10" backgroundColor={color} />
+        <Row justifyContent="space-between" alignItems="center" marginBottom="$3">
+          <Row gap="$2" alignItems="center">
+            <Stack width={8} height={8} borderRadius="$10" backgroundColor={color} />
             <Text fontWeight="600" fontSize="$4">
               {label}
             </Text>
-          </XStack>
-          <YStack
+          </Row>
+          <Stack
             backgroundColor="$color5"
             paddingHorizontal="$2"
             paddingVertical="$1"
@@ -187,13 +188,13 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
             <Text fontSize="$2" fontWeight="600">
               {jobs.length}
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* Job Cards */}
-        <YStack gap="$3" flex={1}>
+        <Stack gap="$3" flex={1}>
           {jobs.length === 0 ? (
-            <YStack
+            <Stack
               padding="$4"
               backgroundColor="$color3"
               borderRadius="$3"
@@ -204,18 +205,18 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
               <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
                 No jobs
               </Text>
-            </YStack>
+            </Stack>
           ) : (
             jobs.map((job) => (
               <DraggableCard key={job.id} id={job.id} disabled={isUpdating}>
-                <YStack opacity={isUpdating ? 0.5 : 1}>
+                <Stack opacity={isUpdating ? 0.5 : 1}>
                   <JobCard job={job} onPress={() => onJobPress(job)} />
-                </YStack>
+                </Stack>
               </DraggableCard>
             ))
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DroppableColumn>
   )
 }

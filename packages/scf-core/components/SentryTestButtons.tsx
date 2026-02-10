@@ -1,5 +1,5 @@
 import { captureException, captureMessage } from '@scf/core/utils/sentry'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Test buttons for verifying Sentry integration
@@ -48,7 +48,7 @@ export function SentryTestButtons() {
   }
 
   return (
-    <YStack gap="$3" padding="$4">
+    <Stack gap="$3" padding="$4">
       <Text fontSize="$6" fontWeight="bold">
         Sentry Integration Tests
       </Text>
@@ -57,7 +57,7 @@ export function SentryTestButtons() {
         Check your Sentry dashboard after clicking.
       </Text>
 
-      <YStack gap="$2" marginTop="$3">
+      <Stack gap="$2" marginTop="$3">
         <Button onPress={testJSError} theme="blue">
           Test JS Error (Handled)
         </Button>
@@ -77,12 +77,12 @@ export function SentryTestButtons() {
         <Button onPress={testUnhandledError} theme="error" chromeless>
           Test Unhandled Error (Crashes Component)
         </Button>
-      </YStack>
+      </Stack>
 
       <Text fontSize="$2" color="$gray10" marginTop="$3">
         ⚠️ Remove these test buttons before production deployment
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 

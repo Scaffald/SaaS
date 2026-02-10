@@ -1,11 +1,11 @@
 import { useStripeConfig } from '@scf/core/features/payments/hooks/useStripeConfig'
 import { api } from '@scf/core/utils/api'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
-import { Card } from '@unicornlove/ui'
+import { Card } from '@unicornlove/beyond-ui'
 
 type SetupIntentFormProps = {
   organizationId: string
@@ -14,7 +14,7 @@ type SetupIntentFormProps = {
 }
 
 export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIntentFormProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const config = useStripeConfig(true)
 
   const createSetupIntentMutation = api.payments.createSetupIntent.useMutation()
@@ -36,7 +36,10 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
       setClientSecret(result.clientSecret)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to initialize payment form'
-      toast.show('Error', { message, type: 'error' })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
     } finally {
       setIsInitializing(false)
     }
@@ -80,7 +83,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (!clientSecret) {
     return (
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontSize="$4" fontWeight="600">
           Add Payment Method
         </Text>
@@ -92,13 +95,13 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
-        <XStack gap="$2">
+        <Row gap="$2">
           <Button size="$4" theme="blue" onPress={handleInitialize} disabled={isInitializing}>
             {isInitializing ? (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Spinner size="small" color="white" />
                 <Text>Initializing…</Text>
-              </XStack>
+              </Row>
             ) : (
               'Continue'
             )}
@@ -106,8 +109,8 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
           <Button size="$4" variant="outlined" onPress={onCancel}>
             Cancel
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
@@ -178,7 +181,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
 
   return (
     <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$4" fontWeight="600">
           Add Payment Method
         </Text>
@@ -187,21 +190,21 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       <PaymentElement />
 
       {errorMessage ? (
         <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Text color="$red11" fontSize="$3" flex={1}>
               {errorMessage}
             </Text>
-          </XStack>
+          </Row>
         </Card>
       ) : null}
 
-      <XStack gap="$2">
+      <Row gap="$2">
         <Button
           size="$4"
           theme="blue"
@@ -210,10 +213,10 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
           flex={1}
         >
           {isSubmitting ? (
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Spinner size="small" color="white" />
               <Text>Saving…</Text>
-            </XStack>
+            </Row>
           ) : (
             'Save Payment Method'
           )}
@@ -221,7 +224,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
         <Button size="$4" variant="outlined" onPress={onCancel}>
           Cancel
         </Button>
-      </XStack>
+      </Row>
     </Card>
   )
 }

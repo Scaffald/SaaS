@@ -1,4 +1,4 @@
-import { extractPlainText } from '@unicornlove/ui';
+import { extractPlainText } from '@unicornlove/beyond-ui';
 import type { JSONContent } from '@tiptap/core';
 
 import type { Employer } from '../components/EmployerCard';

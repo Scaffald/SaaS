@@ -22,8 +22,8 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mockToastShow,
   }),
 }))

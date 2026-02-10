@@ -1,5 +1,5 @@
 import { CheckCircle2, Circle } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 // Mock soft skills - will be replaced with real data from API
 const MOCK_SOFT_SKILLS = [
@@ -25,26 +25,26 @@ export function ReviewStep2SkillsTags({
   onToggleImprovement,
 }: ReviewStep2SkillsTagsProps) {
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$7" fontWeight="700" color="$color12">
           Technical Skills - Details
         </Text>
         <Text fontSize="$5" color="$color11">
           Select their key strengths and areas to improve
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Strengths Section */}
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontSize="$6" fontWeight="600" color="$green11">
           ✓ Strengths
         </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap="$2" flexWrap="wrap">
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = strengths.includes(skill.id)
             return (
-              <XStack
+              <Row
                 key={`strength-${skill.id}`}
                 paddingHorizontal="$3"
                 paddingVertical="$2"
@@ -71,22 +71,22 @@ export function ReviewStep2SkillsTags({
                 >
                   {skill.name}
                 </Text>
-              </XStack>
+              </Row>
             )
           })}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Areas to Improve Section */}
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontSize="$6" fontWeight="600" color="$red11">
           → Areas to Improve
         </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap="$2" flexWrap="wrap">
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = improvements.includes(skill.id)
             return (
-              <XStack
+              <Row
                 key={`improvement-${skill.id}`}
                 paddingHorizontal="$3"
                 paddingVertical="$2"
@@ -113,16 +113,16 @@ export function ReviewStep2SkillsTags({
                 >
                   {skill.name}
                 </Text>
-              </XStack>
+              </Row>
             )
           })}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Helper Text */}
       <Text fontSize="$3" color="$color10" fontStyle="italic">
         Select multiple skills for each category. Skills can only be in one category.
       </Text>
-    </YStack>
+    </Stack>
   )
 }

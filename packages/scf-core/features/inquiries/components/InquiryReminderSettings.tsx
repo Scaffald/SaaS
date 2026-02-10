@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import {
   Button,
@@ -10,31 +10,34 @@ import {
   Spinner,
   Switch,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type InquiryReminderSettingsProps = {
   organizationId: string
 }
 
 export function InquiryReminderSettings({ organizationId }: InquiryReminderSettingsProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const { data: settings, isLoading } = api.organizations.getReminderSettings.useQuery(
     { organizationId },
     { enabled: !!organizationId }
   )
   const updateMutation = api.organizations.updateReminderSettings.useMutation({
     onSuccess: () => {
-      toast.show('Settings saved', {
-        message: 'Inquiry reminder settings updated successfully',
-      })
+      toast.show({
+          title: 'Settings saved',
+          message: 'Inquiry reminder settings updated successfully',
+          variant: 'success',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to save settings'
-      toast.show('Failed to save settings', {
-        message,
-      })
+      toast.show({
+          title: 'Failed to save settings',
+          variant: 'error',
+        })
     },
   })
 
@@ -65,25 +68,25 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
       {isLoading ? (
         <Spinner />
       ) : (
-        <YStack gap="$4">
-          <XStack alignItems="center" justifyContent="space-between" gap="$3">
-            <YStack flex={1} gap="$1">
+        <Stack gap="$4">
+          <Row alignItems="center" justifyContent="space-between" gap="$3">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600">
                 Send automatic reminders
               </Text>
               <Text fontSize="$3" color="$color11">
                 Automatically remind candidates to respond to pending inquiries
               </Text>
-            </YStack>
+            </Stack>
             <Switch
               checked={reminderEnabled}
               onCheckedChange={setReminderEnabled}
               disabled={updateMutation.isPending}
             />
-          </XStack>
+          </Row>
 
           {reminderEnabled && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600">
                 Remind after (days)
               </Text>
@@ -104,7 +107,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
                 after an inquiry is sent if they haven't responded. Reminders are limited to once
                 every 3 days.
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           <Button
@@ -116,7 +119,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
           >
             {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
           </Button>
-        </YStack>
+        </Stack>
       )}
     </Card>
   )

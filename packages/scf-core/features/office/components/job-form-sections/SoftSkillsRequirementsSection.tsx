@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Label, Spinner } from '@unicornlove/ui'
+import { Label, Spinner } from '@unicornlove/beyond-ui'
 
 interface SoftSkillsRequirementsSectionProps {
   requiredSoftSkills?: Array<{ skill_id: string; importance: number }> | null
@@ -78,7 +78,7 @@ export function SoftSkillsRequirementsSection({
 
   if (isLoading) {
     return (
-      <YStack
+      <Stack
         gap="$4"
         padding="$4"
         backgroundColor="$background"
@@ -89,19 +89,19 @@ export function SoftSkillsRequirementsSection({
         <Text fontSize="$6" fontWeight="600">
           Soft Skills Requirements
         </Text>
-        <YStack alignItems="center" padding="$4">
+        <Stack alignItems="center" padding="$4">
           <Spinner size="large" color="$blue10" />
           <Text marginTop="$2" color="$color11">
             Loading soft skills catalog...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   if (!softSkillsData || Object.keys(softSkillsData).length === 0) {
     return (
-      <YStack
+      <Stack
         gap="$4"
         padding="$4"
         backgroundColor="$background"
@@ -115,14 +115,14 @@ export function SoftSkillsRequirementsSection({
         <Text fontSize="$3" color="$color11">
           Soft skills catalog is not available.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   const selectedCount = selectedSkills.size
 
   return (
-    <YStack
+    <Stack
       gap="$4"
       padding="$4"
       backgroundColor="$background"
@@ -130,7 +130,7 @@ export function SoftSkillsRequirementsSection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="600">
           Soft Skills Requirements
         </Text>
@@ -143,24 +143,24 @@ export function SoftSkillsRequirementsSection({
             {selectedCount} {selectedCount === 1 ? 'skill' : 'skills'} selected
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       {/* Soft Skills by Category */}
       {Object.entries(softSkillsData).map(([category, skills]) => {
         if (!Array.isArray(skills) || skills.length === 0) return null
 
         return (
-          <YStack key={category} gap="$3">
+          <Stack key={category} gap="$3">
             <Text fontSize="$4" fontWeight="600" color="$color12">
               {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
             </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            <Row gap="$2" flexWrap="wrap">
               {skills.map((skill) => {
                 const isSelected = selectedSkills.has(skill.id)
                 const importance = selectedSkills.get(skill.id) ?? 3
 
                 return (
-                  <YStack key={skill.id} gap="$2">
+                  <Stack key={skill.id} gap="$2">
                     <Button
                       size="$3"
                       variant={isSelected ? 'outlined' : 'outlined'}
@@ -170,12 +170,12 @@ export function SoftSkillsRequirementsSection({
                       {skill.name}
                     </Button>
                     {isSelected && (
-                      <YStack gap="$1">
+                      <Stack gap="$1">
                         <Label fontSize="$2" color="$color11">
                           Importance:{' '}
                           {IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]}
                         </Label>
-                        <XStack gap="$1">
+                        <Row gap="$1">
                           {[1, 2, 3, 4, 5].map((level) => (
                             <Button
                               key={level}
@@ -187,20 +187,20 @@ export function SoftSkillsRequirementsSection({
                               {level}
                             </Button>
                           ))}
-                        </XStack>
-                      </YStack>
+                        </Row>
+                      </Stack>
                     )}
-                  </YStack>
+                  </Stack>
                 )
               })}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )
       })}
 
       {/* Preview Section */}
       {selectedCount > 0 && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$3"
           backgroundColor="$blue2"
@@ -211,7 +211,7 @@ export function SoftSkillsRequirementsSection({
           <Text fontSize="$4" fontWeight="600" color="$blue11">
             Preview: How candidates will see this
           </Text>
-          <YStack gap="$1">
+          <Stack gap="$1">
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               type SoftSkill = {
                 id?: string
@@ -232,9 +232,9 @@ export function SoftSkillsRequirementsSection({
                 </Text>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

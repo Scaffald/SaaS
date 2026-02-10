@@ -10,9 +10,9 @@ import {
   Separator,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
 import { PhotoUpload } from './PhotoUpload'
 import { ProjectSelector } from './ProjectSelector'
@@ -124,17 +124,17 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
   return (
     <FormProvider {...form}>
       <ScrollView>
-        <YStack gap="$5" padding="$4" paddingBottom="$8">
-          <YStack gap="$2">
+        <Stack gap="$5" padding="$4" paddingBottom="$8">
+          <Stack gap="$2">
             <Text fontSize="$6" fontWeight="700">
               Work Log Details
             </Text>
             <Text fontSize="$3" color="$color10">
               Provide information about the work performed, including project, schedule, and skills.
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Controller
               control={control}
               name="projectId"
@@ -157,9 +157,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontWeight="600" fontSize="$4">
               Log Date
             </Text>
@@ -175,19 +175,19 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 {errors.logDate.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$3">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontWeight="600" fontSize="$4">
                 Time Entries
               </Text>
               <Button size="$3" icon={Plus} onPress={addTimeEntry} variant="outlined">
                 Add Entry
               </Button>
-            </XStack>
+            </Row>
 
-            <YStack gap="$3">
+            <Stack gap="$3">
               {timeEntryFields.map((field, index) => (
                 <TimeEntryInput
                   key={field.id}
@@ -196,9 +196,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   disableRemove={timeEntryFields.length <= 1}
                 />
               ))}
-            </YStack>
+            </Stack>
 
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Text fontWeight="600" fontSize="$3">
                 Total Hours: {totalHours.toFixed(2)}
               </Text>
@@ -207,10 +207,10 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   Overlapping time entries detected.
                 </Text>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontWeight="600" fontSize="$4">
               Work Description
             </Text>
@@ -232,13 +232,13 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 {errors.workDescription.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontWeight="600" fontSize="$4">
               Tasks Completed
             </Text>
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Input
                 value={taskDraft}
                 onChangeText={setTaskDraft}
@@ -248,9 +248,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               <Button size="$3" icon={Plus} onPress={addTask}>
                 Add
               </Button>
-            </XStack>
+            </Row>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               {tasksWithKeys.length === 0 && (
                 <Text fontSize="$3" color="$color10">
                   No tasks added yet.
@@ -258,7 +258,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               )}
 
               {tasksWithKeys.map(({ task, key, index }) => (
-                <XStack
+                <Row
                   key={key}
                   alignItems="center"
                   justifyContent="space-between"
@@ -275,22 +275,22 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   <Button size="$2" variant="outlined" onPress={() => removeTask(index)}>
                     Remove
                   </Button>
-                </XStack>
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
           <Separator />
 
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontWeight="600" fontSize="$4">
               Skills Used
             </Text>
             {skillsQuery.isLoading && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Spinner size="small" />
                 <Text fontSize="$3">Loading your skills…</Text>
-              </XStack>
+              </Row>
             )}
 
             {skillsQuery.error && (
@@ -305,26 +305,26 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               </Text>
             )}
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               {skillOptions.map((skill) => (
-                <XStack key={skill.id} gap="$2" alignItems="center">
+                <Row key={skill.id} gap="$2" alignItems="center">
                   <Checkbox
                     checked={selectedSkills.includes(skill.id)}
                     onCheckedChange={(next) => toggleSkill(skill.id, next === true)}
                   />
                   <Text fontSize="$3">{skill.name}</Text>
-                </XStack>
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
           <Separator />
 
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontWeight="600" fontSize="$4">
               Location Capture
             </Text>
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Button
                 icon={MapPin}
                 onPress={captureLocation}
@@ -339,10 +339,10 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   {location.error}
                 </Text>
               )}
-            </XStack>
+            </Row>
 
             {form.watch('gpsCapture') && (
-              <YStack
+              <Stack
                 borderWidth={1}
                 borderColor="$borderColor"
                 borderRadius="$3"
@@ -362,9 +362,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                     Accuracy: {form.watch('gpsCapture')?.accuracyMeters} meters
                   </Text>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
@@ -372,7 +372,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
           <Separator />
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600" fontSize="$4">
               Draft Status
             </Text>
@@ -405,12 +405,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 Offline draft queued. It will sync automatically when you are online.
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           <Button icon={Save} size="$5" onPress={() => submit()} disabled={isSubmitting}>
             {isSubmitting ? 'Saving…' : submitLabel}
           </Button>
-        </YStack>
+        </Stack>
       </ScrollView>
     </FormProvider>
   )

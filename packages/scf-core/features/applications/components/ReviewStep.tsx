@@ -1,7 +1,7 @@
 import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@scf/schemas'
 import { Check, Edit3, FileText } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Checkbox, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Checkbox, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface ReviewStepProps {
   /**
@@ -62,19 +62,19 @@ export function ReviewStep({
   const [hasConsent, setHasConsent] = useState(false)
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <Stack gap="$6" width="100%" maxWidth={800} padding="$4">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
           Review Your Application
         </Text>
         <Text fontSize="$4" color="$color11">
           Please review your information carefully before submitting.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Screening Information Section */}
-      <YStack
+      <Stack
         gap="$4"
         backgroundColor="$background"
         padding="$6"
@@ -86,7 +86,7 @@ export function ReviewStep({
         shadowOpacity={0.1}
         shadowRadius={3}
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Screening Questions
           </Text>
@@ -102,11 +102,11 @@ export function ReviewStep({
               Edit
             </Text>
           </Button>
-        </XStack>
+        </Row>
 
         <Separator />
 
-        <YStack gap="$4">
+        <Stack gap="$4">
           <InfoRow
             label="Current Location"
             value={screeningAnswers.current_location || 'Not provided'}
@@ -135,12 +135,12 @@ export function ReviewStep({
             label="Earliest Start Date"
             value={screeningAnswers.earliest_start_date || 'Not provided'}
           />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Custom Questions Section */}
       {customQuestionAnswers.length > 0 && (
-        <YStack
+        <Stack
           gap="$4"
           backgroundColor="$background"
           padding="$6"
@@ -152,7 +152,7 @@ export function ReviewStep({
           shadowOpacity={0.1}
           shadowRadius={3}
         >
-          <XStack justifyContent="space-between" alignItems="center">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontSize="$6" fontWeight="bold" color="$color12">
               Additional Questions
             </Text>
@@ -168,11 +168,11 @@ export function ReviewStep({
                 Edit
               </Text>
             </Button>
-          </XStack>
+          </Row>
 
           <Separator />
 
-          <YStack gap="$4">
+          <Stack gap="$4">
             {customQuestionAnswers.map((answer, index) => (
               <InfoRow
                 key={answer.question_id || index}
@@ -180,12 +180,12 @@ export function ReviewStep({
                 value={formatAnswer(answer.answer)}
               />
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Attachments Section */}
-      <YStack
+      <Stack
         gap="$4"
         backgroundColor="$background"
         padding="$6"
@@ -197,7 +197,7 @@ export function ReviewStep({
         shadowOpacity={0.1}
         shadowRadius={3}
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Documents
           </Text>
@@ -213,11 +213,11 @@ export function ReviewStep({
               Edit
             </Text>
           </Button>
-        </XStack>
+        </Row>
 
         <Separator />
 
-        <YStack gap="$4">
+        <Stack gap="$4">
           {attachments.resume ? (
             <DocumentRow type="Resume" metadata={attachments.resume} required />
           ) : (
@@ -237,11 +237,11 @@ export function ReviewStep({
           {attachments.portfolio && (
             <DocumentRow type="Portfolio" metadata={attachments.portfolio} required={false} />
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Submission Consent */}
-      <YStack
+      <Stack
         gap="$3"
         padding="$4"
         backgroundColor="$background"
@@ -249,7 +249,7 @@ export function ReviewStep({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$3" alignItems="flex-start">
+        <Row gap="$3" alignItems="flex-start">
           <Checkbox
             checked={hasConsent}
             onCheckedChange={(value) => setHasConsent(value === true)}
@@ -257,16 +257,16 @@ export function ReviewStep({
             size="$3"
             aria-label="I certify that the information provided is accurate and complete"
           />
-          <YStack gap="$1" flex={1}>
+          <Stack gap="$1" flex={1}>
             <Text fontSize="$4" fontWeight="500" color="$color12">
               I certify that the information provided is accurate and complete
             </Text>
             <Text fontSize="$2" color="$color11">
               By submitting this application, you agree to our Terms of Service and Privacy Policy
             </Text>
-          </YStack>
-        </XStack>
-      </YStack>
+          </Stack>
+        </Row>
+      </Stack>
 
       {/* Submit Button */}
       <Button
@@ -285,7 +285,7 @@ export function ReviewStep({
             ? 'Update Application'
             : 'Submit Application'}
       </Button>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -294,14 +294,14 @@ export function ReviewStep({
  */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       <Text fontSize="$3" fontWeight="400" color="$gray11">
         {label}
       </Text>
       <Text fontSize="$4" fontWeight="500" color="$color12">
         {value}
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -327,10 +327,10 @@ function DocumentRow({
     : 'Recently uploaded'
 
   return (
-    <XStack gap="$3" alignItems="center">
+    <Row gap="$3" alignItems="center">
       <FileText size={20} color="$blue10" />
-      <YStack gap="$1" flex={1}>
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$1" flex={1}>
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$4" fontWeight="500" color="$color12">
             {type}
           </Text>
@@ -339,11 +339,11 @@ function DocumentRow({
               (Required)
             </Text>
           )}
-        </XStack>
+        </Row>
         <Text fontSize="$3" color="$color11">
           {metadata.filename}
         </Text>
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {formatFileSize(metadata.size)}
           </Text>
@@ -353,9 +353,9 @@ function DocumentRow({
           <Text fontSize="$2" color="$color10">
             Uploaded {formattedDate}
           </Text>
-        </XStack>
-      </YStack>
-    </XStack>
+        </Row>
+      </Stack>
+    </Row>
   )
 }
 

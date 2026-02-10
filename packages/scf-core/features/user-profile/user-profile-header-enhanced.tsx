@@ -19,7 +19,7 @@ import {
   UserPlus,
   X,
 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import {
   Avatar,
@@ -28,9 +28,9 @@ import {
   Image,
   Text,
   useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 interface UserProfileHeaderEnhancedProps {
   profile: {
@@ -73,7 +73,7 @@ export function UserProfileHeaderEnhanced({
 }: UserProfileHeaderEnhancedProps) {
   const { width } = useWindowDimensions()
   const isMobile = width < 768
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   // Connection and follow status hooks (only for other users' profiles)
@@ -89,14 +89,17 @@ export function UserProfileHeaderEnhanced({
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request sent', {
-        message: 'Your connection request has been sent.',
-      })
+      toast.show({
+          title: 'Connection request sent',
+          message: 'Your connection request has been sent.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to send request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to send request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -108,14 +111,17 @@ export function UserProfileHeaderEnhanced({
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection accepted', {
-        message: 'You are now connected.',
-      })
+      toast.show({
+          title: 'Connection accepted',
+          message: 'You are now connected.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to accept request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to accept request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -127,9 +133,11 @@ export function UserProfileHeaderEnhanced({
       utils.connections.getPendingRequests.invalidate()
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to decline request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to decline request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -139,14 +147,17 @@ export function UserProfileHeaderEnhanced({
     },
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
-      toast.show('Connection removed', {
-        message: 'Connection has been removed.',
-      })
+      toast.show({
+          title: 'Connection removed',
+          message: 'Connection has been removed.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to remove connection', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to remove connection',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -157,14 +168,17 @@ export function UserProfileHeaderEnhanced({
     },
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
-      toast.show('Following', {
-        message: 'You are now following this user.',
-      })
+      toast.show({
+          title: 'Following',
+          message: 'You are now following this user.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to follow', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to follow',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -174,14 +188,17 @@ export function UserProfileHeaderEnhanced({
     },
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
-      toast.show('Unfollowed', {
-        message: 'You are no longer following this user.',
-      })
+      toast.show({
+          title: 'Unfollowed',
+          message: 'You are no longer following this user.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to unfollow', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to unfollow',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -281,7 +298,7 @@ export function UserProfileHeaderEnhanced({
   return (
     <Card elevate bordered overflow="hidden" padding={0}>
       {/* Banner Section */}
-      <YStack position="relative" height={bannerHeight} backgroundColor="$color4">
+      <Stack position="relative" height={bannerHeight} backgroundColor="$color4">
         {bannerUrl ? (
           <Image
             source={{ uri: bannerUrl }}
@@ -291,14 +308,14 @@ export function UserProfileHeaderEnhanced({
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           />
         ) : (
-          <YStack
+          <Stack
             backgroundColor="$blue5"
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           />
         )}
 
         {/* Avatar Overlay */}
-        <YStack
+        <Stack
           position="absolute"
           style={{
             bottom: -60,
@@ -317,14 +334,14 @@ export function UserProfileHeaderEnhanced({
               </Avatar.Fallback>
             )}
           </Avatar>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Content Section */}
-      <YStack gap="$4" padding="$5" paddingTop={isMobile ? 80 : 96}>
+      <Stack gap="$4" padding="$5" paddingTop={isMobile ? 80 : 96}>
         {/* Header Row - Name, Headline, and Actions */}
-        <XStack gap="$4" alignItems="flex-start" justifyContent="space-between" flexWrap="wrap">
-          <YStack flex={1} gap="$2" minWidth={200}>
+        <Row gap="$4" alignItems="flex-start" justifyContent="space-between" flexWrap="wrap">
+          <Stack flex={1} gap="$2" minWidth={200}>
             {/* Name */}
             <Text fontSize={isMobile ? '$8' : '$10'} fontWeight="700" color="$color12">
               {profile.name || 'User'}
@@ -338,28 +355,28 @@ export function UserProfileHeaderEnhanced({
             )}
 
             {/* Industry and Location */}
-            <XStack gap="$3" flexWrap="wrap" alignItems="center">
+            <Row gap="$3" flexWrap="wrap" alignItems="center">
               {profile.industry_name && (
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <Briefcase size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {profile.industry_name}
                   </Text>
-                </XStack>
+                </Row>
               )}
               {profile.location && (
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <MapPin size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {profile.location}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* Action Buttons */}
-          <XStack gap="$2" flexWrap="wrap" alignItems="center">
+          <Row gap="$2" flexWrap="wrap" alignItems="center">
             {isOwnProfile && onEdit && (
               <Button size={isMobile ? '$3' : '$4'} theme="info" icon={Edit3} onPress={onEdit}>
                 Edit Profile
@@ -465,11 +482,11 @@ export function UserProfileHeaderEnhanced({
               </Button>
             )}
             <Button size={isMobile ? '$3' : '$4'} variant="outlined" circular icon={MoreVertical} />
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {/* Stats Row */}
-        <XStack
+        <Row
           gap="$3"
           flexWrap="wrap"
           paddingTop="$2"
@@ -478,7 +495,7 @@ export function UserProfileHeaderEnhanced({
         >
           {/* Scaffald Score */}
           {profile.gamified_score !== null && (
-            <XStack
+            <Row
               backgroundColor="$blue2"
               paddingHorizontal="$4"
               paddingVertical="$2"
@@ -489,20 +506,20 @@ export function UserProfileHeaderEnhanced({
               borderColor="$blue6"
             >
               <Star size={24} color="$blue10" fill="$blue10" />
-              <YStack>
+              <Stack>
                 <Text fontSize="$7" fontWeight="700" color="$blue11">
                   {profile.gamified_score}
                 </Text>
                 <Text fontSize="$2" color="$blue10">
                   Scaffald Score
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           )}
 
           {/* Years of Experience */}
           {formattedYears !== null && (
-            <XStack
+            <Row
               gap="$2"
               alignItems="center"
               paddingHorizontal="$3"
@@ -514,12 +531,12 @@ export function UserProfileHeaderEnhanced({
               <Text fontSize="$3" color="$color11" fontWeight="600">
                 {formattedYears} years experience
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {/* Hourly Rate */}
           {profile.hourly_rate_cents && (
-            <XStack
+            <Row
               gap="$2"
               alignItems="center"
               paddingHorizontal="$3"
@@ -531,12 +548,12 @@ export function UserProfileHeaderEnhanced({
               <Text fontSize="$3" color="$color11" fontWeight="600">
                 {formatHourlyRate(profile.hourly_rate_cents)}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {/* Open to Work Badge */}
           {profile.open_to_work && (
-            <XStack
+            <Row
               paddingHorizontal="$3"
               paddingVertical="$2"
               backgroundColor="$green3"
@@ -547,10 +564,10 @@ export function UserProfileHeaderEnhanced({
               <Text fontSize="$3" fontWeight="600" color="$green11">
                 ✓ Available for Work
               </Text>
-            </XStack>
+            </Row>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   )
 }

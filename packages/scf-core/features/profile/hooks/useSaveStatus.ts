@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api';
-import type { SaveStatus } from '@unicornlove/ui';
+import type { SaveStatus } from '@unicornlove/beyond-ui';
 import { useEffect, useState } from 'react';
 
 /**

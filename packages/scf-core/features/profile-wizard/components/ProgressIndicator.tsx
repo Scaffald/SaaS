@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Progress, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
@@ -19,30 +19,30 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   const orderedSteps = useMemo(() => PROFILE_WIZARD_STEPS, [])
 
   return (
-    <YStack gap="$3" aria-live="polite">
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap="$3" aria-live="polite">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$4" fontWeight="700">
           Step {orderedSteps.indexOf(currentStep) + 1} of {orderedSteps.length}
         </Text>
         <Text fontSize="$3" color="$color11">
           {completionPercentage}%
         </Text>
-      </XStack>
+      </Row>
 
       <Progress size="$2" value={completionPercentage} max={100} backgroundColor="$color3">
         <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
       </Progress>
 
       {showStepLabels && (
-        <XStack gap="$3" alignItems="flex-start" marginTop="$2" flexWrap="wrap">
+        <Row gap="$3" alignItems="flex-start" marginTop="$2" flexWrap="wrap">
           {orderedSteps.map((stepId, index) => {
             const meta = PROFILE_WIZARD_STEP_META[stepId]
             const isCompleted = completedSteps.includes(stepId)
             const isCurrent = currentStep === stepId
 
             return (
-              <XStack key={stepId} gap="$2" alignItems="center">
-                <YStack
+              <Row key={stepId} gap="$2" alignItems="center">
+                <Stack
                   width={32}
                   height={32}
                   backgroundColor={isCurrent ? '$blue10' : isCompleted ? '$green9' : '$color5'}
@@ -56,21 +56,21 @@ export const ProgressIndicator = memo(function ProgressIndicator({
                   <Text fontWeight="600" color="$color1">
                     {index + 1}
                   </Text>
-                </YStack>
-                <YStack style={{ maxWidth: 160 }}>
+                </Stack>
+                <Stack style={{ maxWidth: 160 }}>
                   <Text fontSize="$3" fontWeight={isCurrent ? '700' : '600'} color="$color12">
                     {meta.title}
                   </Text>
                   <Text fontSize="$2" color="$color10">
                     {meta.estimatedTimeMinutes} min
                   </Text>
-                </YStack>
+                </Stack>
                 {index < orderedSteps.length - 1 && <Separator vertical aria-hidden={true} />}
-              </XStack>
+              </Row>
             )
           })}
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 })

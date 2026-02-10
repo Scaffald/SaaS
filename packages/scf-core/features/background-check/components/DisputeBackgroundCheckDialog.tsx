@@ -3,7 +3,7 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { AlertTriangle } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo } from 'react'
-import { Button, Dialog, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Dialog, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -87,8 +87,8 @@ export function DisputeBackgroundCheckDialog({
           exitStyle={{ y: -10, opacity: 0 }}
           style={{ width: '90%', maxWidth: 520 }}
         >
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center">
               <Dialog.Title fontSize="$6" fontWeight="700">
                 Dispute background check
               </Dialog.Title>
@@ -97,16 +97,16 @@ export function DisputeBackgroundCheckDialog({
                   Close
                 </Button>
               </Dialog.Close>
-            </XStack>
+            </Row>
 
             {check ? (
-              <YStack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
-                <XStack gap="$2" alignItems="center">
+              <Stack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
+                <Row gap="$2" alignItems="center">
                   <AlertTriangle size={18} color="$yellow10" />
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     {statusMeta?.label ?? 'Background check'}
                   </Text>
-                </XStack>
+                </Row>
                 <Text fontSize="$2" color="$color10">
                   Package:{' '}
                   <Text fontWeight="600" color="$color12">
@@ -123,7 +123,7 @@ export function DisputeBackgroundCheckDialog({
                   Disputes should focus on factual inaccuracies, missing context, or mismatched
                   records.
                 </Text>
-              </YStack>
+              </Stack>
             ) : null}
 
             {check ? (
@@ -151,13 +151,13 @@ export function DisputeBackgroundCheckDialog({
                 />
               </>
             ) : (
-              <YStack gap="$3" alignItems="center" paddingVertical="$6">
+              <Stack gap="$3" alignItems="center" paddingVertical="$6">
                 <Text fontSize="$3" color="$color10">
                   Select a background check to review dispute information.
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

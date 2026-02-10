@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
-import { Tab, TabGroup } from '@unicornlove/ui'
+import { Tab, TabGroup } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
-import { Tabs, Text, YStack } from '@unicornlove/ui'
+import { Tabs, Text, Stack } from '@unicornlove/beyond-ui'
 import { ConnectionsList } from './components/ConnectionsList'
 import { FollowersList } from './components/FollowersList'
 import { FollowingList } from './components/FollowingList'
@@ -23,15 +23,15 @@ export function ConnectionsManagementPage() {
   )
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$1">
+    <Stack gap="$4">
+      <Stack gap="$1">
         <Text fontSize="$7" fontWeight="700">
           Connections
         </Text>
         <Text color="$color11">
           Manage your professional connections, followers, and pending requests.
         </Text>
-      </YStack>
+      </Stack>
 
       <TabGroup value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>
         <Tab value="connections" label="Connections" />
@@ -44,26 +44,26 @@ export function ConnectionsManagementPage() {
         />
 
         <Tabs.Content value="connections">
-          <YStack paddingTop="$4">
+          <Stack paddingTop="$4">
             <ConnectionsList />
-          </YStack>
+          </Stack>
         </Tabs.Content>
         <Tabs.Content value="followers">
-          <YStack paddingTop="$4">
+          <Stack paddingTop="$4">
             <FollowersList />
-          </YStack>
+          </Stack>
         </Tabs.Content>
         <Tabs.Content value="following">
-          <YStack paddingTop="$4">
+          <Stack paddingTop="$4">
             <FollowingList />
-          </YStack>
+          </Stack>
         </Tabs.Content>
         <Tabs.Content value="pending">
-          <YStack paddingTop="$4">
+          <Stack paddingTop="$4">
             <PendingRequestsList />
-          </YStack>
+          </Stack>
         </Tabs.Content>
       </TabGroup>
-    </YStack>
+    </Stack>
   )
 }

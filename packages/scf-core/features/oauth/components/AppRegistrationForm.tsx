@@ -3,7 +3,7 @@
  * REQ-10 Task 10: Self-service app registration form
  */
 
-import { Button, Card, Input, Paragraph, SizableText, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Paragraph, SizableText, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 
@@ -62,9 +62,9 @@ export function AppRegistrationForm() {
 
   if (credentials) {
     return (
-      <YStack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
+      <Stack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
         <Card padding="$4" gap="$4">
-          <YStack gap="$3">
+          <Stack gap="$3">
             <SizableText size="$6" fontWeight="600">
               App Registration Successful!
             </SizableText>
@@ -72,30 +72,30 @@ export function AppRegistrationForm() {
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
 
-            <YStack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$2">
-              <YStack gap="$1">
+            <Stack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$2">
+              <Stack gap="$1">
                 <SizableText size="$2" fontWeight="600">
                   Client ID
                 </SizableText>
                 <SizableText size="$3" fontFamily="$mono">
                   {credentials.client_id}
                 </SizableText>
-              </YStack>
-              <YStack gap="$1">
+              </Stack>
+              <Stack gap="$1">
                 <SizableText size="$2" fontWeight="600">
                   Client Secret
                 </SizableText>
                 <SizableText size="$3" fontFamily="$mono" color="$red10">
                   {credentials.client_secret}
                 </SizableText>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
 
             <Paragraph size="$2" color="$yellow10">
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <SizableText size="$4" fontWeight="600">
                 Next Steps
               </SizableText>
@@ -108,28 +108,28 @@ export function AppRegistrationForm() {
               <Paragraph size="$2">
                 3. Wait for admin approval for elevated permissions
               </Paragraph>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
+    <Stack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
       <Card padding="$4" gap="$4">
-        <YStack gap="$4">
-          <YStack gap="$2">
+        <Stack gap="$4">
+          <Stack gap="$2">
             <SizableText size="$6" fontWeight="600">
               Register OAuth Application
             </SizableText>
             <Paragraph size="$2" color="$color11">
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <YStack gap="$1">
+          <Stack gap="$3">
+            <Stack gap="$1">
               <SizableText size="$3">App Name *</SizableText>
               <Input
                 value={appName}
@@ -137,9 +137,9 @@ export function AppRegistrationForm() {
                 placeholder="My Awesome App"
                 maxLength={100}
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
+            <Stack gap="$1">
               <SizableText size="$3">Description *</SizableText>
               <Input
                 value={description}
@@ -149,9 +149,9 @@ export function AppRegistrationForm() {
                 numberOfLines={3}
                 maxLength={500}
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
+            <Stack gap="$1">
               <SizableText size="$3">Homepage URL *</SizableText>
               <Input
                 value={homepageUrl}
@@ -159,12 +159,12 @@ export function AppRegistrationForm() {
                 placeholder="https://example.com"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <SizableText size="$3">Redirect URIs *</SizableText>
               {redirectUris.map((uri, index) => (
-                <XStack key={index} gap="$2">
+                <Row key={index} gap="$2">
                   <Input
                     flex={1}
                     value={uri}
@@ -177,16 +177,16 @@ export function AppRegistrationForm() {
                       Remove
                     </Button>
                   )}
-                </XStack>
+                </Row>
               ))}
               {redirectUris.length < 10 && (
                 <Button onPress={addRedirectUri} variant="outlined" size="$2">
                   Add Redirect URI
                 </Button>
               )}
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
+            <Stack gap="$1">
               <SizableText size="$3">Logo URL (optional)</SizableText>
               <Input
                 value={logoUrl}
@@ -194,9 +194,9 @@ export function AppRegistrationForm() {
                 placeholder="https://example.com/logo.png"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
+            <Stack gap="$1">
               <SizableText size="$3">Privacy Policy URL (optional)</SizableText>
               <Input
                 value={privacyPolicyUrl}
@@ -204,9 +204,9 @@ export function AppRegistrationForm() {
                 placeholder="https://example.com/privacy"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
+            <Stack gap="$1">
               <SizableText size="$3">Terms of Service URL (optional)</SizableText>
               <Input
                 value={termsUrl}
@@ -214,9 +214,9 @@ export function AppRegistrationForm() {
                 placeholder="https://example.com/terms"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
+            <Stack gap="$1">
               <SizableText size="$3">Developer Email *</SizableText>
               <Input
                 value={developerEmail}
@@ -224,10 +224,10 @@ export function AppRegistrationForm() {
                 placeholder="developer@example.com"
                 keyboardType="email"
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
-          <XStack gap="$3" justifyContent="flex-end">
+          <Row gap="$3" justifyContent="flex-end">
             <Button
               onPress={handleSubmit}
               disabled={isSubmitting || !appName || !description || !homepageUrl || !developerEmail}
@@ -235,10 +235,10 @@ export function AppRegistrationForm() {
             >
               Register Application
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { AssessmentStep } from '../utils/assessment-steps'
 import { STEP_INFO } from '../utils/assessment-steps'
 
@@ -30,38 +30,38 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
   }
 
   return (
-    <YStack gap="$3" width="100%">
+    <Stack gap="$3" width="100%">
       {/* Completion Percentage */}
-      <YStack gap="$1">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$1">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Progress
           </Text>
           <Text fontSize="$5" fontWeight="bold" color="$blue10">
             {completionScore}%
           </Text>
-        </XStack>
-        <YStack height={8} backgroundColor="$color5" borderRadius="$10" overflow="hidden">
-          <YStack
+        </Row>
+        <Stack height={8} backgroundColor="$color5" borderRadius="$10" overflow="hidden">
+          <Stack
             height="100%"
             backgroundColor="$blue9"
             width={`${completionScore}%`}
             transition="width 0.3s ease"
           />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Step Indicators */}
-      <XStack gap="$2" alignItems="center" flexWrap="wrap">
+      <Row gap="$2" alignItems="center" flexWrap="wrap">
         {steps.map((step, index) => {
           const status = getStepStatus(step)
           const isLast = index === steps.length - 1
           const stepInfo = STEP_INFO[step]
 
           return (
-            <XStack key={step} gap="$2" alignItems="center">
+            <Row key={step} gap="$2" alignItems="center">
               {/* Step Circle */}
-              <YStack gap="$1" alignItems="center">
+              <Stack gap="$1" alignItems="center">
                 <Circle
                   size={40}
                   backgroundColor={
@@ -103,21 +103,21 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                 >
                   {stepInfo.label}
                 </Text>
-              </YStack>
+              </Stack>
 
               {/* Connector Line */}
               {!isLast && (
-                <YStack
+                <Stack
                   width={40}
                   height={2}
                   backgroundColor={status === 'completed' ? '$green9' : '$color5'}
                   marginBottom={24}
                 />
               )}
-            </XStack>
+            </Row>
           )
         })}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

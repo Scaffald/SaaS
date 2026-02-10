@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from '@unicornlove/ui'
-import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/ui'
+import { ScrollView, Row, Stack } from '@unicornlove/beyond-ui'
+import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
@@ -36,19 +36,19 @@ export const ProfileLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+          <Row paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
             <Breadcrumb items={displayBreadcrumbs} />
-          </XStack>
+          </Row>
         )}
 
         {/* Tab Navigation - positioned at top */}
         {showTabs && <ProfileTabs marginHorizontal="$7" marginTop="$3" />}
 
         {/* Content Area - Responsive two-column layout */}
-        <XStack
+        <Row
           gap="$3"
           paddingHorizontal="$3"
           paddingTop="$3"
@@ -60,7 +60,7 @@ export const ProfileLayout = ({
             flexDirection: 'row',
           }}
         >
-          <YStack
+          <Stack
             width="100%"
             $md={{
               width: undefined,
@@ -69,8 +69,8 @@ export const ProfileLayout = ({
             }}
           >
             {leftContent}
-          </YStack>
-          <YStack
+          </Stack>
+          <Stack
             width="100%"
             $md={{
               width: undefined,
@@ -79,9 +79,9 @@ export const ProfileLayout = ({
             }}
           >
             {rightContent}
-          </YStack>
-        </XStack>
-      </YStack>
+          </Stack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }

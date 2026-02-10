@@ -2,11 +2,11 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { CheckCircle, Clock, Users, XCircle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type InvitationsOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['mine']
 type InvitationRecord = NonNullable<InvitationsOutput['invitations']>[number]
@@ -29,7 +29,7 @@ export function TeamInvitationList({
 
   if (!invitations.length) {
     return (
-      <YStack
+      <Stack
         gap="$2"
         borderWidth={1}
         borderColor="$borderColor"
@@ -43,12 +43,12 @@ export function TeamInvitationList({
             You&apos;re all caught up. New invitations will appear here for quick review.
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {invitations.map((invitation) => {
         const teamName = invitation.team?.name ?? 'Team'
         const organizationName = invitation.team?.organizationName ?? 'Organization'
@@ -68,21 +68,21 @@ export function TeamInvitationList({
             gap="$3"
             backgroundColor="$color1"
           >
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack gap="$1" flex={1}>
+            <Row justifyContent="space-between" alignItems="center">
+              <Stack gap="$1" flex={1}>
                 <Text fontWeight="700">{teamName}</Text>
                 <Text fontSize="$3" color="$color11">
                   {organizationName}
                 </Text>
-                <XStack gap="$2" alignItems="center" marginTop="$2">
+                <Row gap="$2" alignItems="center" marginTop="$2">
                   <Clock size={16} color="$color11" />
                   <Text fontSize="$3" color="$color11">
                     Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}
                   </Text>
-                </XStack>
-              </YStack>
-              <XStack
+                </Row>
+              </Stack>
+              <Row
                 gap="$2"
                 marginLeft="$4"
                 flexShrink={0}
@@ -123,18 +123,18 @@ export function TeamInvitationList({
                 >
                   {isPending ? <Spinner size="small" color="$color1" /> : 'Accept'}
                 </Button>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           </Card>
         )
       })}
-    </YStack>
+    </Stack>
   )
 }
 
 export function TeamInvitationsWidget() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
   const invitationsQuery = api.teams.invitations.mine.useQuery(
     { status: 'pending' },
@@ -155,7 +155,10 @@ export function TeamInvitationsWidget() {
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
-      toast.show('Unable to respond', { message })
+      toast.show({
+          title: 'Unable to respond',
+          variant: 'error',
+        })
     },
   })
 
@@ -186,11 +189,11 @@ export function TeamInvitationsWidget() {
       gap="$4"
       backgroundColor="$color1"
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <XStack gap="$2" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Users size={20} />
           <Text fontWeight="700">Team invitations</Text>
-        </XStack>
+        </Row>
         <Button
           variant="outlined"
           size="$2"
@@ -198,13 +201,13 @@ export function TeamInvitationsWidget() {
         >
           Manage
         </Button>
-      </XStack>
+      </Row>
 
       {invitationsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
+        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Checking for invitations…</Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
           <TeamInvitationList

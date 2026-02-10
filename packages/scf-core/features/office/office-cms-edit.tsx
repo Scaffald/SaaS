@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@scf/schemas'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSEdit() {
@@ -24,9 +24,9 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <YStack alignItems="center" justifyContent="center" flex={1}>
+          <Stack alignItems="center" justifyContent="center" flex={1}>
             <Spinner size="large" />
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />
@@ -38,9 +38,9 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <YStack gap="$4">
+          <Stack gap="$4">
             <Text>Slide not found</Text>
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />
@@ -51,16 +51,16 @@ export function OfficeCMSEdit() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <CMSSlideForm
             initialData={data.slide}
             onSubmit={handleSubmit}
             isLoading={updateSlide.isPending}
           />
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <Text fontSize="$5" fontWeight="bold">
             Edit Slide
           </Text>
@@ -68,7 +68,7 @@ export function OfficeCMSEdit() {
             Update the slide information. Changes will be visible to users immediately if the slide
             is active.
           </Text>
-        </YStack>
+        </Stack>
       }
     />
   )

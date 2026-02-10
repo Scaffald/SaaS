@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
@@ -15,10 +15,10 @@ export function OccupationAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -33,8 +33,8 @@ export function OccupationAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
+      <Stack gap={spacing.md}>
+        <Stack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Occupation Preferences
           </Text>
@@ -42,7 +42,7 @@ export function OccupationAssessmentWidget() {
             Tell us about your current occupation and target occupations to help us recommend
             relevant opportunities.
           </Text>
-        </YStack>
+        </Stack>
 
         <Button variant="primary" onPress={handleStart} size="$5">
           <Button.Text>Add Occupations</Button.Text>
@@ -51,7 +51,7 @@ export function OccupationAssessmentWidget() {
         <Text fontSize="$2" color="$color11">
           Takes about 1-2 minutes (optional)
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

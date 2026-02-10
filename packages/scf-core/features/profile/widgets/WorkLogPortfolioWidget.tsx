@@ -3,7 +3,7 @@ import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
 import { api } from '@scf/core/utils/api'
 import { ShieldCheck } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Card, Image, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface WorkLogPortfolioWidgetProps {
   userId: string
@@ -51,8 +51,8 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
 
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$4" padding="$4">
-        <YStack gap="$2">
+      <Stack gap="$4" padding="$4">
+        <Stack gap="$2">
           <Text fontSize="$6" fontWeight="700">
             Verified work history
           </Text>
@@ -60,19 +60,19 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
             Recent verified work logs selected by this worker. Projects appear here only when the
             worker has chosen to share them publicly.
           </Paragraph>
-        </YStack>
+        </Stack>
 
         {isLoading ? (
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Spinner size="small" />
             <Text color="$color10">Loading work history…</Text>
-          </XStack>
+          </Row>
         ) : workLogs.length === 0 ? (
           <Paragraph color="$color10">
             No verified work logs are currently visible on this profile.
           </Paragraph>
         ) : (
-          <YStack gap="$4">
+          <Stack gap="$4">
             {groupedLogs.map((group) => {
               const allDates = group.entries
                 .map((entry) => entry.logDate)
@@ -100,7 +100,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
               const photos = group.entries.flatMap((entry) => entry.photos) as PublicWorkLogPhoto[]
 
               return (
-                <YStack
+                <Stack
                   key={group.id}
                   borderWidth={1}
                   borderColor="$color6"
@@ -110,15 +110,15 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                   gap="$3"
                   backgroundColor="$color2"
                 >
-                  <XStack alignItems="center" justifyContent="space-between">
-                    <YStack gap="$1">
+                  <Row alignItems="center" justifyContent="space-between">
+                    <Stack gap="$1">
                       <Text fontWeight="700">{group.projectName ?? 'Project'}</Text>
                       {group.organizationName ? (
                         <Text color="$color10">{group.organizationName}</Text>
                       ) : null}
                       <Text color="$color10">{dateLabel}</Text>
-                    </YStack>
-                    <XStack
+                    </Stack>
+                    <Row
                       gap="$2"
                       alignItems="center"
                       paddingHorizontal="$2"
@@ -130,11 +130,11 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       <Text color="$green11" fontSize="$2" fontWeight="600">
                         Verified by Scaffald
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {photos.length > 0 ? (
-                    <XStack gap="$2" flexWrap="wrap">
+                    <Row gap="$2" flexWrap="wrap">
                       {photos.map((photo) => (
                         <Card
                           key={`${group.id}-${photo.id}`}
@@ -155,7 +155,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                               resizeMode="cover"
                             />
                           ) : (
-                            <YStack
+                            <Stack
                               flex={1}
                               alignItems="center"
                               justifyContent="center"
@@ -164,20 +164,20 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                               <Text color="$color10" fontSize="$2">
                                 Photo unavailable
                               </Text>
-                            </YStack>
+                            </Stack>
                           )}
                         </Card>
                       ))}
-                    </XStack>
+                    </Row>
                   ) : (
                     <Paragraph color="$color10">No photos were shared for this project.</Paragraph>
                   )}
-                </YStack>
+                </Stack>
               )
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   )
 }

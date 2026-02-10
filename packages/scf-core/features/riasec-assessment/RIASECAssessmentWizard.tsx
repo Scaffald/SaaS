@@ -6,17 +6,17 @@ import {
   type RiasecScores,
 } from '@scf/core/features/career-assessment/config/career-assessment-schema'
 import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, YStack } from '@unicornlove/ui'
+import { Button, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * RIASECAssessmentWizard - Standalone wizard for RIASEC Career Interests
  */
 export function RIASECAssessmentWizard() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
   const { data: status, isLoading, error } = api.onet.getRIASECStatus.useQuery()
   const [scores, setScores] = useState<RiasecScores>(careerAssessmentDefaults.riasec_scores)
@@ -33,15 +33,19 @@ export function RIASECAssessmentWizard() {
     onSuccess: () => {
       // Invalidate status queries to update drawer checkmarks
       utils.onet.getRIASECStatus.invalidate()
-      toast.show('Assessment Complete', {
-        message: 'Your career interests have been saved!',
-      })
+      toast.show({
+          title: 'Assessment Complete',
+          message: 'Your career interests have been saved!',
+          variant: 'success',
+        })
       router.push(ROUTES.DASHBOARD.path)
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to save assessment. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to save assessment. Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -70,7 +74,7 @@ export function RIASECAssessmentWizard() {
       error={queryError}
       showNext={false}
     >
-      <YStack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
         <RiasecQuickAssessment
           value={scores}
           onChange={setScores}
@@ -85,7 +89,7 @@ export function RIASECAssessmentWizard() {
         >
           <Button.Text>Complete Assessment</Button.Text>
         </Button>
-      </YStack>
+      </Stack>
     </AssessmentWizard>
   )
 }

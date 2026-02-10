@@ -2,9 +2,9 @@ import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useCo
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
 import { api } from '@scf/core/utils/api'
 import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
-import { Button, Text, XStack } from '@unicornlove/ui'
+import { Button, Text, Row } from '@unicornlove/beyond-ui'
 
 interface ConnectionFollowButtonsInlineProps {
   targetUserId: string
@@ -22,7 +22,7 @@ export function ConnectionFollowButtonsInline({
   isOwnProfile = false,
   size = '$4',
 }: ConnectionFollowButtonsInlineProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   // Don't show buttons for own profile
@@ -43,14 +43,17 @@ export function ConnectionFollowButtonsInline({
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request sent', {
-        message: 'Your connection request has been sent.',
-      })
+      toast.show({
+          title: 'Connection request sent',
+          message: 'Your connection request has been sent.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to send request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to send request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -62,14 +65,17 @@ export function ConnectionFollowButtonsInline({
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection accepted', {
-        message: 'You are now connected.',
-      })
+      toast.show({
+          title: 'Connection accepted',
+          message: 'You are now connected.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to accept request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to accept request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -79,14 +85,17 @@ export function ConnectionFollowButtonsInline({
     },
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request declined', {
-        message: 'The connection request has been declined.',
-      })
+      toast.show({
+          title: 'Connection request declined',
+          message: 'The connection request has been declined.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to decline request', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to decline request',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -96,14 +105,17 @@ export function ConnectionFollowButtonsInline({
     },
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
-      toast.show('Connection removed', {
-        message: 'The connection has been removed.',
-      })
+      toast.show({
+          title: 'Connection removed',
+          message: 'The connection has been removed.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to remove connection', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to remove connection',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -116,14 +128,17 @@ export function ConnectionFollowButtonsInline({
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
       utils.follows.getFollowers.invalidate()
-      toast.show('Following', {
-        message: 'You are now following this user.',
-      })
+      toast.show({
+          title: 'Following',
+          message: 'You are now following this user.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to follow user', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to follow user',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -135,14 +150,17 @@ export function ConnectionFollowButtonsInline({
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
       utils.follows.getFollowers.invalidate()
-      toast.show('Unfollowed', {
-        message: 'You are no longer following this user.',
-      })
+      toast.show({
+          title: 'Unfollowed',
+          message: 'You are no longer following this user.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to unfollow user', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
+      toast.show({
+          title: 'Unable to unfollow user',
+          message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
+        })
     },
   })
 
@@ -211,17 +229,17 @@ export function ConnectionFollowButtonsInline({
 
   if (isLoading) {
     return (
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <Loader2 size={16} color="$color10" />
         <Text fontSize="$2" color="$color10">
           Loading...
         </Text>
-      </XStack>
+      </Row>
     )
   }
 
   return (
-    <XStack gap="$2" flexWrap="wrap">
+    <Row gap="$2" flexWrap="wrap">
       {/* Connection Button */}
       {connectionButtonState.type === 'connected' && (
         <>
@@ -310,6 +328,6 @@ export function ConnectionFollowButtonsInline({
           </Text>
         </Button>
       )}
-    </XStack>
+    </Row>
   )
 }

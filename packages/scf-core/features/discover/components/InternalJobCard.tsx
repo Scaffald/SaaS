@@ -1,11 +1,11 @@
 import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Chip, DiscoverCard, extractPlainText } from '@unicornlove/ui'
+import { Chip, DiscoverCard, extractPlainText } from '@unicornlove/beyond-ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -225,24 +225,24 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
   return (
     <DiscoverCard onPress={handleCardPress} padding="$4">
-      <YStack gap="$3">
+      <Stack gap="$3">
         {/* Header */}
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <YStack flex={1} gap="$1">
+        <Stack gap="$2">
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$6" fontWeight="700" color="$color12">
                 {job.title}
               </Text>
               {job.organization && (
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <Building2 size={16} color="$color11" />
                   <Text fontSize="$3" color="$color11" fontWeight="600">
                     {job.organization.name}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
-            <XStack gap="$2" alignItems="center">
+            </Stack>
+            <Row gap="$2" alignItems="center">
               {hasApplied && (
                 <Chip backgroundColor="$green9" color="$green1">
                   Applied
@@ -258,26 +258,26 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                   {Math.round(matchData.score)}% Match
                 </Chip>
               )}
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
 
           {/* Job metadata */}
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap="$3" flexWrap="wrap">
             {job.location && (
-              <XStack gap="$1.5" alignItems="center">
+              <Row gap="$1.5" alignItems="center">
                 <MapPin size={14} color="$color10" />
                 <Text fontSize="$2" color="$color10">
                   {job.location}
                 </Text>
-              </XStack>
+              </Row>
             )}
             {employmentType && (
-              <XStack gap="$1.5" alignItems="center">
+              <Row gap="$1.5" alignItems="center">
                 <Briefcase size={14} color="$color10" />
                 <Text fontSize="$2" color="$color10">
                   {employmentType}
                 </Text>
-              </XStack>
+              </Row>
             )}
             {remoteOption && (
               <Chip
@@ -290,8 +290,8 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 {remoteOption}
               </Chip>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
         {/* Description preview */}
         {descriptionText && (
@@ -301,32 +301,32 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         )}
 
         {/* Pay range and certifications */}
-        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
-          <XStack gap="$3" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
+          <Row gap="$3" alignItems="center">
             {payRange && (
-              <XStack gap="$1.5" alignItems="center">
+              <Row gap="$1.5" alignItems="center">
                 <DollarSign size={16} color="$green10" />
                 <Text fontSize="$3" color="$green10" fontWeight="600">
                   {payRange}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </XStack>
+          </Row>
 
           {postedTime && (
-            <XStack gap="$1.5" alignItems="center">
+            <Row gap="$1.5" alignItems="center">
               <Clock size={14} color="$color9" />
               <Text fontSize="$2" color="$color9">
                 {postedTime}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </XStack>
+        </Row>
 
         {/* Certifications and Skills */}
         {(job.certifications && job.certifications.length > 0) ||
         (job.skills && job.skills.length > 0) ? (
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap="$2" flexWrap="wrap">
             {job.certifications?.slice(0, 3).map((cert) => (
               <Chip
                 key={cert.id}
@@ -381,9 +381,9 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 +{job.skills.length - 2} more
               </Chip>
             )}
-          </XStack>
+          </Row>
         ) : null}
-      </YStack>
+      </Stack>
     </DiscoverCard>
   )
 }

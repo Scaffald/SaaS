@@ -1,6 +1,6 @@
 import { Trophy } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { CompletionMilestone } from '../hooks/useCompletionStatus'
 
 interface MilestoneBadgeProps {
@@ -9,7 +9,7 @@ interface MilestoneBadgeProps {
 
 export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: MilestoneBadgeProps) {
   return (
-    <XStack
+    <Row
       gap="$2"
       alignItems="center"
       paddingHorizontal="$3"
@@ -25,14 +25,14 @@ export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: Milest
         color={milestone.achieved ? '$green10' : '$color10'}
         data-testid="trophy-icon"
       />
-      <YStack>
+      <Stack>
         <Text fontSize="$2" fontWeight="600" color={milestone.achieved ? '$green11' : '$color11'}>
           {milestone.label}
         </Text>
         <Text fontSize="$1" color="$color10">
           {milestone.threshold}% milestone
         </Text>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 })

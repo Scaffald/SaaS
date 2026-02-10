@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react'
-import { Button, Text, XStack, YStack, Spinner } from '@unicornlove/ui'
+import { Button, Text, Row, Stack, Spinner } from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
 
 /**
@@ -92,7 +92,7 @@ function Checkbox({
   description?: string
 }) {
   return (
-    <XStack
+    <Row
       padding="$3"
       backgroundColor={checked ? '$blue2' : '$color2'}
       borderRadius="$2"
@@ -103,7 +103,7 @@ function Checkbox({
       gap="$3"
       alignItems="flex-start"
     >
-      <YStack
+      <Stack
         width={20}
         height={20}
         borderRadius={4}
@@ -119,8 +119,8 @@ function Checkbox({
             ✓
           </Text>
         )}
-      </YStack>
-      <YStack flex={1} gap="$1">
+      </Stack>
+      <Stack flex={1} gap="$1">
         <Text fontSize="$3" fontWeight="500">
           {label}
         </Text>
@@ -129,8 +129,8 @@ function Checkbox({
             {description}
           </Text>
         )}
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }
 
@@ -149,7 +149,7 @@ function RadioButton({
   description?: string
 }) {
   return (
-    <XStack
+    <Row
       padding="$3"
       backgroundColor={selected ? '$blue2' : '$color2'}
       borderRadius="$2"
@@ -160,7 +160,7 @@ function RadioButton({
       gap="$3"
       alignItems="flex-start"
     >
-      <YStack
+      <Stack
         width={20}
         height={20}
         borderRadius={10}
@@ -171,10 +171,10 @@ function RadioButton({
         marginTop={2}
       >
         {selected && (
-          <YStack width={10} height={10} borderRadius={5} backgroundColor="$blue10" />
+          <Stack width={10} height={10} borderRadius={5} backgroundColor="$blue10" />
         )}
-      </YStack>
-      <YStack flex={1} gap="$1">
+      </Stack>
+      <Stack flex={1} gap="$1">
         <Text fontSize="$3" fontWeight="500">
           {label}
         </Text>
@@ -183,8 +183,8 @@ function RadioButton({
             {description}
           </Text>
         )}
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }
 
@@ -231,8 +231,8 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
   // Submitted state
   if (step === 'submitted') {
     return (
-      <YStack padding="$4" gap="$4" alignItems="center">
-        <YStack
+      <Stack padding="$4" gap="$4" alignItems="center">
+        <Stack
           width={80}
           height={80}
           borderRadius={40}
@@ -243,7 +243,7 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
           <Text fontSize="$8" color="$green10">
             ✓
           </Text>
-        </YStack>
+        </Stack>
         <Text fontSize="$6" fontWeight="600" textAlign="center">
           Request Submitted
         </Text>
@@ -257,29 +257,29 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
         <Button onPress={onCancel} marginTop="$4">
           Close
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$4">
+    <Stack gap="$4" padding="$4">
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="600">
           {typeInfo.title}
         </Text>
         <Text fontSize="$3" color="$color11">
           {typeInfo.description}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Step 1: Select Request Type */}
       {step === 'type' && (
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$4" fontWeight="500">
             Select Request Type
           </Text>
-          <YStack gap="$2">
+          <Stack gap="$2">
             <RadioButton
               selected={requestType === 'export'}
               onSelect={() => setRequestType('export')}
@@ -298,23 +298,23 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
               label="Correct My Data"
               description="Request correction of inaccurate information"
             />
-          </YStack>
+          </Stack>
 
-          <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
+          <Row gap="$3" justifyContent="flex-end" marginTop="$4">
             <Button variant="outlined" onPress={onCancel}>
               Cancel
             </Button>
             <Button onPress={() => setStep('categories')}>
               Next
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Step 2: Select Data Categories */}
       {step === 'categories' && (
-        <YStack gap="$3">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$3">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontSize="$4" fontWeight="500">
               {requestType === 'correction' ? 'Describe Correction' : 'Select Data Categories'}
             </Text>
@@ -323,14 +323,14 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
                 Select All
               </Button>
             )}
-          </XStack>
+          </Row>
 
           {requestType === 'correction' ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" color="$color11">
                 Please describe what information is incorrect and what the correct information should be:
               </Text>
-              <YStack
+              <Stack
                 as="textarea"
                 minHeight={150}
                 padding="$3"
@@ -345,10 +345,10 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
                 >
                   {correctionDetails || 'Enter correction details here...'}
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : (
-            <YStack gap="$2">
+            <Stack gap="$2">
               {DATA_CATEGORIES.map((category) => (
                 <Checkbox
                   key={category.id}
@@ -358,10 +358,10 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
                   description={category.description}
                 />
               ))}
-            </YStack>
+            </Stack>
           )}
 
-          <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
+          <Row gap="$3" justifyContent="flex-end" marginTop="$4">
             <Button variant="outlined" onPress={() => setStep('type')}>
               Back
             </Button>
@@ -374,19 +374,19 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
             >
               Next
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Step 3: Confirmation */}
       {step === 'confirm' && (
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$4" fontWeight="500">
             Confirm Your Request
           </Text>
 
           {/* Summary */}
-          <YStack
+          <Stack
             padding="$3"
             backgroundColor="$color2"
             borderRadius="$2"
@@ -404,11 +404,11 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
                       .join(', ')}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Warning for deletion */}
           {typeInfo.warning && (
-            <XStack
+            <Row
               padding="$3"
               backgroundColor="$red2"
               borderRadius="$2"
@@ -418,11 +418,11 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
               <Text fontSize="$3" color="$red11">
                 ⚠️ {typeInfo.warning}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {/* Processing time info */}
-          <XStack
+          <Row
             padding="$3"
             backgroundColor="$blue2"
             borderRadius="$2"
@@ -431,7 +431,7 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
               Your request will be processed within 45 days as required by CCPA. You will receive
               email notifications about the status of your request.
             </Text>
-          </XStack>
+          </Row>
 
           {/* Confirmation checkbox */}
           <Checkbox
@@ -445,7 +445,7 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
             }
           />
 
-          <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
+          <Row gap="$3" justifyContent="flex-end" marginTop="$4">
             <Button variant="outlined" onPress={() => setStep('categories')}>
               Back
             </Button>
@@ -455,18 +455,18 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
               theme={requestType === 'deletion' ? 'red' : undefined}
             >
               {submitRequest.isPending ? (
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <Spinner size="small" />
                   <Text>Submitting...</Text>
-                </XStack>
+                </Row>
               ) : (
                 typeInfo.confirmText
               )}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }
 

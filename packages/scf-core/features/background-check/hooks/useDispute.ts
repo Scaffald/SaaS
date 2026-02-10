@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api';
 import { supabase } from '@scf/core/utils/supabase/client';
 import type { AppRouter } from '@scf/supabase/client-types';
-import type { UploadSelection } from '@unicornlove/ui';
+import type { UploadSelection } from '@unicornlove/beyond-ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToastController } from '@tamagui/toast';
+import { useToast } from '@unicornlove/beyond-ui';
 import type { inferRouterOutputs } from '@trpc/server';
 import { Buffer } from 'buffer';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -159,7 +159,7 @@ const createAttachmentId = () => {
 export function useDispute(
   { checkId, enabled = true }: UseDisputeOptions,
 ): UseDisputeResult {
-  const toast = useToastController();
+  const toast = useToast();
   const utils = api.useUtils();
   const [attachments, setAttachments] = useState<DisputeAttachment[]>([]);
   const [attachmentError, setAttachmentError] = useState<string | null>(null);
@@ -423,9 +423,10 @@ export function useDispute(
             : undefined,
         });
 
-        toast.show("Dispute submitted", {
+        toast.show({
+          title: "Dispute submitted",
           message: "Our compliance team will review your request shortly.",
-          type: "success",
+          variant: 'success',
         });
 
         await Promise.all([
@@ -448,10 +449,10 @@ export function useDispute(
         : 'Unable to submit dispute.';
       console.error("[useDispute] Failed to submit dispute", error);
       setSubmissionError(message);
-      toast.show("Unable to submit dispute", {
-        message,
-        type: "error",
-      });
+      toast.show({
+          title: "Unable to submit dispute",
+          variant: 'error',
+        });
     } finally {
       setIsUploading(false);
       setIsSubmitting(false);

@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import type { WelcomeSlideCreate } from '@scf/schemas'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { useRouter } from 'expo-router'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSCreate() {
@@ -19,12 +19,12 @@ export function OfficeCMSCreate() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <CMSSlideForm onSubmit={handleSubmit} isLoading={createSlide.isPending} />
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <Text fontSize="$5" fontWeight="bold">
             Create New Slide
           </Text>
@@ -32,7 +32,7 @@ export function OfficeCMSCreate() {
           <Text>
             Make sure to set the display order appropriately to control when this slide appears.
           </Text>
-        </YStack>
+        </Stack>
       }
     />
   )

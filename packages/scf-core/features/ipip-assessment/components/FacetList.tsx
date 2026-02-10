@@ -3,7 +3,7 @@ import type {
   IPIPResultFacets,
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { memo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface FacetListProps {
   facets: Record<string, IPIPFacetScore>
@@ -17,7 +17,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
   const facetKeys = Object.keys(facets).sort()
 
   return (
-    <YStack gap="$3" marginTop="$3">
+    <Stack gap="$3" marginTop="$3">
       {facetKeys.map((facetKey) => {
         const facetScore = facets[facetKey]
         const facetNarrative = facetNarratives[facetKey as keyof IPIPResultFacets]
@@ -28,7 +28,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
         // The text is a general description, not specific to low/neutral/high
 
         return (
-          <YStack
+          <Stack
             key={facetKey}
             gap="$2"
             padding="$3"
@@ -37,7 +37,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <XStack justifyContent="space-between" alignItems="center">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 {facetNarrative.title || facetKey}
               </Text>
@@ -54,15 +54,15 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
               >
                 {facetScore.result.toUpperCase()}
               </Text>
-            </XStack>
+            </Row>
             {facetNarrative.text && (
               <Text fontSize="$3" color="$color12">
                 {facetNarrative.text}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )
       })}
-    </YStack>
+    </Stack>
   )
 })

@@ -7,7 +7,7 @@ import {
   Sheet,
   ToggleSwitch,
   type ViewportBounds,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import {
   List as ListIcon,
@@ -24,10 +24,10 @@ import {
   Tabs,
   Text,
   useWindowDimensions,
-  XStack,
-  YStack,
+  Row,
+  Stack,
   type TamaguiElement,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { MapFilterBar } from './components/MapFilterBar'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
@@ -581,7 +581,7 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   return (
-    <YStack ref={layoutRef} flex={1} height="100vh" overflow="hidden" position="relative">
+    <Stack ref={layoutRef} flex={1} height="100vh" overflow="hidden" position="relative">
       {/* Filter Bar / Mobile Header */}
       {isSmallScreen ? (
         <MobileSearchHeader
@@ -610,10 +610,10 @@ export const DiscoverMapScreen = () => {
       )}
 
       {/* Map and Results Container */}
-      <XStack flex={1} overflow="hidden" position="relative">
+      <Row flex={1} overflow="hidden" position="relative">
         {isSmallScreen ? (
           mobileListActive ? (
-            <YStack
+            <Stack
               flex={1}
               backgroundColor="$background"
               paddingHorizontal="$3"
@@ -628,7 +628,7 @@ export const DiscoverMapScreen = () => {
                 onSelect={handleMobileResultSelect}
                 isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
               />
-            </YStack>
+            </Stack>
           ) : (
             <MapContainer
               ref={mapRef}
@@ -678,7 +678,7 @@ export const DiscoverMapScreen = () => {
             />
           </>
         )}
-      </XStack>
+      </Row>
 
       {/* Hover Card - Web only */}
       {Platform.OS === 'web' && (
@@ -743,7 +743,7 @@ export const DiscoverMapScreen = () => {
       {isSmallScreen && (
         <MobileViewToggleBar activeView={mobileViewMode} onViewChange={handleMobileViewChange} />
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -787,7 +787,7 @@ const MobileSearchHeader = ({
   )
 
   return (
-    <XStack
+    <Row
       width="100%"
       paddingHorizontal="$4"
       paddingVertical="$3"
@@ -823,7 +823,7 @@ const MobileSearchHeader = ({
           }}
         />
       ) : (
-        <YStack
+        <Stack
           flex={1}
           backgroundColor="$background"
           padding="$3"
@@ -839,7 +839,7 @@ const MobileSearchHeader = ({
           <Text fontSize="$2" color="$color10">
             {tokenValidation.error}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       <Button
@@ -851,7 +851,7 @@ const MobileSearchHeader = ({
         onPress={onFiltersPress}
         style={{ flexShrink: 0 }}
       />
-    </XStack>
+    </Row>
   )
 }
 
@@ -862,7 +862,7 @@ type MobileViewToggleBarProps = {
 
 const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarProps) => {
   return (
-    <XStack
+    <Row
       position="absolute"
       bottom="$3"
       left="$3"
@@ -886,12 +886,12 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             paddingHorizontal="$4"
             paddingVertical="$3"
           >
-            <XStack alignItems="center" justifyContent="center" gap="$2">
+            <Row alignItems="center" justifyContent="center" gap="$2">
               <MapIcon size={16} />
               <Text fontSize="$4" fontWeight="600">
                 Map
               </Text>
-            </XStack>
+            </Row>
           </Tabs.Tab>
           <Tabs.Tab
             value="list"
@@ -901,16 +901,16 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             paddingHorizontal="$4"
             paddingVertical="$3"
           >
-            <XStack alignItems="center" justifyContent="center" gap="$2">
+            <Row alignItems="center" justifyContent="center" gap="$2">
               <ListIcon size={16} />
               <Text fontSize="$4" fontWeight="600">
                 List
               </Text>
-            </XStack>
+            </Row>
           </Tabs.Tab>
         </Tabs.List>
       </Tabs>
-    </XStack>
+    </Row>
   )
 }
 
@@ -936,8 +936,8 @@ const MobileFiltersContent = ({
   onReset,
 }: MobileFiltersContentProps) => {
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack flex={1} padding="$4" gap="$4">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$6" fontWeight="700">
           Filters
         </Text>
@@ -949,10 +949,10 @@ const MobileFiltersContent = ({
           aria-label="Close filters"
           onPress={onClose}
         />
-      </XStack>
+      </Row>
 
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack gap="$4" paddingBottom="$6">
+        <Stack gap="$4" paddingBottom="$6">
           <FilterToggle
             label="Workers"
             description="Show worker profiles on the map"
@@ -971,7 +971,7 @@ const MobileFiltersContent = ({
             value={showJobs}
             onValueChange={onShowJobsChange}
           />
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <Button
@@ -984,7 +984,7 @@ const MobileFiltersContent = ({
       >
         Reset Filters
       </Button>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -996,7 +996,7 @@ type FilterToggleProps = {
 }
 
 const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => (
-  <YStack
+  <Stack
     gap="$2"
     backgroundColor="$color2"
     padding="$3"
@@ -1004,16 +1004,16 @@ const FilterToggle = ({ label, description, value, onValueChange }: FilterToggle
     borderWidth={1}
     borderColor="$borderColor"
   >
-    <XStack justifyContent="space-between" alignItems="center" gap="$2">
+    <Row justifyContent="space-between" alignItems="center" gap="$2">
       <Text fontSize="$4" fontWeight="600">
         {label}
       </Text>
       <ToggleSwitch checked={value} onCheckedChange={onValueChange} aria-label={label} />
-    </XStack>
+    </Row>
     <Text fontSize="$2" color="$color10">
       {description}
     </Text>
-  </YStack>
+  </Stack>
 )
 
 export default DiscoverMapScreen

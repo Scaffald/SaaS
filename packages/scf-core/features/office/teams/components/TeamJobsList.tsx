@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
@@ -33,8 +33,8 @@ export function TeamJobsList({
   const hasJobs = derivedJobs.length > 0
 
   return (
-    <YStack gap="$3" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
+    <Stack gap="$3" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+      <Row
         justifyContent="space-between"
         alignItems="flex-start"
         flexWrap="wrap"
@@ -48,7 +48,7 @@ export function TeamJobsList({
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team jobs
         </Text>
-        <XStack
+        <Row
           gap="$2"
           alignItems="flex-start"
           flexDirection="column"
@@ -90,14 +90,14 @@ export function TeamJobsList({
           >
             Assign job
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
+        <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading assigned jobs…</Text>
-        </YStack>
+        </Stack>
       ) : error ? (
         <Card
           borderWidth={1}
@@ -106,12 +106,12 @@ export function TeamJobsList({
           padding="$4"
           gap="$3"
         >
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <AlertTriangle size={18} color="$yellow10" />
             <Text fontSize="$5" fontWeight="700">
               Unable to load jobs
             </Text>
-          </XStack>
+          </Row>
           <Text color="$color11">
             {error.message || 'Something went wrong while fetching jobs for this team.'}
           </Text>
@@ -120,7 +120,7 @@ export function TeamJobsList({
           </Button>
         </Card>
       ) : hasJobs ? (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {derivedJobs.map((job) => (
             <Card
               key={job.id}
@@ -134,7 +134,7 @@ export function TeamJobsList({
               accessibilityLabel={`Job ${job.title}. Status ${job.status ?? 'draft'}. Updated ${job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}`}
               width="100%"
             >
-              <XStack
+              <Row
                 justifyContent="space-between"
                 alignItems="flex-start"
                 gap="$3"
@@ -142,16 +142,16 @@ export function TeamJobsList({
                 flexDirection="column"
                 $md={{ flexDirection: 'row' }}
               >
-                <YStack gap="$1" flex={1} width="100%">
+                <Stack gap="$1" flex={1} width="100%">
                   <Text fontSize="$5" fontWeight="700">
                     {job.title}
                   </Text>
                   <Text color="$color11">{job.organization?.name ?? 'No organization'}</Text>
-                </YStack>
+                </Stack>
                 <StatusChip status={job.status ?? 'draft'} />
-              </XStack>
+              </Row>
               {job.teamAssignments && job.teamAssignments.length > 0 ? (
-                <XStack gap="$2" flexWrap="wrap">
+                <Row gap="$2" flexWrap="wrap">
                   {job.teamAssignments.map((assignment: TeamAssignment) => (
                     <TeamBadge
                       key={`${job.id}-${assignment.teamId}`}
@@ -159,9 +159,9 @@ export function TeamJobsList({
                       isPrimary={assignment.isPrimary}
                     />
                   ))}
-                </XStack>
+                </Row>
               ) : null}
-              <XStack
+              <Row
                 gap="$2"
                 flexDirection="column"
                 alignItems="stretch"
@@ -174,8 +174,8 @@ export function TeamJobsList({
                   Updated{' '}
                   {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
-              </XStack>
-              <XStack width="100%">
+              </Row>
+              <Row width="100%">
                 <Button
                   size="$3"
                   variant="outlined"
@@ -188,10 +188,10 @@ export function TeamJobsList({
                 >
                   View job
                 </Button>
-              </XStack>
+              </Row>
             </Card>
           ))}
-        </YStack>
+        </Stack>
       ) : (
         <Card
           borderWidth={1}
@@ -226,7 +226,7 @@ export function TeamJobsList({
           </Button>
         </Card>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -238,7 +238,7 @@ function StatusChip({ status }: { status: string }) {
   const textColor = isOpen ? '$green11' : '$color11'
 
   return (
-    <XStack
+    <Row
       paddingHorizontal="$2"
       paddingVertical="$1"
       borderWidth={1}
@@ -252,7 +252,7 @@ function StatusChip({ status }: { status: string }) {
       <Text fontSize="$2" color={textColor}>
         {normalized}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -262,7 +262,7 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
   const textColor = isPrimary ? '$blue11' : '$color11'
 
   return (
-    <XStack
+    <Row
       paddingHorizontal="$2"
       paddingVertical="$1"
       borderWidth={1}
@@ -277,6 +277,6 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
         {name}
         {isPrimary ? ' • Primary' : ''}
       </Text>
-    </XStack>
+    </Row>
   )
 }

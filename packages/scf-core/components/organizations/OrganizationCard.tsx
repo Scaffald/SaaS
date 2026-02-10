@@ -1,14 +1,14 @@
 import { Building, MapPin, Users } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Text, XStack } from '@unicornlove/ui'
+import type { TamaguiElement } from '@unicornlove/beyond-ui'
+import { Text, Row } from '@unicornlove/beyond-ui'
 import {
   CardActions,
   CardHeader,
   CardMetadata,
   SelectableCard,
   type MetadataItem,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 
 /**
  * Organization address data
@@ -102,8 +102,8 @@ export const OrganizationCard = memo(
 
           {/* Industry badge */}
           {industry && (
-            <XStack alignItems="center" gap="$2">
-              <XStack
+            <Row alignItems="center" gap="$2">
+              <Row
                 alignItems="center"
                 gap="$1"
                 backgroundColor={isSelected ? '$blue3' : '$blue3'}
@@ -114,8 +114,8 @@ export const OrganizationCard = memo(
                 <Text color={isSelected ? '$color1' : '$blue11'} fontWeight="600" fontSize="$2">
                   {industry}
                 </Text>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
 
           {/* Metadata */}

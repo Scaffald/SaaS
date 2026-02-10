@@ -32,8 +32,8 @@ vi.mock('../utils/profile-sync-store', () => ({
   useAdaptiveProfileSync: () => 'idle',
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mockToastShow,
   }),
 }))
@@ -364,8 +364,8 @@ vi.mock('tamagui', () => {
   const Spinner = () => <Text>Spinner</Text>
 
   return {
-    YStack: createView(),
-    XStack: createView(),
+    Stack: createView(),
+    Row: createView(),
     Text: TextComponent,
     Button,
     Input,

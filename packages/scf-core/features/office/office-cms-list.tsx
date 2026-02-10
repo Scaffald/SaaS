@@ -4,7 +4,7 @@ import { OfficeLayout } from '@scf/core/components/layouts'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useState } from 'react'
-import { Button, H2, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H2, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export function OfficeCMSList() {
   const [includeInactive, setIncludeInactive] = useState(false)
@@ -55,15 +55,15 @@ export function OfficeCMSList() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack flex={1} gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack flex={1} gap="$4">
+          <Row justifyContent="space-between" alignItems="center">
             <H2>Welcome Slides CMS</H2>
             <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
               <Button icon={Plus}>Create Slide</Button>
             </Link>
-          </XStack>
+          </Row>
 
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Button
               size="$3"
               chromeless={!includeInactive}
@@ -71,14 +71,14 @@ export function OfficeCMSList() {
             >
               {includeInactive ? 'Hide' : 'Show'} Inactive
             </Button>
-          </XStack>
+          </Row>
 
           {isLoading ? (
-            <YStack alignItems="center" justifyContent="center" flex={1}>
+            <Stack alignItems="center" justifyContent="center" flex={1}>
               <Spinner size="large" />
-            </YStack>
+            </Stack>
           ) : (
-            <YStack gap="$2">
+            <Stack gap="$2">
               {data?.slides.map(
                 (slide: {
                   id: string
@@ -89,7 +89,7 @@ export function OfficeCMSList() {
                   display_order: number
                   is_active: boolean
                 }) => (
-                  <XStack
+                  <Row
                     key={slide.id}
                     padding="$4"
                     gap="$3"
@@ -99,27 +99,27 @@ export function OfficeCMSList() {
                     borderColor="$borderColor"
                     alignItems="center"
                   >
-                    <YStack flex={1} gap="$2">
-                      <XStack gap="$2" alignItems="center">
+                    <Stack flex={1} gap="$2">
+                      <Row gap="$2" alignItems="center">
                         <Text fontWeight="bold">{slide.title}</Text>
                         {!slide.is_active && (
                           <Text fontSize="$2" color="$red10">
                             (Inactive)
                           </Text>
                         )}
-                      </XStack>
+                      </Row>
                       <Text opacity={0.7}>{slide.description}</Text>
-                      <XStack gap="$2">
+                      <Row gap="$2">
                         <Text fontSize="$2" opacity={0.5}>
                           Icon: {slide.icon_name}
                         </Text>
                         <Text fontSize="$2" opacity={0.5}>
                           • Order: {slide.display_order}
                         </Text>
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
 
-                    <XStack gap="$2">
+                    <Row gap="$2">
                       <Button
                         size="$3"
                         icon={slide.is_active ? EyeOff : Eye}
@@ -139,32 +139,32 @@ export function OfficeCMSList() {
                         chromeless
                         theme="error"
                       />
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 )
               )}
 
               {(!data?.slides || data.slides.length === 0) && (
-                <YStack alignItems="center" justifyContent="center" gap="$4" paddingVertical="$8">
+                <Stack alignItems="center" justifyContent="center" gap="$4" paddingVertical="$8">
                   <Text opacity={0.5}>No slides found</Text>
                   <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
                     <Button icon={Plus}>Create First Slide</Button>
                   </Link>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <Text fontSize="$5" fontWeight="bold">
             About Welcome Slides
           </Text>
           <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>
           <Text>Slides are displayed in order based on the &quot;display_order&quot; value.</Text>
           <Text>Only active slides are shown to users.</Text>
-        </YStack>
+        </Stack>
       }
     />
   )

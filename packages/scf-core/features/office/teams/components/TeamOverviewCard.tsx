@@ -2,7 +2,7 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { Briefcase, Mail, Shield, Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -56,33 +56,33 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
       gap="$4"
       backgroundColor="$color2"
     >
-      <XStack gap="$4" justifyContent="space-between" flexWrap="wrap">
-        <YStack gap="$2" flex={1} style={{ minWidth: 240 }}>
-          <XStack gap="$2" alignItems="center" flexWrap="wrap">
+      <Row gap="$4" justifyContent="space-between" flexWrap="wrap">
+        <Stack gap="$2" flex={1} style={{ minWidth: 240 }}>
+          <Row gap="$2" alignItems="center" flexWrap="wrap">
             <Text fontSize="$8" fontWeight="700">
               {team.name || 'Untitled team'}
             </Text>
             {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
-          </XStack>
+          </Row>
           <Text color="$color11">
             {team.description?.trim() ||
               'No description provided. Add context to help team members understand the focus of this team.'}
           </Text>
-        </YStack>
+        </Stack>
         {actions ? (
-          <XStack gap="$2" alignItems="flex-start" flexShrink={0} flexWrap="wrap">
+          <Row gap="$2" alignItems="flex-start" flexShrink={0} flexWrap="wrap">
             {actions}
-          </XStack>
+          </Row>
         ) : null}
-      </XStack>
+      </Row>
 
-      <XStack gap="$2" flexWrap="wrap">
+      <Row gap="$2" flexWrap="wrap">
         <Chip>{purposeLabel}</Chip>
         <Chip>{visibilityLabel}</Chip>
         <Chip>{invitationPolicyLabel}</Chip>
-      </XStack>
+      </Row>
 
-      <XStack gap="$4" flexWrap="wrap">
+      <Row gap="$4" flexWrap="wrap">
         <StatItem
           icon={<Users size={16} />}
           label="Members"
@@ -105,23 +105,23 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
             value={team.defaultRole.name}
           />
         ) : null}
-      </XStack>
+      </Row>
 
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$2" color="$color10" textTransform="uppercase">
           Team slug
         </Text>
         <Text fontWeight="600" color="$color12">
           {team.slug || 'Not configured'}
         </Text>
-      </YStack>
+      </Stack>
     </Card>
   )
 }
 
 function StatItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <XStack
+    <Row
       gap="$2"
       alignItems="center"
       borderWidth={1}
@@ -132,13 +132,13 @@ function StatItem({ icon, label, value }: { icon: ReactNode; label: string; valu
       backgroundColor="$color3"
     >
       {icon}
-      <YStack>
+      <Stack>
         <Text fontSize="$2" color="$color10" textTransform="uppercase">
           {label}
         </Text>
         <Text fontWeight="600">{value}</Text>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }
 
@@ -153,7 +153,7 @@ function Chip({
   const border = tone === 'warning' ? '$yellow8' : '$borderColor'
   const textColor = tone === 'warning' ? '$yellow11' : '$color11'
   return (
-    <XStack
+    <Row
       gap="$2"
       paddingHorizontal="$2"
       paddingVertical="$1"
@@ -165,6 +165,6 @@ function Chip({
       <Text fontSize="$2" color={textColor}>
         {children}
       </Text>
-    </XStack>
+    </Row>
   )
 }

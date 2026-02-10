@@ -1,11 +1,11 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { DiscoverCard } from '@unicornlove/ui'
+import { DiscoverCard } from '@unicornlove/beyond-ui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Button, Paragraph, SizableText, Text, XStack } from '@unicornlove/ui'
+import type { TamaguiElement } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, SizableText, Text, Row } from '@unicornlove/beyond-ui'
 
 import type { TalentProfile } from '../types'
 
@@ -18,7 +18,7 @@ type ResultCardProps = {
 export const ResultCard = memo(
   forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, forwardedRef) => {
     const router = useRouter()
-    const toast = useToastController()
+    const toast = useToast()
 
     const handleCardPress = () => {
       // Notify parent component about selection
@@ -29,8 +29,10 @@ export const ResultCard = memo(
         router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: profile.id }))
       } catch (navigationError) {
         console.error('Failed to navigate to worker profile', navigationError)
-        toast.show('Unable to load profile', {
+        toast.show({
+          title: 'Unable to load profile',
           message: 'Please try again.',
+          variant: 'error',
         })
       }
     }
@@ -42,12 +44,12 @@ export const ResultCard = memo(
         isSelected={isSelected}
         onPress={handleCardPress}
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <SizableText size="$5" fontWeight="700" color={isSelected ? '$color1' : '$color12'}>
             {profile.name}
           </SizableText>
-          <XStack alignItems="center" gap="$2">
-            <XStack
+          <Row alignItems="center" gap="$2">
+            <Row
               alignItems="center"
               gap="$1"
               backgroundColor="$blue3"
@@ -59,40 +61,40 @@ export const ResultCard = memo(
               <Text color="$blue11" fontWeight="700" fontSize="$2">
                 {profile.score}
               </Text>
-            </XStack>
-          </XStack>
-        </XStack>
+            </Row>
+          </Row>
+        </Row>
 
         <Paragraph size="$3" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
           {profile.title}
         </Paragraph>
 
-        <XStack flexWrap="wrap" gap="$2">
-          <XStack alignItems="center" gap="$1">
+        <Row flexWrap="wrap" gap="$2">
+          <Row alignItems="center" gap="$1">
             <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />
             <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
               {profile.experienceYears} years
             </Text>
-          </XStack>
+          </Row>
           {profile.hourlyRate ? (
-            <XStack alignItems="center" gap="$1">
+            <Row alignItems="center" gap="$1">
               <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
                 ${profile.hourlyRate}/hr
               </Text>
-            </XStack>
+            </Row>
           ) : null}
-          <XStack alignItems="center" gap="$1">
+          <Row alignItems="center" gap="$1">
             <Award size={14} color={isSelected ? '$color1' : '$color10'} />
             <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
               {profile.locationLabel}
             </Text>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
-        <XStack gap="$1" flexWrap="wrap">
+        <Row gap="$1" flexWrap="wrap">
           {profile.badges.slice(0, 3).map((badge) => (
-            <XStack
+            <Row
               key={badge.id}
               alignItems="center"
               gap="$1"
@@ -126,16 +128,16 @@ export const ResultCard = memo(
               >
                 {badge.label}
               </Text>
-            </XStack>
+            </Row>
           ))}
           {profile.badges.length > 3 && (
             <Text fontSize="$1" color="$color10">
               +{profile.badges.length - 3} more
             </Text>
           )}
-        </XStack>
+        </Row>
 
-        <XStack gap="$1" flexWrap="wrap">
+        <Row gap="$1" flexWrap="wrap">
           {profile.certifications.slice(0, 2).map((certification) => (
             <Button key={certification} size="$1" borderRadius="$8">
               {certification}
@@ -151,7 +153,7 @@ export const ResultCard = memo(
               +{profile.certifications.length - 2 + profile.skills.length - 3} more
             </Text>
           )}
-        </XStack>
+        </Row>
       </DiscoverCard>
     )
   })

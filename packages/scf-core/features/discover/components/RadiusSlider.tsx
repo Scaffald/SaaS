@@ -1,4 +1,4 @@
-import { Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import { Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type RadiusSliderProps = {
   value: number
@@ -24,15 +24,15 @@ export const RadiusSlider = ({
   step = 1000,
 }: RadiusSliderProps) => {
   return (
-    <YStack gap="$2" flex={1}>
-      <XStack justifyContent="space-between" alignItems="center">
+    <Stack gap="$2" flex={1}>
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$3" fontWeight="600" color="$color11">
           Search Radius
         </Text>
         <Text fontSize="$3" fontWeight="600" color="$blue10">
           {formatRadius(value)}
         </Text>
-      </XStack>
+      </Row>
 
       <Slider
         value={[value]}
@@ -63,14 +63,14 @@ export const RadiusSlider = ({
         />
       </Slider>
 
-      <XStack justifyContent="space-between" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$2" color="$color10">
           {formatRadius(min)}
         </Text>
         <Text fontSize="$2" color="$color10">
           {formatRadius(max)}
         </Text>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

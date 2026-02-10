@@ -1,7 +1,7 @@
-import { Popover, ToggleSwitch } from '@unicornlove/ui'
+import { Popover, ToggleSwitch } from '@unicornlove/beyond-ui'
 import { ChevronDown, SlidersHorizontal } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
-import { Button, Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type FilterDropdownProps = {
   showWorkers?: boolean
@@ -82,14 +82,14 @@ export const FilterDropdown = ({
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       >
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$5" fontWeight="700" marginBottom="$1">
             Display on Map
           </Text>
 
           {/* Workers Toggle */}
-          <YStack gap="$1">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$1">
+            <Row justifyContent="space-between" alignItems="center">
               <Label fontSize="$4" onPress={() => onShowWorkersChange?.(!showWorkers)}>
                 Workers
               </Label>
@@ -98,15 +98,15 @@ export const FilterDropdown = ({
                 onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
                 aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
               />
-            </XStack>
+            </Row>
             <Text fontSize="$2" color="$color10" paddingLeft="$1">
               Show worker profiles on the map
             </Text>
-          </YStack>
+          </Stack>
 
           {/* Employers Toggle */}
-          <YStack gap="$1">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$1">
+            <Row justifyContent="space-between" alignItems="center">
               <Label fontSize="$4" onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                 Employers
               </Label>
@@ -117,15 +117,15 @@ export const FilterDropdown = ({
                   showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
                 }
               />
-            </XStack>
+            </Row>
             <Text fontSize="$2" color="$color10" paddingLeft="$1">
               Show employer organizations on the map
             </Text>
-          </YStack>
+          </Stack>
 
           {/* Jobs Toggle */}
-          <YStack gap="$1">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$1">
+            <Row justifyContent="space-between" alignItems="center">
               <Label fontSize="$4" onPress={() => onShowJobsChange?.(!showJobs)}>
                 Jobs
               </Label>
@@ -134,12 +134,12 @@ export const FilterDropdown = ({
                 onCheckedChange={(checked) => onShowJobsChange?.(checked)}
                 aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
               />
-            </XStack>
+            </Row>
             <Text fontSize="$2" color="$color10" paddingLeft="$1">
               Show job openings on the map
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </Popover.Content>
     </Popover>
   )

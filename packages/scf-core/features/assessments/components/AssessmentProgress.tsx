@@ -1,5 +1,5 @@
 import { Check } from '@tamagui/lucide-icons'
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface AssessmentStep {
   id: string
@@ -30,35 +30,35 @@ export function AssessmentProgress({
 
   if (orientation === 'vertical') {
     return (
-      <YStack gap="$5" width="100%">
+      <Stack gap="$5" width="100%">
         {completionScore !== undefined && (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$3" fontWeight="600" color="$color11">
               Progress
             </Text>
-            <YStack gap="$1">
-              <XStack
+            <Stack gap="$1">
+              <Row
                 height={8}
                 backgroundColor="$color5"
                 borderRadius="$10"
                 overflow="hidden"
                 width="100%"
               >
-                <XStack
+                <Row
                   height="100%"
                   backgroundColor="$blue9"
                   width={`${completionScore}%`}
                   animation="quick"
                 />
-              </XStack>
+              </Row>
               <Text fontSize="$2" fontWeight="600" color="$blue10" style={{ textAlign: 'right' }}>
                 {completionScore}%
               </Text>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
-        <YStack gap="$4">
+        <Stack gap="$4">
           {sortedSteps.map((step, index) => {
             const isCompleted = completedSteps.has(step.id)
             const isCurrent = step.id === currentStep
@@ -78,8 +78,8 @@ export function AssessmentProgress({
                 : '$color10'
 
             return (
-              <XStack key={step.id} gap="$3" alignItems="flex-start">
-                <YStack alignItems="center" gap="$1" style={{ minWidth: 32 }}>
+              <Row key={step.id} gap="$3" alignItems="flex-start">
+                <Stack alignItems="center" gap="$1" style={{ minWidth: 32 }}>
                   <Circle
                     size={32}
                     backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
@@ -97,15 +97,15 @@ export function AssessmentProgress({
                     )}
                   </Circle>
                   {!isLast && (
-                    <YStack
+                    <Stack
                       backgroundColor={isCompleted || isPast ? '$blue8' : '$color6'}
                       opacity={isCompleted || isPast ? 0.85 : 0.4}
                       style={{ width: 2, flexGrow: 1, minHeight: 24 }}
                     />
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$1" flex={1}>
+                <Stack gap="$1" flex={1}>
                   <Text
                     fontSize="$3"
                     fontWeight={isCurrent ? '700' : '500'}
@@ -116,47 +116,47 @@ export function AssessmentProgress({
                   <Text fontSize="$2" color={statusColor}>
                     {statusLabel}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             )
           })}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$3" width="100%">
+    <Stack gap="$3" width="100%">
       {/* Progress Bar */}
       {completionScore !== undefined && (
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$2">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontSize="$3" color="$color11">
               Progress
             </Text>
             <Text fontSize="$4" fontWeight="600" color="$blue10">
               {completionScore}%
             </Text>
-          </XStack>
-          <XStack
+          </Row>
+          <Row
             height={8}
             backgroundColor="$color5"
             borderRadius="$10"
             overflow="hidden"
             width="100%"
           >
-            <XStack
+            <Row
               height="100%"
               backgroundColor="$blue9"
               width={`${completionScore}%`}
               animation="quick"
             />
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Step Indicators */}
-      <XStack gap="$2" flexWrap="wrap" justifyContent="center" $md={{ gap: '$6' }}>
+      <Row gap="$2" flexWrap="wrap" justifyContent="center" $md={{ gap: '$6' }}>
         {sortedSteps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id)
           const isCurrent = step.id === currentStep
@@ -164,7 +164,7 @@ export function AssessmentProgress({
           const isPast = currentStepIndex > index
 
           return (
-            <XStack
+            <Row
               key={step.id}
               alignItems="center"
               gap="$2"
@@ -193,10 +193,10 @@ export function AssessmentProgress({
               >
                 {step.label}
               </Text>
-            </XStack>
+            </Row>
           )
         })}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

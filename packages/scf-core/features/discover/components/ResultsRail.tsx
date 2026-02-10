@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 import { memo } from 'react'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@unicornlove/beyond-ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -28,7 +28,7 @@ export const ResultsRail = memo(function ResultsRail({
   resultListRef,
 }: ResultsRailProps) {
   return (
-    <YStack
+    <Stack
       position="absolute"
       top={0}
       right={0}
@@ -63,6 +63,6 @@ export const ResultsRail = memo(function ResultsRail({
         onSelect={onSelect}
         isLoading={isLoading}
       />
-    </YStack>
+    </Stack>
   )
 })

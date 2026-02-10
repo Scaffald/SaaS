@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, Card, type CardProps, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, type CardProps, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */
@@ -31,10 +31,10 @@ interface ProfileResultCardProps extends CardProps {
  *   onRemove={() => handleRemove(item.id)}
  *   removeDisabled={isRemoving}
  * >
- *   <YStack gap="$2">
+ *   <Stack gap="$2">
  *     <Text fontWeight="600">{item.name}</Text>
  *     <Text color="$color11">{item.description}</Text>
- *   </YStack>
+ *   </Stack>
  * </ProfileResultCard>
  * ```
  */
@@ -60,13 +60,13 @@ export function ProfileResultCard({
       {...props}
     >
       <Card.Header gap="$2">
-        <YStack gap="$3" flex={1}>
+        <Stack gap="$3" flex={1}>
           {children}
-        </YStack>
+        </Stack>
 
         {/* Action buttons */}
         {(onRemove || actions) && (
-          <XStack gap="$2" justifyContent="flex-end" paddingTop="$2">
+          <Row gap="$2" justifyContent="flex-end" paddingTop="$2">
             {actions}
             {onRemove && (
               <Button
@@ -77,16 +77,16 @@ export function ProfileResultCard({
                 disabled={removeDisabled || isRemoving || isLoading}
               >
                 {isLoading ? (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <Spinner size="small" />
                     <Text>Removing...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   'Remove'
                 )}
               </Button>
             )}
-          </XStack>
+          </Row>
         )}
       </Card.Header>
     </Card>

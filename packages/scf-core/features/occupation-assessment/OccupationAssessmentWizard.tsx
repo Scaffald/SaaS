@@ -3,17 +3,17 @@ import { AssessmentWizard } from '@scf/core/features/assessments'
 import { OccupationSearch } from '@scf/core/features/career-assessment/components/OccupationSearch'
 import { api } from '@scf/core/utils/api'
 import { Plus, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * OccupationAssessmentWizard - Standalone wizard for Occupation Preferences
  */
 export function OccupationAssessmentWizard() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
   const { data: status, isLoading, error } = api.onet.getOccupationStatus.useQuery()
   const [currentOccupation, setCurrentOccupation] = useState<string>('')
@@ -32,15 +32,19 @@ export function OccupationAssessmentWizard() {
     onSuccess: () => {
       // Invalidate status queries to update drawer checkmarks
       utils.onet.getOccupationStatus.invalidate()
-      toast.show('Saved', {
-        message: 'Your occupation preferences have been saved!',
-      })
+      toast.show({
+          title: 'Saved',
+          message: 'Your occupation preferences have been saved!',
+          variant: 'success',
+        })
       router.push(ROUTES.DASHBOARD.path)
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to save preferences. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to save preferences. Please try again.',
+          variant: 'error',
+        })
     },
   })
 
@@ -83,49 +87,49 @@ export function OccupationAssessmentWizard() {
       error={error ? new Error(error.message ?? 'Failed to load assessment status.') : null}
       showNext={false}
     >
-      <YStack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
         {/* Current Occupation */}
-        <YStack gap="$3">
-          <YStack gap="$1">
+        <Stack gap="$3">
+          <Stack gap="$1">
             <Text fontSize="$5" fontWeight="600">
               Current Occupation (Optional)
             </Text>
             <Text fontSize="$3" color="$color11">
               What is your current or most recent job?
             </Text>
-          </YStack>
+          </Stack>
           <OccupationSearch
             value={currentOccupation}
             onChange={(code) => setCurrentOccupation(code)}
             placeholder="Search for your occupation..."
             disabled={saveMutation.isPending}
           />
-        </YStack>
+        </Stack>
 
         {/* Target Occupations */}
-        <YStack gap="$3">
-          <YStack gap="$1">
+        <Stack gap="$3">
+          <Stack gap="$1">
             <Text fontSize="$5" fontWeight="600">
               Target Occupations (Optional)
             </Text>
             <Text fontSize="$3" color="$color11">
               What occupations are you interested in pursuing?
             </Text>
-          </YStack>
+          </Stack>
           {targetOccupations.map((occupation, index) => (
-            <XStack
+            <Row
               key={`target-occupation-${index}-${occupation || 'empty'}`}
               gap="$2"
               alignItems="center"
             >
-              <YStack flex={1}>
+              <Stack flex={1}>
                 <OccupationSearch
                   value={occupation}
                   onChange={(code) => handleTargetChange(index, code)}
                   placeholder={`Target occupation ${index + 1}...`}
                   disabled={saveMutation.isPending}
                 />
-              </YStack>
+              </Stack>
               <Button
                 size="$3"
                 variant="outlined"
@@ -133,7 +137,7 @@ export function OccupationAssessmentWizard() {
                 onPress={() => handleRemoveTarget(index)}
                 disabled={saveMutation.isPending}
               />
-            </XStack>
+            </Row>
           ))}
           <Button
             size="$4"
@@ -144,12 +148,12 @@ export function OccupationAssessmentWizard() {
           >
             Add Target Occupation
           </Button>
-        </YStack>
+        </Stack>
 
         <Button size="$5" themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
           <Button.Text>Save Preferences</Button.Text>
         </Button>
-      </YStack>
+      </Stack>
     </AssessmentWizard>
   )
 }

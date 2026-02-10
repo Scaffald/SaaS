@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { Button, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Card } from '@unicornlove/ui'
+import { Card } from '@unicornlove/beyond-ui'
 
 interface UserFormProps {
   userId: string
@@ -95,12 +95,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$4">
-        <XStack alignItems="center" justifyContent="space-between">
+      <Stack padding="$4" gap="$4">
+        <Row alignItems="center" justifyContent="space-between">
           <Text fontSize="$8" fontWeight="bold">
             Edit User
           </Text>
-          <XStack gap="$2">
+          <Row gap="$2">
             <Button data-testid="cancel-button" onPress={() => router.back()} variant="outlined">
               Cancel
             </Button>
@@ -112,17 +112,17 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             >
               {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {/* Profile Information */}
         <Card padding="$4">
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontSize="$6" fontWeight="600" marginBottom="$2">
               Profile Information
             </Text>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">First Name</Text>
               <Input
                 data-testid="user-first-name-input"
@@ -130,9 +130,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setFirstName}
                 placeholder="First name"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Last Name</Text>
               <Input
                 data-testid="user-last-name-input"
@@ -140,9 +140,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setLastName}
                 placeholder="Last name"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Display Name</Text>
               <Input
                 data-testid="user-display-name-input"
@@ -150,9 +150,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setDisplayName}
                 placeholder="Display name"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Bio</Text>
               <Input
                 data-testid="user-bio-input"
@@ -162,18 +162,18 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 multiline
                 numberOfLines={4}
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         {/* Private Information */}
         <Card padding="$4">
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontSize="$6" fontWeight="600" marginBottom="$2">
               Private Information
             </Text>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Email</Text>
               <Input
                 data-testid="user-email-input"
@@ -183,9 +183,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Phone</Text>
               <Input
                 data-testid="user-phone-input"
@@ -194,9 +194,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 placeholder="Phone number"
                 keyboardType="phone-pad"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Birth Date</Text>
               <Input
                 data-testid="user-birth-date-input"
@@ -204,9 +204,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setBirthDate}
                 placeholder="YYYY-MM-DD"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Location</Text>
               <Input
                 data-testid="user-location-input"
@@ -214,18 +214,18 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setLocation}
                 placeholder="City, State"
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         {/* Employment Information */}
         <Card padding="$4">
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontSize="$6" fontWeight="600" marginBottom="$2">
               Employment Information
             </Text>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Employment Status</Text>
               <Input
                 data-testid="user-employment-status-input"
@@ -233,9 +233,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setEmploymentStatus}
                 placeholder="e.g., employed, unemployed"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Job Search Status</Text>
               <Input
                 data-testid="user-job-search-status-input"
@@ -243,9 +243,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setJobSearchStatus}
                 placeholder="e.g., actively looking, open"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Years of Experience</Text>
               <Input
                 data-testid="user-years-experience-input"
@@ -254,9 +254,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 placeholder="Years"
                 keyboardType="numeric"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Current Title</Text>
               <Input
                 data-testid="user-current-title-input"
@@ -264,9 +264,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setCurrentTitle}
                 placeholder="Job title"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Current Employer</Text>
               <Input
                 data-testid="user-current-employer-input"
@@ -274,12 +274,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setCurrentEmployer}
                 placeholder="Company name"
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         {/* Submit Button (mobile-friendly placement) */}
-        <XStack gap="$2" paddingBottom="$4">
+        <Row gap="$2" paddingBottom="$4">
           <Button
             data-testid="cancel-button"
             flex={1}
@@ -297,8 +297,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
           >
             {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }

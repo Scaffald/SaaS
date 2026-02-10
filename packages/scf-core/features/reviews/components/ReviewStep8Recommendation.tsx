@@ -1,5 +1,5 @@
 import { ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface ReviewStep8RecommendationProps {
   recommendation: boolean | null
@@ -11,18 +11,18 @@ export function ReviewStep8Recommendation({
   onChange,
 }: ReviewStep8RecommendationProps) {
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$7" fontWeight="700" color="$color12">
           Final Recommendation
         </Text>
         <Text fontSize="$5" color="$color11">
           Would you recommend working with this person?
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Recommendation Buttons */}
-      <XStack gap="$4" justifyContent="center">
+      <Row gap="$4" justifyContent="center">
         <Button
           size="$6"
           theme={recommendation === true ? 'success' : undefined}
@@ -46,17 +46,17 @@ export function ReviewStep8Recommendation({
         >
           No, Don't Recommend
         </Button>
-      </XStack>
+      </Row>
 
       {/* Selection Display */}
       {recommendation !== null && (
-        <YStack
+        <Stack
           gap="$3"
           padding="$4"
           backgroundColor={recommendation ? '$green3' : '$red3'}
           borderRadius="$4"
         >
-          <XStack gap="$2" alignItems="center" justifyContent="center">
+          <Row gap="$2" alignItems="center" justifyContent="center">
             {recommendation ? (
               <>
                 <ThumbsUp size={24} color="$green11" />
@@ -72,21 +72,21 @@ export function ReviewStep8Recommendation({
                 </Text>
               </>
             )}
-          </XStack>
-          <XStack justifyContent="center">
+          </Row>
+          <Row justifyContent="center">
             <Text fontSize="$4" color={recommendation ? '$green11' : '$red11'}>
               {recommendation
                 ? 'Based on your positive experience, you would work with them again.'
                 : 'Based on your experience, you would not recommend working with them again.'}
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Helper Text */}
       <Text fontSize="$3" color="$color10" fontStyle="italic">
         This is your final assessment. Please be honest and fair in your recommendation.
       </Text>
-    </YStack>
+    </Stack>
   )
 }

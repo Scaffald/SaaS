@@ -26,8 +26,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
   }
 })

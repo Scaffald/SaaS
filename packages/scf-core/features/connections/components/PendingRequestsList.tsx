@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { CheckCircle2, X } from '@tamagui/lucide-icons'
 import { useCallback, useMemo } from 'react'
-import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type PendingRequestsData = NonNullable<
   ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
@@ -45,7 +45,7 @@ type RequestRow = PendingRequest | ReceivedRequest
 
 export function PendingRequestsList() {
   const utils = api.useUtils()
-  const toast = useToastController()
+  const toast = useToast()
 
   const { data: pendingRequests, isLoading } = api.connections.getPendingRequests.useQuery()
 
@@ -53,42 +53,54 @@ export function PendingRequestsList() {
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
       utils.connections.getConnections.invalidate()
-      toast.show('Success', {
-        message: 'Connection request accepted',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Connection request accepted',
+          variant: 'success',
+        })
     },
     onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to accept request',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to accept request',
+          variant: 'error',
+        })
     },
   })
 
   const declineMutation = api.connections.declineRequest.useMutation({
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Success', {
-        message: 'Connection request declined',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Connection request declined',
+          variant: 'success',
+        })
     },
     onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to decline request',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to decline request',
+          variant: 'error',
+        })
     },
   })
 
   const cancelMutation = api.connections.declineRequest.useMutation({
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
-      toast.show('Success', {
-        message: 'Connection request cancelled',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Connection request cancelled',
+          variant: 'success',
+        })
     },
     onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to cancel request',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to cancel request',
+          variant: 'error',
+        })
     },
   })
 
@@ -141,7 +153,7 @@ export function PendingRequestsList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
@@ -153,15 +165,15 @@ export function PendingRequestsList() {
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontSize="$3" fontWeight="500">
                   {name}
                 </Text>
                 <Text fontSize="$2" color="$color10">
                   {request.type === 'sent' ? 'Sent' : 'Received'}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           )
         },
       },
@@ -208,7 +220,7 @@ export function PendingRequestsList() {
           }
 
           return (
-            <XStack gap="$1">
+            <Row gap="$1">
               <Button
                 size="$2"
                 circular
@@ -225,7 +237,7 @@ export function PendingRequestsList() {
                 onPress={() => handleDecline(request.id)}
                 disabled={isLoading}
               />
-            </XStack>
+            </Row>
           )
         },
       },
@@ -242,10 +254,10 @@ export function PendingRequestsList() {
 
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
+      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading pending requests…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -254,7 +266,7 @@ export function PendingRequestsList() {
 
   if (combinedRequests.length === 0) {
     return (
-      <YStack
+      <Stack
         gap="$3"
         borderWidth={1}
         borderColor="$borderColor"
@@ -270,14 +282,14 @@ export function PendingRequestsList() {
           You don't have any pending connection requests. Send connection requests to build your
           network.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {receivedRequests.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             Received ({receivedRequests.length})
           </Text>
@@ -287,11 +299,11 @@ export function PendingRequestsList() {
             pageSize={10}
             emptyMessage="No received requests"
           />
-        </YStack>
+        </Stack>
       )}
 
       {sentRequests.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           {receivedRequests.length > 0 && <Separator />}
           <Text fontSize="$5" fontWeight="600">
             Sent ({sentRequests.length})
@@ -302,8 +314,8 @@ export function PendingRequestsList() {
             pageSize={10}
             emptyMessage="No sent requests"
           />
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

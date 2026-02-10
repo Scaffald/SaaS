@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { AlertTriangle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import {
   Button,
   Dialog,
@@ -13,9 +13,9 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
@@ -46,7 +46,7 @@ export function AdminDisputeResolutionDialog({
   onOpenChange,
   onResolved,
 }: AdminDisputeResolutionDialogProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   const [resolutionStatus, setResolutionStatus] =
@@ -63,9 +63,10 @@ export function AdminDisputeResolutionDialog({
 
   const mutation = api.backgroundChecks.adminResolveDispute.useMutation({
     onSuccess: async () => {
-      toast.show('Dispute resolved', {
-        message: 'The worker and requester will receive notifications shortly.',
-      })
+      toast.show({
+          title: 'Dispute resolved',
+          message: 'The worker and requester will receive notifications shortly.',
+        })
       await Promise.all([
         utils.backgroundChecks.adminListDisputes.invalidate(),
         utils.backgroundChecks.adminListChecks.invalidate(),
@@ -73,10 +74,11 @@ export function AdminDisputeResolutionDialog({
       onResolved()
     },
     onError: (error: unknown) => {
-      toast.show('Unable to resolve dispute', {
-        message: error instanceof Error ? error.message : 'Please try again shortly.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Unable to resolve dispute',
+          message: error instanceof Error ? error.message : 'Please try again shortly.',
+          variant: 'error',
+        })
     },
     onSettled: () => {
       setIsSubmitting(false)
@@ -120,8 +122,8 @@ export function AdminDisputeResolutionDialog({
           exitStyle={{ opacity: 0, scale: 0.95 }}
           style={{ width: '90%', maxWidth: 640, maxHeight: '85%' }}
         >
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center">
               <Dialog.Title fontSize="$6" fontWeight="700">
                 Resolve dispute
               </Dialog.Title>
@@ -130,11 +132,11 @@ export function AdminDisputeResolutionDialog({
                   Close
                 </Button>
               </Dialog.Close>
-            </XStack>
+            </Row>
 
             {dispute ? (
-              <YStack gap="$3">
-                <YStack
+              <Stack gap="$3">
+                <Stack
                   gap="$2"
                   padding="$3"
                   backgroundColor="$color2"
@@ -142,21 +144,21 @@ export function AdminDisputeResolutionDialog({
                   borderColor="$borderColor"
                   borderRadius="$4"
                 >
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <AlertTriangle size={18} color="$yellow10" />
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       {workerName}
                     </Text>
-                  </XStack>
+                  </Row>
                   <Text fontSize="$2" color="$color10">
                     Submitted {formatDateTime(dispute.created_at)}
                   </Text>
                   <Text fontSize="$2" color="$color10">
                     Current status: {dispute.status}
                   </Text>
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Dispute reason
                   </Text>
@@ -166,9 +168,9 @@ export function AdminDisputeResolutionDialog({
                     rows={3}
                     backgroundColor="$color2"
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Dispute details
                   </Text>
@@ -178,12 +180,12 @@ export function AdminDisputeResolutionDialog({
                     rows={5}
                     backgroundColor="$color2"
                   />
-                </YStack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <YStack gap="$1">
+                <Stack gap="$3">
+                  <Stack gap="$1">
                     <Label htmlFor="dispute-resolution-status">Resolution</Label>
                     <ResponsiveSelect
                       value={resolutionStatus}
@@ -197,9 +199,9 @@ export function AdminDisputeResolutionDialog({
                         label: option.label,
                       }))}
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Label htmlFor="dispute-resolution-notes">Resolution notes</Label>
                     <TextArea
                       id="dispute-resolution-notes"
@@ -208,21 +210,21 @@ export function AdminDisputeResolutionDialog({
                       value={resolutionNotes}
                       onChangeText={setResolutionNotes}
                     />
-                  </YStack>
-                </YStack>
-              </YStack>
+                  </Stack>
+                </Stack>
+              </Stack>
             ) : (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
+              <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Spinner size="large" />
                 <Text fontSize="$3" color="$color10">
                   Loading dispute…
                 </Text>
-              </YStack>
+              </Stack>
             )}
 
             <Separator />
 
-            <XStack gap="$2" justifyContent="flex-end">
+            <Row gap="$2" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button size="$3" variant="outlined" disabled={isSubmitting}>
                   Cancel
@@ -235,16 +237,16 @@ export function AdminDisputeResolutionDialog({
                 disabled={!dispute || isSubmitting}
               >
                 {isSubmitting ? (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <Spinner size="small" color="$color1" />
                     <Text color="$color1">Resolving…</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   'Resolve dispute'
                 )}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

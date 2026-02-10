@@ -72,8 +72,8 @@ vi.mock('@scf/core/utils/supabase/client', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mocks.toastShow,
   }),
 }))

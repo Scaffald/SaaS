@@ -7,13 +7,13 @@ import {
   DashboardWidget,
   MonthYearPicker,
   ResponsiveSelect,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { H4, Input, Label, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { H4, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -79,7 +79,7 @@ export function ProfileExperienceLeft() {
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
   const { editingEntryId, cancelEditing } = useExperienceEdit()
-  const toast = useToastController()
+  const toast = useToast()
 
   // Queries
   const experienceQuery = api.profile.experience.getExperience.useQuery()
@@ -123,15 +123,18 @@ export function ProfileExperienceLeft() {
         utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary)
       }
       failProfileSync()
-      toast.show('Error', {
-        message:
-          error instanceof Error ? error.message : 'Failed to save experience. Please try again.',
-      })
+      toast.show({
+          title: 'Error',
+          message: error instanceof Error ? error.message : 'Failed to save experience. Please try again.',
+          variant: 'error',
+        })
     },
     onSuccess: () => {
-      toast.show('Experience Saved', {
-        message: 'Your work experience has been updated successfully!',
-      })
+      toast.show({
+          title: 'Experience Saved',
+          message: 'Your work experience has been updated successfully!',
+          variant: 'success',
+        })
     },
     onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
@@ -321,10 +324,10 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading experience data...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -333,10 +336,10 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load experience data</Text>
           <Button onPress={() => experienceQuery.refetch()}>Retry</Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -345,17 +348,17 @@ export function ProfileExperienceLeft() {
     <DashboardWidget>
       <H4>Work Experience</H4>
 
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Experience Summary */}
-        <XStack gap="$3">
-          <YStack gap="$2" flex={1}>
+        <Row gap="$3">
+          <Stack gap="$2" flex={1}>
             <Text fontWeight="600">Total Years Experience</Text>
             <Text fontSize="$6" fontWeight="700" color="$blue10">
               {totalExperience.years} years {totalExperience.months} months
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" flex={1}>
+          <Stack gap="$2" flex={1}>
             <Text fontWeight="600">Career Level</Text>
             <Controller
               name="career_level"
@@ -372,20 +375,20 @@ export function ProfileExperienceLeft() {
                 />
               )}
             />
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* Experience Entries */}
-        <YStack gap="$3">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$3">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Work History</Text>
             <Button size="$3" onPress={addExperienceEntry} icon={Plus}>
               Add Experience
             </Button>
-          </XStack>
+          </Row>
 
           {fields.map((field, index) => (
-            <YStack
+            <Stack
               key={field.id}
               gap="$3"
               padding="$3"
@@ -393,16 +396,16 @@ export function ProfileExperienceLeft() {
               borderColor="$borderColor"
               borderRadius="$4"
             >
-              <XStack justifyContent="space-between" alignItems="center">
+              <Row justifyContent="space-between" alignItems="center">
                 <Text fontWeight="600">Position {index + 1}</Text>
                 <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                   Remove
                 </Button>
-              </XStack>
+              </Row>
 
               {/* Job Title and Company */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
+              <Row gap="$3">
+                <Stack gap="$2" flex={1}>
                   <Text>Job Title *</Text>
                   <Controller
                     name={`experience_entries.${index}.job_title`}
@@ -423,9 +426,9 @@ export function ProfileExperienceLeft() {
                       {errors.experience_entries[index]?.job_title?.message}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
+                <Stack gap="$2" flex={1}>
                   <Text>Company Name *</Text>
                   <Controller
                     name={`experience_entries.${index}.company_name`}
@@ -448,12 +451,12 @@ export function ProfileExperienceLeft() {
                       {errors.experience_entries[index]?.company_name?.message}
                     </Text>
                   )}
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
 
               {/* Employment Type and Location */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
+              <Row gap="$3">
+                <Stack gap="$2" flex={1}>
                   <Text>Employment Type</Text>
                   <Controller
                     name={`experience_entries.${index}.employment_type`}
@@ -470,9 +473,9 @@ export function ProfileExperienceLeft() {
                       />
                     )}
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
+                <Stack gap="$2" flex={1}>
                   <ControlledAddressForm
                     control={control}
                     name={`experience_entries.${index}.location`}
@@ -498,8 +501,8 @@ export function ProfileExperienceLeft() {
                       {errors.experience_entries[index]?.location?.message}
                     </Text>
                   )}
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
 
               {/* Remote Work Checkbox */}
               <Controller
@@ -508,7 +511,7 @@ export function ProfileExperienceLeft() {
                 render={({ field }) => {
                   const isRemote = Boolean(field.value)
                   return (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <CustomCheckbox
                         checked={isRemote}
                         onCheckedChange={field.onChange}
@@ -518,14 +521,14 @@ export function ProfileExperienceLeft() {
                       <Label cursor="pointer" onPress={() => field.onChange(!isRemote)}>
                         Remote Work
                       </Label>
-                    </XStack>
+                    </Row>
                   )
                 }}
               />
 
               {/* Start and End Dates */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
+              <Row gap="$3">
+                <Stack gap="$2" flex={1}>
                   <Controller
                     name={`experience_entries.${index}.start_date`}
                     control={control}
@@ -542,9 +545,9 @@ export function ProfileExperienceLeft() {
                       />
                     )}
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
+                <Stack gap="$2" flex={1}>
                   <Controller
                     name={`experience_entries.${index}.end_date`}
                     control={control}
@@ -562,8 +565,8 @@ export function ProfileExperienceLeft() {
                       />
                     )}
                   />
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
 
               {/* Currently Working Checkbox */}
               <Controller
@@ -572,7 +575,7 @@ export function ProfileExperienceLeft() {
                 render={({ field }) => {
                   const isCurrent = Boolean(field.value)
                   return (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <CustomCheckbox
                         checked={isCurrent}
                         onCheckedChange={field.onChange}
@@ -582,13 +585,13 @@ export function ProfileExperienceLeft() {
                       <Label cursor="pointer" onPress={() => field.onChange(!isCurrent)}>
                         I currently work here
                       </Label>
-                    </XStack>
+                    </Row>
                   )
                 }}
               />
 
               {/* Description */}
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text>Job Description</Text>
                 <Controller
                   name={`experience_entries.${index}.description`}
@@ -602,20 +605,20 @@ export function ProfileExperienceLeft() {
                     />
                   )}
                 />
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ))}
 
           {fields.length === 0 && (
-            <YStack padding="$4" alignItems="center" gap="$2">
+            <Stack padding="$4" alignItems="center" gap="$2">
               <Text color="$color11">No work experience added yet</Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Save Feedback */}
         {saveBanner && (
-          <YStack
+          <Stack
             marginTop="$4"
             padding="$3"
             gap="$2"
@@ -624,7 +627,7 @@ export function ProfileExperienceLeft() {
             backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
             borderRadius="$4"
           >
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               {saveBanner.type === 'success' ? (
                 <CheckCircle size={18} color="$green10" />
               ) : (
@@ -633,12 +636,12 @@ export function ProfileExperienceLeft() {
               <Text fontWeight="600" color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
                 {saveBanner.message}
               </Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {/* Action Buttons */}
-        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+        <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
           {(editingEntryId || isDirty) && (
             <Button
               variant="outlined"
@@ -665,22 +668,22 @@ export function ProfileExperienceLeft() {
             opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
           >
             {saveState === 'success' ? (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Check size={18} color="$green10" />
                 <Text color="$green10">Saved!</Text>
-              </XStack>
+              </Row>
             ) : isSyncing && saveState === 'saving' ? (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Spinner size="small" color="$color12" />
                 <Text>Saving...</Text>
-              </XStack>
+              </Row>
             ) : editingEntryId ? (
               'Update Experience'
             ) : (
               'Save Changes'
             )}
           </Button>
-        </XStack>
+        </Row>
 
         {/* Cancel Confirmation Dialog */}
         <ConfirmationDialog
@@ -701,7 +704,7 @@ export function ProfileExperienceLeft() {
             }
           }}
         />
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

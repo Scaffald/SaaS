@@ -1,5 +1,5 @@
-import { Text, YStack } from '@unicornlove/ui'
-import { Card } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Card } from '@unicornlove/beyond-ui'
 
 type PaymentIntentFormProps = {
   clientSecret?: string
@@ -18,7 +18,7 @@ export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
 
   return (
     <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$4" fontWeight="600" color="$yellow12">
           Web payment required
         </Text>
@@ -26,7 +26,7 @@ export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
           Payments must currently be completed in the web experience. Please switch to the browser
           to pay {amount}.
         </Text>
-      </YStack>
+      </Stack>
     </Card>
   )
 }

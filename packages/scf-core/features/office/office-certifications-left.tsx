@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@unicornlove/ui'
+import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
@@ -14,9 +14,9 @@ import {
   Text,
   TextArea,
   useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 
 const certificationSchema = z.object({
@@ -68,7 +68,7 @@ export function OfficeCertificationsLeft({
   onCancel,
 }: OfficeCertificationsLeftProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
   const { width } = useWindowDimensions()
   const _isMobile = width < 640
 
@@ -98,32 +98,40 @@ export function OfficeCertificationsLeft({
   // Mutations
   const createMutation = api.office.createCertification.useMutation({
     onSuccess: () => {
-      toast.show('Success', {
-        message: 'Certification created successfully',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Certification created successfully',
+          variant: 'success',
+        })
       reset()
       onCertificationSaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create certification'
-      toast.show('Error', {
-        message: errorMessage,
-      })
+      toast.show({
+          title: 'Error',
+          message: errorMessage,
+          variant: 'error',
+        })
     },
   })
 
   const updateMutation = api.office.updateCertification.useMutation({
     onSuccess: () => {
-      toast.show('Success', {
-        message: 'Certification updated successfully',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Certification updated successfully',
+          variant: 'success',
+        })
       onCertificationSaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update certification'
-      toast.show('Error', {
-        message: errorMessage,
-      })
+      toast.show({
+          title: 'Error',
+          message: errorMessage,
+          variant: 'error',
+        })
     },
   })
 
@@ -176,19 +184,19 @@ export function OfficeCertificationsLeft({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4" padding="$4">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$4" padding="$4">
+        <Row justifyContent="space-between" alignItems="center">
           <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
           {isEditing && (
             <Button size="$2" variant="outlined" onPress={onCancel} icon={X}>
               Cancel
             </Button>
           )}
-        </XStack>
+        </Row>
 
-        <YStack gap="$4">
+        <Stack gap="$4">
           {/* Name */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Name <Text color="$red10">*</Text>
             </Text>
@@ -209,10 +217,10 @@ export function OfficeCertificationsLeft({
                 {errors.name.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Vanity URL */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Vanity URL <Text color="$red10">*</Text>
             </Text>
@@ -236,10 +244,10 @@ export function OfficeCertificationsLeft({
                 {errors.slug.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Category */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">
               Category <Text color="$red10">*</Text>
             </Text>
@@ -258,10 +266,10 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Issuing Organization */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Issuing Organization</Text>
             <Controller
               name="issuing_organization"
@@ -274,10 +282,10 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Description */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Description</Text>
             <Controller
               name="description"
@@ -291,10 +299,10 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Typical Duration */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Typical Duration (days)</Text>
             <Text fontSize="$2" color="$color11">
               How many days it typically takes to complete this certification
@@ -313,17 +321,17 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Requires Renewal */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Controller
               name="requires_renewal"
               control={control}
               render={({ field }) => {
                 const isChecked = Boolean(field.value)
                 return (
-                  <XStack gap="$3" alignItems="center">
+                  <Row gap="$3" alignItems="center">
                     <CustomCheckbox
                       checked={isChecked}
                       onCheckedChange={field.onChange}
@@ -333,15 +341,15 @@ export function OfficeCertificationsLeft({
                     <Label cursor="pointer" onPress={() => field.onChange(!isChecked)}>
                       <Text fontWeight="600">Requires Renewal</Text>
                     </Label>
-                  </XStack>
+                  </Row>
                 )
               }}
             />
-          </YStack>
+          </Stack>
 
           {/* Renewal Period (conditional) */}
           {requiresRenewal && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Renewal Period (months)</Text>
               <Text fontSize="$2" color="$color11">
                 How often this certification must be renewed
@@ -360,11 +368,11 @@ export function OfficeCertificationsLeft({
                   />
                 )}
               />
-            </YStack>
+            </Stack>
           )}
 
           {/* Submit Button */}
-          <XStack justifyContent="flex-end" paddingTop="$4" gap="$2">
+          <Row justifyContent="flex-end" paddingTop="$4" gap="$2">
             {isEditing && (
               <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
                 Cancel
@@ -378,9 +386,9 @@ export function OfficeCertificationsLeft({
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     </DashboardWidget>
   )
 }

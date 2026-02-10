@@ -1,7 +1,7 @@
-import { Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
 import { HelpCircle } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@unicornlove/beyond-ui'
 
 interface AutoRejectCriteria {
   score_minimum?: number
@@ -45,43 +45,43 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
   }
 
   return (
-    <YStack gap="$4" padding="$4">
-      <YStack gap="$2">
+    <Stack gap="$4" padding="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="600">
           Auto-Rejection
         </Text>
         <Text fontSize="$2">Automatically reject applicants who don't meet minimum criteria</Text>
-      </YStack>
+      </Stack>
 
       {/* Enable Auto-Rejection */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <XStack gap="$2" alignItems="center" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Row gap="$2" alignItems="center" flex={1}>
           <Label fontWeight="600">Reject automatically</Label>
           <HelpCircle size={16} color="$color10" />
-        </XStack>
+        </Row>
         <ToggleSwitch
           checked={localState.enabled}
           onCheckedChange={handleToggle}
           aria-label="Enable auto-rejection"
         />
-      </XStack>
+      </Row>
       <Text fontSize="$2" color="$color10">
         Based on Elevate score, work authorization and required skills
       </Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
-        <YStack gap="$3" padding="$3">
+        <Stack gap="$3" padding="$3">
           <Text fontSize="$3" fontWeight="600">
             Rejection Criteria
           </Text>
 
           {/* Work Authorization */}
-          <XStack gap="$3">
-            <YStack gap="$1" flex={1}>
+          <Row gap="$3">
+            <Stack gap="$1" flex={1}>
               <Label>Work authorization required</Label>
               <Text fontSize="$1">Reject if not authorized to work</Text>
-            </YStack>
+            </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_work_authorization || false}
               onCheckedChange={(checked: boolean) =>
@@ -89,14 +89,14 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
               }
               aria-label="Work authorization required"
             />
-          </XStack>
+          </Row>
 
           {/* All Skills Required */}
-          <XStack gap="$3">
-            <YStack gap="$1" flex={1}>
+          <Row gap="$3">
+            <Stack gap="$1" flex={1}>
               <Label>All skills required</Label>
               <Text fontSize="$1">Reject if missing any required skills</Text>
-            </YStack>
+            </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_skills || false}
               onCheckedChange={(checked: boolean) =>
@@ -104,14 +104,14 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
               }
               aria-label="All skills required"
             />
-          </XStack>
+          </Row>
 
           {/* All Certifications Required */}
-          <XStack gap="$3">
-            <YStack gap="$1" flex={1}>
+          <Row gap="$3">
+            <Stack gap="$1" flex={1}>
               <Label>All certifications required</Label>
               <Text fontSize="$1">Reject if missing any required certifications</Text>
-            </YStack>
+            </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_certifications || false}
               onCheckedChange={(checked: boolean) =>
@@ -119,9 +119,9 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
               }
               aria-label="All certifications required"
             />
-          </XStack>
+          </Row>
 
-          <YStack gap="$2" padding="$3">
+          <Stack gap="$2" padding="$3">
             <Text fontSize="$2" fontWeight="600" color="$yellow11">
               ⚠️ Important
             </Text>
@@ -129,9 +129,9 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This
               action cannot be undone automatically. Review your criteria carefully.
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

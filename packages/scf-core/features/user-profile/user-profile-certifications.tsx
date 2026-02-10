@@ -1,5 +1,5 @@
 import { BadgeCheck, Calendar } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Certification {
   id: string
@@ -24,18 +24,18 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" padding="$5">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$4" padding="$5">
+        <Row gap="$2" alignItems="center">
           <BadgeCheck size={24} color="$blue10" />
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Certifications
           </Text>
-        </XStack>
+        </Row>
 
-        <YStack gap="$3">
+        <Stack gap="$3">
           {certifications.map((cert) => (
             <Card key={cert.id} bordered backgroundColor="$color2">
-              <YStack gap="$2" padding="$4">
+              <Stack gap="$2" padding="$4">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   {cert.name}
                 </Text>
@@ -45,20 +45,20 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
                   </Text>
                 )}
                 {(cert.issue_date || cert.expiration_date) && (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <Calendar size={16} color="$color10" />
                     <Text fontSize="$3" color="$color10">
                       {cert.issue_date && `Issued ${formatDate(cert.issue_date)}`}
                       {cert.issue_date && cert.expiration_date && ' • '}
                       {cert.expiration_date && `Expires ${formatDate(cert.expiration_date)}`}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
             </Card>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

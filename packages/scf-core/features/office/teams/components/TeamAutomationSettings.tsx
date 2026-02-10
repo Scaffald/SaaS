@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Input, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 const WORKLOAD_STRATEGIES = [
   { value: 'manual', label: 'Manual assignment' },
@@ -56,7 +56,7 @@ export function TeamAutomationSettings({
   analyticsRefreshIntervalMinutes,
   canEdit = true,
 }: TeamAutomationSettingsProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   const initialState = useMemo<FormState>(
@@ -103,17 +103,18 @@ export function TeamAutomationSettings({
   const updateMutation = api.teams.update.useMutation({
     onSuccess: async () => {
       lastCommittedRef.current = JSON.stringify(debouncedFormState)
-      toast.show('Automation updated', {
-        message: 'Team automation preferences saved.',
-      })
+      toast.show({
+          title: 'Automation updated',
+          message: 'Team automation preferences saved.',
+        })
       await utils.teams.byId.invalidate({ teamId })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Please try again shortly.'
-      toast.show('Unable to update automation settings', {
-        message,
-        type: 'error',
-      })
+      toast.show({
+          title: 'Unable to update automation settings',
+          variant: 'error',
+        })
     },
   })
 
@@ -174,17 +175,17 @@ export function TeamAutomationSettings({
   const statusLabel = updateMutation.isPending ? 'Saving changes…' : 'Settings up to date'
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Automation & workload
         </Text>
         <Text color="$color11">
           Configure how the team auto-assigns work and balances workloads across members.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3" opacity={canEdit ? 1 : 0.6}>
+      <Stack gap="$3" opacity={canEdit ? 1 : 0.6}>
         <SettingsToggle
           label="Allow members to join without an invite"
           description="Let anyone with the link join the team without approval."
@@ -201,7 +202,7 @@ export function TeamAutomationSettings({
           disabled={!canEdit || updateMutation.isPending}
         />
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Invitation expiration (days)
           </Text>
@@ -224,9 +225,9 @@ export function TeamAutomationSettings({
           <Text fontSize="$3" color="$color10">
             Invitations expire automatically after this number of days.
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Workload strategy
           </Text>
@@ -245,12 +246,12 @@ export function TeamAutomationSettings({
           <Text fontSize="$3" color="$color10">
             Choose how work should be distributed when new applications arrive.
           </Text>
-        </YStack>
+        </Stack>
 
         {formState.workloadStrategy === 'load_balance' ? (
-          <YStack gap="$3" paddingLeft="$2" borderLeftWidth={2} borderColor="$borderColor">
+          <Stack gap="$3" paddingLeft="$2" borderLeftWidth={2} borderColor="$borderColor">
             <Text fontWeight="600">Load balance settings</Text>
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$3" color="$color11">
                 Maximum active assignments
               </Text>
@@ -266,8 +267,8 @@ export function TeamAutomationSettings({
                   )
                 }
               />
-            </YStack>
-            <YStack gap="$2">
+            </Stack>
+            <Stack gap="$2">
               <Text fontSize="$3" color="$color11">
                 Maximum pending assignments
               </Text>
@@ -283,14 +284,14 @@ export function TeamAutomationSettings({
                   )
                 }
               />
-            </YStack>
+            </Stack>
             <Text fontSize="$3" color="$color10">
               When a member reaches these limits, assignments roll to the next available teammate.
             </Text>
-          </YStack>
+          </Stack>
         ) : null}
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Analytics refresh interval (minutes)
           </Text>
@@ -313,10 +314,10 @@ export function TeamAutomationSettings({
           <Text fontSize="$3" color="$color10">
             Controls how often analytics snapshots should refresh for this team.
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
-      <XStack justifyContent="space-between" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$3" color="$color10">
           {statusLabel}
         </Text>
@@ -328,8 +329,8 @@ export function TeamAutomationSettings({
         >
           Reset automation
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }
 
@@ -347,13 +348,13 @@ function SettingsToggle({
   disabled: boolean
 }) {
   return (
-    <XStack justifyContent="space-between" gap="$3" alignItems="center" flexWrap="wrap">
-      <YStack gap="$1" flex={1} style={{ minWidth: 200 }}>
+    <Row justifyContent="space-between" gap="$3" alignItems="center" flexWrap="wrap">
+      <Stack gap="$1" flex={1} style={{ minWidth: 200 }}>
         <Text fontWeight="600">{label}</Text>
         <Text fontSize="$3" color="$color10">
           {description}
         </Text>
-      </YStack>
+      </Stack>
       <Switch
         size="$2"
         checked={value}
@@ -362,6 +363,6 @@ function SettingsToggle({
       >
         <Switch.Thumb animation="quick" />
       </Switch>
-    </XStack>
+    </Row>
   )
 }

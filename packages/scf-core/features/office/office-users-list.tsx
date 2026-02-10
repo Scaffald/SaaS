@@ -1,10 +1,10 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import type { TableColumnVisibilityOption } from '@unicornlove/ui'
+import type { TableColumnVisibilityOption } from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Paragraph, YStack } from '@unicornlove/ui'
+import { Paragraph, Stack } from '@unicornlove/beyond-ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
 
@@ -205,12 +205,12 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
             router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)
           },
           children: (
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Paragraph size="$4" color="$color11">
                 This modal will collect user details in an upcoming iteration. Until then, use the
                 primary action below to launch the full create page.
               </Paragraph>
-            </YStack>
+            </Stack>
           ),
         },
         columnVisibilityModalProps: {

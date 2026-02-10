@@ -2,7 +2,7 @@
 
 import { useScrollToTop } from '@react-navigation/native'
 import { type ComponentProps, type RefObject, useRef } from 'react'
-import { ScrollView } from '@unicornlove/ui'
+import { ScrollView } from '@unicornlove/beyond-ui'
 
 type ScrollToTopTabBarContainerProps = ComponentProps<typeof ScrollView>
 

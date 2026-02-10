@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
 export interface AssessmentWizardProps {
@@ -125,50 +125,50 @@ export function AssessmentWizard({
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <Spinner size="large" />
         <Text color="$color11">Loading assessment...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <AlertCircle size={48} color="$red10" />
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading assessment
         </Text>
-        <YStack alignItems="center">
+        <Stack alignItems="center">
           <Text fontSize="$3" color="$color11">
             {error.message || 'An unexpected error occurred'}
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1}>
+    <Stack flex={1}>
       {/* Header */}
       {shouldRenderHeader && (
-        <YStack padding="$4" gap="$3">
+        <Stack padding="$4" gap="$3">
           {(title || description) && (
-            <YStack gap="$1">
+            <Stack gap="$1">
               {title && (
                 <Text fontSize="$7" fontWeight="bold" color="$color12">
                   {title}
                 </Text>
               )}
               {description && (
-                <YStack alignItems="center">
+                <Stack alignItems="center">
                   <Text fontSize="$3" color="$color11">
                     {description}
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {/* Progress Indicator */}
@@ -181,20 +181,20 @@ export function AssessmentWizard({
               orientation={progressOrientation}
             />
           )}
-        </YStack>
+        </Stack>
       )}
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <YStack padding="$4" gap="$4">
+        <Stack padding="$4" gap="$4">
           {children}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <YStack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <XStack gap="$3" justifyContent="space-between">
+        <Stack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <Row gap="$3" justifyContent="space-between">
             {showPrevious && (
               <Button size="$4" variant="outlined" icon={ChevronLeft} onPress={onPrevious}>
                 Previous
@@ -206,9 +206,9 @@ export function AssessmentWizard({
                 Next
               </Button>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

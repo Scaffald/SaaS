@@ -1,7 +1,7 @@
-import { ToggleSwitch } from '@unicornlove/ui'
+import { ToggleSwitch } from '@unicornlove/beyond-ui'
 import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { AnimatePresence, Button, Label, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { AnimatePresence, Button, Label, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type FilterPopupProps = {
   isOpen: boolean
@@ -90,7 +90,7 @@ export const FilterPopup = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <XStack
+        <Row
           position="absolute"
           bottom={100}
           left={0}
@@ -105,7 +105,7 @@ export const FilterPopup = ({
           alignItems="center"
           paddingHorizontal="$4"
         >
-          <YStack
+          <Stack
             width={300}
             height={250}
             flex={1}
@@ -120,7 +120,7 @@ export const FilterPopup = ({
             overflow="hidden"
           >
             {/* Header */}
-            <XStack
+            <Row
               paddingHorizontal="$4"
               paddingVertical="$3"
               justifyContent="space-between"
@@ -139,13 +139,13 @@ export const FilterPopup = ({
                 icon={X}
                 scaleIcon={1.2}
               />
-            </XStack>
+            </Row>
 
             {/* Scrollable Content */}
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-              <YStack padding="$3" gap="$2">
+              <Stack padding="$3" gap="$2">
                 {/* Show Section */}
-                <YStack>
+                <Stack>
                   <Button
                     unstyled
                     onPress={() => toggleSection('show')}
@@ -155,7 +155,7 @@ export const FilterPopup = ({
                     pressStyle={{ backgroundColor: '$color4' }}
                     borderRadius="$3"
                   >
-                    <XStack justifyContent="space-between" alignItems="center" flex={1}>
+                    <Row justifyContent="space-between" alignItems="center" flex={1}>
                       <Text fontSize="$4" fontWeight="600">
                         {getSectionHeaderText()}
                       </Text>
@@ -164,14 +164,14 @@ export const FilterPopup = ({
                       ) : (
                         <ChevronRight size={16} />
                       )}
-                    </XStack>
+                    </Row>
                   </Button>
 
                   {openSections.has('show') && (
-                    <YStack gap="$3" paddingHorizontal="$3" paddingVertical="$3">
+                    <Stack gap="$3" paddingHorizontal="$3" paddingVertical="$3">
                       {/* Workers Toggle */}
-                      <YStack gap="$1">
-                        <XStack justifyContent="space-between" alignItems="center">
+                      <Stack gap="$1">
+                        <Row justifyContent="space-between" alignItems="center">
                           <Label fontSize="$3" onPress={() => onShowWorkersChange?.(!showWorkers)}>
                             Workers
                           </Label>
@@ -182,15 +182,15 @@ export const FilterPopup = ({
                               showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
                             }
                           />
-                        </XStack>
+                        </Row>
                         <Text fontSize="$1" color="$color10" paddingLeft="$1">
                           Show worker profiles on the map
                         </Text>
-                      </YStack>
+                      </Stack>
 
                       {/* Employers Toggle */}
-                      <YStack gap="$1">
-                        <XStack justifyContent="space-between" alignItems="center">
+                      <Stack gap="$1">
+                        <Row justifyContent="space-between" alignItems="center">
                           <Label
                             fontSize="$3"
                             onPress={() => onShowOrganizationsChange?.(!showOrganizations)}
@@ -206,15 +206,15 @@ export const FilterPopup = ({
                                 : 'Hiding employers on map'
                             }
                           />
-                        </XStack>
+                        </Row>
                         <Text fontSize="$1" color="$color10" paddingLeft="$1">
                           Show employer organizations on the map
                         </Text>
-                      </YStack>
+                      </Stack>
 
                       {/* Jobs Toggle */}
-                      <YStack gap="$1">
-                        <XStack justifyContent="space-between" alignItems="center">
+                      <Stack gap="$1">
+                        <Row justifyContent="space-between" alignItems="center">
                           <Label fontSize="$3" onPress={() => onShowJobsChange?.(!showJobs)}>
                             Jobs
                           </Label>
@@ -223,19 +223,19 @@ export const FilterPopup = ({
                             onCheckedChange={(checked) => onShowJobsChange?.(checked)}
                             aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
-                        </XStack>
+                        </Row>
                         <Text fontSize="$1" color="$color10" paddingLeft="$1">
                           Show job openings on the map
                         </Text>
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
                   )}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </ScrollView>
 
             {/* Footer */}
-            <XStack
+            <Row
               paddingHorizontal="$4"
               paddingVertical="$3"
               gap="$2"
@@ -249,9 +249,9 @@ export const FilterPopup = ({
               <Button size="$3" onPress={onClose}>
                 <Text>Apply</Text>
               </Button>
-            </XStack>
-          </YStack>
-        </XStack>
+            </Row>
+          </Stack>
+        </Row>
       )}
     </AnimatePresence>
   )

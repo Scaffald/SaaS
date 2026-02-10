@@ -67,8 +67,8 @@ vi.mock('tamagui', () => {
 
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     View,
     Text,
     Button,

@@ -6,7 +6,7 @@
  * with options to view permissions and revoke access
  */
 
-import { Text, XStack, YStack, Button } from '@unicornlove/ui'
+import { Text, Row, Stack, Button } from '@unicornlove/beyond-ui'
 
 /**
  * Connected app structure
@@ -95,7 +95,7 @@ function formatRelativeTime(dateString: string): string {
 function PermissionBadge({ permission }: { permission: string }) {
   const colors = getPermissionColor(permission)
   return (
-    <XStack
+    <Row
       backgroundColor={colors.bg}
       paddingHorizontal="$2"
       paddingVertical="$1"
@@ -104,7 +104,7 @@ function PermissionBadge({ permission }: { permission: string }) {
       <Text fontSize="$1" color={colors.text} fontWeight="500">
         {permission}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -120,7 +120,7 @@ function AppIconPlaceholder({ name }: { name: string }) {
     .toUpperCase()
 
   return (
-    <YStack
+    <Stack
       width={48}
       height={48}
       borderRadius="$3"
@@ -131,7 +131,7 @@ function AppIconPlaceholder({ name }: { name: string }) {
       <Text fontSize="$4" fontWeight="600" color="$color11">
         {initials}
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -148,7 +148,7 @@ function AppCard({
   onViewDetails?: (appId: string) => void
 }) {
   return (
-    <YStack
+    <Stack
       padding="$4"
       backgroundColor="$color2"
       borderRadius="$3"
@@ -157,9 +157,9 @@ function AppCard({
       gap="$3"
     >
       {/* App header */}
-      <XStack gap="$3" alignItems="flex-start">
+      <Row gap="$3" alignItems="flex-start">
         <AppIconPlaceholder name={app.app_name} />
-        <YStack flex={1} gap="$1">
+        <Stack flex={1} gap="$1">
           <Text fontSize="$4" fontWeight="600">
             {app.app_name}
           </Text>
@@ -168,42 +168,42 @@ function AppCard({
               {app.description}
             </Text>
           )}
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {/* Connection info */}
-      <XStack gap="$4" flexWrap="wrap">
-        <YStack gap="$1">
+      <Row gap="$4" flexWrap="wrap">
+        <Stack gap="$1">
           <Text fontSize="$2" color="$color10">
             Connected
           </Text>
           <Text fontSize="$3">
             {formatDate(app.connected_at)}
           </Text>
-        </YStack>
+        </Stack>
         {app.last_accessed_at && (
-          <YStack gap="$1">
+          <Stack gap="$1">
             <Text fontSize="$2" color="$color10">
               Last Access
             </Text>
             <Text fontSize="$3">
               {formatRelativeTime(app.last_accessed_at)}
             </Text>
-          </YStack>
+          </Stack>
         )}
-      </XStack>
+      </Row>
 
       {/* Permissions */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$2" color="$color10" fontWeight="500">
           Permissions
         </Text>
-        <XStack gap="$1" flexWrap="wrap">
+        <Row gap="$1" flexWrap="wrap">
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
           ))}
           {app.permissions.length > 5 && (
-            <XStack
+            <Row
               backgroundColor="$color4"
               paddingHorizontal="$2"
               paddingVertical="$1"
@@ -212,23 +212,23 @@ function AppCard({
               <Text fontSize="$1" color="$color11">
                 +{app.permissions.length - 5} more
               </Text>
-            </XStack>
+            </Row>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Data categories */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$2" color="$color10" fontWeight="500">
           Data Categories Accessed
         </Text>
         <Text fontSize="$3" color="$color11">
           {app.data_categories.join(' • ')}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$2" justifyContent="flex-end" marginTop="$1">
+      <Row gap="$2" justifyContent="flex-end" marginTop="$1">
         <Button
           size="$3"
           variant="outlined"
@@ -245,8 +245,8 @@ function AppCard({
             Revoke Access
           </Button>
         )}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }
 
@@ -255,7 +255,7 @@ function AppCard({
  */
 function EmptyState() {
   return (
-    <YStack
+    <Stack
       padding="$6"
       backgroundColor="$color2"
       borderRadius="$3"
@@ -271,7 +271,7 @@ function EmptyState() {
         When you connect third-party applications to your account,
         they will appear here so you can manage their access to your data.
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -290,9 +290,9 @@ export function ConnectedAppsPanel({
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {/* Summary */}
-      <XStack
+      <Row
         padding="$3"
         backgroundColor="$orange2"
         borderRadius="$3"
@@ -303,7 +303,7 @@ export function ConnectedAppsPanel({
           {apps.length} application{apps.length === 1 ? '' : 's'} currently have access to your data.
           You can revoke access at any time.
         </Text>
-      </XStack>
+      </Row>
 
       {/* App cards */}
       {apps.map((app) => (
@@ -320,7 +320,7 @@ export function ConnectedAppsPanel({
         Revoking access will immediately prevent the application from accessing your data.
         Some applications may require you to re-authorize access to restore functionality.
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 

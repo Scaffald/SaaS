@@ -1,7 +1,7 @@
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Paragraph, Text, XStack } from '@unicornlove/ui'
+import type { TamaguiElement } from '@unicornlove/beyond-ui'
+import { Paragraph, Text, Row } from '@unicornlove/beyond-ui'
 import {
   CardActions,
   CardBadges,
@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 
 /**
  * Job card organization data
@@ -214,12 +214,12 @@ export const JobCard = memo(
           }
         >
           {/* Header */}
-          <XStack justifyContent="space-between" alignItems="center">
+          <Row justifyContent="space-between" alignItems="center">
             <CardHeader
               title={title}
               subtitle={
                 organization ? (
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <Building2 size={16} color={isSelected ? '$color1' : '$color11'} />
                     <Text
                       fontSize="$3"
@@ -228,13 +228,13 @@ export const JobCard = memo(
                     >
                       {organization.name}
                     </Text>
-                  </XStack>
+                  </Row>
                 ) : undefined
               }
               isSelected={isSelected}
               badge={
                 hasApplied ? (
-                  <XStack
+                  <Row
                     backgroundColor="$green9"
                     paddingHorizontal="$2"
                     paddingVertical="$1"
@@ -243,16 +243,16 @@ export const JobCard = memo(
                     <Text color="$green1" fontSize="$2" fontWeight="600">
                       Applied
                     </Text>
-                  </XStack>
+                  </Row>
                 ) : undefined
               }
             />
-          </XStack>
+          </Row>
 
           {/* Remote option chip */}
           {remoteOption && (
-            <XStack gap="$2">
-              <XStack
+            <Row gap="$2">
+              <Row
                 backgroundColor="$blue8"
                 paddingHorizontal="$2"
                 paddingVertical="$1"
@@ -265,8 +265,8 @@ export const JobCard = memo(
                       ? 'Hybrid'
                       : 'Remote'}
                 </Text>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
 
           {/* Description */}
@@ -283,12 +283,12 @@ export const JobCard = memo(
 
           {/* Pay range */}
           {payRange && (
-            <XStack gap="$1.5" alignItems="center">
+            <Row gap="$1.5" alignItems="center">
               <DollarSign size={16} color="$green10" />
               <Text fontSize="$3" color="$green10" fontWeight="600">
                 {payRange}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {/* Certifications and Skills */}

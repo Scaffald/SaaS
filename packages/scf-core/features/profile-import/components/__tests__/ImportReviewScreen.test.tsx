@@ -214,8 +214,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <h5 {...rest}>{children}</h5>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Button,
     Text,
     Paragraph,

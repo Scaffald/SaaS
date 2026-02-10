@@ -7,10 +7,10 @@ import {
   Heading,
   LoadingState,
   spacing,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { GraduationCap } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
 
@@ -58,7 +58,7 @@ export function EducationWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load education</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -73,7 +73,7 @@ export function EducationWidget({
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -83,9 +83,9 @@ export function EducationWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Education</Heading>
           {showEdit && (
             <Button
@@ -96,7 +96,7 @@ export function EducationWidget({
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {education.length === 0 ? (
           <EmptyState
@@ -115,13 +115,13 @@ export function EducationWidget({
             }
           />
         ) : (
-          <YStack gap="$4">
+          <Stack gap="$4">
             {education
               .slice(0, showCompact ? 2 : undefined)
               .map((edu: UserEducation, index: number) => (
-                <YStack key={edu.id} gap="$2">
+                <Stack key={edu.id} gap="$2">
                   {/* Degree & Field */}
-                  <YStack gap="$1">
+                  <Stack gap="$1">
                     <Text fontSize="$4" fontWeight="600">
                       {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
@@ -129,10 +129,10 @@ export function EducationWidget({
                     <Text fontSize="$3" color="$color11">
                       {edu.institution_name || 'Institution'}
                     </Text>
-                  </YStack>
+                  </Stack>
 
                   {/* Duration */}
-                  <XStack gap="$2" alignItems="center">
+                  <Row gap="$2" alignItems="center">
                     <Text fontSize="$2" color="$color10">
                       {formatDate(edu.start_date)}
                     </Text>
@@ -143,7 +143,7 @@ export function EducationWidget({
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
-                      <XStack
+                      <Row
                         backgroundColor="$blue2"
                         paddingHorizontal="$2"
                         paddingVertical="$0.5"
@@ -154,9 +154,9 @@ export function EducationWidget({
                         <Text color="$blue11" fontSize="$1" fontWeight="600">
                           Current
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Location */}
                   {edu.location && (
@@ -174,7 +174,7 @@ export function EducationWidget({
 
                   {/* Separator between items */}
                   {index < education.length - 1 && <Separator marginVertical="$2" />}
-                </YStack>
+                </Stack>
               ))}
 
             {/* Show More link for compact view */}
@@ -191,9 +191,9 @@ export function EducationWidget({
                 View all {education.length} entries →
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

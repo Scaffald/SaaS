@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { type InquiryCreateInput, inquiryCreateSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -24,7 +24,7 @@ export function useInquiryForm({
   applicationId,
   onSuccess,
 }: UseInquiryFormOptions): UseInquiryFormReturn {
-  const toast = useToastController()
+  const toast = useToast()
 
   const form = useForm<InquiryCreateInput>({
     resolver: zodResolver(inquiryCreateSchema),
@@ -63,27 +63,33 @@ export function useInquiryForm({
 
   const createMutation = api.inquiries.create.useMutation({
     onSuccess: () => {
-      toast.show('Inquiry created', {
-        message: 'Your inquiry has been saved as a draft.',
-      })
+      toast.show({
+          title: 'Inquiry created',
+          message: 'Your inquiry has been saved as a draft.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Failed to create inquiry', {
-        message: error.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Failed to create inquiry',
+          message: error.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 
   const sendMutation = api.inquiries.send.useMutation({
     onSuccess: () => {
-      toast.show('Inquiry sent', {
-        message: 'The inquiry has been sent to the candidate.',
-      })
+      toast.show({
+          title: 'Inquiry sent',
+          message: 'The inquiry has been sent to the candidate.',
+        })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Failed to send inquiry', {
-        message: error.message ?? 'Please try again.',
-      })
+      toast.show({
+          title: 'Failed to send inquiry',
+          message: error.message ?? 'Please try again.',
+          variant: 'error',
+        })
     },
   })
 

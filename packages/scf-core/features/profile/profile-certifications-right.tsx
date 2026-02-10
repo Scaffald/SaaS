@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, DashboardWidget } from '@unicornlove/ui'
+import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
 import {
   Award,
   ChevronDown,
@@ -10,7 +10,7 @@ import {
   Upload,
 } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, H4, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface UserCertification {
@@ -163,27 +163,27 @@ export function ProfileCertificationsRight() {
   if (allCerts.length === 0) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingTop="$8">
+        <Stack gap="$4" alignItems="center" paddingTop="$8">
           <Award size={48} color="$color11" />
-          <YStack gap="$2" alignItems="center">
+          <Stack gap="$2" alignItems="center">
             <H4>Your Certifications</H4>
             <Text color="$color11">Search and add certifications on the left</Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
     )
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap="$4">
         <H4>Your Certifications</H4>
 
         <ScrollView height={700}>
-          <YStack gap="$4">
+          <Stack gap="$4">
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontWeight="600" fontSize="$4" color="$blue11">
                   Top-Level Categories
                 </Text>
@@ -210,9 +210,9 @@ export function ProfileCertificationsRight() {
                             : '$borderColor'
                       }
                     >
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack flex={1} gap="$1">
-                          <XStack gap="$2" alignItems="center">
+                      <Row justifyContent="space-between" alignItems="center">
+                        <Stack flex={1} gap="$1">
+                          <Row gap="$2" alignItems="center">
                             <Text fontWeight="600">{cert.catalog.title}</Text>
                             <Text
                               fontSize="$1"
@@ -224,14 +224,14 @@ export function ProfileCertificationsRight() {
                             >
                               Top Level
                             </Text>
-                          </XStack>
+                          </Row>
                           {cert.catalog.description && (
                             <Text fontSize="$2" color="$color11">
                               {cert.catalog.description}
                             </Text>
                           )}
-                        </YStack>
-                      </XStack>
+                        </Stack>
+                      </Row>
                       {changeStatus === 'added' && (
                         <Text marginTop="$2" fontSize="$2" color="$green11">
                           ✓ Added to profile
@@ -240,12 +240,12 @@ export function ProfileCertificationsRight() {
                     </Card>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Depth 1 - Categories */}
             {depth1.length > 0 && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontWeight="600" fontSize="$4" color="$green11">
                   Sub-Categories
                 </Text>
@@ -272,9 +272,9 @@ export function ProfileCertificationsRight() {
                             : '$borderColor'
                       }
                     >
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack flex={1} gap="$1">
-                          <XStack gap="$2" alignItems="center">
+                      <Row justifyContent="space-between" alignItems="center">
+                        <Stack flex={1} gap="$1">
+                          <Row gap="$2" alignItems="center">
                             <Text fontWeight="600">{cert.catalog.title}</Text>
                             <Text
                               fontSize="$1"
@@ -286,14 +286,14 @@ export function ProfileCertificationsRight() {
                             >
                               Category
                             </Text>
-                          </XStack>
+                          </Row>
                           {cert.catalog.description && (
                             <Text fontSize="$2" color="$color11">
                               {cert.catalog.description}
                             </Text>
                           )}
-                        </YStack>
-                      </XStack>
+                        </Stack>
+                      </Row>
                       {changeStatus === 'added' && (
                         <Text marginTop="$2" fontSize="$2" color="$green11">
                           ✓ Added to profile
@@ -302,12 +302,12 @@ export function ProfileCertificationsRight() {
                     </Card>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Depth 2 - Specific Certifications */}
             {depth2.length > 0 && (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontWeight="600" fontSize="$4" color="$purple11">
                   Specific Certifications
                 </Text>
@@ -338,7 +338,7 @@ export function ProfileCertificationsRight() {
                       }
                     >
                       {/* Header - Always Visible */}
-                      <XStack
+                      <Row
                         padding="$3"
                         gap="$3"
                         alignItems="center"
@@ -352,8 +352,8 @@ export function ProfileCertificationsRight() {
                           <ChevronRight size={20} color="$color11" />
                         )}
 
-                        <YStack flex={1} gap="$1">
-                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                        <Stack flex={1} gap="$1">
+                          <Row gap="$2" alignItems="center" flexWrap="wrap">
                             <Text fontWeight="600">{cert.catalog.title}</Text>
                             <Text
                               fontSize="$1"
@@ -365,7 +365,7 @@ export function ProfileCertificationsRight() {
                             >
                               Certification
                             </Text>
-                          </XStack>
+                          </Row>
                           {hasProof && (
                             <Text fontSize="$2" color="$green10">
                               ✓ Proof added
@@ -381,9 +381,9 @@ export function ProfileCertificationsRight() {
                               Removed from profile
                             </Text>
                           )}
-                        </YStack>
+                        </Stack>
 
-                        <XStack gap="$2">
+                        <Row gap="$2">
                           {hasProof && (
                             <Button
                               size="$2"
@@ -412,12 +412,12 @@ export function ProfileCertificationsRight() {
                           >
                             Remove
                           </Button>
-                        </XStack>
-                      </XStack>
+                        </Row>
+                      </Row>
 
                       {/* Expanded Content - File Upload & URL */}
                       {isExpanded && (
-                        <YStack
+                        <Stack
                           padding="$3"
                           paddingTop="$0"
                           gap="$4"
@@ -425,11 +425,11 @@ export function ProfileCertificationsRight() {
                           borderColor="$borderColor"
                         >
                           {/* File Upload */}
-                          <YStack gap="$2">
+                          <Stack gap="$2">
                             <Text fontWeight="600" fontSize="$3">
                               Upload Certificate
                             </Text>
-                            <XStack gap="$2" style={{ alignItems: 'center' }}>
+                            <Row gap="$2" style={{ alignItems: 'center' }}>
                               <Button
                                 flex={1}
                                 icon={<Upload size={16} />}
@@ -459,20 +459,20 @@ export function ProfileCertificationsRight() {
                                   Upload
                                 </Button>
                               )}
-                            </XStack>
+                            </Row>
                             {cert.certificate_file_path && (
                               <Text fontSize="$2" color="$color11">
                                 Current: {cert.certificate_file_path.split('/').pop()}
                               </Text>
                             )}
-                          </YStack>
+                          </Stack>
 
                           {/* URL Input */}
-                          <YStack gap="$2">
+                          <Stack gap="$2">
                             <Text fontWeight="600" fontSize="$3">
                               Or Add URL
                             </Text>
-                            <XStack gap="$2">
+                            <Row gap="$2">
                               <Input
                                 flex={1}
                                 placeholder="https://..."
@@ -489,23 +489,23 @@ export function ProfileCertificationsRight() {
                               >
                                 Save
                               </Button>
-                            </XStack>
+                            </Row>
                             {cert.credential_url && (
                               <Text fontSize="$2" color="$color11">
                                 Current: {cert.credential_url}
                               </Text>
                             )}
-                          </YStack>
-                        </YStack>
+                          </Stack>
+                        </Stack>
                       )}
                     </Card>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </ScrollView>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

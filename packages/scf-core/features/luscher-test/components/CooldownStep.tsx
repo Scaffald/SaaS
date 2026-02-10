@@ -1,6 +1,6 @@
 import { Clock } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Progress, Text, TextArea, YStack } from '@unicornlove/ui'
+import { Progress, Text, TextArea, Stack } from '@unicornlove/beyond-ui'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends
@@ -77,9 +77,9 @@ export function CooldownStep({
   )
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
+    <Stack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
       {/* Cooldown Timer */}
-      <YStack
+      <Stack
         gap="$4"
         padding="$6"
         backgroundColor="$color3"
@@ -87,7 +87,7 @@ export function CooldownStep({
         borderWidth={1}
         borderColor="$color7"
       >
-        <YStack gap="$2" alignItems="center">
+        <Stack gap="$2" alignItems="center">
           <Clock size={48} color="$blue10" />
           <Text fontSize="$6" fontWeight="600" color="$color12">
             Take a short pause
@@ -98,22 +98,22 @@ export function CooldownStep({
           <Text fontSize="$10" fontWeight="bold" color="$blue10">
             {formatTime(timeRemaining)}
           </Text>
-        </YStack>
+        </Stack>
         <Progress value={cooldownProgress} max={100} size="$2">
           <Progress.Indicator animation="quick" />
         </Progress>
-      </YStack>
+      </Stack>
 
       {/* Diary Prompt Section */}
-      <YStack gap="$4" padding="$4" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-        <YStack gap="$2">
+      <Stack gap="$4" padding="$4" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             {selectedPrompt}
           </Text>
           <Text fontSize="$3" color="$color11">
             Take a breather for 60 seconds or write for 60 seconds if you want (optional)
           </Text>
-        </YStack>
+        </Stack>
 
         <TextArea
           placeholder="Write your thoughts here (optional)..."
@@ -124,7 +124,7 @@ export function CooldownStep({
           maxLength={500}
           fontSize="$4"
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

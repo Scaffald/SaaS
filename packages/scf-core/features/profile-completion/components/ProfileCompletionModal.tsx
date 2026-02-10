@@ -1,7 +1,7 @@
-import { ResponsiveModal } from '@unicornlove/ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { PartyPopper, UploadCloud } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Button, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type ModalMode = 'first-login' | 'progress-reminder'
 
@@ -35,23 +35,23 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
       title={isFirstTime ? 'Welcome! Let’s build your profile' : 'Keep going — you’re close!'}
       size="medium"
     >
-      <YStack gap="$4">
-        <YStack gap="$2">
-          <XStack gap="$2" alignItems="center">
+      <Stack gap="$4">
+        <Stack gap="$2">
+          <Row gap="$2" alignItems="center">
             <PartyPopper size={24} color="$blue10" />
             <Text fontSize="$5" fontWeight="700">
               {isFirstTime ? 'Finish in 5 minutes' : `You’re ${completionPercentage}% complete`}
             </Text>
-          </XStack>
+          </Row>
 
           <Paragraph color="$color11" aria-live="polite">
             {isFirstTime
               ? 'We’ll walk you through six quick steps so employers can get to know you. Auto-save is enabled, and you can come back anytime.'
               : benefitMessage}
           </Paragraph>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Button size="$5" themeInverse onPress={onStartWizard}>
             {isFirstTime ? 'Start Wizard' : 'Continue Profile'}
           </Button>
@@ -61,8 +61,8 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
           <Button size="$3" chromeless onPress={onDismiss}>
             {isFirstTime ? 'Skip and continue later' : 'Remind me later'}
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ResponsiveModal>
   )
 })

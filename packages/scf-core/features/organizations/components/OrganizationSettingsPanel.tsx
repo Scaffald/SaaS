@@ -10,9 +10,9 @@ import {
   Spinner,
   Switch,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import {
   useOrganizationSettings,
   useOrganizationStorageUsage,
@@ -58,7 +58,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <H4>Organization Settings</H4>
         {usage.data ? (
           <Text color="$color10">
@@ -66,70 +66,70 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             docs)
           </Text>
         ) : null}
-      </XStack>
+      </Row>
       <Separator />
       {isLoading || !settings ? (
         <Spinner />
       ) : (
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Controller
             control={form.control}
             name="timezone"
             render={({ field }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Timezone</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="locale"
             render={({ field }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Locale</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="defaultCurrency"
             render={({ field }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Default currency</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="enforceMfa"
             render={({ field }) => (
-              <XStack justifyContent="space-between" alignItems="center">
+              <Row justifyContent="space-between" alignItems="center">
                 <Text fontWeight="600">Require MFA for members</Text>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
-              </XStack>
+              </Row>
             )}
           />
           <Controller
             control={form.control}
             name="sessionTimeoutMinutes"
             render={({ field }) => (
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontWeight="600">Session timeout (minutes)</Text>
                 <Input
                   keyboardType="numeric"
                   value={String(field.value)}
                   onChangeText={(value) => field.onChange(Number(value))}
                 />
-              </YStack>
+              </Stack>
             )}
           />
           <Button onPress={handleSave} disabled={updateMutation.isPending}>
             {updateMutation.isPending ? 'Saving…' : 'Save settings'}
           </Button>
-        </YStack>
+        </Stack>
       )}
     </Card>
   )

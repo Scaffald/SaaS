@@ -1,10 +1,10 @@
 import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { CheckCircle, ChevronRight, Circle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Button, H4, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H4, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -22,7 +22,7 @@ export function ProfileCompletionWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const { completionData, isLoading } = useProfileCompletion()
 
   // Show toast prompts for incomplete sections
@@ -44,9 +44,9 @@ export function ProfileCompletionWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap="$4" alignItems="center" paddingVertical="$4">
           <Text color="$color11">Loading completion status...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -60,20 +60,20 @@ export function ProfileCompletionWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <H4>Profile Completion</H4>
           {variant === 'full' && (
             <Text fontSize="$3" color="$color11">
               {completionData.totalComplete} of {completionData.totalItems} complete
             </Text>
           )}
-        </XStack>
+        </Row>
 
         {/* Progress Bar */}
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$2">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontSize="$5" fontWeight="600" color="$color12">
               {completionData.completionPercentage}%
             </Text>
@@ -82,7 +82,7 @@ export function ProfileCompletionWidget({
                 {completionData.completionPercentage < 100 ? 'Keep going!' : 'Profile complete!'}
               </Text>
             )}
-          </XStack>
+          </Row>
           <Progress
             value={completionData.completionPercentage}
             max={100}
@@ -94,11 +94,11 @@ export function ProfileCompletionWidget({
               backgroundColor={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
             />
           </Progress>
-        </YStack>
+        </Stack>
 
         {/* Next Steps */}
         {variant === 'full' && nextIncompleteItem && (
-          <YStack
+          <Stack
             gap="$3"
             padding="$3"
             backgroundColor="$color3"
@@ -109,9 +109,9 @@ export function ProfileCompletionWidget({
             <Text fontSize="$3" fontWeight="600" color="$color12">
               Next Step
             </Text>
-            <XStack gap="$2" alignItems="center">
+            <Row gap="$2" alignItems="center">
               <Circle size={16} color="$color10" />
-              <YStack flex={1} gap="$1">
+              <Stack flex={1} gap="$1">
                 <Text fontSize="$3" fontWeight="500">
                   {nextIncompleteItem.title}
                 </Text>
@@ -120,7 +120,7 @@ export function ProfileCompletionWidget({
                     {nextIncompleteItem.description}
                   </Text>
                 )}
-              </YStack>
+              </Stack>
               {showEdit && nextIncompleteItem.actionRoute && (
                 <Button
                   size="$2"
@@ -131,19 +131,19 @@ export function ProfileCompletionWidget({
                   Complete
                 </Button>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {/* Checklist (Full variant only) */}
         {variant === 'full' && (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$3" fontWeight="600" color="$color12">
               Sections
             </Text>
-            <YStack gap="$2">
+            <Stack gap="$2">
               {completionData.items.map((item) => (
-                <XStack
+                <Row
                   key={item.id}
                   gap="$2"
                   alignItems="center"
@@ -157,7 +157,7 @@ export function ProfileCompletionWidget({
                   ) : (
                     <Circle size={18} color="$color10" />
                   )}
-                  <YStack flex={1} gap="$1">
+                  <Stack flex={1} gap="$1">
                     <Text
                       fontSize="$3"
                       fontWeight={item.complete ? 'normal' : '500'}
@@ -170,7 +170,7 @@ export function ProfileCompletionWidget({
                         {item.description}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                   {!item.complete && showEdit && item.actionRoute && (
                     <Button
                       size="$2"
@@ -180,15 +180,15 @@ export function ProfileCompletionWidget({
                       Add
                     </Button>
                   )}
-                </XStack>
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
         {/* Compact variant - just show progress and next step */}
         {variant === 'compact' && nextIncompleteItem && (
-          <YStack gap="$2">
+          <Stack gap="$2">
             {nextIncompleteItem.actionRoute && showEdit && (
               <Button
                 size="$3"
@@ -198,9 +198,9 @@ export function ProfileCompletionWidget({
                 Complete: {nextIncompleteItem.title}
               </Button>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

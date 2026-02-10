@@ -1,14 +1,10 @@
-import { ToastViewport as ToastViewportOg } from '@tamagui/toast'
+import { ToastContainer } from '@unicornlove/beyond-ui'
 
 export interface ToastViewportProps {
   noSafeArea?: boolean
 }
 export const ToastViewport = ({ noSafeArea }: ToastViewportProps) => {
-  return (
-    <ToastViewportOg
-      left={noSafeArea ? 0 : 10}
-      right={noSafeArea ? 0 : 10}
-      top={noSafeArea ? 0 : 10}
-    />
-  )
+  // beyond-ui's ToastContainer handles positioning internally
+  // noSafeArea prop is maintained for API compatibility but not used
+  return <ToastContainer />
 }

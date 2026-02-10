@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { FileUpload, ResponsiveModal, spacing } from '@unicornlove/ui'
+import { FileUpload, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
 import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 const ACCEPTED_MIME_TYPES = [
   'application/pdf',
@@ -44,7 +44,7 @@ export function ResumeUploadModal({
   onOpenChange,
   onUploadComplete,
 }: ResumeUploadModalProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
   const uploadResumeMutation = api.resume.upload.useMutation()
   const parseResumeMutation = api.resume.parse.useMutation()
@@ -121,10 +121,10 @@ export function ResumeUploadModal({
     (message: string) => {
       setStatus('error')
       setErrorMessage(message)
-      toast.show('Resume Import Failed', {
-        message,
-        type: 'error',
-      })
+      toast.show({
+          title: 'Resume Import Failed',
+          variant: 'error',
+        })
     },
     [toast]
   )
@@ -202,9 +202,10 @@ export function ResumeUploadModal({
 
         setStatus('success')
         console.debug('[ResumeUploadModal] parsing complete, preparing review wizard')
-        toast.show('Resume Imported', {
+        toast.show({
+          title: 'Resume Imported',
           message: 'Review the parsed details before saving them to your profile.',
-          type: 'success',
+          variant: 'success',
         })
         console.debug('[ResumeUploadModal] redirecting to review experience')
         onUploadComplete?.(uploadResponse.resumeId)
@@ -328,7 +329,7 @@ export function ResumeUploadModal({
 
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Import Resume" size="medium">
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         <Paragraph color="$color11">
           Upload a PDF or Word document under 1MB. We’ll extract your experience, education, skills,
           and preferences so you can confirm the details before saving them to your profile.
@@ -354,7 +355,7 @@ export function ResumeUploadModal({
             error={status === 'error' ? (errorMessage ?? undefined) : undefined}
           />
         ) : (
-          <YStack gap={spacing.sm}>
+          <Stack gap={spacing.sm}>
             <Button
               size="$4"
               icon={UploadCloud}
@@ -369,24 +370,24 @@ export function ResumeUploadModal({
               <Text color="$color11">Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
             )}
             {status === 'error' && errorMessage ? (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <AlertCircle color="$red10" size={18} />
                 <Text color="$red10">{errorMessage}</Text>
-              </XStack>
+              </Row>
             ) : null}
-          </YStack>
+          </Stack>
         )}
 
         {shouldShowProgressIndicators && progressValue > 0 && (
-          <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$3">
-            <YStack height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
-              <YStack
+          <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$3">
+            <Stack height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
+              <Stack
                 height="100%"
                 width={`${Math.round(progressValue * 100)}%`}
                 backgroundColor={progressColor}
               />
-            </YStack>
-            <XStack gap="$2" alignItems="center">
+            </Stack>
+            <Row gap="$2" alignItems="center">
               {status === 'success' ? (
                 <CheckCircle2 color="$green10" size={18} />
               ) : status === 'error' ? (
@@ -397,12 +398,12 @@ export function ResumeUploadModal({
               <Text color={status === 'error' ? '$red11' : '$color11'} fontWeight="600">
                 {progressLabel ?? 'Processing resume...'}
               </Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {status === 'success' && (
-          <XStack
+          <Row
             gap="$3"
             alignItems="center"
             backgroundColor="$green3"
@@ -413,11 +414,11 @@ export function ResumeUploadModal({
             <Text color="$green11" fontWeight="600">
               Resume uploaded successfully. Redirecting...
             </Text>
-          </XStack>
+          </Row>
         )}
 
         {status === 'error' && errorMessage && (
-          <XStack
+          <Row
             gap="$3"
             alignItems="center"
             backgroundColor="$red3"
@@ -428,10 +429,10 @@ export function ResumeUploadModal({
             <Text color="$red11" fontWeight="600">
               {errorMessage}
             </Text>
-          </XStack>
+          </Row>
         )}
 
-        <XStack gap="$2" justifyContent="flex-end">
+        <Row gap="$2" justifyContent="flex-end">
           <Button
             size="$3"
             variant="outlined"
@@ -455,8 +456,8 @@ export function ResumeUploadModal({
                 ? 'Upload Failed'
                 : 'Waiting for file'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ResponsiveModal>
   )
 }

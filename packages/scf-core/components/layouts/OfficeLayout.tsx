@@ -4,9 +4,9 @@ import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { ScrollView, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
-import type { StackProps } from '@unicornlove/ui'
-import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/ui'
+import { ScrollView, useWindowDimensions, Row, Stack } from '@unicornlove/beyond-ui'
+import type { StackProps } from '@unicornlove/beyond-ui'
+import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/beyond-ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type OfficeLayoutProps = {
@@ -194,18 +194,18 @@ export const OfficeLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack paddingHorizontal="$3" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+          <Row paddingHorizontal="$3" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
             <Breadcrumb items={displayBreadcrumbs} />
-          </XStack>
+          </Row>
         )}
 
         {/* TabGroup Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
           <>
-            <XStack paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
+            <Row paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
               <TabGroup
                 value={activeTabValue}
                 onValueChange={handleTabChange}
@@ -217,9 +217,9 @@ export const OfficeLayout = ({
                   <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
                 ))}
               </TabGroup>
-            </XStack>
+            </Row>
             {secondaryTabItems.length > 0 && (
-              <XStack paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
+              <Row paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
                 <TabGroup
                   value={activeSecondaryValue}
                   onValueChange={handleTabChange}
@@ -231,13 +231,13 @@ export const OfficeLayout = ({
                     <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
                   ))}
                 </TabGroup>
-              </XStack>
+              </Row>
             )}
           </>
         )}
 
         {/* Content Area - Use programmatic responsive flexDirection */}
-        <XStack
+        <Row
           gap="$3"
           padding="$3"
           flexDirection="column"
@@ -250,7 +250,7 @@ export const OfficeLayout = ({
           }}
         >
           {hasLeftContent && (
-            <YStack
+            <Stack
               minWidth="100%"
               width="100%"
               maxWidth="100%"
@@ -266,10 +266,10 @@ export const OfficeLayout = ({
               }}
             >
               {leftContent}
-            </YStack>
+            </Stack>
           )}
           {hasRightContent && (
-            <YStack
+            <Stack
               minWidth="100%"
               width="100%"
               maxWidth="100%"
@@ -285,10 +285,10 @@ export const OfficeLayout = ({
               }}
             >
               {rightContent}
-            </YStack>
+            </Stack>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }

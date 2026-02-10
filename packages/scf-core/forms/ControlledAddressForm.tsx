@@ -1,7 +1,7 @@
-import { AddressForm, type AddressResult } from '@unicornlove/ui'
+import { AddressForm, type AddressResult } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { type FieldPath, type FieldValues, type PathValue, useWatch } from 'react-hook-form'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import type { ControlledAddressFormProps, CustomAddressFieldMapping } from './types'
 
 /**
@@ -208,7 +208,7 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
     apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
 
   return (
-    <YStack gap="$2" position="relative" zIndex={1000}>
+    <Stack gap="$2" position="relative" zIndex={1000}>
       {label && (
         <Text fontWeight="600">
           {label}
@@ -228,6 +228,6 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
         onAddressChange={handleAddressChange}
         onChange={onChange}
       />
-    </YStack>
+    </Stack>
   )
 }

@@ -3,8 +3,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock all profile form components to test cancel behavior pattern
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: vi.fn(),
   }),
 }))
@@ -110,8 +110,8 @@ vi.mock('@unicornlove/ui', () => {
 })
 
 vi.mock('tamagui', () => ({
-  YStack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  XStack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Row: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   Input: ({ value, onChangeText }: { value?: string; onChangeText?: (v: string) => void }) => (
     <input value={value} onChange={(e) => onChangeText?.(e.target.value)} />

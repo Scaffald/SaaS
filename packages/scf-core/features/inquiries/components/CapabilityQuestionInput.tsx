@@ -1,4 +1,4 @@
-import { Button, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
 import { Check, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 
@@ -21,11 +21,11 @@ export function CapabilityQuestionInput({
   }
 
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       <Text fontSize="$3" fontWeight="600">
         {question}
       </Text>
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <Button
           flex={1}
           theme={localValue === true ? 'success' : undefined}
@@ -44,14 +44,14 @@ export function CapabilityQuestionInput({
         >
           No
         </Button>
-      </XStack>
+      </Row>
       {/* Alternative: Toggle Switch */}
-      <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
+      <Row justifyContent="space-between" alignItems="center" marginTop="$2">
         <Text fontSize="$3" color="$color11">
           Toggle answer
         </Text>
         <ToggleSwitch checked={localValue ?? false} onCheckedChange={handleValueChange} />
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

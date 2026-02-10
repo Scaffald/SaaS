@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react'
 import { Platform } from 'react-native'
-import { useIsomorphicLayoutEffect } from '@unicornlove/ui'
+import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
 
 /**
  * Map state interface for persisting search location, filters, and UI preferences

@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { DashboardWidget, Text, XStack, YStack } from '@unicornlove/ui'
+import { DashboardWidget, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ArrowRight } from '@tamagui/lucide-icons'
 import { Link, usePathname } from 'expo-router'
 
@@ -36,16 +36,16 @@ export function BackgroundCheckNavigationMenu() {
 
   return (
     <DashboardWidget gap="$4">
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Background Check Tools
         </Text>
         <Text fontSize="$3" color="$color10">
           Switch between related workflows and management tools.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         {BACKGROUND_CHECK_NAV_ITEMS.map((item) => {
           const normalizedPath = pathname?.replace(/\/$/, '') ?? ''
           const itemPath = item.path.replace(/\/$/, '')
@@ -56,7 +56,7 @@ export function BackgroundCheckNavigationMenu() {
 
           return (
             <Link key={item.key} href={item.path} asChild>
-              <YStack
+              <Stack
                 paddingHorizontal="$4"
                 paddingVertical="$3"
                 gap="$2"
@@ -73,26 +73,26 @@ export function BackgroundCheckNavigationMenu() {
                 cursor="pointer"
                 animation="quick"
               >
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$4" fontWeight="600" color={isActive ? '$blue12' : '$color12'}>
                     {item.title}
                   </Text>
                   <Text fontSize="$3" color={isActive ? '$blue11' : '$color10'}>
                     {item.description}
                   </Text>
-                </YStack>
+                </Stack>
 
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <Text fontSize="$3" fontWeight="600" color={isActive ? '$blue12' : '$color11'}>
                     View workspace
                   </Text>
                   <ArrowRight size={16} color={isActive ? '$blue11' : '$color10'} />
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </Link>
           )
         })}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

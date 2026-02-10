@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, SkeletonCard, Text, YStack } from '@unicornlove/ui'
+import { Button, SkeletonCard, Text, Stack } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 
@@ -27,7 +27,7 @@ export function InquiryOverviewWidget() {
   const entries = data.slice(0, 3)
 
   return (
-    <YStack padding="$4" backgroundColor="$color2" borderRadius="$4" gap="$3">
+    <Stack padding="$4" backgroundColor="$color2" borderRadius="$4" gap="$3">
       <Text fontWeight="600" fontSize="$5">
         Negotiations
       </Text>
@@ -37,7 +37,7 @@ export function InquiryOverviewWidget() {
           : `You have ${data.length} active inquiries.`}
       </Text>
       {entries.map((application: ApplicationRecord) => (
-        <YStack
+        <Stack
           key={application.id}
           padding="$3"
           gap="$2"
@@ -62,13 +62,13 @@ export function InquiryOverviewWidget() {
           >
             View Inquiry
           </Button>
-        </YStack>
+        </Stack>
       ))}
       {data.length > entries.length && (
         <Text fontSize="$2" color="$color11">
           {data.length - entries.length} more in progress
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -13,11 +13,11 @@ import {
   Label,
   Paragraph,
   Separator,
-  XStack,
-  YStack,
+  Row,
+  Stack,
   Checkbox,
   Spinner,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { AlertCircle, CheckCircle, Copy } from '@tamagui/lucide-icons'
 import { format, addMonths } from 'date-fns'
 
@@ -213,7 +213,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
           maxWidth={600}
         >
           {step === 'configure' ? (
-            <YStack gap="$4">
+            <Stack gap="$4">
               {/* Header */}
               <Dialog.Title>
                 <H3>Create API Key</H3>
@@ -227,9 +227,9 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
               <Separator />
 
               {/* Form */}
-              <YStack gap="$4">
+              <Stack gap="$4">
                 {/* Key Name */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label htmlFor="key-name">Key Name</Label>
                   <Input
                     id="key-name"
@@ -241,14 +241,14 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                   <Paragraph size="$2" color="$gray11">
                     A descriptive name to identify this key
                   </Paragraph>
-                </YStack>
+                </Stack>
 
                 {/* Scopes Selection */}
-                <YStack gap="$3">
+                <Stack gap="$3">
                   <Label>Permissions</Label>
 
                   {/* Read Permissions */}
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Paragraph size="$3" fontWeight="600" color="$gray12">
                       Read Permissions
                     </Paragraph>
@@ -263,24 +263,24 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                         onPress={() => toggleScope(scope.id)}
                         cursor="pointer"
                       >
-                        <XStack ai="center" gap="$3">
+                        <Row ai="center" gap="$3">
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
                             onCheckedChange={() => toggleScope(scope.id)}
                           />
-                          <YStack f={1} gap="$1">
+                          <Stack f={1} gap="$1">
                             <Paragraph fontWeight="600">{scope.label}</Paragraph>
                             <Paragraph size="$2" color="$gray11">
                               {scope.description}
                             </Paragraph>
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
 
                   {/* Write Permissions */}
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Paragraph size="$3" fontWeight="600" color="$gray12">
                       Write Permissions
                     </Paragraph>
@@ -295,32 +295,32 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                         onPress={() => toggleScope(scope.id)}
                         cursor="pointer"
                       >
-                        <XStack ai="center" gap="$3">
+                        <Row ai="center" gap="$3">
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
                             onCheckedChange={() => toggleScope(scope.id)}
                           />
-                          <YStack f={1} gap="$1">
+                          <Stack f={1} gap="$1">
                             <Paragraph fontWeight="600">{scope.label}</Paragraph>
                             <Paragraph size="$2" color="$gray11">
                               {scope.description}
                             </Paragraph>
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
 
                   <Paragraph size="$2" color="$gray11">
                     Selected: {selectedScopes.length} permission
                     {selectedScopes.length !== 1 ? 's' : ''}
                   </Paragraph>
-                </YStack>
+                </Stack>
 
                 {/* Expiration */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label>Expiration</Label>
-                  <XStack gap="$2" flexWrap="wrap">
+                  <Row gap="$2" flexWrap="wrap">
                     {EXPIRATION_OPTIONS.map((option) => (
                       <Button
                         key={option.label}
@@ -333,27 +333,27 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                         {option.label}
                       </Button>
                     ))}
-                  </XStack>
+                  </Row>
                   <Paragraph size="$2" color="$gray11">
                     {expirationDays
                       ? `Key will expire on ${format(addMonths(new Date(), expirationDays / 30), 'MMM d, yyyy')}`
                       : 'Key will never expire (not recommended for production)'}
                   </Paragraph>
-                </YStack>
+                </Stack>
 
                 {/* Error Message */}
                 {error && (
                   <Card backgroundColor="$red2" borderColor="$red6" borderWidth={1} padding="$3">
-                    <XStack ai="center" gap="$2">
+                    <Row ai="center" gap="$2">
                       <AlertCircle size={20} color="$red11" />
                       <Paragraph color="$red11">{error}</Paragraph>
-                    </XStack>
+                    </Row>
                   </Card>
                 )}
-              </YStack>
+              </Stack>
 
               {/* Actions */}
-              <XStack gap="$3" jc="flex-end">
+              <Row gap="$3" jc="flex-end">
                 <Dialog.Close asChild>
                   <Button variant="outlined" disabled={isCreating}>
                     Cancel
@@ -367,12 +367,12 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 >
                   {isCreating ? 'Creating...' : 'Create API Key'}
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ) : (
-            <YStack gap="$4">
+            <Stack gap="$4">
               {/* Success Header */}
-              <YStack ai="center" gap="$3">
+              <Stack ai="center" gap="$3">
                 <Card backgroundColor="$green3" padding="$4" borderRadius="$10">
                   <CheckCircle size={48} color="$green11" />
                 </Card>
@@ -380,15 +380,15 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 <Paragraph color="$gray11" textAlign="center">
                   Your API key has been created successfully
                 </Paragraph>
-              </YStack>
+              </Stack>
 
               <Separator />
 
               {/* Warning */}
               <Card backgroundColor="$orange2" borderColor="$orange6" borderWidth={1} padding="$4">
-                <XStack ai="flex-start" gap="$3">
+                <Row ai="flex-start" gap="$3">
                   <AlertCircle size={20} color="$orange11" mt="$0.5" />
-                  <YStack f={1} gap="$2">
+                  <Stack f={1} gap="$2">
                     <Paragraph fontWeight="600" color="$orange11">
                       Save Your API Key Now
                     </Paragraph>
@@ -396,15 +396,15 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       This is the only time you'll see the full key. Make sure to copy it and store
                       it securely. If you lose it, you'll need to create a new one.
                     </Paragraph>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               </Card>
 
               {/* API Key Display */}
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Label>API Key</Label>
                 <Card backgroundColor="$gray3" padding="$4" borderRadius="$4">
-                  <YStack gap="$3">
+                  <Stack gap="$3">
                     <Paragraph
                       fontFamily="$mono"
                       fontSize="$4"
@@ -421,23 +421,23 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                     >
                       {keyCopied ? 'Copied!' : 'Copy to Clipboard'}
                     </Button>
-                  </YStack>
+                  </Stack>
                 </Card>
-              </YStack>
+              </Stack>
 
               {/* Key Details */}
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Paragraph size="$2" color="$gray11">
                   Name
                 </Paragraph>
                 <Paragraph fontWeight="600">{createdKey?.name}</Paragraph>
-              </YStack>
+              </Stack>
 
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Paragraph size="$2" color="$gray11">
                   Permissions
                 </Paragraph>
-                <XStack gap="$2" flexWrap="wrap">
+                <Row gap="$2" flexWrap="wrap">
                   {createdKey?.scopes.map((scope) => (
                     <Card
                       key={scope}
@@ -451,23 +451,23 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       </Paragraph>
                     </Card>
                   ))}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
 
               {createdKey?.expires_at && (
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Paragraph size="$2" color="$gray11">
                     Expires
                   </Paragraph>
                   <Paragraph fontWeight="600" color="$orange11">
                     {format(new Date(createdKey.expires_at), 'MMM d, yyyy')}
                   </Paragraph>
-                </YStack>
+                </Stack>
               )}
 
               {/* Documentation Link */}
               <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} padding="$4">
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Paragraph fontWeight="600" color="$blue11">
                     Next Steps
                   </Paragraph>
@@ -477,14 +477,14 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                   <Paragraph size="$3" color="$blue11" fontFamily="$mono">
                     packages/scaffald-sdk/docs/getting-started.md
                   </Paragraph>
-                </YStack>
+                </Stack>
               </Card>
 
               {/* Close Button */}
               <Button theme="blue" onPress={handleClose}>
                 Done
               </Button>
-            </YStack>
+            </Stack>
           )}
         </Dialog.Content>
       </Dialog.Portal>

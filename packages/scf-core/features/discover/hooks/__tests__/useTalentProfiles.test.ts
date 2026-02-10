@@ -30,7 +30,7 @@ import {
   buildTalentProfilesQuery,
   useTalentProfiles,
 } from '../useTalentProfiles';
-import type { ViewportBounds } from '@unicornlove/ui';
+import type { ViewportBounds } from '@unicornlove/beyond-ui';
 
 describe("useTalentProfiles", () => {
   const mockBounds: ViewportBounds = {

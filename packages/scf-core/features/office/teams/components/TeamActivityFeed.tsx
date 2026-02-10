@@ -1,12 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Separator, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Separator, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 type MentionOption = {
   id: string
@@ -34,7 +34,7 @@ export function TeamActivityFeed({
   mentionOptions = [],
   memberDirectory = {},
 }: TeamActivityFeedProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
   const [commentBody, setCommentBody] = useState('')
   const [mentions, setMentions] = useState<MentionOption[]>([])
@@ -57,13 +57,17 @@ export function TeamActivityFeed({
       setCommentBody('')
       setMentions([])
       await utils.teams.analytics.activity.invalidate({ teamId, pageSize: PAGE_SIZE })
-      toast.show('Comment posted', {
-        message: 'Your update is now visible to the team.',
-      })
+      toast.show({
+          title: 'Comment posted',
+          message: 'Your update is now visible to the team.',
+        })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to post comment', { message })
+      toast.show({
+          title: 'Unable to post comment',
+          variant: 'error',
+        })
     },
   })
 
@@ -122,7 +126,7 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
@@ -133,7 +137,7 @@ export function TeamActivityFeed({
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -143,14 +147,14 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">
                 {actor} assigned this team to job {jobId}
               </Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -160,14 +164,14 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">
                 {actor} updated the job assignment for {jobId}
               </Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -177,14 +181,14 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">
                 {actor} removed this team from job {jobId}
               </Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -194,14 +198,14 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">
                 {actor} transferred ownership to {targetMember}
               </Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -210,12 +214,12 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">{actor} left the team</Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -225,14 +229,14 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <YStack gap="$1">
+            <Stack gap="$1">
               <Text fontWeight="600">
                 {actor} performed {normalizedEvent}
               </Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
-            </YStack>
+            </Stack>
           ),
         }
       }
@@ -275,8 +279,8 @@ export function TeamActivityFeed({
   const disableSubmit = isPosting || commentBody.trim().length === 0
 
   return (
-    <YStack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
+    <Stack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+      <Row
         gap="$2"
         alignItems="flex-start"
         justifyContent="space-between"
@@ -287,12 +291,12 @@ export function TeamActivityFeed({
           flexDirection: 'row',
         }}
       >
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
           <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
             Team activity
           </Text>
-        </XStack>
+        </Row>
         <Button
           size="$2"
           variant="outlined"
@@ -305,9 +309,9 @@ export function TeamActivityFeed({
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontWeight="600" accessibilityRole="header">
           Share an update
         </Text>
@@ -323,11 +327,11 @@ export function TeamActivityFeed({
         />
 
         {mentionOptions.length > 0 ? (
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontSize="$3" color="$color11">
               Mention a teammate (optional)
             </Text>
-            <XStack
+            <Row
               gap="$2"
               flexWrap="wrap"
               flexDirection="column"
@@ -365,11 +369,11 @@ export function TeamActivityFeed({
                   ]}
                 />
               ) : null}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         ) : null}
 
-        <XStack justifyContent="flex-end">
+        <Row justifyContent="flex-end">
           <Button
             size="$3"
             backgroundColor="$color9"
@@ -384,29 +388,29 @@ export function TeamActivityFeed({
           >
             {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       <Separator />
 
       {activityQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
+        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Loading team activity…</Text>
-        </YStack>
+        </Stack>
       ) : events.length === 0 ? (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">No activity yet</Text>
           <Text color="$color11">
             Your team&apos;s collaboration history will appear here as members take action.
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$4">
+        <Stack gap="$4">
           {events.map((event, index) => {
             const eventContent = renderEventDetails(event)
             return (
-              <YStack
+              <Stack
                 key={event.id}
                 gap="$2"
                 paddingBottom="$3"
@@ -417,12 +421,12 @@ export function TeamActivityFeed({
                 accessibilityLabel={eventContent.accessibilityLabel}
               >
                 {eventContent.content}
-              </YStack>
+              </Stack>
             )
           })}
 
           {activityQuery.hasNextPage ? (
-            <XStack justifyContent="center">
+            <Row justifyContent="center">
               <Button
                 size="$3"
                 variant="outlined"
@@ -433,10 +437,10 @@ export function TeamActivityFeed({
               >
                 {activityQuery.isFetchingNextPage ? <Spinner size="small" /> : 'Load more'}
               </Button>
-            </XStack>
+            </Row>
           ) : null}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

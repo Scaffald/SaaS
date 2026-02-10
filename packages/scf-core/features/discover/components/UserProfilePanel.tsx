@@ -2,9 +2,9 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { ExternalLink, MapPin, User, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type PreviewSkill = {
   csiSkillId?: string | null
@@ -38,7 +38,7 @@ export function UserProfilePanel({
   position = { top: 16, right: 16 },
 }: UserProfilePanelProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
   // Fetch lightweight preview data
   const { data: preview, isLoading } = api.userProfile.getPreview.useQuery(
@@ -58,9 +58,11 @@ export function UserProfilePanel({
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
-      toast.show('Unable to load profile', {
-        message: 'Please try again.',
-      })
+      toast.show({
+          title: 'Unable to load profile',
+          message: 'Please try again.',
+          variant: 'error',
+        })
     }
   }
 
@@ -91,7 +93,7 @@ export function UserProfilePanel({
       exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
     >
       {/* Close button */}
-      <XStack justifyContent="flex-end">
+      <Row justifyContent="flex-end">
         <Button
           size="$2"
           circular
@@ -101,25 +103,25 @@ export function UserProfilePanel({
           opacity={0.7}
           hoverStyle={{ opacity: 1 }}
         />
-      </XStack>
+      </Row>
 
       {isLoading ? (
-        <YStack paddingVertical="$4" alignItems="center" gap="$3">
+        <Stack paddingVertical="$4" alignItems="center" gap="$3">
           <Spinner size="small" color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Loading...
           </Text>
-        </YStack>
+        </Stack>
       ) : !preview ? (
-        <YStack paddingVertical="$4" alignItems="center">
+        <Stack paddingVertical="$4" alignItems="center">
           <Text fontSize="$3" color="$red10">
             Profile not found
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
           {/* Profile Header */}
-          <XStack gap="$3" alignItems="flex-start">
+          <Row gap="$3" alignItems="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
               <Avatar circular size="$4">
@@ -135,7 +137,7 @@ export function UserProfilePanel({
             )}
 
             {/* Name and Title */}
-            <YStack flex={1} gap="$1">
+            <Stack flex={1} gap="$1">
               <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
                 {preview.displayName}
               </Text>
@@ -145,25 +147,25 @@ export function UserProfilePanel({
                 </Text>
               )}
               {preview.location && (
-                <XStack gap="$1" alignItems="center" marginTop="$1">
+                <Row gap="$1" alignItems="center" marginTop="$1">
                   <MapPin size={14} color="$color10" />
                   <Text fontSize="$2" color="$color10" numberOfLines={1}>
                     {preview.location}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {/* Top Skills */}
           {topSkills.length > 0 && (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$2" fontWeight="600" color="$color11" textTransform="uppercase">
                 Top Skills
               </Text>
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap="$2" flexWrap="wrap">
                 {topSkills.slice(0, 3).map((skill) => (
-                  <YStack
+                  <Stack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
                     backgroundColor="$color3"
                     paddingHorizontal="$2"
@@ -175,10 +177,10 @@ export function UserProfilePanel({
                     <Text fontSize="$2" color="$color11">
                       Skill {skill.proficiency > 0 ? `(${skill.proficiency})` : ''}
                     </Text>
-                  </YStack>
+                  </Stack>
                 ))}
                 {topSkills.length > 3 && (
-                  <YStack
+                  <Stack
                     backgroundColor="$color3"
                     paddingHorizontal="$2"
                     paddingVertical="$1"
@@ -189,18 +191,18 @@ export function UserProfilePanel({
                     <Text fontSize="$2" color="$color11">
                       +{topSkills.length - 3} more
                     </Text>
-                  </YStack>
+                  </Stack>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
 
           {/* Action Button */}
-          <XStack gap="$2" paddingTop="$2">
+          <Row gap="$2" paddingTop="$2">
             <Button flex={1} theme="info" onPress={handleViewProfile} icon={ExternalLink}>
               View Profile
             </Button>
-          </XStack>
+          </Row>
         </>
       )}
     </Card>

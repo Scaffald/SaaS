@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
-import { ResponsiveModal } from '@unicornlove/ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import {
   Briefcase,
   Building2,
@@ -10,7 +10,7 @@ import {
   MapPin,
 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface JobData {
   id?: string
@@ -103,23 +103,23 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
       size="medium"
     >
       {isLoading ? (
-        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
+        <Stack paddingVertical="$8" alignItems="center" justifyContent="center">
           <Spinner size="large" color="$blue10" />
           <Text marginTop="$4" color="$color11">
             Loading job details...
           </Text>
-        </YStack>
+        </Stack>
       ) : !job ? (
-        <YStack paddingVertical="$8" alignItems="center">
+        <Stack paddingVertical="$8" alignItems="center">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Job not found
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <>
           {/* Job Header */}
-          <YStack gap="$3" alignItems="center">
-            <YStack
+          <Stack gap="$3" alignItems="center">
+            <Stack
               width={80}
               height={80}
               borderRadius="$6"
@@ -128,27 +128,27 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               justifyContent="center"
             >
               <Briefcase size={40} color="$blue10" />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2" alignItems="center">
+            <Stack gap="$2" alignItems="center">
               <Text fontSize="$8" fontWeight="700" color="$color12">
                 {job.title}
               </Text>
               {job.organization?.name && (
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   <Building2 size={16} color="$color10" />
                   <Text fontSize="$5" color="$color11">
                     {job.organization.name}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
 
             {/* Job Type Badge */}
             {(job.employment_type || job.position_level) && (
-              <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+              <Row gap="$2" flexWrap="wrap" justifyContent="center">
                 {job.employment_type && (
-                  <XStack
+                  <Row
                     backgroundColor="$blue2"
                     paddingHorizontal="$3"
                     paddingVertical="$1.5"
@@ -159,10 +159,10 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     <Text fontSize="$3" fontWeight="600" color="$blue11">
                       {formatEmploymentType(job.employment_type)}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
                 {job.position_level && (
-                  <XStack
+                  <Row
                     backgroundColor="$color3"
                     paddingHorizontal="$3"
                     paddingVertical="$1.5"
@@ -171,36 +171,36 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     <Text fontSize="$3" fontWeight="600" color="$color11">
                       {job.position_level}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Quick Info */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             {job.location && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <MapPin size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {job.location}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {job.remote_option && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Clock size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {formatRemoteOption(job.remote_option)}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {(job.pay_range_min_cents || job.pay_range_max_cents) && (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <DollarSign size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {formatPayRange(
@@ -210,11 +210,11 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   )}
                   {job.pay_range_type === 'annual' && ' annually'}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {job.status === 'open' && (
-              <XStack
+              <Row
                 backgroundColor="$green3"
                 paddingHorizontal="$3"
                 paddingVertical="$1.5"
@@ -223,22 +223,22 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <Text fontSize="$3" fontWeight="600" color="$green11">
                   Accepting Applications
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* Description Preview */}
           {job.description && (
             <>
               <Separator />
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   Description
                 </Text>
                 <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
                   {job.description}
                 </Text>
-              </YStack>
+              </Stack>
             </>
           )}
 

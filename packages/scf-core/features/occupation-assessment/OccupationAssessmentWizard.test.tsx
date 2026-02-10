@@ -15,8 +15,8 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: mockToastShow,
   }),
 }))
@@ -116,10 +116,10 @@ vi.mock('@unicornlove/ui', async () => {
     Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <span {...props}>{children}</span>
     ),
-    XStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    Row: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
-    YStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
   }

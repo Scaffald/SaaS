@@ -21,7 +21,7 @@ import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
 import { Pressable, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+import { Text, useWindowDimensions, Row, Stack } from '@unicornlove/beyond-ui'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
 import type { DrawerItemConfig } from './types'
@@ -154,22 +154,22 @@ export const DrawerContent = ({
   )
 
   return (
-    <YStack
+    <Stack
       flex={1}
       backgroundColor="$color3"
       paddingHorizontal={isCollapsed ? '$2' : '$6'}
       paddingVertical="$5"
       alignItems={isCollapsed ? 'center' : 'stretch'}
     >
-      <YStack flex={1} justifyContent="space-between" gap="$5" width="100%">
+      <Stack flex={1} justifyContent="space-between" gap="$5" width="100%">
         {!isSmall ? (
-          <XStack justifyContent="center" alignItems="center" gap="$3" paddingTop="$2" width="100%">
+          <Row justifyContent="center" alignItems="center" gap="$3" paddingTop="$2" width="100%">
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
               width={isCollapsed ? 30 : 120}
               showWordmark={!isCollapsed}
             />
-          </XStack>
+          </Row>
         ) : null}
 
         {!isCollapsed ? (
@@ -182,7 +182,7 @@ export const DrawerContent = ({
           />
         ) : null}
 
-        <YStack
+        <Stack
           gap="$2"
           flex={1}
           marginTop="$2"
@@ -206,9 +206,9 @@ export const DrawerContent = ({
               isCollapsed={isCollapsed}
             />
           ))}
-        </YStack>
+        </Stack>
 
-        <YStack
+        <Stack
           paddingTop="$4"
           borderTopWidth={1}
           borderColor="$color5"
@@ -216,7 +216,7 @@ export const DrawerContent = ({
           alignItems={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
-            <YStack gap="$3" alignItems="center">
+            <Stack gap="$3" alignItems="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
                 <SettingsIcon size={footerIconSize} color="$color11" />
               </FooterActionButton>
@@ -235,9 +235,9 @@ export const DrawerContent = ({
                   )}
                 </FooterActionButton>
               ) : null}
-            </YStack>
+            </Stack>
           ) : (
-            <XStack
+            <Row
               width="100%"
               justifyContent="space-between"
               alignItems="center"
@@ -262,11 +262,11 @@ export const DrawerContent = ({
                   )}
                 </FooterActionButton>
               ) : null}
-            </XStack>
+            </Row>
           )}
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }
 
@@ -288,7 +288,7 @@ const DrawerProfileCard = ({
   const avatarSize = 40
 
   return (
-    <XStack
+    <Row
       width="100%"
       borderWidth={1}
       borderColor="$color4"
@@ -298,7 +298,7 @@ const DrawerProfileCard = ({
       borderRadius="$4"
     >
       {avatarUri ? (
-        <YStack
+        <Stack
           width={avatarSize}
           height={avatarSize}
           overflow="hidden"
@@ -314,9 +314,9 @@ const DrawerProfileCard = ({
             style={{ width: '100%', height: '100%' }}
             contentFit="cover"
           />
-        </YStack>
+        </Stack>
       ) : (
-        <YStack
+        <Stack
           width={avatarSize}
           height={avatarSize}
           backgroundColor="$blue10"
@@ -329,14 +329,14 @@ const DrawerProfileCard = ({
           <Text color="$color1" fontSize={16} fontWeight="700">
             {fallbackInitial}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
-      <YStack flex={1} gap="$2">
+      <Stack flex={1} gap="$2">
         <Text fontSize="$4" fontWeight="600" color="$color12">
           {displayName}
         </Text>
-        <XStack gap="$4">
+        <Row gap="$4">
           <Text
             fontSize="$2"
             color="$blue10"
@@ -357,8 +357,8 @@ const DrawerProfileCard = ({
           >
             Logout
           </Text>
-        </XStack>
-      </YStack>
-    </XStack>
+        </Row>
+      </Stack>
+    </Row>
   )
 }

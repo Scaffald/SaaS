@@ -2,8 +2,8 @@ import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { useMemo } from 'react'
-import { useWindowDimensions } from '@unicornlove/ui'
-import { Tab, TabGroup, type TabGroupProps } from '@unicornlove/ui'
+import { useWindowDimensions } from '@unicornlove/beyond-ui'
+import { Tab, TabGroup, type TabGroupProps } from '@unicornlove/beyond-ui'
 
 export type AssessmentsTabsItem = {
   key: string

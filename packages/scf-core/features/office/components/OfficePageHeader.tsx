@@ -1,5 +1,5 @@
 import { Plus } from '@tamagui/lucide-icons'
-import { Button, Input, XStack } from '@unicornlove/ui'
+import { Button, Input, Row } from '@unicornlove/beyond-ui'
 
 interface OfficePageHeaderProps {
   searchPlaceholder?: string
@@ -17,7 +17,7 @@ export function OfficePageHeader({
   onCreateClick,
 }: OfficePageHeaderProps) {
   return (
-    <XStack gap="$3" alignItems="center" flex={1} paddingHorizontal="$4">
+    <Row gap="$3" alignItems="center" flex={1} paddingHorizontal="$4">
       <Input
         flex={1}
         placeholder={searchPlaceholder}
@@ -29,6 +29,6 @@ export function OfficePageHeader({
           {createButtonLabel}
         </Button>
       )}
-    </XStack>
+    </Row>
   )
 }

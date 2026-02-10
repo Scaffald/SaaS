@@ -1,9 +1,9 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/ui'
+import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void
@@ -90,27 +90,27 @@ export function DiscoverJobsRight({
 
   if (filtersLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
         <Text marginTop="$2" color="$color11">
           Loading filters...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         {/* Search */}
         <DashboardWidget>
-          <YStack gap="$3">
-            <XStack alignItems="center" justifyContent="space-between">
+          <Stack gap="$3">
+            <Row alignItems="center" justifyContent="space-between">
               <Text fontSize="$5" fontWeight="600" color="$color12">
                 Search Jobs
               </Text>
               <Search size={20} color="$color10" />
-            </XStack>
+            </Row>
 
             <Input
               placeholder="Search by title, company..."
@@ -118,35 +118,35 @@ export function DiscoverJobsRight({
               onChangeText={handleSearchChange}
               size="$4"
             />
-          </YStack>
+          </Stack>
         </DashboardWidget>
 
         {/* Filters Header */}
         <DashboardWidget>
-          <XStack alignItems="center" justifyContent="space-between">
-            <XStack alignItems="center" gap="$2">
+          <Row alignItems="center" justifyContent="space-between">
+            <Row alignItems="center" gap="$2">
               <Filter size={20} color="$color10" />
               <Text fontSize="$5" fontWeight="600" color="$color12">
                 Filters
               </Text>
-            </XStack>
+            </Row>
 
             {hasActiveFilters && (
               <Button size="$2" variant="outlined" onPress={clearAllFilters} icon={X}>
                 Clear
               </Button>
             )}
-          </XStack>
+          </Row>
         </DashboardWidget>
 
         {/* Job Source Filter */}
         <DashboardWidget>
-          <YStack gap="$3">
+          <Stack gap="$3">
             <Text fontSize="$4" fontWeight="600" color="$color12">
               Job Source
             </Text>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Button
                 size="$3"
                 variant="outlined"
@@ -171,19 +171,19 @@ export function DiscoverJobsRight({
               >
                 External Jobs
               </Button>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </DashboardWidget>
 
         {/* Industry Filter */}
         {INDUSTRIES.length > 0 && (
           <DashboardWidget>
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Industry ({INDUSTRIES.length})
               </Text>
 
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {INDUSTRIES.map((industry: string) => {
                   const isSelected = selectedIndustries.includes(industry)
                   return (
@@ -198,20 +198,20 @@ export function DiscoverJobsRight({
                     </Button>
                   )
                 })}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </DashboardWidget>
         )}
 
         {/* Job Type Filter */}
         {JOB_TYPES.length > 0 && (
           <DashboardWidget>
-            <YStack gap="$3">
+            <Stack gap="$3">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Job Type ({JOB_TYPES.length})
               </Text>
 
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {JOB_TYPES.map((type: string) => {
                   const isSelected = selectedJobTypes.includes(type)
                   return (
@@ -226,16 +226,16 @@ export function DiscoverJobsRight({
                     </Button>
                   )
                 })}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </DashboardWidget>
         )}
 
         {/* Soft Skills Match Filter - Only for internal jobs */}
         {hasSoftSkillsAssessment && jobSource !== 'external' && (
           <DashboardWidget>
-            <YStack gap="$3">
-              <XStack alignItems="center" justifyContent="space-between">
+            <Stack gap="$3">
+              <Row alignItems="center" justifyContent="space-between">
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   Soft Skills Match
                 </Text>
@@ -249,7 +249,7 @@ export function DiscoverJobsRight({
                     Clear
                   </Button>
                 )}
-              </XStack>
+              </Row>
 
               <RangeSliderCard
                 title="Minimum Match Score"
@@ -265,20 +265,20 @@ export function DiscoverJobsRight({
                 formatMin={() => '0%'}
                 formatMax={() => '100%'}
               />
-            </YStack>
+            </Stack>
           </DashboardWidget>
         )}
 
         {/* Sort Options */}
         {jobSource !== 'external' && (
           <DashboardWidget>
-            <YStack gap="$3">
-              <XStack alignItems="center" gap="$2">
+            <Stack gap="$3">
+              <Row alignItems="center" gap="$2">
                 <ChevronsUpDown size={18} color="$color10" />
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   Sort By
                 </Text>
-              </XStack>
+              </Row>
 
               <ResponsiveSelect
                 value={sortBy}
@@ -296,76 +296,76 @@ export function DiscoverJobsRight({
                 placeholder="Sort jobs by..."
                 label="Sort"
               />
-            </YStack>
+            </Stack>
           </DashboardWidget>
         )}
 
         {/* Active Filters Summary */}
         {hasActiveFilters && (
           <DashboardWidget>
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Active Filters
               </Text>
 
               {searchQuery && (
-                <XStack alignItems="center" gap="$2">
+                <Row alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Search:
                   </Text>
                   <Text fontSize="$3" color="$blue11" fontWeight="600">
                     "{searchQuery}"
                   </Text>
-                </XStack>
+                </Row>
               )}
 
               {selectedIndustries.length > 0 && (
-                <XStack alignItems="center" gap="$2">
+                <Row alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Industries:
                   </Text>
                   <Text fontSize="$3" color="$blue11" fontWeight="600">
                     {selectedIndustries.length}
                   </Text>
-                </XStack>
+                </Row>
               )}
 
               {selectedJobTypes.length > 0 && (
-                <XStack alignItems="center" gap="$2">
+                <Row alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Job Types:
                   </Text>
                   <Text fontSize="$3" color="$blue11" fontWeight="600">
                     {selectedJobTypes.length}
                   </Text>
-                </XStack>
+                </Row>
               )}
 
               {minSoftSkillsMatch !== null && (
-                <XStack alignItems="center" gap="$2">
+                <Row alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Min Match:
                   </Text>
                   <Text fontSize="$3" color="$blue11" fontWeight="600">
                     {minSoftSkillsMatch}%
                   </Text>
-                </XStack>
+                </Row>
               )}
 
               {sortBy !== 'relevance' && (
-                <XStack alignItems="center" gap="$2">
+                <Row alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Sort:
                   </Text>
                   <Text fontSize="$3" color="$blue11" fontWeight="600">
                     {sortBy === 'match_score' ? 'Best Match' : sortBy}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
           </DashboardWidget>
         )}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

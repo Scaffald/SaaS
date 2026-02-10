@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import {
   createContext,
   type ReactNode,
@@ -53,7 +53,7 @@ interface ProfileSkillsProviderProps {
 }
 
 export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [pendingSearch, setPendingSearch] = useState<PendingSearch | null>(null)
 
   // Use extracted hooks

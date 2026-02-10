@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
 import { DataCategorySummary } from './components/DataCategorySummary'
 import { PrivacyRightsList } from './components/PrivacyRightsList'
@@ -59,7 +59,7 @@ export function PrivacyDashboard() {
 
   if (hasError) {
     return (
-      <YStack padding="$4" gap="$4" alignItems="center" justifyContent="center" flex={1}>
+      <Stack padding="$4" gap="$4" alignItems="center" justifyContent="center" flex={1}>
         <Text color="$red10" fontSize="$5" fontWeight="600">
           Error Loading Privacy Dashboard
         </Text>
@@ -72,15 +72,15 @@ export function PrivacyDashboard() {
         >
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView>
-      <YStack padding="$4" gap="$6" maxWidth={1200} marginHorizontal="auto">
+      <Stack padding="$4" gap="$6" maxWidth={1200} marginHorizontal="auto">
         {/* Page Header */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$8" fontWeight="700">
             Privacy & Data
           </Text>
@@ -88,10 +88,10 @@ export function PrivacyDashboard() {
             Manage your privacy settings, view your data, and exercise your California
             Consumer Privacy Act (CCPA) rights.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Quick Actions */}
-        <YStack
+        <Stack
           gap="$4"
           padding="$4"
           backgroundColor="$color2"
@@ -102,7 +102,7 @@ export function PrivacyDashboard() {
           <Text fontSize="$5" fontWeight="600">
             Quick Actions
           </Text>
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap="$3" flexWrap="wrap">
             <Button
               onPress={() => setShowRequestForm(true)}
               icon={undefined}
@@ -124,9 +124,9 @@ export function PrivacyDashboard() {
             >
               Manage Opt-Outs
             </Button>
-          </XStack>
+          </Row>
           {optOutStatus?.hasGPCOptOut && (
-            <XStack
+            <Row
               gap="$2"
               padding="$3"
               backgroundColor="$blue2"
@@ -138,12 +138,12 @@ export function PrivacyDashboard() {
                 You have been automatically opted out of the sale and sharing of your personal
                 information.
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
 
         {/* Data Categories Summary */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Your Data Categories
           </Text>
@@ -151,16 +151,16 @@ export function PrivacyDashboard() {
             Categories of personal information we collect about you
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
+            <Row padding="$6" justifyContent="center">
               <Spinner size="large" />
-            </XStack>
+            </Row>
           ) : (
             <DataCategorySummary categories={dataSummary?.categories || []} />
           )}
-        </YStack>
+        </Stack>
 
         {/* CCPA Rights */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Your Privacy Rights
           </Text>
@@ -168,10 +168,10 @@ export function PrivacyDashboard() {
             Under the California Consumer Privacy Act (CCPA), you have the following rights
           </Text>
           <PrivacyRightsList />
-        </YStack>
+        </Stack>
 
         {/* Request History */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Request History
           </Text>
@@ -179,16 +179,16 @@ export function PrivacyDashboard() {
             Your privacy request history and their status
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
+            <Row padding="$6" justifyContent="center">
               <Spinner size="large" />
-            </XStack>
+            </Row>
           ) : (
             <RequestHistoryTable requests={requestHistory?.requests || []} />
           )}
-        </YStack>
+        </Stack>
 
         {/* Connected Apps */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Connected Applications
           </Text>
@@ -196,16 +196,16 @@ export function PrivacyDashboard() {
             Third-party applications that have access to your data
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
+            <Row padding="$6" justifyContent="center">
               <Spinner size="large" />
-            </XStack>
+            </Row>
           ) : (
             <ConnectedAppsPanel apps={connectedApps || []} />
           )}
-        </YStack>
+        </Stack>
 
         {/* Footer Links */}
-        <YStack
+        <Stack
           gap="$3"
           padding="$4"
           backgroundColor="$color2"
@@ -216,7 +216,7 @@ export function PrivacyDashboard() {
           <Text fontSize="$4" fontWeight="600">
             Additional Resources
           </Text>
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text
               color="$blue10"
               fontSize="$3"
@@ -244,11 +244,11 @@ export function PrivacyDashboard() {
             >
               Learn more about CCPA
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {/* Contact Info */}
-        <YStack gap="$2" paddingBottom="$6">
+        <Stack gap="$2" paddingBottom="$6">
           <Text color="$color11" fontSize="$3">
             Questions about your privacy? Contact our Privacy Team at{' '}
             <Text
@@ -259,8 +259,8 @@ export function PrivacyDashboard() {
               privacy@scaffald.com
             </Text>
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ScrollView>
   )
 }

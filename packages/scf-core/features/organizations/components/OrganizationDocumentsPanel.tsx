@@ -1,6 +1,6 @@
-import { Table } from '@unicornlove/ui'
+import { Table } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack } from '@unicornlove/ui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, Row } from '@unicornlove/beyond-ui'
 import {
   useDocumentDownloadUrl,
   useDocumentUploadSession,
@@ -34,7 +34,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <H4>Documents</H4>
         <Button
           size="$3"
@@ -50,7 +50,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
         >
           Upload Placeholder
         </Button>
-      </XStack>
+      </Row>
       <Separator />
       {isLoading ? (
         <Spinner />

@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
-import { Button, Text, TextArea, YStack } from '@unicornlove/ui'
+import { Button, Text, TextArea, Stack } from '@unicornlove/beyond-ui'
 
 interface RemoveMemberModalProps {
   open: boolean
@@ -23,7 +23,7 @@ export function RemoveMemberModal({
   member,
   onRemoved,
 }: RemoveMemberModalProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [reason, setReason] = useState('')
 
   const removeMemberMutation = api.teams.members.remove.useMutation({
@@ -34,7 +34,10 @@ export function RemoveMemberModal({
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to remove member', { message })
+      toast.show({
+          title: 'Unable to remove member',
+          variant: 'error',
+        })
     },
   })
 
@@ -55,13 +58,13 @@ export function RemoveMemberModal({
 
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Remove team member">
-      <YStack gap="$4">
+      <Stack gap="$4">
         <Text fontSize="$4">
           Are you sure you want to remove{' '}
           <Text fontWeight="700">{member?.displayName ?? 'this member'}</Text> from the team?
         </Text>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" color="$color11">
             Removal reason (optional)
           </Text>
@@ -76,9 +79,9 @@ export function RemoveMemberModal({
             paddingVertical="$2"
             disabled={removeMemberMutation.isPending}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
+        <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
           <Text fontWeight="600">What happens next?</Text>
           <Text color="$color11" fontSize="$3">
             • The member loses access to the team immediately.
@@ -89,9 +92,9 @@ export function RemoveMemberModal({
           <Text color="$color11" fontSize="$3">
             • You can re-add them later if needed.
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Button
             backgroundColor="$red9"
             color="$color1"
@@ -107,8 +110,8 @@ export function RemoveMemberModal({
           >
             Cancel
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ResponsiveModal>
   )
 }

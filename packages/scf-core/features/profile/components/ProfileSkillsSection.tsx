@@ -1,7 +1,7 @@
 import { SoftSkillsComparisonWidget } from '../widgets/SoftSkillsComparisonWidget'
 import { TechnicalSkillsWidget } from '../widgets/TechnicalSkillsWidget'
 import type { ProfileWidgetProps } from '../widgets/types'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@unicornlove/beyond-ui'
 
 /**
  * ProfileSkillsSection
@@ -21,10 +21,10 @@ export function ProfileSkillsSection({
   variant = 'full',
 }: ProfileWidgetProps) {
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <SoftSkillsComparisonWidget userId={userId} showEdit={showEdit} variant={variant} />
       {/* <SoftSkillsRadarWidget userId={userId} showEdit={showEdit} variant={variant} /> */}
       <TechnicalSkillsWidget userId={userId} showEdit={showEdit} variant={variant} />
-    </YStack>
+    </Stack>
   )
 }

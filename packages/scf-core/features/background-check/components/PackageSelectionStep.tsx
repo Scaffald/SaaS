@@ -1,7 +1,7 @@
 import type { AppRouter } from '@scf/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 import { memo } from 'react'
-import { Button, Card, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -43,22 +43,22 @@ const PackageCard = memo(function PackageCard({
       gap="$3"
       onPress={onSelect}
     >
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           {pkg.display_name}
         </Text>
         <Text fontSize="$3" color="$color11">
           {pkg.description}
         </Text>
-        <XStack gap="$3" alignItems="center">
+        <Row gap="$3" alignItems="center">
           <Text fontSize="$4" fontWeight="bold" color="$color12">
             {formatCurrency(pkg.retail_cost_cents)}
           </Text>
           <Text fontSize="$2" color="$color10">
             Platform cost: {formatCurrency(pkg.platform_cost_cents)}
           </Text>
-        </XStack>
-        <YStack gap="$1">
+        </Row>
+        <Stack gap="$1">
           <Text fontSize="$2" color="$color10" fontWeight="bold">
             Components
           </Text>
@@ -73,8 +73,8 @@ const PackageCard = memo(function PackageCard({
               Component list coming soon
             </Text>
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   )
 })
@@ -89,8 +89,8 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
   const hasSelection = Boolean(selectedPackageId)
 
   return (
-    <YStack gap="$4" flex={1}>
-      <YStack gap="$2">
+    <Stack gap="$4" flex={1}>
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           Choose a background check package
         </Text>
@@ -98,10 +98,10 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
           Select the screening package that best fits your role. You can review the included
           components and pricing before continuing.
         </Text>
-      </YStack>
+      </Stack>
 
       <ScrollView flex={1}>
-        <YStack gap="$3" paddingBottom="$6">
+        <Stack gap="$3" paddingBottom="$6">
           {isLoading && (
             <Text fontSize="$3" color="$color10">
               Loading packages…
@@ -120,12 +120,12 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
               onSelect={() => onSelect(pkg.id)}
             />
           ))}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <Button size="$4" theme="blue" disabled={!hasSelection} onPress={onContinue}>
         Continue
       </Button>
-    </YStack>
+    </Stack>
   )
 })

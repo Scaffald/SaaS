@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api';
 import { supabase } from '@scf/core/utils/supabase/client';
-import { useToastController } from '@tamagui/toast';
+import { useToast } from '@unicornlove/beyond-ui';
 import { Buffer } from 'buffer';
 import type * as ImageManipulator from 'expo-image-manipulator';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -304,7 +304,7 @@ export const usePhotoUpload = ({
   workLogId,
   maxPhotos = DEFAULT_MAX_PHOTOS,
 }: UsePhotoUploadOptions = {}): UsePhotoUploadReturn => {
-  const toast = useToastController();
+  const toast = useToast();
   const utils = api.useUtils();
 
   const isReady = Boolean(workLogId);
@@ -502,9 +502,10 @@ export const usePhotoUpload = ({
         setUploadProgress(85);
         await refresh();
         setUploadProgress(100);
-        toast.show("Photo Uploaded", {
+        toast.show({
+          title: "Photo Uploaded",
           message: "Your work log photo has been uploaded successfully.",
-          type: "success",
+          variant: 'success',
         });
       } finally {
         setTimeout(() => setUploadProgress(0), 400);
@@ -524,9 +525,9 @@ export const usePhotoUpload = ({
           ? error.message
           : 'Unable to upload photo. Please try again.';
         setUploadError(message);
-        toast.show("Upload Failed", {
-          message,
-          type: "error",
+        toast.show({
+          title: "Upload Failed",
+          variant: 'error',
         });
       }
     },
@@ -596,10 +597,11 @@ export const usePhotoUpload = ({
         return next;
       });
       await refresh();
-      toast.show("Photo Deleted", {
-        message: "The photo has been removed from this work log.",
-        type: "info",
-      });
+      toast.show({
+          title: "Photo Deleted",
+          message: "The photo has been removed from this work log.",
+          variant: 'info',
+        });
     },
     [deletePhotoMutation, refresh, toast, workLogId],
   );

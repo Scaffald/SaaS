@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DiscoverCard } from '@unicornlove/ui'
+import { DiscoverCard } from '@unicornlove/beyond-ui'
 import {
   Briefcase,
   Building2,
@@ -11,7 +11,7 @@ import {
 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { type GetThemeValueForKey, Text, XStack, YStack } from '@unicornlove/ui'
+import { type GetThemeValueForKey, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -66,9 +66,9 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   return (
     <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="$4" gap="$3">
       {/* Header: Title and Status */}
-      <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
-        <YStack gap="$2" flex={1}>
-          <XStack alignItems="center" gap="$2" flexWrap="wrap">
+      <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
+        <Stack gap="$2" flex={1}>
+          <Row alignItems="center" gap="$2" flexWrap="wrap">
             <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
             <Text
               fontSize="$5"
@@ -79,17 +79,17 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             >
               {job.title}
             </Text>
-          </XStack>
+          </Row>
           {job.organization && (
-            <XStack alignItems="center" gap="$1.5" marginLeft="$7">
+            <Row alignItems="center" gap="$1.5" marginLeft="$7">
               <Building2 size={14} color="$color10" />
               <Text fontSize="$3" color="$color11" numberOfLines={1}>
                 {job.organization.name}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
-        <XStack
+        </Stack>
+        <Row
           paddingHorizontal="$2"
           paddingVertical="$1"
           borderRadius="$3"
@@ -104,11 +104,11 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           >
             {getStatusLabel(job.status)}
           </Text>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Metrics Row */}
-      <XStack gap="$3" flexWrap="wrap">
+      <Row gap="$3" flexWrap="wrap">
         {applicationCount !== undefined && (
           <MetricItem
             icon={<Users size={14} />}
@@ -127,17 +127,17 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             value={job.created_by.display_name || job.created_by.username || 'Unknown'}
           />
         )}
-      </XStack>
+      </Row>
 
       {/* Details Row */}
-      <XStack gap="$3" flexWrap="wrap">
+      <Row gap="$3" flexWrap="wrap">
         {job.location && (
-          <XStack alignItems="center" gap="$1.5">
+          <Row alignItems="center" gap="$1.5">
             <MapPin size={14} color="$color10" />
             <Text fontSize="$3" color="$color11" numberOfLines={1}>
               {job.location}
             </Text>
-          </XStack>
+          </Row>
         )}
         {job.remote_option && (
           <Text
@@ -163,26 +163,26 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {/* Pay Range */}
       {payRange && (
-        <XStack alignItems="center" gap="$1.5">
+        <Row alignItems="center" gap="$1.5">
           <DollarSign size={14} color="$green10" />
           <Text fontSize="$3" fontWeight="600" color="$green10">
             {payRange}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
-        <XStack alignItems="center" gap="$1.5">
+        <Row alignItems="center" gap="$1.5">
           <Calendar size={12} color="$color9" />
           <Text fontSize="$2" color="$color10">
             Created {createdDate}
           </Text>
-        </XStack>
+        </Row>
       )}
     </DiscoverCard>
   )
@@ -190,7 +190,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 
 function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <XStack
+    <Row
       gap="$2"
       alignItems="center"
       borderWidth={1}
@@ -201,14 +201,14 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
       backgroundColor="$color3"
     >
       {icon}
-      <YStack gap={0}>
+      <Stack gap={0}>
         <Text fontSize="$1" color="$color10" textTransform="uppercase">
           {label}
         </Text>
         <Text fontSize="$2" fontWeight="600" color="$color12">
           {value}
         </Text>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }

@@ -1,8 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, Dialog } from '@unicornlove/ui'
+import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
@@ -14,9 +14,9 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
 
@@ -97,7 +97,7 @@ export function OfficeOrganizationsList() {
     reason: '',
   })
   const [rejectError, setRejectError] = useState<string | null>(null)
-  const toast = useToastController()
+  const toast = useToast()
 
   const { data, isLoading, refetch } = api.office.listOrganizations.useQuery({
     limit: 50,
@@ -125,9 +125,10 @@ export function OfficeOrganizationsList() {
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Please try again shortly.'
-      toast.show('Unable to review request', {
-        message,
-      })
+      toast.show({
+          title: 'Unable to review request',
+          variant: 'error',
+        })
     },
   })
 
@@ -276,7 +277,7 @@ export function OfficeOrganizationsList() {
               Provide a short reason for rejecting <Text fontWeight="600">{rejectDialog.name}</Text>
               . This helps the requester understand what to do next.
             </Dialog.Description>
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
               <TextArea
                 id="organization-reject-reason"
@@ -299,8 +300,8 @@ export function OfficeOrganizationsList() {
                   {rejectError}
                 </Text>
               ) : null}
-            </YStack>
-            <XStack gap="$3" justifyContent="flex-end">
+            </Stack>
+            <Row gap="$3" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button variant="outlined" disabled={reviewMutation.isPending}>
                   Cancel
@@ -314,7 +315,7 @@ export function OfficeOrganizationsList() {
               >
                 Reject Request
               </Button>
-            </XStack>
+            </Row>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog>
@@ -339,9 +340,9 @@ export function OfficeOrganizationsList() {
         getItemName={getItemName}
         itemType="organization"
         rightContent={
-          <YStack gap="$4">
+          <Stack gap="$4">
             <DashboardWidget gap="$4">
-              <XStack justifyContent="space-between" alignItems="center">
+              <Row justifyContent="space-between" alignItems="center">
                 <Text fontSize="$5" fontWeight="700">
                   Moderation Summary
                 </Text>
@@ -354,33 +355,33 @@ export function OfficeOrganizationsList() {
                 >
                   Refresh
                 </Button>
-              </XStack>
-              <XStack gap="$4" $sm={{ flexDirection: 'column', gap: '$3' }}>
-                <YStack gap="$1">
+              </Row>
+              <Row gap="$4" $sm={{ flexDirection: 'column', gap: '$3' }}>
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$color11">
                     Pending
                   </Text>
                   <Text fontSize="$7" fontWeight="700">
                     {moderationCounts.pending}
                   </Text>
-                </YStack>
-                <YStack gap="$1">
+                </Stack>
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$color11">
                     Approved
                   </Text>
                   <Text fontSize="$7" fontWeight="700" color="$green10">
                     {moderationCounts.approved}
                   </Text>
-                </YStack>
-                <YStack gap="$1">
+                </Stack>
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$color11">
                     Rejected
                   </Text>
                   <Text fontSize="$7" fontWeight="700" color="$red10">
                     {moderationCounts.rejected}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             </DashboardWidget>
 
             <DashboardWidget gap="$4">
@@ -388,18 +389,18 @@ export function OfficeOrganizationsList() {
                 Pending Approvals
               </Text>
               {isRequestsLoading ? (
-                <XStack justifyContent="center" paddingVertical="$4">
+                <Row justifyContent="center" paddingVertical="$4">
                   <Spinner size="large" />
-                </XStack>
+                </Row>
               ) : pendingRequests.length === 0 ? (
                 <Text fontSize="$3" color="$color11">
                   No pending organization requests. Check back soon!
                 </Text>
               ) : (
-                <YStack gap="$4">
+                <Stack gap="$4">
                   {pendingRequests.map((request, index) => (
-                    <YStack key={request.id} gap="$3">
-                      <YStack gap="$1.5">
+                    <Stack key={request.id} gap="$3">
+                      <Stack gap="$1.5">
                         <Text fontSize="$4" fontWeight="600">
                           {request.name}
                         </Text>
@@ -429,8 +430,8 @@ export function OfficeOrganizationsList() {
                             Resent {request.resent_count} time(s)
                           </Text>
                         ) : null}
-                      </YStack>
-                      <XStack gap="$2">
+                      </Stack>
+                      <Row gap="$2">
                         <Button
                           size="$2"
                           theme="success"
@@ -450,11 +451,11 @@ export function OfficeOrganizationsList() {
                         >
                           Reject
                         </Button>
-                      </XStack>
+                      </Row>
                       {index < pendingRequests.length - 1 ? <Separator /> : null}
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
+                </Stack>
               )}
             </DashboardWidget>
 
@@ -465,7 +466,7 @@ export function OfficeOrganizationsList() {
               onRefresh={refreshRequests}
               isLoading={isRequestsLoading || isRequestsRefetching}
             />
-          </YStack>
+          </Stack>
         }
       />
     </>

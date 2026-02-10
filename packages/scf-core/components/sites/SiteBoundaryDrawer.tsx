@@ -1,7 +1,7 @@
-import type { Boundary, Coordinate } from '@unicornlove/ui'
+import type { Boundary, Coordinate } from '@unicornlove/beyond-ui'
 import { Edit3, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface SiteBoundaryDrawerProps {
   boundary?: Boundary
@@ -87,17 +87,17 @@ export function SiteBoundaryDrawer({
   const areaSqft = calculateArea(coordinates)
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <Card padding="$4">
-        <YStack gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$4">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontSize="$6" fontWeight="600">
               Site Boundary
             </Text>
             <Button size="$2" icon={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
-          </XStack>
+          </Row>
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
           <Card padding="$4" backgroundColor="$gray2" minHeight={400} borderRadius="$4">
@@ -128,25 +128,25 @@ export function SiteBoundaryDrawer({
           )}
 
           {/* Coordinate List */}
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600">Boundary Coordinates</Text>
             {coordinates.length === 0 ? (
               <Text color="$gray10">No points added yet. Click "Add Point" to start drawing.</Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {coordinates.map((coord, index) => (
                   <Card
                     key={`${coord[0]}-${coord[1]}-${index}`}
                     padding="$2"
                     backgroundColor="$gray2"
                   >
-                    <XStack gap="$2" alignItems="center" justifyContent="space-between">
-                      <XStack gap="$2" flex={1}>
+                    <Row gap="$2" alignItems="center" justifyContent="space-between">
+                      <Row gap="$2" flex={1}>
                         <Text fontSize="$2" color="$gray10">
                           Point {index + 1}:
                         </Text>
                         {editingIndex === index ? (
-                          <XStack gap="$2" flex={1}>
+                          <Row gap="$2" flex={1}>
                             <Input
                               size="$2"
                               value={coord[0].toString()}
@@ -170,14 +170,14 @@ export function SiteBoundaryDrawer({
                             <Button size="$2" onPress={() => setEditingIndex(null)}>
                               Save
                             </Button>
-                          </XStack>
+                          </Row>
                         ) : (
                           <Text flex={1}>
                             [{coord[0].toFixed(6)}, {coord[1].toFixed(6)}]
                           </Text>
                         )}
-                      </XStack>
-                      <XStack gap="$2">
+                      </Row>
+                      <Row gap="$2">
                         <Button
                           size="$2"
                           variant="outlined"
@@ -192,13 +192,13 @@ export function SiteBoundaryDrawer({
                           onPress={() => handleRemovePoint(index)}
                           disabled={coordinates.length <= 3 || editingIndex !== null}
                         />
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                   </Card>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {coordinates.length > 0 && (
             <Button
@@ -212,8 +212,8 @@ export function SiteBoundaryDrawer({
               Clear All Points
             </Button>
           )}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

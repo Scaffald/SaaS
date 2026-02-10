@@ -2,13 +2,13 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { Button, Sheet, spacing } from '@unicornlove/ui'
+import { Button, Sheet, spacing } from '@unicornlove/beyond-ui'
 import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform, Pressable } from 'react-native'
-import { Paragraph, Spinner, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { Paragraph, Spinner, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 
@@ -433,13 +433,13 @@ export function NewsWidget({
   }
 
   return (
-    <YStack gap={spacing.md}>
-      <XStack justifyContent="space-between" alignItems="center" paddingTop={spacing.sm}>
+    <Stack gap={spacing.md}>
+      <Row justifyContent="space-between" alignItems="center" paddingTop={spacing.sm}>
         <Text fontSize="$6" fontWeight="600" color="$color12">
           News
         </Text>
 
-        <XStack gap={spacing.xs} alignItems="center">
+        <Row gap={spacing.xs} alignItems="center">
           {/* TODO: Implement and refine filter button functionality later */}
           {/* <Button
             size="$3"
@@ -456,20 +456,20 @@ export function NewsWidget({
             disabled={isLoading}
             icon={isLoading ? <Spinner size="small" /> : <RefreshCw size={16} />}
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
-        <YStack alignItems="center" gap={spacing.sm}>
+        <Stack alignItems="center" gap={spacing.sm}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11" fontSize="$4">
             Loading personalised news...
           </Text>
-        </YStack>
+        </Stack>
       ) : null}
 
       {isError && displayNews.length === 0 ? (
-        <YStack alignItems="center" gap={spacing.sm}>
+        <Stack alignItems="center" gap={spacing.sm}>
           <AlertCircle size={24} color="$red10" />
           <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
             Failed to load news feed
@@ -486,15 +486,15 @@ export function NewsWidget({
           >
             Try Again
           </Button>
-        </YStack>
+        </Stack>
       ) : null}
 
       {displayNews.length > 0 && (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {displayNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (
-                <YStack
+                <Stack
                   gap="$2"
                   padding="$3"
                   backgroundColor="$color2"
@@ -503,7 +503,7 @@ export function NewsWidget({
                   opacity={pressed ? 0.7 : 1}
                   style={{ borderRadius: 12 }}
                 >
-                  <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
+                  <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
                     <Text
                       fontSize="$4"
                       fontWeight="600"
@@ -514,8 +514,8 @@ export function NewsWidget({
                       {item.title}
                     </Text>
                     <ExternalLink size={16} color="$color10" />
-                  </XStack>
-                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                  </Row>
+                  <Row gap="$2" alignItems="center" flexWrap="wrap">
                     <Text fontSize="$2" color="$color11">
                       {formatTimeAgo(item.pubDate)}
                     </Text>
@@ -527,11 +527,11 @@ export function NewsWidget({
                     <Text fontSize="$2" color="$color10">
                       • {relevanceLabel(item.relevanceScore)}
                     </Text>
-                  </XStack>
+                  </Row>
                   {item.reasons.length > 0 && (
-                    <XStack gap="$2" flexWrap="wrap">
+                    <Row gap="$2" flexWrap="wrap">
                       {item.reasons.slice(0, 2).map((reason: string, index: number) => (
-                        <YStack
+                        <Stack
                           key={`${item.id}-reason-${index}`}
                           paddingHorizontal="$2"
                           paddingVertical="$1"
@@ -541,11 +541,11 @@ export function NewsWidget({
                           <Text fontSize="$1" color="$blue11">
                             {reason}
                           </Text>
-                        </YStack>
+                        </Stack>
                       ))}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               )}
             </Pressable>
           ))}
@@ -558,7 +558,7 @@ export function NewsWidget({
           >
             View All News
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       <Sheet
@@ -578,45 +578,45 @@ export function NewsWidget({
             Tailor the news feed using your profile information.
           </Paragraph>
 
-          <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$3">
+            <Row justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Match my skills</Paragraph>
               <Switch
                 size="$2"
                 checked={preferences.matchSkills}
                 onCheckedChange={(value) => updatePreference('matchSkills', value)}
               />
-            </XStack>
+            </Row>
 
-            <XStack justifyContent="space-between" alignItems="center">
+            <Row justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Match my industry</Paragraph>
               <Switch
                 size="$2"
                 checked={preferences.matchIndustry}
                 onCheckedChange={(value) => updatePreference('matchIndustry', value)}
               />
-            </XStack>
+            </Row>
 
-            <XStack justifyContent="space-between" alignItems="center">
+            <Row justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Boost trending stories</Paragraph>
               <Switch
                 size="$2"
                 checked={preferences.prioritizeTrending}
                 onCheckedChange={(value) => updatePreference('prioritizeTrending', value)}
               />
-            </XStack>
+            </Row>
 
-            <XStack justifyContent="space-between" alignItems="center">
+            <Row justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Show recent stories only</Paragraph>
               <Switch
                 size="$2"
                 checked={preferences.recentOnly}
                 onCheckedChange={(value) => updatePreference('recentOnly', value)}
               />
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Sheet.Frame>
       </Sheet>
-    </YStack>
+    </Stack>
   )
 }

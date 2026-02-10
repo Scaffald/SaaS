@@ -13,11 +13,11 @@ import {
   Paragraph,
   Separator,
   Spinner,
-  XStack,
-  YStack,
+  Row,
+  Stack,
   Checkbox,
   ScrollView,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from '@tamagui/lucide-icons'
 
 interface APIKeyScopesManagerProps {
@@ -218,7 +218,7 @@ export function APIKeyScopesManager({
           maxWidth={700}
           maxHeight="85vh"
         >
-          <YStack gap="$4" f={1}>
+          <Stack gap="$4" f={1}>
             {/* Header */}
             <Dialog.Title>
               <H3>Manage API Key Permissions</H3>
@@ -229,12 +229,12 @@ export function APIKeyScopesManager({
 
             {!apiKey.is_active && (
               <Card backgroundColor="$orange2" borderColor="$orange6" borderWidth={1} padding="$3">
-                <XStack ai="center" gap="$2">
+                <Row ai="center" gap="$2">
                   <AlertCircle size={20} color="$orange11" />
                   <Paragraph color="$orange11">
                     This API key is revoked. Updating scopes will not re-activate it.
                   </Paragraph>
-                </XStack>
+                </Row>
               </Card>
             )}
 
@@ -242,9 +242,9 @@ export function APIKeyScopesManager({
 
             {/* Info Card */}
             <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} padding="$3">
-              <XStack ai="flex-start" gap="$3">
+              <Row ai="flex-start" gap="$3">
                 <Info size={20} color="$blue11" mt="$0.5" />
-                <YStack f={1} gap="$2">
+                <Stack f={1} gap="$2">
                   <Paragraph fontWeight="600" color="$blue11">
                     Permission Scopes
                   </Paragraph>
@@ -252,20 +252,20 @@ export function APIKeyScopesManager({
                     Scopes control what your API key can access. Grant only the minimum permissions
                     needed for your use case (principle of least privilege).
                   </Paragraph>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             </Card>
 
             {/* Scopes Selection - Scrollable */}
             <ScrollView maxHeight={400}>
-              <YStack gap="$4">
+              <Stack gap="$4">
                 {/* Read Permissions */}
-                <YStack gap="$3">
-                  <XStack ai="center" gap="$2">
+                <Stack gap="$3">
+                  <Row ai="center" gap="$2">
                     <Shield size={20} color="$green10" />
                     <H4>Read Permissions</H4>
-                  </XStack>
-                  <YStack gap="$2">
+                  </Row>
+                  <Stack gap="$2">
                     {SCOPE_DEFINITIONS.filter((s) => s.category === 'read').map((scope) => (
                       <Card
                         key={scope.id}
@@ -277,19 +277,19 @@ export function APIKeyScopesManager({
                         onPress={() => toggleScope(scope.id)}
                         cursor="pointer"
                       >
-                        <XStack ai="flex-start" gap="$3">
+                        <Row ai="flex-start" gap="$3">
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
                             onCheckedChange={() => toggleScope(scope.id)}
                             mt="$0.5"
                           />
-                          <YStack f={1} gap="$2">
+                          <Stack f={1} gap="$2">
                             <Paragraph fontWeight="600">{scope.label}</Paragraph>
                             <Paragraph size="$2" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.requires && scope.requires.length > 0 && (
-                              <XStack ai="center" gap="$2" flexWrap="wrap">
+                              <Row ai="center" gap="$2" flexWrap="wrap">
                                 <Paragraph size="$2" color="$gray11">
                                   Requires:
                                 </Paragraph>
@@ -306,22 +306,22 @@ export function APIKeyScopesManager({
                                     </Paragraph>
                                   </Card>
                                 ))}
-                              </XStack>
+                              </Row>
                             )}
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       </Card>
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
 
                 {/* Write Permissions */}
-                <YStack gap="$3">
-                  <XStack ai="center" gap="$2">
+                <Stack gap="$3">
+                  <Row ai="center" gap="$2">
                     <Lock size={20} color="$orange10" />
                     <H4>Write Permissions</H4>
-                  </XStack>
-                  <YStack gap="$2">
+                  </Row>
+                  <Stack gap="$2">
                     {SCOPE_DEFINITIONS.filter((s) => s.category === 'write').map((scope) => (
                       <Card
                         key={scope.id}
@@ -333,13 +333,13 @@ export function APIKeyScopesManager({
                         onPress={() => toggleScope(scope.id)}
                         cursor="pointer"
                       >
-                        <XStack ai="flex-start" gap="$3">
+                        <Row ai="flex-start" gap="$3">
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
                             onCheckedChange={() => toggleScope(scope.id)}
                             mt="$0.5"
                           />
-                          <YStack f={1} gap="$2">
+                          <Stack f={1} gap="$2">
                             <Paragraph fontWeight="600">{scope.label}</Paragraph>
                             <Paragraph size="$2" color="$gray11">
                               {scope.description}
@@ -351,16 +351,16 @@ export function APIKeyScopesManager({
                                 borderWidth={1}
                                 padding="$2"
                               >
-                                <XStack ai="flex-start" gap="$2">
+                                <Row ai="flex-start" gap="$2">
                                   <AlertCircle size={14} color="$orange11" mt="$0.5" />
                                   <Paragraph size="$2" color="$orange11" f={1}>
                                     {scope.warning}
                                   </Paragraph>
-                                </XStack>
+                                </Row>
                               </Card>
                             )}
                             {scope.requires && scope.requires.length > 0 && (
-                              <XStack ai="center" gap="$2" flexWrap="wrap">
+                              <Row ai="center" gap="$2" flexWrap="wrap">
                                 <Paragraph size="$2" color="$gray11">
                                   Requires:
                                 </Paragraph>
@@ -377,24 +377,24 @@ export function APIKeyScopesManager({
                                     </Paragraph>
                                   </Card>
                                 ))}
-                              </XStack>
+                              </Row>
                             )}
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       </Card>
                     ))}
-                  </YStack>
-                </YStack>
-              </YStack>
+                  </Stack>
+                </Stack>
+              </Stack>
             </ScrollView>
 
             {/* Summary */}
             <Card backgroundColor="$gray3" padding="$3">
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Paragraph size="$2" color="$gray11">
                   Selected Permissions
                 </Paragraph>
-                <XStack gap="$2" flexWrap="wrap">
+                <Row gap="$2" flexWrap="wrap">
                   {selectedScopes.length === 0 ? (
                     <Paragraph size="$3" color="$gray11">
                       No permissions selected
@@ -414,61 +414,61 @@ export function APIKeyScopesManager({
                       </Card>
                     ))
                   )}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </Card>
 
             {/* Changes Summary */}
             {hasChanges() && (
               <Card backgroundColor="$yellow2" borderColor="$yellow6" borderWidth={1} padding="$3">
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Paragraph fontWeight="600" color="$yellow11">
                     Pending Changes
                   </Paragraph>
                   {getAddedScopes().length > 0 && (
-                    <XStack gap="$2" ai="center">
+                    <Row gap="$2" ai="center">
                       <CheckCircle size={16} color="$green11" />
                       <Paragraph size="$3" color="$gray11">
                         Adding: {getAddedScopes().join(', ')}
                       </Paragraph>
-                    </XStack>
+                    </Row>
                   )}
                   {getRemovedScopes().length > 0 && (
-                    <XStack gap="$2" ai="center">
+                    <Row gap="$2" ai="center">
                       <XCircle size={16} color="$red11" />
                       <Paragraph size="$3" color="$gray11">
                         Removing: {getRemovedScopes().join(', ')}
                       </Paragraph>
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               </Card>
             )}
 
             {/* Error Message */}
             {error && (
               <Card backgroundColor="$red2" borderColor="$red6" borderWidth={1} padding="$3">
-                <XStack ai="center" gap="$2">
+                <Row ai="center" gap="$2">
                   <AlertCircle size={20} color="$red11" />
                   <Paragraph color="$red11" f={1}>
                     {error}
                   </Paragraph>
-                </XStack>
+                </Row>
               </Card>
             )}
 
             {/* Success Message */}
             {success && (
               <Card backgroundColor="$green2" borderColor="$green6" borderWidth={1} padding="$3">
-                <XStack ai="center" gap="$2">
+                <Row ai="center" gap="$2">
                   <CheckCircle size={20} color="$green11" />
                   <Paragraph color="$green11">Scopes updated successfully!</Paragraph>
-                </XStack>
+                </Row>
               </Card>
             )}
 
             {/* Actions */}
-            <XStack gap="$3" jc="flex-end">
+            <Row gap="$3" jc="flex-end">
               <Dialog.Close asChild>
                 <Button variant="outlined" disabled={isUpdating || success}>
                   Cancel
@@ -482,8 +482,8 @@ export function APIKeyScopesManager({
               >
                 {isUpdating ? 'Updating...' : 'Update Permissions'}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

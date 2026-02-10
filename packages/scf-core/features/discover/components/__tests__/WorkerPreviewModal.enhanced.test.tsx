@@ -9,8 +9,8 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({
     show: vi.fn(),
   }),
 }))
@@ -95,8 +95,8 @@ vi.mock('@unicornlove/ui', () => ({
 }))
 
 vi.mock('tamagui', () => ({
-  YStack: (props: { children: ReactNode }) => <div>{props.children}</div>,
-  XStack: (props: { children: ReactNode }) => <div>{props.children}</div>,
+  Stack: (props: { children: ReactNode }) => <div>{props.children}</div>,
+  Row: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
   H4: (props: { children: ReactNode }) => <h4>{props.children}</h4>,
   ScrollView: (props: { children: ReactNode }) => <div>{props.children}</div>,

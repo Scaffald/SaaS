@@ -1,5 +1,5 @@
 import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from '@tamagui/lucide-icons'
-import { type GetThemeValueForKey, Text, XStack } from '@unicornlove/ui'
+import { type GetThemeValueForKey, Text, Row } from '@unicornlove/beyond-ui'
 
 type BadgeStatus = 'active' | 'expired' | 'revoked' | null | undefined
 
@@ -76,7 +76,7 @@ export function IdVerificationBadge({
   const mutedSubtext = '$color10' as GetThemeValueForKey<'color'>
 
   return (
-    <XStack
+    <Row
       alignItems="center"
       gap="$1.5"
       paddingHorizontal={size === 'sm' ? '$2' : '$3'}
@@ -95,6 +95,6 @@ export function IdVerificationBadge({
           · exp {expiresText}
         </Text>
       )}
-    </XStack>
+    </Row>
   )
 }

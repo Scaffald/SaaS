@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
-import { Button, H4, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileEmptyState } from './components'
 import { useExperienceEdit } from './contexts/experience-edit-context'
 import { formatDateRange } from './utils/date-formatting'
@@ -86,10 +86,10 @@ export function ProfileExperienceRight() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading experience data...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -98,9 +98,9 @@ export function ProfileExperienceRight() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load experience data</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -114,7 +114,7 @@ export function ProfileExperienceRight() {
       </Text>
 
       {/* Experience Summary Section */}
-      <YStack
+      <Stack
         gap="$3"
         marginBottom="$4"
         padding="$3"
@@ -133,7 +133,7 @@ export function ProfileExperienceRight() {
             Add a career level to highlight your experience level
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       {experienceEntries.length === 0 ? (
         <ProfileEmptyState
@@ -141,12 +141,12 @@ export function ProfileExperienceRight() {
           message="No work experience saved yet. Add your first position in the left panel."
         />
       ) : (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {(experienceEntries as ExperienceEntry[]).map((exp) => {
             const locationDisplay = formatLocationForDisplay(exp.location, exp.is_remote || false)
 
             return (
-              <YStack
+              <Stack
                 key={exp.id}
                 padding="$4"
                 gap="$3"
@@ -160,13 +160,13 @@ export function ProfileExperienceRight() {
                 }}
               >
                 {/* Job Title */}
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$6" fontWeight="700" color="$color12">
                     {exp.job_title}
                   </Text>
 
                   {/* Company Name */}
-                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                  <Row gap="$2" alignItems="center" flexWrap="wrap">
                     <Text fontSize="$4" fontWeight="600" color="$color11">
                       {exp.company_name}
                     </Text>
@@ -180,43 +180,43 @@ export function ProfileExperienceRight() {
                         </Text>
                       </>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Current Position Badge */}
                   {exp.is_current && (
-                    <XStack gap="$1" alignItems="center">
+                    <Row gap="$1" alignItems="center">
                       <Text fontSize="$2" fontWeight="600" color="$blue10">
                         Current Position
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Details */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   {/* Date Range */}
                   {(exp.start_date || exp.end_date || exp.is_current) && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <Calendar size={16} color="$color11" />
                       <Text fontSize="$2" color="$color11">
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Location */}
                   {locationDisplay && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <MapPin size={16} color="$color11" />
                       <Text fontSize="$2" color="$color11">
                         {locationDisplay}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && (
-                    <YStack gap="$1">
+                    <Stack gap="$1">
                       <Text fontSize="$2" fontWeight="600" color="$color11">
                         Description:
                       </Text>
@@ -225,12 +225,12 @@ export function ProfileExperienceRight() {
                           ? `${exp.description.substring(0, 200)}...`
                           : exp.description}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Edit Button */}
-                <XStack justifyContent="flex-end" marginTop="$2">
+                <Row justifyContent="flex-end" marginTop="$2">
                   <Button
                     size="$2"
                     variant="outlined"
@@ -245,11 +245,11 @@ export function ProfileExperienceRight() {
                   >
                     Edit
                   </Button>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )
           })}
-        </YStack>
+        </Stack>
       )}
     </DashboardWidget>
   )

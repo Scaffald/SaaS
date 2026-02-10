@@ -3,10 +3,10 @@ import { AssessmentWizard } from '@scf/core/features/assessments'
 import { IPIPTestStep } from '@scf/core/features/personality-assessment/components/IPIPTestStep'
 import type { IPIPAnswer, IPIPDomain } from '@scf/core/features/personality-assessment/lib/ipip'
 import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@unicornlove/beyond-ui'
 import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
 
 interface SaveIPIPProgressResult {
@@ -19,7 +19,7 @@ interface SaveIPIPProgressResult {
  */
 export function IPIPAssessmentWizard() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [completedDomain, setCompletedDomain] = useState<IPIPDomain | null>(null)
 
   const { data: status, isLoading, error } = api.personalityAssessment.getIPIPStatus.useQuery()
@@ -32,8 +32,10 @@ export function IPIPAssessmentWizard() {
       utils.personalityAssessment.getIPIPStatus.invalidate()
       utils.personalityAssessment.getAssessmentStatus.invalidate()
       if (result.isComplete) {
-        toast.show('Questions Complete', {
+        toast.show({
+          title: 'Questions Complete',
           message: 'Your personality assessment has been saved!',
+          variant: 'success',
         })
         router.push(ROUTES.DASHBOARD.path)
       }
@@ -43,11 +45,12 @@ export function IPIPAssessmentWizard() {
       const errorMessage =
         error.message ||
         'Failed to save progress. Your answers are saved locally and will be synced when connection is restored.'
-      toast.show('Save Error', {
-        message: errorMessage,
-        type: 'error',
-        duration: 5000,
-      })
+      toast.show({
+          title: 'Save Error',
+          message: errorMessage,
+          variant: 'error',
+          duration: 5000,
+        })
       // Note: Answers are still in local state, user can retry by continuing
     },
   })
@@ -98,14 +101,14 @@ export function IPIPAssessmentWizard() {
         error={queryError}
         showNext={false}
       >
-        <YStack
+        <Stack
           gap="$6"
           width="100%"
           alignItems="center"
           padding="$8"
           style={{ maxWidth: 800, alignSelf: 'center' }}
         >
-          <YStack gap="$4" alignItems="center">
+          <Stack gap="$4" alignItems="center">
             <Text fontSize="$9" fontWeight="bold" color="$green10">
               ✓ {DOMAIN_NAMES[completedDomain]} Complete!
             </Text>
@@ -116,17 +119,17 @@ export function IPIPAssessmentWizard() {
               Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
               assessment.
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3" width="100%" maxWidth={400}>
+          <Stack gap="$3" width="100%" maxWidth={400}>
             <Button size="$5" theme="info" onPress={handleContinueToNextDomain}>
               Continue to Next Domain
             </Button>
             <Button size="$4" variant="outlined" onPress={handleTakeBreak}>
               Take a Break
             </Button>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </AssessmentWizard>
     )
   }

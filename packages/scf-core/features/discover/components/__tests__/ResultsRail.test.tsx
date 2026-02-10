@@ -56,7 +56,7 @@ vi.mock('tamagui', () => {
   }
 
   return {
-    YStack: MockYStack,
+    Stack: MockYStack,
   }
 })
 

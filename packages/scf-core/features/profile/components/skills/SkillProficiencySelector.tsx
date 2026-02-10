@@ -1,6 +1,6 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */
@@ -32,7 +32,7 @@ export function SkillProficiencySelector({
   const currentLevel = getProficiencyLevel(proficiency)
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <Text fontWeight="600" fontSize="$4">
         Set Proficiency Level
       </Text>
@@ -40,7 +40,7 @@ export function SkillProficiencySelector({
       {/* Selected Skill */}
       <Card bordered backgroundColor="$color3">
         <Card.Header>
-          <YStack gap="$1">
+          <Stack gap="$1">
             <Text fontSize="$4" fontWeight="600">
               {skill.name}
             </Text>
@@ -49,14 +49,14 @@ export function SkillProficiencySelector({
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
-          </YStack>
+          </Stack>
         </Card.Header>
       </Card>
 
       <Separator />
 
       {/* Proficiency Slider */}
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontWeight="600">Proficiency</Text>
 
         <Slider
@@ -76,26 +76,26 @@ export function SkillProficiencySelector({
         {/* Current Level Display */}
         <Card bordered backgroundColor="$color3">
           <Card.Header>
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack>
+            <Row justifyContent="space-between" alignItems="center">
+              <Stack>
                 <Text fontWeight="600" fontSize="$4" color="$green9">
                   {currentLevel?.label}
                 </Text>
                 <Text fontSize="$2" color="$color11">
                   {currentLevel?.description}
                 </Text>
-              </YStack>
+              </Stack>
               <Text fontSize="$8" fontWeight="bold" color="$green9">
                 {proficiency}
               </Text>
-            </XStack>
+            </Row>
           </Card.Header>
         </Card>
 
         {/* Level Guide */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           {PROFICIENCY_LEVELS.map((level) => (
-            <XStack
+            <Row
               key={level.value}
               gap="$2"
               alignItems="center"
@@ -107,20 +107,20 @@ export function SkillProficiencySelector({
               <Text flex={1} fontSize="$2">
                 {level.label} - {level.description}
               </Text>
-            </XStack>
+            </Row>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$3">
+      <Row gap="$3">
         <Button flex={1} variant="outlined" onPress={onCancel}>
           Cancel
         </Button>
         <Button flex={1} themeInverse onPress={onAdd}>
           Add Skill
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

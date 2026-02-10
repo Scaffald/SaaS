@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { Download, Trash2 } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type ConnectionsData = NonNullable<
   ReturnType<typeof api.connections.getConnections.useQuery>['data']
@@ -45,21 +45,25 @@ type Connection = ConnectionsData extends Array<infer T> ? T : ConnectionData
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')
   const utils = api.useUtils()
-  const toast = useToastController()
+  const toast = useToast()
 
   const { data: connections, isLoading } = api.connections.getConnections.useQuery()
 
   const removeConnectionMutation = api.connections.removeConnection.useMutation({
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
-      toast.show('Success', {
-        message: 'Connection removed',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Connection removed',
+          variant: 'success',
+        })
     },
     onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to remove connection',
-      })
+      toast.show({
+          title: 'Error',
+          message: error.message || 'Failed to remove connection',
+          variant: 'error',
+        })
     },
   })
 
@@ -86,9 +90,11 @@ export function ConnectionsList() {
 
   const handleExportCSV = () => {
     if (!connections || connections.length === 0) {
-      toast.show('Error', {
-        message: 'No connections to export',
-      })
+      toast.show({
+          title: 'Error',
+          message: 'No connections to export',
+          variant: 'error',
+        })
       return
     }
 
@@ -116,13 +122,17 @@ export function ConnectionsList() {
       link.download = `connections-${new Date().toISOString().split('T')[0]}.csv`
       link.click()
       URL.revokeObjectURL(url)
-      toast.show('Success', {
-        message: 'Connections exported successfully',
-      })
+      toast.show({
+          title: 'Success',
+          message: 'Connections exported successfully',
+          variant: 'success',
+        })
     } else {
-      toast.show('Error', {
-        message: 'CSV export is only available on web',
-      })
+      toast.show({
+          title: 'Error',
+          message: 'CSV export is only available on web',
+          variant: 'error',
+        })
     }
   }
 
@@ -138,7 +148,7 @@ export function ConnectionsList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
@@ -153,7 +163,7 @@ export function ConnectionsList() {
               <Text fontSize="$3" fontWeight="500">
                 {name}
               </Text>
-            </XStack>
+            </Row>
           )
         },
       },
@@ -202,16 +212,16 @@ export function ConnectionsList() {
 
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
+      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading connections…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center" gap="$2">
+    <Stack gap="$4">
+      <Row justifyContent="space-between" alignItems="center" gap="$2">
         <Input
           flex={1}
           placeholder="Search connections..."
@@ -224,10 +234,10 @@ export function ConnectionsList() {
             Export CSV
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {filteredConnections.length === 0 ? (
-        <YStack
+        <Stack
           gap="$3"
           borderWidth={1}
           borderColor="$borderColor"
@@ -244,7 +254,7 @@ export function ConnectionsList() {
               ? 'No connections match your search.'
               : "You haven't connected with anyone yet. Send connection requests to build your network."}
           </Text>
-        </YStack>
+        </Stack>
       ) : (
         <DataTable
           columns={columns}
@@ -253,6 +263,6 @@ export function ConnectionsList() {
           emptyMessage="No connections found"
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,5 +1,5 @@
 import { X } from '@tamagui/lucide-icons'
-import { Button, Text, XStack } from '@unicornlove/ui'
+import { Button, Text, Row } from '@unicornlove/beyond-ui'
 
 interface CertificationChipProps {
   certification: {
@@ -20,7 +20,7 @@ export function CertificationChip({
   disabled = false,
 }: CertificationChipProps) {
   return (
-    <XStack
+    <Row
       style={{
         backgroundColor: '#dbeafe',
         borderColor: '#60a5fa',
@@ -44,6 +44,6 @@ export function CertificationChip({
         disabled={disabled}
         opacity={disabled ? 0.5 : 1}
       />
-    </XStack>
+    </Row>
   )
 }

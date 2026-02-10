@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import { AlertTriangle, X as CloseIcon, DownloadCloud } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Alert } from 'react-native'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useDispute } from '../hooks/useDispute'
 import { CheckProgressTracker } from './CheckProgressTracker'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -48,7 +48,7 @@ export const ResultsViewer = memo(function ResultsViewer({
 
   if (getCheckQuery.isLoading || getCheckQuery.isFetching) {
     return (
-      <YStack
+      <Stack
         gap="$3"
         padding="$4"
         backgroundColor="$background"
@@ -56,19 +56,19 @@ export const ResultsViewer = memo(function ResultsViewer({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Spinner size="small" color="$color11" />
           <Text fontSize="$3" color="$color11">
             Loading background check details…
           </Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
   if (getCheckQuery.isError || !getCheckQuery.data?.check) {
     return (
-      <YStack
+      <Stack
         gap="$3"
         padding="$4"
         backgroundColor="$background"
@@ -76,16 +76,16 @@ export const ResultsViewer = memo(function ResultsViewer({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <AlertTriangle size={18} color="$red10" />
           <Text fontSize="$3" color="$red11">
             We couldn’t load your background check details. Try again.
           </Text>
-        </XStack>
+        </Row>
         <Button size="$3" variant="outlined" onPress={() => getCheckQuery.refetch()}>
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -110,7 +110,7 @@ export const ResultsViewer = memo(function ResultsViewer({
   }
 
   return (
-    <YStack
+    <Stack
       gap="$4"
       padding="$4"
       backgroundColor="$background"
@@ -118,13 +118,13 @@ export const ResultsViewer = memo(function ResultsViewer({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
+      <Row justifyContent="space-between" alignItems="center">
+        <Stack gap="$1">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             {summary?.package?.display_name ?? 'Background check results'}
           </Text>
-          <XStack gap="$2" alignItems="center">
-            <YStack
+          <Row gap="$2" alignItems="center">
+            <Stack
               paddingHorizontal="$3"
               paddingVertical="$1"
               backgroundColor={statusColors.background}
@@ -135,16 +135,16 @@ export const ResultsViewer = memo(function ResultsViewer({
               <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
                 {statusMeta.label}
               </Text>
-            </YStack>
+            </Stack>
             <Text fontSize="$2" color="$color10">
               Last updated {formatDate(detail.updated_at)}
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
         <Button size="$3" variant="outlined" icon={CloseIcon} onPress={onClose}>
           Close
         </Button>
-      </XStack>
+      </Row>
 
       <CheckProgressTracker
         status={detail.status}
@@ -163,7 +163,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       />
 
       {onRequestDispute && summary?.status && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$3"
           backgroundColor="$color2"
@@ -189,33 +189,33 @@ export const ResultsViewer = memo(function ResultsViewer({
           >
             {hasActiveDispute ? 'Dispute in progress' : 'Dispute results'}
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       {detail.summary && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Summary
           </Text>
           <Text fontSize="$2" color="$color10">
             {detail.summary}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {detail.findings && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Findings
           </Text>
           <Text fontSize="$2" color="$color10">
             {JSON.stringify(detail.findings, null, 2)}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$3">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Documents
           </Text>
@@ -233,15 +233,15 @@ export const ResultsViewer = memo(function ResultsViewer({
           >
             Download report
           </Button>
-        </XStack>
+        </Row>
         {documents.length === 0 ? (
           <Text fontSize="$2" color="$color10">
             No documents uploaded yet.
           </Text>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             {documents.map((document: BackgroundCheckDocument) => (
-              <XStack
+              <Row
                 key={document.id}
                 justifyContent="space-between"
                 alignItems="center"
@@ -251,26 +251,26 @@ export const ResultsViewer = memo(function ResultsViewer({
                 borderWidth={1}
                 borderColor="$borderColor"
               >
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$3" color="$color12">
                     {document.file_name}
                   </Text>
                   <Text fontSize="$2" color="$color10">
                     Uploaded {formatDate(document.uploaded_at)}
                   </Text>
-                </YStack>
+                </Stack>
                 <Button size="$2" variant="outlined" disabled>
                   View
                 </Button>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       <Separator />
 
       <PrivacyControls checkId={checkId} metadata={detail.metadata} />
-    </YStack>
+    </Stack>
   )
 })

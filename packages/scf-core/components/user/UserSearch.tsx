@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useEffect, useState } from 'react'
-import { Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface UserSearchProps {
   value?: string // user ID
@@ -141,8 +141,8 @@ export function UserSearch({
     showResults && debouncedSearch.length >= 2 && (filteredUsers.length > 0 || isLoading)
 
   return (
-    <YStack gap="$2" position="relative" width="100%">
-      <XStack
+    <Stack gap="$2" position="relative" width="100%">
+      <Row
         gap="$2"
         alignItems="center"
         borderWidth={1}
@@ -179,10 +179,10 @@ export function UserSearch({
             ✕
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {showDropdown && (
-        <YStack
+        <Stack
           position="absolute"
           top="100%"
           left={0}
@@ -203,7 +203,7 @@ export function UserSearch({
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user: User) => {
               return (
-                <XStack
+                <Row
                   key={user.id}
                   padding="$3"
                   gap="$2"
@@ -216,7 +216,7 @@ export function UserSearch({
                   cursor="pointer"
                   onPress={() => handleSelect(user)}
                 >
-                  <YStack flex={1} gap="$1">
+                  <Stack flex={1} gap="$1">
                     <Text fontSize="$3" fontWeight="600">
                       {user.first_name || user.last_name
                         ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
@@ -225,20 +225,20 @@ export function UserSearch({
                     <Text fontSize="$2" color="$color11">
                       @{user.username}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )
             })
           ) : isLoading ? (
-            <YStack padding="$4" alignItems="center">
+            <Stack padding="$4" alignItems="center">
               <Text color="$color11">Searching...</Text>
-            </YStack>
+            </Stack>
           ) : null}
-        </YStack>
+        </Stack>
       )}
 
       {debouncedSearch.length >= 2 && !isLoading && filteredUsers.length === 0 && showResults && (
-        <YStack
+        <Stack
           position="absolute"
           top="100%"
           left={0}
@@ -254,7 +254,7 @@ export function UserSearch({
           <Text fontSize="$3" color="$color11">
             No users found for "{debouncedSearch}"
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {error && (
@@ -262,6 +262,6 @@ export function UserSearch({
           {error}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

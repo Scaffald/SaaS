@@ -1,7 +1,7 @@
-import { DiscoverCard, extractPlainText } from '@unicornlove/ui'
+import { DiscoverCard, extractPlainText } from '@unicornlove/beyond-ui'
 import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface Employer {
   id: string
@@ -36,24 +36,24 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
   return (
     <DiscoverCard onPress={() => onViewDetails(employer)}>
-      <YStack gap="$3">
+      <Stack gap="$3">
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
-          <YStack flex={1} gap="$2">
-            <XStack alignItems="center" gap="$2">
+        <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
+          <Stack flex={1} gap="$2">
+            <Row alignItems="center" gap="$2">
               <Building2 size={20} color="$blue10" />
               <Text fontSize="$6" fontWeight="700" color="$color12">
                 {employer.name}
               </Text>
-            </XStack>
+            </Row>
 
             {employer.industries && (
               <Text fontSize="$3" color="$blue10" fontWeight="600">
                 {employer.industries.name}
               </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* Description */}
         {employer.description && (
@@ -65,35 +65,35 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         )}
 
         {/* Details */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           {location && (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <MapPin size={16} color="$color10" />
               <Text fontSize="$3" color="$color11">
                 {location}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {employer.employee_count_range && (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Users size={16} color="$color10" />
               <Text fontSize="$3" color="$color11">
                 {employer.employee_count_range} employees
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {employer.website_url && (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <ExternalLink size={16} color="$color10" />
               <Text fontSize="$3" color="$blue10" numberOfLines={1}>
                 {employer.website_url.replace(/^https?:\/\//, '')}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DiscoverCard>
   )
 }

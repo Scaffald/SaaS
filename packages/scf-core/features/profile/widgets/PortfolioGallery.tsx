@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, ResponsiveModal } from '@unicornlove/ui'
+import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
 import { Eye } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, H4, Image, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, H4, Image, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
@@ -43,10 +43,10 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Spinner size="large" />
           <Text color="$color11">Loading portfolio...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -58,11 +58,11 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
   return (
     <>
       <DashboardWidget>
-        <YStack gap="$4">
+        <Stack gap="$4">
           <H4>Portfolio</H4>
 
           {/* Grid Layout */}
-          <YStack gap="$3">
+          <Stack gap="$3">
             {portfolioItems.map((item: PortfolioItem) => {
               const imageUrl = item.file_path
                 ? getStorageUrl('portfolio', item.file_path)
@@ -77,7 +77,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                   cursor="pointer"
                   onPress={() => handleItemClick(item)}
                 >
-                  <YStack gap="$3">
+                  <Stack gap="$3">
                     {imageUrl && (
                       <Image
                         source={{ uri: imageUrl }}
@@ -87,7 +87,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         borderRadius="$3"
                       />
                     )}
-                    <YStack gap="$2" padding="$3">
+                    <Stack gap="$2" padding="$3">
                       <Text fontSize="$4" fontWeight="600" numberOfLines={2}>
                         {item.title}
                       </Text>
@@ -100,20 +100,20 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         </Text>
                       )}
                       {imageUrl && (
-                        <XStack gap="$2" alignItems="center" marginTop="$2">
+                        <Row gap="$2" alignItems="center" marginTop="$2">
                           <Eye size={14} color="$color10" />
                           <Text fontSize="$2" color="$color10">
                             Click to view
                           </Text>
-                        </XStack>
+                        </Row>
                       )}
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                 </Card>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
 
       {/* Lightbox Modal */}
@@ -124,7 +124,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
           title={selectedItem.title}
           size="large"
         >
-          <YStack gap="$4">
+          <Stack gap="$4">
             {(() => {
               const imageUrl = selectedItem.file_path
                 ? getStorageUrl('portfolio', selectedItem.file_path)
@@ -142,7 +142,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                     />
                   )}
                   {selectedItem.description && (
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       <Text fontSize="$3" fontWeight="600">
                         Description
                       </Text>
@@ -151,12 +151,12 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                           ? selectedItem.description
                           : 'Rich text description'}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
                 </>
               )
             })()}
-          </YStack>
+          </Stack>
         </ResponsiveModal>
       )}
     </>

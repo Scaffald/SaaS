@@ -1,11 +1,11 @@
 import { api } from '@scf/core/utils/api'
 import type { ScreeningAnswers } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@unicornlove/ui'
+import type { AddressResult } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { CheckCircle2, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Button, Label, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Label, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface QuickApplyModalProps {
   /**
@@ -96,7 +96,7 @@ export function QuickApplyModal({
   const [showSuccess, setShowSuccess] = useState(false)
 
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
-  const toast = useToastController()
+  const toast = useToast()
 
   const submitMutation = api.applications.submit.useMutation({
     onSuccess: (application: { id: string }) => {
@@ -112,9 +112,10 @@ export function QuickApplyModal({
     },
     onError: (error: { message?: string }) => {
       const message = error.message || 'Failed to submit application. Please try again.'
-      toast.show('Error', {
-        message,
-      })
+      toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
       setIsSubmitting(false)
     },
   })
@@ -262,26 +263,26 @@ export function QuickApplyModal({
         <Dialog.Overlay key="overlay" />
         <Dialog.Content key="content" gap="$4" width="90%" maxWidth={600} maxHeight="90%">
           {/* Header */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack flex={1} gap="$1">
+          <Stack gap="$2">
+            <Row justifyContent="space-between" alignItems="center">
+              <Stack flex={1} gap="$1">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   Apply to {organizationName}
                 </Text>
                 <Text fontSize="$4" color="$color11">
                   {jobTitle}
                 </Text>
-              </YStack>
+              </Stack>
               <Dialog.Close asChild>
                 <Button size="$3" circular icon={X} chromeless />
               </Dialog.Close>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* Success State */}
           {showSuccess ? (
-            <YStack gap="$4" padding="$6" alignItems="center" justifyContent="center" flex={1}>
-              <YStack
+            <Stack gap="$4" padding="$6" alignItems="center" justifyContent="center" flex={1}>
+              <Stack
                 width={80}
                 height={80}
                 borderRadius="$12"
@@ -292,22 +293,22 @@ export function QuickApplyModal({
                 justifyContent="center"
               >
                 <CheckCircle2 size={48} color="$green10" />
-              </YStack>
-              <YStack gap="$2" alignItems="center">
+              </Stack>
+              <Stack gap="$2" alignItems="center">
                 <Text fontSize="$7" fontWeight="bold" color="$color12" textAlign="center">
                   Application Submitted!
                 </Text>
                 <Text fontSize="$4" color="$color11" textAlign="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : (
             /* Form Content */
             <ScrollView showsVerticalScrollIndicator={false} flex={1}>
-              <YStack gap="$4" padding="$4">
+              <Stack gap="$4" padding="$4">
                 {/* Current Location */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
                     You current location <Text color="$red10">*</Text>
                   </Label>
@@ -324,28 +325,28 @@ export function QuickApplyModal({
                       disabled={isSubmitting}
                     />
                   ) : (
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       <Text fontSize="$3" color="$red10">
                         Location search is unavailable. Please enter your location manually.
                       </Text>
                       <Text fontSize="$2" color="$color10">
                         Location search requires Mapbox API key configuration.
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
                   {errors.current_location && (
                     <Text fontSize="$2" color="$red10">
                       {errors.current_location}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Willing to Relocate */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label fontSize="$4" fontWeight="600">
                     Are you willing to relocate? <Text color="$red10">*</Text>
                   </Label>
-                  <XStack gap="$3">
+                  <Row gap="$3">
                     <Button
                       flex={1}
                       size="$4"
@@ -370,11 +371,11 @@ export function QuickApplyModal({
                     >
                       No
                     </Button>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
 
                 {/* Years of Experience */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
                     Years of experience <Text color="$red10">*</Text>
                   </Label>
@@ -392,15 +393,15 @@ export function QuickApplyModal({
                       borderColor: errors.years_experience ? '$red9' : '$borderColor',
                     }}
                   />
-                </YStack>
+                </Stack>
 
                 {/* Required Skills (Display Only) */}
                 {requiredSkills.length > 0 && (
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Label fontSize="$4" fontWeight="600">
                       Required skills
                     </Label>
-                    <YStack
+                    <Stack
                       padding="$3"
                       backgroundColor="$gray3"
                       borderRadius="$3"
@@ -410,17 +411,17 @@ export function QuickApplyModal({
                       <Text fontSize="$3" color="$color11">
                         {requiredSkills.join(', ')}
                       </Text>
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                 )}
 
                 {/* Optional Skills (Display Only) */}
                 {optionalSkills.length > 0 && (
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Label fontSize="$4" fontWeight="600">
                       Optional skills
                     </Label>
-                    <YStack
+                    <Stack
                       padding="$3"
                       backgroundColor="$gray3"
                       borderRadius="$3"
@@ -430,16 +431,16 @@ export function QuickApplyModal({
                       <Text fontSize="$3" color="$color11">
                         {optionalSkills.join(', ')}
                       </Text>
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                 )}
 
                 {/* Work Authorization */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label fontSize="$4" fontWeight="600">
                     Are you authorized to work legally in the US? <Text color="$red10">*</Text>
                   </Label>
-                  <XStack gap="$3">
+                  <Row gap="$3">
                     <Button
                       flex={1}
                       size="$4"
@@ -466,16 +467,16 @@ export function QuickApplyModal({
                     >
                       No
                     </Button>
-                  </XStack>
+                  </Row>
                   {errors.is_authorized_to_work && (
                     <Text fontSize="$2" color="$red10">
                       {errors.is_authorized_to_work}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Earliest Start Date */}
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
                     Earliest start date <Text color="$red10">*</Text>
                   </Label>
@@ -493,14 +494,14 @@ export function QuickApplyModal({
                       borderColor: errors.earliest_start_date ? '$red9' : '$borderColor',
                     }}
                   />
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </ScrollView>
           )}
 
           {/* Footer */}
           {!showSuccess && (
-            <XStack
+            <Row
               gap="$3"
               justifyContent="flex-end"
               paddingTop="$4"
@@ -520,7 +521,7 @@ export function QuickApplyModal({
               >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </Button>
-            </XStack>
+            </Row>
           )}
         </Dialog.Content>
       </Dialog.Portal>

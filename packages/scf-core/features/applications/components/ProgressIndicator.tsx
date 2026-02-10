@@ -1,6 +1,6 @@
 import type { ApplicationStepType } from '@scf/schemas'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface ProgressIndicatorProps {
   /**
@@ -45,7 +45,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
   }
 
   return (
-    <XStack
+    <Row
       gap="$2"
       alignItems="center"
       flexWrap="wrap"
@@ -72,11 +72,11 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
           })
 
         return (
-          <XStack key={step.id} gap="$2" alignItems="center" flex={1} minWidth={0}>
+          <Row key={step.id} gap="$2" alignItems="center" flex={1} minWidth={0}>
             {/* Step Circle */}
-            <YStack gap="$2" alignItems="center" flexShrink={0}>
+            <Stack gap="$2" alignItems="center" flexShrink={0}>
               {status === 'completed' ? (
-                <YStack
+                <Stack
                   width={32}
                   height={32}
                   borderRadius="$10"
@@ -91,9 +91,9 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   shadowRadius={4}
                 >
                   <CheckCircle2 size={20} color="$color12" />
-                </YStack>
+                </Stack>
               ) : (
-                <YStack
+                <Stack
                   width={32}
                   height={32}
                   borderRadius="$10"
@@ -114,7 +114,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   >
                     {stepNumber}
                   </Text>
-                </YStack>
+                </Stack>
               )}
 
               {/* Step Label */}
@@ -131,11 +131,11 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
               >
                 {step.label}
               </Text>
-            </YStack>
+            </Stack>
 
             {/* Connector Line */}
             {!isLast && (
-              <YStack
+              <Stack
                 flex={1}
                 height={2}
                 backgroundColor={isLineCompleted ? '$blue9' : '$gray4'}
@@ -143,9 +143,9 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 minWidth={20}
               />
             )}
-          </XStack>
+          </Row>
         )
       })}
-    </XStack>
+    </Row>
   )
 }

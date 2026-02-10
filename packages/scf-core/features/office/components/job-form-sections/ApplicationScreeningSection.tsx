@@ -1,6 +1,6 @@
-import { ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@unicornlove/beyond-ui'
 
 interface ApplicationScreeningSectionProps {
   requireCurrentLocation: boolean
@@ -65,13 +65,13 @@ export function ApplicationScreeningSection({
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {/* Current Location */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Current location</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
+        </Stack>
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_current_location ? '1' : '0'}
           </Text>
@@ -80,15 +80,15 @@ export function ApplicationScreeningSection({
             onCheckedChange={(checked) => handleChange('require_current_location', checked)}
             aria-label="Require current location"
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Willing to Relocate */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Willing to relocate</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
+        </Stack>
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_relocation_willingness ? '1' : '0'}
           </Text>
@@ -97,16 +97,16 @@ export function ApplicationScreeningSection({
             onCheckedChange={(checked) => handleChange('require_relocation_willingness', checked)}
             aria-label="Require relocation willingness"
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Minimum Years of Experience */}
-      <YStack gap="$2">
-        <XStack gap="$3" alignItems="center" justifyContent="space-between">
-          <YStack gap="$1" flex={1}>
+      <Stack gap="$2">
+        <Row gap="$3" alignItems="center" justifyContent="space-between">
+          <Stack gap="$1" flex={1}>
             <Label>Minimum years of experience</Label>
-          </YStack>
-          <XStack gap="$2" alignItems="center">
+          </Stack>
+          <Row gap="$2" alignItems="center">
             <Text fontSize="$2" color="$color10">
               {localState.minimum_years_experience_enabled ? '1' : '0'}
             </Text>
@@ -117,8 +117,8 @@ export function ApplicationScreeningSection({
               }
               aria-label="Require minimum years of experience"
             />
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
         {localState.minimum_years_experience_enabled && (
           <ResponsiveSelect
             value={localState.minimum_years_experience?.toString() || ''}
@@ -132,14 +132,14 @@ export function ApplicationScreeningSection({
             }))}
           />
         )}
-      </YStack>
+      </Stack>
 
       {/* Work Authorization */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Authorized to work in US</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
+        </Stack>
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_work_authorization ? '1' : '0'}
           </Text>
@@ -148,15 +148,15 @@ export function ApplicationScreeningSection({
             onCheckedChange={(checked) => handleChange('require_work_authorization', checked)}
             aria-label="Require work authorization"
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Earliest Start Date */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Earliest start date</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
+        </Stack>
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_earliest_start_date ? '1' : '0'}
           </Text>
@@ -165,8 +165,8 @@ export function ApplicationScreeningSection({
             onCheckedChange={(checked) => handleChange('require_earliest_start_date', checked)}
             aria-label="Require earliest start date"
           />
-        </XStack>
-      </XStack>
-    </YStack>
+        </Row>
+      </Row>
+    </Stack>
   )
 }

@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
 
 interface TeamMemberRoleSelectProps {
@@ -24,7 +24,7 @@ export function TeamMemberRoleSelect({
   onRoleChanged,
   fullWidth = false,
 }: TeamMemberRoleSelectProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? '')
 
   useEffect(() => {
@@ -41,14 +41,20 @@ export function TeamMemberRoleSelect({
 
   const updateRoleMutation = api.teams.members.update.useMutation({
     onSuccess: (_data: unknown, variables: { roleId?: string } | undefined) => {
-      toast.show('Role updated', { message: 'Team member role changed successfully.' })
+      toast.show({
+          title: 'Role updated',
+          message: 'Team member role changed successfully.',
+        })
       if (variables?.roleId) {
         onRoleChanged?.(variables.roleId)
       }
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to update role', { message })
+      toast.show({
+          title: 'Unable to update role',
+          variant: 'error',
+        })
       setSelectedRoleId(currentRoleId ?? '')
     },
   })
@@ -63,7 +69,7 @@ export function TeamMemberRoleSelect({
   }
 
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       <Text fontSize="$3" color="$color11">
         Role
       </Text>
@@ -80,6 +86,6 @@ export function TeamMemberRoleSelect({
           width: fullWidth ? '100%' : undefined,
         }}
       />
-    </YStack>
+    </Stack>
   )
 }

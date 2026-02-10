@@ -1,6 +1,6 @@
 import { Award, BadgeCheck, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Separator, Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, ScrollView, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {
@@ -78,63 +78,63 @@ export function DiscoverWorkersRight({
 
   // Custom active filters content
   const activeFiltersContent = (
-    <YStack gap="$2">
+    <Stack gap="$2">
       {searchQuery && (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$3" color="$color11">
             Search:
           </Text>
           <Text fontSize="$3" fontWeight="600" color="$blue10">
             {searchQuery}
           </Text>
-        </XStack>
+        </Row>
       )}
       {minScore > 0 && (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Text fontSize="$3" color="$color11">
             Min Score:
           </Text>
           <Text fontSize="$3" fontWeight="600" color="$blue10">
             {minScore}
           </Text>
-        </XStack>
+        </Row>
       )}
       {selectedSkills.length > 0 && (
-        <XStack gap="$2" alignItems="center" flexWrap="wrap">
+        <Row gap="$2" alignItems="center" flexWrap="wrap">
           <Text fontSize="$3" color="$color11">
             Skills:
           </Text>
           <Text fontSize="$3" fontWeight="600" color="$blue10">
             {selectedSkills.length}
           </Text>
-        </XStack>
+        </Row>
       )}
       {selectedCertifications.length > 0 && (
-        <XStack gap="$2" alignItems="center" flexWrap="wrap">
+        <Row gap="$2" alignItems="center" flexWrap="wrap">
           <Text fontSize="$3" color="$color11">
             Certs:
           </Text>
           <Text fontSize="$3" fontWeight="600" color="$green10">
             {selectedCertifications.length}
           </Text>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         <SearchFilterWidget
           title="Search & Filter"
           subtitle="Find skilled workers for your projects"
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           searchLabel={
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Search size={16} />
               <Text>Search</Text>
-            </XStack>
+            </Row>
           }
           searchPlaceholder="Search by name, title, or location..."
           hasActiveFilters={hasActiveFilters}
@@ -145,15 +145,15 @@ export function DiscoverWorkersRight({
           <Separator />
 
           {/* Scaffald Score Filter */}
-          <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$3">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Scaffald Score
               </Text>
               <Text fontSize="$5" fontWeight="700" color="$blue10">
                 {minScore}
               </Text>
-            </XStack>
+            </Row>
             <Slider
               value={[minScore]}
               onValueChange={([val]) => onMinScoreChange(val)}
@@ -167,20 +167,20 @@ export function DiscoverWorkersRight({
               </Slider.Track>
               <Slider.Thumb circular index={0} size="$0.75" />
             </Slider>
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Skills Filter */}
-          <YStack gap="$3">
-            <XStack alignItems="center" gap="$2">
+          <Stack gap="$3">
+            <Row alignItems="center" gap="$2">
               <Award size={16} color="$color12" />
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Skills
               </Text>
-            </XStack>
+            </Row>
 
-            <XStack gap="$2">
+            <Row gap="$2">
               <Input
                 flex={1}
                 placeholder="Add skill..."
@@ -192,12 +192,12 @@ export function DiscoverWorkersRight({
               <Button size="$3" onPress={handleAddSkill} disabled={!skillInput.trim()}>
                 Add
               </Button>
-            </XStack>
+            </Row>
 
             {selectedSkills.length > 0 && (
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap="$2" flexWrap="wrap">
                 {selectedSkills.map((skill) => (
-                  <XStack
+                  <Row
                     key={skill}
                     backgroundColor="$blue3"
                     paddingHorizontal="$2"
@@ -212,24 +212,24 @@ export function DiscoverWorkersRight({
                     <Button size="$1" circular unstyled onPress={() => handleRemoveSkill(skill)}>
                       <X size={12} color="$blue11" />
                     </Button>
-                  </XStack>
+                  </Row>
                 ))}
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Certifications Filter */}
-          <YStack gap="$3">
-            <XStack alignItems="center" gap="$2">
+          <Stack gap="$3">
+            <Row alignItems="center" gap="$2">
               <BadgeCheck size={16} color="$color12" />
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Certifications
               </Text>
-            </XStack>
+            </Row>
 
-            <XStack gap="$2">
+            <Row gap="$2">
               <Input
                 flex={1}
                 placeholder="Add certification..."
@@ -245,12 +245,12 @@ export function DiscoverWorkersRight({
               >
                 Add
               </Button>
-            </XStack>
+            </Row>
 
             {selectedCertifications.length > 0 && (
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap="$2" flexWrap="wrap">
                 {selectedCertifications.map((cert) => (
-                  <XStack
+                  <Row
                     key={cert}
                     backgroundColor="$green3"
                     paddingHorizontal="$2"
@@ -270,13 +270,13 @@ export function DiscoverWorkersRight({
                     >
                       <X size={12} color="$green11" />
                     </Button>
-                  </XStack>
+                  </Row>
                 ))}
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
         </SearchFilterWidget>
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

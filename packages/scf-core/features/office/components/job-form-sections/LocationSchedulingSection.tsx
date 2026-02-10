@@ -1,6 +1,6 @@
-import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Label, TextArea } from '@unicornlove/ui'
+import { Label, TextArea } from '@unicornlove/beyond-ui'
 
 interface LocationSchedulingSectionProps {
   relocationAssistanceOffered?: boolean
@@ -36,7 +36,7 @@ export function LocationSchedulingSection({
   }
 
   return (
-    <YStack
+    <Stack
       gap="$4"
       padding="$4"
       backgroundColor="$background"
@@ -52,22 +52,22 @@ export function LocationSchedulingSection({
       </Text>
 
       {/* Relocation Assistance */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap="$3" alignItems="center" justifyContent="space-between">
+        <Stack gap="$1" flex={1}>
           <Label>Relocation assistance offered</Label>
           <Text fontSize="$2" color="$color10">
             Company provides relocation support
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.relocation_assistance_offered || false}
           onCheckedChange={(checked) => handleChange('relocation_assistance_offered', checked)}
           aria-label="Relocation assistance offered"
         />
-      </XStack>
+      </Row>
 
       {localState.relocation_assistance_offered && (
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Label>Relocation assistance details</Label>
           <TextArea
             placeholder="Describe relocation assistance provided"
@@ -77,11 +77,11 @@ export function LocationSchedulingSection({
             }
             height={80}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Work Schedule Details */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>Work schedule details</Label>
         <TextArea
           placeholder="e.g. Monday-Friday 8am-5pm, flexible hours, compressed workweek"
@@ -89,17 +89,17 @@ export function LocationSchedulingSection({
           onChangeText={(text) => handleChange('work_schedule_details', text || undefined)}
           height={80}
         />
-      </YStack>
+      </Stack>
 
       {/* Timezone */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label>Timezone</Label>
         <Input
           placeholder="e.g. America/New_York, Pacific Time"
           value={localState.timezone || ''}
           onChangeText={(text) => handleChange('timezone', text || undefined)}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

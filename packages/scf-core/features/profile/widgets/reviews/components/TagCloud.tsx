@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { TagData } from '../types'
 
 interface TagCloudProps {
@@ -32,17 +32,17 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
   const textColor = variant === 'strength' ? '$green11' : '$red11'
 
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       <Text fontSize="$5" fontWeight="700" color="$color12">
         {title}
       </Text>
-      <XStack gap="$2" flexWrap="wrap">
+      <Row gap="$2" flexWrap="wrap">
         {displayTags.map((tag) => {
           const relativeSize = getRelativeSize(tag.count)
           const fontSize = relativeSize <= 1.5 ? '$2' : relativeSize <= 2.5 ? '$3' : '$4'
 
           return (
-            <XStack
+            <Row
               key={tag.name}
               backgroundColor={bgColor}
               paddingHorizontal="$3"
@@ -52,10 +52,10 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
               <Text fontSize={fontSize} fontWeight="600" color={textColor}>
                 {tag.name} ({tag.count})
               </Text>
-            </XStack>
+            </Row>
           )
         })}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

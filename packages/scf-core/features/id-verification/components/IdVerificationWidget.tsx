@@ -1,9 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget } from '@unicornlove/ui'
+import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
@@ -19,7 +19,7 @@ export function IdVerificationWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Identity verification
         </Text>
@@ -42,7 +42,7 @@ export function IdVerificationWidget() {
         >
           Manage verification
         </Button>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

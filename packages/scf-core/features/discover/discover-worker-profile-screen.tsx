@@ -9,12 +9,12 @@ import {
 } from '@scf/core/features/profile/widgets'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { api } from '@scf/core/utils/api'
-import { type BreadcrumbItem, DashboardWidget } from '@unicornlove/ui'
+import { type BreadcrumbItem, DashboardWidget } from '@unicornlove/beyond-ui'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { Animated, Easing } from 'react-native'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 const SHIMMER_WIDTH = 220
 
@@ -62,7 +62,7 @@ function SkeletonBlock({
   })
 
   return (
-    <YStack
+    <Stack
       position="relative"
       overflow="hidden"
       backgroundColor="$color4"
@@ -91,7 +91,7 @@ function SkeletonBlock({
           style={{ flex: 1 }}
         />
       </Animated.View>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -102,81 +102,81 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
     const headlineWidths = [110, 90, 120] as const
     const overviewSections = ['overview-primary', 'overview-secondary'] as const
     return (
-      <YStack gap="$4">
+      <Stack gap="$4">
         {wrapWidget(
-          <YStack gap="$3" alignItems="center">
+          <Stack gap="$3" alignItems="center">
             <SkeletonBlock height={96} width={96} radius={48} />
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
-            <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+            <Row gap="$2" flexWrap="wrap" justifyContent="center">
               {headlineWidths.map((width) => (
                 <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {wrapWidget(
-          <YStack gap="$3">
+          <Stack gap="$3">
             {overviewSections.map((sectionId) => (
-              <YStack key={sectionId} gap="$2">
+              <Stack key={sectionId} gap="$2">
                 <SkeletonBlock height={20} width="70%" />
                 <SkeletonBlock height={14} width="50%" />
                 <SkeletonBlock height={12} width="40%" />
                 <SkeletonBlock height={12} width="60%" />
-              </YStack>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         )}
 
         {wrapWidget(
-          <YStack gap="$2">
+          <Stack gap="$2">
             <SkeletonBlock height={20} width="55%" />
             <SkeletonBlock height={14} width="65%" />
             <SkeletonBlock height={12} width="40%" />
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {wrapWidget(
-        <YStack gap="$3">
+        <Stack gap="$3">
           <SkeletonBlock height={20} width="60%" />
           {['review-1', 'review-2'].map((reviewId) => (
-            <YStack key={reviewId} gap="$1">
+            <Stack key={reviewId} gap="$1">
               <SkeletonBlock height={16} width="80%" />
               <SkeletonBlock height={12} width="55%" />
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       )}
 
       {wrapWidget(
-        <YStack gap="$3">
+        <Stack gap="$3">
           <SkeletonBlock height={20} width="45%" />
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap="$2" flexWrap="wrap">
             {['skill-1', 'skill-2', 'skill-3', 'skill-4', 'skill-5', 'skill-6'].map((skillId) => (
               <SkeletonBlock key={skillId} height={28} width={100} radius={14} />
             ))}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {wrapWidget(
-        <YStack gap="$3">
+        <Stack gap="$3">
           <SkeletonBlock height={20} width="55%" />
           {['stat-1', 'stat-2', 'stat-3'].map((statId) => (
-            <YStack key={statId} gap="$1">
+            <Stack key={statId} gap="$1">
               <SkeletonBlock height={16} width="70%" />
               <SkeletonBlock height={12} width="40%" />
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -217,12 +217,12 @@ export function DiscoverWorkerProfileScreen({
   if (!safeUserId) {
     const errorWidget = (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
+        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
           <Text fontSize="$6" fontWeight="700" color="$red10">
             Worker not found
           </Text>
           <Text color="$color11">Select a worker from the list to view their profile.</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
 
@@ -242,14 +242,14 @@ export function DiscoverWorkerProfileScreen({
   if (!generalInfo) {
     const unavailableWidget = (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
+        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
           <Text fontSize="$6" fontWeight="700" color="$red10">
             Profile unavailable
           </Text>
           <Text color="$color11" style={{ textAlign: 'center' }}>
             We couldn&apos;t load this worker profile. Please try another worker.
           </Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
 
@@ -278,7 +278,7 @@ export function DiscoverWorkerProfileScreen({
   ]
 
   const leftColumn = (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <GeneralInfoWidget
         userId={safeUserId}
         showEdit={false}
@@ -287,15 +287,15 @@ export function DiscoverWorkerProfileScreen({
       />
       <ExperienceWidget userId={safeUserId} showEdit={false} />
       <EducationWidget userId={safeUserId} showEdit={false} />
-    </YStack>
+    </Stack>
   )
 
   const rightColumn = (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <ReviewsWidget userId={safeUserId} showEdit />
       <ProfileSkillsSection userId={safeUserId} showEdit={false} />
       <CertificationsWidget userId={safeUserId} showEdit={false} />
-    </YStack>
+    </Stack>
   )
 
   return {

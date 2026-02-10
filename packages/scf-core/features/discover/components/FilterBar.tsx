@@ -1,6 +1,6 @@
 import { List, RotateCcw, Search, SlidersHorizontal } from '@tamagui/lucide-icons'
 import type { CSSProperties } from 'react'
-import { Button, XStack } from '@unicornlove/ui'
+import { Button, Row } from '@unicornlove/beyond-ui'
 
 type FilterBarProps = {
   onSearchPress?: () => void
@@ -28,7 +28,7 @@ export const FilterBar = ({
   filterActive = false,
 }: FilterBarProps) => {
   return (
-    <XStack
+    <Row
       position="absolute"
       bottom="$4"
       left={0}
@@ -39,7 +39,7 @@ export const FilterBar = ({
       justifyContent="center"
       animation="quick"
     >
-      <XStack
+      <Row
         backgroundColor="$background"
         opacity={0.95}
         paddingHorizontal="$3"
@@ -107,7 +107,7 @@ export const FilterBar = ({
           hoverStyle={{ backgroundColor: '$backgroundHover' }}
           pressStyle={{ backgroundColor: '$backgroundPress' }}
         />
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   )
 }

@@ -1,9 +1,9 @@
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import type { PaymentIntent, StripeElementsOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useMemo, useState } from 'react'
-import { Card } from '@unicornlove/ui'
+import { Card } from '@unicornlove/beyond-ui'
 
 import { useStripeConfig } from '../../hooks/useStripeConfig'
 
@@ -126,15 +126,15 @@ function PaymentIntentFormInner({
 
   return (
     <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
-      <YStack gap="$1">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Stack gap="$1">
+        <Row justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600">
             Charge amount
           </Text>
           <Text fontSize="$5" fontWeight="700">
             {amountLabel}
           </Text>
-        </XStack>
+        </Row>
         {description ? (
           <Text fontSize="$3" color="$color11">
             {description}
@@ -145,17 +145,17 @@ function PaymentIntentFormInner({
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       <PaymentElement />
 
       {errorMessage ? (
         <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Text color="$red11" fontSize="$3" flex={1}>
               {errorMessage}
             </Text>
-          </XStack>
+          </Row>
         </Card>
       ) : null}
 
@@ -166,10 +166,10 @@ function PaymentIntentFormInner({
         onPress={handleSubmit}
       >
         {isSubmitting ? (
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Spinner size="small" color="white" />
             <Text>Processing…</Text>
-          </XStack>
+          </Row>
         ) : (
           submitLabel
         )}

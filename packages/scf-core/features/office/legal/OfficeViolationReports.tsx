@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type ViolationReportsOutput =
   inferRouterOutputs<AppRouter>['legalAgreements']['listViolationReports']
@@ -103,7 +103,7 @@ export function OfficeViolationReports() {
           const row = info.row.original
           if (row.status === 'pending') {
             return (
-              <XStack gap="$1">
+              <Row gap="$1">
                 <Button
                   size="$2"
                   variant="outlined"
@@ -118,7 +118,7 @@ export function OfficeViolationReports() {
                 >
                   Review
                 </Button>
-              </XStack>
+              </Row>
             )
           }
           return null
@@ -129,16 +129,16 @@ export function OfficeViolationReports() {
   }, [updateMutation])
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
+    <Stack flex={1} padding="$4" gap="$4">
+      <Row justifyContent="space-between" alignItems="center">
+        <Stack>
           <Text fontSize="$7" fontWeight="700">
             Anti-Circumvention Violation Reports
           </Text>
           <Text color="$color10">
             Review and manage reports of off-platform hires and fee avoidance.
           </Text>
-        </YStack>
+        </Stack>
         <Button
           size="$3"
           variant="outlined"
@@ -148,13 +148,13 @@ export function OfficeViolationReports() {
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
       {reportsQuery.isLoading ? (
-        <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+        <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
           <Spinner size="large" />
           <Text color="$color10">Loading violation reports…</Text>
-        </YStack>
+        </Stack>
       ) : (
         <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
           <DataTable
@@ -171,6 +171,6 @@ export function OfficeViolationReports() {
           )}
         </Card>
       )}
-    </YStack>
+    </Stack>
   )
 }

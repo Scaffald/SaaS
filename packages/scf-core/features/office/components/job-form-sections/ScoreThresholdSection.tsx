@@ -1,6 +1,6 @@
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Label, Slider } from '@unicornlove/ui'
+import { Label, Slider } from '@unicornlove/beyond-ui'
 
 interface ScoreThresholdSectionProps {
   minimumScore?: number
@@ -18,22 +18,22 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
   const currentScore = value[0] || 50
 
   return (
-    <YStack gap="$4" padding="$4">
-      <YStack gap="$2">
-        <XStack gap="$2">
+    <Stack gap="$4" padding="$4">
+      <Stack gap="$2">
+        <Row gap="$2">
           <Label fontSize="$5" fontWeight="600" flex={1}>
             Minimum Score
           </Label>
           <Text fontSize="$6" fontWeight="700">
             {currentScore}
           </Text>
-        </XStack>
+        </Row>
         <Text fontSize="$2">
           Set the minimum score threshold for auto-screening applicants (0-100 scale)
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
+      <Stack gap="$3">
         <Slider value={value} onValueChange={handleChange} min={0} max={100} step={1} width="100%">
           <Slider.Track>
             <Slider.TrackActive />
@@ -41,15 +41,15 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
           <Slider.Thumb circular index={0} />
         </Slider>
 
-        <XStack gap="$2">
+        <Row gap="$2">
           <Text fontSize="$1" flex={1}>
             0 (Low)
           </Text>
           <Text fontSize="$1">100 (High)</Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
-      <YStack gap="$2" padding="$3">
+      <Stack gap="$2" padding="$3">
         <Text fontSize="$2" fontWeight="600" color="$blue11">
           Score Guidelines
         </Text>
@@ -65,7 +65,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
         <Text fontSize="$1" color="$blue11">
           • <Text fontWeight="600">76-100:</Text> Highly qualified candidates only
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

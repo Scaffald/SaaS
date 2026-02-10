@@ -1,6 +1,6 @@
 import type { IconProps } from '@tamagui/helpers-icon'
 import type { ComponentType } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 
 interface ProfileEmptyStateProps {
   icon: ComponentType<IconProps>
@@ -13,7 +13,7 @@ interface ProfileEmptyStateProps {
  */
 export function ProfileEmptyState({ icon: Icon, message }: ProfileEmptyStateProps) {
   return (
-    <YStack
+    <Stack
       padding="$4"
       alignItems="center"
       gap="$2"
@@ -24,6 +24,6 @@ export function ProfileEmptyState({ icon: Icon, message }: ProfileEmptyStateProp
     >
       <Icon size={48} color="$color11" />
       <Text color="$color11">{message}</Text>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
-import { ResponsiveModal } from '@unicornlove/ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { AlertTriangle, CheckCircle } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { resetProfileSyncError, useAdaptiveProfileSync } from '../profile/utils/profile-sync-store'
 import { ReviewWizard } from '../reviews/components/ReviewWizard'
 import { UserProfileAbout } from './user-profile-about'
@@ -62,31 +62,31 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
+      <Stack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
         <Spinner size="large" color="$blue10" />
         <Text marginTop="$4" color="$color11">
           Loading profile...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!profile) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
+      <Stack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
         <Text color="$red10" fontSize="$6" fontWeight="600">
           Profile not found
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack gap="$6" padding="$4" paddingBottom="$8">
-          <XStack justifyContent="flex-end">
-            <YStack
+        <Stack gap="$6" padding="$4" paddingBottom="$8">
+          <Row justifyContent="flex-end">
+            <Stack
               paddingHorizontal="$3"
               paddingVertical="$2"
               borderRadius="$4"
@@ -100,7 +100,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
               gap="$1"
               style={{ maxWidth: 200 }}
             >
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 {syncStatus === 'syncing' ? (
                   <Spinner size="small" color="$blue10" />
                 ) : syncStatus === 'error' ? (
@@ -125,14 +125,14 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                       ? 'Sync failed'
                       : 'Up to date'}
                 </Text>
-              </XStack>
+              </Row>
               {syncStatus === 'error' && (
                 <Button size="$2" variant="outlined" onPress={resetProfileSyncError} marginTop="$2">
                   Dismiss
                 </Button>
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {/* Profile Header */}
           <UserProfileHeader
@@ -157,7 +157,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
 
           {/* Education Section */}
           {education.length > 0 && <UserProfileEducation education={education} />}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {/* Review Modal */}

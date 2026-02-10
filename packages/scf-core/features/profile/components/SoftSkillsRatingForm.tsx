@@ -5,14 +5,14 @@ import {
   LoadingState,
   ResponsiveModal,
   SaveStatusIndicator,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Slider, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Separator, Slider, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { softSkillsUpdateSchema, type SoftSkillsUpdateInput } from '@scf/schemas/profile'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
@@ -43,7 +43,7 @@ const SOFT_SKILL_LEVELS = [
  */
 export const SoftSkillsRatingForm: FC = () => {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
@@ -194,8 +194,9 @@ export const SoftSkillsRatingForm: FC = () => {
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'Failed to save assessment. Please try again.'
-        toast.show('Error', {
-          message,
+        toast.show({
+          title: 'Error',
+          variant: 'error',
         })
       }
     },
@@ -214,7 +215,7 @@ export const SoftSkillsRatingForm: FC = () => {
 
   if (error) {
     return (
-      <YStack gap="$4" alignItems="center" paddingVertical="$8">
+      <Stack gap="$4" alignItems="center" paddingVertical="$8">
         <Text color="$red10">Failed to load assessment</Text>
         <Text color="$color11" fontSize="$2">
           {error.message}
@@ -222,32 +223,32 @@ export const SoftSkillsRatingForm: FC = () => {
         <Button variant="primary" size="$2" onPress={() => void refetch()}>
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   if (formSkills.length === 0) {
     return (
-      <YStack gap="$4" alignItems="center" paddingVertical="$8">
+      <Stack gap="$4" alignItems="center" paddingVertical="$8">
         <Text color="$color11">No soft skills available</Text>
         <Text color="$color10" fontSize="$2">
           Please contact support if this issue persists.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="$4">
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <Heading variant="h3">Rate Your Soft Skills</Heading>
         <SaveStatusIndicator
           status={autoSaveStatus}
           lastSavedAt={lastSavedAt}
           error={autoSaveStatus === 'error' ? 'Failed to auto-save' : undefined}
         />
-      </XStack>
+      </Row>
 
       <Text fontSize="$3" color="$color11">
         Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
@@ -265,11 +266,11 @@ export const SoftSkillsRatingForm: FC = () => {
       <Separator />
 
       {/* Skills List for Active Category */}
-      <YStack gap="$4">
+      <Stack gap="$4">
         {categorySkills.length === 0 ? (
-          <YStack gap="$2" alignItems="center" paddingVertical="$8">
+          <Stack gap="$2" alignItems="center" paddingVertical="$8">
             <Text color="$color11">No skills in this category</Text>
-          </YStack>
+          </Stack>
         ) : (
           categorySkills.map((skill) => {
             const skillRatingIndex = watchedRatings.findIndex((r) => r.skill_id === skill.id)
@@ -282,8 +283,8 @@ export const SoftSkillsRatingForm: FC = () => {
 
             return (
               <Card key={skill.id} bordered padding="$4" backgroundColor="$background">
-                <YStack gap="$3">
-                  <YStack gap="$1">
+                <Stack gap="$3">
+                  <Stack gap="$1">
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       {skill.name}
                     </Text>
@@ -292,7 +293,7 @@ export const SoftSkillsRatingForm: FC = () => {
                         {skill.description}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
 
                   <Controller
                     control={control}
@@ -306,7 +307,7 @@ export const SoftSkillsRatingForm: FC = () => {
                       const sliderValue = typeof value === 'number' ? value : defaultRating
 
                       return (
-                        <YStack gap="$2">
+                        <Stack gap="$2">
                           <Slider
                             value={[sliderValue]}
                             onValueChange={(newValue) => onChange(newValue[0])}
@@ -330,9 +331,9 @@ export const SoftSkillsRatingForm: FC = () => {
                             />
                           </Slider>
 
-                          <XStack justifyContent="space-between" gap="$2" flexWrap="wrap">
+                          <Row justifyContent="space-between" gap="$2" flexWrap="wrap">
                             {SOFT_SKILL_LEVELS.map((level) => (
-                              <YStack
+                              <Stack
                                 key={level.value}
                                 flex={1}
                                 minWidth={64}
@@ -349,24 +350,24 @@ export const SoftSkillsRatingForm: FC = () => {
                                 >
                                   {level.label}
                                 </Text>
-                              </YStack>
+                              </Stack>
                             ))}
-                          </XStack>
-                        </YStack>
+                          </Row>
+                        </Stack>
                       )
                     }}
                   />
-                </YStack>
+                </Stack>
               </Card>
             )
           })
         )}
-      </YStack>
+      </Stack>
 
       <Separator />
 
       {/* Submit Button */}
-      <XStack justifyContent="flex-end" paddingTop="$2">
+      <Row justifyContent="flex-end" paddingTop="$2">
         <Button
           variant="primary"
           size="$4"
@@ -377,7 +378,7 @@ export const SoftSkillsRatingForm: FC = () => {
         >
           {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}
         </Button>
-      </XStack>
+      </Row>
 
       {/* Success Modal */}
       <ResponsiveModal
@@ -387,8 +388,8 @@ export const SoftSkillsRatingForm: FC = () => {
         size="medium"
         showCloseButton={true}
       >
-        <YStack gap="$4" padding="$4" alignItems="center">
-          <YStack
+        <Stack gap="$4" padding="$4" alignItems="center">
+          <Stack
             width={80}
             height={80}
             borderRadius="$12"
@@ -399,9 +400,9 @@ export const SoftSkillsRatingForm: FC = () => {
             justifyContent="center"
           >
             <CheckCircle2 size={48} color="$green10" />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" alignItems="center">
+          <Stack gap="$2" alignItems="center">
             <Text fontSize="$6" fontWeight="700" color="$color12" style={{ textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
@@ -409,9 +410,9 @@ export const SoftSkillsRatingForm: FC = () => {
               Your assessment has been saved successfully. Your ratings will be used to improve job
               matching and showcase your strengths.
             </Text>
-          </YStack>
+          </Stack>
 
-          <XStack gap="$3" paddingTop="$2">
+          <Row gap="$3" paddingTop="$2">
             <Button variant="outlined" onPress={handleSuccessModalClose}>
               View Profile
             </Button>
@@ -424,9 +425,9 @@ export const SoftSkillsRatingForm: FC = () => {
             >
               Find Matching Jobs
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </ResponsiveModal>
-    </YStack>
+    </Stack>
   )
 }

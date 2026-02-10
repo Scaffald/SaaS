@@ -1,10 +1,10 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@scf/schemas'
 import { ApplicationStep } from '@scf/schemas'
 import { api } from '@scf/core/utils/api'
-import { SaveStatusIndicator } from '@unicornlove/ui'
+import { SaveStatusIndicator } from '@unicornlove/beyond-ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
 import { AttachmentsStep } from './AttachmentsStep'
@@ -177,31 +177,31 @@ export function ApplicationWizard({
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <Stack flex={1} backgroundColor="$background">
       {/* Header */}
-      <YStack
+      <Stack
         padding="$4"
         backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
         gap="$3"
       >
-        <XStack justifyContent="space-between" alignItems="flex-start" width="100%">
-          <YStack gap="$1" flex={1}>
+        <Row justifyContent="space-between" alignItems="flex-start" width="100%">
+          <Stack gap="$1" flex={1}>
             <Text fontSize="$6" fontWeight="bold" color="$color12">
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
             </Text>
             <Text fontSize="$3" color="$color11">
               {organizationName}
             </Text>
-          </YStack>
+          </Stack>
           {/* Save Status Indicator */}
           <SaveStatusIndicator
             status={isSaving ? 'saving' : saveError ? 'error' : lastSavedAt ? 'saved' : 'idle'}
             lastSavedAt={lastSavedAt || undefined}
             error={saveError || undefined}
           />
-        </XStack>
+        </Row>
 
         {/* Progress Indicator */}
         <ProgressIndicator
@@ -209,28 +209,28 @@ export function ApplicationWizard({
           completedSteps={completedSteps}
           steps={steps}
         />
-      </YStack>
+      </Stack>
 
       {/* Error Display */}
       {submitError && (
-        <YStack
+        <Stack
           padding="$4"
           backgroundColor="$red2"
           borderBottomWidth={1}
           borderBottomColor="$red7"
         >
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <AlertCircle size={20} color="$red10" />
             <Text fontSize="$3" color="$red11" flex={1}>
               {submitError.message || 'An error occurred'}
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <YStack padding="$4" alignItems="center">
+        <Stack padding="$4" alignItems="center">
           {currentStep === 'screening' && (
             <ScreeningStep
               answers={screeningAnswers}
@@ -304,12 +304,12 @@ export function ApplicationWizard({
               isEditMode={isEditMode}
             />
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {/* Cancel Confirmation Dialog */}
       {showCancelConfirm && (
-        <YStack
+        <Stack
           position="absolute"
           top={0}
           left={0}
@@ -320,7 +320,7 @@ export function ApplicationWizard({
           justifyContent="center"
           padding="$4"
         >
-          <YStack
+          <Stack
             backgroundColor="$background"
             borderRadius="$4"
             padding="$6"
@@ -330,7 +330,7 @@ export function ApplicationWizard({
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$6" fontWeight="bold" color="$color12">
                 Cancel Application?
               </Text>
@@ -338,19 +338,19 @@ export function ApplicationWizard({
                 Your progress has been auto-saved. You can return to complete your application
                 later.
               </Text>
-            </YStack>
+            </Stack>
 
-            <XStack gap="$3" justifyContent="flex-end">
+            <Row gap="$3" justifyContent="flex-end">
               <Button size="$4" variant="outlined" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>
               <Button size="$4" theme="error" onPress={confirmCancel}>
                 Exit Application
               </Button>
-            </XStack>
-          </YStack>
-        </YStack>
+            </Row>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

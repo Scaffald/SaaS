@@ -3,7 +3,7 @@
  * REQ-10 Task 11: Admin OAuth app list
  */
 
-import { Button, Card, SizableText, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, SizableText, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 
@@ -19,17 +19,17 @@ export function OAuthAppList() {
   })
 
   return (
-    <YStack flex={1} gap="$4">
-      <YStack gap="$2">
+    <Stack flex={1} gap="$4">
+      <Stack gap="$2">
         <SizableText size="$6" fontWeight="600">
           OAuth Applications
         </SizableText>
         <SizableText size="$2" color="$color11">
           Manage and approve OAuth applications
         </SizableText>
-      </YStack>
+      </Stack>
 
-      <XStack gap="$2">
+      <Row gap="$2">
         {(['all', 'pending', 'active', 'trusted', 'suspended', 'revoked'] as AppStatus[]).map((status) => (
           <Button
             key={status}
@@ -40,13 +40,13 @@ export function OAuthAppList() {
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </Button>
         ))}
-      </XStack>
+      </Row>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         {listApps.data?.apps.map((app) => (
           <Card key={app.id} padding="$3" data-testid={`oauth-app-${app.id}`}>
-            <XStack gap="$3" alignItems="center">
-              <YStack flex={1} gap="$1">
+            <Row gap="$3" alignItems="center">
+              <Stack flex={1} gap="$1">
                 <SizableText size="$4" fontWeight="600" data-testid="oauth-app-name">
                   {app.display_name}
                 </SizableText>
@@ -56,15 +56,15 @@ export function OAuthAppList() {
                 <SizableText size="$1" color="$color11" data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </SizableText>
-              </YStack>
+              </Stack>
               <Button href={`/office/oauth-apps/${app.id}`} size="$2" data-testid="oauth-app-view-button">
                 View
               </Button>
-            </XStack>
+            </Row>
           </Card>
         ))}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 

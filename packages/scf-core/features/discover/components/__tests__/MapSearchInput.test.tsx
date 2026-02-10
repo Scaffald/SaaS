@@ -57,8 +57,8 @@ vi.mock('tamagui', () => {
 
   return {
     AnimatePresence: (props: { children: ReactNode }) => <>{props.children}</>,
-    XStack: MockXStack,
-    YStack: MockYStack,
+    Row: MockXStack,
+    Stack: MockYStack,
     Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
   }
 })

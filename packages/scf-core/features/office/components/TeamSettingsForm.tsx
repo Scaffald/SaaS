@@ -2,11 +2,11 @@ import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Info } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, Separator, Spinner, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Spinner, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
 
@@ -59,7 +59,7 @@ export function TeamSettingsForm({
   canEdit,
   onSettingsSaved,
 }: TeamSettingsFormProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const utils = api.useUtils()
 
   const [metadataState, setMetadataState] = useState<Record<string, unknown>>(
@@ -122,10 +122,11 @@ export function TeamSettingsForm({
     onError: (error: unknown) => {
       setStatus('error')
       pendingMetadataRef.current = null
-      toast.show('Unable to update settings', {
-        message: error instanceof Error ? error.message : 'Please try again shortly.',
-        type: 'error',
-      })
+      toast.show({
+          title: 'Unable to update settings',
+          message: error instanceof Error ? error.message : 'Please try again shortly.',
+          variant: 'error',
+        })
     },
   })
 
@@ -217,7 +218,7 @@ export function TeamSettingsForm({
       gap="$4"
       backgroundColor="$color2"
     >
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$7" fontWeight="700">
           Team settings
         </Text>
@@ -225,14 +226,14 @@ export function TeamSettingsForm({
           Configure defaults and collaboration preferences for this team. Changes are saved
           automatically.
         </Text>
-      </YStack>
+      </Stack>
 
       {!canEdit ? <PermissionBanner /> : null}
 
       <Separator />
 
-      <YStack gap="$4" opacity={canEdit ? 1 : 0.6}>
-        <YStack gap="$2">
+      <Stack gap="$4" opacity={canEdit ? 1 : 0.6}>
+        <Stack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             Default role for new members
           </Text>
@@ -259,9 +260,9 @@ export function TeamSettingsForm({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$5" fontWeight="600">
             Notification preferences
           </Text>
@@ -293,9 +294,9 @@ export function TeamSettingsForm({
             control={control}
             name="notifications.applicationAssigned"
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$5" fontWeight="600">
             Assignment rules
           </Text>
@@ -313,18 +314,18 @@ export function TeamSettingsForm({
             control={control}
             name="jobAssignment.requireApproval"
           />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       <Separator />
 
-      <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-        <XStack gap="$2" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
+        <Row gap="$2" alignItems="center">
           {updateMutation.isPending ? <Spinner size="small" /> : null}
           <Text fontSize="$3" color={statusColor}>
             {statusLabel}
           </Text>
-        </XStack>
+        </Row>
         <Button
           size="$3"
           variant="outlined"
@@ -333,7 +334,7 @@ export function TeamSettingsForm({
         >
           Reset to defaults
         </Button>
-      </XStack>
+      </Row>
     </Card>
   )
 }
@@ -406,13 +407,13 @@ function SettingsToggle({
           padding="$3"
           gap="$2"
         >
-          <XStack justifyContent="space-between" alignItems="center" gap="$3">
-            <YStack flex={1} gap="$1">
+          <Row justifyContent="space-between" alignItems="center" gap="$3">
+            <Stack flex={1} gap="$1">
               <Text fontWeight="600">{label}</Text>
               <Text fontSize="$3" color="$color11">
                 {description}
               </Text>
-            </YStack>
+            </Stack>
             <Switch
               checked={field.value}
               onCheckedChange={(value) => field.onChange(Boolean(value))}
@@ -421,7 +422,7 @@ function SettingsToggle({
             >
               <Switch.Thumb />
             </Switch>
-          </XStack>
+          </Row>
         </Card>
       )}
     />
@@ -430,7 +431,7 @@ function SettingsToggle({
 
 function PermissionBanner() {
   return (
-    <XStack
+    <Row
       gap="$3"
       alignItems="center"
       borderWidth={1}
@@ -441,12 +442,12 @@ function PermissionBanner() {
       paddingVertical="$2"
     >
       <Info size={18} color="$color11" />
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontWeight="600">View only</Text>
         <Text fontSize="$3" color="$color11">
           You need team admin permissions to update settings for this team.
         </Text>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }

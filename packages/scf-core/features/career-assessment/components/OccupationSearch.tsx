@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useEffect, useRef, useState } from 'react'
-import { Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface OccupationSearchProps {
   value?: string
@@ -129,8 +129,8 @@ export function OccupationSearch({
     showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
 
   return (
-    <YStack gap="$2" position="relative" width="100%">
-      <XStack gap="$2" alignItems="center">
+    <Stack gap="$2" position="relative" width="100%">
+      <Row gap="$2" alignItems="center">
         <Input
           flex={1}
           placeholder={placeholder}
@@ -141,10 +141,10 @@ export function OccupationSearch({
           disabled={disabled}
         />
         {isLoading && <Spinner size="small" />}
-      </XStack>
+      </Row>
 
       {showDropdown && (
-        <YStack
+        <Stack
           position="absolute"
           top="100%"
           left={0}
@@ -163,7 +163,7 @@ export function OccupationSearch({
           shadowRadius={4}
         >
           {occupations.map((occupation: Occupation) => (
-            <XStack
+            <Row
               key={occupation.onetsoc_code}
               padding="$3"
               gap="$2"
@@ -176,21 +176,21 @@ export function OccupationSearch({
               cursor="pointer"
               onPress={() => handleSelect(occupation)}
             >
-              <YStack flex={1} gap="$1">
+              <Stack flex={1} gap="$1">
                 <Text fontSize="$3" fontWeight="600">
                   {occupation.title}
                 </Text>
                 <Text fontSize="$2" color="$color11">
                   {occupation.onetsoc_code}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           ))}
-        </YStack>
+        </Stack>
       )}
 
       {debouncedSearch.length >= 2 && queryError && (
-        <YStack
+        <Stack
           position="absolute"
           top="100%"
           left={0}
@@ -206,11 +206,11 @@ export function OccupationSearch({
           <Text fontSize="$3" color="$red10">
             {queryError.message || 'Unable to load occupations. Please try again.'}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && showResults && (
-        <YStack
+        <Stack
           position="absolute"
           top="100%"
           left={0}
@@ -226,8 +226,8 @@ export function OccupationSearch({
           <Text fontSize="$3" color="$color11">
             No occupations found for "{debouncedSearch}"
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

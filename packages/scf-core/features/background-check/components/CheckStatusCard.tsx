@@ -1,8 +1,8 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { AlertTriangle, Eye, RefreshCcw } from '@tamagui/lucide-icons'
 import { memo, useMemo } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import {
   type BackgroundCheckSummary,
@@ -53,9 +53,9 @@ export const CheckStatusCard = memo(function CheckStatusCard({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <XStack justifyContent="space-between" alignItems="flex-start" gap="$4" flexWrap="wrap">
-          <YStack gap="$1" flex={1}>
+      <Stack gap="$4">
+        <Row justifyContent="space-between" alignItems="flex-start" gap="$4" flexWrap="wrap">
+          <Stack gap="$1" flex={1}>
             <Text fontSize="$5" fontWeight="600" color="$color12">
               {packageLabel}
             </Text>
@@ -67,10 +67,10 @@ export const CheckStatusCard = memo(function CheckStatusCard({
                 Est. completion {formatDate(estimatedCompletion)}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" alignItems="flex-end">
-            <XStack
+          <Stack gap="$2" alignItems="flex-end">
+            <Row
               paddingHorizontal="$3"
               paddingVertical="$1"
               backgroundColor={statusColors.background}
@@ -83,9 +83,9 @@ export const CheckStatusCard = memo(function CheckStatusCard({
               <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
                 {statusMeta.label}
               </Text>
-            </XStack>
+            </Row>
             {check.expires_at && (
-              <XStack alignItems="center" gap="$2">
+              <Row alignItems="center" gap="$2">
                 {expirationWarning && <AlertTriangle size={14} color="$yellow10" />}
                 <Text fontSize="$2" color={expirationWarning ? '$yellow10' : '$color10'}>
                   {expired
@@ -96,29 +96,29 @@ export const CheckStatusCard = memo(function CheckStatusCard({
                           : ''
                       }`}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap="$2">
+          <Row justifyContent="space-between" alignItems="center">
             <Text fontSize="$3" fontWeight="500" color="$color12">
               Progress
             </Text>
             <Text fontSize="$2" color="$color10">
               {progress}%
             </Text>
-          </XStack>
+          </Row>
           <Progress value={progress} max={100} backgroundColor="$color3" size="$1">
             <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
           </Progress>
           <Text fontSize="$2" color="$color10">
             {statusMeta.description}
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap="$2" flexWrap="wrap">
           <Button
             size="$3"
             icon={Eye}
@@ -141,8 +141,8 @@ export const CheckStatusCard = memo(function CheckStatusCard({
               Dispute
             </Button>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </DashboardWidget>
   )
 })

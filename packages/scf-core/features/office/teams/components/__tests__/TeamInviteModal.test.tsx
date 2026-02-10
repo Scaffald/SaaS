@@ -21,8 +21,8 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({ show: mockShow }),
+vi.mock('@unicornlove/beyond-ui', () => ({
+  useToast: () => ({ show: mockShow }),
 }))
 
 vi.mock('@unicornlove/ui', () => ({
@@ -176,8 +176,8 @@ vi.mock('tamagui', () => {
 
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Button,
     Input,

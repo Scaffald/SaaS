@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Avatar, type GetThemeValueForKey } from '@unicornlove/ui'
+import { Avatar, type GetThemeValueForKey } from '@unicornlove/beyond-ui'
 
 interface InquiryHistoryTimelineProps {
   inquiryId: string
@@ -145,25 +145,25 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="$4" alignItems="center" gap="$4">
         <Text>Loading history...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="$4" alignItems="center" gap="$4">
         <Text color="$red10">Failed to load history</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!sortedHistory || sortedHistory.length === 0) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="$4" alignItems="center" gap="$4">
         <Text color="$color11">No history available</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -173,22 +173,22 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   }
 
   return (
-    <YStack gap="$3" padding="$4">
+    <Stack gap="$3" padding="$4">
       <Text fontSize="$6" fontWeight="600">
         History
       </Text>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         {sortedHistory.map((event, index) => {
           const EventIcon = getEventIcon(event.event_type as EventType)
           const eventColor = getEventColor(event.event_type as EventType)
           const isLast = index === sortedHistory.length - 1
 
           return (
-            <XStack key={event.id} gap="$3" alignItems="flex-start">
+            <Row key={event.id} gap="$3" alignItems="flex-start">
               {/* Timeline dot and line */}
-              <YStack alignItems="center" width={24}>
-                <YStack
+              <Stack alignItems="center" width={24}>
+                <Stack
                   width={12}
                   height={12}
                   borderRadius="$10"
@@ -197,13 +197,13 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                   justifyContent="center"
                 >
                   <EventIcon size={8} color="white" />
-                </YStack>
-                {!isLast && <YStack flex={1} width={2} backgroundColor="$gray5" height={40} />}
-              </YStack>
+                </Stack>
+                {!isLast && <Stack flex={1} width={2} backgroundColor="$gray5" height={40} />}
+              </Stack>
 
               {/* Event details */}
-              <YStack flex={1} gap="$1">
-                <XStack gap="$2" alignItems="center">
+              <Stack flex={1} gap="$1">
+                <Row gap="$2" alignItems="center">
                   <Avatar size="$2" circular>
                     <Avatar.Image src={event.actor?.avatar_path || undefined} />
                     <Avatar.Fallback backgroundColor="$blue9">
@@ -218,7 +218,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                   <Text fontSize="$3" color="$color11">
                     {formatEventType(event.event_type as EventType)}
                   </Text>
-                </XStack>
+                </Row>
 
                 <Text fontSize="$2" color="$color11">
                   {formatTimestamp(event.created_at)}
@@ -230,11 +230,11 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                     {formatEventData(event.event_type as EventType, event.event_data)}
                   </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           )
         })}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

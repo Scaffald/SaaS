@@ -14,12 +14,12 @@ import {
   LoadingState,
   ResponsiveModal,
   spacing,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { Download } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useMemo, useState, type FC } from 'react'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -34,7 +34,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   variant = 'full',
 }) => {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [drillDownOpen, setDrillDownOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<SoftSkillCategory>('reliability')
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
@@ -68,9 +68,10 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
 
   // Handle export (placeholder for now)
   const handleExport = useCallback(() => {
-    toast.show('Export', {
-      message: 'Chart export functionality coming soon!',
-    })
+    toast.show({
+          title: 'Export',
+          message: 'Chart export functionality coming soon!',
+        })
   }, [toast])
 
   if (isLoading) {
@@ -84,12 +85,12 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load soft skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -110,11 +111,11 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Soft Skills</Heading>
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             {!showCompact && (
               <Button
                 variant="outlined"
@@ -137,8 +138,8 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
                 Edit
               </Button>
             )}
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {/* Category Tabs */}
         {skills.length > 0 && (
@@ -164,7 +165,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           size="large"
           showCloseButton={true}
         >
-          <YStack gap="$4" padding="$4">
+          <Stack gap="$4" padding="$4">
             {/* Category Tabs */}
             <SoftSkillsCategoryTabs
               activeCategory={selectedCategory}
@@ -177,9 +178,9 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
               activeCategory={selectedCategory}
               isLoading={false}
             />
-          </YStack>
+          </Stack>
         </ResponsiveModal>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

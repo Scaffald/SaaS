@@ -8,12 +8,12 @@ import {
   type TableAddRecordModalProps,
   TableColumnVisibilityModal,
   type TableColumnVisibilityModalProps,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { DataTable } from '@scf/core/components/ui/DataTable'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
-import type { BreadcrumbItem } from '@unicornlove/ui'
+import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { Plus } from '@tamagui/lucide-icons'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
@@ -104,17 +104,17 @@ export function OfficePageLayout<TData>({
   children,
 }: OfficePageLayoutProps<TData>) {
   const content = (
-    <YStack flex={1} padding="$4" gap="$4">
+    <Stack flex={1} padding="$4" gap="$4">
       {beforeContent}
       {!hideHeader && (
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <H2>{title}</H2>
           {!actionBarConfig && !hideCreateButton && (
             <Button icon={Plus} onPress={onCreateClick}>
               {createButtonLabel}
             </Button>
           )}
-        </XStack>
+        </Row>
       )}
 
       {actionBarConfig ? (
@@ -150,7 +150,7 @@ export function OfficePageLayout<TData>({
       />
 
       {afterContent}
-    </YStack>
+    </Stack>
   )
 
   if (wrapWithOfficeLayout) {

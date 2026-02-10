@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
-import { SkillsChart } from '@unicornlove/ui'
+import { SkillsChart } from '@unicornlove/beyond-ui'
 import { Calendar, TrendingUp } from '@tamagui/lucide-icons'
-import { Button } from '@unicornlove/ui'
+import { Button } from '@unicornlove/beyond-ui'
 import { useMemo, useState, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsHistoryTimelineProps {
@@ -121,49 +121,49 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (isLoading) {
     return (
-      <YStack gap="$4" alignItems="center" justifyContent="center" padding="$4">
+      <Stack gap="$4" alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
         <Text color="$color11">Loading version history...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack gap="$2" padding="$4">
+      <Stack gap="$2" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading history
         </Text>
         <Text fontSize="$3" color="$color11">
           {error.message || 'Failed to load version history'}
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (versions.length === 0) {
     return (
-      <YStack gap="$2" padding="$4" alignItems="center">
+      <Stack gap="$2" padding="$4" alignItems="center">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           No History Yet
         </Text>
         <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
           Complete your first soft skills assessment to start tracking your progress over time.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (versions.length === 1) {
     return (
-      <YStack gap="$3" padding="$4">
+      <Stack gap="$3" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           Assessment History
         </Text>
         <Text fontSize="$3" color="$color11">
           This is your first assessment. Complete another assessment to see progression tracking.
         </Text>
-        <YStack
+        <Stack
           gap="$2"
           padding="$3"
           backgroundColor="$blue2"
@@ -171,7 +171,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
           borderWidth={1}
           borderColor="$blue7"
         >
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Calendar size={16} color="$blue10" />
             <Text fontSize="$4" fontWeight="600" color="$blue11">
               Version {versions[0].version}
@@ -181,7 +181,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                 • {formatDate(versions[0].selfAssessedAt)}
               </Text>
             )}
-          </XStack>
+          </Row>
           {currentVersionData && (
             <SkillsChart
               datasets={[
@@ -205,14 +205,14 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
               showDots
             />
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+      <Stack gap="$4" padding="$4">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Assessment History
         </Text>
@@ -221,21 +221,21 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
         </Text>
 
         {/* Timeline */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           {versions.map((version, index) => {
             const isCurrent = version.version === currentVersion
             const isSelected = selectedVersion === version.version
             const daysAgo = getDaysAgo(version.selfAssessedAt)
 
             return (
-              <YStack key={version.version}>
+              <Stack key={version.version}>
                 {/* Version Card */}
                 <Button
                   unstyled
                   onPress={() => setSelectedVersion(isSelected ? null : version.version)}
                   pressStyle={{ opacity: 0.8 }}
                 >
-                  <YStack
+                  <Stack
                     gap="$3"
                     padding="$4"
                     backgroundColor={isSelected ? '$blue2' : isCurrent ? '$green2' : '$color2'}
@@ -243,14 +243,14 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     borderWidth={2}
                     borderColor={isSelected ? '$blue9' : isCurrent ? '$green9' : '$borderColor'}
                   >
-                    <XStack
+                    <Row
                       alignItems="center"
                       justifyContent="space-between"
                       flexWrap="wrap"
                       gap="$2"
                     >
-                      <XStack gap="$3" alignItems="center">
-                        <YStack
+                      <Row gap="$3" alignItems="center">
+                        <Stack
                           width={40}
                           height={40}
                           borderRadius="$12"
@@ -261,9 +261,9 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           <Text fontSize="$4" fontWeight="700" color="$color1">
                             V{version.version}
                           </Text>
-                        </YStack>
-                        <YStack gap="$1">
-                          <XStack gap="$2" alignItems="center">
+                        </Stack>
+                        <Stack gap="$1">
+                          <Row gap="$2" alignItems="center">
                             <Text fontSize="$4" fontWeight="600" color="$color12">
                               Version {version.version}
                               {isCurrent && (
@@ -272,40 +272,40 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                                 </Text>
                               )}
                             </Text>
-                          </XStack>
+                          </Row>
                           {version.selfAssessedAt && (
-                            <XStack gap="$2" alignItems="center">
+                            <Row gap="$2" alignItems="center">
                               <Calendar size={14} color="$color10" />
                               <Text fontSize="$2" color="$color10">
                                 {formatDate(version.selfAssessedAt)}
                                 {daysAgo && ` • ${daysAgo}`}
                               </Text>
-                            </XStack>
+                            </Row>
                           )}
-                        </YStack>
-                      </XStack>
+                        </Stack>
+                      </Row>
                       {isSelected && <TrendingUp size={20} color="$blue10" />}
-                    </XStack>
+                    </Row>
 
                     {/* Category Averages */}
-                    <XStack gap="$3" flexWrap="wrap">
+                    <Row gap="$3" flexWrap="wrap">
                       {Object.entries(version.categoryAverages).map(([category, average]) => (
-                        <YStack key={category} gap="$1" style={{ minWidth: 120 }}>
+                        <Stack key={category} gap="$1" style={{ minWidth: 120 }}>
                           <Text fontSize="$2" color="$color10" textTransform="capitalize">
                             {category}
                           </Text>
                           <Text fontSize="$4" fontWeight="600" color="$color12">
                             {average.toFixed(1)}/5
                           </Text>
-                        </YStack>
+                        </Stack>
                       ))}
-                    </XStack>
+                    </Row>
 
                     {/* Selected Version Radar Chart */}
                     {isSelected && selectedVersionData && !(!isCurrent && currentVersionData) && (
                       <>
                         <Separator />
-                        <YStack gap="$2" alignItems="center">
+                        <Stack gap="$2" alignItems="center">
                           <Text fontSize="$4" fontWeight="600" color="$blue11">
                             Version {version.version} Radar Chart
                           </Text>
@@ -330,7 +330,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                             isAnimated
                             showDots
                           />
-                        </YStack>
+                        </Stack>
                       </>
                     )}
 
@@ -338,14 +338,14 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     {isSelected && !isCurrent && currentVersionData && selectedVersionData && (
                       <>
                         <Separator />
-                        <YStack gap="$3" alignItems="center">
+                        <Stack gap="$3" alignItems="center">
                           <Text fontSize="$4" fontWeight="600" color="$color12">
                             Comparison: Version {version.version} vs Current (Version{' '}
                             {currentVersion})
                           </Text>
 
-                          <XStack gap="$4" flexWrap="wrap" justifyContent="center">
-                            <YStack flex={1} style={{ minWidth: 250 }}>
+                          <Row gap="$4" flexWrap="wrap" justifyContent="center">
+                            <Stack flex={1} style={{ minWidth: 250 }}>
                               <SkillsChart
                                 datasets={[
                                   {
@@ -371,46 +371,46 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                                 isAnimated
                                 showDots
                               />
-                            </YStack>
-                          </XStack>
+                            </Stack>
+                          </Row>
 
                           {/* Legend */}
-                          <XStack
+                          <Row
                             gap="$4"
                             alignItems="center"
                             justifyContent="center"
                             paddingVertical="$2"
                           >
-                            <XStack gap="$2" alignItems="center">
-                              <YStack width={20} height={3} backgroundColor="$blue9" />
+                            <Row gap="$2" alignItems="center">
+                              <Stack width={20} height={3} backgroundColor="$blue9" />
                               <Text fontSize="$2" color="$color11">
                                 Version {version.version}
                               </Text>
-                            </XStack>
-                            <XStack gap="$2" alignItems="center">
-                              <YStack width={20} height={3} backgroundColor="$green9" />
+                            </Row>
+                            <Row gap="$2" alignItems="center">
+                              <Stack width={20} height={3} backgroundColor="$green9" />
                               <Text fontSize="$2" color="$color11">
                                 Current
                               </Text>
-                            </XStack>
-                          </XStack>
-                        </YStack>
+                            </Row>
+                          </Row>
+                        </Stack>
                       </>
                     )}
-                  </YStack>
+                  </Stack>
                 </Button>
 
                 {/* Timeline Connector */}
                 {index < versions.length - 1 && (
-                  <YStack alignItems="center" paddingVertical="$2">
-                    <YStack width={2} height={20} backgroundColor="$borderColor" />
-                  </YStack>
+                  <Stack alignItems="center" paddingVertical="$2">
+                    <Stack width={2} height={20} backgroundColor="$borderColor" />
+                  </Stack>
                 )}
-              </YStack>
+              </Stack>
             )
           })}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ScrollView>
   )
 }

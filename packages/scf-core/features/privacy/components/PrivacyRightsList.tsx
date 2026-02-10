@@ -6,7 +6,7 @@
  * and links to exercise each right
  */
 
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Privacy right structure
@@ -100,7 +100,7 @@ function RightCard({
   }
 
   return (
-    <YStack
+    <Stack
       padding="$4"
       backgroundColor="$color2"
       borderRadius="$3"
@@ -108,8 +108,8 @@ function RightCard({
       borderColor="$borderColor"
       gap="$3"
     >
-      <XStack gap="$2" alignItems="center">
-        <YStack
+      <Row gap="$2" alignItems="center">
+        <Stack
           width={8}
           height={8}
           borderRadius={4}
@@ -118,7 +118,7 @@ function RightCard({
         <Text fontSize="$5" fontWeight="600">
           {right.title}
         </Text>
-      </XStack>
+      </Row>
 
       <Text fontSize="$3" color="$color11" lineHeight="$4">
         {right.description}
@@ -136,7 +136,7 @@ function RightCard({
           {right.actionLabel} →
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -154,13 +154,13 @@ interface PrivacyRightsListProps {
  */
 export function PrivacyRightsList({ onAction }: PrivacyRightsListProps) {
   return (
-    <YStack gap="$3">
+    <Stack gap="$3">
       {CCPA_RIGHTS.map((right) => (
         <RightCard key={right.id} right={right} onAction={onAction} />
       ))}
 
       {/* Legal reference */}
-      <YStack
+      <Stack
         padding="$3"
         backgroundColor="$color3"
         borderRadius="$2"
@@ -171,8 +171,8 @@ export function PrivacyRightsList({ onAction }: PrivacyRightsListProps) {
           California Privacy Rights Act (CPRA). To exercise any of these rights, you can use
           the quick actions at the top of this page or contact our Privacy Team.
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 

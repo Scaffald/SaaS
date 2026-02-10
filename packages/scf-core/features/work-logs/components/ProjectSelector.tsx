@@ -1,7 +1,7 @@
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { memo, useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export interface ProjectSelectorOrganization {
   id: string
@@ -57,13 +57,13 @@ export const ProjectSelector = memo(function ProjectSelector({
   const hasMultipleOrganizations = organizations.length > 1
 
   return (
-    <YStack gap="$2">
+    <Stack gap="$2">
       <Text fontWeight="600" fontSize="$4">
         Project
       </Text>
 
       {hasMultipleOrganizations && (
-        <YStack gap="$1">
+        <Stack gap="$1">
           <Text fontSize="$3" color="$color10">
             Organization
           </Text>
@@ -86,10 +86,10 @@ export const ProjectSelector = memo(function ProjectSelector({
               })),
             ]}
           />
-        </YStack>
+        </Stack>
       )}
 
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$3" color="$color10">
           Select a project to associate with this work log.
         </Text>
@@ -104,17 +104,17 @@ export const ProjectSelector = memo(function ProjectSelector({
             label: `${project.name}${project.isArchived ? ' (Archived)' : ''}`,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {isLoading && (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Spinner size="small" />
           <Text fontSize="$3">Loading projects…</Text>
-        </XStack>
+        </Row>
       )}
 
       {error && (
-        <XStack
+        <Row
           gap="$2"
           alignItems="center"
           backgroundColor="$red3"
@@ -137,7 +137,7 @@ export const ProjectSelector = memo(function ProjectSelector({
               aria-label="Retry loading projects"
             />
           )}
-        </XStack>
+        </Row>
       )}
 
       {helperText && (
@@ -151,6 +151,6 @@ export const ProjectSelector = memo(function ProjectSelector({
           No projects available for the selected organization.
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 })

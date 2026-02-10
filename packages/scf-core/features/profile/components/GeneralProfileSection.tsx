@@ -6,12 +6,12 @@ import {
   Button,
   DashboardWidget,
   PhoneNumberInput,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { AnimatePresence, Input, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,
@@ -45,7 +45,7 @@ export function GeneralProfileSection({
   readOnly = false,
 }: GeneralProfileSectionProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   const getErrorMessage = (value: unknown): string | undefined => {
     if (typeof value === 'string') {
@@ -69,35 +69,39 @@ export function GeneralProfileSection({
       ? () =>
           api.office.updateUserGeneral.useMutation({
             onSuccess: () => {
-              toast.show('Profile Updated', {
-                message: 'Profile has been saved successfully!',
-              })
+              toast.show({
+          title: 'Profile Updated',
+          message: 'Profile has been saved successfully!',
+        })
               refetch()
             },
             onError: (error: unknown) => {
               console.error('Error saving profile:', error)
               const message =
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
-              toast.show('Error', {
-                message,
-              })
+              toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
             },
           })
       : () =>
           api.profile.general.updateGeneral.useMutation({
             onSuccess: () => {
-              toast.show('Profile Updated', {
-                message: 'Your profile has been saved successfully!',
-              })
+              toast.show({
+          title: 'Profile Updated',
+          message: 'Your profile has been saved successfully!',
+        })
               refetch()
             },
             onError: (error: unknown) => {
               console.error('Error saving profile:', error)
               const message =
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
-              toast.show('Error', {
-                message,
-              })
+              toast.show({
+          title: 'Error',
+          variant: 'error',
+        })
             },
           })
 
@@ -107,9 +111,10 @@ export function GeneralProfileSection({
 
   const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
     onSuccess: (data: { avatarPath: string }) => {
-      toast.show('Avatar Uploaded', {
-        message: 'Avatar has been uploaded successfully!',
-      })
+      toast.show({
+          title: 'Avatar Uploaded',
+          message: 'Avatar has been uploaded successfully!',
+        })
       setValue('avatar_path', data.avatarPath)
       refetch()
     },
@@ -117,9 +122,10 @@ export function GeneralProfileSection({
       console.error('Error uploading avatar:', error)
       const message =
         error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.'
-      toast.show('Upload Error', {
-        message,
-      })
+      toast.show({
+          title: 'Upload Error',
+          variant: 'error',
+        })
     },
   })
 
@@ -170,18 +176,18 @@ export function GeneralProfileSection({
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <Stack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text>Loading profile...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap="$4">
         {/* Avatar Section */}
-        <YStack gap="$3" alignItems="center">
+        <Stack gap="$3" alignItems="center">
           <Text fontWeight="600">Profile Photo</Text>
           <AvatarImagePicker
             value={getAvatarUrl(avatarPath) || ''}
@@ -204,9 +210,11 @@ export function GeneralProfileSection({
                   reader.readAsDataURL(blob)
                 } catch (error) {
                   console.error('Error processing image:', error)
-                  toast.show('Error', {
-                    message: 'Failed to process image. Please try again.',
-                  })
+                  toast.show({
+          title: 'Error',
+          message: 'Failed to process image. Please try again.',
+          variant: 'error',
+        })
                 }
               } else {
                 setValue('avatar_path', '')
@@ -221,11 +229,11 @@ export function GeneralProfileSection({
               Uploading avatar...
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Name Fields */}
-        <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
-          <YStack gap="$2" flex={1}>
+        <Row gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
+          <Stack gap="$2" flex={1}>
             <Text fontWeight="600">First Name *</Text>
             <Controller
               name="first_name"
@@ -246,9 +254,9 @@ export function GeneralProfileSection({
                 {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" flex={1}>
+          <Stack gap="$2" flex={1}>
             <Text fontWeight="600">Last Name *</Text>
             <Controller
               name="last_name"
@@ -269,11 +277,11 @@ export function GeneralProfileSection({
                 {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
               </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* About Section */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">About</Text>
           <Controller
             name="about"
@@ -295,10 +303,10 @@ export function GeneralProfileSection({
               {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Contact Information */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Phone</Text>
           <Controller
             name="phone"
@@ -314,9 +322,9 @@ export function GeneralProfileSection({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontWeight="600">Email {mode === 'user' ? '(Read-only)' : ''}</Text>
           <Controller
             name="email"
@@ -340,10 +348,10 @@ export function GeneralProfileSection({
               Email changes must be made through account settings
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Home Address */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontWeight="600">Home Address</Text>
           <AddressForm
             mode="hybrid"
@@ -395,11 +403,11 @@ export function GeneralProfileSection({
             }}
             disabled={readOnly}
           />
-        </YStack>
+        </Stack>
 
         {/* Save Button */}
         {!readOnly && (
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <Row justifyContent="flex-end" paddingTop="$4">
             <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}
@@ -421,9 +429,9 @@ export function GeneralProfileSection({
               </AnimatePresence>
               <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

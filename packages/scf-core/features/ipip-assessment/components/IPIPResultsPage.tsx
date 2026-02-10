@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Tabs, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 import { ChartView } from './ChartView'
 import { NarrativeView } from './NarrativeView'
@@ -37,11 +37,11 @@ export function IPIPResultsPage() {
 
   if (results.isLoading) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center" aria-live="polite">
+      <Stack gap="$4" padding="$8" alignItems="center" aria-live="polite">
         <Text fontSize="$5" color="$color11">
           Loading your results...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -53,7 +53,7 @@ export function IPIPResultsPage() {
   // Handle critical errors (network, API failures)
   if (results.error && !results.hasPartialResults) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center" aria-live="assertive">
+      <Stack gap="$4" padding="$8" alignItems="center" aria-live="assertive">
         <AlertCircle size="$3" color="$red10" />
         <Text fontSize="$5" color="$red10" fontWeight="600">
           Error Loading Results
@@ -61,22 +61,22 @@ export function IPIPResultsPage() {
         <Text fontSize="$4" color="$color11" textAlign="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
-        <XStack gap="$3">
+        <Row gap="$3">
           <Button icon={RefreshCcw} onPress={handleRetry} theme="blue">
             Retry
           </Button>
           <Button variant="outlined" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
             Return to Dashboard
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
   // Handle case where no assessment has been started
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center">
+      <Stack gap="$4" padding="$8" alignItems="center">
         <Text fontSize="$5" color="$color11" fontWeight="600">
           No Results Yet
         </Text>
@@ -86,7 +86,7 @@ export function IPIPResultsPage() {
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
           Start Assessment
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -94,16 +94,16 @@ export function IPIPResultsPage() {
   const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
-    <YStack gap="$6" width="100%" padding="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
+    <Stack gap="$6" width="100%" padding="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
           Your Personality Results
         </Text>
         <Text fontSize="$4" color="$color11">
           Discover your Big Five personality traits and how they shape your work style.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Tab Navigation */}
       <Tabs
@@ -113,7 +113,7 @@ export function IPIPResultsPage() {
         flexDirection="column"
       >
         <Tabs.List
-          separator={<YStack width="$1" />}
+          separator={<Stack width="$1" />}
           disablePassBorderRadius="bottom"
           aria-label="Manage your personality results view"
         >
@@ -176,7 +176,7 @@ export function IPIPResultsPage() {
 
       {/* Data Quality Warnings */}
       {hasDataErrors && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$4"
           backgroundColor="$yellow2"
@@ -184,12 +184,12 @@ export function IPIPResultsPage() {
           borderWidth={1}
           borderColor="$yellow7"
         >
-          <XStack alignItems="center" gap="$2">
+          <Row alignItems="center" gap="$2">
             <AlertCircle size="$1" color="$yellow11" />
             <Text fontSize="$4" fontWeight="600" color="$yellow11">
               Partial Data Available
             </Text>
-          </XStack>
+          </Row>
           <Text fontSize="$3" color="$yellow10">
             Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
             {results.normalizationError && 'Score normalization failed. '}
@@ -205,13 +205,13 @@ export function IPIPResultsPage() {
           >
             Refresh Data
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       {/* Share Results Section */}
       {results.isComplete && (
         <ShareResults isComplete={results.isComplete} nextAvailableAt={results.nextAvailableAt} />
       )}
-    </YStack>
+    </Stack>
   )
 }

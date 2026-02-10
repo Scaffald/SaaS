@@ -20,11 +20,11 @@ import {
   Tab,
   TabGroup,
   type SkillsChartDataset,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
@@ -138,7 +138,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -153,7 +153,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -188,9 +188,9 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Skills</Heading>
           {showEdit && (
             <Button
@@ -203,7 +203,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {/* Tabs */}
         <TabGroup
@@ -221,7 +221,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           (isLoadingSkills ? (
             <LoadingState message="Loading skills..." />
           ) : error ? (
-            <YStack gap="$4" alignItems="center" paddingVertical="$8">
+            <Stack gap="$4" alignItems="center" paddingVertical="$8">
               <Text color="$red10">Failed to load skills</Text>
               <Text color="$color11" fontSize="$2">
                 {(error as unknown as Record<string, unknown>).message}
@@ -236,7 +236,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               >
                 Retry
               </Button>
-            </YStack>
+            </Stack>
           ) : skills.length === 0 ? (
             <EmptyState
               title="No skills added yet"
@@ -253,20 +253,20 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               }
             />
           ) : (
-            <YStack gap="$4">
+            <Stack gap="$4">
               {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
-                <YStack key={taxonomy} gap="$2">
+                <Stack key={taxonomy} gap="$2">
                   {/* Taxonomy Header */}
                   <Text fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase">
                     {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                   </Text>
 
                   {/* Skills in this taxonomy */}
-                  <XStack gap="$2" flexWrap="wrap">
+                  <Row gap="$2" flexWrap="wrap">
                     {groupedSkills[taxonomy]
                       .slice(0, showCompact ? 5 : undefined)
                       .map((skill: EnrichedUserSkill) => (
-                        <XStack
+                        <Row
                           key={skill.id}
                           backgroundColor="$blue2"
                           paddingHorizontal="$3"
@@ -278,12 +278,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                           alignItems="center"
                         >
                           {skill.verified && <CheckCircle size={14} color="$blue11" />}
-                          <YStack gap="$0.5">
+                          <Stack gap="$0.5">
                             <Text fontSize="$2" fontWeight="500" color="$blue11">
                               {skill.name}
                             </Text>
                             {!showCompact && (
-                              <XStack gap="$2">
+                              <Row gap="$2">
                                 {skill.proficiency > 0 && (
                                   <Text fontSize="$1" color="$blue10">
                                     {getProficiencyLabel(skill.proficiency)}
@@ -294,13 +294,13 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                                     • {skill.yearsExperience}y
                                   </Text>
                                 )}
-                              </XStack>
+                              </Row>
                             )}
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       ))}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               ))}
 
               {/* Show More link for compact view */}
@@ -317,7 +317,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   View all {skills.length} skills →
                 </Text>
               )}
-            </YStack>
+            </Stack>
           ))}
 
         {/* Soft Skills Tab Content */}
@@ -325,7 +325,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           (isLoadingSoftSkills ? (
             <LoadingState message="Loading soft skills..." />
           ) : softSkillsError ? (
-            <YStack gap="$4" alignItems="center" paddingVertical="$8">
+            <Stack gap="$4" alignItems="center" paddingVertical="$8">
               <Text color="$red10">Failed to load soft skills</Text>
               <Text color="$color11" fontSize="$2">
                 {softSkillsError.message}
@@ -339,7 +339,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               >
                 Complete Assessment
               </Button>
-            </YStack>
+            </Stack>
           ) : softSkills.length === 0 ? (
             <EmptyState
               title="No soft skills assessment"
@@ -356,7 +356,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               }
             />
           ) : (
-            <YStack gap="$4">
+            <Stack gap="$4">
               {/* Category Tabs */}
               <SoftSkillsCategoryTabs
                 activeCategory={activeCategory}
@@ -367,7 +367,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
               {/* Skills Chart for Active Category */}
               {categoryChartData && categoryChartData.length > 0 && (
-                <YStack gap="$2" alignItems="center">
+                <Stack gap="$2" alignItems="center">
                   <Text fontSize="$4" fontWeight="600" color="$color12">
                     {categoryLabels[activeCategory]} Skills
                   </Text>
@@ -381,7 +381,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
                     Individual skill ratings in {categoryLabels[activeCategory]}
                   </Text>
-                </YStack>
+                </Stack>
               )}
 
               <Separator />
@@ -395,7 +395,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
               {/* Action Buttons */}
               {showEdit && (
-                <XStack justifyContent="flex-end" gap="$2" paddingTop="$2" flexWrap="wrap">
+                <Row justifyContent="flex-end" gap="$2" paddingTop="$2" flexWrap="wrap">
                   <Button variant="outlined" size="$3" onPress={() => setShowHistoryModal(true)}>
                     View History
                   </Button>
@@ -406,11 +406,11 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   >
                     Update Assessment
                   </Button>
-                </XStack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
           ))}
-      </YStack>
+      </Stack>
 
       {/* History Modal */}
       <ResponsiveModal
@@ -420,9 +420,9 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         size="large"
         showCloseButton={true}
       >
-        <YStack gap="$4" padding="$4">
+        <Stack gap="$4" padding="$4">
           {/* View Toggle */}
-          <XStack gap="$2" justifyContent="center">
+          <Row gap="$2" justifyContent="center">
             <Button
               variant={historyView === 'timeline' ? 'primary' : 'outlined'}
               size="$3"
@@ -437,7 +437,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             >
               Progression
             </Button>
-          </XStack>
+          </Row>
 
           {/* History Content */}
           {historyView === 'timeline' ? (
@@ -445,7 +445,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           ) : (
             <SoftSkillsProgressionChart userId={userId} />
           )}
-        </YStack>
+        </Stack>
       </ResponsiveModal>
     </DashboardWidget>
   )

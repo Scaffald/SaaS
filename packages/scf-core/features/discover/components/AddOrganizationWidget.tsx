@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
   AlertTriangle,
   ArrowRight,
@@ -10,10 +10,10 @@ import {
   Loader2,
   Pencil,
 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Input, Label, Separator, Stack, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Label, Separator, Stack, Text, Row } from '@unicornlove/beyond-ui'
 import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2
@@ -24,7 +24,7 @@ const MIN_QUERY_LENGTH = 2
  */
 export function AddOrganizationWidget() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [organizationName, setOrganizationName] = useState('')
   const debouncedQuery = useDebounce(organizationName, 300)
   const trimmedQuery = debouncedQuery.trim()
@@ -79,14 +79,17 @@ export function AddOrganizationWidget() {
     {
       onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
         setSubmittedRequest(request)
-        toast.show('Request submitted', {
-          message:
-            'Thanks for the submission! Our team will review your organization and follow up shortly.',
+        toast.show({
+          title: 'Request submitted',
+          message: 'Thanks for the submission! Our team will review your organization and follow up shortly.',
+          variant: 'success',
         })
       },
       onError: (error: { message?: string }) => {
-        toast.show('Unable to submit organization', {
+        toast.show({
+          title: 'Unable to submit organization',
           message: error.message ?? 'Please try again in a moment.',
+          variant: 'error',
         })
       },
     }
@@ -105,20 +108,20 @@ export function AddOrganizationWidget() {
 
   return (
     <DashboardWidget gap="$4">
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$2">
+        <Row gap="$2" alignItems="center">
           <Building2 size={20} color="$blue10" />
           <Text fontSize="$5" fontWeight="700" color="$color12">
             Add an Organization
           </Text>
-        </XStack>
+        </Row>
         <Text fontSize="$3" color="$color11">
           Enter the organization name to check if we already have it. You can continue to the
           creation flow once we confirm it&apos;s new.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="add-organization-name" fontSize="$3" fontWeight="600" color="$color12">
           Organization Name
         </Label>
@@ -129,7 +132,7 @@ export function AddOrganizationWidget() {
           placeholder="Start typing the organization name"
           autoCapitalize="words"
         />
-      </YStack>
+      </Stack>
 
       <Separator />
 
@@ -147,12 +150,12 @@ export function AddOrganizationWidget() {
           }
         />
       ) : isFetching || isLoading ? (
-        <XStack gap="$2" alignItems="center">
+        <Row gap="$2" alignItems="center">
           <Loader2 size={16} color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Checking for existing organizations...
           </Text>
-        </XStack>
+        </Row>
       ) : (
         <StatusSummary
           hasDuplicate={hasDuplicate}
@@ -170,12 +173,12 @@ export function AddOrganizationWidget() {
         onPress={handleCreatePress}
       >
         {isSubmitting ? (
-          <XStack gap="$2" alignItems="center">
+          <Row gap="$2" alignItems="center">
             <Loader2 size={16} color="$color1" />
             <Text fontSize="$4" fontWeight="600" color="$color1">
               Submitting...
             </Text>
-          </XStack>
+          </Row>
         ) : submittedRequest ? (
           'Request Submitted'
         ) : (
@@ -209,38 +212,38 @@ function StatusSummary({
 
   if (hasDuplicate) {
     return (
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap="$3">
+        <Row gap="$2" alignItems="center">
           <AlertTriangle size={16} color="$yellow10" />
           <Text fontSize="$3" fontWeight="600" color="$yellow10">
             We found existing organizations that match your search.
           </Text>
-        </XStack>
-        <YStack gap="$2">
+        </Row>
+        <Stack gap="$2">
           {matchingEmployers.map((employer) => (
             <DuplicateLink key={employer.id} id={employer.id} name={employer.name || 'Unknown'} />
           ))}
-        </YStack>
+        </Stack>
         <Text fontSize="$2" color="$color10">
           Review the existing organization before creating a new one.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$2">
-      <XStack gap="$2" alignItems="center">
+    <Stack gap="$2">
+      <Row gap="$2" alignItems="center">
         <CheckCircle2 size={16} color="$green10" />
         <Text fontSize="$3" fontWeight="600" color="$green10">
           This name looks available.
         </Text>
-      </XStack>
+      </Row>
       <Text fontSize="$2" color="$color10">
         We&apos;ll use the slug <Text fontWeight="600">{candidateSlug}</Text> when you create the
         organization.
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -281,13 +284,13 @@ type SubmissionSummaryProps = {
 
 function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
   return (
-    <YStack gap="$2">
-      <XStack gap="$2" alignItems="center">
+    <Stack gap="$2">
+      <Row gap="$2" alignItems="center">
         <CheckCircle2 size={16} color="$green10" />
         <Text fontSize="$3" fontWeight="600" color="$green10">
           Request submitted for {request.name}
         </Text>
-      </XStack>
+      </Row>
       <Text fontSize="$2" color="$color10">
         We&apos;ll review <Text fontWeight="600">{request.slug}</Text> and notify you once it&apos;s
         approved. You can keep browsing employers while we take a look.
@@ -303,6 +306,6 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
           Add more details
         </Button>
       ) : null}
-    </YStack>
+    </Stack>
   )
 }

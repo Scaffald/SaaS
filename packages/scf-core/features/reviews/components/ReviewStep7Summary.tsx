@@ -1,4 +1,4 @@
-import { Text, TextArea, YStack } from '@unicornlove/ui'
+import { Text, TextArea, Stack } from '@unicornlove/beyond-ui'
 
 interface ReviewStep7SummaryProps {
   comment: string
@@ -7,15 +7,15 @@ interface ReviewStep7SummaryProps {
 
 export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProps) {
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$7" fontWeight="700" color="$color12">
           Summary (Optional)
         </Text>
         <Text fontSize="$5" color="$color11">
           Add any additional comments about working with this person
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Text Area */}
       <TextArea
@@ -35,6 +35,6 @@ export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProp
         This field is optional. You can skip it or add details about your experience working
         together.
       </Text>
-    </YStack>
+    </Stack>
   )
 }

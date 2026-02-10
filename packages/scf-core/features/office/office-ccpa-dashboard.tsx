@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
 
 /**
@@ -87,7 +87,7 @@ function formatDate(dateString: string): string {
 function StatusBadge({ status }: { status: AdminRequestStatus }) {
   const colors = STATUS_COLORS[status]
   return (
-    <XStack
+    <Row
       backgroundColor={colors.bg}
       paddingHorizontal="$2"
       paddingVertical="$1"
@@ -96,7 +96,7 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
       <Text fontSize="$2" color={colors.text} fontWeight="500" textTransform="capitalize">
         {status}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -106,7 +106,7 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
 function PriorityBadge({ priority }: { priority: string }) {
   const colors = PRIORITY_COLORS[priority] || PRIORITY_COLORS.low
   return (
-    <XStack
+    <Row
       backgroundColor={colors.bg}
       paddingHorizontal="$2"
       paddingVertical="$1"
@@ -115,7 +115,7 @@ function PriorityBadge({ priority }: { priority: string }) {
       <Text fontSize="$2" color={colors.text} fontWeight="500" textTransform="capitalize">
         {priority}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -136,7 +136,7 @@ function MetricCard({
   const trendColor = trend === 'up' ? '$green10' : trend === 'down' ? '$red10' : '$color11'
 
   return (
-    <YStack
+    <Stack
       padding="$4"
       backgroundColor="$color2"
       borderRadius="$3"
@@ -157,7 +157,7 @@ function MetricCard({
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} vs last month
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -176,7 +176,7 @@ function RequestRow({
   onView?: (id: string) => void
 }) {
   return (
-    <XStack
+    <Row
       padding="$3"
       backgroundColor={request.is_overdue ? '$red2' : '$color2'}
       borderRadius="$2"
@@ -187,17 +187,17 @@ function RequestRow({
       flexWrap="wrap"
     >
       {/* Request ID */}
-      <YStack minWidth={100}>
+      <Stack minWidth={100}>
         <Text fontSize="$2" color="$color10">
           Request ID
         </Text>
         <Text fontSize="$3" fontWeight="500">
           {request.id.slice(0, 8)}...
         </Text>
-      </YStack>
+      </Stack>
 
       {/* User */}
-      <YStack flex={1} minWidth={140}>
+      <Stack flex={1} minWidth={140}>
         <Text fontSize="$2" color="$color10">
           User
         </Text>
@@ -207,36 +207,36 @@ function RequestRow({
         <Text fontSize="$2" color="$color10">
           {request.user_email}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Type */}
-      <YStack minWidth={100}>
+      <Stack minWidth={100}>
         <Text fontSize="$2" color="$color10">
           Type
         </Text>
         <Text fontSize="$3" textTransform="capitalize">
           {request.type.replace('_', ' ')}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Status */}
-      <YStack minWidth={100}>
+      <Stack minWidth={100}>
         <Text fontSize="$2" color="$color10">
           Status
         </Text>
         <StatusBadge status={request.status} />
-      </YStack>
+      </Stack>
 
       {/* Priority */}
-      <YStack minWidth={80}>
+      <Stack minWidth={80}>
         <Text fontSize="$2" color="$color10">
           Priority
         </Text>
         <PriorityBadge priority={request.priority} />
-      </YStack>
+      </Stack>
 
       {/* Days Elapsed */}
-      <YStack minWidth={80}>
+      <Stack minWidth={80}>
         <Text fontSize="$2" color="$color10">
           Days
         </Text>
@@ -248,20 +248,20 @@ function RequestRow({
           {request.days_elapsed}
           {request.is_overdue && ' (OVERDUE)'}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Submitted */}
-      <YStack flex={1} minWidth={120}>
+      <Stack flex={1} minWidth={120}>
         <Text fontSize="$2" color="$color10">
           Submitted
         </Text>
         <Text fontSize="$3">
           {formatDate(request.created_at)}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$2" minWidth={200} justifyContent="flex-end">
+      <Row gap="$2" minWidth={200} justifyContent="flex-end">
         <Button size="$2" variant="outlined" onPress={() => onView?.(request.id)}>
           View
         </Button>
@@ -275,8 +275,8 @@ function RequestRow({
             Process
           </Button>
         )}
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   )
 }
 
@@ -299,12 +299,12 @@ function FilterBar({
   onPriorityChange: (priority: string) => void
 }) {
   return (
-    <XStack gap="$3" flexWrap="wrap" alignItems="center">
-      <YStack gap="$1">
+    <Row gap="$3" flexWrap="wrap" alignItems="center">
+      <Stack gap="$1">
         <Text fontSize="$2" color="$color10">
           Status
         </Text>
-        <XStack gap="$2">
+        <Row gap="$2">
           {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <Button
               key={status}
@@ -315,14 +315,14 @@ function FilterBar({
               {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
             </Button>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$2" color="$color10">
           Type
         </Text>
-        <XStack gap="$2">
+        <Row gap="$2">
           {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
             <Button
               key={type}
@@ -333,14 +333,14 @@ function FilterBar({
               {type === 'all' ? 'All' : type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
             </Button>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
-      <YStack gap="$1">
+      <Stack gap="$1">
         <Text fontSize="$2" color="$color10">
           Priority
         </Text>
-        <XStack gap="$2">
+        <Row gap="$2">
           {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
               key={priority}
@@ -351,9 +351,9 @@ function FilterBar({
               {priority === 'all' ? 'All' : priority.charAt(0).toUpperCase() + priority.slice(1)}
             </Button>
           ))}
-        </XStack>
-      </YStack>
-    </XStack>
+        </Row>
+      </Stack>
+    </Row>
   )
 }
 
@@ -398,7 +398,7 @@ export function CCPAAdminDashboard() {
 
   if (hasError) {
     return (
-      <YStack padding="$4" gap="$4" alignItems="center" justifyContent="center" flex={1}>
+      <Stack padding="$4" gap="$4" alignItems="center" justifyContent="center" flex={1}>
         <Text color="$red10" fontSize="$5" fontWeight="600">
           Error Loading CCPA Dashboard
         </Text>
@@ -408,7 +408,7 @@ export function CCPAAdminDashboard() {
         <Button onPress={() => window.location.reload()} variant="outlined">
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -427,28 +427,28 @@ export function CCPAAdminDashboard() {
 
   return (
     <ScrollView>
-      <YStack padding="$4" gap="$6" maxWidth={1400} marginHorizontal="auto">
+      <Stack padding="$4" gap="$6" maxWidth={1400} marginHorizontal="auto">
         {/* Page Header */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$8" fontWeight="700">
             CCPA Compliance Dashboard
           </Text>
           <Text color="$color11" fontSize="$4">
             Manage CCPA requests, monitor compliance metrics, and ensure regulatory compliance.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Compliance Metrics */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Compliance Metrics
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
+            <Row padding="$6" justifyContent="center">
               <Spinner size="large" />
-            </XStack>
+            </Row>
           ) : (
-            <XStack gap="$3" flexWrap="wrap">
+            <Row gap="$3" flexWrap="wrap">
               <MetricCard
                 label="Total Requests"
                 value={metrics?.total_requests || 0}
@@ -495,13 +495,13 @@ export function CCPAAdminDashboard() {
                 value={metrics?.overdue_count || 0}
                 color={metrics?.overdue_count ? '$red10' : '$green10'}
               />
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
 
         {/* 45-Day Deadline Warning */}
         {(metrics?.overdue_count || 0) > 0 && (
-          <XStack
+          <Row
             padding="$4"
             backgroundColor="$red2"
             borderRadius="$3"
@@ -514,11 +514,11 @@ export function CCPAAdminDashboard() {
               ATTENTION: {metrics?.overdue_count} request(s) have exceeded the 45-day CCPA deadline.
               Immediate action required.
             </Text>
-          </XStack>
+          </Row>
         )}
 
         {/* Request Filters */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Request Management
           </Text>
@@ -530,16 +530,16 @@ export function CCPAAdminDashboard() {
             onTypeChange={setTypeFilter}
             onPriorityChange={setPriorityFilter}
           />
-        </YStack>
+        </Stack>
 
         {/* Request List */}
-        <YStack gap="$2">
+        <Stack gap="$2">
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
+            <Row padding="$6" justifyContent="center">
               <Spinner size="large" />
-            </XStack>
+            </Row>
           ) : requests?.requests?.length === 0 ? (
-            <YStack
+            <Stack
               padding="$6"
               backgroundColor="$color2"
               borderRadius="$3"
@@ -551,7 +551,7 @@ export function CCPAAdminDashboard() {
               <Text fontSize="$4" color="$color11">
                 No requests match the current filters
               </Text>
-            </YStack>
+            </Stack>
           ) : (
             requests?.requests?.map((request: AdminCCPARequest) => (
               <RequestRow
@@ -563,14 +563,14 @@ export function CCPAAdminDashboard() {
               />
             ))
           )}
-        </YStack>
+        </Stack>
 
         {/* Quick Actions */}
-        <YStack gap="$3">
+        <Stack gap="$3">
           <Text fontSize="$6" fontWeight="600">
             Quick Actions
           </Text>
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap="$3" flexWrap="wrap">
             <Button size="$4">
               Generate Compliance Report
             </Button>
@@ -583,11 +583,11 @@ export function CCPAAdminDashboard() {
             <Button size="$4" variant="outlined">
               Audit Log
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
         {/* CCPA Timeline Requirements */}
-        <YStack
+        <Stack
           gap="$3"
           padding="$4"
           backgroundColor="$color2"
@@ -598,34 +598,34 @@ export function CCPAAdminDashboard() {
           <Text fontSize="$5" fontWeight="600">
             CCPA Timeline Requirements
           </Text>
-          <YStack gap="$2">
-            <XStack gap="$2" alignItems="center">
-              <YStack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
+          <Stack gap="$2">
+            <Row gap="$2" alignItems="center">
+              <Stack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
               <Text fontSize="$3" color="$color11">
                 <Text fontWeight="600">10 days</Text> - Acknowledge receipt of request
               </Text>
-            </XStack>
-            <XStack gap="$2" alignItems="center">
-              <YStack width={8} height={8} borderRadius={4} backgroundColor="$orange10" />
+            </Row>
+            <Row gap="$2" alignItems="center">
+              <Stack width={8} height={8} borderRadius={4} backgroundColor="$orange10" />
               <Text fontSize="$3" color="$color11">
                 <Text fontWeight="600">45 days</Text> - Complete request (with possible 45-day extension)
               </Text>
-            </XStack>
-            <XStack gap="$2" alignItems="center">
-              <YStack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
+            </Row>
+            <Row gap="$2" alignItems="center">
+              <Stack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
               <Text fontSize="$3" color="$color11">
                 <Text fontWeight="600">12 months</Text> - Retain request records
               </Text>
-            </XStack>
-            <XStack gap="$2" alignItems="center">
-              <YStack width={8} height={8} borderRadius={4} backgroundColor="$red10" />
+            </Row>
+            <Row gap="$2" alignItems="center">
+              <Stack width={8} height={8} borderRadius={4} backgroundColor="$red10" />
               <Text fontSize="$3" color="$color11">
                 <Text fontWeight="600">72 hours</Text> - Notify users of data breaches
               </Text>
-            </XStack>
-          </YStack>
-        </YStack>
-      </YStack>
+            </Row>
+          </Stack>
+        </Stack>
+      </Stack>
     </ScrollView>
   )
 }

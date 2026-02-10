@@ -14,10 +14,10 @@ import {
   SkillsChart,
   spacing,
   type SkillsChartDataset,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -162,12 +162,12 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load soft skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -176,10 +176,10 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (!data || data.skills.length === 0) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap={spacing.md}>
+          <Row justifyContent="space-between" alignItems="center">
             <Heading variant="h4">Soft Skills Analysis</Heading>
-          </XStack>
+          </Row>
           <EmptyState
             title="No soft skills assessment"
             description="Complete your soft skills assessment to see your profile"
@@ -190,7 +190,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               Complete Soft Skills Assessment
             </Button>
           )}
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -199,12 +199,12 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (!isCompleted && showCTA) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack gap={spacing.md}>
+          <Row justifyContent="space-between" alignItems="center">
             <Heading variant="h4">Soft Skills Analysis</Heading>
-          </XStack>
-          <YStack gap="$4">
-            <YStack gap="$2">
+          </Row>
+          <Stack gap="$4">
+            <Stack gap="$2">
               <Text fontSize="$3" color="$color11">
                 Complete your soft skills assessment to showcase your strengths and improve job
                 matching.
@@ -212,12 +212,12 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               <Text fontSize="$2" color="$color10">
                 {completionCount} of 25 skills rated
               </Text>
-            </YStack>
+            </Stack>
             <Button variant="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
             </Button>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -228,9 +228,9 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={spacing.md}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Soft Skills Analysis</Heading>
           {showEdit && (
             <Button
@@ -243,7 +243,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {/* Category Tabs */}
         {skills.length > 0 && (
@@ -258,13 +258,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
         {/* Chart Comparison */}
         {categoryChartData && categoryChartData.length > 0 && (
-          <YStack gap="$4">
+          <Stack gap="$4">
             <Text fontSize="$4" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
               {categoryLabels[activeCategory]} Skills
             </Text>
 
             {/* Main Skills Chart */}
-            <YStack alignItems="center" paddingVertical="$4">
+            <Stack alignItems="center" paddingVertical="$4">
               <SkillsChart
                 datasets={categoryChartData}
                 height={chartHeight}
@@ -278,30 +278,30 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
                 gridColor="$color5"
                 labelColor="$color11"
               />
-            </YStack>
+            </Stack>
 
             {/* Legend */}
             {categoryChartData.length > 1 && (
-              <XStack gap="$4" alignItems="center" justifyContent="center" paddingVertical="$2">
-                <XStack gap="$2" alignItems="center">
-                  <YStack width={20} height={3} backgroundColor="$blue9" />
+              <Row gap="$4" alignItems="center" justifyContent="center" paddingVertical="$2">
+                <Row gap="$2" alignItems="center">
+                  <Stack width={20} height={3} backgroundColor="$blue9" />
                   <Text fontSize="$2" color="$color11">
                     Self Assessment
                   </Text>
-                </XStack>
-                <XStack gap="$2" alignItems="center">
-                  <YStack width={20} height={3} backgroundColor="$green9" />
+                </Row>
+                <Row gap="$2" alignItems="center">
+                  <Stack width={20} height={3} backgroundColor="$green9" />
                   <Text fontSize="$2" color="$color11">
                     Peer Average
                   </Text>
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
             )}
 
             <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {/* CTA button for completed assessments when showCTA is true */}
@@ -310,7 +310,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             Update Assessment
           </Button>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

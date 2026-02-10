@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, Dialog } from '@unicornlove/ui'
+import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Button, H4, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileEmptyState } from './components'
 import type { EducationEntry } from './types/education'
 import { formatDateRange } from './utils/date-formatting'
@@ -18,7 +18,7 @@ interface ProfileEducationRightProps {
  */
 export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProps = {}) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
-  const toast = useToastController()
+  const toast = useToast()
 
   // Query saved education data
   const educationQuery = api.profile.education.getEducation.useQuery()
@@ -27,17 +27,19 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   // Delete mutation
   const deleteEducationMutation = api.profile.education.deleteEducation.useMutation({
     onError: (error: unknown) => {
-      toast.show('Delete Failed', {
-        message:
-          error instanceof Error
+      toast.show({
+          title: 'Delete Failed',
+          message: error instanceof Error
             ? error.message
             : 'Failed to delete education entry. Please try again.',
-      })
+          variant: 'error',
+        })
     },
     onSuccess: () => {
-      toast.show('Education Deleted', {
-        message: 'The education entry has been removed.',
-      })
+      toast.show({
+          title: 'Education Deleted',
+          message: 'The education entry has been removed.',
+        })
       educationQuery.refetch()
       setDeleteDialogOpen(null)
     },
@@ -45,9 +47,11 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
   const handleDelete = (educationId: string | null | undefined) => {
     if (!educationId) {
-      toast.show('Delete Failed', {
-        message: 'Missing education identifier. Please try again.',
-      })
+      toast.show({
+          title: 'Delete Failed',
+          message: 'Missing education identifier. Please try again.',
+          variant: 'error',
+        })
       return
     }
     deleteEducationMutation.mutate({ educationId })
@@ -57,10 +61,10 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading education data...</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -69,9 +73,9 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load education data</Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -90,14 +94,14 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
           message="No education history saved yet. Add your first education entry in the left panel."
         />
       ) : (
-        <YStack gap="$3">
+        <Stack gap="$3">
           {educationEntries.map((edu) => {
             const normalizedGpa =
               typeof edu.gpa === 'number' ? edu.gpa : edu.gpa != null ? Number(edu.gpa) : undefined
             const hasValidGpa = typeof normalizedGpa === 'number' && !Number.isNaN(normalizedGpa)
 
             return (
-              <YStack
+              <Stack
                 key={edu.id}
                 padding="$4"
                 gap="$3"
@@ -111,28 +115,28 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                 }}
               >
                 {/* Institution Name with Verification Badge */}
-                <YStack gap="$1">
-                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                <Stack gap="$1">
+                  <Row gap="$2" alignItems="center" flexWrap="wrap">
                     <Text fontSize="$6" fontWeight="700" color="$color12">
                       {edu.institution_name}
                     </Text>
                     {!edu.is_verified && (
-                      <XStack gap="$1" alignItems="center">
+                      <Row gap="$1" alignItems="center">
                         <AlertCircle size={14} color="$orange10" />
                         <Text fontSize="$1" color="$orange10">
                           Pending verification
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Current Education Badge */}
                   {edu.is_current && (
-                    <XStack gap="$1" alignItems="center">
+                    <Row gap="$1" alignItems="center">
                       <Text fontSize="$2" fontWeight="600" color="$blue10">
                         Current
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Degree Type */}
@@ -155,7 +159,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                       GPA: {normalizedGpa.toFixed(1)}/4.0
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Delete Confirmation Dialog */}
                 <Dialog
@@ -170,7 +174,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         Are you sure you want to delete this education entry? This action cannot be
                         undone.
                       </Dialog.Description>
-                      <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
+                      <Row gap="$3" justifyContent="flex-end" marginTop="$4">
                         <Button variant="outlined" onPress={() => setDeleteDialogOpen(null)}>
                           Cancel
                         </Button>
@@ -181,16 +185,16 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         >
                           {deleteEducationMutation.isPending ? 'Deleting...' : 'Delete'}
                         </Button>
-                      </XStack>
+                      </Row>
                     </Dialog.Content>
                   </Dialog.Portal>
                 </Dialog>
 
                 {/* Details */}
-                <YStack gap="$2">
-                  <XStack alignItems="center" flexWrap="wrap" gap="$3">
+                <Stack gap="$2">
+                  <Row alignItems="center" flexWrap="wrap" gap="$3">
                     {(edu.start_date || edu.end_date || edu.is_current) && (
-                      <XStack gap="$2" alignItems="center">
+                      <Row gap="$2" alignItems="center">
                         <Calendar size={16} color="$color11" />
                         <Text fontSize="$2" color="$color11">
                           {formatDateRange(
@@ -200,10 +204,10 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                             edu.expected_graduation_date
                           )}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
 
-                    <XStack gap="$2" marginLeft="auto">
+                    <Row gap="$2" marginLeft="auto">
                       <Button
                         size="$2"
                         variant="outlined"
@@ -215,9 +219,11 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                           if (edu.id && onEditEntry) {
                             onEditEntry(edu.id)
                           } else {
-                            toast.show('Error', {
-                              message: 'Unable to edit this entry. Please try again.',
-                            })
+                            toast.show({
+          title: 'Error',
+          message: 'Unable to edit this entry. Please try again.',
+          variant: 'error',
+        })
                           }
                         }}
                       />
@@ -230,35 +236,35 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         accessibilityLabel="Delete education entry"
                         onPress={() => setDeleteDialogOpen(edu.id ?? null)}
                       />
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* Location */}
                   {edu.location && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap="$2" alignItems="center">
                       <MapPin size={16} color="$color11" />
                       <Text fontSize="$2" color="$color11">
                         {edu.location}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Description */}
                   {edu.description && (
-                    <YStack gap="$1">
+                    <Stack gap="$1">
                       <Text fontSize="$2" fontWeight="600" color="$color11">
                         Description:
                       </Text>
                       <Text fontSize="$2" color="$color11">
                         {edu.description}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             )
           })}
-        </YStack>
+        </Stack>
       )}
     </DashboardWidget>
   )

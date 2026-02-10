@@ -36,7 +36,7 @@ vi.mock('@unicornlove/ui', async () => {
     Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <span {...props}>{children}</span>
     ),
-    YStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
   }

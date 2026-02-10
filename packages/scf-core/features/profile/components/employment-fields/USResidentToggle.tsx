@@ -1,5 +1,5 @@
-import { ToggleCard } from '@unicornlove/ui'
-import type { ToggleCardProps } from '@unicornlove/ui'
+import { ToggleCard } from '@unicornlove/beyond-ui'
+import type { ToggleCardProps } from '@unicornlove/beyond-ui'
 import { Flag } from '@tamagui/lucide-icons'
 
 export interface USResidentToggleProps

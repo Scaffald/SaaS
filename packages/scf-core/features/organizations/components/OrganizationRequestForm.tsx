@@ -3,10 +3,10 @@ import { api } from '@scf/core/utils/api'
 import { type OrganizationRequest, organizationRequestSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, Loader2 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface OrganizationRequestSummary {
   id: string
@@ -33,7 +33,7 @@ export function OrganizationRequestForm({
   defaultName = '',
   defaultSlug = '',
 }: OrganizationRequestFormProps) {
-  const toast = useToastController()
+  const toast = useToast()
 
   const form = useForm<OrganizationRequest>({
     resolver: zodResolver(organizationRequestSchema),
@@ -56,16 +56,20 @@ export function OrganizationRequestForm({
   const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation(
     {
       onSuccess: ({ request }: CreateOrganizationRequestResult) => {
-        toast.show('Request submitted', {
+        toast.show({
+          title: 'Request submitted',
           message: 'We received your organization details and will follow up after review.',
+          variant: 'success',
         })
         if (request?.slug) {
           setValue('slug', request.slug, { shouldValidate: false })
         }
       },
       onError: (error: { message?: string }) => {
-        toast.show('Unable to submit request', {
+        toast.show({
+          title: 'Unable to submit request',
           message: error?.message ?? 'Please try again shortly.',
+          variant: 'error',
         })
       },
     }
@@ -79,8 +83,8 @@ export function OrganizationRequestForm({
   const submissionSucceeded = createOrganizationRequestMutation.isSuccess
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Label htmlFor="organization-request-name" fontSize="$3" fontWeight="600" color="$color12">
           Organization Name
         </Label>
@@ -109,9 +113,9 @@ export function OrganizationRequestForm({
             {formState.errors.name.message}
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="organization-request-slug" fontSize="$3" fontWeight="600" color="$color12">
           Preferred Slug
         </Label>
@@ -134,9 +138,9 @@ export function OrganizationRequestForm({
             {formState.errors.slug.message}
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label
           htmlFor="organization-request-website"
           fontSize="$3"
@@ -164,9 +168,9 @@ export function OrganizationRequestForm({
             {formState.errors.website.message}
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Label htmlFor="organization-request-notes" fontSize="$3" fontWeight="600" color="$color12">
           Notes for the review team (optional)
         </Label>
@@ -188,7 +192,7 @@ export function OrganizationRequestForm({
             {formState.errors.notes.message}
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
 
       <Button
         size="$4"
@@ -202,18 +206,18 @@ export function OrganizationRequestForm({
 
       {submissionSucceeded ? (
         <Card bordered theme="success" padding="$4" gap="$3">
-          <XStack gap="$3" alignItems="center">
+          <Row gap="$3" alignItems="center">
             <CheckCircle2 size={20} color="$green10" />
             <Text fontSize="$4" fontWeight="700" color="$green10">
               Request submitted successfully
             </Text>
-          </XStack>
+          </Row>
           <Text fontSize="$3" color="$color11">
             We&apos;ve logged your request. Our team will review it and follow up if we need
             additional details.
           </Text>
         </Card>
       ) : null}
-    </YStack>
+    </Stack>
   )
 }

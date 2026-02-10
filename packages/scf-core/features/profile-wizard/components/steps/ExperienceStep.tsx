@@ -1,8 +1,8 @@
-import { MonthYearPicker, ToggleSwitch } from '@unicornlove/ui'
+import { MonthYearPicker, ToggleSwitch } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 import type { ExperienceStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -82,17 +82,17 @@ export function ExperienceStep({
   }
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
+    <Stack gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Add your latest experience
         </Text>
         <Paragraph color="$color11">
           Showcase your most recent role. You can add more later in your full profile.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Job Title *</Text>
         <Controller
           control={control}
@@ -106,9 +106,9 @@ export function ExperienceStep({
             {errors.jobTitle.message}
           </Text>
         )}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Company *</Text>
         <Controller
           control={control}
@@ -122,10 +122,10 @@ export function ExperienceStep({
             {errors.companyName.message}
           </Text>
         )}
-      </YStack>
+      </Stack>
 
-      <XStack gap="$3">
-        <YStack flex={1} gap="$2">
+      <Row gap="$3">
+        <Stack flex={1} gap="$2">
           <Controller
             control={control}
             name="startDate"
@@ -138,9 +138,9 @@ export function ExperienceStep({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$2">
+        <Stack flex={1} gap="$2">
           <Controller
             control={control}
             name="endDate"
@@ -154,10 +154,10 @@ export function ExperienceStep({
               />
             )}
           />
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <Controller
           control={control}
           name="isCurrent"
@@ -171,9 +171,9 @@ export function ExperienceStep({
           )}
         />
         <Text fontSize="$3">I currently work here</Text>
-      </XStack>
+      </Row>
 
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontWeight="600">Summary</Text>
         <Controller
           control={control}
@@ -186,7 +186,7 @@ export function ExperienceStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
       <StepNavigation
         canGoBack
@@ -199,7 +199,7 @@ export function ExperienceStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Next: Certifications"
       />
-    </YStack>
+    </Stack>
   )
 }
 

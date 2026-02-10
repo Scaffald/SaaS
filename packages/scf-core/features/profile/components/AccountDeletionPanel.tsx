@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { useToast } from '@unicornlove/ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { AlertTriangle, Trash2 } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { AlertDialog, Button, Card, Input, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { AlertDialog, Button, Card, Input, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 
 export function AccountDeletionPanel() {
   const [isOpen, setIsOpen] = useState(false)
@@ -46,13 +46,13 @@ export function AccountDeletionPanel() {
 
   return (
     <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="$4">
-      <YStack gap="$3">
-        <XStack alignItems="center" gap="$2">
+      <Stack gap="$3">
+        <Row alignItems="center" gap="$2">
           <AlertTriangle color="$red11" size={20} />
           <Text fontSize="$6" fontWeight="700" color="$red11">
             Delete Account
           </Text>
-        </XStack>
+        </Row>
 
         <Text color="$color11" fontSize="$3">
           Permanently delete your account and all associated data. This action cannot be undone.
@@ -77,8 +77,8 @@ export function AccountDeletionPanel() {
           <AlertDialog.Portal>
             <AlertDialog.Overlay />
             <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <YStack gap="$4" padding="$4">
-                <YStack gap="$2">
+              <Stack gap="$4" padding="$4">
+                <Stack gap="$2">
                   <Text fontSize="$7" fontWeight="700" color="$red11">
                     Delete Your Account?
                   </Text>
@@ -86,9 +86,9 @@ export function AccountDeletionPanel() {
                     This action cannot be undone. All your data will be permanently deleted or
                     anonymized.
                   </Text>
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text fontSize="$4" fontWeight="600">
                     Reason (optional)
                   </Text>
@@ -98,9 +98,9 @@ export function AccountDeletionPanel() {
                     placeholder="Help us improve by sharing why you're deleting your account..."
                     style={{ minHeight: 80 }}
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2">
+                <Stack gap="$2">
                   <Text fontSize="$4" fontWeight="600">
                     Type "DELETE" to confirm
                   </Text>
@@ -110,9 +110,9 @@ export function AccountDeletionPanel() {
                     placeholder="DELETE"
                     borderColor={confirmText === 'DELETE' ? '$green8' : '$red8'}
                   />
-                </YStack>
+                </Stack>
 
-                <XStack gap="$3" justifyContent="flex-end">
+                <Row gap="$3" justifyContent="flex-end">
                   <Button
                     variant="outlined"
                     onPress={() => {
@@ -133,12 +133,12 @@ export function AccountDeletionPanel() {
                   >
                     {deletionMutation.isPending ? 'Deleting...' : 'Delete Account'}
                   </Button>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </AlertDialog.Content>
           </AlertDialog.Portal>
         </AlertDialog>
-      </YStack>
+      </Stack>
     </Card>
   )
 }

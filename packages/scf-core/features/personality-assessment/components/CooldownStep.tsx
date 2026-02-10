@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, YStack } from '@unicornlove/ui'
+import { Button, Progress, Text, Stack } from '@unicornlove/beyond-ui'
 import { getChoices, getQuestions, type IPIPAnswer, type IPIPChoice } from '../lib/ipip'
 
 export interface CooldownStepProps {
@@ -99,9 +99,9 @@ export function CooldownStep({
   )
 
   return (
-    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+    <Stack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Cooldown Timer */}
-      <YStack
+      <Stack
         gap="$4"
         padding="$6"
         backgroundColor="$color3"
@@ -109,7 +109,7 @@ export function CooldownStep({
         borderWidth={1}
         borderColor="$color7"
       >
-        <YStack gap="$2" alignItems="center">
+        <Stack gap="$2" alignItems="center">
           <Text fontSize="$6" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             Cooldown Period
           </Text>
@@ -119,25 +119,25 @@ export function CooldownStep({
           <Text fontSize="$8" fontWeight="bold" color="$blue10">
             {formatTime(timeRemaining)}
           </Text>
-        </YStack>
+        </Stack>
         <Progress value={cooldownProgress} max={100} size="$2">
           <Progress.Indicator animation="quick" />
         </Progress>
-      </YStack>
+      </Stack>
 
       {/* IPIP Questions Section */}
-      <YStack gap="$4">
-        <YStack gap="$2" alignItems="center">
+      <Stack gap="$4">
+        <Stack gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
           <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
             Progress: {currentIndex} / 120 ({progress}%)
           </Text>
-        </YStack>
+        </Stack>
 
         {currentQuestion && (
-          <YStack
+          <Stack
             gap="$4"
             padding="$4"
             borderRadius="$4"
@@ -148,7 +148,7 @@ export function CooldownStep({
               {currentQuestion.text}
             </Text>
 
-            <YStack gap="$3">
+            <Stack gap="$3">
               {currentChoices.map((choice) => (
                 <Button
                   key={choice.score}
@@ -161,18 +161,18 @@ export function CooldownStep({
                   <Button.Text>{choice.text}</Button.Text>
                 </Button>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
         {!currentQuestion && !isCooldownActive && (
-          <YStack gap="$2" alignItems="center" padding="$4">
+          <Stack gap="$2" alignItems="center" padding="$4">
             <Text fontSize="$4" color="$green10" fontWeight="600" style={{ textAlign: 'center' }}>
               All questions answered! You can continue to the next step.
             </Text>
-          </YStack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

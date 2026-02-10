@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
@@ -23,7 +23,7 @@ export function AddTeamMemberModal({
   organizationId,
   onAdded,
 }: AddTeamMemberModalProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [selectedUserId, setSelectedUserId] = useState<string>('')
   const [selectedUserName, setSelectedUserName] = useState<string>('')
   const [selectedRoleId, setSelectedRoleId] = useState<string>('')
@@ -39,7 +39,10 @@ export function AddTeamMemberModal({
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to add member', { message })
+      toast.show({
+          title: 'Unable to add member',
+          variant: 'error',
+        })
     },
   })
 
@@ -77,12 +80,12 @@ export function AddTeamMemberModal({
 
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Add team member">
-      <YStack gap="$4">
+      <Stack gap="$4">
         <Text color="$color11">
           Invite an existing organization member to collaborate on this team.
         </Text>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" color="$color11">
             Member
           </Text>
@@ -97,17 +100,17 @@ export function AddTeamMemberModal({
             error={formError ?? undefined}
             disabled={addMemberMutation.isPending}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap="$2">
           <Text fontSize="$3" color="$color11">
             Role
           </Text>
           {isLoadingRoles ? (
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap="$2">
               <Spinner size="small" />
               <Text color="$color11">Loading roles...</Text>
-            </XStack>
+            </Row>
           ) : (
             <ResponsiveSelect
               value={selectedRoleId || roleOptions[0]?.id || ''}
@@ -119,9 +122,9 @@ export function AddTeamMemberModal({
               }))}
             />
           )}
-        </YStack>
+        </Stack>
 
-        <XStack gap="$3" justifyContent="flex-end">
+        <Row gap="$3" justifyContent="flex-end">
           <Button
             variant="outlined"
             disabled={addMemberMutation.isPending}
@@ -137,8 +140,8 @@ export function AddTeamMemberModal({
           >
             {addMemberMutation.isPending ? <Spinner size="small" color="$color1" /> : 'Add Member'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ResponsiveModal>
   )
 }

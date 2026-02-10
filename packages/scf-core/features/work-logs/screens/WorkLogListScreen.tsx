@@ -5,7 +5,7 @@ import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from '@tamagu
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { RefreshControl, ScrollView } from 'react-native'
-import { Button, Card, Paragraph, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Paragraph, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
 import { useWorkLogSync } from '../hooks/useWorkLogSync'
@@ -56,9 +56,9 @@ export function WorkLogListScreen() {
         <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
       }
     >
-      <YStack gap="$4" padding="$4" flex={1}>
-        <XStack justifyContent="space-between" alignItems="center">
-          <YStack gap="$1">
+      <Stack gap="$4" padding="$4" flex={1}>
+        <Row justifyContent="space-between" alignItems="center">
+          <Stack gap="$1">
             <Text fontSize="$7" fontWeight="700">
               Work Logs
             </Text>
@@ -66,7 +66,7 @@ export function WorkLogListScreen() {
               Track and review your daily work history, collaborate with teammates, and manage
               verification.
             </Paragraph>
-          </YStack>
+          </Stack>
           <Button
             size="$4"
             icon={Plus}
@@ -74,14 +74,14 @@ export function WorkLogListScreen() {
           >
             New Work Log
           </Button>
-        </XStack>
+        </Row>
 
         {hasOfflineQueue && (
           <Card backgroundColor="$yellow3" borderColor="$yellow7" borderWidth={1}>
-            <YStack gap="$3" padding="$3">
-              <XStack gap="$3" alignItems="center">
+            <Stack gap="$3" padding="$3">
+              <Row gap="$3" alignItems="center">
                 <CloudOff color="#b45309" />
-                <YStack gap="$1" flex={1}>
+                <Stack gap="$1" flex={1}>
                   <Text fontWeight="600" color="$yellow11">
                     Offline drafts ready to sync
                   </Text>
@@ -89,9 +89,9 @@ export function WorkLogListScreen() {
                     {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? '' : 's'} will
                     sync once you are back online.
                   </Paragraph>
-                </YStack>
-              </XStack>
-              <XStack gap="$3" justifyContent="flex-end">
+                </Stack>
+              </Row>
+              <Row gap="$3" justifyContent="flex-end">
                 <Button
                   size="$3"
                   variant="outlined"
@@ -100,8 +100,8 @@ export function WorkLogListScreen() {
                 >
                   {syncManager.isSyncing ? 'Syncing…' : 'Sync Now'}
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </Card>
         )}
 
@@ -115,14 +115,14 @@ export function WorkLogListScreen() {
         <Separator />
 
         {listQuery.isLoading ? (
-          <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+          <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
             <Spinner size="large" />
             <Text color="$color10">Loading work logs…</Text>
-          </YStack>
+          </Stack>
         ) : items.length === 0 ? (
           <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
         ) : (
-          <YStack gap="$3" paddingBottom="$6">
+          <Stack gap="$3" paddingBottom="$6">
             {items.map((item) => (
               <Card
                 key={item.id}
@@ -134,23 +134,23 @@ export function WorkLogListScreen() {
                   router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))
                 }
               >
-                <YStack gap="$3" padding="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack gap="$1">
+                <Stack gap="$3" padding="$3">
+                  <Row justifyContent="space-between" alignItems="center">
+                    <Stack gap="$1">
                       <Text fontWeight="700" fontSize="$6">
                         {item.project?.name ?? 'Unknown Project'}
                       </Text>
                       <Text color="$color10">
                         {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
                       </Text>
-                    </YStack>
+                    </Stack>
                     <Text fontWeight="600" color={getStatusColor(item.status) as never}>
                       {getStatusLabel(item.status)}
                     </Text>
-                  </XStack>
+                  </Row>
 
-                  <XStack gap="$2" flexWrap="wrap">
-                    <YStack
+                  <Row gap="$2" flexWrap="wrap">
+                    <Stack
                       paddingHorizontal="$2"
                       paddingVertical="$1"
                       borderRadius="$3"
@@ -163,9 +163,9 @@ export function WorkLogListScreen() {
                       >
                         {item.visibility === 'public' ? 'Public' : 'Private'}
                       </Text>
-                    </YStack>
+                    </Stack>
                     {item.showOnProfile && (
-                      <YStack
+                      <Stack
                         paddingHorizontal="$2"
                         paddingVertical="$1"
                         borderRadius="$3"
@@ -174,11 +174,11 @@ export function WorkLogListScreen() {
                         <Text fontSize="$2" color="$blue11" fontWeight="600">
                           On profile
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
-                  </XStack>
+                  </Row>
 
-                  <XStack gap="$4" flexWrap="wrap">
+                  <Row gap="$4" flexWrap="wrap">
                     <MetricPill
                       icon={Activity}
                       label="Hours"
@@ -194,7 +194,7 @@ export function WorkLogListScreen() {
                       label="Photos"
                       value={`${item.photoCount ?? 0}`}
                     />
-                  </XStack>
+                  </Row>
 
                   {item.descriptionPreview && (
                     <Paragraph numberOfLines={2} color="$color10">
@@ -202,7 +202,7 @@ export function WorkLogListScreen() {
                     </Paragraph>
                   )}
 
-                  <XStack justifyContent="space-between" alignItems="center">
+                  <Row justifyContent="space-between" alignItems="center">
                     <Text color="$color10" fontSize="$3">
                       Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
                     </Text>
@@ -217,13 +217,13 @@ export function WorkLogListScreen() {
                     >
                       View Details
                     </Button>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               </Card>
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }
@@ -248,18 +248,18 @@ function AnalyticsBanner({
 }: AnalyticsBannerProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$3" padding="$3">
+      <Stack gap="$3" padding="$3">
         <Text fontWeight="700" fontSize="$5">
           Quick summary
         </Text>
         {isLoading && !statusSummary ? (
-          <XStack gap="$3" alignItems="center">
+          <Row gap="$3" alignItems="center">
             <Spinner size="small" />
             <Text color="$color10">Calculating analytics…</Text>
-          </XStack>
+          </Row>
         ) : (
-          <YStack gap="$3">
-            <XStack gap="$4" flexWrap="wrap">
+          <Stack gap="$3">
+            <Row gap="$4" flexWrap="wrap">
               <SummaryTile label="Total Logs" value={String(totalLogs)} />
               <SummaryTile label="Total Hours" value={`${totalHours.toFixed(2)}h`} />
               <SummaryTile
@@ -280,10 +280,10 @@ function AnalyticsBanner({
                 ).toFixed(1)}h`}
                 color="$orange10"
               />
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   )
 }
@@ -297,7 +297,7 @@ interface SummaryTileProps {
 
 function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTileProps) {
   return (
-    <YStack
+    <Stack
       backgroundColor="$color2"
       borderRadius="$4"
       paddingHorizontal="$4"
@@ -316,7 +316,7 @@ function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTile
           {subtitle}
         </Text>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -328,7 +328,7 @@ interface MetricPillProps {
 
 function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
   return (
-    <XStack
+    <Row
       backgroundColor="$color3"
       paddingHorizontal="$3"
       paddingVertical="$2"
@@ -341,7 +341,7 @@ function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
       <Text fontSize="$3" color="$color10">
         {label}
       </Text>
-    </XStack>
+    </Row>
   )
 }
 
@@ -352,7 +352,7 @@ interface EmptyStateProps {
 function EmptyState({ onCreate }: EmptyStateProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$3" alignItems="center" paddingVertical="$8" paddingHorizontal="$4">
+      <Stack gap="$3" alignItems="center" paddingVertical="$8" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700">
           No work logs yet
         </Text>
@@ -363,7 +363,7 @@ function EmptyState({ onCreate }: EmptyStateProps) {
         <Button size="$4" icon={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
-      </YStack>
+      </Stack>
     </Card>
   )
 }

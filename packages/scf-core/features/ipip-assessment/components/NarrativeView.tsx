@@ -1,5 +1,5 @@
 import type { IPIPResults, IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import { DOMAIN_ORDER } from '../utils/domainGrouping'
 import { generateOverallSummary } from '../utils/narrativeGenerator'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
@@ -26,11 +26,11 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center" aria-live="polite">
+      <Stack gap="$4" padding="$4" alignItems="center" aria-live="polite">
         <Text fontSize="$4" color="$color11">
           No results available yet. Complete at least one domain to see results.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -38,10 +38,10 @@ export function NarrativeView({
   const overallSummary = scores ? generateOverallSummary(scores) : null
 
   return (
-    <YStack gap="$6" width="100%">
+    <Stack gap="$6" width="100%">
       {/* Overall Summary - only show if we have scores and narratives */}
       {overallSummary && (
-        <YStack
+        <Stack
           gap="$3"
           padding="$5"
           backgroundColor="$blue2"
@@ -55,12 +55,12 @@ export function NarrativeView({
           <Text fontSize="$4" color="$blue10" lineHeight="$5">
             {overallSummary}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Show message if summary unavailable but we have partial data */}
       {!overallSummary && completedDomains > 0 && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$4"
           backgroundColor="$blue2"
@@ -75,11 +75,11 @@ export function NarrativeView({
           <Text fontSize="$3" color="$blue10">
             Complete more domains to see your full personality profile summary.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Domain Cards */}
-      <YStack gap="$4">
+      <Stack gap="$4">
         {DOMAIN_ORDER.map((domain) => {
           const domainScore = scores?.[domain] ?? null
           const normalizedDomainScore = normalizedScores?.[domain]
@@ -98,11 +98,11 @@ export function NarrativeView({
             />
           )
         })}
-      </YStack>
+      </Stack>
 
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
-        <YStack
+        <Stack
           gap="$2"
           padding="$4"
           backgroundColor="$yellow2"
@@ -117,8 +117,8 @@ export function NarrativeView({
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype.
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

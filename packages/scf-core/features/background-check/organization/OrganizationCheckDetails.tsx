@@ -3,7 +3,7 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCcw, X } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getStatusMetadata } from '../components/status.utils'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -46,7 +46,7 @@ export function OrganizationCheckDetails({
   }, [detail])
 
   return (
-    <YStack
+    <Stack
       borderWidth={1}
       borderColor="$borderColor"
       borderRadius="$6"
@@ -54,11 +54,11 @@ export function OrganizationCheckDetails({
       gap="$3"
       backgroundColor="$color2"
     >
-      <XStack justifyContent="space-between" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Background Check Details
         </Text>
-        <XStack gap="$2">
+        <Row gap="$2">
           <Button
             size="$2"
             variant="outlined"
@@ -71,20 +71,20 @@ export function OrganizationCheckDetails({
           <Button size="$2" variant="outlined" icon={X} onPress={onClose}>
             Close
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {checkQuery.isLoading ? (
-        <YStack gap="$2" alignItems="center" paddingVertical="$4">
+        <Stack gap="$2" alignItems="center" paddingVertical="$4">
           <Spinner size="large" />
           <Text fontSize="$3" color="$color11">
             Loading background check details…
           </Text>
-        </YStack>
+        </Stack>
       ) : null}
 
       {checkQuery.isError ? (
-        <YStack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
+        <Stack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
           <Text fontSize="$3" color="$color11">
             We couldn’t load the background check details. Please try again.
           </Text>
@@ -97,19 +97,19 @@ export function OrganizationCheckDetails({
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       ) : null}
 
       {!checkQuery.isLoading && !checkQuery.isError && (detail || summary) ? (
-        <YStack gap="$3">
-          <YStack gap="$1">
+        <Stack gap="$3">
+          <Stack gap="$1">
             <Text fontSize="$4" fontWeight="600" color="$color12">
               Overview
             </Text>
             <Separator />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <InfoRow
               label="Status"
               value={formatStatus(detail?.status ?? summary?.status ?? 'pending')}
@@ -144,23 +144,23 @@ export function OrganizationCheckDetails({
               label="Estimated Completion"
               value={formatDateTime(detail?.estimated_completion_date ?? null)}
             />
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {detail?.summary ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Summary
               </Text>
               <Text fontSize="$3" color="$color11">
                 {detail.summary}
               </Text>
-            </YStack>
+            </Stack>
           ) : null}
 
           {detail?.findings ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Findings
               </Text>
@@ -169,17 +169,17 @@ export function OrganizationCheckDetails({
                   ? detail.findings
                   : JSON.stringify(detail.findings, null, 2)}
               </Text>
-            </YStack>
+            </Stack>
           ) : null}
 
           {componentStatuses.length > 0 ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Component Statuses
               </Text>
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {componentStatuses.map((component, index) => (
-                  <YStack
+                  <Stack
                     key={`${component.check_type_id ?? index}`}
                     padding="$3"
                     backgroundColor="$color3"
@@ -207,14 +207,14 @@ export function OrganizationCheckDetails({
                         }
                       />
                     ) : null}
-                  </YStack>
+                  </Stack>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : null}
 
           {detail?.metadata ? (
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Metadata
               </Text>
@@ -225,11 +225,11 @@ export function OrganizationCheckDetails({
               >
                 {JSON.stringify(detail.metadata, null, 2)}
               </Text>
-            </YStack>
+            </Stack>
           ) : null}
-        </YStack>
+        </Stack>
       ) : null}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -240,13 +240,13 @@ interface InfoRowProps {
 
 function InfoRow({ label, value }: InfoRowProps) {
   return (
-    <XStack gap="$2" justifyContent="space-between" flexWrap="wrap">
+    <Row gap="$2" justifyContent="space-between" flexWrap="wrap">
       <Text fontSize="$3" color="$color10">
         {label}
       </Text>
       <Text fontSize="$3" color="$color12" fontWeight="600">
         {value}
       </Text>
-    </XStack>
+    </Row>
   )
 }
