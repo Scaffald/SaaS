@@ -292,7 +292,7 @@ export class Skills extends Resource {
   }
 
   async removeUserSkill(params: RemoveUserSkillParams): Promise<SuccessResponse> {
-    return this.del<SuccessResponse>('/v1/profiles/skills', params)
+    return this.del<SuccessResponse>(`/v1/profiles/skills/${params.skillId}`)
   }
 
   // Multi-Taxonomy Endpoints
@@ -310,7 +310,7 @@ export class Skills extends Resource {
   }
 
   async removeSkillMultiTaxonomy(params: RemoveSkillMTParams): Promise<SuccessResponse> {
-    return this.del<SuccessResponse>('/v1/profiles/skills/multi-taxonomy', params)
+    return this.del<SuccessResponse>(`/v1/profiles/skills/multi-taxonomy/${params.userSkillId}`)
   }
 
   async getPrimaryIndustry(): Promise<GetPrimaryIndustryResponse> {

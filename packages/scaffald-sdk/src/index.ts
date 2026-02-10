@@ -57,8 +57,8 @@ export type {
   SoftSkillsHistoryVersion,
   GetSoftSkillsHistoryResponse,
   GetSoftSkillsComparisonResponse,
-  Industry,
-  GetIndustriesResponse,
+  Industry as SkillIndustry,
+  GetIndustriesResponse as GetSkillIndustriesResponse,
   SearchParentSkillsParams,
   ParentSkill,
   SearchParentSkillsResponse,
@@ -86,6 +86,23 @@ export type {
   GetSkillsLegacyResponse,
   UpdateSkillsLegacyParams,
 } from './resources/skills.js'
+
+export type {
+  Address,
+  ExperienceEntry,
+  GetExperienceResponse,
+  ExperienceSummary,
+  SaveExperienceParams,
+  SaveExperienceResponse,
+  DeleteExperienceParams,
+  DeleteExperienceResponse,
+} from './resources/experience.js'
+
+export type {
+  EmploymentPreferences,
+  UpdateEmploymentParams,
+  UpdateEmploymentResponse,
+} from './resources/employment.js'
 
 export type { Industry, IndustryListResponse } from './resources/industries.js'
 
