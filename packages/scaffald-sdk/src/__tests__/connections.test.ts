@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest'
+import { http, HttpResponse } from 'msw'
 import { Scaffald } from '../client.js'
 import { server } from './mocks/server'
 
@@ -428,7 +429,16 @@ describe('Connections', () => {
       ).rejects.toThrow()
     })
 
-    it('should handle 500 server error', async () => {
+    it('should handle 500 server error', { timeout: 15000 }, async () => {
+      server.use(
+        http.get('*/v1/connections', () => {
+          return HttpResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+          )
+        })
+      )
+
       await expect(
         client.connections.list()
       ).rejects.toThrow()

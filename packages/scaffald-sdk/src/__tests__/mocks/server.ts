@@ -2843,8 +2843,32 @@ export const handlers = [
 
   // GET /v1/engagement/metrics - Get metrics
   http.get(`${BASE_URL}/v1/engagement/metrics`, ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    const apiKey = authHeader?.replace('Bearer ', '')
+    
     const url = new URL(request.url)
-    const _days = parseInt(url.searchParams.get('days') || '30', 10)
+    const days = parseInt(url.searchParams.get('days') || '30', 10)
+
+    // Return empty metrics for test_key_new
+    if (apiKey === 'test_key_new') {
+      return HttpResponse.json({
+        profile_views: 0,
+        job_views: 0,
+        applications_started: 0,
+        applications_completed: 0,
+        searches: 0,
+        total_events: 0,
+      })
+    }
+
+    // Validation
+    if (days < 1) {
+      return HttpResponse.json({ error: 'days must be at least 1' }, { status: 400 })
+    }
+
+    if (days === 999999) {
+      return HttpResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
 
     return HttpResponse.json({
       profile_views: 42,
@@ -2863,6 +2887,11 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/connections`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')
     const apiKey = authHeader?.replace('Bearer ', '')
+    
+    // Simulate server error for test_key_server_error
+    if (apiKey === 'test_key_server_error') {
+      return HttpResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
     
     // Return empty for test_key_empty
     if (apiKey === 'test_key_empty') {
@@ -3056,7 +3085,19 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/connections/status/:userId`, ({ params }) => {
     const { userId } = params
 
-    if (userId === 'user_2') {
+    // Error cases
+    if (userId === 'user_nonexistent') {
+      return HttpResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Special cases
+    if (userId === 'user_self') {
+      return HttpResponse.json({
+        status: 'none', // Cannot connect with yourself
+      })
+    }
+
+    if (userId === 'user_2' || userId === 'user_already_connected') {
       return HttpResponse.json({
         status: 'connected',
         connectionId: 'conn_1',
@@ -3077,7 +3118,6 @@ export const handlers = [
       })
     }
 
-    
     if (userId === 'nonexistent_user') {
       return HttpResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -3091,13 +3131,71 @@ export const handlers = [
   http.post(`${BASE_URL}/v1/connections/request`, async ({ request }) => {
     const body = (await request.json()) as any
 
+    // Validation errors
     if (!body.targetUserId || body.targetUserId === '') {
       return HttpResponse.json({ error: 'targetUserId is required' }, { status: 400 })
     }
 
-    if (body.targetUserId === 'user_2') {
+    // Invalid format - reject special characters
+    if (body.targetUserId && /[^a-zA-Z0-9_-]/.test(body.targetUserId)) {
+      return HttpResponse.json({ error: 'Invalid userId format' }, { status: 400 })
+    }
+
+    // Cannot send to self
+    if (body.targetUserId === 'user_self' || body.targetUserId === 'user_1') {
+      return HttpResponse.json({ error: 'Cannot send connection request to yourself' }, { status: 400 })
+    }
+
+    // User not found
+    if (body.targetUserId === 'user_nonexistent') {
+      return HttpResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Already connected
+    if (body.targetUserId === 'user_2' || body.targetUserId === 'user_already_connected') {
       return HttpResponse.json({ error: 'Already connected' }, { status: 409 })
     }
+
+    // Pending request exists
+    if (body.targetUserId === 'user_pending_sent') {
+      return HttpResponse.json({ error: 'Connection request already sent' }, { status: 409 })
+    }
+
+    // Unauthorized
+    if (body.targetUserId === 'user_unauthorized') {
+      return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit
+    if (body.targetUserId === 'user_rate_limit') {
+      return HttpResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, headers: { 'Retry-After': '1' } }
+      )
+    }
+
+    // Exceeds connection limit
+    if (body.targetUserId === 'user_exceeds_limit') {
+      return HttpResponse.json({ error: 'Connection limit exceeded' }, { status: 403 })
+    }
+
+    // Deactivated user
+    if (body.targetUserId === 'user_deactivated') {
+      return HttpResponse.json({ error: 'User is deactivated' }, { status: 403 })
+    }
+
+    // Blocked user
+    if (body.targetUserId === 'user_blocked') {
+      return HttpResponse.json({ error: 'Cannot send connection request to blocked user' }, { status: 403 })
+    }
+
+    // Network error simulation
+    if (body.targetUserId === 'user_network_error') {
+      return HttpResponse.error()
+    }
+
+    // Private profile - should succeed but just send request
+    // (removing the error that was here before)
 
     return HttpResponse.json(
       {
@@ -3128,8 +3226,34 @@ export const handlers = [
   http.post(`${BASE_URL}/v1/connections/:connectionId/accept`, ({ params }) => {
     const { connectionId } = params
 
-    if (connectionId === 'invalid_id') {
+    // Validation
+    if (!connectionId || connectionId === '') {
+      return HttpResponse.json({ error: 'connectionId is required' }, { status: 400 })
+    }
+
+    // Invalid format - only reject truly invalid formats (special chars, spaces, etc)
+    if (connectionId && /[^a-zA-Z0-9_-]/.test(connectionId as string)) {
+      return HttpResponse.json({ error: 'Invalid connectionId format' }, { status: 400 })
+    }
+
+    // Not found
+    if (connectionId === 'invalid_id' || connectionId === 'conn_nonexistent' || connectionId === 'invalid-id-format') {
       return HttpResponse.json({ error: 'Connection not found' }, { status: 404 })
+    }
+
+    // Already accepted
+    if (connectionId === 'conn_already_accepted' || connectionId === 'conn_1') {
+      return HttpResponse.json({ error: 'Connection already accepted' }, { status: 409 })
+    }
+
+    // Already declined
+    if (connectionId === 'conn_already_declined') {
+      return HttpResponse.json({ error: 'Connection already declined' }, { status: 409 })
+    }
+
+    // Cannot accept request you sent
+    if (connectionId === 'conn_you_sent') {
+      return HttpResponse.json({ error: 'Cannot accept request you sent' }, { status: 403 })
     }
 
     return HttpResponse.json({
@@ -3158,8 +3282,29 @@ export const handlers = [
   http.post(`${BASE_URL}/v1/connections/:connectionId/decline`, ({ params }) => {
     const { connectionId } = params
 
-    if (connectionId === 'invalid_id') {
+    // Validation
+    if (!connectionId || connectionId === '') {
+      return HttpResponse.json({ error: 'connectionId is required' }, { status: 400 })
+    }
+
+    // Not found
+    if (connectionId === 'invalid_id' || connectionId === 'conn_nonexistent') {
       return HttpResponse.json({ error: 'Connection not found' }, { status: 404 })
+    }
+
+    // Already accepted - can't decline
+    if (connectionId === 'conn_already_accepted' || connectionId === 'conn_1') {
+      return HttpResponse.json({ error: 'Cannot decline accepted connection' }, { status: 409 })
+    }
+
+    // Already declined - idempotent, return success
+    if (connectionId === 'conn_already_declined') {
+      return new HttpResponse(null, { status: 204 })
+    }
+
+    // Cannot decline request you sent
+    if (connectionId === 'conn_you_sent') {
+      return HttpResponse.json({ error: 'Cannot decline request you sent' }, { status: 403 })
     }
 
     return new HttpResponse(null, { status: 204 })
@@ -3169,8 +3314,19 @@ export const handlers = [
   http.delete(`${BASE_URL}/v1/connections/:connectionId`, ({ params }) => {
     const { connectionId } = params
 
-    if (connectionId === 'invalid_id') {
+    // Not found
+    if (connectionId === 'invalid_id' || connectionId === 'conn_nonexistent') {
       return HttpResponse.json({ error: 'Connection not found' }, { status: 404 })
+    }
+
+    // Cannot remove pending request (must cancel instead)
+    if (connectionId === 'conn_pending_1' || connectionId === 'conn_pending' || connectionId === 'conn_pending_5') {
+      return HttpResponse.json({ error: 'Cannot remove pending connection. Use cancel instead.' }, { status: 400 })
+    }
+
+    // Already removed - idempotent
+    if (connectionId === 'conn_already_removed') {
+      return new HttpResponse(null, { status: 204 })
     }
 
     return new HttpResponse(null, { status: 204 })
@@ -3180,14 +3336,29 @@ export const handlers = [
   http.delete(`${BASE_URL}/v1/connections/:connectionId/cancel`, ({ params }) => {
     const { connectionId } = params
 
-    if (connectionId === 'invalid_id') {
+    // Not found
+    if (connectionId === 'invalid_id' || connectionId === 'conn_nonexistent') {
       return HttpResponse.json({ error: 'Connection not found' }, { status: 404 })
+    }
+
+    // Cannot cancel request you received (must decline instead)
+    if (connectionId === 'conn_you_received' || connectionId === 'conn_pending_2' || connectionId === 'conn_pending_received_1') {
+      return HttpResponse.json({ error: 'Cannot cancel request you received. Use decline instead.' }, { status: 403 })
+    }
+
+    // Cannot cancel accepted connection
+    if (connectionId === 'conn_already_accepted' || connectionId === 'conn_1') {
+      return HttpResponse.json({ error: 'Cannot cancel accepted connection. Use remove instead.' }, { status: 409 })
+    }
+
+    // Already canceled - idempotent
+    if (connectionId === 'conn_already_canceled') {
+      return new HttpResponse(null, { status: 204 })
     }
 
     return new HttpResponse(null, { status: 204 })
   }),
-  // ===========================
-  // Work Logs Handlers
+
   // ===========================
 
   // GET /v1/work-logs/projects - Get project options
