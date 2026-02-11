@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useProjects } from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
@@ -106,8 +106,8 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | null | string>(null)
 
-  const { data, isLoading, refetch } = api.projects.list.useQuery({
-    organization_id: selectedOrg || undefined,
+  const { data, isLoading, refetch } = useProjects({
+    organizationId: selectedOrg || undefined,
     status: (statusFilter as ProjectStatus) || undefined,
     limit: 50,
     offset: 0,

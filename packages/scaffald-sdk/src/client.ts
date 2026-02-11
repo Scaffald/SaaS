@@ -28,6 +28,7 @@ import { Employers } from './resources/employers.js'
 import { ONET } from './resources/onet.js'
 import { Portfolio } from './resources/portfolio.js'
 import { Reviews } from './resources/reviews.js'
+import { Projects } from './resources/projects.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -60,6 +61,7 @@ export class Scaffald {
   public readonly onet: ONET
   public readonly portfolio: Portfolio
   public readonly reviews: Reviews
+  public readonly projects: Projects
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -100,6 +102,7 @@ export class Scaffald {
     this.onet = new ONET(this.http)
     this.portfolio = new Portfolio(this.http)
     this.reviews = new Reviews(this.http)
+    this.projects = new Projects(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

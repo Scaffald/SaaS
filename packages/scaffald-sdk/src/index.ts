@@ -415,6 +415,37 @@ export type {
   DeleteDraftResponse,
 } from './resources/reviews.js'
 
+export type {
+  ProjectStatus,
+  LocationVisibility,
+  WorkerStatus,
+  Project,
+  ProjectSite,
+  ProjectAddress,
+  ProjectWorker,
+  ProjectWithRelations,
+  CreateProjectParams,
+  CreateProjectResponse,
+  UpdateProjectParams,
+  UpdateProjectResponse,
+  GetProjectParams,
+  GetProjectResponse,
+  ListProjectsParams,
+  ListProjectsResponse,
+  AddSiteParams,
+  AddSiteResponse,
+  AddAddressParams,
+  AddAddressResponse,
+  AddWorkerParams,
+  AddWorkerResponse,
+  ClaimWorkParams,
+  ClaimWorkResponse,
+  ApproveWorkerParams,
+  ApproveWorkerResponse,
+  RejectWorkerParams,
+  RejectWorkerResponse,
+} from './resources/projects.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

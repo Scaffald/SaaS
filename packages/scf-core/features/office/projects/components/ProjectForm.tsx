@@ -1,5 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
+import {
+  useProject,
+  useCreateProjectMutation,
+  useUpdateProjectMutation,
+} from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -54,25 +59,22 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   const toast = useToast()
   const { data: organizationsData } = useAllOrganizations()
 
-  const { data: projectData } = api.projects.get.useQuery(
-    { id: projectId ?? '' },
-    { enabled: mode === 'edit' && !!projectId }
-  )
+  const { data: projectData } = useProject(projectId, {
+    enabled: mode === 'edit' && !!projectId,
+  })
 
   const [formData, setFormData] = useState<ProjectFormData>({
-    name: initialData?.name || projectData?.project?.name || '',
-    description: initialData?.description || projectData?.project?.description || '',
-    organization_id: initialData?.organization_id || projectData?.project?.organization_id || '',
-    status: initialData?.status || projectData?.project?.status || 'planning',
-    start_date: initialData?.start_date || projectData?.project?.start_date || '',
-    end_date: initialData?.end_date || projectData?.project?.end_date || '',
+    name: initialData?.name || projectData?.name || '',
+    description: initialData?.description || projectData?.description || '',
+    organization_id: initialData?.organization_id || projectData?.organization_id || '',
+    status: initialData?.status || projectData?.status || 'planning',
+    start_date: initialData?.start_date || projectData?.start_date || '',
+    end_date: initialData?.end_date || projectData?.end_date || '',
     location_visibility:
-      initialData?.location_visibility ||
-      projectData?.project?.location_visibility ||
-      'organization_only',
+      initialData?.location_visibility || projectData?.location_visibility || 'organization_only',
     location_visibility_override:
       initialData?.location_visibility_override ||
-      projectData?.project?.location_visibility_override ||
+      projectData?.location_visibility_override ||
       false,
   })
 
@@ -99,21 +101,21 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
     }
   }, [orgData?.default_project_location_visibility, formData.location_visibility_override])
 
-  const createMutation = api.projects.create.useMutation()
-  const updateMutation = api.projects.update.useMutation()
+  const createMutation = useCreateProjectMutation()
+  const updateMutation = useUpdateProjectMutation()
 
   const handleSubmit = async () => {
     try {
       if (mode === 'create') {
         await createMutation.mutateAsync({
-          organization_id: formData.organization_id,
+          organizationId: formData.organization_id,
           name: formData.name,
           description: formData.description || undefined,
           status: formData.status,
-          start_date: formData.start_date || undefined,
-          end_date: formData.end_date || undefined,
-          location_visibility: formData.location_visibility,
-          location_visibility_override: formData.location_visibility_override,
+          startDate: formData.start_date || undefined,
+          endDate: formData.end_date || undefined,
+          locationVisibility: formData.location_visibility,
+          locationVisibilityOverride: formData.location_visibility_override,
         })
         toast.show({
           title: 'Project created successfully',
@@ -126,10 +128,10 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           name: formData.name,
           description: formData.description || null,
           status: formData.status,
-          start_date: formData.start_date || null,
-          end_date: formData.end_date || null,
-          location_visibility: formData.location_visibility,
-          location_visibility_override: formData.location_visibility_override,
+          startDate: formData.start_date || null,
+          endDate: formData.end_date || null,
+          locationVisibility: formData.location_visibility,
+          locationVisibilityOverride: formData.location_visibility_override,
         })
         toast.show({
           title: 'Project updated successfully',

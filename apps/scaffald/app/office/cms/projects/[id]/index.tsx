@@ -1,5 +1,5 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useProject } from '@scf/core/utils/projects-sdk-hooks'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
 import { useLocalSearchParams } from 'expo-router'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -7,7 +7,7 @@ import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { data, isLoading } = api.projects.get.useQuery({ id: id as string }, { enabled: !!id })
+  const { data, isLoading } = useProject(id as string, { enabled: !!id })
 
   if (!id) {
     return (
@@ -31,7 +31,7 @@ export default function ProjectDetailPage() {
     )
   }
 
-  if (!data?.project) {
+  if (!data) {
     return (
       <Stack flex={1} padding="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
@@ -42,7 +42,7 @@ export default function ProjectDetailPage() {
     )
   }
 
-  const project = data.project
+  const project = data
   const sites = project.project_sites || []
   const addresses = project.project_addresses || []
   const workers = project.project_workers || []
