@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useSoftSkillsByCategory } from '@scf/core/utils/reviews-sdk-hooks'
 import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, Spinner } from '@unicornlove/beyond-ui'
@@ -27,7 +27,7 @@ export function SoftSkillsRequirementsSection({
   requiredSoftSkills,
   onUpdate,
 }: SoftSkillsRequirementsSectionProps) {
-  const { data: softSkillsData, isLoading } = api.reviews.getSoftSkillsByCategory.useQuery()
+  const { data: softSkillsData, isLoading } = useSoftSkillsByCategory()
 
   const [selectedSkills, setSelectedSkills] = useState<Map<string, number>>(() => {
     const map = new Map<string, number>()

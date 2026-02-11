@@ -1,5 +1,6 @@
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { useReviewsBySubject } from '@scf/core/utils/reviews-sdk-hooks'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useRef } from 'react'
@@ -32,7 +33,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   const trackEventMutation = useTrackEngagementMutation()
 
   // Fetch real reviews from database
-  const { data: reviewsData, isLoading } = api.reviews.getBySubject.useQuery({
+  const { data: reviewsData, isLoading } = useReviewsBySubject({
     subjectId: userId,
     subjectType: 'user',
     status: 'released',

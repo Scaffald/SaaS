@@ -1,4 +1,9 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useCreateReviewDraftMutation,
+  useSaveDraftMutation,
+  useSubmitReviewMutation,
+  useMyReviews,
+} from '@scf/core/utils/reviews-sdk-hooks'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { ChevronLeft, ChevronRight } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
@@ -53,11 +58,11 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
     subjectId,
   })
 
-  // tRPC mutations and queries
-  const createDraftMutation = api.reviews.createDraft.useMutation()
-  const saveDraftMutation = api.reviews.saveDraft.useMutation()
-  const submitReviewMutation = api.reviews.submitReview.useMutation()
-  const { data: myReviews, isLoading: isLoadingReviews } = api.reviews.getMyReviews.useQuery()
+  // SDK mutations and queries
+  const createDraftMutation = useCreateReviewDraftMutation()
+  const saveDraftMutation = useSaveDraftMutation()
+  const submitReviewMutation = useSubmitReviewMutation()
+  const { data: myReviews, isLoading: isLoadingReviews } = useMyReviews()
 
   // Check for existing draft or create new one on mount
   useEffect(() => {

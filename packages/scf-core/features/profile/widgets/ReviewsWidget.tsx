@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useReviewsBySubject } from '@scf/core/utils/reviews-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   Button,
@@ -53,7 +54,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     error,
     refetch,
     isFetching,
-  } = api.reviews.getBySubject.useQuery(
+  } = useReviewsBySubject(
     {
       subjectId: userId || '',
       subjectType: 'user',
