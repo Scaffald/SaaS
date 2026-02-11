@@ -10,6 +10,13 @@ import {
   useFollowUserMutation,
   useUnfollowUserMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
+import {
+  useUserProfile,
+  useUserSkills,
+  useUserCertifications,
+  useUserExperience,
+  useUserEducation,
+} from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useAdaptiveLoading } from '@scf/core/utils/useAdaptiveLoading'
 import { useQueryClient } from '@tanstack/react-query'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
@@ -271,37 +278,29 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   const isFollowMutating = followMutation.isPending || unfollowMutation.isPending
 
   // Fetch worker profile data
-  const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && open }
-  )
+  const { data: profile, isLoading: profileLoading } = useUserProfile(userId, {
+    enabled: open,
+  })
 
   // Fetch top skills
-  const { data: skills = [], isLoading: skillsLoading } = api.userProfile.getUserSkills.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && open }
-  )
+  const { data: skills = [], isLoading: skillsLoading } = useUserSkills(userId, {
+    enabled: open,
+  })
 
   // Fetch certifications
-  const { data: certifications = [], isLoading: certsLoading } =
-    api.userProfile.getUserCertifications.useQuery(
-      { userId: userId || '' },
-      { enabled: !!userId && open }
-    )
+  const { data: certifications = [], isLoading: certsLoading } = useUserCertifications(userId, {
+    enabled: open,
+  })
 
   // Fetch work experience
-  const { data: experience = [], isLoading: experienceLoading } =
-    api.userProfile.getUserExperience.useQuery(
-      { userId: userId || '' },
-      { enabled: !!userId && open }
-    )
+  const { data: experience = [], isLoading: experienceLoading } = useUserExperience(userId, {
+    enabled: open,
+  })
 
   // Fetch education
-  const { data: education = [], isLoading: educationLoading } =
-    api.userProfile.getUserEducation.useQuery(
-      { userId: userId || '' },
-      { enabled: !!userId && open }
-    )
+  const { data: education = [], isLoading: educationLoading } = useUserEducation(userId, {
+    enabled: open,
+  })
 
   const isLoading =
     profileLoading || skillsLoading || certsLoading || experienceLoading || educationLoading

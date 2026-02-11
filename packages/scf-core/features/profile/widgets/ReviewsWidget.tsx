@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
 import { useReviewsBySubject } from '@scf/core/utils/reviews-sdk-hooks'
+import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   Button,
@@ -42,10 +42,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   const { user: currentUser } = useUser()
 
   // Fetch profile data for review modal
-  const { data: profile } = api.userProfile.getUserProfile.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId }
-  )
+  const { data: profile } = useUserProfile(userId)
 
   // Fetch reviews
   const {

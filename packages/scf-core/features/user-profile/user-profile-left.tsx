@@ -1,4 +1,10 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useUserProfile,
+  useUserSkills,
+  useUserCertifications,
+  useUserExperience,
+  useUserEducation,
+} from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { AlertTriangle, CheckCircle } from 'lucide-react-native'
@@ -27,19 +33,15 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   const syncStatus = useAdaptiveProfileSync(300)
 
   // Fetch all profile data
-  const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery({
-    userId,
-  })
+  const { data: profile, isLoading: profileLoading } = useUserProfile(userId)
 
-  const { data: skills = [], isLoading: skillsLoading } = api.userProfile.getUserSkills.useQuery({
-    userId,
-  })
+  const { data: skills = [], isLoading: skillsLoading } = useUserSkills(userId)
 
-  const { data: certifications = [] } = api.userProfile.getUserCertifications.useQuery({ userId })
+  const { data: certifications = [] } = useUserCertifications(userId)
 
-  const { data: experience = [] } = api.userProfile.getUserExperience.useQuery({ userId })
+  const { data: experience = [] } = useUserExperience(userId)
 
-  const { data: education = [] } = api.userProfile.getUserEducation.useQuery({ userId })
+  const { data: education = [] } = useUserEducation(userId)
 
   const isLoading = profileLoading || skillsLoading
 

@@ -1,4 +1,3 @@
-import { api } from '@scf/core/utils/api'
 import {
   useUserCertificationTree,
   useTopLevelCertifications,
@@ -159,7 +158,6 @@ export function ProfileCertificationsLeft({
     refetch: refetchTree,
     isPending: isLoadingTree,
   } = useUserCertificationTree()
-  const utils = api.useContext()
   const queryClient = useQueryClient()
 
   const { data: topLevelResults, isPending: isLoadingSearch } =
@@ -274,7 +272,7 @@ export function ProfileCertificationsLeft({
       resetCustomForm()
       setShowCustomForm(false)
       await refetchTree()
-      await invalidateProfileQueries(utils)
+      await invalidateProfileQueries(queryClient)
       completeProfileSync()
     } catch (error) {
       console.error('Error saving custom certification:', error)
@@ -294,7 +292,7 @@ export function ProfileCertificationsLeft({
     saveCustomCertMutation,
     toast,
     uploadCustomFileMutation,
-    utils,
+    queryClient,
   ])
 
   // Update search results when query returns
@@ -360,7 +358,7 @@ export function ProfileCertificationsLeft({
       // Trigger highlight animation in right panel (will be handled by refetchTree)
       triggerHighlight(cert.id, 'added')
 
-      await invalidateProfileQueries(utils)
+      await invalidateProfileQueries(queryClient)
       await refetchTree()
       completeProfileSync()
     } catch (error) {
@@ -408,7 +406,7 @@ export function ProfileCertificationsLeft({
           title: 'Category Removed',
           message: 'Certification category removed from your profile.',
         })
-          await invalidateProfileQueries(utils)
+          await invalidateProfileQueries(queryClient)
           completeProfileSync()
         } else {
           completeProfileSync()
@@ -418,7 +416,7 @@ export function ProfileCertificationsLeft({
           title: 'Category Removed',
           message: 'Certification category removed from your profile.',
         })
-        await invalidateProfileQueries(utils)
+        await invalidateProfileQueries(queryClient)
         completeProfileSync()
       }
     } catch (error) {
@@ -460,7 +458,7 @@ export function ProfileCertificationsLeft({
           toast.show('Category Saved', {
             message: `${categoryTitle} added to your certifications.`,
           })
-          await invalidateProfileQueries(utils)
+          await invalidateProfileQueries(queryClient)
           completeProfileSync()
         } catch (error) {
           console.error('Error adding category:', error)
@@ -516,7 +514,7 @@ export function ProfileCertificationsLeft({
           ? `${certTitle} added to your profile.`
           : `${certTitle} removed from your profile.`,
       })
-      await invalidateProfileQueries(utils)
+      await invalidateProfileQueries(queryClient)
       completeProfileSync()
     } catch (error) {
       console.error('Error toggling certification:', error)

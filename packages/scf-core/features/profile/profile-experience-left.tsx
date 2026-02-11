@@ -1,5 +1,4 @@
 import { ControlledAddressForm } from '@scf/core/forms'
-import { api } from '@scf/core/utils/api'
 import { useExperience, useExperienceSummary, useSaveExperienceMutation } from '@scf/core/utils/profile-experience-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -86,7 +85,6 @@ export function ProfileExperienceLeft() {
   // Queries
   const experienceQuery = useExperience()
   const experienceSummaryQuery = useExperienceSummary()
-  const utils = api.useContext()
   const queryClient = useQueryClient()
 
   // Mutations
@@ -143,7 +141,7 @@ export function ProfileExperienceLeft() {
       if (!error) {
         completeProfileSync()
       }
-      void invalidateProfileQueries(utils)
+      void invalidateProfileQueries(queryClient)
     },
   })
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')

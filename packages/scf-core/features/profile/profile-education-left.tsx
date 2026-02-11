@@ -1,4 +1,3 @@
-import { api } from '@scf/core/utils/api'
 import { useEducation, useEducationLevel, useSaveEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -118,7 +117,6 @@ export function ProfileEducationLeft({
   // Queries
   const educationQuery = useEducation()
   const educationLevelQuery = useEducationLevel()
-  const utils = api.useContext()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Mutations
@@ -177,7 +175,7 @@ export function ProfileEducationLeft({
       if (!error) {
         completeProfileSync()
       }
-      void invalidateProfileQueries(utils)
+      void invalidateProfileQueries(queryClient)
     },
     // Type assertion needed due to tRPC mutation callback type inference limitations
   } as never)

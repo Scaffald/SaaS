@@ -1,5 +1,4 @@
 import { ControlledAddressForm } from '@scf/core/forms'
-import { api } from '@scf/core/utils/api'
 import {
   useGeneralInfo,
   useUpdateGeneralInfoMutation,
@@ -49,7 +48,6 @@ export function ProfileGeneralLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
   const toast = useSafeToast()
-  const utils = api.useContext()
   const queryClient = useQueryClient()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
@@ -94,7 +92,7 @@ export function ProfileGeneralLeft() {
       if (!error) {
         completeProfileSync()
       }
-      void invalidateProfileQueries(utils)
+      void invalidateProfileQueries(queryClient)
     },
   })
 
@@ -108,7 +106,7 @@ export function ProfileGeneralLeft() {
         message: 'Your avatar has been uploaded successfully!',
       })
       setValue('avatar_path', data.avatarPath)
-      await invalidateProfileQueries(utils)
+      await invalidateProfileQueries(queryClient)
     },
     onError: (error: unknown) => {
       console.error('Error uploading avatar:', error)

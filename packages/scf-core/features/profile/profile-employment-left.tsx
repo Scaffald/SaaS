@@ -5,7 +5,6 @@ import {
 } from '@scf/core/features/profile/components/employment-fields'
 import {
   AVAILABILITY_OPTIONS,
-  api,
   DRIVERS_LICENSE_OPTIONS,
   type EmploymentProfileFormData,
   MILITARY_STATUS_OPTIONS,
@@ -149,7 +148,6 @@ export function ProfileEmploymentLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
   const toast = useToast()
-  const utils = api.useContext()
   const queryClient = useQueryClient()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
@@ -201,7 +199,7 @@ export function ProfileEmploymentLeft() {
       if (!error) {
         completeProfileSync()
       }
-      await invalidateProfileQueries(utils)
+      await invalidateProfileQueries(queryClient)
     },
   })
 

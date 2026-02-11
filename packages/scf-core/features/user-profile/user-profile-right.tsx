@@ -1,4 +1,3 @@
-import { api } from '@scf/core/utils/api'
 import {
   useGeneralInfoWidget,
   useExperienceWidget,
@@ -6,6 +5,7 @@ import {
   useCertificationsWidget,
   useEducationWidget,
 } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUser } from '@scf/core/utils/useUser'
 import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
@@ -29,7 +29,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
   const { user: currentUser } = useUser()
 
-  const { data: profile } = api.userProfile.getUserProfile.useQuery({ userId })
+  const { data: profile } = useUserProfile(userId)
 
   // Fetch widget data for snapshot
   const { data: generalInfo, isLoading: loadingGeneral } = useGeneralInfoWidget(

@@ -1,4 +1,3 @@
-import { api } from '@scf/core/utils/api';
 import {
   useAddSkillMultiTaxonomyMutation,
   useRemoveSkillMultiTaxonomyMutation,
@@ -39,7 +38,6 @@ interface UseProfileSkillsMutationsReturn {
  */
 export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
   const toast = useToast();
-  const utils = api.useContext();
   const queryClient = useQueryClient();
 
   // Store skill details for optimistic updates (accessed in onMutate)
@@ -141,7 +139,7 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
         title: 'Industry Updated',
         message: 'Your primary industry has been updated',
       });
-      await invalidateProfileQueries(utils);
+      await invalidateProfileQueries(queryClient);
     },
     onError: (error) => {
       toast.show({

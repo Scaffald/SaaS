@@ -73,7 +73,7 @@ export class ProfileViews extends Resource {
    * Record a profile view (with deduplication)
    */
   async recordView(params: RecordViewParams): Promise<RecordViewResponse> {
-    return this.post('/profile-views/record', {
+    return this.post('/v1/profile-views/record', {
       viewed_user_id: params.viewedUserId,
     })
   }
@@ -82,7 +82,7 @@ export class ProfileViews extends Resource {
    * Get who viewed current user's profile
    */
   async getProfileViews(params?: GetProfileViewsParams): Promise<GetProfileViewsResponse> {
-    return this.get('/profile-views', {
+    return this.get('/v1/profile-views', {
       limit: params?.limit,
       offset: params?.offset,
     })

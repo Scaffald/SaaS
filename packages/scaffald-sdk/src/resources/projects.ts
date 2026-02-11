@@ -220,7 +220,7 @@ export class Projects extends Resource {
    * Create a new project
    */
   async create(params: CreateProjectParams): Promise<Project> {
-    const response = await this.post<CreateProjectResponse>('/projects', {
+    const response = await this.post<CreateProjectResponse>('/v1/projects', {
       organization_id: params.organizationId,
       name: params.name,
       description: params.description,
@@ -237,7 +237,7 @@ export class Projects extends Resource {
    * Update a project
    */
   async update(params: UpdateProjectParams): Promise<Project> {
-    const response = await this.patch<UpdateProjectResponse>(`/projects/${params.id}`, {
+    const response = await this.patch<UpdateProjectResponse>(`/v1/projects/${params.id}`, {
       name: params.name,
       description: params.description,
       status: params.status,
@@ -252,8 +252,8 @@ export class Projects extends Resource {
   /**
    * Get a project by ID with related data
    */
-  async get(params: GetProjectParams): Promise<ProjectWithRelations> {
-    const response = await this.get<GetProjectResponse>(`/projects/${params.id}`)
+  async getById(params: GetProjectParams): Promise<ProjectWithRelations> {
+    const response = await super.get<GetProjectResponse>(`/v1/projects/${params.id}`)
     return response.project
   }
 
@@ -261,7 +261,7 @@ export class Projects extends Resource {
    * List projects with pagination and filters
    */
   async list(params?: ListProjectsParams): Promise<ListProjectsResponse> {
-    return this.get<ListProjectsResponse>('/projects', {
+    return this.get<ListProjectsResponse>('/v1/projects', {
       organization_id: params?.organizationId,
       status: params?.status,
       limit: params?.limit,
@@ -273,7 +273,7 @@ export class Projects extends Resource {
    * Add a site to a project
    */
   async addSite(params: AddSiteParams): Promise<AddSiteResponse> {
-    return this.post<AddSiteResponse>(`/projects/${params.projectId}/sites`, {
+    return this.post<AddSiteResponse>(`/v1/projects/${params.projectId}/sites`, {
       site_id: params.siteId,
       is_primary: params.isPrimary,
     })
@@ -283,7 +283,7 @@ export class Projects extends Resource {
    * Add an address to a project
    */
   async addAddress(params: AddAddressParams): Promise<AddAddressResponse> {
-    return this.post<AddAddressResponse>(`/projects/${params.projectId}/addresses`, {
+    return this.post<AddAddressResponse>(`/v1/projects/${params.projectId}/addresses`, {
       address_id: params.addressId,
       is_primary: params.isPrimary,
     })
@@ -293,7 +293,7 @@ export class Projects extends Resource {
    * Manager assigns a worker to a project
    */
   async addWorker(params: AddWorkerParams): Promise<ProjectWorker> {
-    const response = await this.post<AddWorkerResponse>(`/projects/${params.projectId}/workers`, {
+    const response = await this.post<AddWorkerResponse>(`/v1/projects/${params.projectId}/workers`, {
       user_id: params.userId,
       job_id: params.jobId,
       start_date: params.startDate,
@@ -309,7 +309,7 @@ export class Projects extends Resource {
    */
   async claimWork(params: ClaimWorkParams): Promise<ProjectWorker> {
     const response = await this.post<ClaimWorkResponse>(
-      `/projects/${params.projectId}/workers/claim`,
+      `/v1/projects/${params.projectId}/workers/claim`,
       {
         job_id: params.jobId,
         start_date: params.startDate,
@@ -326,7 +326,7 @@ export class Projects extends Resource {
    */
   async approveWorker(params: ApproveWorkerParams): Promise<ProjectWorker> {
     const response = await this.post<ApproveWorkerResponse>(
-      `/projects/workers/${params.projectWorkerId}/approve`,
+      `/v1/projects/workers/${params.projectWorkerId}/approve`,
       {}
     )
     return response.worker
@@ -337,7 +337,7 @@ export class Projects extends Resource {
    */
   async rejectWorker(params: RejectWorkerParams): Promise<ProjectWorker> {
     const response = await this.post<RejectWorkerResponse>(
-      `/projects/workers/${params.projectWorkerId}/reject`,
+      `/v1/projects/workers/${params.projectWorkerId}/reject`,
       {
         reason: params.reason,
       }

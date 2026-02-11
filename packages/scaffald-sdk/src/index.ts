@@ -387,8 +387,6 @@ export type {
   ReviewCategoryRating,
   ReviewSkillRating,
   ReviewSoftSkillVote,
-  GetSoftSkillsParams,
-  GetSoftSkillsResponse,
   GetSoftSkillsByCategoryResponse,
   CreateReviewDraftParams,
   SaveDraftParams,
@@ -455,6 +453,25 @@ export type {
   GetProfileViewsParams,
   GetProfileViewsResponse,
 } from './resources/profile-views.js'
+
+export type {
+  UserProfilePreview,
+  UserProfileDetailed,
+  UserSkill,
+  UserCertification,
+  UserExperience,
+  UserEducation,
+  ReviewsSummary,
+  ContactInfo,
+  GetPreviewParams,
+  GetUserProfileParams,
+  GetUserSkillsParams,
+  GetUserCertificationsParams,
+  GetUserExperienceParams,
+  GetUserEducationParams,
+  GetReviewsSummaryParams,
+  GetContactInfoParams,
+} from './resources/user-profiles.js'
 
 export {
   OAuthClient,

@@ -1,9 +1,9 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
 import {
   useOrganization,
   useOrganizationOpenJobsCount,
 } from '@scf/core/utils/organizations-sdk-hooks'
+import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
 import { Button, Spinner, Text, View, Row, Stack } from '@unicornlove/beyond-ui'
@@ -38,10 +38,9 @@ export function ProfileHoverCard({
   onHoverCardLeave,
 }: ProfileHoverCardProps) {
   // Fetch worker preview data (lightweight)
-  const { data: workerPreview, isLoading: isLoadingWorker } = api.userProfile.getPreview.useQuery(
-    { userId: pinId || '' },
-    { enabled: !!pinId && pinType === 'worker' && visible }
-  )
+  const { data: workerPreview, isLoading: isLoadingWorker } = useUserProfilePreview(pinId, {
+    enabled: pinType === 'worker' && visible,
+  })
 
   // Fetch organization data
   const { data: organization, isLoading: isLoadingOrg } = useOrganization(pinId || undefined, {

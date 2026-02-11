@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api';
 import type { SaveStatus } from '@unicornlove/beyond-ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 /**
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
  * Monitors mutations and provides save status, navigation guards, and forced save functionality
  */
 export function useSaveStatus(isAdding: boolean, isRemoving: boolean) {
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [lastSavedAt, setLastSavedAt] = useState<Date | undefined>();
   const [saveError, setSaveError] = useState<string | undefined>();
@@ -122,7 +122,9 @@ export function useSaveStatus(isAdding: boolean, isRemoving: boolean) {
 
     try {
       // Force refetch to sync with server
-      await utils.profile.skillsMultiTaxonomy.getUserSkills.refetch();
+      await queryClient.invalidateQueries({
+        queryKey: ['scaffald', 'skills', 'multi-taxonomy']
+      });
       setSaveStatus("saved");
       setSaveButtonState("saved");
       setLastSavedAt(new Date());

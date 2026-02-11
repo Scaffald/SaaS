@@ -1,5 +1,6 @@
 import { InquiryCreateForm } from '@scf/core/features/inquiries/components/InquiryCreateForm'
 import { api } from '@scf/core/utils/api'
+import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
@@ -77,14 +78,13 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
   const contactUnlocked = Boolean(successFeeStatusQuery.data?.status === 'upfront_paid')
 
-  const contactInfoQuery = api.userProfile.getUserContactInfo.useQuery(
+  const contactInfoQuery = useContactInfo(
     {
       userId: workerUserId,
-      organizationId,
       applicationId,
     },
     {
-      enabled: Boolean(contactUnlocked && organizationId && applicationId && workerUserId),
+      enabled: contactUnlocked,
     }
   )
 

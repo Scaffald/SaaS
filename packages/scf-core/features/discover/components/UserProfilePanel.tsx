@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { ExternalLink, MapPin, User, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -41,10 +41,9 @@ export function UserProfilePanel({
   const toast = useToast()
 
   // Fetch lightweight preview data
-  const { data: preview, isLoading } = api.userProfile.getPreview.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && open }
-  )
+  const { data: preview, isLoading } = useUserProfilePreview(userId, {
+    enabled: open,
+  })
 
   if (!open || !userId) {
     return null

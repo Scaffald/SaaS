@@ -1,8 +1,8 @@
 import { ConnectionFollowButtonsInline } from '@scf/core/features/connections/components/ConnectionFollowButtonsInline'
 import { IdVerificationBadge } from '@scf/core/features/id-verification'
 import { ReviewWizard } from '@scf/core/features/reviews/components/ReviewWizard'
-import { api } from '@scf/core/utils/api'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
@@ -94,10 +94,9 @@ export function GeneralInfoWidget({
   const badge = data.idVerificationBadge
 
   // Fetch profile data for review modal
-  const { data: profile } = api.userProfile.getUserProfile.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && showButtons }
-  )
+  const { data: profile } = useUserProfile(userId, {
+    enabled: showButtons,
+  })
 
   // Only show "Add Review" button if viewing someone else's profile
   const canLeaveReview = showButtons && !isOwnProfile && currentUser?.id !== userId

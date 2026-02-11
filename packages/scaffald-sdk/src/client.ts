@@ -30,6 +30,7 @@ import { Portfolio } from './resources/portfolio.js'
 import { Reviews } from './resources/reviews.js'
 import { Projects } from './resources/projects.js'
 import { ProfileViews } from './resources/profile-views.js'
+import { UserProfiles } from './resources/user-profiles.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -64,6 +65,7 @@ export class Scaffald {
   public readonly reviews: Reviews
   public readonly projects: Projects
   public readonly profileViews: ProfileViews
+  public readonly userProfiles: UserProfiles
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -106,6 +108,7 @@ export class Scaffald {
     this.reviews = new Reviews(this.http)
     this.projects = new Projects(this.http)
     this.profileViews = new ProfileViews(this.http)
+    this.userProfiles = new UserProfiles(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

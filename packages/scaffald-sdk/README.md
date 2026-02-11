@@ -862,6 +862,84 @@ import { verifyWebhookSignature } from '@scaffald/sdk/webhooks'
 
 **📖 [Complete Advanced Features Guide](./docs/advanced-features.md)**
 
+## Architecture
+
+Scaffald uses a hybrid architecture combining REST SDK and tRPC:
+
+- **SDK (REST API)**: User-facing data operations, public endpoints
+- **tRPC**: Complex workflows, file operations, admin tools, provider integrations
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architectural decisions and guidelines.
+
+### When to Use SDK vs tRPC
+
+**Use SDK for:**
+- User-facing CRUD operations
+- Read-heavy operations
+- Public API candidates
+- Standard HTTP patterns
+
+**Use tRPC for:**
+- File uploads/downloads
+- External provider integration (Stripe, etc.)
+- Admin-only operations
+- Compliance workflows
+
+See [SDK_MIGRATION_GUIDELINES.md](./SDK_MIGRATION_GUIDELINES.md) for migration decision trees and checklists.
+
+## Testing
+
+The SDK has comprehensive test coverage using Vitest and MSW (Mock Service Worker).
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests for specific resource
+pnpm test teams
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Generate coverage report
+pnpm test:coverage
+```
+
+### Test Coverage
+
+- ✅ **93% resource coverage** (28/30 resources)
+- ✅ **31 test files** including infrastructure tests
+- ✅ **Comprehensive scenarios**: happy paths, edge cases, error handling
+- ✅ **All error codes covered**: 401, 404, 429, 500
+
+### Writing Tests
+
+See existing test files in `src/__tests__/` for patterns. Each resource test should cover:
+
+- All methods (list, get, create, update, delete)
+- Happy paths with realistic data
+- Edge cases (empty, null, missing)
+- Validation errors (400)
+- Auth errors (401)
+- Not found (404)
+- Rate limiting (429)
+- Server errors (500)
+
+See [SDK_MIGRATION_GUIDELINES.md#testing-patterns](./SDK_MIGRATION_GUIDELINES.md#testing-patterns) for detailed testing patterns.
+
+## API Coverage
+
+The SDK covers 31 resources across:
+
+- **Core Data**: jobs, applications, profiles, user-profiles, organizations, teams
+- **Profile Extensions**: skills, experience, education, certifications, portfolio, reviews, projects
+- **Social**: connections, follows, engagement, profile-views
+- **Supporting**: prerequisites, profile-completion, employers, onet, inquiries, notifications
+
+See [API_COVERAGE_MATRIX.md](./API_COVERAGE_MATRIX.md) for complete coverage details.
+
 ## Development
 
 ```bash
