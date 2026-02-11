@@ -2860,7 +2860,14 @@ export const handlers = [
   // ===========================
 
   // GET /v1/connections - List connections
-  http.get(`${BASE_URL}/v1/connections`, () => {
+  http.get(`${BASE_URL}/v1/connections`, ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    const apiKey = authHeader?.replace('Bearer ', '')
+    
+    // Return empty for test_key_empty
+    if (apiKey === 'test_key_empty') {
+      return HttpResponse.json({ data: [], total: 0 })
+    }
     return HttpResponse.json({
       data: [
         {
@@ -2872,13 +2879,13 @@ export const handlers = [
           updated_at: '2024-01-10T12:00:00Z',
           requester: {
             id: 'user_1',
-            first_name: 'John',
-            last_name: 'Doe',
+            first_name: 'Alice',
+            last_name: 'Johnson',
             avatar_url: 'https://example.com/avatar1.jpg',
           },
           addressee: {
             id: 'user_2',
-            first_name: 'Jane',
+            first_name: 'Bob',
             last_name: 'Smith',
             avatar_url: 'https://example.com/avatar2.jpg',
           },
@@ -2898,32 +2905,122 @@ export const handlers = [
           },
           addressee: {
             id: 'user_1',
-            first_name: 'John',
-            last_name: 'Doe',
+            first_name: 'Alice',
+            last_name: 'Johnson',
             avatar_url: 'https://example.com/avatar1.jpg',
           },
         },
+        {
+          id: 'conn_3',
+          requester_id: 'user_1',
+          addressee_id: 'user_4',
+          status: 'accepted',
+          created_at: '2024-01-12T10:00:00Z',
+          updated_at: '2024-01-12T12:00:00Z',
+          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          addressee: { id: 'user_4', first_name: 'David', last_name: 'Brown', avatar_url: 'https://example.com/avatar4.jpg' },
+        },
+        {
+          id: 'conn_4',
+          requester_id: 'user_5',
+          addressee_id: 'user_1',
+          status: 'accepted',
+          created_at: '2024-01-13T10:00:00Z',
+          updated_at: '2024-01-13T12:00:00Z',
+          requester: { id: 'user_5', first_name: 'Eve', last_name: 'Williams', avatar_url: 'https://example.com/avatar5.jpg' },
+          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+        },
+        {
+          id: 'conn_5',
+          requester_id: 'user_1',
+          addressee_id: 'user_6',
+          status: 'accepted',
+          created_at: '2024-01-14T10:00:00Z',
+          updated_at: '2024-01-14T12:00:00Z',
+          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          addressee: { id: 'user_6', first_name: 'Frank', last_name: 'Miller', avatar_url: 'https://example.com/avatar6.jpg' },
+        },
+        {
+          id: 'conn_6',
+          requester_id: 'user_7',
+          addressee_id: 'user_1',
+          status: 'accepted',
+          created_at: '2024-01-15T10:00:00Z',
+          updated_at: '2024-01-15T12:00:00Z',
+          requester: { id: 'user_7', first_name: 'Grace', last_name: 'Davis', avatar_url: 'https://example.com/avatar7.jpg' },
+          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+        },
+        {
+          id: 'conn_7',
+          requester_id: 'user_1',
+          addressee_id: 'user_8',
+          status: 'accepted',
+          created_at: '2024-01-16T10:00:00Z',
+          updated_at: '2024-01-16T12:00:00Z',
+          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          addressee: { id: 'user_8', first_name: 'Henry', last_name: 'Taylor', avatar_url: 'https://example.com/avatar8.jpg' },
+        },
+                {
+          id: 'conn_8',
+          requester_id: 'user_9',
+          addressee_id: 'user_1',
+          status: 'accepted',
+          created_at: '2024-01-17T10:00:00Z',
+          updated_at: '2024-01-17T12:00:00Z',
+          requester: { id: 'user_9', first_name: 'Ivy', last_name: 'Anderson', avatar_url: 'https://example.com/avatar9.jpg' },
+          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+        },
+        {
+          id: 'conn_9',
+          requester_id: 'user_1',
+          addressee_id: 'user_10',
+          status: 'accepted',
+          created_at: '2024-01-18T10:00:00Z',
+          updated_at: '2024-01-18T12:00:00Z',
+          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          addressee: { id: 'user_10', first_name: 'Jack', last_name: 'White', avatar_url: 'https://example.com/avatar10.jpg' },
+        },
+        {
+          id: 'conn_10',
+          requester_id: 'user_11',
+          addressee_id: 'user_1',
+          status: 'accepted',
+          created_at: '2024-01-19T10:00:00Z',
+          updated_at: '2024-01-19T12:00:00Z',
+          requester: { id: 'user_11', first_name: 'Kate', last_name: 'Harris', avatar_url: 'https://example.com/avatar11.jpg' },
+          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+        },
       ],
-      total: 2,
+      total: 10,
     })
   }),
 
   // GET /v1/connections/pending - Get pending requests
-  http.get(`${BASE_URL}/v1/connections/pending`, () => {
+  http.get(`${BASE_URL}/v1/connections/pending`, ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    const apiKey = authHeader?.replace('Bearer ', '')
+    
+    // Return empty for test_key_empty
+    if (apiKey === 'test_key_empty') {
+      return HttpResponse.json({ sent: [], received: [] })
+    }
     return HttpResponse.json({
       sent: [
         {
           id: 'conn_pending_1',
           requester_id: 'user_1',
-          addressee_id: 'user_4',
+          addressee_id: 'user_pending_sent',
           status: 'pending',
           created_at: '2024-01-12T10:00:00Z',
-          requester: {
-            id: 'user_1',
-            first_name: 'John',
-            last_name: 'Doe',
-            avatar_url: 'https://example.com/avatar1.jpg',
-          },
+          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+        },
+        {
+          id: 'conn_pending_3',
+          requester_id: 'user_1',
+          addressee_id: 'user_12',
+          status: 'pending',
+          created_at: '2024-01-20T10:00:00Z',
+          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
         },
       ],
       received: [
@@ -2933,12 +3030,23 @@ export const handlers = [
           addressee_id: 'user_1',
           status: 'pending',
           created_at: '2024-01-13T10:00:00Z',
-          requester: {
-            id: 'user_5',
-            first_name: 'Alice',
-            last_name: 'Johnson',
-            avatar_url: 'https://example.com/avatar5.jpg',
-          },
+          requester: { id: 'user_5', first_name: 'Eve', last_name: 'Williams', avatar_url: 'https://example.com/avatar5.jpg' },
+        },
+        {
+          id: 'conn_pending_4',
+          requester_id: 'user_13',
+          addressee_id: 'user_1',
+          status: 'pending',
+          created_at: '2024-01-21T10:00:00Z',
+          requester: { id: 'user_13', first_name: 'Laura', last_name: 'Martin', avatar_url: 'https://example.com/avatar13.jpg' },
+        },
+        {
+          id: 'conn_pending_5',
+          requester_id: 'user_14',
+          addressee_id: 'user_1',
+          status: 'pending',
+          created_at: '2024-01-22T10:00:00Z',
+          requester: { id: 'user_14', first_name: 'Mike', last_name: 'Thompson', avatar_url: 'https://example.com/avatar14.jpg' },
         },
       ],
     })
@@ -2948,25 +3056,30 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/connections/status/:userId`, ({ params }) => {
     const { userId } = params
 
-    if (userId === 'user_connected') {
+    if (userId === 'user_2') {
       return HttpResponse.json({
         status: 'connected',
-        connectionId: 'conn_123',
+        connectionId: 'conn_1',
       })
     }
 
     if (userId === 'user_pending_sent') {
       return HttpResponse.json({
         status: 'pending_sent',
-        connectionId: 'conn_456',
+        connectionId: 'conn_pending_1',
       })
     }
 
     if (userId === 'user_pending_received') {
       return HttpResponse.json({
         status: 'pending_received',
-        connectionId: 'conn_789',
+        connectionId: 'conn_pending_2',
       })
+    }
+
+    
+    if (userId === 'nonexistent_user') {
+      return HttpResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     return HttpResponse.json({
@@ -2982,7 +3095,7 @@ export const handlers = [
       return HttpResponse.json({ error: 'targetUserId is required' }, { status: 400 })
     }
 
-    if (body.targetUserId === 'already_connected') {
+    if (body.targetUserId === 'user_2') {
       return HttpResponse.json({ error: 'Already connected' }, { status: 409 })
     }
 
@@ -2996,8 +3109,8 @@ export const handlers = [
         updated_at: new Date().toISOString(),
         requester: {
           id: 'user_1',
-          first_name: 'John',
-          last_name: 'Doe',
+          first_name: 'Alice',
+          last_name: 'Johnson',
           avatar_url: 'https://example.com/avatar1.jpg',
         },
         addressee: {
@@ -3028,14 +3141,14 @@ export const handlers = [
       updated_at: new Date().toISOString(),
       requester: {
         id: 'user_2',
-        first_name: 'Jane',
+        first_name: 'Bob',
         last_name: 'Smith',
         avatar_url: 'https://example.com/avatar2.jpg',
       },
       addressee: {
         id: 'user_1',
-        first_name: 'John',
-        last_name: 'Doe',
+        first_name: 'Alice',
+        last_name: 'Johnson',
         avatar_url: 'https://example.com/avatar1.jpg',
       },
     })
