@@ -4,7 +4,7 @@
  */
 
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ClearImportDataResponse,
   SaveImportDataParams,
@@ -19,7 +19,7 @@ import type {
  * Get saved import data (TTL: 24 hours)
  */
 export function useImportData() {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'profiles', 'import', 'data'],
@@ -41,7 +41,7 @@ export function useImportData() {
 export function useSaveImportDataMutation(
   options?: UseMutationOptions<SaveImportDataResponse, Error, SaveImportDataParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: SaveImportDataParams) => {
@@ -58,7 +58,7 @@ export function useSaveImportDataMutation(
 export function useClearImportDataMutation(
   options?: UseMutationOptions<ClearImportDataResponse, Error, void>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async () => {

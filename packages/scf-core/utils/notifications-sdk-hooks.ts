@@ -11,7 +11,7 @@ import {
   type UseQueryOptions,
   type UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ListNotificationsParams,
   ListNotificationsResponse,
@@ -40,7 +40,7 @@ export function useNotifications(
   params?: ListNotificationsParams,
   options?: Omit<UseQueryOptions<ListNotificationsResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'notifications', 'list', params],
@@ -63,7 +63,7 @@ export function useInfiniteNotifications(
     'queryKey' | 'queryFn' | 'getNextPageParam' | 'initialPageParam'
   >
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useInfiniteQuery({
     queryKey: ['scaffald', 'notifications', 'list-infinite', params],
@@ -84,7 +84,7 @@ export function useInfiniteNotifications(
 export function useUnreadCount(
   options?: Omit<UseQueryOptions<UnreadCountResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'notifications', 'unread-count'],
@@ -103,7 +103,7 @@ export function useUnreadCount(
 export function useNotificationPreferences(
   options?: Omit<UseQueryOptions<NotificationPreferences>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'notifications', 'preferences'],
@@ -122,7 +122,7 @@ export function useNotificationPreferences(
 export function useNotificationDevices(
   options?: Omit<UseQueryOptions<NotificationDevice[]>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'notifications', 'devices'],
@@ -145,7 +145,7 @@ export function useNotificationDevices(
 export function useMarkAsReadMutation(
   options?: UseMutationOptions<Notification, Error, MarkAsReadParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: MarkAsReadParams) => {
@@ -162,7 +162,7 @@ export function useMarkAsReadMutation(
 export function useMarkAsUnreadMutation(
   options?: UseMutationOptions<Notification, Error, MarkAsUnreadParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: MarkAsUnreadParams) => {
@@ -179,7 +179,7 @@ export function useMarkAsUnreadMutation(
 export function useMarkManyReadMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: BulkIdsParams) => {
@@ -196,7 +196,7 @@ export function useMarkManyReadMutation(
 export function useMarkManyUnreadMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: BulkIdsParams) => {
@@ -213,7 +213,7 @@ export function useMarkManyUnreadMutation(
 export function useArchiveManyMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: BulkIdsParams) => {
@@ -230,7 +230,7 @@ export function useArchiveManyMutation(
 export function useRestoreManyMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: BulkIdsParams) => {
@@ -247,7 +247,7 @@ export function useRestoreManyMutation(
 export function useMarkAllAsReadMutation(
   options?: UseMutationOptions<MarkAllAsReadResponse, Error, void>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async () => {
@@ -264,7 +264,7 @@ export function useMarkAllAsReadMutation(
 export function useDeleteManyMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: BulkIdsParams) => {
@@ -281,7 +281,7 @@ export function useDeleteManyMutation(
 export function useSavePreferencesMutation(
   options?: UseMutationOptions<SuccessResponse, Error, SavePreferencesParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: SavePreferencesParams) => {
@@ -298,7 +298,7 @@ export function useSavePreferencesMutation(
 export function useRegisterDeviceMutation(
   options?: UseMutationOptions<SuccessResponse, Error, RegisterDeviceParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: RegisterDeviceParams) => {
@@ -315,7 +315,7 @@ export function useRegisterDeviceMutation(
 export function useRemoveDeviceMutation(
   options?: UseMutationOptions<SuccessResponse, Error, RemoveDeviceParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: RemoveDeviceParams) => {

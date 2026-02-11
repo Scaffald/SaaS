@@ -4,7 +4,7 @@
  */
 
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   DismissNudgeParams,
   DismissNudgeResponse,
@@ -18,7 +18,7 @@ import type {
  * Get profile completion status with weighted scoring and milestones
  */
 export function useCompletionStatus() {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'profiles', 'completion', 'status'],
@@ -34,7 +34,7 @@ export function useCompletionStatus() {
  * Get personalized benefits messaging based on incomplete sections
  */
 export function usePersonalizedBenefits() {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'profiles', 'completion', 'benefits'],
@@ -56,7 +56,7 @@ export function usePersonalizedBenefits() {
 export function useDismissNudgeMutation(
   options?: UseMutationOptions<DismissNudgeResponse, Error, DismissNudgeParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: DismissNudgeParams) => {

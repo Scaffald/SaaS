@@ -8,8 +8,8 @@ import {
   useQuery,
   type UseMutationOptions,
   type UseQueryOptions,
-} from '@tantml:query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+} from '@tanstack/react-query'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ViewAnalytics,
   RecordViewParams,
@@ -29,7 +29,7 @@ export function useProfileViews(
   params?: GetProfileViewsParams,
   options?: Omit<UseQueryOptions<GetProfileViewsResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'profile-views', 'list', params],
@@ -48,7 +48,7 @@ export function useProfileViews(
 export function useViewAnalytics(
   options?: Omit<UseQueryOptions<ViewAnalytics>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'profile-views', 'analytics'],
@@ -71,7 +71,7 @@ export function useViewAnalytics(
 export function useRecordViewMutation(
   options?: UseMutationOptions<RecordViewResponse, Error, RecordViewParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: RecordViewParams) => {

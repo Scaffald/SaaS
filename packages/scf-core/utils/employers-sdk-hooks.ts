@@ -9,7 +9,7 @@ import {
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   Employer,
   GetEmployersParams,
@@ -40,7 +40,7 @@ export function useEmployers(
   params?: GetEmployersParams,
   options?: Omit<UseQueryOptions<GetEmployersResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'employers', 'list', params],
@@ -60,7 +60,7 @@ export function useEmployer(
   params: GetEmployerByIdParams,
   options?: Omit<UseQueryOptions<Employer>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'employers', 'detail', params.id],
@@ -80,7 +80,7 @@ export function useEmploymentStatus(
   params: GetEmploymentStatusParams,
   options?: Omit<UseQueryOptions<EmploymentStatus>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'employers', 'employment-status', params.organizationId],
@@ -100,7 +100,7 @@ export function useFollowStatus(
   params: GetFollowStatusParams,
   options?: Omit<UseQueryOptions<FollowStatus>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'employers', 'follow-status', params.organizationId],
@@ -123,7 +123,7 @@ export function useFollowStatus(
 export function useClaimEmploymentMutation(
   options?: UseMutationOptions<ClaimEmploymentResponse, Error, ClaimEmploymentParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: ClaimEmploymentParams) => {
@@ -140,7 +140,7 @@ export function useClaimEmploymentMutation(
 export function useRemoveEmploymentMutation(
   options?: UseMutationOptions<RemoveEmploymentResponse, Error, RemoveEmploymentParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: RemoveEmploymentParams) => {
@@ -157,7 +157,7 @@ export function useRemoveEmploymentMutation(
 export function useFollowOrganizationMutation(
   options?: UseMutationOptions<FollowOrganizationResponse, Error, FollowOrganizationParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: FollowOrganizationParams) => {
@@ -174,7 +174,7 @@ export function useFollowOrganizationMutation(
 export function useUnfollowOrganizationMutation(
   options?: UseMutationOptions<UnfollowOrganizationResponse, Error, UnfollowOrganizationParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UnfollowOrganizationParams) => {

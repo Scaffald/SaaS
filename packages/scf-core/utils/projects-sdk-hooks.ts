@@ -9,7 +9,7 @@ import {
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   Project,
   ProjectWithRelations,
@@ -39,7 +39,7 @@ export function useProject(
   projectId: string | undefined,
   options?: Omit<UseQueryOptions<ProjectWithRelations>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'projects', 'detail', projectId],
@@ -59,7 +59,7 @@ export function useProjects(
   params?: ListProjectsParams,
   options?: Omit<UseQueryOptions<ListProjectsResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'projects', 'list', params],
@@ -82,7 +82,7 @@ export function useProjects(
 export function useCreateProjectMutation(
   options?: UseMutationOptions<Project, Error, CreateProjectParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: CreateProjectParams) => {
@@ -99,7 +99,7 @@ export function useCreateProjectMutation(
 export function useUpdateProjectMutation(
   options?: UseMutationOptions<Project, Error, UpdateProjectParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdateProjectParams) => {
@@ -116,7 +116,7 @@ export function useUpdateProjectMutation(
 export function useAddSiteMutation(
   options?: UseMutationOptions<AddSiteResponse, Error, AddSiteParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: AddSiteParams) => {
@@ -133,7 +133,7 @@ export function useAddSiteMutation(
 export function useAddAddressMutation(
   options?: UseMutationOptions<AddAddressResponse, Error, AddAddressParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: AddAddressParams) => {
@@ -150,7 +150,7 @@ export function useAddAddressMutation(
 export function useAddWorkerMutation(
   options?: UseMutationOptions<ProjectWorker, Error, AddWorkerParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: AddWorkerParams) => {
@@ -167,7 +167,7 @@ export function useAddWorkerMutation(
 export function useClaimWorkMutation(
   options?: UseMutationOptions<ProjectWorker, Error, ClaimWorkParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: ClaimWorkParams) => {
@@ -184,7 +184,7 @@ export function useClaimWorkMutation(
 export function useApproveWorkerMutation(
   options?: UseMutationOptions<ProjectWorker, Error, ApproveWorkerParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: ApproveWorkerParams) => {
@@ -201,7 +201,7 @@ export function useApproveWorkerMutation(
 export function useRejectWorkerMutation(
   options?: UseMutationOptions<ProjectWorker, Error, RejectWorkerParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: RejectWorkerParams) => {

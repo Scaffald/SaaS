@@ -9,7 +9,7 @@ import {
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   PortfolioItem,
   ListPortfolioItemsParams,
@@ -34,7 +34,7 @@ export function usePortfolioItems(
   params?: ListPortfolioItemsParams,
   options?: Omit<UseQueryOptions<PortfolioItem[]>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'portfolio', 'list', params],
@@ -57,7 +57,7 @@ export function usePortfolioItems(
 export function useCreatePortfolioItemMutation(
   options?: UseMutationOptions<PortfolioItem, Error, CreatePortfolioItemParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: CreatePortfolioItemParams) => {
@@ -74,7 +74,7 @@ export function useCreatePortfolioItemMutation(
 export function useUpdatePortfolioItemMutation(
   options?: UseMutationOptions<PortfolioItem, Error, UpdatePortfolioItemParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdatePortfolioItemParams) => {
@@ -91,7 +91,7 @@ export function useUpdatePortfolioItemMutation(
 export function useDeletePortfolioItemMutation(
   options?: UseMutationOptions<DeletePortfolioItemResponse, Error, DeletePortfolioItemParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: DeletePortfolioItemParams) => {
@@ -108,7 +108,7 @@ export function useDeletePortfolioItemMutation(
 export function useReorderPortfolioItemsMutation(
   options?: UseMutationOptions<ReorderPortfolioItemsResponse, Error, ReorderPortfolioItemsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: ReorderPortfolioItemsParams) => {
@@ -125,7 +125,7 @@ export function useReorderPortfolioItemsMutation(
 export function useUploadPortfolioImageMutation(
   options?: UseMutationOptions<UploadPortfolioImageResponse, Error, UploadPortfolioImageParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UploadPortfolioImageParams) => {

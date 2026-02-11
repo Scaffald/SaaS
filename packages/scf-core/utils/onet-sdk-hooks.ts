@@ -9,7 +9,7 @@ import {
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   SearchOccupationsParams,
   SearchOccupationsResponse,
@@ -33,7 +33,7 @@ export function useSearchOccupations(
   params: SearchOccupationsParams,
   options?: Omit<UseQueryOptions<SearchOccupationsResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'onet', 'occupations', 'search', params],
@@ -53,7 +53,7 @@ export function useOccupation(
   params: GetOccupationParams,
   options?: Omit<UseQueryOptions<OccupationData>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'onet', 'occupation', params.onetCode],
@@ -72,7 +72,7 @@ export function useOccupation(
 export function useCareerAssessmentStatus(
   options?: Omit<UseQueryOptions<CareerAssessmentStatus>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'onet', 'career-assessment', 'status'],
@@ -91,7 +91,7 @@ export function useCareerAssessmentStatus(
 export function useRIASECStatus(
   options?: Omit<UseQueryOptions<RIASECStatus>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'onet', 'riasec', 'status'],
@@ -110,7 +110,7 @@ export function useRIASECStatus(
 export function useOccupationStatus(
   options?: Omit<UseQueryOptions<OccupationStatus>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'onet', 'occupation', 'status'],
@@ -134,7 +134,7 @@ export function useOccupationStatus(
 export function useSaveCareerAssessmentMutation(
   options?: UseMutationOptions<SaveCareerAssessmentResponse, Error, SaveCareerAssessmentParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: SaveCareerAssessmentParams) => {

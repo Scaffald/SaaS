@@ -9,7 +9,7 @@ import {
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
-import { useScaffaldClient } from '../hooks/use-scaffald-client'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   SoftSkill,
   Review,
@@ -49,7 +49,7 @@ export function useSoftSkills(
   params?: GetSoftSkillsParams,
   options?: Omit<UseQueryOptions<SoftSkill[]>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'reviews', 'soft-skills', params],
@@ -68,7 +68,7 @@ export function useSoftSkills(
 export function useSoftSkillsByCategory(
   options?: Omit<UseQueryOptions<GetSoftSkillsByCategoryResponse>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'reviews', 'soft-skills', 'by-category'],
@@ -88,7 +88,7 @@ export function useReviewDraft(
   params: GetDraftParams,
   options?: Omit<UseQueryOptions<Review>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'reviews', 'draft', params.reviewId],
@@ -119,7 +119,7 @@ export function useReviewsBySubject(
     'queryKey' | 'queryFn'
   >
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'reviews', 'by-subject', params],
@@ -138,7 +138,7 @@ export function useReviewsBySubject(
 export function useMyReviews(
   options?: Omit<UseQueryOptions<Review[]>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'reviews', 'my-reviews'],
@@ -158,7 +158,7 @@ export function useReviewAnalytics(
   params: GetReviewAnalyticsParams,
   options?: Omit<UseQueryOptions<ReviewAnalytics | null>, 'queryKey' | 'queryFn'>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useQuery({
     queryKey: ['scaffald', 'reviews', 'analytics', params],
@@ -181,7 +181,7 @@ export function useReviewAnalytics(
 export function useCreateReviewDraftMutation(
   options?: UseMutationOptions<Review, Error, CreateReviewDraftParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: CreateReviewDraftParams) => {
@@ -198,7 +198,7 @@ export function useCreateReviewDraftMutation(
 export function useSaveDraftMutation(
   options?: UseMutationOptions<SaveDraftResponse, Error, SaveDraftParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: SaveDraftParams) => {
@@ -215,7 +215,7 @@ export function useSaveDraftMutation(
 export function useUpdateStepMutation(
   options?: UseMutationOptions<UpdateStepResponse, Error, UpdateStepParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdateStepParams) => {
@@ -232,7 +232,7 @@ export function useUpdateStepMutation(
 export function useUpdateSkillRatingsMutation(
   options?: UseMutationOptions<UpdateSkillRatingsResponse, Error, UpdateSkillRatingsParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdateSkillRatingsParams) => {
@@ -249,7 +249,7 @@ export function useUpdateSkillRatingsMutation(
 export function useUpdateCategoryRatingMutation(
   options?: UseMutationOptions<UpdateCategoryRatingResponse, Error, UpdateCategoryRatingParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdateCategoryRatingParams) => {
@@ -266,7 +266,7 @@ export function useUpdateCategoryRatingMutation(
 export function useUpdateSoftSkillVotesMutation(
   options?: UseMutationOptions<UpdateSoftSkillVotesResponse, Error, UpdateSoftSkillVotesParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdateSoftSkillVotesParams) => {
@@ -283,7 +283,7 @@ export function useUpdateSoftSkillVotesMutation(
 export function useUpdateCommentMutation(
   options?: UseMutationOptions<UpdateCommentResponse, Error, UpdateCommentParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: UpdateCommentParams) => {
@@ -300,7 +300,7 @@ export function useUpdateCommentMutation(
 export function useSubmitReviewMutation(
   options?: UseMutationOptions<SubmitReviewResponse, Error, SubmitReviewParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: SubmitReviewParams) => {
@@ -317,7 +317,7 @@ export function useSubmitReviewMutation(
 export function useDeleteDraftMutation(
   options?: UseMutationOptions<DeleteDraftResponse, Error, DeleteDraftParams>
 ) {
-  const client = useScaffaldClient()
+  const client = useScaffaldJobsClient()
 
   return useMutation({
     mutationFn: async (params: DeleteDraftParams) => {
