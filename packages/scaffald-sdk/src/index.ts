@@ -446,6 +446,16 @@ export type {
   RejectWorkerResponse,
 } from './resources/projects.js'
 
+export type {
+  ProfileViewViewer,
+  ProfileView,
+  ViewAnalytics,
+  RecordViewParams,
+  RecordViewResponse,
+  GetProfileViewsParams,
+  GetProfileViewsResponse,
+} from './resources/profile-views.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

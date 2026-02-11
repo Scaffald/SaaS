@@ -1,11 +1,11 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
 import {
   useFollowers,
   usePendingConnections,
   useAcceptConnectionMutation,
   useDeclineConnectionMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
+import { useProfileViews, useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
 import { Card } from '@unicornlove/beyond-ui'
 import {
   ArrowDown,
@@ -30,12 +30,10 @@ export function ProfileActivityWidget() {
   const queryClient = useQueryClient()
 
   // Fetch data
-  const { data: profileViews, isLoading: viewsLoading } = api.profileViews.getProfileViews.useQuery(
-    { limit: 10 }
-  )
+  const { data: profileViewsData, isLoading: viewsLoading } = useProfileViews({ limit: 10 })
+  const profileViews = profileViewsData?.views
 
-  const { data: viewAnalytics, isLoading: analyticsLoading } =
-    api.profileViews.getViewAnalytics.useQuery()
+  const { data: viewAnalytics, isLoading: analyticsLoading } = useViewAnalytics()
 
   const { data: followersData, isLoading: followersLoading } = useFollowers()
   const followers = followersData?.data

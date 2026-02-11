@@ -9,7 +9,7 @@ import {
   SkillsWidget,
 } from '@scf/core/features/profile/widgets'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { api } from '@scf/core/utils/api'
+import { useRecordViewMutation } from '@scf/core/utils/profile-views-sdk-hooks'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import type { DashboardBreadcrumbSegment } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
@@ -47,7 +47,7 @@ export default function UserProfilePage() {
   const isOwnProfile = currentUserId === id
 
   // Profile view tracking
-  const recordViewMutation = api.profileViews.recordView.useMutation()
+  const recordViewMutation = useRecordViewMutation()
 
   useEffect(() => {
     // Track profile view automatically

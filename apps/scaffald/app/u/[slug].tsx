@@ -11,7 +11,7 @@ import {
 } from '@scf/core/features/profile/widgets'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { useProfileBySlug } from '@scf/core/utils/profile-general-sdk-hooks'
-import { api } from '@scf/core/utils/api'
+import { useRecordViewMutation } from '@scf/core/utils/profile-views-sdk-hooks'
 import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
@@ -43,7 +43,7 @@ export default function PublicUserProfilePage() {
   )
 
   // Profile view tracking
-  const recordViewMutation = api.profileViews.recordView.useMutation()
+  const recordViewMutation = useRecordViewMutation()
 
   // Track profile view automatically (before redirect check)
   useEffect(() => {
