@@ -108,40 +108,65 @@ export async function seedForsuredTestData(): Promise<void> {
 
   try {
     // Step 1: Seed Users
-    console.log('Step 1/5: Seeding ForSured test users...')
+    console.log('Step 1/9: Seeding ForSured test users...')
     await executeSqlFile('001_seed-users.sql')
     console.log('✅ Users seeded')
 
     // Step 2: Seed Organizations
-    console.log('Step 2/5: Seeding ForSured organizations...')
+    console.log('Step 2/9: Seeding ForSured organizations...')
     await executeSqlFile('002_seed-organizations.sql')
     console.log('✅ Organizations seeded')
 
     // Step 3: Seed Projects & Subcontractors
-    console.log('Step 3/5: Seeding ForSured projects & subcontractors...')
+    console.log('Step 3/9: Seeding ForSured projects & subcontractors...')
     await executeSqlFile('003_seed-projects.sql')
     console.log('✅ Projects & subcontractors seeded')
 
     // Step 4: Seed Documents, Policies & Compliance
-    console.log('Step 4/5: Seeding ForSured documents, policies & compliance...')
+    console.log('Step 4/9: Seeding ForSured documents, policies & compliance...')
     await executeSqlFile('004_seed-policies.sql')
     console.log('✅ Documents, policies & compliance seeded')
 
     // Step 5: Seed Tasks & Comments
-    console.log('Step 5/5: Seeding ForSured tasks & comments...')
+    console.log('Step 5/9: Seeding ForSured tasks & comments...')
     await executeSqlFile('005_seed-tasks.sql')
     console.log('✅ Tasks & comments seeded')
+
+    // Step 6: Seed Broker-Client Relationships
+    console.log('Step 6/9: Seeding ForSured broker-client relationships...')
+    await executeSqlFile('006_seed-relationships.sql')
+    console.log('✅ Broker-client relationships seeded')
+
+    // Step 7: Seed Comprehensive Data for Test Users
+    console.log('Step 7/9: Seeding comprehensive data for test users...')
+    await executeSqlFile('008_seed-test-users-comprehensive.sql')
+    console.log('✅ Test users comprehensive data seeded')
+
+    // Step 8: Seed Notifications
+    console.log('Step 8/9: Seeding notifications for all users...')
+    await executeSqlFile('009_seed-notifications.sql')
+    console.log('✅ Notifications seeded')
+
+    // Step 9: Seed Broker-Client Relationship Invitations
+    console.log('Step 9/9: Seeding broker-client relationship invitations...')
+    await executeSqlFile('010_seed-broker-clients.sql')
+    console.log('✅ Broker-client invitations seeded')
 
     console.log('')
     console.log('============================================')
     console.log('ForSured Test Data Complete!')
     console.log('============================================')
     console.log('')
-    console.log('Test Users:')
-    console.log('  - gc.fresh@forsured-test.com')
-    console.log('  - gc.active@forsured-test.com')
-    console.log('  - contractor.active@forsured-test.com')
-    console.log('  - broker.active@forsured-test.com')
+    console.log('Test Users (from "/" page):')
+    console.log('  - test-gc@forsured.test (Manager)')
+    console.log('  - test-contractor@forsured.test (Contractor)')
+    console.log('  - test-broker@forsured.test (Broker)')
+    console.log('')
+    console.log('Additional Test Users:')
+    console.log('  - gc-fresh@forsured-test.com')
+    console.log('  - gc-active@forsured-test.com')
+    console.log('  - contractor-active@forsured-test.com')
+    console.log('  - broker-active@forsured-test.com')
     console.log('  - admin@forsured-test.com')
     console.log('')
     console.log('Password for all: ForsuredTest123!')
