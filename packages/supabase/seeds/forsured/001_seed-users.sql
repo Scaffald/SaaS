@@ -85,13 +85,21 @@ FROM (VALUES
   ('50000000-0000-0000-0000-000000000032', 'superadmin@forsured-test.com', 'ForSured SuperAdmin', 'ForSured', 'SuperAdmin', '+1 (555) 004-0002', 'Jacksonville, FL, United States', 'super_admin'),
 
   -- =========================================================
-  -- SIMPLE TEST USERS (for Start.tsx quick login)
+  -- SIMPLE TEST USERS (for Start.tsx quick login) - legacy @forsured.test
   -- =========================================================
   -- Note: These use 10000000 IDs to match existing users in database
   ('10000000-0000-0000-0000-000000000001', 'test-gc@forsured.test', 'Test GC User', 'Test', 'GC', '+1 (555) 005-0001', 'New York, NY, United States', 'gc'),
   ('10000000-0000-0000-0000-000000000002', 'test-contractor@forsured.test', 'Test Contractor User', 'Test', 'Contractor', '+1 (555) 005-0002', 'Houston, TX, United States', 'contractor'),
   ('10000000-0000-0000-0000-000000000003', 'test-broker@forsured.test', 'Test Broker User', 'Test', 'Broker', '+1 (555) 005-0003', 'San Jose, CA, United States', 'broker'),
-  ('10000000-0000-0000-0000-000000000004', 'test-admin@forsured.test', 'Test Admin User', 'Test', 'Admin', '+1 (555) 005-0004', 'Austin, TX, United States', 'admin')
+  ('10000000-0000-0000-0000-000000000004', 'test-admin@forsured.test', 'Test Admin User', 'Test', 'Admin', '+1 (555) 005-0004', 'Austin, TX, United States', 'admin'),
+
+  -- =========================================================
+  -- MAGIC LINK TEST USERS (for Start.tsx quick login) - @example.com
+  -- =========================================================
+  ('10000000-0000-0000-0000-000000000010', 'manager@example.com', 'Test Manager', 'Test', 'Manager', '+1 (555) 006-0001', 'New York, NY, United States', 'gc'),
+  ('10000000-0000-0000-0000-000000000011', 'contractor@example.com', 'Test Contractor', 'Test', 'Contractor', '+1 (555) 006-0002', 'Houston, TX, United States', 'contractor'),
+  ('10000000-0000-0000-0000-000000000012', 'broker@example.com', 'Test Broker', 'Test', 'Broker', '+1 (555) 006-0003', 'San Jose, CA, United States', 'broker'),
+  ('10000000-0000-0000-0000-000000000013', 'admin@example.com', 'Test Admin', 'Test', 'Admin', '+1 (555) 006-0004', 'Austin, TX, United States', 'admin')
 ) AS users(id, email, name, first_name, last_name, phone, location, user_type)
 ON CONFLICT (id) DO NOTHING;
 
@@ -111,11 +119,16 @@ INSERT INTO forsured.user_profiles (
   onboarding_step
 )
 VALUES
-  -- Test users for Start.tsx quick login (10000000 IDs)
+  -- Test users for Start.tsx quick login - legacy @forsured.test (10000000 IDs)
   ('10000000-0000-0000-0000-000000000001', 'manager', true, 5),
   ('10000000-0000-0000-0000-000000000002', 'contractor', true, 5),
   ('10000000-0000-0000-0000-000000000003', 'broker', true, 5),
-  ('10000000-0000-0000-0000-000000000004', 'admin', true, 5)
+  ('10000000-0000-0000-0000-000000000004', 'admin', true, 5),
+  -- Magic link test users - @example.com (10000000 IDs)
+  ('10000000-0000-0000-0000-000000000010', 'manager', true, 5),
+  ('10000000-0000-0000-0000-000000000011', 'contractor', true, 5),
+  ('10000000-0000-0000-0000-000000000012', 'broker', true, 5),
+  ('10000000-0000-0000-0000-000000000013', 'admin', true, 5)
 ON CONFLICT (scaffald_user_id) DO NOTHING;
 
 COMMIT;

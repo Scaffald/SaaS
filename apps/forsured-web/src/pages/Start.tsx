@@ -1,27 +1,20 @@
 /**
- * Start Page - Landing page with OAuth login
- * Redesigned to use Beyond UI components and design tokens
+ * Start Page - Landing page with magic link login
+ * Uses Supabase magic links for passwordless authentication
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextInput, View, Platform } from 'react-native';
-import { 
-  Stack, 
-  Row, 
-  Text, 
-  Button, 
-  Spinner,
-  Separator,
+import { TextInput, Platform } from 'react-native';
+import {
+  Stack,
+  Text,
+  Button,
   Box,
   H1,
   H3,
 } from '@unicornlove/beyond-ui';
 import { colors, spacing, borderRadius, shadows, typography } from '@unicornlove/beyond-ui';
-import { ArrowLeft } from 'lucide-react';
-import { initiateOAuth } from '../lib/auth/oauth';
 import { supabase } from '../lib/supabase';
-
-const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 /**
  * Test user credentials (seeded in database)
@@ -29,10 +22,10 @@ const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
  * Password for all test users: ForsuredTest123!
  */
 const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
-  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
-  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
-  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
-  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
+  gc: { email: 'manager@example.com', password: 'ForsuredTest123!' },
+  contractor: { email: 'contractor@example.com', password: 'ForsuredTest123!' },
+  broker: { email: 'broker@example.com', password: 'ForsuredTest123!' },
+  admin: { email: 'admin@example.com', password: 'ForsuredTest123!' },
 };
 
 function StartPage() {
@@ -48,44 +41,33 @@ function StartPage() {
     console.log('[StartPage] Form submitted with email:', email);
     setIsLoading(true);
     try {
-      if (USE_OAUTH) {
-        // OAuth mode: Use Scaffald OAuth
-        initiateOAuth({ loginHint: email });
-      } else {
-        // Magic link mode: Use Supabase magic link (like Scaffald does)
-        const normalizedEmail = email.trim().toLowerCase();
-        const redirectTo = `${window.location.protocol}//${window.location.host}/auth/callback`;
+      const normalizedEmail = email.trim().toLowerCase();
+      const redirectTo = `${window.location.protocol}//${window.location.host}/auth/callback`;
 
-        console.log('[StartPage] Sending magic link with redirectTo:', redirectTo);
+      console.log('[StartPage] Sending magic link with redirectTo:', redirectTo);
 
-        const { error } = await supabase.auth.signInWithOtp({
-          email: normalizedEmail,
-          options: {
-            emailRedirectTo: redirectTo,
-            shouldCreateUser: true,
-          },
-        });
+      const { error } = await supabase.auth.signInWithOtp({
+        email: normalizedEmail,
+        options: {
+          emailRedirectTo: redirectTo,
+          shouldCreateUser: true,
+        },
+      });
 
-        if (error) {
-          console.error('[StartPage] Error sending magic link:', error);
-          setError(error.message || 'Failed to send magic link. Please try again.');
-          setIsLoading(false);
-          return;
-        }
-
-        console.log('[StartPage] Magic link sent - user will receive email');
-        navigate(`/auth/verify?email=${encodeURIComponent(normalizedEmail)}`);
+      if (error) {
+        console.error('[StartPage] Error sending magic link:', error);
+        setError(error.message || 'Failed to send magic link. Please try again.');
+        setIsLoading(false);
+        return;
       }
+
+      console.log('[StartPage] Magic link sent - user will receive email');
+      navigate(`/auth/verify?email=${encodeURIComponent(normalizedEmail)}`);
     } catch (error) {
       console.error('[StartPage] Error initiating auth:', error);
       setError(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
       setIsLoading(false);
     }
-  };
-
-  const handleScaffaldContinue = () => {
-    setIsLoading(true);
-    initiateOAuth();
   };
 
   /**
@@ -193,9 +175,6 @@ function StartPage() {
                 Welcome to ForSured
               </H1>
               <Text color="secondary" style={{ textAlign: 'center' }}>
-                Powered by Scaffald
-              </Text>
-              <Text color="secondary" style={{ textAlign: 'center', marginTop: spacing[4] }}>
                 Manage subcontractor compliance with confidence.
               </Text>
             </Stack>
@@ -262,43 +241,10 @@ function StartPage() {
                 fullWidth
                 loading={isLoading}
               >
-                {isLoading ? 'Redirecting...' : 'Continue with Email'}
+                {isLoading ? 'Sending...' : 'Continue with Email'}
               </Button>
             </Stack>
           </form>
-
-          {/* Divider */}
-          <Row alignItems="center" gap={spacing[12]} style={{ width: '100%' }}>
-            <Box style={{ flex: 1, height: 1, backgroundColor: colors.border.light.default }} />
-            <Text color="secondary" style={{ fontSize: 14 }}>
-              or
-            </Text>
-            <Box style={{ flex: 1, height: 1, backgroundColor: colors.border.light.default }} />
-          </Row>
-
-          {/* Direct Scaffald Login */}
-          <Stack gap={spacing[12]} style={{ width: '100%' }}>
-            <Button
-              onPress={handleScaffaldContinue}
-              disabled={isLoading}
-              color="gray"
-              variant="outline"
-              fullWidth
-              iconStart={ArrowLeft}
-            >
-              Continue with Scaffald Account
-            </Button>
-
-            <Text 
-              color="secondary" 
-              style={{ 
-                fontSize: 12, 
-                textAlign: 'center',
-              }}
-            >
-              Already have a Scaffald account? Sign in directly above.
-            </Text>
-          </Stack>
 
           {/* TEMPORARY: Test Login Buttons */}
           <Box
@@ -366,16 +312,6 @@ function StartPage() {
             </Stack>
           </Box>
 
-          {/* Security Notice */}
-          <Text 
-            color="secondary" 
-            style={{ 
-              fontSize: 12, 
-              textAlign: 'center',
-            }}
-          >
-            Secured with OAuth 2.0 + PKCE
-          </Text>
         </Stack>
       </Box>
     </Box>
