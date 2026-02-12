@@ -171,6 +171,9 @@ export default function EnhancedSubcontractorDashboard() {
 
     if (organizationId) {
       fetchDashboardData()
+    } else {
+      // No organization found — render dashboard with empty data
+      setLoading(false)
     }
   }, [userId, organizationId, forsured])
 
