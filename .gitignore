@@ -104,5 +104,6 @@ test-results.log
 /scf-trpc
 **/supabase/.temp/
 **/supabase/.branches/
-**/supabase/migrations
+# Supabase CLI symlinked migrations (root /supabase/), not packages/supabase/migrations/
+/supabase/migrations
 **/*.toml.bak
