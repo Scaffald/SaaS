@@ -2,9 +2,9 @@
 // REQ-126: Admin user management service
 //
 // Provides CRUD operations for user management in the admin interface.
-// Queries both forsured.user_profiles and core.users tables.
+// Queries both forsured.user_profiles and forsured.users tables.
 
-import { forsured, core } from '../lib/supabase';
+import { forsured } from '../lib/supabase';
 import { logAdminAction, AUDIT_ACTIONS } from './auditLogService';
 
 export interface AdminUser {
@@ -72,15 +72,15 @@ export async function getUsers(filters: AdminUserFilters = {}): Promise<AdminUse
     return [];
   }
 
-  // Get core user details
+  // Get user details from forsured.users
   const coreUserIds = profiles.map((p: { scaffald_user_id: string }) => p.scaffald_user_id);
-  const { data: coreUsers, error: coreError } = await core('users')
+  const { data: coreUsers, error: coreError } = await forsured('users')
     .select('id, email, name, organization_id')
     .in('id', coreUserIds);
 
   if (coreError) {
-    console.error('[AdminUserService] Failed to fetch core users:', coreError);
-    // Continue without core data
+    console.error('[AdminUserService] Failed to fetch users:', coreError);
+    // Continue without user data
   }
 
   // Get organizations for company names
@@ -90,7 +90,7 @@ export async function getUsers(filters: AdminUserFilters = {}): Promise<AdminUse
 
   let organizations: Array<{ id: string; name: string }> = [];
   if (orgIds.length > 0) {
-    const { data: orgs } = await core('organizations')
+    const { data: orgs } = await forsured('organizations')
       .select('id, name')
       .in('id', orgIds);
     organizations = orgs || [];
@@ -156,8 +156,8 @@ export async function getUserById(id: string): Promise<AdminUser | null> {
     return null;
   }
 
-  // Get core user details
-  const { data: coreUser } = await core('users')
+  // Get user details from forsured.users
+  const { data: coreUser } = await forsured('users')
     .select('id, email, name, organization_id')
     .eq('id', profile.scaffald_user_id)
     .maybeSingle();
@@ -165,7 +165,7 @@ export async function getUserById(id: string): Promise<AdminUser | null> {
   // Get organization
   let company = null;
   if (coreUser?.organization_id) {
-    const { data: org } = await core('organizations')
+    const { data: org } = await forsured('organizations')
       .select('name')
       .eq('id', coreUser.organization_id)
       .maybeSingle();

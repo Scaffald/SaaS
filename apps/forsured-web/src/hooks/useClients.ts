@@ -1,6 +1,5 @@
 /**
  * Clients Hook
- * REQ-212: Code Updates for Shared Database Architecture
  *
  * Fetches broker's clients from relationship_invitations table.
  * Clients can be:
@@ -13,7 +12,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { BrokerClient, ClientType } from '../types'
-import { supabaseServiceRole, core as coreQuery, forsured as forsuredQuery } from '../lib/supabase'
+import { supabaseServiceRole, forsured as forsuredQuery } from '../lib/supabase'
 
 // Relationship invitation row from the database
 interface RelationshipInvitationRow {
@@ -31,7 +30,7 @@ interface RelationshipInvitationRow {
   updated_at: string;
 }
 
-// Organization row from core schema
+// Organization row from forsured schema
 interface OrganizationRow {
   id: string;
   name: string;
@@ -127,7 +126,7 @@ export function useClients(brokerOrgId?: string) {
       // If no brokerOrgId provided, we can't filter by broker
       // Fall back to fetching all organizations (for backwards compatibility)
       if (!brokerOrgId) {
-        const { data: orgs, error: orgError } = await coreQuery('organizations', client)
+        const { data: orgs, error: orgError } = await forsuredQuery('organizations', client)
           .select('*')
           .order('created_at', { ascending: false })
 
@@ -219,7 +218,7 @@ export function useClients(brokerOrgId?: string) {
         return
       }
 
-      const { data: orgs, error: orgsError } = await coreQuery('organizations', client)
+      const { data: orgs, error: orgsError } = await forsuredQuery('organizations', client)
         .select('*')
         .in('id', clientOrgIds)
 
@@ -302,18 +301,18 @@ export function useClients(brokerOrgId?: string) {
         throw new Error('Supabase service role client not configured')
       }
 
-      // TODO REQ-212: This is a simplified implementation that only creates the organization.
+      // TODO: This is a simplified implementation that only creates the organization.
       // A complete implementation needs to:
-      // 1. Create the organization in core.organizations
+      // 1. Create the organization in forsured.organizations
       // 2. Create broker-client relationship in a broker_clients table
       // 3. Store additional metadata (risk_level, compliance_score, client_type, etc.)
       // For now, we only create the basic organization record.
-      const { data, error: insertError } = await coreQuery('organizations', supaClient)
+      const { data, error: insertError } = await forsuredQuery('organizations', supaClient)
         .insert({
           name: client.company_name,
           // Map BrokerClient fields to organization fields where possible
           // Note: Many BrokerClient fields (risk_level, compliance_score, etc.)
-          // don't exist in core.organizations and need a separate table
+          // don't exist in forsured.organizations and need a separate table
         })
         .select()
         .single()
@@ -338,14 +337,14 @@ export function useClients(brokerOrgId?: string) {
         throw new Error('Supabase service role client not configured')
       }
 
-      // TODO REQ-212: Similar to addClient, this is incomplete.
+      // TODO: Similar to addClient, this is incomplete.
       // We can only update the organization name, not broker-specific fields.
       const updateData: Record<string, unknown> = {};
       if (updates.company_name) {
         updateData.name = updates.company_name;
       }
 
-      const { data, error: updateError } = await coreQuery('organizations', supaClient)
+      const { data, error: updateError } = await forsuredQuery('organizations', supaClient)
         .update(updateData)
         .eq('id', id)
         .select()

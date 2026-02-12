@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
-import { supabaseServiceRole, forsured as forsuredQuery, core as coreQuery } from '../lib/supabase';
+import { supabaseServiceRole, forsured as forsuredQuery } from '../lib/supabase';
 
 export default function TestSupabase() {
   const { tasks, loading, error, createTask, updateTask } = useTasks();
@@ -55,14 +55,14 @@ export default function TestSupabase() {
         addResult(`forsured schema error: ${forsuredError.message}`, true);
       }
 
-      // Try core schema
-      const { error: coreError } = await coreQuery('users', supabaseServiceRole)
+      // Try forsured.users table
+      const { error: usersError } = await forsuredQuery('users', supabaseServiceRole)
         .select('id', { count: 'exact', head: true });
-      if (!coreError) {
+      if (!usersError) {
         schemasFound++;
-        addResult('Schema core accessible');
+        addResult('forsured.users table accessible');
       } else {
-        addResult(`core schema error: ${coreError.message}`, true);
+        addResult(`forsured.users error: ${usersError.message}`, true);
       }
 
       addResult(`Schemas accessible: ${schemasFound}/2`);
@@ -79,15 +79,15 @@ export default function TestSupabase() {
         setConnectionStatus('success');
       }
 
-      // Test 4: Check core.users table exists (read-only)
-      const { data: coreUsers, error: coreUsersError } = await coreQuery('users', supabaseServiceRole)
+      // Test 4: Check forsured.users table exists (read-only)
+      const { data: forsuredUsers, error: forsuredUsersError } = await forsuredQuery('users', supabaseServiceRole)
         .select('id, name, email')
         .limit(1);
 
-      if (coreUsersError) {
-        addResult(`Core users table check failed: ${coreUsersError.message}`, true);
+      if (forsuredUsersError) {
+        addResult(`forsured.users table check failed: ${forsuredUsersError.message}`, true);
       } else {
-        addResult(`Core users table accessible (sample: ${coreUsers?.length || 0} rows)`);
+        addResult(`forsured.users table accessible (sample: ${forsuredUsers?.length || 0} rows)`);
       }
     } catch (err) {
       addResult(`Connection test error: ${(err as Error).message}`, true);

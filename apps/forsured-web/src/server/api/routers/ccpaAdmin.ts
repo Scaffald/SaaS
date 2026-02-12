@@ -12,7 +12,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
-import { core } from '../../../lib/supabase'
+import { forsured } from '../../../lib/supabase'
 
 /**
  * CCPA request status enum
@@ -50,7 +50,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       startDate.setDate(startDate.getDate() - days)
 
       // Get all requests in the period
-      const { data: requests, error } = await core('ccpa_requests')
+      const { data: requests, error } = await forsured('ccpa_requests')
         .select('*')
         .gte('submitted_at', startDate.toISOString())
 
@@ -158,7 +158,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       } = input ?? {}
 
       // Build query
-      let query = core('ccpa_requests')
+      let query = forsured('ccpa_requests')
         .select('*', { count: 'exact' })
         .order(sortBy, { ascending: sortOrder === 'asc' })
         .range(offset, offset + limit - 1)
@@ -239,7 +239,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       const { requestId, status, notes } = input
 
       // Get current request
-      const { data: request, error: fetchError } = await core('ccpa_requests')
+      const { data: request, error: fetchError } = await forsured('ccpa_requests')
         .select('id, status')
         .eq('id', requestId)
         .single()
@@ -281,7 +281,7 @@ export const ccpaAdminRouter = createTRPCRouter({
         updateData.denial_reason = notes
       }
 
-      const { error: updateError } = await core('ccpa_requests')
+      const { error: updateError } = await forsured('ccpa_requests')
         .update(updateData)
         .eq('id', requestId)
 
@@ -293,7 +293,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Record in history
-      await core('ccpa_request_history').insert({
+      await forsured('ccpa_request_history').insert({
         request_id: requestId,
         status,
         changed_by: ctx.user?.id,
@@ -321,7 +321,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       const { requestId, assignedTo } = input
 
       // Get current request
-      const { data: request, error: fetchError } = await core('ccpa_requests')
+      const { data: request, error: fetchError } = await forsured('ccpa_requests')
         .select('id, metadata')
         .eq('id', requestId)
         .single()
@@ -338,7 +338,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       metadata.assigned_to = assignedTo
       metadata.assigned_at = assignedTo ? new Date().toISOString() : null
 
-      const { error: updateError } = await core('ccpa_requests')
+      const { error: updateError } = await forsured('ccpa_requests')
         .update({
           metadata,
           updated_at: new Date().toISOString(),
@@ -353,7 +353,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Record in history
-      await core('ccpa_request_history').insert({
+      await forsured('ccpa_request_history').insert({
         request_id: requestId,
         status: request.status ?? 'pending',
         changed_by: ctx.user?.id,
@@ -380,7 +380,7 @@ export const ccpaAdminRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { requestId } = input
 
-      const { data: request, error } = await core('ccpa_requests')
+      const { data: request, error } = await forsured('ccpa_requests')
         .select('*')
         .eq('id', requestId)
         .single()
@@ -444,7 +444,7 @@ export const ccpaAdminRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { requestId } = input
 
-      const { data, error } = await core('ccpa_request_history')
+      const { data, error } = await forsured('ccpa_request_history')
         .select('*')
         .eq('request_id', requestId)
         .order('changed_at', { ascending: false })
@@ -480,7 +480,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       const { requestId, note } = input
 
       // Get current request
-      const { data: request, error: fetchError } = await core('ccpa_requests')
+      const { data: request, error: fetchError } = await forsured('ccpa_requests')
         .select('id, metadata, status')
         .eq('id', requestId)
         .single()
@@ -506,7 +506,7 @@ export const ccpaAdminRouter = createTRPCRouter({
 
       metadata.internal_notes = notes
 
-      const { error: updateError } = await core('ccpa_requests')
+      const { error: updateError } = await forsured('ccpa_requests')
         .update({
           metadata,
           updated_at: new Date().toISOString(),
@@ -521,7 +521,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Record in history
-      await core('ccpa_request_history').insert({
+      await forsured('ccpa_request_history').insert({
         request_id: requestId,
         status: request.status,
         changed_by: ctx.user?.id,
@@ -554,7 +554,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       const { requestId, notes } = input
 
       // Get current request
-      const { data: request, error: fetchError } = await core('ccpa_requests')
+      const { data: request, error: fetchError } = await forsured('ccpa_requests')
         .select('id, status')
         .eq('id', requestId)
         .single()
@@ -573,7 +573,7 @@ export const ccpaAdminRouter = createTRPCRouter({
         })
       }
 
-      const { error: updateError } = await core('ccpa_requests')
+      const { error: updateError } = await forsured('ccpa_requests')
         .update({
           status: 'in_progress',
           updated_at: new Date().toISOString(),
@@ -588,7 +588,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Record in history
-      await core('ccpa_request_history').insert({
+      await forsured('ccpa_request_history').insert({
         request_id: requestId,
         status: 'in_progress',
         changed_by: ctx.user?.id,
@@ -611,7 +611,7 @@ export const ccpaAdminRouter = createTRPCRouter({
    */
   listApps: protectedProcedure.query(async () => {
     // Get OAuth apps
-    const { data: oauthApps, error: oauthError } = await core('oauth_apps')
+    const { data: oauthApps, error: oauthError } = await forsured('oauth_apps')
       .select('id, name, display_name, description, status, created_at, updated_at')
       .order('display_name', { ascending: true })
 
@@ -624,7 +624,7 @@ export const ccpaAdminRouter = createTRPCRouter({
 
     // Get CCPA app registry entries
     const { data: ccpaConfigs, error: ccpaError } =
-      await core('ccpa_oauth_app_registry').select('*')
+      await forsured('ccpa_oauth_app_registry').select('*')
 
     if (ccpaError) {
       throw new TRPCError({
@@ -682,7 +682,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       const { appId } = input
 
       // Get the OAuth app
-      const { data: oauthApp, error: oauthError } = await core('oauth_apps')
+      const { data: oauthApp, error: oauthError } = await forsured('oauth_apps')
         .select('*')
         .eq('id', appId)
         .single()
@@ -695,7 +695,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Get CCPA config if exists
-      const { data: ccpaConfig } = await core('ccpa_oauth_app_registry')
+      const { data: ccpaConfig } = await forsured('ccpa_oauth_app_registry')
         .select('*')
         .eq('app_id', oauthApp.name)
         .single()
@@ -783,7 +783,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       } = input
 
       // Get the OAuth app
-      const { data: oauthApp, error: oauthError } = await core('oauth_apps')
+      const { data: oauthApp, error: oauthError } = await forsured('oauth_apps')
         .select('id, name, display_name')
         .eq('id', appId)
         .single()
@@ -809,7 +809,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Check if config exists
-      const { data: existingConfig } = await core('ccpa_oauth_app_registry')
+      const { data: existingConfig } = await forsured('ccpa_oauth_app_registry')
         .select('id')
         .eq('app_id', oauthApp.name)
         .single()
@@ -827,7 +827,7 @@ export const ccpaAdminRouter = createTRPCRouter({
           updateData.webhook_secret = webhookSecret
         }
 
-        const { error: updateError } = await core('ccpa_oauth_app_registry')
+        const { error: updateError } = await forsured('ccpa_oauth_app_registry')
           .update(updateData)
           .eq('id', existingConfig.id)
 
@@ -845,7 +845,7 @@ export const ccpaAdminRouter = createTRPCRouter({
         }
       } else {
         // Create new config
-        const { data: newConfig, error: insertError } = await core('ccpa_oauth_app_registry')
+        const { data: newConfig, error: insertError } = await forsured('ccpa_oauth_app_registry')
           .insert({
             app_id: oauthApp.name,
             app_name: oauthApp.display_name,
@@ -886,7 +886,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       const { appId, requestType } = input
 
       // Get the OAuth app
-      const { data: oauthApp, error: oauthError } = await core('oauth_apps')
+      const { data: oauthApp, error: oauthError } = await forsured('oauth_apps')
         .select('id, name')
         .eq('id', appId)
         .single()
@@ -899,7 +899,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       }
 
       // Get CCPA config
-      const { data: ccpaConfig, error: ccpaError } = await core('ccpa_oauth_app_registry')
+      const { data: ccpaConfig, error: ccpaError } = await forsured('ccpa_oauth_app_registry')
         .select('*')
         .eq('app_id', oauthApp.name)
         .single()
@@ -954,7 +954,7 @@ export const ccpaAdminRouter = createTRPCRouter({
 
       // Update last verified at
       if (responseStatus >= 200 && responseStatus < 300) {
-        await core('ccpa_oauth_app_registry')
+        await forsured('ccpa_oauth_app_registry')
           .update({ last_verified_at: new Date().toISOString() })
           .eq('id', ccpaConfig.id)
       }
@@ -1429,7 +1429,7 @@ export const ccpaAdminRouter = createTRPCRouter({
       for (const requestId of requestIds) {
         try {
           // Get current request status
-          const { data: request, error: fetchError } = await core('ccpa_requests')
+          const { data: request, error: fetchError } = await forsured('ccpa_requests')
             .select('id, status')
             .eq('id', requestId)
             .single()
@@ -1465,7 +1465,7 @@ export const ccpaAdminRouter = createTRPCRouter({
             updateData.completed_at = new Date().toISOString()
           }
 
-          const { error: updateError } = await core('ccpa_requests')
+          const { error: updateError } = await forsured('ccpa_requests')
             .update(updateData)
             .eq('id', requestId)
 
@@ -1479,7 +1479,7 @@ export const ccpaAdminRouter = createTRPCRouter({
           }
 
           // Add history entry
-          await core('ccpa_request_history').insert({
+          await forsured('ccpa_request_history').insert({
             request_id: requestId,
             status: newStatus,
             changed_by: ctx.user?.id,
@@ -1531,7 +1531,7 @@ export const ccpaAdminRouter = createTRPCRouter({
 
       for (const requestId of requestIds) {
         try {
-          const { error: updateError } = await core('ccpa_requests')
+          const { error: updateError } = await forsured('ccpa_requests')
             .update({
               metadata: {
                 assigned_to: assigneeId,
@@ -1552,7 +1552,7 @@ export const ccpaAdminRouter = createTRPCRouter({
           }
 
           // Add history entry
-          await core('ccpa_request_history').insert({
+          await forsured('ccpa_request_history').insert({
             request_id: requestId,
             status: 'in_progress',
             changed_by: ctx.user?.id,
@@ -1747,7 +1747,7 @@ export const ccpaAdminRouter = createTRPCRouter({
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
 
     // Get all active requests with deadlines within 7 days or overdue
-    const { data: requests, error } = await core('ccpa_requests')
+    const { data: requests, error } = await forsured('ccpa_requests')
       .select('*')
       .in('status', ['pending', 'in_progress'])
       .lte('deadline_at', sevenDaysFromNow.toISOString())

@@ -228,6 +228,96 @@ FROM roles r,
 WHERE r.name = ra.role_name
 ON CONFLICT (role_id, user_id, scope_org_id, scope_team_id) DO NOTHING;
 
+-- =========================================================
+-- FORSURED-OWNED ORGANIZATIONS
+-- =========================================================
+-- These mirror core.organizations into the forsured-owned table.
+-- Required for all forsured.* FK references (projects, tasks, etc.)
+-- Uses the same IDs as core.organizations for FK compatibility.
+-- =========================================================
+INSERT INTO forsured.organizations (id, owner_user_id, name, slug, website, address)
+VALUES
+  -- GC Organizations
+  ('60000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000003', 'Acme Construction Group', 'acme-construction-group', 'https://acme-construction.test',
+    '{"street": "100 Construction Way", "city": "New York", "state": "NY", "postal": "10001", "country": "USA"}'::jsonb),
+  ('60000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-000000000002', 'BuildRight Contractors', 'buildright-contractors', 'https://buildright.test',
+    '{"street": "200 Builder Ave", "city": "Boston", "state": "MA", "postal": "02101", "country": "USA"}'::jsonb),
+  ('60000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000004', 'Pacific Coast Builders', 'pacific-coast-builders', 'https://pacific-coast-builders.test',
+    '{"street": "300 Ocean Blvd", "city": "Los Angeles", "state": "CA", "postal": "90001", "country": "USA"}'::jsonb),
+  -- Contractor Organizations
+  ('60000000-0000-0000-0000-000000000011', '50000000-0000-0000-0000-000000000012', 'Elite Electrical Services', 'elite-electrical-services', 'https://elite-electrical.test',
+    '{"street": "400 Spark St", "city": "Houston", "state": "TX", "postal": "77001", "country": "USA"}'::jsonb),
+  ('60000000-0000-0000-0000-000000000012', '50000000-0000-0000-0000-000000000013', 'Budget Plumbing Co', 'budget-plumbing-co', 'https://budget-plumbing.test',
+    '{"street": "500 Pipe Lane", "city": "San Antonio", "state": "TX", "postal": "78201", "country": "USA"}'::jsonb),
+  ('60000000-0000-0000-0000-000000000013', '50000000-0000-0000-0000-000000000011', 'Phoenix HVAC Solutions', 'phoenix-hvac-solutions', 'https://phoenix-hvac.test',
+    '{"street": "600 Cool Rd", "city": "Phoenix", "state": "AZ", "postal": "85001", "country": "USA"}'::jsonb),
+  -- Broker Organizations
+  ('60000000-0000-0000-0000-000000000021', '50000000-0000-0000-0000-000000000022', 'Pinnacle Insurance Brokers', 'pinnacle-insurance-brokers', 'https://pinnacle-insurance.test',
+    '{"street": "700 Insurance Plaza", "city": "San Jose", "state": "CA", "postal": "95101", "country": "USA"}'::jsonb),
+  -- Test User Organizations
+  ('60000000-0000-0000-0000-000000000031', '10000000-0000-0000-0000-000000000001', 'Test Construction Company', 'test-construction-company', 'https://test-construction.test',
+    '{"street": "100 Test St", "city": "New York", "state": "NY", "postal": "10001", "country": "USA"}'::jsonb),
+  ('60000000-0000-0000-0000-000000000032', '10000000-0000-0000-0000-000000000002', 'Test Contractor Services', 'test-contractor-services', 'https://test-contractor.test',
+    '{"street": "200 Contractor Ave", "city": "Houston", "state": "TX", "postal": "77001", "country": "USA"}'::jsonb),
+  ('60000000-0000-0000-0000-000000000033', '10000000-0000-0000-0000-000000000003', 'Test Insurance Brokers', 'test-insurance-brokers', 'https://test-broker.test',
+    '{"street": "300 Broker Blvd", "city": "San Jose", "state": "CA", "postal": "95101", "country": "USA"}'::jsonb)
+ON CONFLICT (id) DO NOTHING;
+
+-- =========================================================
+-- FORSURED ROLES
+-- =========================================================
+INSERT INTO forsured.roles (id, scope, name, description)
+VALUES
+  ('70000000-0000-0000-0000-000000000001', 'organization', 'owner', 'Organization owner with full access'),
+  ('70000000-0000-0000-0000-000000000002', 'organization', 'admin', 'Organization administrator'),
+  ('70000000-0000-0000-0000-000000000003', 'organization', 'member', 'Organization member'),
+  ('70000000-0000-0000-0000-000000000004', 'platform', 'platform_admin', 'ForSured platform administrator')
+ON CONFLICT (name) DO NOTHING;
+
+-- =========================================================
+-- FORSURED ROLE ASSIGNMENTS
+-- =========================================================
+INSERT INTO forsured.role_assignments (role_id, role_type, user_id, scope_org_id, organization_id)
+VALUES
+  -- GC Org 1 - Active GC is owner
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000003', '60000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000001'),
+  ('70000000-0000-0000-0000-000000000003', 'member', '50000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000001'),
+  -- GC Org 2 - Onboarding GC is owner
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000002'),
+  -- GC Org 3 - MultiProject GC is owner
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000004', '60000000-0000-0000-0000-000000000003', '60000000-0000-0000-0000-000000000003'),
+  -- Contractor Org 1 - Active Contractor is owner
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000012', '60000000-0000-0000-0000-000000000011', '60000000-0000-0000-0000-000000000011'),
+  -- Contractor Org 2 - NonCompliant Contractor is owner
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000013', '60000000-0000-0000-0000-000000000012', '60000000-0000-0000-0000-000000000012'),
+  -- Contractor Org 3 - Fresh Contractor is owner, MultiProject is member
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000011', '60000000-0000-0000-0000-000000000013', '60000000-0000-0000-0000-000000000013'),
+  ('70000000-0000-0000-0000-000000000003', 'member', '50000000-0000-0000-0000-000000000014', '60000000-0000-0000-0000-000000000013', '60000000-0000-0000-0000-000000000013'),
+  -- Broker Org - Active Broker is owner, Fresh Broker is member
+  ('70000000-0000-0000-0000-000000000001', 'owner', '50000000-0000-0000-0000-000000000022', '60000000-0000-0000-0000-000000000021', '60000000-0000-0000-0000-000000000021'),
+  ('70000000-0000-0000-0000-000000000003', 'member', '50000000-0000-0000-0000-000000000021', '60000000-0000-0000-0000-000000000021', '60000000-0000-0000-0000-000000000021'),
+  -- Admin has access to primary GC org
+  ('70000000-0000-0000-0000-000000000002', 'admin', '50000000-0000-0000-0000-000000000031', '60000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000001'),
+  -- Test user organizations
+  ('70000000-0000-0000-0000-000000000001', 'owner', '10000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000031', '60000000-0000-0000-0000-000000000031'),
+  ('70000000-0000-0000-0000-000000000001', 'owner', '10000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000032', '60000000-0000-0000-0000-000000000032'),
+  ('70000000-0000-0000-0000-000000000001', 'owner', '10000000-0000-0000-0000-000000000003', '60000000-0000-0000-0000-000000000033', '60000000-0000-0000-0000-000000000033')
+ON CONFLICT (id) DO NOTHING;
+
+-- =========================================================
+-- UPDATE FORSURED.USERS WITH ORGANIZATION IDS
+-- =========================================================
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000001' WHERE id IN ('50000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000001');
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000002' WHERE id = '50000000-0000-0000-0000-000000000002';
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000003' WHERE id = '50000000-0000-0000-0000-000000000004';
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000011' WHERE id = '50000000-0000-0000-0000-000000000012';
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000012' WHERE id = '50000000-0000-0000-0000-000000000013';
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000013' WHERE id IN ('50000000-0000-0000-0000-000000000011', '50000000-0000-0000-0000-000000000014');
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000021' WHERE id IN ('50000000-0000-0000-0000-000000000022', '50000000-0000-0000-0000-000000000021');
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000031' WHERE id = '10000000-0000-0000-0000-000000000001';
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000032' WHERE id = '10000000-0000-0000-0000-000000000002';
+UPDATE forsured.users SET organization_id = '60000000-0000-0000-0000-000000000033' WHERE id = '10000000-0000-0000-0000-000000000003';
+
 COMMIT;
 
 -- =========================================================

@@ -10,7 +10,7 @@
  * not on signin. This prevents double attribution.
  */
 
-import { core } from '../supabase'
+import { forsured } from '../supabase'
 import { auditService } from '../audit/AuditService'
 import type { ReferralData } from '../invitations/types'
 
@@ -137,7 +137,7 @@ export async function attributeReferralOnSignup(
 
   try {
     // Look up the invitation by referral code
-    const { data: invitation, error: invError } = await core('generic_invitations')
+    const { data: invitation, error: invError } = await forsured('generic_invitations')
       .select('id, inviter_id, inviter_organization_id')
       .eq('referral_code', referralData.code)
       .single()
@@ -149,7 +149,7 @@ export async function attributeReferralOnSignup(
     }
 
     // Check if this new user is the intended invitee (link invitation to user)
-    const { error: updateError } = await core('generic_invitations')
+    const { error: updateError } = await forsured('generic_invitations')
       .update({ invitee_user_id: newUserId })
       .eq('id', invitation.id)
       .is('invitee_user_id', null)
@@ -198,7 +198,7 @@ export async function getReferralStats(userId: string): Promise<{
   pendingInvitations: number
 }> {
   try {
-    const { data: invitations, error } = await core('generic_invitations')
+    const { data: invitations, error } = await forsured('generic_invitations')
       .select('id, status')
       .eq('inviter_id', userId)
 

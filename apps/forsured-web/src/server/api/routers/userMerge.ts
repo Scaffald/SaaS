@@ -10,7 +10,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
-import { forsured, core } from '../../../lib/supabase'
+import { forsured } from '../../../lib/supabase'
 import { AuditService } from '../../../lib/audit/AuditService'
 import { sendMergeCompletionNotifications } from '../../../lib/mergeNotifications'
 

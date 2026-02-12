@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { forsured, core } from '../lib/supabase';
+import { forsured } from '../lib/supabase';
 
 /**
  * Activity log entry for display
@@ -233,11 +233,11 @@ async function fetchResourceNames(
     }
   }
 
-  // Fetch organizations (in core schema)
+  // Fetch organizations (in forsured schema)
   const uncachedOrgIds = ids.organizationIds.filter((id) => !cache.organizations.has(id));
   if (uncachedOrgIds.length > 0) {
     try {
-      const { data: organizations } = await core('organizations')
+      const { data: organizations } = await forsured('organizations')
         .select('id, name')
         .in('id', uncachedOrgIds);
       if (organizations) {
@@ -488,7 +488,7 @@ async function fetchUsersInfo(
   if (uncachedIds.length === 0) return;
 
   try {
-    const { data: users } = await core('users')
+    const { data: users } = await forsured('users')
       .select('id, name, email')
       .in('id', uncachedIds);
 

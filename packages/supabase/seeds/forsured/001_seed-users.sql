@@ -134,6 +134,42 @@ VALUES
   ('10000000-0000-0000-0000-000000000013', 'admin', true, 5)
 ON CONFLICT (scaffald_user_id) DO NOTHING;
 
+-- =========================================================
+-- CREATE FORSURED.USERS RECORDS
+-- =========================================================
+-- These mirror auth.users into the forsured-owned users table.
+-- Required for all forsured.* FK references (tasks, projects, etc.)
+-- =========================================================
+INSERT INTO forsured.users (id, email, name, display_name, role)
+VALUES
+  -- GC Users
+  ('50000000-0000-0000-0000-000000000001', 'gc-fresh@forsured-test.com', 'Fresh GC User', 'Fresh GC User', 'gc'),
+  ('50000000-0000-0000-0000-000000000002', 'gc-onboarding@forsured-test.com', 'Onboarding GC User', 'Onboarding GC User', 'gc'),
+  ('50000000-0000-0000-0000-000000000003', 'gc-active@forsured-test.com', 'Active GC User', 'Active GC User', 'gc'),
+  ('50000000-0000-0000-0000-000000000004', 'gc-multiproject@forsured-test.com', 'MultiProject GC User', 'MultiProject GC User', 'gc'),
+  -- Contractors
+  ('50000000-0000-0000-0000-000000000011', 'contractor-fresh@forsured-test.com', 'Fresh Contractor', 'Fresh Contractor', 'contractor'),
+  ('50000000-0000-0000-0000-000000000012', 'contractor-active@forsured-test.com', 'Active Contractor', 'Active Contractor', 'contractor'),
+  ('50000000-0000-0000-0000-000000000013', 'contractor-noncompliant@forsured-test.com', 'NonCompliant Contractor', 'NonCompliant Contractor', 'contractor'),
+  ('50000000-0000-0000-0000-000000000014', 'contractor-multiproject@forsured-test.com', 'MultiProject Contractor', 'MultiProject Contractor', 'contractor'),
+  -- Brokers
+  ('50000000-0000-0000-0000-000000000021', 'broker-fresh@forsured-test.com', 'Fresh Broker', 'Fresh Broker', 'broker'),
+  ('50000000-0000-0000-0000-000000000022', 'broker-active@forsured-test.com', 'Active Broker', 'Active Broker', 'broker'),
+  -- Admins
+  ('50000000-0000-0000-0000-000000000031', 'admin@forsured-test.com', 'ForSured Admin', 'ForSured Admin', 'admin'),
+  ('50000000-0000-0000-0000-000000000032', 'superadmin@forsured-test.com', 'ForSured SuperAdmin', 'ForSured SuperAdmin', 'super_admin'),
+  -- Legacy test users
+  ('10000000-0000-0000-0000-000000000001', 'test-gc@forsured.test', 'Test GC User', 'Test GC User', 'gc'),
+  ('10000000-0000-0000-0000-000000000002', 'test-contractor@forsured.test', 'Test Contractor User', 'Test Contractor User', 'contractor'),
+  ('10000000-0000-0000-0000-000000000003', 'test-broker@forsured.test', 'Test Broker User', 'Test Broker User', 'broker'),
+  ('10000000-0000-0000-0000-000000000004', 'test-admin@forsured.test', 'Test Admin User', 'Test Admin User', 'admin'),
+  -- Magic link test users
+  ('10000000-0000-0000-0000-000000000010', 'manager@example.com', 'Test Manager', 'Test Manager', 'gc'),
+  ('10000000-0000-0000-0000-000000000011', 'contractor@example.com', 'Test Contractor', 'Test Contractor', 'contractor'),
+  ('10000000-0000-0000-0000-000000000012', 'broker@example.com', 'Test Broker', 'Test Broker', 'broker'),
+  ('10000000-0000-0000-0000-000000000013', 'admin@example.com', 'Test Admin', 'Test Admin', 'admin')
+ON CONFLICT (id) DO NOTHING;
+
 COMMIT;
 
 -- =========================================================

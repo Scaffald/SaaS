@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 import { Comment, EntityType } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
-import { core } from '../lib/supabase';
+import { forsured } from '../lib/supabase';
 
 interface UseCommentsOptions {
   entityType?: EntityType;
@@ -74,7 +74,7 @@ export function useComments(options: UseCommentsOptions = {}) {
 
       if (uniqueUserIds.length > 0) {
         try {
-          const { data: usersData, error: usersError } = await core('users')
+          const { data: usersData, error: usersError } = await forsured('users')
             .select('id, display_name, username')
             .in('id', uniqueUserIds);
 

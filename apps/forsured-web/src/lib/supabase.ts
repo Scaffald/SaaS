@@ -1,9 +1,8 @@
 /**
  * Supabase Client Configuration
- * REQ-212: Code Updates for Shared Database Architecture
  *
- * This module provides the Supabase client configured for the forsured.* schema
- * with cross-schema query support for core.* tables (Uni-Construct/Scaffald).
+ * This module provides the Supabase client configured for the forsured.* schema.
+ * All ForSured data lives in the forsured.* schema -- no core.* dependencies.
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
@@ -161,20 +160,19 @@ export const table = {
   // Project-Subcontractor relationship
   projectSubcontractors: 'forsured.project_subcontractors',
 
-  // Core schema tables (Uni-Construct/Scaffald - read-only)
-  coreUsers: 'core.users',
-  coreOrganizations: 'core.organizations',
-  coreProjects: 'core.projects',
-  coreRoleAssignments: 'core.role_assignments',
-  // Legacy aliases (deprecated - use core* versions)
-  /** @deprecated Use coreUsers instead */
-  scaffaldUsers: 'core.users',
-  /** @deprecated Use coreOrganizations instead */
-  scaffaldOrganizations: 'core.organizations',
-  /** @deprecated Use coreProjects instead */
-  scaffaldProjects: 'core.projects',
-  /** @deprecated Use coreRoleAssignments instead */
-  scaffaldRoleAssignments: 'core.role_assignments',
+  // Forsured schema tables (previously in core.*)
+  users: 'forsured.users',
+  organizations: 'forsured.organizations',
+  roles: 'forsured.roles',
+  roleAssignments: 'forsured.role_assignments',
+  genericInvitations: 'forsured.generic_invitations',
+  invitationRules: 'forsured.invitation_rules',
+  userRelationships: 'forsured.user_relationships',
+  // CCPA tables
+  ccpaRequests: 'forsured.ccpa_requests',
+  ccpaRequestHistory: 'forsured.ccpa_request_history',
+  oauthApps: 'forsured.oauth_apps',
+  ccpaOauthAppRegistry: 'forsured.ccpa_oauth_app_registry',
 };
 
 /**
@@ -203,33 +201,11 @@ export function forsured(tableName: string, client: SupabaseClient = supabase) {
 }
 
 /**
- * Type-safe query builder for core schema (Uni-Construct/Scaffald - read-only)
- *
- * @param tableName - Table name within core schema
- * @param client - Optional Supabase client (defaults to anon client)
- *
- * @example
- * ```ts
- * // Query core.users table
- * const { data } = await core('users')
- *   .select('id, name, email, organization:organizations!inner(id, name)')
- *   .eq('id', userId);
- *
- * // Use service role client for testing (bypasses RLS)
- * const { data } = await core('users', supabaseServiceRole!)
- *   .select('*');
- * ```
+ * @deprecated ForSured no longer uses core schema. Use forsured() instead.
+ * Kept temporarily for reference during migration.
  */
 export function core(tableName: string, client: SupabaseClient = supabase) {
-  return client.schema('core').from(tableName);
-}
-
-/**
- * @deprecated Use core() instead. This function is maintained for backward compatibility.
- * Type-safe query builder for core schema (legacy name)
- */
-export function scaffald(tableName: string, client: SupabaseClient = supabase) {
-  return core(tableName, client);
+  return client.schema('forsured').from(tableName);
 }
 
 /**
@@ -254,9 +230,8 @@ export async function getCurrentUser() {
  * Uses scope_org_id from role_assignments table where user has a role
  */
 export async function getUserOrganizationId(userId: string): Promise<string | null> {
-  // Query role_assignments to find user's organization
-  // Get the first organization where user has any role assignment
-  const { data, error } = await core('role_assignments')
+  // Query forsured.role_assignments to find user's organization
+  const { data, error } = await forsured('role_assignments')
     .select('scope_org_id')
     .eq('user_id', userId)
     .not('scope_org_id', 'is', null)
@@ -284,7 +259,7 @@ export async function userHasRole(
   organizationId: string,
   allowedRoles: string[]
 ): Promise<boolean> {
-  const { data, error } = await core('role_assignments')
+  const { data, error } = await forsured('role_assignments')
     .select('role_type')
     .eq('user_id', userId)
     .eq('organization_id', organizationId)
