@@ -257,7 +257,7 @@ export class ComplianceDbAuthorizationService {
     if (cached !== undefined) return cached
 
     const { data } = await this.supabase
-      .schema('core')
+      .schema('forsured')
       .from('role_assignments')
       .select('role:roles(name, scope)')
       .eq('user_id', userId)

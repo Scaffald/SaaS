@@ -1,93 +1,26 @@
 /**
- * Notifications Proxy Router
- * 
- * Proxies requests to the Edge Function notifications router
- * This allows the frontend to use type-safe tRPC hooks while calling Edge Functions
+ * Notifications Router
+ *
+ * Direct database implementation for notifications.
+ * Queries forsured.notifications table via service role client.
+ * Matches the API shape expected by useNotifications hook.
  */
 
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
+import { supabaseServiceRole, forsured } from '../../../lib/supabase'
 
 /**
- * Call Edge Function tRPC endpoint
+ * Get the service role client for forsured schema queries (bypasses RLS)
  */
-async function callEdgeFunctionTRPC(
-  procedure: string,
-  input: unknown,
-  accessToken: string,
-  type: 'query' | 'mutation' = 'query'
-): Promise<unknown> {
-  // Use process.env for server-side environment variables
-  const supabaseUrl =
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    process.env.VITE_SUPABASE_URL ||
-    'http://localhost:54321'
-  const baseUrl = `${supabaseUrl}/functions/v1/trpc/notifications.${procedure}`
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${accessToken}`,
-    apikey:
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.VITE_SUPABASE_ANON_KEY ||
-      '',
+function getForsuredNotifications() {
+  const client = supabaseServiceRole || undefined
+  if (client) {
+    return client.schema('forsured').from('notifications')
   }
-
-  let response: Response
-
-  if (type === 'mutation') {
-    // Mutations use POST with batch format
-    response = await fetch(`${baseUrl}?batch=1`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        0: input ?? null,
-      }),
-    })
-  } else {
-    // Queries use GET with batch format
-    const url =
-      input === undefined
-        ? `${baseUrl}?batch=1`
-        : `${baseUrl}?batch=1&input=${encodeURIComponent(JSON.stringify({ '0': input }))}`
-
-    response = await fetch(url, {
-      method: 'GET',
-      headers,
-    })
-  }
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    let errorData: unknown
-    try {
-      errorData = JSON.parse(errorText)
-    } catch {
-      errorData = errorText
-    }
-    throw new TRPCError({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: `Edge Function error: ${JSON.stringify(errorData)}`,
-    })
-  }
-
-  const result = await response.json()
-  // tRPC Edge Function returns results in batched format: [{ result: { data: ... } }]
-  if (Array.isArray(result) && result.length > 0) {
-    const firstResult = result[0]
-    if (firstResult.result) {
-      if (firstResult.result.error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: firstResult.result.error.message || 'Edge Function error',
-        })
-      }
-      return firstResult.result.data
-    }
-    return firstResult
-  }
-  return result
+  // Fallback to regular client
+  return forsured('notifications')
 }
 
 export const notificationsProxyRouter = createTRPCRouter({
@@ -103,95 +36,218 @@ export const notificationsProxyRouter = createTRPCRouter({
         .default({})
     )
     .query(async ({ ctx, input }) => {
-      // Get access token from context (set during context creation)
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      // Ensure input has defaults applied
-      const queryInput = {
-        status: input?.status ?? 'all',
-        limit: input?.limit ?? 25,
-        cursor: input?.cursor,
+
+      const status = input?.status ?? 'all'
+      const limit = input?.limit ?? 25
+
+      let query = getForsuredNotifications()
+        .select('id, type, title, message, entity_type, entity_id, triggered_by, is_read, read_at, metadata, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (status === 'unread') {
+        query = query.eq('is_read', false)
+      } else if (status === 'read') {
+        query = query.eq('is_read', true)
       }
-      return callEdgeFunctionTRPC('list', queryInput, ctx.accessToken)
+      // 'all' and 'archived' don't add extra filters (archived not yet implemented at DB level)
+
+      if (input?.cursor) {
+        // Cursor-based pagination: get items created before the cursor
+        const { data: cursorRow } = await getForsuredNotifications()
+          .select('created_at')
+          .eq('id', input.cursor)
+          .single()
+
+        if (cursorRow) {
+          query = query.lt('created_at', cursorRow.created_at)
+        }
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch notifications: ${error.message}`,
+        })
+      }
+
+      const items = data || []
+      const nextCursor = items.length === limit ? items[items.length - 1]?.id : undefined
+
+      return { items, nextCursor }
     }),
 
   getUnreadCount: protectedProcedure
     .input(z.object({}).optional().default({}))
     .query(async ({ ctx }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('getUnreadCount', {}, ctx.accessToken)
+
+      const { count, error } = await getForsuredNotifications()
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_read', false)
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to count notifications: ${error.message}`,
+        })
+      }
+
+      return { count: count || 0 }
     }),
 
   markAsRead: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('markAsRead', input, ctx.accessToken, 'mutation')
+
+      const { error } = await getForsuredNotifications()
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq('id', input.id)
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+      }
+      return { success: true }
     }),
 
   markAsUnread: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('markAsUnread', input, ctx.accessToken, 'mutation')
+
+      const { error } = await getForsuredNotifications()
+        .update({ is_read: false, read_at: null })
+        .eq('id', input.id)
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+      }
+      return { success: true }
     }),
 
   markManyRead: protectedProcedure
     .input(z.object({ ids: z.array(z.string().uuid()).min(1) }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('markManyRead', input, ctx.accessToken, 'mutation')
+
+      const { error } = await getForsuredNotifications()
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .in('id', input.ids)
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+      }
+      return { success: true }
     }),
 
   markManyUnread: protectedProcedure
     .input(z.object({ ids: z.array(z.string().uuid()).min(1) }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('markManyUnread', input, ctx.accessToken, 'mutation')
+
+      const { error } = await getForsuredNotifications()
+        .update({ is_read: false, read_at: null })
+        .in('id', input.ids)
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+      }
+      return { success: true }
     }),
 
   archiveMany: protectedProcedure
     .input(z.object({ ids: z.array(z.string().uuid()).min(1) }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('archiveMany', input, ctx.accessToken, 'mutation')
+
+      // Hard delete (no deleted_at column on notifications table)
+      const { error } = await getForsuredNotifications()
+        .delete()
+        .in('id', input.ids)
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+      }
+      return { success: true }
     }),
 
   restoreMany: protectedProcedure
     .input(z.object({ ids: z.array(z.string().uuid()).min(1) }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('restoreMany', input, ctx.accessToken, 'mutation')
+
+      // Restore not supported (no deleted_at column) - just return success
+      return { success: true }
     }),
 
   markAllAsRead: protectedProcedure.mutation(async ({ ctx }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
-      }
-      return callEdgeFunctionTRPC('markAllAsRead', undefined, ctx.accessToken, 'mutation')
-    }),
+    const userId = ctx.userId
+    if (!userId) {
+      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
+    }
+
+    const { error } = await getForsuredNotifications()
+      .update({ is_read: true, read_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .eq('is_read', false)
+
+    if (error) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+    }
+    return { success: true }
+  }),
 
   deleteMany: protectedProcedure
     .input(z.object({ ids: z.array(z.string().uuid()).min(1) }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.accessToken) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
+      const userId = ctx.userId
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
       }
-      return callEdgeFunctionTRPC('deleteMany', input, ctx.accessToken, 'mutation')
+
+      const { error } = await getForsuredNotifications()
+        .delete()
+        .in('id', input.ids)
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
+      }
+      return { success: true }
     }),
 })

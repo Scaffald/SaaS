@@ -236,14 +236,9 @@ export async function getUserOrganizationId(userId: string): Promise<string | nu
     .eq('user_id', userId)
     .not('scope_org_id', 'is', null)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error) {
-    // PGRST116 means no rows found - user has no org assignment
-    if (error.code === 'PGRST116') {
-      console.log('[Supabase] No organization assignment found for user:', userId);
-      return null;
-    }
     console.error('[Supabase] Error getting user organization:', error);
     return null;
   }
@@ -264,7 +259,7 @@ export async function userHasRole(
     .eq('user_id', userId)
     .eq('organization_id', organizationId)
     .in('role_type', allowedRoles)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('[Supabase] Error checking user role:', error);

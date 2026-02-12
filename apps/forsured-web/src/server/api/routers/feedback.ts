@@ -99,7 +99,7 @@ const adminUpdateStatusInput = z.object({
  * Get the current user's forsured profile
  */
 async function getCurrentUserProfile(userId: string) {
-  const { data, error } = await forsured('user_profiles')
+  const { data, error } = await getForsuredAdmin('user_profiles')
     .select('id, scaffald_user_id, user_type, name, email, company')
     .eq('scaffald_user_id', userId)
     .single()
@@ -118,7 +118,7 @@ async function getCurrentUserProfile(userId: string) {
  * Check if user is an admin
  */
 async function isUserAdmin(userId: string): Promise<boolean> {
-  const { data } = await forsured('user_profiles')
+  const { data } = await getForsuredAdmin('user_profiles')
     .select('user_type')
     .eq('scaffald_user_id', userId)
     .single()
@@ -130,7 +130,7 @@ async function isUserAdmin(userId: string): Promise<boolean> {
  * Get admin users for reassignment dropdown
  */
 async function getAdminUsers() {
-  const { data } = await forsured('user_profiles')
+  const { data } = await getForsuredAdmin('user_profiles')
     .select('id, name, email')
     .eq('user_type', 'admin')
     .order('name')
