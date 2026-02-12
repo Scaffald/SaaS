@@ -22,10 +22,10 @@ import { supabase } from '../lib/supabase';
  * Password for all test users: ForsuredTest123!
  */
 const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
-  gc: { email: 'manager@example.com', password: 'ForsuredTest123!' },
-  contractor: { email: 'contractor@example.com', password: 'ForsuredTest123!' },
-  broker: { email: 'broker@example.com', password: 'ForsuredTest123!' },
-  admin: { email: 'admin@example.com', password: 'ForsuredTest123!' },
+  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
+  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
+  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
+  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
 };
 
 function StartPage() {

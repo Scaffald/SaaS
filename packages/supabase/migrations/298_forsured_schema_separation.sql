@@ -520,11 +520,11 @@ DO $$ BEGIN
 
     ALTER TABLE forsured.compliance_records
       ADD CONSTRAINT fk_compliance_records_client
-      FOREIGN KEY (client_org_id) REFERENCES forsured.organizations(id) ON DELETE CASCADE;
+      FOREIGN KEY (client_id) REFERENCES forsured.organizations(id) ON DELETE CASCADE;
 
     ALTER TABLE forsured.compliance_records
       ADD CONSTRAINT fk_compliance_records_reviewer
-      FOREIGN KEY (reviewer_id) REFERENCES forsured.users(id) ON DELETE SET NULL;
+      FOREIGN KEY (reviewed_by_user_id) REFERENCES forsured.users(id) ON DELETE SET NULL;
   END IF;
 END $$;
 
@@ -544,7 +544,7 @@ DO $$ BEGIN
 
     ALTER TABLE forsured.project_requirements
       ADD CONSTRAINT fk_project_requirements_evaluator
-      FOREIGN KEY (evaluator_id) REFERENCES forsured.users(id) ON DELETE SET NULL;
+      FOREIGN KEY (evaluated_by_user_id) REFERENCES forsured.users(id) ON DELETE SET NULL;
   END IF;
 END $$;
 

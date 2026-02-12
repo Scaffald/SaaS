@@ -25,6 +25,37 @@
 -- =============================================================================
 
 -- =============================================================================
+-- 0. CREATE project_subcontractors TABLE (needed by check_project_subcontractor_access below)
+--    Full table definition lives in migration 255 which uses IF NOT EXISTS.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS forsured.project_subcontractors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID NOT NULL,
+    subcontractor_id UUID NOT NULL,
+    invited_by UUID,
+    invited_at TIMESTAMPTZ DEFAULT NOW(),
+    status TEXT DEFAULT 'invited',
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+
+    CONSTRAINT fk_project_subcontractors_project
+        FOREIGN KEY (project_id)
+        REFERENCES forsured.projects(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_project_subcontractors_subcontractor
+        FOREIGN KEY (subcontractor_id)
+        REFERENCES forsured.subcontractors(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_project_subcontractor UNIQUE (project_id, subcontractor_id),
+
+    CONSTRAINT chk_project_subcontractors_status
+        CHECK (status IN ('invited', 'active', 'onboarding', 'removed', 'declined'))
+);
+
+-- =============================================================================
 -- 1. ENABLE RLS ON ALL FORSURED TABLES
 -- =============================================================================
 
