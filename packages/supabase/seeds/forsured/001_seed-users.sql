@@ -111,7 +111,10 @@ ON CONFLICT (id) DO NOTHING;
 -- =========================================================
 -- CREATE FORSURED USER PROFILES
 -- =========================================================
--- The test login users need forsured.user_profiles records
+-- Quick-login test users need forsured.user_profiles so
+-- ProtectedRoute allows access to dashboards.
+-- user_type must match CHECK constraint: gc, contractor, broker, admin
+-- =========================================================
 INSERT INTO forsured.user_profiles (
   scaffald_user_id,
   user_type,
@@ -119,13 +122,13 @@ INSERT INTO forsured.user_profiles (
   onboarding_step
 )
 VALUES
-  -- Test users for Start.tsx quick login - legacy @forsured.test (10000000 IDs)
-  ('10000000-0000-0000-0000-000000000001', 'manager', true, 5),
+  -- Legacy @forsured.test quick-login users
+  ('10000000-0000-0000-0000-000000000001', 'gc', true, 5),
   ('10000000-0000-0000-0000-000000000002', 'contractor', true, 5),
   ('10000000-0000-0000-0000-000000000003', 'broker', true, 5),
   ('10000000-0000-0000-0000-000000000004', 'admin', true, 5),
-  -- Magic link test users - @example.com (10000000 IDs)
-  ('10000000-0000-0000-0000-000000000010', 'manager', true, 5),
+  -- @example.com magic-link quick-login users
+  ('10000000-0000-0000-0000-000000000010', 'gc', true, 5),
   ('10000000-0000-0000-0000-000000000011', 'contractor', true, 5),
   ('10000000-0000-0000-0000-000000000012', 'broker', true, 5),
   ('10000000-0000-0000-0000-000000000013', 'admin', true, 5)
