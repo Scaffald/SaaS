@@ -1,5 +1,6 @@
 import { api } from '@scf/core/utils/api'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -11,9 +12,11 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
 
 export function AccountDeletionPanel() {
+  const { theme } = useThemeContext()
+) {
   const [isOpen, setIsOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [confirmText, setConfirmText] = useState('')
@@ -57,23 +60,23 @@ export function AccountDeletionPanel() {
     <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color="$red11" size="lg" />
-          <Text color="$red11">Delete Account</Text>
+          <AlertTriangle style={{ color: colors.text[theme].error }} size="lg" />
+          <Text style={{ color: colors.text[theme].error }}>Delete Account</Text>
         </Row>
 
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Permanently delete your account and all associated data. This action cannot be undone.
         </Text>
 
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           • All payment data will be anonymized • Your profile will be removed • You will lose
           access to all organizations and teams
         </Text>
 
         <Button
           variant="outline"
-          borderColor="$red8"
-          color="$red11"
+          style={{ borderColor: colors.border[theme].error }}
+          style={{ color: colors.text[theme].error }}
           iconStart={Trash2}
           onPress={() => setIsOpen(true)}
         >
@@ -86,8 +89,8 @@ export function AccountDeletionPanel() {
             <AlertDialog.Content style={{ maxWidth: 500 }}>
               <Stack gap={16} padding="md">
                 <Stack gap={8}>
-                  <Text color="$red11">Delete Your Account?</Text>
-                  <Text color="$gray11">
+                  <Text style={{ color: colors.text[theme].error }}>Delete Your Account?</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     This action cannot be undone. All your data will be permanently deleted or
                     anonymized.
                   </Text>
@@ -109,7 +112,7 @@ export function AccountDeletionPanel() {
                     value={confirmText}
                     onChangeText={setConfirmText}
                     placeholder="DELETE"
-                    borderColor={confirmText === 'DELETE' ? '$green8' : '$red8'}
+                    borderColor={confirmText === 'DELETE' ? '$green8' : colors.border[theme].error}
                   />
                 </Stack>
 

@@ -6,7 +6,7 @@ import { isSlugValid } from '@scf/core/utils/slugify'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { organizationCreateSchema, type OrganizationCreate } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -17,6 +17,7 @@ import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
 import { OrganizationProjectPrivacySettings } from './OrganizationProjectPrivacySettings'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -35,6 +36,7 @@ type SlugAvailabilityState =
   | { state: 'error'; message: string }
 
 export function OrganizationForm({ mode, organizationId, initialData }: OrganizationFormProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -253,7 +255,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   return (
     <ScrollView
       flex={1}
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       padding="lg"
       showsVerticalScrollIndicator={false}
     >
@@ -269,10 +271,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               value={field.value}
               onChangeText={handleNameChange}
               placeholder="Enter organization name"
-              borderColor={errors.name ? '$red8' : '$borderColor'}
+              borderColor={errors.name ? colors.border[theme].error : colors.border[theme].default}
             />
             {errors.name && (
-              <Text data-testid="name-error" color="$red10">
+              <Text data-testid="name-error" style={{ color: colors.text[theme].error }}>
                 {errors.name.message}
               </Text>
             )}
@@ -294,27 +296,27 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               placeholder="organization-username"
               autoCapitalize="none"
               autoCorrect={false}
-              borderColor={slugHasAvailabilityError || errors.slug ? '$red8' : '$borderColor'}
+              borderColor={slugHasAvailabilityError || errors.slug ? colors.border[theme].error : colors.border[theme].default}
             />
             <Text opacity={0.7}>Lowercase, URL-friendly username (hyphens only)</Text>
             {errors.slug && (
-              <Text data-testid="slug-error" color="$red10">
+              <Text data-testid="slug-error" style={{ color: colors.text[theme].error }}>
                 {errors.slug.message}
               </Text>
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
-                <Text color="$gray11">Checking availability...</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Checking availability...</Text>
               </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
-              <Text color="$green10">This vanity URL is available.</Text>
+              <Text style={{ color: colors.text[theme].success }}>This vanity URL is available.</Text>
             )}
-            {slugStatus.state === 'invalid' && <Text color="$red10">{slugStatus.message}</Text>}
+            {slugStatus.state === 'invalid' && <Text style={{ color: colors.text[theme].error }}>{slugStatus.message}</Text>}
             {slugStatus.state === 'taken' && (
               <Stack gap={8}>
-                <Text color="$red10">{slugStatus.message}</Text>
+                <Text style={{ color: colors.text[theme].error }}>{slugStatus.message}</Text>
                 {slugStatus.suggestions?.length ? (
                   <Row gap={8} flexWrap="wrap">
                     {slugStatus.suggestions.map((suggestion) => (
@@ -371,10 +373,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               value={field.value || ''}
               onChangeText={field.onChange}
               placeholder="https://example.com/logo.png"
-              borderColor={errors.logo_url ? '$red8' : '$borderColor'}
+              borderColor={errors.logo_url ? colors.border[theme].error : colors.border[theme].default}
             />
             {errors.logo_url && (
-              <Text data-testid="logo-error" color="$red10">
+              <Text data-testid="logo-error" style={{ color: colors.text[theme].error }}>
                 {errors.logo_url.message}
               </Text>
             )}
@@ -400,7 +402,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 { value: 'private', label: 'Private' },
               ]}
             />
-            {errors.visibility && <Text color="$red10">{errors.visibility.message}</Text>}
+            {errors.visibility && <Text style={{ color: colors.text[theme].error }}>{errors.visibility.message}</Text>}
           </Stack>
         )}
       />

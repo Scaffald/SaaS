@@ -6,10 +6,11 @@ import {
 import type { TeamInvitation } from '@scaffald/sdk'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
 import { Clock, RefreshCw, XCircle } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   Button,
   Card,
@@ -33,10 +34,10 @@ const STATUS_LABELS: Record<InvitationStatus, string> = {
 
 const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
   pending: '$orange10',
-  accepted: '$green10',
-  declined: '$red10',
-  expired: '$color11',
-  revoked: '$color11',
+  accepted: colors.text[theme].success,
+  declined: colors.text[theme].error,
+  expired: colors.text[theme].secondary,
+  revoked: colors.text[theme].secondary,
 }
 
 interface TeamInvitationsListProps {
@@ -50,6 +51,7 @@ export function TeamInvitationsList({
   refreshKey,
   headerAction,
 }: TeamInvitationsListProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending')
 
@@ -166,19 +168,19 @@ export function TeamInvitationsList({
       {invitationsQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical={24}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading invitations…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading invitations…</Text>
         </Stack>
       ) : invitations.length === 0 ? (
         <Stack
           gap={8}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
           borderRadius={16}
           padding="md"
-          backgroundColor="$color2"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
         >
           <Text>No invitations yet</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Invite teammates to collaborate on hiring. Invitations will appear here with their
             status.
           </Text>
@@ -188,7 +190,7 @@ export function TeamInvitationsList({
           {invitations.map((invitation) => {
             const statusLabel =
               STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status
-            const statusColor = STATUS_COLORS[invitation.status as InvitationStatus] ?? '$color11'
+            const statusColor = STATUS_COLORS[invitation.status as InvitationStatus] ?? colors.text[theme].secondary
 
             const sentAt = invitation.sentAt ? new Date(invitation.sentAt).toLocaleString() : null
             const expiresAt = invitation.expiresAt
@@ -224,9 +226,9 @@ export function TeamInvitationsList({
                 key={invitation.id}
                 padding="md"
                 borderWidth={1}
-                borderColor="$borderColor"
+                borderColor={colors.border[theme].default}
                 gap={12}
-                backgroundColor="$color1"
+                style={{ backgroundColor: colors.bg[theme].onPrimary }}
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={`Invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'} · Status ${statusLabel}${invitation.role?.name ? ` · Role ${invitation.role.name}` : ''}`}
@@ -241,8 +243,8 @@ export function TeamInvitationsList({
                           : 'Invitation'}
                     </Text>
                     <Row gap={8} align="center">
-                      <Clock size="md" color="$gray11" />
-                      <Text color="$gray11">
+                      <Clock size="md" style={{ color: colors.text[theme].secondary }} />
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         Sent {sentAt ?? 'recently'}
                         {expiresAt ? ` · Expires ${expiresAt}` : null}
                       </Text>
@@ -252,27 +254,27 @@ export function TeamInvitationsList({
                 </Row>
 
                 <Row gap={8} flexDirection="column" align="stretch">
-                  <Text color="$gray11">Role:</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Role:</Text>
                   <Text>{invitation.role?.name ?? 'Member'}</Text>
                 </Row>
 
                 {lastDeliveryStatus ? (
                   <Stack gap={4}>
-                    <Text color="$gray11">
-                      Delivery status: <Text color="$gray11">{lastDeliveryStatus}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      Delivery status: <Text style={{ color: colors.text[theme].secondary }}>{lastDeliveryStatus}</Text>
                       {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
                     </Text>
                     {deliveryChannels && deliveryChannels.length > 0 ? (
-                      <Text color="$gray11">Channels: {deliveryChannels.join(', ')}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Channels: {deliveryChannels.join(', ')}</Text>
                     ) : null}
                     {lastDeliveryError ? (
-                      <Text color="$red10">Last error: {lastDeliveryError}</Text>
+                      <Text style={{ color: colors.text[theme].error }}>Last error: {lastDeliveryError}</Text>
                     ) : null}
                   </Stack>
                 ) : null}
 
                 <Row gap={8} flexDirection="column" align="stretch">
-                  <Text color="$gray11">Type:</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Type:</Text>
                   <Text>{invitation.email ? 'Email invitation' : 'Existing member'}</Text>
                 </Row>
 
@@ -297,7 +299,7 @@ export function TeamInvitationsList({
                   <Button
                     size="xs"
                     variant="outline"
-                    color="$red10"
+                    style={{ color: colors.text[theme].error }}
                     iconStart={XCircle}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}

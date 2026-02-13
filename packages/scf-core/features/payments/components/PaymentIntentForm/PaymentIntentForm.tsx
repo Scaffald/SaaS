@@ -1,4 +1,5 @@
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import type { PaymentIntent, StripeElementsOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
@@ -17,6 +18,7 @@ type PaymentIntentFormProps = {
 }
 
 export function PaymentIntentForm(props: PaymentIntentFormProps) {
+  const { theme } = useThemeContext()
   const { clientSecret, amountCents } = props
   const config = useStripeConfig(Boolean(clientSecret))
 
@@ -43,16 +45,16 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (config.isLoading || !options || !stripePromise) {
     return (
-      <Card padding="sm" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text color="$gray11">Preparing secure payment form…</Text>
+      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderColor: colors.border[theme].default }} borderWidth={1}>
+        <Text style={{ color: colors.text[theme].secondary }}>Preparing secure payment form…</Text>
       </Card>
     )
   }
 
   if (!config.publishableKey) {
     return (
-      <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-        <Text color="$red11">
+      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].error, borderColor: colors.border[theme].error }} borderWidth={1}>
+        <Text style={{ color: colors.text[theme].error }}>
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
       </Card>
@@ -78,6 +80,7 @@ function PaymentIntentFormInner({
   disabled,
   testMode,
 }: InnerProps) {
+  const { theme } = useThemeContext()
   const stripe = useStripe()
   const elements = useElements()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -123,24 +126,24 @@ function PaymentIntentFormInner({
   const amountLabel = currencyFormatter.format(amountCents / 100)
 
   return (
-    <Card padding="md" borderColor="$borderColor" borderWidth={1} gap={12}>
+    <Card padding="md" style={{ borderColor: colors.border[theme].default }} borderWidth={1} gap={12}>
       <Stack gap={4}>
         <Row justify="space-between" align="center">
           <Text>Charge amount</Text>
           <Text>{amountLabel}</Text>
         </Row>
-        {description ? <Text color="$gray11">{description}</Text> : null}
+        {description ? <Text style={{ color: colors.text[theme].secondary }}>{description}</Text> : null}
         {testMode && (
-          <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
+          <Text style={{ color: colors.text[theme].warning }}>Stripe test mode is active. Use test card numbers only.</Text>
         )}
       </Stack>
 
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+        <Card padding="sm" style={{ backgroundColor: colors.bg[theme].error, borderColor: colors.border[theme].error }} borderWidth={1}>
           <Row gap={8} align="center">
-            <Text color="$red11" flex={1}>
+            <Text style={{ color: colors.text[theme].error }} flex={1}>
               {errorMessage}
             </Text>
           </Row>

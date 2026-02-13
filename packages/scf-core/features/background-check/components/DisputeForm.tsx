@@ -1,4 +1,5 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, type UploadSelection, UploadSurface, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { AlertCircle, Upload, X } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
@@ -57,6 +58,7 @@ export function DisputeForm({
   submissionError,
   hasActiveDispute,
 }: DisputeFormProps) {
+  const { theme } = useThemeContext()
   const reasonValue = form.watch('reason')
 
   const disableSubmit = useMemo(
@@ -68,8 +70,8 @@ export function DisputeForm({
     <FormProvider {...form}>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="$gray11">Submit a dispute</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>Submit a dispute</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Share what needs review and, if helpful, include supporting documents so our compliance
             team can investigate quickly.
           </Text>
@@ -77,16 +79,16 @@ export function DisputeForm({
 
         {hasActiveDispute ? (
           <Card
-            backgroundColor="$yellow3"
-            borderColor="$yellow8"
+            style={{ backgroundColor: colors.bg[theme].warning }}
+            style={{ borderColor: colors.border[theme].warning }}
             borderWidth={1}
             paddingHorizontal={12}
             paddingVertical={8}
             gap={8}
             borderRadius={16}
           >
-            <Text color="$yellow11">Dispute already in review</Text>
-            <Text color="$yellow11">
+            <Text style={{ color: colors.text[theme].warning }}>Dispute already in review</Text>
+            <Text style={{ color: colors.text[theme].warning }}>
               You have a dispute awaiting review. We’ll notify you when the team has an update.
             </Text>
           </Card>
@@ -126,9 +128,9 @@ export function DisputeForm({
                     value={value ?? ''}
                     onChangeText={onChange}
                     placeholder="Share a short summary…"
-                    borderColor={error ? '$red8' : '$borderColor'}
+                    style={{ borderColor: error ? colors.border[theme].error : colors.border[theme].default }}
                   />
-                  {error ? <Text color="$red10">{error.message}</Text> : null}
+                  {error ? <Text style={{ color: colors.text[theme].error }}>{error.message}</Text> : null}
                 </Stack>
               )}
             />
@@ -146,18 +148,18 @@ export function DisputeForm({
                   value={value}
                   onChangeText={onChange}
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
-                  borderColor={error ? '$red8' : '$borderColor'}
+                  style={{ borderColor: error ? colors.border[theme].error : colors.border[theme].default }}
                 />
-                <Text color="$gray11">Minimum 20 characters. Max 2000 characters.</Text>
-                {error ? <Text color="$red10">{error.message}</Text> : null}
+                <Text style={{ color: colors.text[theme].secondary }}>Minimum 20 characters. Max 2000 characters.</Text>
+                {error ? <Text style={{ color: colors.text[theme].error }}>{error.message}</Text> : null}
               </Stack>
             )}
           />
         </Fieldset>
 
         <Stack gap={8}>
-          <Text color="$gray11">Supporting documents (optional)</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>Supporting documents (optional)</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Upload up to five files (PDF, JPG, or PNG, 10MB each) to help us verify your dispute.
           </Text>
 
@@ -186,14 +188,14 @@ export function DisputeForm({
               >
                 <input {...getInputProps()} />
                 <Upload size={24} color="$blue10" />
-                <Text color="$gray11">{isProcessing ? 'Processing…' : 'Drag a file here'}</Text>
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[theme].secondary }}>{isProcessing ? 'Processing…' : 'Drag a file here'}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   or <Text color="$blue11">browse your device</Text>
                 </Text>
                 <Button size="xs" variant="outline" onPress={open} iconStart={Upload}>
                   Choose file
                 </Button>
-                <Text color="$gray11">Accepted: PDF, PNG, JPG • Max 10MB each</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Accepted: PDF, PNG, JPG • Max 10MB each</Text>
               </Stack>
             )}
           </UploadSurface>
@@ -207,8 +209,8 @@ export function DisputeForm({
               backgroundColor="$red3"
               borderRadius={12}
             >
-              <AlertCircle size="md" color="$red10" />
-              <Text color="$red10">{attachmentError}</Text>
+              <AlertCircle size="md" style={{ color: colors.text[theme].error }} />
+              <Text style={{ color: colors.text[theme].error }}>{attachmentError}</Text>
             </Row>
           ) : null}
 
@@ -229,10 +231,10 @@ export function DisputeForm({
                   justify="space-between"
                 >
                   <Stack flex={1} gap={4}>
-                    <Text color="$gray11" >
+                    <Text style={{ color: colors.text[theme].secondary }} >
                       {attachment.name}
                     </Text>
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {attachment.mimeType.toUpperCase()} • {formatFileSize(attachment.size)}
                     </Text>
                   </Stack>
@@ -259,8 +261,8 @@ export function DisputeForm({
             backgroundColor="$red3"
             borderRadius={12}
           >
-            <AlertCircle size="md" color="$red10" />
-            <Text color="$red10">{submissionError}</Text>
+            <AlertCircle size="md" style={{ color: colors.text[theme].error }} />
+            <Text style={{ color: colors.text[theme].error }}>{submissionError}</Text>
           </Row>
         ) : null}
 

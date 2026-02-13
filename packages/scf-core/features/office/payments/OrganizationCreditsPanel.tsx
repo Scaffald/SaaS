@@ -1,8 +1,9 @@
 import { api } from '@scf/core/utils/api'
 import { CreditCard, DollarSign, Plus } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Card, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OrganizationCreditsPanelProps = {
   organizationId: string
@@ -16,6 +17,7 @@ const formatCurrency = (cents: number, currency = 'usd'): string => {
 }
 
 export function OrganizationCreditsPanel({ organizationId }: OrganizationCreditsPanelProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [showDepositForm, setShowDepositForm] = useState(false)
   const [depositAmount, setDepositAmount] = useState('')
@@ -82,7 +84,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       <Card bordered padding="md">
         <Stack gap={12} align="center" paddingVertical={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading account credits…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading account credits…</Text>
         </Stack>
       </Card>
     )
@@ -93,7 +95,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Account Credits</Text>
-          <Text color="$gray11">Pre-funded balance for automatic payments</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Pre-funded balance for automatic payments</Text>
         </Stack>
         {!showDepositForm && (
           <Button size="sm" color="primary" iconStart={Plus} onPress={() => setShowDepositForm(true)}>
@@ -103,12 +105,12 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       </Row>
 
       {/* Balance Display */}
-      <Card padding="md" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }} borderColor={colors.border[theme].default} borderWidth={1}>
         <Row gap={12} align="center">
-          <DollarSign size={32} color="$green11" />
+          <DollarSign size={32} style={{ color: colors.text[theme].success }} />
           <Stack flex={1}>
-            <Text color="$gray11">Current Balance</Text>
-            <Text color="$green11">
+            <Text style={{ color: colors.text[theme].secondary }}>Current Balance</Text>
+            <Text style={{ color: colors.text[theme].success }}>
               {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
             </Text>
           </Stack>
@@ -126,7 +128,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               keyboardType="decimal-pad"
               size="md"
             />
-            <Text color="$gray11">Enter the amount you want to add to your account credits.</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Enter the amount you want to add to your account credits.</Text>
           </Stack>
           <Row gap={8}>
             <Button
@@ -188,14 +190,14 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                         justify="space-between"
                         align="center"
                         padding="xs"
-                        backgroundColor="$color2"
+                        style={{ backgroundColor: colors.bg[theme].subtle }}
                         borderRadius={8}
                       >
                         <Stack flex={1}>
                           <Text>{entry.description ?? entry.transactionType}</Text>
-                          <Text color="$gray11">{new Date(entry.createdAt).toLocaleDateString()}</Text>
+                          <Text style={{ color: colors.text[theme].secondary }}>{new Date(entry.createdAt).toLocaleDateString()}</Text>
                         </Stack>
-                        <Text color={entry.direction === 'credit' ? '$green11' : '$red11'}>
+                        <Text style={{ color: entry.direction === 'credit' ? colors.text[theme].success : colors.text[theme].error }}>
                           {entry.direction === 'credit' ? '+' : '-'}
                           {formatCurrency(entry.amountCents, entry.currency)}
                         </Text>

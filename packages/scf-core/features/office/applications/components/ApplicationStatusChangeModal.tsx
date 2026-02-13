@@ -1,16 +1,19 @@
 import { api } from '@scf/core/utils/api'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   Button,
+  Card,
   CustomCheckbox,
   ResponsiveModal,
   Spinner,
   Text,
+  TextArea,
   Row,
   Stack,
+  useThemeContext,
+  useToast,
 } from '@unicornlove/beyond-ui'
-import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
-import { Card, TextArea } from '@unicornlove/beyond-ui'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 
@@ -248,7 +251,7 @@ export const ApplicationStatusChangeModal = ({
           <Text>
             {isRejection ? `Reject ${candidateName}?` : `Mark ${candidateName} as Hired?`}
           </Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             This will move the application from <Text>{STATUS_LABELS[fromStatus]}</Text> to{' '}
             <Text>{STATUS_LABELS[toStatus]}</Text>
           </Text>
@@ -268,20 +271,20 @@ export const ApplicationStatusChangeModal = ({
             {initializingIntent && !paymentCompleted && (
               <Stack gap={4} align="center">
                 <Spinner size="sm" />
-                <Text color="$gray11">Preparing payment form…</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Preparing payment form…</Text>
               </Stack>
             )}
 
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
-              <Card padding="sm" backgroundColor="$green2" borderColor="$green6" borderWidth={1}>
-                <Text color="$green11">
+              <Card padding="sm" style={{ backgroundColor: colors.bg[theme].successSubtle }} borderColor="$green6" borderWidth={1}>
+                <Text style={{ color: colors.text[theme].success }}>
                   Upfront fee paid on{' '}
                   {successFeeStatus.upfrontPaidAt
                     ? new Date(successFeeStatus.upfrontPaidAt).toLocaleDateString()
                     : 'recently'}
                   .
                 </Text>
-                <Text color="$green11">You can now mark this candidate as hired.</Text>
+                <Text style={{ color: colors.text[theme].success }}>You can now mark this candidate as hired.</Text>
               </Card>
             )}
 
@@ -292,8 +295,8 @@ export const ApplicationStatusChangeModal = ({
                 <Stack gap={12}>
                   <Card
                     padding="sm"
-                    backgroundColor="$color2"
-                    borderColor="$borderColor"
+                    style={{ backgroundColor: colors.bg[theme].subtle }}
+                    borderColor={colors.border[theme].default}
                     borderWidth={1}
                   >
                     <Row gap={8} align="center">
@@ -302,7 +305,7 @@ export const ApplicationStatusChangeModal = ({
                         checked={legalAccepted}
                         onChange={(next) => setLegalAccepted(Boolean(next))}
                       />
-                      <Text flex={1} color="$gray11">
+                      <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                         {legalCopy}
                       </Text>
                     </Row>
@@ -324,7 +327,7 @@ export const ApplicationStatusChangeModal = ({
         <Stack gap={8}>
           <Text>
             {isRejection ? 'Reason for rejection' : 'Notes (optional)'}
-            {isRejection && <Text color="$red10"> *</Text>}
+            {isRejection && <Text style={{ color: colors.text[theme].error }}> *</Text>}
           </Text>
           <TextArea
             data-testid="status-change-reason-input"
@@ -339,7 +342,7 @@ export const ApplicationStatusChangeModal = ({
             
           />
           {isRejection && !reason.trim() && (
-            <Text data-testid="reason-error" color="$red10">
+            <Text data-testid="reason-error" style={{ color: colors.text[theme].error }}>
               Rejection reason is required
             </Text>
           )}
@@ -360,9 +363,9 @@ export const ApplicationStatusChangeModal = ({
               data-testid="status-change-confirm-button"
               onPress={handleConfirm}
               disabled={confirmDisabled}
-              backgroundColor={isRejection ? '$red9' : '$green9'}
+              style={{ backgroundColor: isRejection ? colors.bg[theme].error : colors.bg[theme].success }}
               hoverStyle={{
-                backgroundColor: isRejection ? '$red10' : '$green10',
+                backgroundColor: isRejection ? colors.text[theme].error : colors.text[theme].success,
               }}
             >
               {isLoading ? 'Processing...' : isRejection ? 'Reject Application' : 'Confirm Hire'}
@@ -500,11 +503,11 @@ function HireSummaryCard({
 }) {
   if (hasMissingData) {
     return (
-      <Card padding="sm" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-        <Text color="$yellow11">
+      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderColor={colors.border[theme].warning} borderWidth={1}>
+        <Text style={{ color: colors.text[theme].warning }}>
           Add pay range information to this job before marking the hire.
         </Text>
-        <Text marginTop={4} color="$yellow11">
+        <Text marginTop={4} style={{ color: colors.text[theme].warning }}>
           We use the job&apos;s pay range to calculate success fees and payment schedules.
         </Text>
       </Card>
@@ -516,31 +519,31 @@ function HireSummaryCard({
   }
 
   return (
-    <Card padding="md" borderWidth={1} borderColor="$borderColor">
+    <Card padding="md" borderWidth={1} borderColor={colors.border[theme].default}>
       <Stack gap={8}>
         <Text>Success Fee Overview</Text>
         <Row justify="space-between">
-          <Text color="$gray11">Total Hire Value</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Total Hire Value</Text>
           <Text>{currencyFormatter.format(hireSummary.totalHireValueCents / 100)}</Text>
         </Row>
         <Row justify="space-between">
-          <Text color="$gray11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Upfront ({hireSummary.upfrontPercentage}%)</Text>
           <Text>{currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}</Text>
         </Row>
         <Row justify="space-between">
-          <Text color="$gray11">Final ({hireSummary.finalPercentage}%)</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Final ({hireSummary.finalPercentage}%)</Text>
           <Text>
             {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due{' '}
             {hireSummary.finalDueDate}
           </Text>
         </Row>
-        {isProcessing && <Text color="$gray11">Creating payment intent...</Text>}
-        {paymentError && <Text color="$red10">{paymentError}</Text>}
-        {isStatusLoading && <Text color="$gray11">Checking latest payment status…</Text>}
+        {isProcessing && <Text style={{ color: colors.text[theme].secondary }}>Creating payment intent...</Text>}
+        {paymentError && <Text style={{ color: colors.text[theme].error }}>{paymentError}</Text>}
+        {isStatusLoading && <Text style={{ color: colors.text[theme].secondary }}>Checking latest payment status…</Text>}
         {!isStatusLoading &&
           successFeeStatus &&
           typeof (successFeeStatus as unknown as Record<string, unknown>)?.status === 'string' && (
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               Current status:{' '}
               {(successFeeStatus as unknown as Record<string, unknown>).status
                 ?.toString()

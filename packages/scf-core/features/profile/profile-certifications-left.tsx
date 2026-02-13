@@ -15,7 +15,8 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@scf/core/components/certifications'
-import { Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, MonthYearPicker, ToggleCard, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Award, PlusCircle, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useState } from 'react'
@@ -82,6 +83,7 @@ interface ProfileCertificationsLeftProps {
 export function ProfileCertificationsLeft({
   onSelectCertificationForProof,
 }: ProfileCertificationsLeftProps) {
+  const { theme } = useThemeContext()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Certification[]>([])
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
@@ -629,9 +631,9 @@ export function ProfileCertificationsLeft({
           </Row>
 
           {showCustomForm && (
-            <Card bordered backgroundColor="$color2">
+            <Card bordered style={{ backgroundColor: colors.bg[theme].subtle }}>
               <Stack gap={12} padding="md">
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Add certifications that are not in our catalog. These appear alongside saved
                   certifications on the right panel.
                 </Text>
@@ -644,7 +646,7 @@ export function ProfileCertificationsLeft({
                     onChangeText={(text) => setCustomForm((prev) => ({ ...prev, name: text }))}
                     disabled={isSavingCustom}
                   />
-                  {customErrors.name && <Text color="$red10">{customErrors.name}</Text>}
+                  {customErrors.name && <Text style={{ color: colors.text[theme].error }}>{customErrors.name}</Text>}
                 </Stack>
 
                 <Stack gap={8}>
@@ -658,7 +660,7 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
-                    <Text color="$red10">{customErrors.organization}</Text>
+                    <Text style={{ color: colors.text[theme].error }}>{customErrors.organization}</Text>
                   )}
                 </Stack>
 
@@ -710,7 +712,7 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                     {customErrors.credentialUrl && (
-                      <Text color="$red10">{customErrors.credentialUrl}</Text>
+                      <Text style={{ color: colors.text[theme].error }}>{customErrors.credentialUrl}</Text>
                     )}
                   </Stack>
                 </Row>
@@ -797,7 +799,7 @@ export function ProfileCertificationsLeft({
               (topLevel: UserCertification) => {
                 return (
                   <Stack key={topLevel.id} gap={8}>
-                    <Text color="$blue11">{topLevel.catalog.title}</Text>
+                    <Text style={{ color: colors.text[theme].info }}>{topLevel.catalog.title}</Text>
 
                     {/* Fetch and display depth 1 categories */}
                     <Depth1Categories
@@ -861,7 +863,7 @@ function Depth1Categories({
   const typedTree = certTree as unknown as CertificationTree
 
   if (depth1Categories.length === 0) {
-    return <Text color="$gray11">No sub-categories available</Text>
+    return <Text style={{ color: colors.text[theme].secondary }}>No sub-categories available</Text>
   }
 
   return (
@@ -929,7 +931,7 @@ function Depth2Certifications({
   const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
 
   if (depth2Certs.length === 0) {
-    return <Text color="$gray11">No specific certifications available</Text>
+    return <Text style={{ color: colors.text[theme].secondary }}>No specific certifications available</Text>
   }
 
   // Create a map of saved certifications
@@ -956,20 +958,18 @@ function Depth2Certifications({
             borderRadius={16}
             borderWidth={1}
             animation="quick"
-            backgroundColor={
-              changeStatus === 'added'
-                ? '$green2'
+            style={{
+              backgroundColor: changeStatus === 'added'
+                ? colors.bg[theme].success
                 : changeStatus === 'removed'
-                  ? '$red2'
-                  : '$color1'
-            }
-            borderColor={
-              changeStatus === 'added'
-                ? '$green7'
+                  ? colors.bg[theme].error
+                  : colors.bg[theme].default,
+              borderColor: changeStatus === 'added'
+                ? colors.border[theme].success
                 : changeStatus === 'removed'
-                  ? '$red7'
-                  : '$borderColor'
-            }
+                  ? colors.border[theme].error
+                  : colors.border[theme].default,
+            }}
           >
             <CertificationCheckbox
               certification={sanitizedCert}
@@ -986,12 +986,12 @@ function Depth2Certifications({
               disabled={toggleMutation.isPending}
             />
             {changeStatus === 'added' && (
-              <Text marginTop={8} color="$green11">
+              <Text marginTop={8} style={{ color: colors.text[theme].success }}>
                 ✓ Added to profile
               </Text>
             )}
             {changeStatus === 'removed' && (
-              <Text marginTop={8} color="$red11">
+              <Text marginTop={8} style={{ color: colors.text[theme].error }}>
                 Removed from profile
               </Text>
             )}

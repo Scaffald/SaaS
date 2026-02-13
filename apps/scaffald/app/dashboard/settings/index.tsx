@@ -449,7 +449,7 @@ export default function NotificationsCenterScreen() {
                     <Button
                       key={option.value}
                       size="md"
-                      color={isSelected ? 'blue' : 'gray'}
+                      color={isSelected ? 'primary' : 'gray'}
                       {...(!isSelected ? { variant: 'outlined' as const } : {})}
                       onPress={() =>
                         setPreferences((prev) => ({
@@ -646,7 +646,7 @@ export default function NotificationsCenterScreen() {
                       {!notification.read ? (
                         <Button
                           size="md"
-                          color="info"
+                          color="primary"
                           onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
                         >
                           Mark as read
@@ -680,7 +680,7 @@ export default function NotificationsCenterScreen() {
                       )}
 
                       {notification.ctaUrl && (
-                        <Button size="md" color="info" onPress={() => handleNavigate(notification)}>
+                        <Button size="md" color="primary" onPress={() => handleNavigate(notification)}>
                           <Row gap={8} align="center">
                             <Text color="gray">
                               {notification.ctaLabel ?? 'Open'}
@@ -698,7 +698,7 @@ export default function NotificationsCenterScreen() {
             {notificationsQuery.hasNextPage && (
               <Button
                
-                color="info"
+                color="primary"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}
               >

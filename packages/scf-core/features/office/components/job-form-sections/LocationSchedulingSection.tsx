@@ -1,6 +1,7 @@
-import { Input, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, TextArea } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface LocationSchedulingSectionProps {
   relocationAssistanceOffered?: boolean
@@ -22,6 +23,7 @@ export function LocationSchedulingSection({
   timezone,
   onUpdate,
 }: LocationSchedulingSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     relocation_assistance_offered: relocationAssistanceOffered,
     relocation_assistance_details: relocationAssistanceDetails,
@@ -39,19 +41,19 @@ export function LocationSchedulingSection({
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       <Text>Location & Scheduling</Text>
-      <Text color="$gray11">Work location and schedule information</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>Work location and schedule information</Text>
 
       {/* Relocation Assistance */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Relocation assistance offered</Label>
-          <Text color="$gray11">Company provides relocation support</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Company provides relocation support</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.relocation_assistance_offered || false}

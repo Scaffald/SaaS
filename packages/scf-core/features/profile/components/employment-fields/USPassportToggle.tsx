@@ -1,5 +1,6 @@
-import { ToggleCard } from '@unicornlove/beyond-ui'
-import type { ToggleCardProps } from '@unicornlove/beyond-ui'
+import { ToggleCard } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
+import type { ToggleCardProps } , useThemeContext } from '@unicornlove/beyond-ui'
 import { MapPin } from 'lucide-react-native'
 
 export interface USPassportToggleProps
@@ -12,13 +13,15 @@ export interface USPassportToggleProps
  * Shared "US Passport" toggle card component
  * Used in profile employment sections
  */
-export function USPassportToggle({
+export function USPassportToggle() {
+  const { theme } = useThemeContext()
+{
   description = 'I have a valid United States passport',
   ...toggleCardProps
 }: USPassportToggleProps) {
   return (
     <ToggleCard
-      iconStart={<MapPin size="xs" color="$gray11" />}
+      iconStart={<MapPin size="xs" style={{ color: colors.text[theme].secondary }} />}
       title="US Passport"
       description={description}
       {...toggleCardProps}

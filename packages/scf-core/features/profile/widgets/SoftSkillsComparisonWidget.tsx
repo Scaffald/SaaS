@@ -14,10 +14,11 @@ import {
   SkillsChart,
   spacing,
   type SkillsChartDataset,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -26,7 +27,9 @@ import type { ProfileWidgetProps } from './types'
  * Displays soft skills analysis with category tabs and radar chart visualization.
  * Supports CTA button for incomplete assessments (dashboard use case).
  */
-export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
+export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = () => {
+  const { theme } = useThemeContext()
+{
   userId,
   showEdit = false,
   variant = 'full',
@@ -116,13 +119,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
       {
         label: categoryLabels[activeCategory],
         data: chartData,
-        fillColor: '$blue4',
-        strokeColor: '$blue9',
+        fillColor: colors.bg[theme].info,
+        strokeColor: colors.bg[theme].primary,
         strokeWidth: 3,
         fillOpacity: 0.02,
         gradient: {
-          startColor: '$blue8',
-          endColor: '$blue4',
+          startColor: colors.border[theme].info,
+          endColor: colors.bg[theme].info,
         },
       },
     ]
@@ -141,8 +144,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         datasets.push({
           label: 'Peer Average',
           data: peerChartData,
-          fillColor: '$green4',
-          strokeColor: '$green9',
+          fillColor: colors.bg[theme].success,
+          strokeColor: colors.bg[theme].success,
           strokeWidth: 3,
           fillOpacity: 0.02,
         })
@@ -164,8 +167,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load soft skills</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -204,11 +207,11 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
           </Row>
           <Stack gap={16}>
             <Stack gap={8}>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Complete your soft skills assessment to showcase your strengths and improve job
                 matching.
               </Text>
-              <Text color="$gray11">{completionCount} of 25 skills rated</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{completionCount} of 25 skills rated</Text>
             </Stack>
             <Button variant="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
@@ -256,7 +259,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         {/* Chart Comparison */}
         {categoryChartData && categoryChartData.length > 0 && (
           <Stack gap={16}>
-            <Text color="$gray11" style={{ textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
               {categoryLabels[activeCategory]} Skills
             </Text>
 
@@ -271,9 +274,9 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
                 showSets={categoryChartData.length > 1 ? [0, 1] : [0]}
                 showDots={true}
                 dotSize={5}
-                backgroundColor="$color2"
+                style={{ backgroundColor: colors.bg[theme].subtle }}
                 gridColor="$color5"
-                labelColor="$color11"
+                labelColor="colors.text[theme].secondary"
               />
             </Stack>
 
@@ -281,17 +284,17 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             {categoryChartData.length > 1 && (
               <Row gap={16} align="center" justify="center" paddingVertical={8}>
                 <Row gap={8} align="center">
-                  <Stack width={20} height={3} backgroundColor="$blue9" />
-                  <Text color="$gray11">Self Assessment</Text>
+                  <Stack width={20} height={3} style={{ backgroundColor: colors.bg[theme].primary }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Self Assessment</Text>
                 </Row>
                 <Row gap={8} align="center">
-                  <Stack width={20} height={3} backgroundColor="$green9" />
-                  <Text color="$gray11">Peer Average</Text>
+                  <Stack width={20} height={3} style={{ backgroundColor: colors.bg[theme].success }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Peer Average</Text>
                 </Row>
               </Row>
             )}
 
-            <Text color="$gray11" style={{ textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
           </Stack>

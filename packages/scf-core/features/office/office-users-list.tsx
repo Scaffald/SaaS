@@ -4,9 +4,10 @@ import type { TableColumnVisibilityOption } from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Paragraph, Stack } from '@unicornlove/beyond-ui'
+import { Paragraph, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type User = {
   id: string
@@ -64,6 +65,7 @@ export interface OfficeUsersListProps {
 }
 
 export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [addModalOpen, setAddModalOpen] = useState(false)
@@ -206,7 +208,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
           },
           children: (
             <Stack gap={12}>
-              <Paragraph size="md" color="$gray11">
+              <Paragraph size="md" style={{ color: colors.text[theme].secondary }}>
                 This modal will collect user details in an upcoming iteration. Until then, use the
                 primary action below to launch the full create page.
               </Paragraph>

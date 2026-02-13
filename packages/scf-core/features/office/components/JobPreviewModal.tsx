@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
 import { extractPlainText } from '@unicornlove/beyond-ui'
 import {
   Award,
@@ -11,6 +11,7 @@ import {
   Users,
 } from 'lucide-react-native'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface JobData {
   id?: string
@@ -54,6 +55,7 @@ interface JobPreviewModalProps {
  * Shows how the job will appear to candidates
  */
 export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalProps) {
+  const { theme } = useThemeContext()
   // Fetch job data using office endpoint
   const { data, isLoading } = api.office.getJob.useQuery(
     { id: jobId || '' },
@@ -107,14 +109,14 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="lg">
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="$blue10" />
-          <Text marginTop={16} color="$gray11">
+          <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+          <Text marginTop={16} style={{ color: colors.text[theme].secondary }}>
             Loading job details...
           </Text>
         </Stack>
       ) : !job ? (
         <Stack paddingVertical={32} align="center">
-          <Text color="$red10">Job not found</Text>
+          <Text style={{ color: colors.text[theme].error }}>Job not found</Text>
         </Stack>
       ) : (
         <ScrollView style={{ maxHeight: 600 }}>
@@ -125,19 +127,19 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 width={80}
                 height={80}
                 borderRadius={24}
-                backgroundColor="$blue4"
+                style={{ backgroundColor: colors.bg[theme].info }}
                 align="center"
                 justify="center"
               >
-                <Briefcase size={40} color="$blue10" />
+                <Briefcase size={40} style={{ color: colors.text[theme].info }} />
               </Stack>
 
               <Stack gap={8} align="center">
-                <Text color="$gray11">{job.title}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{job.title}</Text>
                 {job.organization && (
                   <Row gap={8} align="center">
-                    <Building2 size="md" color="$gray11" />
-                    <Text color="$gray11">{job.organization.name}</Text>
+                    <Building2 size="md" style={{ color: colors.text[theme].secondary }} />
+                    <Text style={{ color: colors.text[theme].secondary }}>{job.organization.name}</Text>
                   </Row>
                 )}
               </Stack>
@@ -146,28 +148,28 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Row gap={8} flexWrap="wrap" justify="center">
                 {formatEmploymentType(job.employment_type ?? null) && (
                   <Row
-                    backgroundColor="$blue3"
+                    style={{ backgroundColor: colors.bg[theme].info }}
                     paddingHorizontal={12}
                     paddingVertical={4}
                     borderRadius={12}
                     gap={8}
                     align="center"
                   >
-                    <Briefcase size="md" color="$blue10" />
-                    <Text color="$blue11">{formatEmploymentType(job.employment_type ?? null)}</Text>
+                    <Briefcase size="md" style={{ color: colors.text[theme].info }} />
+                    <Text style={{ color: colors.text[theme].info }}>{formatEmploymentType(job.employment_type ?? null)}</Text>
                   </Row>
                 )}
                 {formatRemoteOption(job.remote_option ?? null) && (
                   <Row
-                    backgroundColor="$green3"
+                    style={{ backgroundColor: colors.bg[theme].successSubtle }}
                     paddingHorizontal={12}
                     paddingVertical={4}
                     borderRadius={12}
                     gap={8}
                     align="center"
                   >
-                    <MapPin size="md" color="$green10" />
-                    <Text color="$green11">{formatRemoteOption(job.remote_option ?? null)}</Text>
+                    <MapPin size="md" style={{ color: colors.text[theme].success }} />
+                    <Text style={{ color: colors.text[theme].success }}>{formatRemoteOption(job.remote_option ?? null)}</Text>
                   </Row>
                 )}
               </Row>
@@ -179,8 +181,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             <Stack gap={12}>
               {job.location && (
                 <Row gap={8} align="center">
-                  <MapPin size="md" color="$gray11" />
-                  <Text color="$gray11">{job.location}</Text>
+                  <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
                 </Row>
               )}
 
@@ -190,8 +192,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 job.pay_range_type ?? null
               ) && (
                 <Row gap={8} align="center">
-                  <DollarSign size="md" color="$gray11" />
-                  <Text color="$gray11">
+                  <DollarSign size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     {formatPayRange(
                       job.pay_range_min_cents ?? null,
                       job.pay_range_max_cents ?? null,
@@ -203,8 +205,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
               {job.posted_at && (
                 <Row gap={8} align="center">
-                  <Calendar size="md" color="$gray11" />
-                  <Text color="$gray11">
+                  <Calendar size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     Posted{' '}
                     {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
                   </Text>
@@ -217,8 +219,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {/* Description */}
             {job.description && (
               <Stack gap={8}>
-                <Text color="$gray11">Job Description</Text>
-                <Text color="$gray11" lineHeight={4}>
+                <Text style={{ color: colors.text[theme].secondary }}>Job Description</Text>
+                <Text style={{ color: colors.text[theme].secondary }} lineHeight={4}>
                   {typeof job.description === 'string'
                     ? job.description
                     : extractPlainText(job.description)}
@@ -230,8 +232,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.job_skills && job.job_skills.length > 0 && (
               <Stack gap={8}>
                 <Row gap={8} align="center">
-                  <Users size="md" color="$gray11" />
-                  <Text color="$gray11">Required Skills</Text>
+                  <Users size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Required Skills</Text>
                 </Row>
                 <Row gap={8} flexWrap="wrap">
                   {(job.job_skills || []).map((jobSkill, idx: number) => {
@@ -246,12 +248,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     return (
                       <Row
                         key={skillKey}
-                        backgroundColor="$blue3"
+                        style={{ backgroundColor: colors.bg[theme].info }}
                         paddingHorizontal={8}
                         paddingVertical={4}
                         borderRadius={12}
                       >
-                        <Text color="$blue11">{skillName}</Text>
+                        <Text style={{ color: colors.text[theme].info }}>{skillName}</Text>
                       </Row>
                     )
                   })}
@@ -263,8 +265,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.job_certifications && job.job_certifications.length > 0 && (
               <Stack gap={8}>
                 <Row gap={8} align="center">
-                  <Award size="md" color="$gray11" />
-                  <Text color="$gray11">Required Certifications</Text>
+                  <Award size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Required Certifications</Text>
                 </Row>
                 <Stack gap={8}>
                   {job.job_certifications.map(
@@ -275,10 +277,10 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                         `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
                       return (
                         <Row key={certKey} gap={8} align="center">
-                          <Text color="$gray11">
+                          <Text style={{ color: colors.text[theme].secondary }}>
                             {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
-                          {jobCert.is_required && <Text color="$red10">(Required)</Text>}
+                          {jobCert.is_required && <Text style={{ color: colors.text[theme].error }}>(Required)</Text>}
                         </Row>
                       )
                     }
@@ -292,12 +294,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Row
                 backgroundColor={
                   job.status === 'open'
-                    ? '$green3'
+                    ? colors.bg[theme].successSubtle
                     : job.status === 'draft'
-                      ? '$gray3'
+                      ? colors.bg[theme].muted
                       : job.status === 'paused'
-                        ? '$yellow3'
-                        : '$red3'
+                        ? colors.bg[theme].warningSubtle
+                        : colors.bg[theme].errorSubtle
                 }
                 paddingHorizontal={12}
                 paddingVertical={4}
@@ -306,12 +308,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <Text
                   color={
                     job.status === 'open'
-                      ? '$green11'
+                      ? colors.text[theme].success
                       : job.status === 'draft'
-                        ? '$gray11'
+                        ? colors.text[theme].secondary
                         : job.status === 'paused'
-                          ? '$yellow11'
-                          : '$red11'
+                          ? colors.text[theme].warning
+                          : colors.text[theme].error
                   }
                 >
                   {job.status

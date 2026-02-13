@@ -1,4 +1,5 @@
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Card } from '@unicornlove/beyond-ui'
 
 type PaymentIntentFormProps = {
@@ -11,16 +12,17 @@ type PaymentIntentFormProps = {
 }
 
 export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
+  const { theme } = useThemeContext()
   const amount = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   }).format(amountCents / 100)
 
   return (
-    <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+    <Card padding="md" style={{ backgroundColor: colors.bg[theme].warning, borderColor: colors.border[theme].warning }} borderWidth={1}>
       <Stack gap={8}>
-        <Text color="$yellow12">Web payment required</Text>
-        <Text color="$yellow11">
+        <Text style={{ color: colors.text[theme].primary }}>Web payment required</Text>
+        <Text style={{ color: colors.text[theme].warning }}>
           Payments must currently be completed in the web experience. Please switch to the browser
           to pay {amount}.
         </Text>

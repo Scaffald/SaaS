@@ -10,10 +10,11 @@
 
 import { api } from '@scf/core/utils/api'
 import { Cloud, Database, HardDrive } from 'lucide-react-native'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, Heading, LoadingState, spacing } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { ComponentType } from 'react'
 import { useState, useEffect } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 type StorageBackend = 'supabase' | 'dropbox' | 'google_drive'
@@ -51,6 +52,8 @@ const STORAGE_OPTIONS: StorageOption[] = [
 ]
 
 export function StoragePreferencesWidget() {
+  const { theme } = useThemeContext()
+) {
   const [selectedPreference, setSelectedPreference] = useState<StorageBackend>('supabase')
   const [hasChanges, setHasChanges] = useState(false)
 
@@ -91,8 +94,8 @@ export function StoragePreferencesWidget() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load storage preferences</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load storage preferences</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -105,7 +108,7 @@ export function StoragePreferencesWidget() {
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Heading variant="h4">Document Storage</Heading>
-            <Text color="$gray11">Choose where your documents are stored</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Choose where your documents are stored</Text>
           </Stack>
           {hasChanges && (
             <Button variant="primary" size="xs" disabled={mutation.isPending} onPress={handleSave}>
@@ -126,8 +129,8 @@ export function StoragePreferencesWidget() {
                 padding="md"
                 borderRadius={16}
                 borderWidth={2}
-                borderColor={isSelected ? '$blue8' : '$borderColor'}
-                backgroundColor={isSelected ? '$blue2' : '$color1'}
+                borderColor={isSelected ? colors.border[theme].info : colors.border[theme].default}
+                backgroundColor={isSelected ? colors.bg[theme].info : colors.bg[theme].default}
                 opacity={option.available ? 1 : 0.5}
                 pressStyle={option.available ? { scale: 0.98 } : undefined}
                 onPress={() => option.available && handleSelect(option.value)}
@@ -139,16 +142,16 @@ export function StoragePreferencesWidget() {
                   width={48}
                   height={48}
                   borderRadius={12}
-                  backgroundColor={isSelected ? '$blue4' : '$color3'}
+                  backgroundColor={isSelected ? colors.bg[theme].info : colors.bg[theme].muted}
                   align="center"
                   justify="center"
                 >
-                  <IconComponent size={24} color={isSelected ? '$blue10' : '$color11'} />
+                  <IconComponent size={24} color={isSelected ? '$blue10' : colors.text[theme].secondary} />
                 </Row>
 
                 <Stack flex={1} gap={4}>
                   <Row align="center" gap={8}>
-                    <Text color="$gray11">{option.label}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{option.label}</Text>
                     {!option.available && (
                       <Row
                         backgroundColor="$yellow4"
@@ -166,11 +169,11 @@ export function StoragePreferencesWidget() {
                         paddingVertical={4}
                         borderRadius={8}
                       >
-                        <Text color="$green11">ACTIVE</Text>
+                        <Text style={{ color: colors.text[theme].success }}>ACTIVE</Text>
                       </Row>
                     )}
                   </Row>
-                  <Text color="$gray11">{option.description}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{option.description}</Text>
                 </Stack>
               </Row>
             )
@@ -178,20 +181,20 @@ export function StoragePreferencesWidget() {
         </Stack>
 
         {/* Status Messages */}
-        {mutation.isSuccess && <Text color="$green10">Storage preference saved successfully.</Text>}
+        {mutation.isSuccess && <Text style={{ color: colors.text[theme].success }}>Storage preference saved successfully.</Text>}
         {mutation.isError && (
-          <Text color="$red10">Failed to save storage preference: {mutation.error.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to save storage preference: {mutation.error.message}</Text>
         )}
 
         {/* Info Note */}
         <Stack
-          backgroundColor="$blue2"
+          style={{ backgroundColor: colors.bg[theme].info }}
           padding="sm"
           borderRadius={12}
           borderWidth={1}
           borderColor="$blue6"
         >
-          <Text color="$blue11">
+          <Text style={{ color: colors.text[theme].info }}>
             Note: Existing documents will remain in their current storage location. Only new
             documents will use your selected preference.
           </Text>

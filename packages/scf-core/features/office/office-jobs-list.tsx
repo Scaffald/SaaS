@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -9,6 +9,7 @@ import { Button, H2, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { JobsKanbanBoard } from './components/JobsKanbanBoard'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type Job = {
   id: string
@@ -127,6 +128,7 @@ type SortOption =
   | 'status_desc'
 
 export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
   const [search, setSearch] = useState('')
@@ -242,7 +244,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const filtersAccessory = (
     <Row gap={12} align="center" flexWrap="wrap">
       <Row gap={8} align="center">
-        <Text color="$gray11">Status</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <ResponsiveSelect
           value={statusFilter ?? 'all'}
           onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
@@ -259,7 +261,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       </Row>
       {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
         <Row gap={8} align="center">
-          <Text color="$gray11">Organization</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Organization</Text>
           <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
@@ -278,7 +280,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         </Row>
       )}
       <Row gap={8} align="center">
-        <Text color="$gray11">Team</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Team</Text>
         <ResponsiveSelect
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
@@ -295,13 +297,13 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       </Row>
       <Row gap={8} align="center">
-        <Text color="$gray11">My teams only</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>My teams only</Text>
         <Switch size="xs" checked={myTeamsOnly} onChange={setMyTeamsOnly}>
           <Switch.Thumb />
         </Switch>
       </Row>
       <Row gap={8} align="center">
-        <Text color="$gray11">Sort</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Sort</Text>
         <ResponsiveSelect
           value={sortBy}
           onValueChange={(value: string) => setSortBy(value as SortOption)}
@@ -326,13 +328,13 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <Stack flex={1} backgroundColor="$background">
+          <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
             {showHeader && (
               <Stack padding="md" paddingBottom={12} gap={12}>
                 <Row justify="space-between" align="center">
                   <Stack>
                     <H2>Jobs</H2>
-                    <Text color="$gray11">{filteredAndSortedJobs.length} total jobs</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{filteredAndSortedJobs.length} total jobs</Text>
                   </Stack>
                   <Row gap={8}>
                     <Button size="sm" onPress={() => setViewMode('kanban')} variant="outline">

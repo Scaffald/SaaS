@@ -1,8 +1,9 @@
 import { Trash2 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { Dialog } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface DeleteButtonProps {
   /**
@@ -51,6 +52,7 @@ export function DeleteButton({
   size = '$2',
   variant = 'outlined',
 }: DeleteButtonProps) {
+  const { theme } = useThemeContext()
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const toast = useToast()
@@ -95,7 +97,7 @@ export function DeleteButton({
             </Dialog.Description>
 
             <Stack gap={8}>
-              <Text color="$red10">
+              <Text style={{ color: colors.text[theme].error }}>
                 This action cannot be undone. This will permanently delete the {itemType} and all
                 associated data.
               </Text>

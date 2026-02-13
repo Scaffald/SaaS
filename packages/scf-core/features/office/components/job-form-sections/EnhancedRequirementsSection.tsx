@@ -1,6 +1,7 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface EnhancedRequirementsSectionProps {
   minimumEducationLevel?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
@@ -46,6 +47,7 @@ export function EnhancedRequirementsSection({
   shiftRequirements,
   onUpdate,
 }: EnhancedRequirementsSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     minimum_education_level: minimumEducationLevel,
     require_background_check: requireBackgroundCheck,
@@ -71,13 +73,13 @@ export function EnhancedRequirementsSection({
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       <Text>Enhanced Requirements</Text>
-      <Text color="$gray11">Additional job requirements and qualifications</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>Additional job requirements and qualifications</Text>
 
       {/* Minimum Education Level */}
       <Stack gap={8}>
@@ -98,7 +100,7 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require background check</Label>
-          <Text color="$gray11">Background screening required for this position</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Background screening required for this position</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_background_check || false}
@@ -122,7 +124,7 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require drug test</Label>
-          <Text color="$gray11">Pre-employment drug screening required</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Pre-employment drug screening required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_drug_test || false}
@@ -135,7 +137,7 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require driver's license</Label>
-          <Text color="$gray11">Valid driver's license required</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Valid driver's license required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_drivers_license || false}
@@ -179,7 +181,7 @@ export function EnhancedRequirementsSection({
             }
           }}
         />
-        <Text color="$gray11">Percentage of time spent traveling for work</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Percentage of time spent traveling for work</Text>
       </Stack>
 
       {/* Shift Requirements */}

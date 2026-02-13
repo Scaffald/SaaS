@@ -1,6 +1,7 @@
-import { Input, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean
@@ -22,6 +23,7 @@ export function DistributionVisibilitySection({
   externalApplicationUrl,
   onUpdate,
 }: DistributionVisibilitySectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     is_featured: isFeatured,
     featured_until: featuredUntil,
@@ -42,19 +44,19 @@ export function DistributionVisibilitySection({
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       <Text>Distribution & Visibility</Text>
-      <Text color="$gray11">Control job posting visibility and distribution</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>Control job posting visibility and distribution</Text>
 
       {/* Is Featured */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Featured job</Label>
-          <Text color="$gray11">Highlight this job in listings</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Highlight this job in listings</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_featured || false}
@@ -71,7 +73,7 @@ export function DistributionVisibilitySection({
             value={localState.featured_until || ''}
             onChangeText={(text) => handleChange('featured_until', text || undefined)}
           />
-          <Text color="$gray11">Date when featured status expires</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Date when featured status expires</Text>
         </Stack>
       )}
 
@@ -89,7 +91,7 @@ export function DistributionVisibilitySection({
             handleChange('seo_keywords', keywords.length > 0 ? keywords : undefined)
           }}
         />
-        <Text color="$gray11">Comma-separated keywords for search optimization</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Comma-separated keywords for search optimization</Text>
       </Stack>
 
       {/* External Application URL */}
@@ -100,7 +102,7 @@ export function DistributionVisibilitySection({
           value={localState.external_application_url || ''}
           onChangeText={(text) => handleChange('external_application_url', text || undefined)}
         />
-        <Text color="$gray11">Redirect to external ATS for applications</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Redirect to external ATS for applications</Text>
       </Stack>
     </Stack>
   )

@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DiscoverCard } from '@unicornlove/beyond-ui'
+import { DiscoverCard , useThemeContext} from '@unicornlove/beyond-ui'
 import {
   Briefcase,
   Building2,
@@ -12,6 +12,7 @@ import {
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { type GetThemeValueForKey, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -23,12 +24,35 @@ export interface JobCardProps {
   isSelected?: boolean
 }
 
-const STATUS_COLORS: Record<string, { backgroundColor: string; text: string; border: string }> = {
-  draft: { backgroundColor: '$gray3', text: '$gray11', border: '$gray6' },
-  open: { backgroundColor: '$green3', text: '$green11', border: '$green6' },
-  paused: { backgroundColor: '$yellow3', text: '$yellow11', border: '$yellow6' },
-  closed: { backgroundColor: '$red3', text: '$red11', border: '$red6' },
-  reviewing: { backgroundColor: '$blue3', text: '$blue11', border: '$blue6' },
+const getStatusColors = (status: string, theme: 'light' | 'dark') => {
+  const STATUS_COLORS: Record<string, { backgroundColor: string; text: string; border: string }> = {
+    draft: {
+      backgroundColor: colors.bg[theme].muted,
+      text: colors.text[theme].secondary,
+      border: colors.border[theme].subtle
+    },
+    open: {
+      backgroundColor: colors.bg[theme].successSubtle,
+      text: colors.text[theme].success,
+      border: colors.border[theme].success
+    },
+    paused: {
+      backgroundColor: colors.bg[theme].warningSubtle,
+      text: colors.text[theme].warning,
+      border: colors.border[theme].warning
+    },
+    closed: {
+      backgroundColor: colors.bg[theme].errorSubtle,
+      text: colors.text[theme].error,
+      border: colors.border[theme].error
+    },
+    reviewing: {
+      backgroundColor: colors.bg[theme].info,
+      text: colors.text[theme].info,
+      border: colors.border[theme].info
+    },
+  }
+  return STATUS_COLORS[status] || STATUS_COLORS.draft
 }
 
 const formatPayRange = (job: Job) => {
@@ -52,7 +76,8 @@ const getStatusLabel = (status: string) => {
 }
 
 export function JobCard({ job, applicationCount, onPress, isSelected = false }: JobCardProps) {
-  const statusColors = STATUS_COLORS[job.status] || STATUS_COLORS.draft
+  const { theme } = useThemeContext()
+  const statusColors = getStatusColors(job.status, theme)
   const payRange = formatPayRange(job)
   const postedDate = formatDate(job.posted_at)
   const createdDate = formatDate(job.created_at)
@@ -69,15 +94,15 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row justify="space-between" align="flex-start" gap={12}>
         <Stack gap={8} flex={1}>
           <Row align="center" gap={8} flexWrap="wrap">
-            <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
-            <Text color={isSelected ? '$yellow11' : '$color12'}  flex={1}>
+            <Briefcase size={18} color={isSelected ? colors.text[theme].warning : colors.text[theme].tertiary} />
+            <Text style={{ color: isSelected ? colors.text[theme].warning : colors.text[theme].primary }}  flex={1}>
               {job.title}
             </Text>
           </Row>
           {job.organization && (
             <Row align="center" gap={6} marginLeft="$7">
-              <Building2 size="md" color="$gray11" />
-              <Text color="$gray11" >
+              <Building2 size="md" style={{ color: colors.text[theme].secondary }} />
+              <Text style={{ color: colors.text[theme].secondary }} >
                 {job.organization.name}
               </Text>
             </Row>
@@ -123,16 +148,16 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} flexWrap="wrap">
         {job.location && (
           <Row align="center" gap={6}>
-            <MapPin size="md" color="$gray11" />
-            <Text color="$gray11" >
+            <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
+            <Text style={{ color: colors.text[theme].secondary }} >
               {job.location}
             </Text>
           </Row>
         )}
         {job.remote_option && (
           <Text
-            color="$gray11"
-            backgroundColor="$color3"
+            style={{ color: colors.text[theme].secondary }}
+            style={{ backgroundColor: colors.bg[theme].muted }}
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}
@@ -142,8 +167,8 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         )}
         {job.employment_type && (
           <Text
-            color="$gray11"
-            backgroundColor="$color3"
+            style={{ color: colors.text[theme].secondary }}
+            style={{ backgroundColor: colors.bg[theme].muted }}
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}
@@ -156,16 +181,16 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Pay Range */}
       {payRange && (
         <Row align="center" gap={6}>
-          <DollarSign size="md" color="$green10" />
-          <Text color="$green10">{payRange}</Text>
+          <DollarSign size="md" style={{ color: colors.text[theme].success }} />
+          <Text style={{ color: colors.text[theme].success }}>{payRange}</Text>
         </Row>
       )}
 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
         <Row align="center" gap={6}>
-          <Calendar size="sm" color="$gray11" />
-          <Text color="$gray11">Created {createdDate}</Text>
+          <Calendar size="sm" style={{ color: colors.text[theme].secondary }} />
+          <Text style={{ color: colors.text[theme].secondary }}>Created {createdDate}</Text>
         </Row>
       )}
     </DiscoverCard>
@@ -178,18 +203,18 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
       gap={8}
       align="center"
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       borderRadius={12}
       paddingHorizontal={8}
       paddingVertical={4}
-      backgroundColor="$color3"
+      style={{ backgroundColor: colors.bg[theme].muted }}
     >
       {icon}
       <Stack gap={0}>
-        <Text color="$gray11" textTransform="uppercase">
+        <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
           {label}
         </Text>
-        <Text color="$gray11">{value}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{value}</Text>
       </Stack>
     </Row>
   )

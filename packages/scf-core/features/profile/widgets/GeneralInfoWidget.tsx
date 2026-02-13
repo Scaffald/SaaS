@@ -5,10 +5,11 @@ import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
+import { DashboardWidget, LoadingState, ResponsiveModal, spacing } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { MessageSquarePlus } from 'lucide-react-native'
 import { useState } from 'react'
-import { Avatar, Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Avatar, Button, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
@@ -28,7 +29,9 @@ interface GeneralInfoWidgetProps extends ProfileWidgetProps {
  * @param showButtons - Show connection/follow/review buttons in header
  * @param isOwnProfile - Whether this is the current user's own profile
  */
-export function GeneralInfoWidget({
+export function GeneralInfoWidget() {
+  const { theme } = useThemeContext()
+{
   userId,
   variant = 'full',
   showButtons = false,
@@ -55,8 +58,8 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load profile information</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load profile information</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="primary"
             size="xs"
@@ -76,7 +79,7 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$gray11">No profile data available</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>No profile data available</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -151,10 +154,10 @@ export function GeneralInfoWidget({
               <Text>{displayName}</Text>
               {data.headline && (
                 <Stack align="center" maxWidth="100%">
-                  <Text color="$gray11">{data.headline}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{data.headline}</Text>
                 </Stack>
               )}
-              {data.username && <Text color="$gray11">@{data.username}</Text>}
+              {data.username && <Text style={{ color: colors.text[theme].secondary }}>@{data.username}</Text>}
               {badge && (
                 <IdVerificationBadge
                   status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
@@ -168,14 +171,14 @@ export function GeneralInfoWidget({
             {/* Status Badges */}
             {data.open_to_work && (
               <Row
-                backgroundColor="$blue2"
+                style={{ backgroundColor: colors.bg[theme].info }}
                 paddingHorizontal={12}
                 paddingVertical={6}
                 borderRadius="$10"
                 borderWidth={1}
-                borderColor="$blue7"
+                style={{ borderColor: colors.border[theme].info }}
               >
-                <Text color="$blue11">Open to Work</Text>
+                <Text style={{ color: colors.text[theme].info }}>Open to Work</Text>
               </Row>
             )}
           </Stack>
@@ -184,7 +187,7 @@ export function GeneralInfoWidget({
           {data.about && variant === 'full' && (
             <Stack gap={8}>
               <Text>About</Text>
-              <Text color="$gray11" lineHeight={12}>
+              <Text style={{ color: colors.text[theme].secondary }} lineHeight={12}>
                 {data.about}
               </Text>
             </Stack>
@@ -197,21 +200,21 @@ export function GeneralInfoWidget({
 
               {data.privateData.email && (
                 <Stack gap={4}>
-                  <Text color="$gray11">Email</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Email</Text>
                   <Text>{data.privateData.email}</Text>
                 </Stack>
               )}
 
               {data.privateData.phone && (
                 <Stack gap={4}>
-                  <Text color="$gray11">Phone</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Phone</Text>
                   <Text>{data.privateData.phone}</Text>
                 </Stack>
               )}
 
               {data.privateData.location && (
                 <Stack gap={4}>
-                  <Text color="$gray11">Location</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Location</Text>
                   <Text>{data.privateData.location}</Text>
                 </Stack>
               )}
@@ -238,7 +241,7 @@ export function GeneralInfoWidget({
                   if (formattedYears === null) return null
                   return (
                     <Stack gap={4} flex={1} minWidth={120}>
-                      <Text color="$gray11">Experience</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Experience</Text>
                       <Text>
                         {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
@@ -248,7 +251,7 @@ export function GeneralInfoWidget({
 
                 {data.industries && (
                   <Stack gap={4} flex={1} minWidth={120}>
-                    <Text color="$gray11">Industry</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Industry</Text>
                     <Text>{data.industries.name}</Text>
                   </Stack>
                 )}

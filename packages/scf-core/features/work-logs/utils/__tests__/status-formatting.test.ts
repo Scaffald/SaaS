@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { colors } from '@unicornlove/beyond-ui/tokens';
 
 import { getStatusColor, getStatusLabel } from '../status-formatting';
 
@@ -34,31 +35,31 @@ describe('getStatusLabel', () => {
 
 describe('getStatusColor', () => {
   it('returns correct color for draft status', () => {
-    expect(getStatusColor('draft')).toBe('$color10');
+    expect(getStatusColor('draft', 'light')).toBe(colors.text.light.tertiary);
   });
 
   it('returns correct color for pending_verification status', () => {
-    expect(getStatusColor('pending_verification')).toBe('$orange10');
+    expect(getStatusColor('pending_verification', 'light')).toBe(colors.text.light.warning);
   });
 
   it('returns correct color for verified status', () => {
-    expect(getStatusColor('verified')).toBe('$green10');
+    expect(getStatusColor('verified', 'light')).toBe(colors.text.light.success);
   });
 
   it('returns correct color for disputed status', () => {
-    expect(getStatusColor('disputed')).toBe('$red10');
+    expect(getStatusColor('disputed', 'light')).toBe(colors.text.light.error);
   });
 
-  it('returns default gray color for null status', () => {
-    expect(getStatusColor(null)).toBe('$gray10');
+  it('returns default secondary color for null status', () => {
+    expect(getStatusColor(null, 'light')).toBe(colors.text.light.secondary);
   });
 
-  it('returns default gray color for undefined status', () => {
-    expect(getStatusColor(undefined)).toBe('$gray10');
+  it('returns default secondary color for undefined status', () => {
+    expect(getStatusColor(undefined, 'light')).toBe(colors.text.light.secondary);
   });
 
-  it('returns default color for unknown status', () => {
-    expect(getStatusColor('unknown_status')).toBe('$color10');
+  it('returns default tertiary color for unknown status', () => {
+    expect(getStatusColor('unknown_status', 'light')).toBe(colors.text.light.tertiary);
   });
 });
 

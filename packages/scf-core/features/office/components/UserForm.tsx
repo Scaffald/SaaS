@@ -1,9 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Input, ScrollView, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { Card } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface UserFormProps {
   userId: string
@@ -27,6 +28,7 @@ interface UserFormProps {
 }
 
 export function UserForm({ userId, initialProfile, initialPrivateData }: UserFormProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -97,7 +99,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
   }
 
   return (
-    <ScrollView flex={1} backgroundColor="$background">
+    <ScrollView flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
       <Stack padding="md" gap={16}>
         <Row align="center" justify="space-between">
           <Text>Edit User</Text>

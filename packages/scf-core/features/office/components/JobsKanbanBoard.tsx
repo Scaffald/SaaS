@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DraggableCard, DroppableColumn } from '@unicornlove/beyond-ui'
+import { DraggableCard, DroppableColumn , useThemeContext} from '@unicornlove/beyond-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -11,6 +11,7 @@ import { ScrollView } from 'react-native'
 import { type GetThemeValueForKey, Text, Row, Stack, useToast } from '@unicornlove/beyond-ui'
 import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -27,10 +28,10 @@ const STATUS_LABELS: Record<JobStatus, string> = {
 }
 
 const STATUS_COLORS: Record<JobStatus, GetThemeValueForKey<'backgroundColor'>> = {
-  draft: '$gray9',
-  open: '$green9',
-  paused: '$yellow9',
-  closed: '$red9',
+  draft: colors.bg[theme].muted,
+  open: colors.bg[theme].success,
+  paused: colors.bg[theme].warning,
+  closed: colors.bg[theme].error,
 }
 
 interface JobsKanbanBoardProps {
@@ -39,6 +40,7 @@ interface JobsKanbanBoardProps {
 }
 
 export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -165,11 +167,11 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
       <Stack
         data-testid={`kanban-column-${status}`}
         width={320}
-        backgroundColor="$color2"
+        style={{ backgroundColor: colors.bg[theme].subtle }}
         borderRadius={16}
         padding="sm"
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[theme].default}
       >
         {/* Column Header */}
         <Row justify="space-between" align="center" marginBottom={12}>
@@ -178,7 +180,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
             <Text>{label}</Text>
           </Row>
           <Stack
-            backgroundColor="$color5"
+            style={{ backgroundColor: colors.bg[theme].inactive }}
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}
@@ -192,13 +194,13 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
           {jobs.length === 0 ? (
             <Stack
               padding="md"
-              backgroundColor="$color3"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
               align="center"
               justify="center"
               style={{ minHeight: 100 }}
             >
-              <Text color="$gray11" style={{ textAlign: 'center' }}>
+              <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
                 No jobs
               </Text>
             </Stack>

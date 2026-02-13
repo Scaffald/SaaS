@@ -7,14 +7,15 @@ import {
   useReorderPortfolioItemsMutation,
 } from '@scf/core/utils/portfolio-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
+import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { ImageUpload } from '@scf/core/components/ui'
 import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
 import { useCallback, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { H4, Image, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { H4, Image, Input, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
 import type { ProfileWidgetProps } from './types'
 
@@ -156,7 +157,9 @@ const parsePortfolioItems = (data: unknown): PortfolioItem[] => {
  * @param showEdit - Whether to show edit actions (always true for manager)
  * @param variant - Display variant (always 'full' for manager)
  */
-export function PortfolioManager({ userId }: ProfileWidgetProps) {
+export function PortfolioManager() {
+  const { theme } = useThemeContext()
+{ userId }: ProfileWidgetProps) {
   const toast = useToast()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
@@ -398,7 +401,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
 
         {!isEditing ? (
           <Stack gap={12}>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
             <Button
@@ -531,7 +534,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   <Stack gap={8}>
                     <Text>{item.title}</Text>
                     {item.description && (
-                      <Text color="$gray11" >
+                      <Text style={{ color: colors.text[theme].secondary }} >
                         {getDescriptionPreview(item.description)}
                       </Text>
                     )}

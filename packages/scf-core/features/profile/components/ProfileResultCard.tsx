@@ -1,6 +1,7 @@
 import { X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, Card, type CardProps, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, type CardProps, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */
@@ -33,12 +34,14 @@ interface ProfileResultCardProps extends CardProps {
  * >
  *   <Stack gap={8}>
  *     <Text>{item.name}</Text>
- *     <Text color="$gray11">{item.description}</Text>
+ *     <Text style={{ color: colors.text[theme].secondary }}>{item.description}</Text>
  *   </Stack>
  * </ProfileResultCard>
  * ```
  */
-export function ProfileResultCard({
+export function ProfileResultCard() {
+  const { theme } = useThemeContext()
+{
   children,
   onRemove,
   removeDisabled = false,
@@ -53,7 +56,7 @@ export function ProfileResultCard({
     <Card
       bordered={bordered}
       size="md"
-      backgroundColor={isNew ? '$green2' : undefined}
+      backgroundColor={isNew ? colors.bg[theme].success : undefined}
       borderColor={isNew ? '$green9' : undefined}
       borderWidth={isNew ? 2 : undefined}
       animation={isNew ? 'quick' : undefined}

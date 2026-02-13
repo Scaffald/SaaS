@@ -1,9 +1,10 @@
 import { useUpdateTeam } from '@scaffald/sdk/react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Input, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 const WORKLOAD_STRATEGIES = [
   { value: 'manual', label: 'Manual assignment' },
@@ -56,6 +57,7 @@ export function TeamAutomationSettings({
   analyticsRefreshIntervalMinutes,
   canEdit = true,
 }: TeamAutomationSettingsProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
 
   const initialState = useMemo<FormState>(
@@ -179,7 +181,7 @@ export function TeamAutomationSettings({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Automation & workload</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Configure how the team auto-assigns work and balances workloads across members.
         </Text>
       </Stack>
@@ -219,7 +221,7 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text color="$gray11">Invitations expire automatically after this number of days.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Invitations expire automatically after this number of days.</Text>
         </Stack>
 
         <Stack gap={8}>
@@ -236,16 +238,16 @@ export function TeamAutomationSettings({
               label: option.label,
             }))}
           />
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Choose how work should be distributed when new applications arrive.
           </Text>
         </Stack>
 
         {formState.workloadStrategy === 'load_balance' ? (
-          <Stack gap={12} paddingLeft={8} borderLeftWidth={2} borderColor="$borderColor">
+          <Stack gap={12} paddingLeft={8} borderLeftWidth={2} borderColor={colors.border[theme].default}>
             <Text>Load balance settings</Text>
             <Stack gap={8}>
-              <Text color="$gray11">Maximum active assignments</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Maximum active assignments</Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxActiveAssignments ?? 10)}
@@ -260,7 +262,7 @@ export function TeamAutomationSettings({
               />
             </Stack>
             <Stack gap={8}>
-              <Text color="$gray11">Maximum pending assignments</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Maximum pending assignments</Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxPendingAssignments ?? 15)}
@@ -274,7 +276,7 @@ export function TeamAutomationSettings({
                 }
               />
             </Stack>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               When a member reaches these limits, assignments roll to the next available teammate.
             </Text>
           </Stack>
@@ -298,14 +300,14 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Controls how often analytics snapshots should refresh for this team.
           </Text>
         </Stack>
       </Stack>
 
       <Row justify="space-between" align="center">
-        <Text color="$gray11">{statusLabel}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{statusLabel}</Text>
         <Button
           size="xs"
           variant="outline"
@@ -336,7 +338,7 @@ function SettingsToggle({
     <Row justify="space-between" gap={12} align="center" flexWrap="wrap">
       <Stack gap={4} flex={1} style={{ minWidth: 200 }}>
         <Text>{label}</Text>
-        <Text color="$gray11">{description}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
       </Stack>
       <Switch
         size="xs"

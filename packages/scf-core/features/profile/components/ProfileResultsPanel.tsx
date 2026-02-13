@@ -1,6 +1,7 @@
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, Stack, type YStackProps } from '@unicornlove/beyond-ui'
+import { ScrollView, Spinner, Text, Stack, type YStackProps } , useThemeContext } from '@unicornlove/beyond-ui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */
@@ -36,7 +37,9 @@ interface ProfileResultsPanelProps extends YStackProps {
  * </ProfileResultsPanel>
  * ```
  */
-export function ProfileResultsPanel({
+export function ProfileResultsPanel() {
+  const { theme } = useThemeContext()
+{
   children,
   title,
   isLoading = false,
@@ -55,12 +58,12 @@ export function ProfileResultsPanel({
           {isLoading ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
               <Spinner size="lg" />
-              <Text color="$gray11">Loading...</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
             </Stack>
           ) : isEmpty ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
-              {EmptyIcon && <EmptyIcon size={48} color="$gray11" />}
-              <Text color="$gray11" textAlign="center">
+              {EmptyIcon && <EmptyIcon size={48} style={{ color: colors.text[theme].secondary }} />}
+              <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                 {emptyMessage || 'No items added yet'}
               </Text>
             </Stack>

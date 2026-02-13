@@ -1,13 +1,14 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { Button, Separator, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type MentionOption = {
   id: string
@@ -35,6 +36,7 @@ export function TeamActivityFeed({
   mentionOptions = [],
   memberDirectory = {},
 }: TeamActivityFeedProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const queryClient = useQueryClient()
   const [commentBody, setCommentBody] = useState('')
@@ -131,9 +133,9 @@ export function TeamActivityFeed({
               <Text>{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
-                <Text color="$gray11">Mentions: {mentionNames.join(', ')}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Mentions: {mentionNames.join(', ')}</Text>
               ) : null}
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -148,7 +150,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} assigned this team to job {jobId}
               </Text>
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -163,7 +165,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} updated the job assignment for {jobId}
               </Text>
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -178,7 +180,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} removed this team from job {jobId}
               </Text>
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -193,7 +195,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} transferred ownership to {targetMember}
               </Text>
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -205,7 +207,7 @@ export function TeamActivityFeed({
           content: (
             <Stack gap={4}>
               <Text>{actor} left the team</Text>
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -220,7 +222,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} performed {normalizedEvent}
               </Text>
-              <Text color="$gray11">{occurredAt}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -304,7 +306,7 @@ export function TeamActivityFeed({
 
         {mentionOptions.length > 0 ? (
           <Stack gap={8}>
-            <Text color="$gray11">Mention a teammate (optional)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Mention a teammate (optional)</Text>
             <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
               {mentions.map((mention) => (
                 <Button
@@ -340,8 +342,8 @@ export function TeamActivityFeed({
         <Row justify="flex-end">
           <Button
             size="sm"
-            backgroundColor="$color9"
-            color="$gray11"
+            style={{ backgroundColor: colors.bg[theme].primary }}
+            style={{ color: colors.text[theme].secondary }}
             iconStart={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}
@@ -349,7 +351,7 @@ export function TeamActivityFeed({
             accessibilityHint="Shares your message with the team"
             width="100%"
           >
-            {isPosting ? <Spinner size="sm" color="$gray11" /> : 'Post update'}
+            {isPosting ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Post update'}
           </Button>
         </Row>
       </Stack>
@@ -359,12 +361,12 @@ export function TeamActivityFeed({
       {activityQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical={24}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading team activity…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading team activity…</Text>
         </Stack>
       ) : events.length === 0 ? (
         <Stack gap={8}>
           <Text>No activity yet</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Your team&apos;s collaboration history will appear here as members take action.
           </Text>
         </Stack>
@@ -378,7 +380,7 @@ export function TeamActivityFeed({
                 gap={8}
                 paddingBottom={12}
                 borderBottomWidth={index === events.length - 1 ? 0 : 1}
-                borderColor="$borderColor"
+                borderColor={colors.border[theme].default}
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={eventContent.accessibilityLabel}

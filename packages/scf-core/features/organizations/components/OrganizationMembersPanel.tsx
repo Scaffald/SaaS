@@ -217,9 +217,11 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 <Row key={invite.id} justify="space-between" align="center">
                   <Stack>
                     <Text>{invite.invitee_email}</Text>
-                    <Paragraph color="$gray11">{invite.role_name ?? 'member'}</Paragraph>
+                    <Paragraph style={{ color: colors.text[theme].secondary }}>
+                      {invite.role_name ?? 'member'}
+                    </Paragraph>
                   </Stack>
-                  <Text color="$gray11">{invite.status}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{invite.status}</Text>
                 </Row>
               )
             )}

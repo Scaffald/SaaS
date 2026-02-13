@@ -1,10 +1,11 @@
 import type { OrganizationLocation } from '@scf/schemas'
 import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete , useThemeContext} from '@unicornlove/beyond-ui'
 import { Plus, X } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
 import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]
@@ -39,6 +40,7 @@ export function OrganizationLocationsInput({
   provider = 'mapbox',
   apiKey,
 }: OrganizationLocationsInputProps) {
+  const { theme } = useThemeContext()
   const resolvedProvider = provider === 'google' ? 'mapbox' : provider
   const resolvedApiKey =
     apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
@@ -133,7 +135,7 @@ export function OrganizationLocationsInput({
       {/* Label and Help Text */}
       <Stack gap={8}>
         <Text>Locations *</Text>
-        <Text color="$gray11" lineHeight={4}>
+        <Text style={{ color: colors.text[theme].secondary }} lineHeight={4}>
           Add one or more locations for this organization
         </Text>
       </Stack>
@@ -146,9 +148,9 @@ export function OrganizationLocationsInput({
               key={locationIds[index]}
               gap={8}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default }}
               borderWidth={1}
-              borderColor="$borderColor"
+              borderColor={colors.border[theme].default}
             >
               {/* Location Name */}
               <Stack gap={8}>
@@ -186,32 +188,32 @@ export function OrganizationLocationsInput({
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled || value.length === 1}
                   backgroundColor="transparent"
-                  borderColor="$color8"
+                  borderColor={colors.border[theme].default}
                 >
                   <Button.Icon>
-                    <X size="md" color="$red10" />
+                    <X size="md" style={{ color: colors.text[theme].error }} />
                   </Button.Icon>
-                  <Button.Text color="$red10">Remove Location</Button.Text>
+                  <Button.Text style={{ color: colors.text[theme].error }}>Remove Location</Button.Text>
                 </Button>
               </Row>
             </Stack>
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <Stack padding="md" borderWidth={1} borderColor="$borderColor" gap={8}>
-            <Text color="$gray11">No locations added yet</Text>
+          <Stack padding="md" borderWidth={1} borderColor={colors.border[theme].default} gap={8}>
+            <Text style={{ color: colors.text[theme].secondary }}>No locations added yet</Text>
             <Button
               variant="outline"
               size="sm"
               onPress={handleAddLocation}
               disabled={disabled}
               backgroundColor="transparent"
-              borderColor="$color8"
+              borderColor={colors.border[theme].default}
             >
               <Button.Icon>
-                <Plus size="md" color="$gray11" />
+                <Plus size="md" style={{ color: colors.text[theme].secondary }} />
               </Button.Icon>
-              <Button.Text color="$gray11">Add First Location</Button.Text>
+              <Button.Text style={{ color: colors.text[theme].secondary }}>Add First Location</Button.Text>
             </Button>
           </Stack>
         )}
@@ -226,17 +228,17 @@ export function OrganizationLocationsInput({
           disabled={disabled}
           alignSelf="flex-start"
           backgroundColor="transparent"
-          borderColor="$color8"
+          borderColor={colors.border[theme].default}
         >
           <Button.Icon>
-            <Plus size="md" color="$gray11" />
+            <Plus size="md" style={{ color: colors.text[theme].secondary }} />
           </Button.Icon>
-          <Button.Text color="$gray11">Add Another Location</Button.Text>
+          <Button.Text style={{ color: colors.text[theme].secondary }}>Add Another Location</Button.Text>
         </Button>
       )}
 
       {/* Error Message */}
-      {errors && <Text color="$red10">{errors}</Text>}
+      {errors && <Text style={{ color: colors.text[theme].error }}>{errors}</Text>}
     </Stack>
   )
 }

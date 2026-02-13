@@ -2,13 +2,14 @@ import { useUpdateTeam } from '@scaffald/sdk/react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Info } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { Button, Card, Separator, Spinner, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 const DEFAULT_SETTINGS = {
   defaultRoleId: null as string | null,
@@ -59,6 +60,7 @@ export function TeamSettingsForm({
   canEdit,
   onSettingsSaved,
 }: TeamSettingsFormProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
 
   const [metadataState, setMetadataState] = useState<Record<string, unknown>>(
@@ -208,19 +210,19 @@ export function TeamSettingsForm({
     }
   })()
 
-  const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
+  const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : colors.text[theme].secondary
 
   return (
     <Card
       padding="md"
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       gap={16}
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
     >
       <Stack gap={8}>
         <Text>Team settings</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Configure defaults and collaboration preferences for this team. Changes are saved
           automatically.
         </Text>
@@ -233,7 +235,7 @@ export function TeamSettingsForm({
       <Stack gap={16} opacity={canEdit ? 1 : 0.6}>
         <Stack gap={8}>
           <Text>Default role for new members</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Select which role is assigned when a member is added without specifying a role.
           </Text>
           <Controller
@@ -392,15 +394,15 @@ function SettingsToggle({
       render={({ field }) => (
         <Card
           borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color3"
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].muted }}
           padding="sm"
           gap={8}
         >
           <Row justify="space-between" align="center" gap={12}>
             <Stack flex={1} gap={4}>
               <Text>{label}</Text>
-              <Text color="$gray11">{description}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
             </Stack>
             <Switch
               checked={field.value}
@@ -423,16 +425,16 @@ function PermissionBanner() {
       gap={12}
       align="center"
       borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$color3"
+      borderColor={colors.border[theme].default}
+      style={{ backgroundColor: colors.bg[theme].muted }}
       borderRadius={16}
       paddingHorizontal={12}
       paddingVertical={8}
     >
-      <Info size={18} color="$gray11" />
+      <Info size={18} style={{ color: colors.text[theme].secondary }} />
       <Stack gap={4}>
         <Text>View only</Text>
-        <Text color="$gray11">You need team admin permissions to update settings for this team.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>You need team admin permissions to update settings for this team.</Text>
       </Stack>
     </Row>
   )

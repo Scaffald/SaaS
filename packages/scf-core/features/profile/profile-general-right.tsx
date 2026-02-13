@@ -1,9 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ResumeUploadButton, ResumeUploadModal } from '@scf/core/features/resume'
-import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { DashboardWidget, spacing } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { H3, H4, Text, Stack } from '@unicornlove/beyond-ui'
+import { H3, H4, Text, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**
@@ -11,6 +12,8 @@ import { VanityUrlSection } from './components/VanityUrlSection'
  * Navigation and overview for general profile settings with animated tips
  */
 export function ProfileGeneralRight() {
+  const { theme } = useThemeContext()
+) {
   const router = useRouter()
   const [resumeModalOpen, setResumeModalOpen] = useState(false)
   const handleResumeUploadComplete = useCallback(
@@ -29,7 +32,7 @@ export function ProfileGeneralRight() {
       <Stack gap={16}>
         <DashboardWidget>
           <H3>General Information</H3>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Update your basic profile information including your name, photo, and contact details.
           </Text>
         </DashboardWidget>
@@ -37,11 +40,11 @@ export function ProfileGeneralRight() {
         <DashboardWidget>
           <Stack gap={spacing.sm}>
             <H4>Import from your resume</H4>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the
               details before they’re saved to your profile.
             </Text>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               Accepted formats: PDF, DOC, DOCX. You can re-import your resume at any time.
             </Text>
             <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="md" />

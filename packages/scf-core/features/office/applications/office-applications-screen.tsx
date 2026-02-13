@@ -1,10 +1,11 @@
-import { Button, H2, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, H2, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import type { Applications } from './hooks/useApplications'
 import { useApplications } from './hooks/useApplications'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -169,9 +170,9 @@ export const OfficeApplicationsScreen = () => {
   // Loading state
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" backgroundColor="$background">
+      <Stack flex={1} align="center" justify="center" style={{ backgroundColor: colors.bg[theme].default }}>
         <Spinner size="lg" />
-        <Text marginTop={16} color="$gray11">
+        <Text marginTop={16} style={{ color: colors.text[theme].secondary }}>
           Loading applications...
         </Text>
       </Stack>
@@ -182,9 +183,9 @@ export const OfficeApplicationsScreen = () => {
   if (isError) {
     return (
       <Stack flex={1} align="center" justify="center" padding="md">
-        <Text color="$red10">Error Loading Applications</Text>
+        <Text style={{ color: colors.text[theme].error }}>Error Loading Applications</Text>
         <Stack align="center">
-          <Text color="$gray11" marginTop={8}>
+          <Text style={{ color: colors.text[theme].secondary }} marginTop={8}>
             {error?.message || 'Failed to load applications. Please try again.'}
           </Text>
         </Stack>
@@ -193,12 +194,12 @@ export const OfficeApplicationsScreen = () => {
   }
 
   return (
-    <Stack flex={1} padding="md" backgroundColor="$background">
+    <Stack flex={1} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
       {/* Header */}
       <Row justify="space-between" align="center" marginBottom={16}>
         <Stack>
           <H2>Applications</H2>
-          <Text color="$gray11">{filteredApplications.length} total applications</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{filteredApplications.length} total applications</Text>
         </Stack>
 
         <Row gap={8}>

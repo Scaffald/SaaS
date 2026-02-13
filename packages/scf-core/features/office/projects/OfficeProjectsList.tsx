@@ -2,13 +2,14 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useProjects } from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { Eye, EyeOff, Pencil } from 'lucide-react-native'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, H2, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
 
@@ -88,7 +89,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
         <Row gap={8} align="center">
           <Icon size="md" />
           <Text>{label}</Text>
-          {hasOverride && <Text color="$yellow10">(Override)</Text>}
+          {hasOverride && <Text style={{ color: colors.text[theme].warning }}>(Override)</Text>}
         </Row>
       )
     },
@@ -97,6 +98,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
 ]
 
 export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean }) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const { data: organizationsData } = useAllOrganizations()
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null)
@@ -127,7 +129,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
           {showHeader && (
             <Stack gap={8}>
               <H2>Projects</H2>
-              <Text color="$gray11">Manage construction projects with geographic data</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Manage construction projects with geographic data</Text>
             </Stack>
           )}
           <Stack gap={16}>
@@ -172,8 +174,8 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
 
               <Button
                 onPress={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
-                backgroundColor="$blue9"
-                color="$blue12"
+                style={{ backgroundColor: colors.bg[theme].primary }}
+                style={{ color: colors.text[theme].primary }}
               >
                 Create Project
               </Button>
@@ -189,16 +191,16 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                   <Row
                     key={project.id}
                     padding="md"
-                    backgroundColor="$background"
+                    style={{ backgroundColor: colors.bg[theme].default }}
                     borderRadius={16}
                     justify="space-between"
                     align="center"
                     borderWidth={1}
-                    borderColor="$borderColor"
+                    borderColor={colors.border[theme].default}
                   >
                     <Stack gap={4} flex={1}>
                       <Text>{project.name}</Text>
-                      <Text color="$gray10">
+                      <Text style={{ color: colors.text[theme].tertiary }}>
                         {project.organization?.name || 'No organization'} • {project.status}
                       </Text>
                     </Stack>

@@ -1,11 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type CommentsOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['comments']
 type CommentRecord = NonNullable<CommentsOutput['comments']>[number]
@@ -26,6 +27,7 @@ export function TeamCommentThread({
   applicationId,
   mentionOptions = [],
 }: TeamCommentThreadProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const queryClient = useQueryClient()
   const [commentBody, setCommentBody] = useState('')
@@ -89,8 +91,8 @@ export function TeamCommentThread({
   return (
     <Card
       borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$color2"
+      borderColor={colors.border[theme].default}
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       padding="md"
       gap={16}
       paddingHorizontal={12}
@@ -100,7 +102,7 @@ export function TeamCommentThread({
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
           <Text accessibilityRole="header">Team discussion</Text>
         </Row>
-        <Text color="$gray11">Share updates with your team. Mentions notify teammates instantly.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Share updates with your team. Mentions notify teammates instantly.</Text>
       </Stack>
 
       <Stack gap={12}>
@@ -138,21 +140,21 @@ export function TeamCommentThread({
           </Row>
         ) : null}
 
-        {mentionLabel ? <Text color="$gray11">Mentioning @{mentionLabel}</Text> : null}
+        {mentionLabel ? <Text style={{ color: colors.text[theme].secondary }}>Mentioning @{mentionLabel}</Text> : null}
 
         <Row justify="flex-end">
           <Button
             size="sm"
             iconStart={Send}
-            backgroundColor="$color9"
-            color="$gray11"
+            style={{ backgroundColor: colors.bg[theme].primary }}
+            style={{ color: colors.text[theme].secondary }}
             onPress={() => void handleSubmit()}
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"
             accessibilityHint="Shares this comment with the team"
             width="100%"
           >
-            {isSubmitting ? <Spinner size="sm" color="$gray11" /> : 'Post comment'}
+            {isSubmitting ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Post comment'}
           </Button>
         </Row>
       </Stack>
@@ -160,12 +162,12 @@ export function TeamCommentThread({
       {commentsQuery.isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading discussion…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading discussion…</Text>
         </Stack>
       ) : comments.length === 0 ? (
         <Stack gap={4}>
           <Text>No comments yet</Text>
-          <Text color="$gray11">Start the conversation by leaving the first comment.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Start the conversation by leaving the first comment.</Text>
         </Stack>
       ) : (
         <Stack gap={12}>
@@ -190,7 +192,7 @@ export function TeamCommentThread({
                 key={comment.id}
                 gap={4}
                 borderBottomWidth={1}
-                borderColor="$borderColor"
+                borderColor={colors.border[theme].default}
                 paddingBottom={12}
                 accessible
                 accessibilityRole="summary"
@@ -198,10 +200,10 @@ export function TeamCommentThread({
                 width="100%"
               >
                 <Text>{actorName}</Text>
-                <Text color="$gray11">{occurredAt}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
                 <Text>{comment.body}</Text>
                 {mentionNames.length ? (
-                  <Text color="$gray11">Mentions: {mentionNames.join(', ')}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Mentions: {mentionNames.join(', ')}</Text>
                 ) : null}
               </Stack>
             )

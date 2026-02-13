@@ -6,6 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   Button,
   Card,
@@ -16,6 +17,7 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@unicornlove/beyond-ui'
 
 type StorageAnalytics = inferRouterOutputs<AppRouter>['office']['storage']['analytics']
@@ -56,6 +58,7 @@ const formatPercent = (value: number | null | undefined): string => {
 }
 
 export function OfficeStorageDashboard() {
+  const { theme } = useThemeContext()
   const [search, setSearch] = useState('')
   const analyticsQuery = api.office.storage.analytics.useQuery(undefined, {
     staleTime: 60_000,
@@ -117,7 +120,7 @@ export function OfficeStorageDashboard() {
           return (
             <Stack gap={4}>
               <Text>{row.displayName}</Text>
-              <Text color="$gray11">{row.username ? `@${row.username}` : row.userId.slice(0, 8)}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{row.username ? `@${row.username}` : row.userId.slice(0, 8)}</Text>
             </Stack>
           )
         },
@@ -143,7 +146,7 @@ export function OfficeStorageDashboard() {
         cell: (info) => {
           const row = info.row.original
           if (!row.storageLimitBytes) {
-            return <Text color="$gray11">No limit</Text>
+            return <Text style={{ color: colors.text[theme].secondary }}>No limit</Text>
           }
 
           const percent = row.usagePercentOfLimit ?? 0
@@ -151,13 +154,13 @@ export function OfficeStorageDashboard() {
 
           return (
             <Stack gap={4}>
-              <Progress value={clamped} max={100} backgroundColor="$color3" size={4}>
+              <Progress value={clamped} max={100} style={{ backgroundColor: colors.bg[theme].muted }} size={4}>
                 <Progress.Indicator
                   animation="bouncy"
                   backgroundColor={percent > 100 ? '$red10' : '$green10'}
                 />
               </Progress>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {formatPercent(percent)} of {formatBytes(row.storageLimitBytes)}
               </Text>
             </Stack>
@@ -227,7 +230,7 @@ export function OfficeStorageDashboard() {
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Storage Analytics</Text>
-          <Paragraph color="$gray11">
+          <Paragraph style={{ color: colors.text[theme].secondary }}>
             Monitor how workers consume storage across work logs, portfolios, and certifications.
           </Paragraph>
         </Stack>
@@ -245,7 +248,7 @@ export function OfficeStorageDashboard() {
       {isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading storage metrics…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading storage metrics…</Text>
         </Stack>
       ) : (
         <>
@@ -254,22 +257,22 @@ export function OfficeStorageDashboard() {
               <Card
                 key={card.label}
                 borderWidth={1}
-                borderColor="$color6"
-                backgroundColor="$color2"
+                borderColor={colors.border[theme].default}
+                style={{ backgroundColor: colors.bg[theme].subtle }}
                 padding="md"
                 width="100%"
                 maxWidth={320}
               >
                 <Stack gap={8}>
-                  <Text color="$gray11">{card.label}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{card.label}</Text>
                   <Text>{card.value}</Text>
-                  {card.subtext ? <Text color="$gray11">{card.subtext}</Text> : null}
+                  {card.subtext ? <Text style={{ color: colors.text[theme].secondary }}>{card.subtext}</Text> : null}
                 </Stack>
               </Card>
             ))}
           </Row>
 
-          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
+          <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
             <Stack gap={12}>
               <Text>Usage breakdown</Text>
               <Stack gap={12}>
@@ -277,11 +280,11 @@ export function OfficeStorageDashboard() {
                   <Stack key={entry.label} gap={4}>
                     <Row justify="space-between" align="center">
                       <Text>{entry.label}</Text>
-                      <Text color="$gray11">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
                     </Row>
-                    <Progress value={entry.percent} max={100} backgroundColor="$color3" size={4}>
+                    <Progress value={entry.percent} max={100} style={{ backgroundColor: colors.bg[theme].muted }} size={4}>
                       <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
                     </Progress>
                   </Stack>
@@ -290,7 +293,7 @@ export function OfficeStorageDashboard() {
             </Stack>
           </Card>
 
-          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
+          <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
             <Stack gap={12}>
               <Row justify="space-between" align="center">
                 <Text>Top users by storage consumption</Text>

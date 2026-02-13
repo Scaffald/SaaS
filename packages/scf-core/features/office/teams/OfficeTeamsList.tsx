@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@scf/schemas'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -9,6 +9,7 @@ import { OfficePageLayout } from '../components/OfficePageLayout'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 import { useTeams, useArchiveTeam } from '@scaffald/sdk/react'
 import type { TeamResponse } from '@scaffald/sdk'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
 type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
@@ -59,6 +60,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>): ColumnDef<TeamRow
 ]
 
 export function OfficeTeamsList() {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
   const [search, setSearch] = useState('')
@@ -170,10 +172,10 @@ export function OfficeTeamsList() {
       afterContent={
         archiveMutation.isPending ? (
           <Stack
-            backgroundColor="$color2"
+            style={{ backgroundColor: colors.bg[theme].subtle }}
             padding="sm"
             borderRadius={16}
-            shadowColor="$color10"
+            shadowColor={colors.text[theme].tertiary}
             marginRight={16}
             marginBottom={16}
             style={{ alignSelf: 'flex-end' }}

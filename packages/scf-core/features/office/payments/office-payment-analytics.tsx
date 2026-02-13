@@ -6,7 +6,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type PaymentAnalytics = inferRouterOutputs<AppRouter>['payments']['adminGetAnalytics']
 
@@ -30,6 +31,7 @@ const formatTransactionType = (type: string): string => {
 }
 
 export function OfficePaymentAnalytics() {
+  const { theme } = useThemeContext()
   const analyticsQuery = api.payments.adminGetAnalytics.useQuery(undefined, {
     staleTime: 60_000,
   })
@@ -52,7 +54,7 @@ export function OfficePaymentAnalytics() {
       }),
       columnHelper.accessor('failureReason', {
         header: 'Failure Reason',
-        cell: (info) => <Text color="$red11">{info.getValue() ?? 'Unknown error'}</Text>,
+        cell: (info) => <Text style={{ color: colors.text[theme].error }}>{info.getValue() ?? 'Unknown error'}</Text>,
       }),
       columnHelper.accessor('failedAt', {
         header: 'Failed At',
@@ -118,7 +120,7 @@ export function OfficePaymentAnalytics() {
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Payment Analytics</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Monitor payment transactions, revenue, and failure rates across all services.
           </Text>
         </Stack>
@@ -136,7 +138,7 @@ export function OfficePaymentAnalytics() {
       {isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading payment metrics…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading payment metrics…</Text>
         </Stack>
       ) : (
         <>
@@ -145,23 +147,23 @@ export function OfficePaymentAnalytics() {
               <Card
                 key={card.label}
                 borderWidth={1}
-                borderColor="$color6"
-                backgroundColor="$color2"
+                borderColor={colors.border[theme].default}
+                style={{ backgroundColor: colors.bg[theme].subtle }}
                 padding="md"
                 width="100%"
                 maxWidth={280}
               >
                 <Stack gap={8}>
-                  <Text color="$gray11">{card.label}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{card.label}</Text>
                   <Text>{card.value}</Text>
-                  {card.subtext ? <Text color="$gray11">{card.subtext}</Text> : null}
+                  {card.subtext ? <Text style={{ color: colors.text[theme].secondary }}>{card.subtext}</Text> : null}
                 </Stack>
               </Card>
             ))}
           </Row>
 
           {typeBreakdown.length > 0 && (
-            <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
+            <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
               <Stack gap={12}>
                 <Text>Revenue by Transaction Type</Text>
                 <Stack gap={12}>
@@ -169,12 +171,12 @@ export function OfficePaymentAnalytics() {
                     <Stack key={entry.type} gap={4}>
                       <Row justify="space-between" align="center">
                         <Text>{entry.label}</Text>
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           {formatCurrency(entry.revenue)} · {entry.count} transactions
                         </Text>
                       </Row>
                       <Row gap={8}>
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           {entry.succeeded} succeeded, {entry.failed} failed
                         </Text>
                       </Row>
@@ -186,11 +188,11 @@ export function OfficePaymentAnalytics() {
           )}
 
           {failedQueue.length > 0 && (
-            <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
+            <Card borderWidth={1} borderColor={colors.border[theme].error} style={{ backgroundColor: colors.bg[theme].errorSubtle }} padding="md">
               <Stack gap={12}>
                 <Row justify="space-between" align="center">
-                  <Text color="$red11">Failed Transactions Queue</Text>
-                  <Text color="$red11">{failedQueue.length} failed</Text>
+                  <Text style={{ color: colors.text[theme].error }}>Failed Transactions Queue</Text>
+                  <Text style={{ color: colors.text[theme].error }}>{failedQueue.length} failed</Text>
                 </Row>
                 <DataTable
                   columns={columns}

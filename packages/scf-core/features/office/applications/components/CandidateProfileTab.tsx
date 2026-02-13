@@ -1,5 +1,6 @@
-import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface CandidateProfileTabProps {
   candidate: MockApplication['candidate']
@@ -35,12 +36,12 @@ export const CandidateProfileTab = ({
   return (
     <Stack gap={16}>
       {/* Contact Info */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Contact Information</Text>
         {isContactLocked ? (
           <Stack gap={8}>
-            <Text color="$orange11">Contact details locked</Text>
-            <Text color="$gray11">{lockedMessage}</Text>
+            <Text style={{ color: colors.text[theme].warning }}>Contact details locked</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{lockedMessage}</Text>
           </Stack>
         ) : (
           <Stack gap={8}>
@@ -61,7 +62,7 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Skills */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Skills</Text>
         <Stack gap={12}>
           {candidate.skills.map((skill, index) => (
@@ -70,11 +71,11 @@ export const CandidateProfileTab = ({
               <Stack
                 backgroundColor={
                   skill.proficiency === 'expert'
-                    ? '$green3'
+                    ? colors.bg[theme].successSubtle
                     : skill.proficiency === 'advanced'
                       ? '$blue3'
                       : skill.proficiency === 'intermediate'
-                        ? '$yellow3'
+                        ? colors.bg[theme].warningSubtle
                         : '$color3'
                 }
                 paddingHorizontal={12}
@@ -102,7 +103,7 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Certifications */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Certifications</Text>
         <Stack gap={12}>
           {candidate.certifications.map((cert, index) => (
@@ -120,7 +121,7 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Experience */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Work Experience</Text>
         <Stack gap={16}>
           {candidate.experience.map((exp, index) => (
@@ -130,7 +131,7 @@ export const CandidateProfileTab = ({
               <Text opacity={0.6}>{exp.duration}</Text>
               <Text marginTop={4}>{exp.description}</Text>
               {index < candidate.experience.length - 1 && (
-                <Stack height={1} backgroundColor="$color5" marginTop={8} />
+                <Stack height={1} style={{ backgroundColor: colors.bg[theme].inactive }} marginTop={8} />
               )}
             </Stack>
           ))}

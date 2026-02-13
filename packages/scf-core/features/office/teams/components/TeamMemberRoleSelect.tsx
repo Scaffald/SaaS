@@ -1,9 +1,10 @@
 import { useUpdateTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import { Text, Stack } from '@unicornlove/beyond-ui'
 import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface TeamMemberRoleSelectProps {
   teamId: string
@@ -24,6 +25,7 @@ export function TeamMemberRoleSelect({
   onRoleChanged,
   fullWidth = false,
 }: TeamMemberRoleSelectProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? '')
 
@@ -72,7 +74,7 @@ export function TeamMemberRoleSelect({
 
   return (
     <Stack gap={8}>
-      <Text color="$gray11">Role</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>Role</Text>
       <ResponsiveSelect
         value={selectedRoleId}
         onValueChange={handleRoleChange}

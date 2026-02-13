@@ -1,5 +1,6 @@
 import { TeamCommentThread } from '@scf/core/features/office/teams'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface NotesTabProps {
   applicationId: string
@@ -12,7 +13,7 @@ export const NotesTab = ({ applicationId, teamId, mentionOptions = [] }: NotesTa
     return (
       <Stack gap={12}>
         <Text>Team discussion unavailable</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Assign this job to a team to enable collaborative comments and mentions.
         </Text>
       </Stack>

@@ -211,7 +211,7 @@ export default function NewsPage() {
 
       {isLoading && newsItems.length === 0 ? (
         <Stack align="center" gap={12}>
-          <Spinner size="lg" color="blue" />
+          <Spinner size="lg" color="primary" />
           <Text color="gray">
             Loading latest news…
           </Text>

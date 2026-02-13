@@ -1,6 +1,7 @@
-import { ResponsiveSelect, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface ApplicationScreeningSectionProps {
   requireCurrentLocation: boolean
@@ -35,6 +36,7 @@ export function ApplicationScreeningSection({
   requireEarliestStartDate,
   onUpdate,
 }: ApplicationScreeningSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     require_current_location: requireCurrentLocation,
     require_relocation_willingness: requireRelocationWillingness,
@@ -72,7 +74,7 @@ export function ApplicationScreeningSection({
           <Label>Current location</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="$gray11">{localState.require_current_location ? '1' : '0'}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{localState.require_current_location ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_current_location}
             onChange={(checked) => handleChange('require_current_location', checked)}
@@ -87,7 +89,7 @@ export function ApplicationScreeningSection({
           <Label>Willing to relocate</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="$gray11">{localState.require_relocation_willingness ? '1' : '0'}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{localState.require_relocation_willingness ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_relocation_willingness}
             onChange={(checked) => handleChange('require_relocation_willingness', checked)}
@@ -103,7 +105,7 @@ export function ApplicationScreeningSection({
             <Label>Minimum years of experience</Label>
           </Stack>
           <Row gap={8} align="center">
-            <Text color="$gray11">{localState.minimum_years_experience_enabled ? '1' : '0'}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{localState.minimum_years_experience_enabled ? '1' : '0'}</Text>
             <ToggleSwitch
               checked={localState.minimum_years_experience_enabled}
               onChange={(checked) =>
@@ -134,7 +136,7 @@ export function ApplicationScreeningSection({
           <Label>Authorized to work in US</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="$gray11">{localState.require_work_authorization ? '1' : '0'}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{localState.require_work_authorization ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_work_authorization}
             onChange={(checked) => handleChange('require_work_authorization', checked)}
@@ -149,7 +151,7 @@ export function ApplicationScreeningSection({
           <Label>Earliest start date</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="$gray11">{localState.require_earliest_start_date ? '1' : '0'}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{localState.require_earliest_start_date ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_earliest_start_date}
             onChange={(checked) => handleChange('require_earliest_start_date', checked)}

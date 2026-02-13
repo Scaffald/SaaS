@@ -1,6 +1,7 @@
 import { useRemoveTeamMember } from '@scaffald/sdk/react'
 import { useEffect, useState } from 'react'
-import { ResponsiveModal, useToast, Button, Text, TextArea, Stack } from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useToast, Button, Text, TextArea, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface RemoveMemberModalProps {
   open: boolean
@@ -21,6 +22,7 @@ export function RemoveMemberModal({
   member,
   onRemoved,
 }: RemoveMemberModalProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [reason, setReason] = useState('')
 
@@ -70,31 +72,31 @@ export function RemoveMemberModal({
         </Text>
 
         <Stack gap={8}>
-          <Text color="$gray11">Removal reason (optional)</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Removal reason (optional)</Text>
           <TextArea
             value={reason}
             onChangeText={setReason}
             placeholder="Provide additional context for other admins…"
             rows={4}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[theme].default}
             paddingHorizontal={12}
             paddingVertical={8}
             disabled={removeMemberMutation.isPending}
           />
         </Stack>
 
-        <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={16}>
+        <Stack gap={8} style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" borderRadius={16}>
           <Text>What happens next?</Text>
-          <Text color="$gray11">• The member loses access to the team immediately.</Text>
-          <Text color="$gray11">• Their review history is preserved for auditing.</Text>
-          <Text color="$gray11">• You can re-add them later if needed.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>• The member loses access to the team immediately.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>• Their review history is preserved for auditing.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>• You can re-add them later if needed.</Text>
         </Stack>
 
         <Stack gap={12}>
           <Button
-            backgroundColor="$red9"
-            color="$gray11"
+            style={{ backgroundColor: colors.bg[theme].error }}
+            style={{ color: colors.text[theme].secondary }}
             onPress={handleRemove}
             disabled={removeMemberMutation.isPending}
           >

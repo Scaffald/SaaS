@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget , useThemeContext} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, H4, Input, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 const universitySchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -45,6 +46,7 @@ export function OfficeUniversitiesForm({
   onUniversitySaved,
   onCancel,
 }: OfficeUniversitiesFormProps) {
+  const { theme } = useThemeContext()
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
 
@@ -200,7 +202,7 @@ export function OfficeUniversitiesForm({
           {/* Name */}
           <Stack gap={8}>
             <Text>
-              Name <Text color="$red10">*</Text>
+              Name <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
             <Controller
               name="name"
@@ -211,12 +213,12 @@ export function OfficeUniversitiesForm({
                   placeholder="e.g. Harvard University"
                   value={field.value}
                   onChangeText={(text) => handleNameChange(text, field.onChange)}
-                  borderColor={errors.name ? '$red8' : '$borderColor'}
+                  borderColor={errors.name ? colors.border[theme].error : colors.border[theme].default}
                 />
               )}
             />
             {errors.name && (
-              <Text data-testid="name-error" color="$red10">
+              <Text data-testid="name-error" style={{ color: colors.text[theme].error }}>
                 {errors.name.message}
               </Text>
             )}
@@ -225,9 +227,9 @@ export function OfficeUniversitiesForm({
           {/* Vanity URL */}
           <Stack gap={8}>
             <Text>
-              Vanity URL <Text color="$red10">*</Text>
+              Vanity URL <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
-            <Text color="$gray11">URL-friendly username (auto-generated from name)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>URL-friendly username (auto-generated from name)</Text>
             <Controller
               name="slug"
               control={control}
@@ -237,12 +239,12 @@ export function OfficeUniversitiesForm({
                   placeholder="e.g. harvard-university"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.slug ? '$red8' : '$borderColor'}
+                  borderColor={errors.slug ? colors.border[theme].error : colors.border[theme].default}
                 />
               )}
             />
             {errors.slug && (
-              <Text data-testid="slug-error" color="$red10">
+              <Text data-testid="slug-error" style={{ color: colors.text[theme].error }}>
                 {errors.slug.message}
               </Text>
             )}
@@ -251,7 +253,7 @@ export function OfficeUniversitiesForm({
           {/* Country */}
           <Stack gap={8}>
             <Text>
-              Country <Text color="$red10">*</Text>
+              Country <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
             <Controller
               name="country"
@@ -262,12 +264,12 @@ export function OfficeUniversitiesForm({
                   placeholder="e.g. United States"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.country ? '$red8' : '$borderColor'}
+                  borderColor={errors.country ? colors.border[theme].error : colors.border[theme].default}
                 />
               )}
             />
             {errors.country && (
-              <Text data-testid="country-error" color="$red10">
+              <Text data-testid="country-error" style={{ color: colors.text[theme].error }}>
                 {errors.country.message}
               </Text>
             )}
@@ -276,9 +278,9 @@ export function OfficeUniversitiesForm({
           {/* Alpha Two Code */}
           <Stack gap={8}>
             <Text>
-              Country Code <Text color="$red10">*</Text>
+              Country Code <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
-            <Text color="$gray11">2-letter ISO country code (e.g. US, CA, GB)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>2-letter ISO country code (e.g. US, CA, GB)</Text>
             <Controller
               name="alpha_two_code"
               control={control}
@@ -288,13 +290,13 @@ export function OfficeUniversitiesForm({
                   placeholder="e.g. US"
                   value={field.value}
                   onChangeText={(text) => field.onChange(text.toUpperCase())}
-                  borderColor={errors.alpha_two_code ? '$red8' : '$borderColor'}
+                  borderColor={errors.alpha_two_code ? colors.border[theme].error : colors.border[theme].default}
                   maxLength={2}
                 />
               )}
             />
             {errors.alpha_two_code && (
-              <Text data-testid="country-code-error" color="$red10">
+              <Text data-testid="country-code-error" style={{ color: colors.text[theme].error }}>
                 {errors.alpha_two_code.message}
               </Text>
             )}
@@ -303,7 +305,7 @@ export function OfficeUniversitiesForm({
           {/* State/Province */}
           <Stack gap={8}>
             <Text>State/Province</Text>
-            <Text color="$gray11">Optional state or province (e.g. Massachusetts, Ontario)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Optional state or province (e.g. Massachusetts, Ontario)</Text>
             <Controller
               name="state_province"
               control={control}
@@ -321,7 +323,7 @@ export function OfficeUniversitiesForm({
           {/* Domains */}
           <Stack gap={8}>
             <Text>Domains</Text>
-            <Text color="$gray11">Email domains (comma-separated, e.g. harvard.edu, hbs.edu)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Email domains (comma-separated, e.g. harvard.edu, hbs.edu)</Text>
             <Controller
               name="domains"
               control={control}
@@ -340,7 +342,7 @@ export function OfficeUniversitiesForm({
           {/* Web Pages */}
           <Stack gap={8}>
             <Text>Web Pages</Text>
-            <Text color="$gray11">Official websites (comma-separated URLs)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Official websites (comma-separated URLs)</Text>
             <Controller
               name="web_pages"
               control={control}

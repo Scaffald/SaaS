@@ -1,11 +1,12 @@
 import { useCreateJobApplicationMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import type { ScreeningAnswers } from '@scf/schemas'
 import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { AddressAutocomplete, Dialog, ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { CheckCircle2, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Label, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface QuickApplyModalProps {
   /**
@@ -94,6 +95,7 @@ export function QuickApplyModal({
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const { theme } = useThemeContext()
 
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
   const toast = useToast()
@@ -268,8 +270,8 @@ export function QuickApplyModal({
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Stack flex={1} gap={4}>
-                <Text color="$gray11">Apply to {organizationName}</Text>
-                <Text color="$gray11">{jobTitle}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Apply to {organizationName}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{jobTitle}</Text>
               </Stack>
               <Dialog.Close asChild>
                 <Button size="sm"  iconStart={X} chromeless />
@@ -284,19 +286,19 @@ export function QuickApplyModal({
                 width={80}
                 height={80}
                 borderRadius="$12"
-                backgroundColor="$green2"
+                style={{ backgroundColor: colors.bg[theme].success }}
                 borderWidth={2}
-                borderColor="$green9"
+                style={{ borderColor: colors.border[theme].success }}
                 align="center"
                 justify="center"
               >
-                <CheckCircle2 size={48} color="$green10" />
+                <CheckCircle2 size={48} style={{ color: colors.text[theme].success }} />
               </Stack>
               <Stack gap={8} align="center">
-                <Text color="$gray11" textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   Application Submitted!
                 </Text>
-                <Text color="$gray11" textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
               </Stack>
@@ -308,7 +310,7 @@ export function QuickApplyModal({
                 {/* Current Location */}
                 <Stack gap={8}>
                   <Label htmlFor="current_location">
-                    You current location <Text color="$red10">*</Text>
+                    You current location <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   {mapboxToken ? (
                     <AddressAutocomplete
@@ -324,21 +326,21 @@ export function QuickApplyModal({
                     />
                   ) : (
                     <Stack gap={8}>
-                      <Text color="$red10">
+                      <Text style={{ color: colors.text[theme].error }}>
                         Location search is unavailable. Please enter your location manually.
                       </Text>
-                      <Text color="$gray11">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         Location search requires Mapbox API key configuration.
                       </Text>
                     </Stack>
                   )}
-                  {errors.current_location && <Text color="$red10">{errors.current_location}</Text>}
+                  {errors.current_location && <Text style={{ color: colors.text[theme].error }}>{errors.current_location}</Text>}
                 </Stack>
 
                 {/* Willing to Relocate */}
                 <Stack gap={8}>
                   <Label>
-                    Are you willing to relocate? <Text color="$red10">*</Text>
+                    Are you willing to relocate? <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   <Row gap={12}>
                     <Button
@@ -371,7 +373,7 @@ export function QuickApplyModal({
                 {/* Years of Experience */}
                 <Stack gap={8}>
                   <Label htmlFor="years_experience">
-                    Years of experience <Text color="$red10">*</Text>
+                    Years of experience <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   <ResponsiveSelect
                     value={getYearsExperienceValue()}
@@ -384,7 +386,7 @@ export function QuickApplyModal({
                     }))}
                     triggerProps={{
                       id: 'years_experience',
-                      borderColor: errors.years_experience ? '$red9' : '$borderColor',
+                      style: { borderColor: errors.years_experience ? colors.border[theme].error : colors.border[theme].default },
                     }}
                   />
                 </Stack>
@@ -395,12 +397,12 @@ export function QuickApplyModal({
                     <Label>Required skills</Label>
                     <Stack
                       padding="sm"
-                      backgroundColor="$gray3"
+                      style={{ backgroundColor: colors.bg[theme].muted }}
                       borderRadius={12}
                       borderWidth={1}
-                      borderColor="$borderColor"
+                      style={{ borderColor: colors.border[theme].default }}
                     >
-                      <Text color="$gray11">{requiredSkills.join(', ')}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>{requiredSkills.join(', ')}</Text>
                     </Stack>
                   </Stack>
                 )}
@@ -411,12 +413,12 @@ export function QuickApplyModal({
                     <Label>Optional skills</Label>
                     <Stack
                       padding="sm"
-                      backgroundColor="$gray3"
+                      style={{ backgroundColor: colors.bg[theme].muted }}
                       borderRadius={12}
                       borderWidth={1}
-                      borderColor="$borderColor"
+                      style={{ borderColor: colors.border[theme].default }}
                     >
-                      <Text color="$gray11">{optionalSkills.join(', ')}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>{optionalSkills.join(', ')}</Text>
                     </Stack>
                   </Stack>
                 )}
@@ -424,7 +426,7 @@ export function QuickApplyModal({
                 {/* Work Authorization */}
                 <Stack gap={8}>
                   <Label>
-                    Are you authorized to work legally in the US? <Text color="$red10">*</Text>
+                    Are you authorized to work legally in the US? <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   <Row gap={12}>
                     <Button
@@ -455,14 +457,14 @@ export function QuickApplyModal({
                     </Button>
                   </Row>
                   {errors.is_authorized_to_work && (
-                    <Text color="$red10">{errors.is_authorized_to_work}</Text>
+                    <Text style={{ color: colors.text[theme].error }}>{errors.is_authorized_to_work}</Text>
                   )}
                 </Stack>
 
                 {/* Earliest Start Date */}
                 <Stack gap={8}>
                   <Label htmlFor="earliest_start_date">
-                    Earliest start date <Text color="$red10">*</Text>
+                    Earliest start date <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   <ResponsiveSelect
                     value={formData.earliest_start_date || ''}
@@ -475,7 +477,7 @@ export function QuickApplyModal({
                     }))}
                     triggerProps={{
                       id: 'earliest_start_date',
-                      borderColor: errors.earliest_start_date ? '$red9' : '$borderColor',
+                      style: { borderColor: errors.earliest_start_date ? colors.border[theme].error : colors.border[theme].default },
                     }}
                   />
                 </Stack>
@@ -490,7 +492,7 @@ export function QuickApplyModal({
               justify="flex-end"
               paddingTop={16}
               borderTopWidth={1}
-              borderTopColor="$borderColor"
+              style={{ borderTopColor: colors.border[theme].default }}
             >
               <Button size="md" variant="outline" onPress={handleClose} disabled={isSubmitting}>
                 Cancel

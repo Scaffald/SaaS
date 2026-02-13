@@ -10,8 +10,9 @@
  */
 
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 /**
  * Request status type for admin view
@@ -48,11 +49,11 @@ interface AdminCCPARequest {
  * Status badge colors
  */
 const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = {
-  pending: { bg: '$yellow3', text: '$yellow11' },
+  pending: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
   processing: { bg: '$blue3', text: '$blue11' },
-  completed: { bg: '$green3', text: '$green11' },
-  failed: { bg: '$red3', text: '$red11' },
-  cancelled: { bg: '$color4', text: '$color11' },
+  completed: { bg: colors.bg[theme].successSubtle, text: colors.text[theme].success },
+  failed: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
+  cancelled: { bg: '$color4', text: colors.text[theme].secondary },
   appealed: { bg: '$orange3', text: '$orange11' },
 }
 
@@ -60,10 +61,10 @@ const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = 
  * Priority badge colors
  */
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
-  low: { bg: '$color4', text: '$color11' },
-  medium: { bg: '$yellow3', text: '$yellow11' },
+  low: { bg: '$color4', text: colors.text[theme].secondary },
+  medium: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
   high: { bg: '$orange3', text: '$orange11' },
-  urgent: { bg: '$red3', text: '$red11' },
+  urgent: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
 }
 
 /**
@@ -122,20 +123,20 @@ function MetricCard({
   trend?: 'up' | 'down' | 'neutral'
   color?: string
 }) {
-  const trendColor = trend === 'up' ? '$green10' : trend === 'down' ? '$red10' : '$color11'
+  const trendColor = trend === 'up' ? '$green10' : trend === 'down' ? '$red10' : colors.text[theme].secondary
 
   return (
     <Stack
       padding="md"
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       borderRadius={12}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       flex={1}
       minWidth={150}
       gap={4}
     >
-      <Text color="$gray11">{label}</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
       <Text color={color}>{value}</Text>
       {trend && (
         <Text color={trendColor}>
@@ -173,38 +174,38 @@ function RequestRow({
     >
       {/* Request ID */}
       <Stack minWidth={100}>
-        <Text color="$gray11">Request ID</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Request ID</Text>
         <Text>{request.id.slice(0, 8)}...</Text>
       </Stack>
 
       {/* User */}
       <Stack flex={1} minWidth={140}>
-        <Text color="$gray11">User</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>User</Text>
         <Text>{request.user_name}</Text>
-        <Text color="$gray11">{request.user_email}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{request.user_email}</Text>
       </Stack>
 
       {/* Type */}
       <Stack minWidth={100}>
-        <Text color="$gray11">Type</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
         <Text textTransform="capitalize">{request.type.replace('_', ' ')}</Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text color="$gray11">Status</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <StatusBadge status={request.status} />
       </Stack>
 
       {/* Priority */}
       <Stack minWidth={80}>
-        <Text color="$gray11">Priority</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Priority</Text>
         <PriorityBadge priority={request.priority} />
       </Stack>
 
       {/* Days Elapsed */}
       <Stack minWidth={80}>
-        <Text color="$gray11">Days</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Days</Text>
         <Text
           color={
             request.is_overdue ? '$red10' : request.days_elapsed > 30 ? '$orange10' : '$color12'
@@ -217,7 +218,7 @@ function RequestRow({
 
       {/* Submitted */}
       <Stack flex={1} minWidth={120}>
-        <Text color="$gray11">Submitted</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Submitted</Text>
         <Text>{formatDate(request.created_at)}</Text>
       </Stack>
 
@@ -262,7 +263,7 @@ function FilterBar({
   return (
     <Row gap={12} flexWrap="wrap" align="center">
       <Stack gap={4}>
-        <Text color="$gray11">Status</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <Row gap={8}>
           {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <Button
@@ -278,7 +279,7 @@ function FilterBar({
       </Stack>
 
       <Stack gap={4}>
-        <Text color="$gray11">Type</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
         <Row gap={8}>
           {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
             <Button
@@ -296,7 +297,7 @@ function FilterBar({
       </Stack>
 
       <Stack gap={4}>
-        <Text color="$gray11">Priority</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Priority</Text>
         <Row gap={8}>
           {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
@@ -318,6 +319,7 @@ function FilterBar({
  * CCPA Admin Dashboard Component
  */
 export function CCPAAdminDashboard() {
+  const { theme } = useThemeContext()
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
@@ -356,8 +358,8 @@ export function CCPAAdminDashboard() {
   if (hasError) {
     return (
       <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
-        <Text color="$red10">Error Loading CCPA Dashboard</Text>
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: colors.text[theme].error }}>Error Loading CCPA Dashboard</Text>
+        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
           {metricsError?.message || requestsError?.message}
         </Text>
         <Button onPress={() => window.location.reload()} variant="outline">
@@ -386,7 +388,7 @@ export function CCPAAdminDashboard() {
         {/* Page Header */}
         <Stack gap={8}>
           <Text>CCPA Compliance Dashboard</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Manage CCPA requests, monitor compliance metrics, and ensure regulatory compliance.
           </Text>
         </Stack>
@@ -413,12 +415,12 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Processing"
                 value={metrics?.processing_requests || 0}
-                color="$blue10"
+                style={{ color: colors.text[theme].info }}
               />
               <MetricCard
                 label="Completed"
                 value={metrics?.completed_requests || 0}
-                color="$green10"
+                style={{ color: colors.text[theme].success }}
                 trend="up"
               />
               <MetricCard
@@ -450,14 +452,14 @@ export function CCPAAdminDashboard() {
         {(metrics?.overdue_count || 0) > 0 && (
           <Row
             padding="md"
-            backgroundColor="$red2"
+            style={{ backgroundColor: colors.bg[theme].errorSubtle }}
             borderRadius={12}
             borderWidth={1}
-            borderColor="$red6"
+            borderColor={colors.border[theme].error}
             gap={8}
             align="center"
           >
-            <Text color="$red11">
+            <Text style={{ color: colors.text[theme].error }}>
               ATTENTION: {metrics?.overdue_count} request(s) have exceeded the 45-day CCPA deadline.
               Immediate action required.
             </Text>
@@ -486,14 +488,14 @@ export function CCPAAdminDashboard() {
           ) : requests?.requests?.length === 0 ? (
             <Stack
               padding="xl"
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].subtle }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
+              borderColor={colors.border[theme].default}
               align="center"
               gap={8}
             >
-              <Text color="$gray11">No requests match the current filters</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>No requests match the current filters</Text>
             </Stack>
           ) : (
             requests?.requests?.map((request: AdminCCPARequest) => (
@@ -529,34 +531,34 @@ export function CCPAAdminDashboard() {
         <Stack
           gap={12}
           padding="md"
-          backgroundColor="$color2"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
           borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
         >
           <Text>CCPA Timeline Requirements</Text>
           <Stack gap={8}>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>10 days</Text> - Acknowledge receipt of request
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$orange10" />
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>45 days</Text> - Complete request (with possible 45-day extension)
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
-              <Text color="$gray11">
+              <Stack width={8} height={8} borderRadius={4} style={{ backgroundColor: colors.text[theme].success }} />
+              <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>12 months</Text> - Retain request records
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} backgroundColor="$red10" />
-              <Text color="$gray11">
+              <Stack width={8} height={8} borderRadius={4} style={{ backgroundColor: colors.text[theme].error }} />
+              <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>72 hours</Text> - Notify users of data breaches
               </Text>
             </Row>

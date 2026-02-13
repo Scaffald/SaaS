@@ -3,11 +3,12 @@ import {
   useDeleteEducationMutation,
 } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
+import { DashboardWidget, Dialog } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
-import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, H4, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { ProfileEmptyState } from './components'
 import type { EducationEntry } from './types/education'
 import { formatDateRange } from './utils/date-formatting'
@@ -20,7 +21,9 @@ interface ProfileEducationRightProps {
  * Profile Education Right Component
  * Displays saved education entries in the right column
  */
-export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProps = {}) {
+export function ProfileEducationRight() {
+  const { theme } = useThemeContext()
+{ onEditEntry }: ProfileEducationRightProps = {}) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -69,7 +72,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading education data...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -80,7 +83,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text color="$red10">Failed to load education data</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load education data</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -90,7 +93,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
     <DashboardWidget>
       <H4>Saved Education</H4>
 
-      <Text color="$gray11" marginBottom={16}>
+      <Text style={{ color: colors.text[theme].secondary }} marginBottom={16}>
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
@@ -113,7 +116,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                 gap={12}
                 backgroundColor="$background"
                 borderWidth={1}
-                borderColor="$borderColor"
+                style={{ borderColor: colors.border[theme].default }}
                 borderRadius={16}
                 hoverStyle={{
                   borderColor: '$borderColorHover',
@@ -123,7 +126,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                 {/* Institution Name with Verification Badge */}
                 <Stack gap={4}>
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text color="$gray11">{edu.institution_name}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{edu.institution_name}</Text>
                     {!edu.is_verified && (
                       <Row gap={4} align="center">
                         <AlertCircle size="md" color="$orange10" />
@@ -135,18 +138,18 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {/* Current Education Badge */}
                   {edu.is_current && (
                     <Row gap={4} align="center">
-                      <Text color="$blue10">Current</Text>
+                      <Text style={{ color: colors.text[theme].info }}>Current</Text>
                     </Row>
                   )}
 
                   {/* Degree Type */}
-                  {edu.degree_type && <Text color="$gray11">{edu.degree_type}</Text>}
+                  {edu.degree_type && <Text style={{ color: colors.text[theme].secondary }}>{edu.degree_type}</Text>}
 
                   {/* Field of Study */}
-                  {edu.field_of_study && <Text color="$gray11">{edu.field_of_study}</Text>}
+                  {edu.field_of_study && <Text style={{ color: colors.text[theme].secondary }}>{edu.field_of_study}</Text>}
 
                   {/* GPA */}
-                  {hasValidGpa && <Text color="$gray11">GPA: {normalizedGpa.toFixed(1)}/4.0</Text>}
+                  {hasValidGpa && <Text style={{ color: colors.text[theme].secondary }}>GPA: {normalizedGpa.toFixed(1)}/4.0</Text>}
                 </Stack>
 
                 {/* Delete Confirmation Dialog */}
@@ -183,8 +186,8 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   <Row align="center" flexWrap="wrap" gap={12}>
                     {(edu.start_date || edu.end_date || edu.is_current) && (
                       <Row gap={8} align="center">
-                        <Calendar size="md" color="$gray11" />
-                        <Text color="$gray11">
+                        <Calendar size="md" style={{ color: colors.text[theme].secondary }} />
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           {formatDateRange(
                             edu.start_date,
                             edu.end_date,
@@ -230,16 +233,16 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {/* Location */}
                   {edu.location && (
                     <Row gap={8} align="center">
-                      <MapPin size="md" color="$gray11" />
-                      <Text color="$gray11">{edu.location}</Text>
+                      <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
+                      <Text style={{ color: colors.text[theme].secondary }}>{edu.location}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {edu.description && (
                     <Stack gap={4}>
-                      <Text color="$gray11">Description:</Text>
-                      <Text color="$gray11">{edu.description}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Description:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>{edu.description}</Text>
                     </Stack>
                   )}
                 </Stack>

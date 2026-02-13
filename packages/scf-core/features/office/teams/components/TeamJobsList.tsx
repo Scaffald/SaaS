@@ -4,7 +4,8 @@ import { AlertTriangle, ArrowRight, RefreshCcw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
@@ -27,6 +28,7 @@ export function TeamJobsList({
   onRefresh,
   onCreateJob,
 }: TeamJobsListProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   const derivedJobs = useMemo(() => jobs ?? [], [jobs])
@@ -78,21 +80,21 @@ export function TeamJobsList({
       {isLoading ? (
         <Stack align="center" justify="center" paddingVertical={24} gap={8}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading assigned jobs…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading assigned jobs…</Text>
         </Stack>
       ) : error ? (
         <Card
           borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
           padding="md"
           gap={12}
         >
           <Row gap={8} align="center">
-            <AlertTriangle size={18} color="$yellow10" />
+            <AlertTriangle size={18} style={{ color: colors.text[theme].warning }} />
             <Text>Unable to load jobs</Text>
           </Row>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {error.message || 'Something went wrong while fetching jobs for this team.'}
           </Text>
           <Button size="sm" onPress={() => onRefresh?.()}>
@@ -106,8 +108,8 @@ export function TeamJobsList({
               key={job.id}
               padding="md"
               borderWidth={1}
-              borderColor="$borderColor"
-              backgroundColor="$color2"
+              borderColor={colors.border[theme].default}
+              style={{ backgroundColor: colors.bg[theme].subtle }}
               gap={12}
               accessible
               accessibilityRole="summary"
@@ -123,7 +125,7 @@ export function TeamJobsList({
               >
                 <Stack gap={4} flex={1} width="100%">
                   <Text>{job.title}</Text>
-                  <Text color="$gray11">{job.organization?.name ?? 'No organization'}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{job.organization?.name ?? 'No organization'}</Text>
                 </Stack>
                 <StatusChip status={job.status ?? 'draft'} />
               </Row>
@@ -139,7 +141,7 @@ export function TeamJobsList({
                 </Row>
               ) : null}
               <Row gap={8} flexDirection="column" align="stretch">
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Updated{' '}
                   {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
@@ -163,14 +165,14 @@ export function TeamJobsList({
       ) : (
         <Card
           borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
           padding="md"
           gap={8}
           width="100%"
         >
           <Text>No jobs assigned yet</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
             team will appear here.
           </Text>
@@ -200,9 +202,9 @@ export function TeamJobsList({
 function StatusChip({ status }: { status: string }) {
   const normalized = status.replace(/_/g, ' ')
   const isOpen = status === 'open'
-  const background = isOpen ? '$green4' : '$color3'
-  const border = isOpen ? '$green8' : '$borderColor'
-  const textColor = isOpen ? '$green11' : '$color11'
+  const background = isOpen ? colors.bg[theme].successSubtle : colors.bg[theme].muted
+  const border = isOpen ? colors.border[theme].success : colors.border[theme].default
+  const textColor = isOpen ? colors.text[theme].success : colors.text[theme].secondary
 
   return (
     <Row
@@ -222,9 +224,9 @@ function StatusChip({ status }: { status: string }) {
 }
 
 function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
-  const background = isPrimary ? '$blue4' : '$color3'
-  const border = isPrimary ? '$blue8' : '$borderColor'
-  const textColor = isPrimary ? '$blue11' : '$color11'
+  const background = isPrimary ? colors.bg[theme].info : colors.bg[theme].muted
+  const border = isPrimary ? colors.border[theme].info : colors.border[theme].default
+  const textColor = isPrimary ? '$blue11' : colors.text[theme].secondary
 
   return (
     <Row

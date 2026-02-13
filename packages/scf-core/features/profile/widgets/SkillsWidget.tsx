@@ -20,11 +20,12 @@ import {
   Tab,
   TabGroup,
   type SkillsChartDataset,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
@@ -49,7 +50,9 @@ interface EnrichedUserSkill {
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
+export function SkillsWidget() {
+  const { theme } = useThemeContext()
+{ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'technical' | 'soft-skills'>('technical')
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
@@ -142,8 +145,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load skills</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load skills</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="primary"
             size="xs"
@@ -223,8 +226,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             <LoadingState message="Loading skills..." />
           ) : error ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text color="$red10">Failed to load skills</Text>
-              <Text color="$gray11">{(error as unknown as Record<string, unknown>).message}</Text>
+              <Text style={{ color: colors.text[theme].error }}>Failed to load skills</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{(error as unknown as Record<string, unknown>).message}</Text>
               <Button
                 variant="primary"
                 size="xs"
@@ -256,7 +259,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
                 <Stack key={taxonomy} gap={8}>
                   {/* Taxonomy Header */}
-                  <Text color="$gray11" textTransform="uppercase">
+                  <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
                     {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                   </Text>
 
@@ -267,27 +270,27 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                       .map((skill: EnrichedUserSkill) => (
                         <Row
                           key={skill.id}
-                          backgroundColor="$blue2"
+                          style={{ backgroundColor: colors.bg[theme].info }}
                           paddingHorizontal={12}
                           paddingVertical={8}
                           borderRadius={12}
                           borderWidth={1}
-                          borderColor={skill.verified ? '$blue7' : '$blue5'}
+                          borderColor={skill.verified ? '$blue7' : colors.border[theme].subtle}
                           gap={8}
                           align="center"
                         >
-                          {skill.verified && <CheckCircle size="md" color="$blue11" />}
+                          {skill.verified && <CheckCircle size="md" style={{ color: colors.text[theme].info }} />}
                           <Stack gap={2}>
-                            <Text color="$blue11">{skill.name}</Text>
+                            <Text style={{ color: colors.text[theme].info }}>{skill.name}</Text>
                             {!showCompact && (
                               <Row gap={8}>
                                 {skill.proficiency > 0 && (
-                                  <Text color="$blue10">
+                                  <Text style={{ color: colors.text[theme].info }}>
                                     {getProficiencyLabel(skill.proficiency)}
                                   </Text>
                                 )}
                                 {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                  <Text color="$blue10">• {skill.yearsExperience}y</Text>
+                                  <Text style={{ color: colors.text[theme].info }}>• {skill.yearsExperience}y</Text>
                                 )}
                               </Row>
                             )}
@@ -301,10 +304,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Show More link for compact view */}
               {showCompact && skills.length > 5 && (
                 <Text
-                  color="$blue7"
+                  style={{ color: colors.border[theme].info }}
                   cursor="pointer"
-                  hoverStyle={{ color: '$blue8' }}
-                  pressStyle={{ color: '$blue9' }}
+                  hoverStyle={{ color: colors.border[theme].info }}
+                  pressStyle={{ color: colors.bg[theme].primary }}
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                 >
                   View all {skills.length} skills →
@@ -319,8 +322,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             <LoadingState message="Loading soft skills..." />
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text color="$red10">Failed to load soft skills</Text>
-              <Text color="$gray11">{softSkillsError.message}</Text>
+              <Text style={{ color: colors.text[theme].error }}>Failed to load soft skills</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{softSkillsError.message}</Text>
               <Button
                 variant="primary"
                 size="xs"
@@ -359,7 +362,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Skills Chart for Active Category */}
               {categoryChartData && categoryChartData.length > 0 && (
                 <Stack gap={8} align="center">
-                  <Text color="$gray11">{categoryLabels[activeCategory]} Skills</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{categoryLabels[activeCategory]} Skills</Text>
                   <SkillsChart
                     datasets={categoryChartData}
                     height={variant === 'compact' ? 200 : 300}
@@ -367,7 +370,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     maxValue={100}
                     isAnimated={true}
                   />
-                  <Text color="$gray11" style={{ textAlign: 'center' }}>
+                  <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
                     Individual skill ratings in {categoryLabels[activeCategory]}
                   </Text>
                 </Stack>

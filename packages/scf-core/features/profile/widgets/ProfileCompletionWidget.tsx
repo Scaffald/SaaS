@@ -1,10 +1,11 @@
 import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { CheckCircle, ChevronRight, Circle } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Button, H4, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, H4, Progress, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -17,7 +18,9 @@ import type { ProfileWidgetProps } from './types'
  * @param showEdit - Whether to show edit actions
  * @param variant - Display variant (compact or full)
  */
-export function ProfileCompletionWidget({
+export function ProfileCompletionWidget() {
+  const { theme } = useThemeContext()
+{
   showEdit = false,
   variant = 'full',
 }: ProfileWidgetProps) {
@@ -45,7 +48,7 @@ export function ProfileCompletionWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={16}>
-          <Text color="$gray11">Loading completion status...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading completion status...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -65,7 +68,7 @@ export function ProfileCompletionWidget({
         <Row justify="space-between" align="center">
           <H4>Profile Completion</H4>
           {variant === 'full' && (
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               {completionData.totalComplete} of {completionData.totalItems} complete
             </Text>
           )}
@@ -74,9 +77,9 @@ export function ProfileCompletionWidget({
         {/* Progress Bar */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="$gray11">{completionData.completionPercentage}%</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{completionData.completionPercentage}%</Text>
             {variant === 'full' && (
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {completionData.completionPercentage < 100 ? 'Keep going!' : 'Profile complete!'}
               </Text>
             )}
@@ -99,18 +102,18 @@ export function ProfileCompletionWidget({
           <Stack
             gap={12}
             padding="sm"
-            backgroundColor="$color3"
+            backgroundColor={colors.bg[theme].muted}
             borderRadius={12}
             borderWidth={1}
-            borderColor="$borderColor"
+            style={{ borderColor: colors.border[theme].default }}
           >
-            <Text color="$gray11">Next Step</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Next Step</Text>
             <Row gap={8} align="center">
-              <Circle size="md" color="$gray11" />
+              <Circle size="md" style={{ color: colors.text[theme].secondary }} />
               <Stack flex={1} gap={4}>
                 <Text>{nextIncompleteItem.title}</Text>
                 {nextIncompleteItem.description && (
-                  <Text color="$gray11">{nextIncompleteItem.description}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{nextIncompleteItem.description}</Text>
                 )}
               </Stack>
               {showEdit && nextIncompleteItem.actionRoute && (
@@ -130,7 +133,7 @@ export function ProfileCompletionWidget({
         {/* Checklist (Full variant only) */}
         {variant === 'full' && (
           <Stack gap={8}>
-            <Text color="$gray11">Sections</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Sections</Text>
             <Stack gap={8}>
               {completionData.items.map((item) => (
                 <Row
@@ -138,18 +141,18 @@ export function ProfileCompletionWidget({
                   gap={8}
                   align="center"
                   padding="xs"
-                  backgroundColor={item.complete ? '$color2' : '$color3'}
+                  backgroundColor={item.complete ? '$color2' : colors.bg[theme].muted}
                   borderRadius={8}
                   opacity={item.complete ? 0.7 : 1}
                 >
                   {item.complete ? (
-                    <CheckCircle size={18} color="$green10" />
+                    <CheckCircle size={18} style={{ color: colors.text[theme].success }} />
                   ) : (
-                    <Circle size={18} color="$gray11" />
+                    <Circle size={18} style={{ color: colors.text[theme].secondary }} />
                   )}
                   <Stack flex={1} gap={4}>
-                    <Text color={item.complete ? '$color11' : '$color12'}>{item.title}</Text>
-                    {item.description && <Text color="$gray11">{item.description}</Text>}
+                    <Text color={item.complete ? colors.text[theme].secondary : colors.text[theme].primary}>{item.title}</Text>
+                    {item.description && <Text style={{ color: colors.text[theme].secondary }}>{item.description}</Text>}
                   </Stack>
                   {!item.complete && showEdit && item.actionRoute && (
                     <Button

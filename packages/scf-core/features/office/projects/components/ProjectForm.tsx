@@ -6,21 +6,23 @@ import {
   useUpdateProjectMutation,
 } from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { useToast } from '@unicornlove/beyond-ui'
-import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   Button,
   Card,
   Input,
+  ResponsiveSelect,
   Spinner,
   Switch,
   Text,
   TextArea,
   Row,
   Stack,
+  useThemeContext,
+  useToast,
 } from '@unicornlove/beyond-ui'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
 
 type ProjectFormData = {
   name: string
@@ -55,6 +57,7 @@ const VISIBILITY_OPTIONS = [
 ]
 
 export function ProjectForm({ mode, projectId, initialData, onSuccess }: ProjectFormProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
   const { data: organizationsData } = useAllOrganizations()
@@ -234,7 +237,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             </Stack>
           </Row>
 
-          <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+          <Card padding="md" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderColor={colors.border[theme].warning} borderWidth={1}>
             <Stack gap={16}>
               <Text>Location Visibility Settings</Text>
 
@@ -249,8 +252,8 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               </Row>
 
               {formData.location_visibility_override && (
-                <Stack gap={8} padding="xs" backgroundColor="$yellow3" borderRadius={8}>
-                  <Text color="$yellow11">⚠️ This overrides your organization's global setting</Text>
+                <Stack gap={8} padding="xs" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderRadius={8}>
+                  <Text style={{ color: colors.text[theme].warning }}>⚠️ This overrides your organization's global setting</Text>
                 </Stack>
               )}
 
@@ -274,7 +277,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                     label: option.label,
                   }))}
                 />
-                <Text color="$gray10">
+                <Text style={{ color: colors.text[theme].tertiary }}>
                   {formData.location_visibility === 'public' && 'Anyone can see exact locations'}
                   {formData.location_visibility === 'authenticated' &&
                     'Only logged-in users see exact locations'}

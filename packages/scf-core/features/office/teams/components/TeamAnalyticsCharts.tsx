@@ -1,11 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { BarChart, LineChart, PieChart } from '@unicornlove/beyond-ui'
+import { BarChart, LineChart, PieChart , useThemeContext} from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
 import { Card, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
 type MetricRecord = NonNullable<OverviewOutput['metrics']>[number]
@@ -18,6 +19,7 @@ interface TeamAnalyticsChartsProps {
 }
 
 export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsChartsProps) {
+  const { theme } = useThemeContext()
   const { width } = useWindowDimensions() // Keep for actual dimension calculations
   // Breakpoint: 800px (small/medium layout)
   const isSmallScreen = width <= 800
@@ -148,7 +150,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     return (
       <Stack gap={12} align="center" justify="center" paddingVertical={16}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading analytics data…</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading analytics data…</Text>
       </Stack>
     )
   }
@@ -157,13 +159,13 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     return (
       <Card
         borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
+        borderColor={colors.border[theme].default}
+        style={{ backgroundColor: colors.bg[theme].subtle }}
         padding="md"
         gap={8}
       >
         <Text>Insights unavailable</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           We&apos;ll start charting metrics once your team begins reviewing applications and
           recording activity.
         </Text>
@@ -239,7 +241,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         summary={workloadSummary ?? undefined}
       >
         {workloadBreakdown.length === 0 ? (
-          <Text color="$gray11">No workload snapshots available.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>No workload snapshots available.</Text>
         ) : (
           <ScrollView
             horizontal={isSmallScreen}
@@ -265,7 +267,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
               />
               <Stack gap={4}>
                 {workloadBreakdown.map((entry) => (
-                  <Text key={entry.text} color="$gray11">
+                  <Text key={entry.text} style={{ color: colors.text[theme].secondary }}>
                     {entry.text}: {entry.value} assignments
                   </Text>
                 ))}
@@ -294,17 +296,17 @@ function AnalyticsCard({
   return (
     <Card
       borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$color2"
+      borderColor={colors.border[theme].default}
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       padding="md"
       gap={12}
     >
       <Stack gap={4}>
         <Text accessibilityRole="header">{title}</Text>
-        {description ? <Text color="$gray11">{description}</Text> : null}
-        {summary ? <Text color="$gray11">{summary}</Text> : null}
+        {description ? <Text style={{ color: colors.text[theme].secondary }}>{description}</Text> : null}
+        {summary ? <Text style={{ color: colors.text[theme].secondary }}>{summary}</Text> : null}
       </Stack>
-      {emptyMessage ? <Text color="$gray11">{emptyMessage}</Text> : null}
+      {emptyMessage ? <Text style={{ color: colors.text[theme].secondary }}>{emptyMessage}</Text> : null}
       {children}
     </Card>
   )

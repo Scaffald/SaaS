@@ -4,10 +4,11 @@ import {
   SaveStatusIndicator,
   SavingModal,
   SkeletonForm,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Check } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { InlineSkillSearch } from './components'
 import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'
@@ -18,6 +19,8 @@ import { useProfileSkillsContext } from './profile-skills-context'
  * Inline form for searching and adding skills
  */
 export function ProfileSkillsLeft() {
+  const { theme } = useThemeContext()
+) {
   const {
     isLoadingIndustries,
     industries,
@@ -103,7 +106,7 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text color="$gray11">Select your industry to search for relevant skills</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Select your industry to search for relevant skills</Text>
             </Stack>
 
             <Separator />
@@ -114,10 +117,10 @@ export function ProfileSkillsLeft() {
                 padding="md"
                 align="center"
                 gap={8}
-                backgroundColor="$color3"
+                backgroundColor={colors.bg[theme].muted}
                 borderRadius={16}
               >
-                <Text color="$gray11" textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   Please select an industry above to search for skills
                 </Text>
               </Stack>

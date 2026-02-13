@@ -1,4 +1,4 @@
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -7,6 +7,7 @@ import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useAddTeamMember } from '@scaffald/sdk/react'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface AddTeamMemberModalProps {
   open: boolean
@@ -23,6 +24,7 @@ export function AddTeamMemberModal({
   organizationId,
   onAdded,
 }: AddTeamMemberModalProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [selectedUserId, setSelectedUserId] = useState<string>('')
   const [selectedUserName, setSelectedUserName] = useState<string>('')
@@ -87,12 +89,12 @@ export function AddTeamMemberModal({
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Add team member">
       <Stack gap={16}>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Invite an existing organization member to collaborate on this team.
         </Text>
 
         <Stack gap={8}>
-          <Text color="$gray11">Member</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Member</Text>
           <UserSearch
             value={selectedUserId}
             onUserSelect={(id, name) => {
@@ -107,11 +109,11 @@ export function AddTeamMemberModal({
         </Stack>
 
         <Stack gap={8}>
-          <Text color="$gray11">Role</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Role</Text>
           {isLoadingRoles ? (
             <Row align="center" gap={8}>
               <Spinner size="sm" />
-              <Text color="$gray11">Loading roles...</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Loading roles...</Text>
             </Row>
           ) : (
             <ResponsiveSelect
@@ -136,11 +138,11 @@ export function AddTeamMemberModal({
           </Button>
           <Button
             onPress={handleSubmit}
-            backgroundColor="$color9"
-            color="$gray11"
+            style={{ backgroundColor: colors.bg[theme].primary }}
+            style={{ color: colors.text[theme].secondary }}
             disabled={addMemberMutation.isPending}
           >
-            {addMemberMutation.isPending ? <Spinner size="sm" color="$gray11" /> : 'Add Member'}
+            {addMemberMutation.isPending ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Add Member'}
           </Button>
         </Row>
       </Stack>

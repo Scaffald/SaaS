@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { DataTable } from '@scf/core/components/ui'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { Download, FileText, RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
@@ -9,6 +9,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { TransactionReceiptModal } from './TransactionReceiptModal'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type TransactionListOutput = inferRouterOutputs<AppRouter>['payments']['adminListTransactions']
 type Transaction = TransactionListOutput['items'][number]
@@ -33,24 +34,25 @@ const formatStatus = (status: string): string => {
   return status.charAt(0).toUpperCase() + status.slice(1)
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string, theme: 'light' | 'dark') => {
   switch (status) {
     case 'succeeded':
-      return '$green11' as const
+      return colors.text[theme].success
     case 'failed':
-      return '$red11' as const
+      return colors.text[theme].error
     case 'pending':
-      return '$orange11' as const
+      return colors.text[theme].warning
     case 'refunded':
-      return '$blue11' as const
+      return colors.text[theme].info
     case 'cancelled':
-      return '$gray11' as const
+      return colors.text[theme].secondary
     default:
-      return '$color11' as const
+      return colors.text[theme].secondary
   }
 }
 
 export function OfficeTransactionHistory() {
+  const { theme } = useThemeContext()
   const [selectedOrganizationId, _setSelectedOrganizationId] = useState<string | undefined>()
   const [statusFilter, setStatusFilter] = useState<string | undefined>()
   const [transactionTypeFilter, setTransactionTypeFilter] = useState<string | undefined>()
@@ -123,6 +125,7 @@ export function OfficeTransactionHistory() {
   }
 
   const transactionsColumns = useMemo(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const defs = [
       columnHelper.accessor('createdAt', {
         header: 'Date',
@@ -147,13 +150,13 @@ export function OfficeTransactionHistory() {
         header: 'Status',
         cell: (info) => {
           const status = info.getValue()
-          return <Text color={getStatusColor(status)}>{formatStatus(status)}</Text>
+          return <Text style={{ color: getStatusColor(status, theme) }}>{formatStatus(status)}</Text>
         },
       }),
       columnHelper.accessor('stripePaymentIntentId', {
         header: 'Stripe ID',
         cell: (info) => (
-          <Text color="$gray11" style={{ fontFamily: 'monospace' }}>
+          <Text style={{ color: colors.text[theme].secondary }} style={{ fontFamily: 'monospace' }}>
             {info.getValue().slice(0, 20)}...
           </Text>
         ),
@@ -173,14 +176,14 @@ export function OfficeTransactionHistory() {
       }),
     ]
     return defs as ColumnDef<Transaction, unknown>[]
-  }, [])
+  }, [theme])
 
   return (
     <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Transaction History</Text>
-          <Text color="$gray11">View and export payment transaction records.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>View and export payment transaction records.</Text>
         </Stack>
         <Row gap={8}>
           <Button
@@ -205,10 +208,10 @@ export function OfficeTransactionHistory() {
       </Row>
 
       {/* Filters */}
-      <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="sm">
+      <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm">
         <Row gap={12} flexWrap="wrap">
           <Stack gap={4} width={200}>
-            <Text color="$gray11">Status</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
             <ResponsiveSelect
               value={statusFilter ?? ''}
               onValueChange={(value) => setStatusFilter(value || undefined)}
@@ -225,7 +228,7 @@ export function OfficeTransactionHistory() {
             />
           </Stack>
           <Stack gap={4} width={200}>
-            <Text color="$gray11">Type</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
             <ResponsiveSelect
               value={transactionTypeFilter ?? ''}
               onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
@@ -249,10 +252,10 @@ export function OfficeTransactionHistory() {
       {transactionsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading transactions…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading transactions…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
+        <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
           <DataTable
             columns={transactionsColumns}
             data={transactionsQuery.data?.items ?? []}
@@ -261,7 +264,7 @@ export function OfficeTransactionHistory() {
             emptyMessage="No transactions found."
           />
           {transactionsQuery.data && transactionsQuery.data.totalCount > 0 && (
-            <Text color="$gray11" marginTop={12}>
+            <Text style={{ color: colors.text[theme].secondary }} marginTop={12}>
               Showing {transactionsQuery.data.items.length} of {transactionsQuery.data.totalCount}{' '}
               transactions
             </Text>

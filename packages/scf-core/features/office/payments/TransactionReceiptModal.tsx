@@ -1,7 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { Dialog } from '@unicornlove/beyond-ui'
+import { Dialog, useThemeContext } from '@unicornlove/beyond-ui'
 import { Download, X } from 'lucide-react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type TransactionReceiptModalProps = {
   transactionId: string
@@ -14,6 +15,7 @@ export function TransactionReceiptModal({
   open,
   onOpenChange,
 }: TransactionReceiptModalProps) {
+  const { theme } = useThemeContext()
   const receiptQuery = api.payments.generateReceipt.useQuery(
     { transactionId },
     {
@@ -83,44 +85,44 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           {receiptQuery.isLoading ? (
             <Stack align="center" paddingVertical={24} gap={12}>
               <Spinner size="lg" />
-              <Text color="$gray11">Loading receipt…</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Loading receipt…</Text>
             </Stack>
           ) : receiptQuery.error ? (
-            <Card padding="md" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-              <Text color="$red11">Failed to load receipt: {receiptQuery.error.message}</Text>
+            <Card padding="md" style={{ backgroundColor: colors.bg[theme].error }} borderColor={colors.border[theme].error} borderWidth={1}>
+              <Text style={{ color: colors.text[theme].error }}>Failed to load receipt: {receiptQuery.error.message}</Text>
             </Card>
           ) : receiptQuery.data ? (
             <Stack gap={16}>
               <Card
                 padding="md"
-                backgroundColor="$color2"
-                borderColor="$borderColor"
+                style={{ backgroundColor: colors.bg[theme].subtle }}
+                borderColor={colors.border[theme].default}
                 borderWidth={1}
               >
                 <Stack gap={12}>
                   <Row justify="space-between" align="center">
                     <Text>{receiptQuery.data.receiptNumber}</Text>
-                    <Text color="$green11">{receiptQuery.data.amount}</Text>
+                    <Text style={{ color: colors.text[theme].success }}>{receiptQuery.data.amount}</Text>
                   </Row>
                   <Stack gap={8}>
                     <Row justify="space-between">
-                      <Text color="$gray11">Date:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Date:</Text>
                       <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
                     </Row>
                     <Row justify="space-between">
-                      <Text color="$gray11">Organization:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Organization:</Text>
                       <Text>{receiptQuery.data.organizationName}</Text>
                     </Row>
                     <Row justify="space-between">
-                      <Text color="$gray11">Type:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Type:</Text>
                       <Text>{receiptQuery.data.transactionType}</Text>
                     </Row>
                     <Row justify="space-between">
-                      <Text color="$gray11">Status:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Status:</Text>
                       <Text>{receiptQuery.data.status}</Text>
                     </Row>
                     <Row justify="space-between">
-                      <Text color="$gray11">Payment Intent:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Payment Intent:</Text>
                       <Text style={{ fontFamily: 'monospace' }}>
                         {receiptQuery.data.stripePaymentIntentId}
                       </Text>

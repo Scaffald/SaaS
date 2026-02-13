@@ -245,7 +245,7 @@ export function StripeSettingsPage() {
               {data?.hasApiKey ? (
                 <Text style={{ color: colors.text[theme].success }}>✓ Secret stored in Vault</Text>
               ) : (
-                <Text color="$red10">API secret not configured</Text>
+                <Text style={{ color: colors.text[theme].error }}>API secret not configured</Text>
               )}
             </Stack>
 
@@ -275,7 +275,7 @@ export function StripeSettingsPage() {
               {data?.hasWebhookSecret ? (
                 <Text style={{ color: colors.text[theme].success }}>✓ Webhook secret stored</Text>
               ) : (
-                <Text color="$red10">Webhook secret not configured</Text>
+                <Text style={{ color: colors.text[theme].error }}>Webhook secret not configured</Text>
               )}
             </Stack>
           </Stack>
@@ -332,7 +332,7 @@ export function StripeSettingsPage() {
           <Stack gap={8}>
             <Text style={{ color: colors.text[theme].secondary }}>Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}</Text>
             {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
-              <Paragraph size="sm" color="$red10">
+              <Paragraph size="sm" style={{ color: colors.text[theme].error }}>
                 {data.lastTestedError}
               </Paragraph>
             ) : null}

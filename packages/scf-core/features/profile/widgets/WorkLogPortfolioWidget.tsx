@@ -3,13 +3,16 @@ import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
 import { usePublicWorkLogsFeed } from '@scf/core/utils/work-logs-sdk-hooks'
 import { ShieldCheck } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, Image, Paragraph, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface WorkLogPortfolioWidgetProps {
   userId: string
 }
 
-export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) {
+export function WorkLogPortfolioWidget() {
+  const { theme } = useThemeContext()
+{ userId }: WorkLogPortfolioWidgetProps) {
   const { data, isLoading } = usePublicWorkLogsFeed(userId ? { userId, limit: 12 } : undefined, {
     enabled: Boolean(userId),
     staleTime: 60_000,
@@ -54,7 +57,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
       <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text>Verified work history</Text>
-          <Paragraph color="$gray11">
+          <Paragraph style={{ color: colors.text[theme].secondary }}>
             Recent verified work logs selected by this worker. Projects appear here only when the
             worker has chosen to share them publicly.
           </Paragraph>
@@ -63,10 +66,10 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
         {isLoading ? (
           <Row gap={8} align="center">
             <Spinner size="sm" />
-            <Text color="$gray11">Loading work history…</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Loading work history…</Text>
           </Row>
         ) : workLogs.length === 0 ? (
-          <Paragraph color="$gray11">
+          <Paragraph style={{ color: colors.text[theme].secondary }}>
             No verified work logs are currently visible on this profile.
           </Paragraph>
         ) : (
@@ -106,15 +109,15 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                   paddingHorizontal={12}
                   paddingVertical={12}
                   gap={12}
-                  backgroundColor="$color2"
+                  style={{ backgroundColor: colors.bg[theme].subtle }}
                 >
                   <Row align="center" justify="space-between">
                     <Stack gap={4}>
                       <Text>{group.projectName ?? 'Project'}</Text>
                       {group.organizationName ? (
-                        <Text color="$gray11">{group.organizationName}</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>{group.organizationName}</Text>
                       ) : null}
-                      <Text color="$gray11">{dateLabel}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>{dateLabel}</Text>
                     </Stack>
                     <Row
                       gap={8}
@@ -124,8 +127,8 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       borderRadius={16}
                       backgroundColor="$green4"
                     >
-                      <ShieldCheck size="md" color="$green11" />
-                      <Text color="$green11">Verified by Scaffald</Text>
+                      <ShieldCheck size="md" style={{ color: colors.text[theme].success }} />
+                      <Text style={{ color: colors.text[theme].success }}>Verified by Scaffald</Text>
                     </Row>
                   </Row>
 
@@ -155,16 +158,16 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                               flex={1}
                               align="center"
                               justify="center"
-                              backgroundColor="$color3"
+                              backgroundColor={colors.bg[theme].muted}
                             >
-                              <Text color="$gray11">Photo unavailable</Text>
+                              <Text style={{ color: colors.text[theme].secondary }}>Photo unavailable</Text>
                             </Stack>
                           )}
                         </Card>
                       ))}
                     </Row>
                   ) : (
-                    <Paragraph color="$gray11">No photos were shared for this project.</Paragraph>
+                    <Paragraph style={{ color: colors.text[theme].secondary }}>No photos were shared for this project.</Paragraph>
                   )}
                 </Stack>
               )

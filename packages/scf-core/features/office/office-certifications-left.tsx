@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { CustomCheckbox, DashboardWidget, ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -18,6 +18,7 @@ import {
   Stack,
 } from '@unicornlove/beyond-ui'
 import { z } from 'zod'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 const certificationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -67,6 +68,7 @@ export function OfficeCertificationsLeft({
   onCertificationSaved,
   onCancel,
 }: OfficeCertificationsLeftProps) {
+  const { theme } = useThemeContext()
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
   const { width } = useWindowDimensions()
@@ -198,7 +200,7 @@ export function OfficeCertificationsLeft({
           {/* Name */}
           <Stack gap={8}>
             <Text>
-              Name <Text color="$red10">*</Text>
+              Name <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
             <Controller
               name="name"
@@ -208,19 +210,19 @@ export function OfficeCertificationsLeft({
                   placeholder="e.g. OSHA 30-Hour Construction"
                   value={field.value}
                   onChangeText={(text) => handleNameChange(text, field.onChange)}
-                  borderColor={errors.name ? '$red8' : '$borderColor'}
+                  borderColor={errors.name ? colors.border[theme].error : colors.border[theme].default}
                 />
               )}
             />
-            {errors.name && <Text color="$red10">{errors.name.message}</Text>}
+            {errors.name && <Text style={{ color: colors.text[theme].error }}>{errors.name.message}</Text>}
           </Stack>
 
           {/* Vanity URL */}
           <Stack gap={8}>
             <Text>
-              Vanity URL <Text color="$red10">*</Text>
+              Vanity URL <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
-            <Text color="$gray11">URL-friendly username (auto-generated from name)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>URL-friendly username (auto-generated from name)</Text>
             <Controller
               name="slug"
               control={control}
@@ -229,17 +231,17 @@ export function OfficeCertificationsLeft({
                   placeholder="e.g. osha-30-hour-construction"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.slug ? '$red8' : '$borderColor'}
+                  borderColor={errors.slug ? colors.border[theme].error : colors.border[theme].default}
                 />
               )}
             />
-            {errors.slug && <Text color="$red10">{errors.slug.message}</Text>}
+            {errors.slug && <Text style={{ color: colors.text[theme].error }}>{errors.slug.message}</Text>}
           </Stack>
 
           {/* Category */}
           <Stack gap={8}>
             <Text>
-              Category <Text color="$red10">*</Text>
+              Category <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
             <Controller
               name="category"
@@ -294,7 +296,7 @@ export function OfficeCertificationsLeft({
           {/* Typical Duration */}
           <Stack gap={8}>
             <Text>Typical Duration (days)</Text>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               How many days it typically takes to complete this certification
             </Text>
             <Controller
@@ -341,7 +343,7 @@ export function OfficeCertificationsLeft({
           {requiresRenewal && (
             <Stack gap={8}>
               <Text>Renewal Period (months)</Text>
-              <Text color="$gray11">How often this certification must be renewed</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>How often this certification must be renewed</Text>
               <Controller
                 name="renewal_period_months"
                 control={control}

@@ -2,7 +2,8 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { Briefcase, Mail, Shield, Users } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -38,6 +39,7 @@ const INVITATION_POLICY_LABELS: Record<string, string> = {
 }
 
 export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps) {
+  const { theme } = useThemeContext()
   const purposeLabel = PURPOSE_LABELS[team.purpose ?? ''] ?? 'General'
   const visibilityLabel = VISIBILITY_LABELS[team.visibility ?? ''] ?? 'Org-wide'
   const invitationPolicyLabel =
@@ -52,9 +54,9 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
     <Card
       padding="md"
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       gap={16}
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
     >
       <Row gap={16} justify="space-between" flexWrap="wrap">
         <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
@@ -62,7 +64,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
             <Text>{team.name || 'Untitled team'}</Text>
             {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
           </Row>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {team.description?.trim() ||
               'No description provided. Add context to help team members understand the focus of this team.'}
           </Text>
@@ -106,10 +108,10 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
       </Row>
 
       <Stack gap={4}>
-        <Text color="$gray11" textTransform="uppercase">
+        <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
           Team slug
         </Text>
-        <Text color="$gray11">{team.slug || 'Not configured'}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{team.slug || 'Not configured'}</Text>
       </Stack>
     </Card>
   )
@@ -121,15 +123,15 @@ function StatItem({ icon, label, value }: { icon: ReactNode; label: string; valu
       gap={8}
       align="center"
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       borderRadius={16}
       paddingHorizontal={12}
       paddingVertical={8}
-      backgroundColor="$color3"
+      style={{ backgroundColor: colors.bg[theme].muted }}
     >
       {icon}
       <Stack>
-        <Text color="$gray11" textTransform="uppercase">
+        <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
           {label}
         </Text>
         <Text>{value}</Text>
@@ -145,9 +147,9 @@ function Chip({
   children: ReactNode
   tone?: 'surface' | 'warning'
 }) {
-  const background = tone === 'warning' ? '$yellow4' : '$color3'
-  const border = tone === 'warning' ? '$yellow8' : '$borderColor'
-  const textColor = tone === 'warning' ? '$yellow11' : '$color11'
+  const background = tone === 'warning' ? colors.bg[theme].warningSubtle : colors.bg[theme].muted
+  const border = tone === 'warning' ? colors.border[theme].warning : colors.border[theme].default
+  const textColor = tone === 'warning' ? colors.text[theme].warning : colors.text[theme].secondary
   return (
     <Row
       gap={8}

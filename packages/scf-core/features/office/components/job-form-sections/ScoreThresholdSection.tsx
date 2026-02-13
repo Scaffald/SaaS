@@ -1,6 +1,7 @@
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, Slider } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface ScoreThresholdSectionProps {
   minimumScore?: number
@@ -8,6 +9,7 @@ interface ScoreThresholdSectionProps {
 }
 
 export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThresholdSectionProps) {
+  const { theme } = useThemeContext()
   const [value, setValue] = useState<number[]>([minimumScore || 50])
 
   const handleChange = (newValue: number[]) => {
@@ -42,17 +44,17 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
       </Stack>
 
       <Stack gap={8} padding="sm">
-        <Text color="$blue11">Score Guidelines</Text>
-        <Text color="$blue11">
+        <Text style={{ color: colors.text[theme].info }}>Score Guidelines</Text>
+        <Text style={{ color: colors.text[theme].info }}>
           • <Text>0-25:</Text> Entry level, minimal requirements
         </Text>
-        <Text color="$blue11">
+        <Text style={{ color: colors.text[theme].info }}>
           • <Text>26-50:</Text> Some experience required
         </Text>
-        <Text color="$blue11">
+        <Text style={{ color: colors.text[theme].info }}>
           • <Text>51-75:</Text> Experienced candidates preferred
         </Text>
-        <Text color="$blue11">
+        <Text style={{ color: colors.text[theme].info }}>
           • <Text>76-100:</Text> Highly qualified candidates only
         </Text>
       </Stack>

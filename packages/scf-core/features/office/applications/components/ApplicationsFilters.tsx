@@ -1,5 +1,6 @@
-import { Button, ResponsiveSelect, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ResponsiveSelect, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface ApplicationsFiltersProps {
   filters: {
@@ -29,7 +30,7 @@ export const ApplicationsFilters = ({
       gap={12}
       paddingVertical={12}
       paddingHorizontal={16}
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       borderRadius={16}
       marginBottom={16}
       flexWrap="wrap"

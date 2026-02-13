@@ -1,7 +1,8 @@
-import { Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { HelpCircle } from 'lucide-react-native'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface AutoRejectCriteria {
   score_minimum?: number
@@ -20,6 +21,7 @@ interface AutoRejectionSectionProps {
 }
 
 export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoRejectionSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     enabled,
     criteria: criteria || {},
@@ -55,7 +57,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
       <Row gap={12} align="center" justify="space-between">
         <Row gap={8} align="center" flex={1}>
           <Label>Reject automatically</Label>
-          <HelpCircle size="md" color="$gray11" />
+          <HelpCircle size="md" style={{ color: colors.text[theme].secondary }} />
         </Row>
         <ToggleSwitch
           checked={localState.enabled}
@@ -63,7 +65,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           aria-label="Enable auto-rejection"
         />
       </Row>
-      <Text color="$gray11">Based on Elevate score, work authorization and required skills</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>Based on Elevate score, work authorization and required skills</Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
@@ -116,8 +118,8 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           </Row>
 
           <Stack gap={8} padding="sm">
-            <Text color="$yellow11">⚠️ Important</Text>
-            <Text color="$yellow11">
+            <Text style={{ color: colors.text[theme].warning }}>⚠️ Important</Text>
+            <Text style={{ color: colors.text[theme].warning }}>
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This
               action cannot be undone automatically. Review your criteria carefully.
             </Text>

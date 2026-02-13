@@ -1,6 +1,7 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Slider, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */
@@ -21,7 +22,9 @@ interface SkillProficiencySelectorProps {
  * Skill Proficiency Selector Component
  * Displays proficiency slider and level guide for selecting skill proficiency
  */
-export function SkillProficiencySelector({
+export function SkillProficiencySelector() {
+  const { theme } = useThemeContext()
+{
   skill,
   taxonomy,
   proficiency,
@@ -36,12 +39,12 @@ export function SkillProficiencySelector({
       <Text>Set Proficiency Level</Text>
 
       {/* Selected Skill */}
-      <Card bordered backgroundColor="$color3">
+      <Card bordered backgroundColor={colors.bg[theme].muted}>
         <Card.Header>
           <Stack gap={4}>
             <Text>{skill.name}</Text>
             {skill.code && (
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
@@ -64,18 +67,18 @@ export function SkillProficiencySelector({
           size="sm"
         >
           <Slider.Track backgroundColor="$color4" height={6}>
-            <Slider.TrackActive backgroundColor="$green9" />
+            <Slider.TrackActive style={{ backgroundColor: colors.bg[theme].success }} />
           </Slider.Track>
           <Slider.Thumb index={0}  size={4} />
         </Slider>
 
         {/* Current Level Display */}
-        <Card bordered backgroundColor="$color3">
+        <Card bordered backgroundColor={colors.bg[theme].muted}>
           <Card.Header>
             <Row justify="space-between" align="center">
               <Stack>
                 <Text color="$green9">{currentLevel?.label}</Text>
-                <Text color="$gray11">{currentLevel?.description}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{currentLevel?.description}</Text>
               </Stack>
               <Text color="$green9">{proficiency}</Text>
             </Row>

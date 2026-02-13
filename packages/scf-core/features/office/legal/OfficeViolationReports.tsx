@@ -6,7 +6,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type ViolationReportsOutput =
   inferRouterOutputs<AppRouter>['legalAgreements']['listViolationReports']
@@ -35,17 +36,18 @@ const getStatusColor = (status: string) => {
     case 'under_review':
       return '$blue11' as const
     case 'confirmed':
-      return '$red11' as const
+      return colors.text[theme].error as const
     case 'dismissed':
-      return '$gray11' as const
+      return colors.text[theme].secondary as const
     case 'resolved':
-      return '$green11' as const
+      return colors.text[theme].success as const
     default:
       return '$color11' as const
   }
 }
 
 export function OfficeViolationReports() {
+  const { theme } = useThemeContext()
   const reportsQuery = api.legalAgreements.listViolationReports.useQuery(undefined, {
     staleTime: 30_000,
   })
@@ -125,7 +127,7 @@ export function OfficeViolationReports() {
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Anti-Circumvention Violation Reports</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Review and manage reports of off-platform hires and fee avoidance.
           </Text>
         </Stack>
@@ -143,10 +145,10 @@ export function OfficeViolationReports() {
       {reportsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading violation reports…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading violation reports…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
+        <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
           <DataTable
             columns={reportsColumns}
             data={reportsQuery.data?.items ?? []}
@@ -155,7 +157,7 @@ export function OfficeViolationReports() {
             emptyMessage="No violation reports found."
           />
           {reportsQuery.data && reportsQuery.data.totalCount > 0 && (
-            <Text color="$gray11" marginTop={12}>
+            <Text style={{ color: colors.text[theme].secondary }} marginTop={12}>
               Showing {reportsQuery.data.items.length} of {reportsQuery.data.totalCount} reports
             </Text>
           )}

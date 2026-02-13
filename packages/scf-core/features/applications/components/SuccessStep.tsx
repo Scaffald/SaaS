@@ -1,7 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { Check, ExternalLink, Home } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface SuccessStepProps {
   /**
@@ -48,6 +49,7 @@ export function SuccessStep({
   onReturnToJobs,
 }: SuccessStepProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
 
   // Format application ID (e.g., #APP-12345)
   const formatApplicationId = (id: string): string => {
@@ -81,33 +83,33 @@ export function SuccessStep({
         width={80}
         height={80}
         borderRadius="$12"
-        backgroundColor="$green2"
+        style={{ backgroundColor: colors.bg[theme].success }}
         borderWidth={2}
-        borderColor="$green9"
+        style={{ borderColor: colors.border[theme].success }}
         align="center"
         justify="center"
         aria-hidden={true}
       >
-        <Check size={48} color="$green10" />
+        <Check size={48} style={{ color: colors.text[theme].success }} />
       </Stack>
 
       {/* Success Message */}
       <Stack gap={8} align="center">
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
           Application Submitted Successfully!
         </Text>
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
-        <Text color="$gray11" textAlign="center" marginTop={8}>
+        <Text style={{ color: colors.text[theme].secondary }} textAlign="center" marginTop={8}>
           Your application has been received and is under review
         </Text>
       </Stack>
 
       {/* Application ID */}
       <Stack gap={8} align="center" marginTop={16}>
-        <Text color="$blue10">Application ID: {formattedId}</Text>
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: colors.text[theme].info }}>Application ID: {formattedId}</Text>
+        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
           You will receive an email confirmation shortly
         </Text>
       </Stack>
@@ -116,14 +118,14 @@ export function SuccessStep({
       <Stack
         gap={12}
         padding="md"
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        style={{ borderColor: colors.border[theme].default }}
         width="100%"
         marginTop={32}
       >
-        <Text color="$gray11">What happens next:</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>What happens next:</Text>
 
         <Stack gap={12} marginTop={8}>
           <NextStepItem text="Our team will review your application within 3-5 business days" />
@@ -174,10 +176,10 @@ export function SuccessStep({
 function NextStepItem({ text }: { text: string }) {
   return (
     <Row gap={12} align="flex-start">
-      <Text color="$gray11" marginTop={4}>
+      <Text style={{ color: colors.text[theme].secondary }} marginTop={4}>
         •
       </Text>
-      <Text color="$gray11" flex={1} lineHeight={4}>
+      <Text style={{ color: colors.text[theme].secondary }} flex={1} lineHeight={4}>
         {text}
       </Text>
     </Row>

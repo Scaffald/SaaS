@@ -1,7 +1,8 @@
-import { ToggleCard } from '@unicornlove/beyond-ui'
-import type { ToggleCardProps } from '@unicornlove/beyond-ui'
+import { ToggleCard } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
+import type { ToggleCardProps } , useThemeContext } from '@unicornlove/beyond-ui'
 import { Plane } from 'lucide-react-native'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { MaximumTravelDistanceCard } from './MaximumTravelDistanceCard'
 
 export interface OpenToTravelCardProps
@@ -25,7 +26,9 @@ export interface OpenToTravelCardProps
  * The travel distance slider only appears when "Open to travel" is toggled on
  * Used in both profile employment and resume wizard contexts
  */
-export function OpenToTravelCard({
+export function OpenToTravelCard() {
+  const { theme } = useThemeContext()
+{
   description = 'I am willing to travel for work opportunities',
   checked,
   onCheckedChange,
@@ -39,7 +42,7 @@ export function OpenToTravelCard({
 }: OpenToTravelCardProps) {
   return (
     <ToggleCard
-      iconStart={<Plane size="xs" color="$gray11" />}
+      iconStart={<Plane size="xs" style={{ color: colors.text[theme].secondary }} />}
       title="Open to travel"
       description={description}
       checked={checked}

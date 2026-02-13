@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Crown, LogOut, Plus, UserMinus } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -23,6 +23,7 @@ import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOpt
 import { AddTeamMemberModal } from './AddTeamMemberModal'
 import { RemoveMemberModal } from './RemoveMemberModal'
 import { TeamMemberRoleSelect } from './TeamMemberRoleSelect'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface TeamMembersListProps {
   teamId: string
@@ -47,6 +48,7 @@ interface TeamMember {
 }
 
 export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [memberToRemove, setMemberToRemove] = useState<TeamMember | null>(null)
@@ -186,8 +188,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         <Button
           iconStart={Plus}
           onPress={() => setIsAddModalOpen(true)}
-          backgroundColor="$color9"
-          color="$gray11"
+          style={{ backgroundColor: colors.bg[theme].primary }}
+          style={{ color: colors.text[theme].secondary }}
           size="sm"
           accessibilityLabel="Add a new team member"
           width="100%"
@@ -199,12 +201,12 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       {isLoadingMembers ? (
         <Stack align="center" justify="center" paddingVertical={32} gap={8}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading team members…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading team members…</Text>
         </Stack>
       ) : hasMembers ? (
         <Stack gap={12}>
           {workloadErrorMessage ? (
-            <Text color="$red10">Unable to load workload snapshots: {workloadErrorMessage}</Text>
+            <Text style={{ color: colors.text[theme].error }}>Unable to load workload snapshots: {workloadErrorMessage}</Text>
           ) : null}
           {members.map((member) => {
             const workload = workloadsByMemberId.get(member.id)
@@ -225,7 +227,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               <Card
                 key={member.id}
                 padding="md"
-                borderColor="$borderColor"
+                borderColor={colors.border[theme].default}
                 borderWidth={1}
                 gap={12}
                 accessible
@@ -250,7 +252,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     </Avatar>
                     <Stack>
                       <Text>{member.displayName}</Text>
-                      {member.username ? <Text color="$gray11">@{member.username}</Text> : null}
+                      {member.username ? <Text style={{ color: colors.text[theme].secondary }}>@{member.username}</Text> : null}
                     </Stack>
                   </Row>
                   <Row
@@ -288,7 +290,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     ) : null}
                     <Button
                       variant="outline"
-                      color="$red10"
+                      style={{ color: colors.text[theme].error }}
                       iconStart={UserMinus}
                       onPress={() =>
                         setMemberToRemove({
@@ -310,17 +312,17 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     </Button>
                   </Row>
                 </Row>
-                <Text color="$gray11">Status: {memberStatusLabel}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Status: {memberStatusLabel}</Text>
                 {workload ? (
                   <Row gap={12} flexWrap="wrap">
-                    <Text color="$gray11">Active: {workload.activeAssignments}</Text>
-                    <Text color="$gray11">Pending: {workload.pendingAssignments}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Active: {workload.activeAssignments}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Pending: {workload.pendingAssignments}</Text>
                     {workload.overdueAssignments > 0 ? (
-                      <Text color="$red10">Overdue: {workload.overdueAssignments}</Text>
+                      <Text style={{ color: colors.text[theme].error }}>Overdue: {workload.overdueAssignments}</Text>
                     ) : null}
-                    <Text color="$gray11">Reviews completed: {workload.completedReviews}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Reviews completed: {workload.completedReviews}</Text>
                     {availabilityLabel ? (
-                      <Text color="$gray11">Availability: {availabilityLabel}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Availability: {availabilityLabel}</Text>
                     ) : null}
                   </Row>
                 ) : null}
@@ -332,13 +334,13 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         <Stack
           gap={8}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
           borderRadius={16}
           padding="md"
-          backgroundColor="$color2"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
         >
           <Text>No team members yet</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Add collaborators to this team to manage jobs and applications together.
           </Text>
         </Stack>
@@ -347,7 +349,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       {viewerMembership ? (
         <Button
           variant="outline"
-          color="$red10"
+          style={{ color: colors.text[theme].error }}
           iconStart={LogOut}
           size="sm"
           disabled={selfRemoveMutation.isPending}
@@ -404,7 +406,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               action cannot be undone.
             </AlertDialog.Description>
             <Stack gap={8}>
-              <Text color="$gray11">Optional reason</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Optional reason</Text>
               <TextArea
                 value={leaveReason}
                 onChangeText={setLeaveReason}
@@ -420,13 +422,13 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
                 <Button
-                  backgroundColor="$red9"
-                  color="$gray11"
+                  style={{ backgroundColor: colors.bg[theme].error }}
+                  style={{ color: colors.text[theme].secondary }}
                   iconStart={LogOut}
                   onPress={() => void handleLeaveTeam()}
                   disabled={selfRemoveMutation.isPending}
                 >
-                  {selfRemoveMutation.isPending ? <Spinner size="sm" color="$gray11" /> : 'Leave team'}
+                  {selfRemoveMutation.isPending ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Leave team'}
                 </Button>
               </AlertDialog.Action>
             </Row>

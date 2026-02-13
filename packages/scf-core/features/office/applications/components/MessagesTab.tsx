@@ -1,12 +1,13 @@
 import { Send } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import {
   useApplicationMessages,
   useSendApplicationMessageMutation,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface MessagesTabProps {
   applicationId: string
@@ -81,9 +82,9 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   if (error) {
     return (
       <Stack gap={12} padding="md">
-        <Card padding="md" backgroundColor="$red3">
-          <Text color="$red10">Error loading messages</Text>
-          <Text color="$red10" marginTop={8}>
+        <Card padding="md" style={{ backgroundColor: colors.bg[theme].errorSubtle }}>
+          <Text style={{ color: colors.text[theme].error }}>Error loading messages</Text>
+          <Text style={{ color: colors.text[theme].error }} marginTop={8}>
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
@@ -96,7 +97,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       {/* Message Thread */}
       <Stack gap={12}>
         {transformedMessages.length === 0 ? (
-          <Card padding="md" backgroundColor="$color2">
+          <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
             <Text opacity={0.7} textAlign="center">
               No messages yet. Start the conversation below!
             </Text>
@@ -106,7 +107,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
             <Card
               key={message.id}
               padding="md"
-              backgroundColor={message.sender === 'recruiter' ? '$blue3' : '$color2'}
+              style={{ backgroundColor: message.sender === 'recruiter' ? colors.bg[theme].info : colors.bg[theme].subtle }}
               alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
             >
@@ -126,7 +127,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
               {!message.isRead && message.sender === 'candidate' && (
                 <Stack marginTop={8}>
-                  <Text color="$red10">Unread</Text>
+                  <Text style={{ color: colors.text[theme].error }}>Unread</Text>
                 </Stack>
               )}
             </Card>
@@ -135,7 +136,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       </Stack>
 
       {/* Send Message */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Send Message</Text>
 
         <TextArea

@@ -7,10 +7,11 @@ import {
   Heading,
   LoadingState,
   spacing,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { GraduationCap } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
 import type { EducationWidgetEntry } from '@scaffald/sdk'
@@ -25,7 +26,9 @@ type UserEducation = EducationWidgetEntry
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function EducationWidget({
+export function EducationWidget() {
+  const { theme } = useThemeContext()
+{
   userId,
   showEdit = false,
   variant = 'full',
@@ -50,8 +53,8 @@ export function EducationWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load education</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load education</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="primary"
             size="xs"
@@ -115,36 +118,36 @@ export function EducationWidget({
                       {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text color="$gray11">{edu.institution_name || 'Institution'}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{edu.institution_name || 'Institution'}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="$gray11">{formatDate(edu.start_date)}</Text>
-                    <Text color="$gray11">-</Text>
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.text[theme].secondary }}>{formatDate(edu.start_date)}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>-</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
                       <Row
-                        backgroundColor="$blue2"
+                        style={{ backgroundColor: colors.bg[theme].info }}
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
                         borderWidth={1}
-                        borderColor="$blue7"
+                        style={{ borderColor: colors.border[theme].info }}
                       >
-                        <Text color="$blue11">Current</Text>
+                        <Text style={{ color: colors.text[theme].info }}>Current</Text>
                       </Row>
                     )}
                   </Row>
 
                   {/* Location */}
-                  {edu.location && <Text color="$gray11">📍 {edu.location}</Text>}
+                  {edu.location && <Text style={{ color: colors.text[theme].secondary }}>📍 {edu.location}</Text>}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text color="$gray11" lineHeight={12}>
+                    <Text style={{ color: colors.text[theme].secondary }} lineHeight={12}>
                       {edu.description}
                     </Text>
                   )}
@@ -157,10 +160,10 @@ export function EducationWidget({
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                color="$blue7"
+                style={{ color: colors.border[theme].info }}
                 cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
+                hoverStyle={{ color: colors.border[theme].info }}
+                pressStyle={{ color: colors.bg[theme].primary }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
               >
                 View all {education.length} entries →

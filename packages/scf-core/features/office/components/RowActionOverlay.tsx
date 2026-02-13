@@ -1,8 +1,9 @@
 import { Eye, Pencil, X } from 'lucide-react-native'
 import { useEffect, useRef } from 'react'
-import { Button, Row } from '@unicornlove/beyond-ui'
+import { Button, Row , useThemeContext} from '@unicornlove/beyond-ui'
 import { DeleteButton } from './DeleteButton'
 import { DuplicateButton } from './DuplicateButton'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface RowActionOverlayProps<TData> {
   /** The row data */
@@ -106,9 +107,9 @@ export function RowActionOverlay<TData>({
     <Row
       ref={overlayRef}
       position="absolute"
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       borderRadius={16}
       padding="xs"
       gap={8}

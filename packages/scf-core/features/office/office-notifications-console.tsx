@@ -1,8 +1,9 @@
 import { api } from '@scf/core/utils/api'
-import { NotificationTag } from '@unicornlove/beyond-ui'
+import { NotificationTag , useThemeContext} from '@unicornlove/beyond-ui'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface NotificationDelivery {
   id: string
@@ -67,6 +68,7 @@ function formatChannel(channel: string) {
 }
 
 export function OfficeNotificationsConsole() {
+  const { theme } = useThemeContext()
   const [status, setStatus] = useState<DeliveryStatus>('queued')
 
   const deliveriesQuery = api.notifications.admin.deliveries.useQuery({
@@ -82,7 +84,7 @@ export function OfficeNotificationsConsole() {
     <Stack gap={24}>
       <Stack gap={8}>
         <Text>Notification Operations</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Monitor delivery workers, inspect failures, and triage digest backlogs.
         </Text>
       </Stack>
@@ -124,17 +126,17 @@ export function OfficeNotificationsConsole() {
 
         {deliveriesQuery.isLoading ? (
           <Stack align="center" gap={12} marginTop={16}>
-            <Spinner size="lg" color="$gray11" />
-            <Text color="$gray11">Loading deliveries…</Text>
+            <Spinner size="lg" style={{ color: colors.text[theme].secondary }} />
+            <Text style={{ color: colors.text[theme].secondary }}>Loading deliveries…</Text>
           </Stack>
         ) : deliveries.length === 0 ? (
           <Stack gap={12} align="center" marginTop={16}>
-            <AlertCircle size={32} color="$gray11" />
-            <Text color="$gray11">No deliveries match this filter.</Text>
+            <AlertCircle size={32} style={{ color: colors.text[theme].secondary }} />
+            <Text style={{ color: colors.text[theme].secondary }}>No deliveries match this filter.</Text>
           </Stack>
         ) : (
-          <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
-            <Row backgroundColor="$color2" padding="sm" gap={12}>
+          <Stack borderWidth={1} borderColor={colors.border[theme].default} borderRadius={16} overflow="hidden">
+            <Row style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" gap={12}>
               <Text flex={2}>Notification</Text>
               <Text flex={1}>Channel</Text>
               <Text flex={1}>Status</Text>
@@ -157,18 +159,18 @@ export function OfficeNotificationsConsole() {
                   <Row gap={12} align="center">
                     <Stack flex={2} gap={4}>
                       <Row gap={8} align="center">
-                        <Text color="$gray11" >
+                        <Text style={{ color: colors.text[theme].secondary }} >
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
                         <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text color="$gray11" >
+                      <Text style={{ color: colors.text[theme].secondary }} >
                         {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
                     </Stack>
-                    <Text flex={1} color="$gray11">
+                    <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                       {formatChannel(delivery.channel)}
                     </Text>
                     <NotificationTag
@@ -180,13 +182,13 @@ export function OfficeNotificationsConsole() {
                     >
                       {delivery.status}
                     </NotificationTag>
-                    <Text flex={1} color="$gray11">
+                    <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                       {delivery.attempts}
                     </Text>
-                    <Text flex={2} color="$gray11" >
+                    <Text flex={2} style={{ color: colors.text[theme].secondary }} >
                       {delivery.last_error ?? '—'}
                     </Text>
-                    <Text flex={1} color="$gray11">
+                    <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                       {formatDate(delivery.updated_at)}
                     </Text>
                   </Row>
@@ -197,7 +199,7 @@ export function OfficeNotificationsConsole() {
         )}
       </Stack>
 
-      <Separator backgroundColor="$color3" />
+      <Separator style={{ backgroundColor: colors.bg[theme].muted }} />
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
@@ -215,17 +217,17 @@ export function OfficeNotificationsConsole() {
 
         {digestQuery.isLoading ? (
           <Stack align="center" gap={12} marginTop={16}>
-            <Spinner size="lg" color="$gray11" />
-            <Text color="$gray11">Loading digest queue…</Text>
+            <Spinner size="lg" style={{ color: colors.text[theme].secondary }} />
+            <Text style={{ color: colors.text[theme].secondary }}>Loading digest queue…</Text>
           </Stack>
         ) : digestItems.length === 0 ? (
           <Stack gap={12} align="center" marginTop={16}>
-            <AlertCircle size={32} color="$gray11" />
-            <Text color="$gray11">Digest queue is empty.</Text>
+            <AlertCircle size={32} style={{ color: colors.text[theme].secondary }} />
+            <Text style={{ color: colors.text[theme].secondary }}>Digest queue is empty.</Text>
           </Stack>
         ) : (
-          <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
-            <Row backgroundColor="$color2" padding="sm" gap={12}>
+          <Stack borderWidth={1} borderColor={colors.border[theme].default} borderRadius={16} overflow="hidden">
+            <Row style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" gap={12}>
               <Text flex={1}>User ID</Text>
               <Text flex={1}>Type</Text>
               <Text flex={1}>Bucket</Text>
@@ -242,24 +244,24 @@ export function OfficeNotificationsConsole() {
                 backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                 align="flex-start"
               >
-                <Text flex={1} color="$gray11" >
+                <Text flex={1} style={{ color: colors.text[theme].secondary }} >
                   {item.user_id}
                 </Text>
-                <Text flex={1} color="$gray11">
+                <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                   {item.type}
                 </Text>
-                <Text flex={1} color="$gray11">
+                <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                   {item.bucket}
                 </Text>
-                <Text flex={1} color="$gray11">
+                <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                   {item.count}
                 </Text>
-                <Text flex={2} color="$gray11">
+                <Text flex={2} style={{ color: colors.text[theme].secondary }}>
                   {Array.isArray(item.channels) && item.channels.length > 0
                     ? item.channels.join(', ')
                     : '—'}
                 </Text>
-                <Text flex={1} color="$gray11">
+                <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                   {formatDate(item.last_event_at)}
                 </Text>
               </Row>

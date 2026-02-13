@@ -1,9 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { ExternalLink } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
@@ -33,6 +34,7 @@ const VISIBILITY_OPTIONS = [
 export function OrganizationProjectPrivacySettings({
   organizationId,
 }: OrganizationProjectPrivacySettingsProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const { data: orgData, isLoading } = api.organizations.getOrganization.useQuery(
     { id: organizationId },
@@ -79,17 +81,17 @@ export function OrganizationProjectPrivacySettings({
 
   if (isLoading) {
     return (
-      <Card padding="md" backgroundColor="$gray2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Spinner />
       </Card>
     )
   }
 
   return (
-    <Card padding="md" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+    <Card padding="md" style={{ backgroundColor: colors.bg[theme].info }} borderColor={colors.border[theme].info} borderWidth={1}>
       <Stack gap={16}>
         <Text>Project Location Privacy</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Set the default visibility level for project locations. Individual projects can override
           this setting.
         </Text>
@@ -107,10 +109,10 @@ export function OrganizationProjectPrivacySettings({
           />
         </Stack>
 
-        <Card padding="sm" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Card padding="sm" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderColor={colors.border[theme].warning} borderWidth={1}>
           <Stack gap={8}>
             <Text>Project Override Statistics</Text>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               {overrideCount} project{overrideCount !== 1 ? 's' : ''} override this default setting
             </Text>
             {overrideCount > 0 && (

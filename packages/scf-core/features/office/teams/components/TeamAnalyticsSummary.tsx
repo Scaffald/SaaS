@@ -3,8 +3,9 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface TeamAnalyticsSummaryProps {
   teamId: string
@@ -38,6 +39,7 @@ function formatNumber(value?: number | null) {
 }
 
 export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
+  const { theme } = useThemeContext()
   const [range, setRange] = useState<number>(7)
 
   const now = useMemo(() => new Date(), [])
@@ -138,12 +140,12 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       {analyticsQuery.isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading analytics…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading analytics…</Text>
         </Stack>
       ) : metrics.length === 0 ? (
         <Stack gap={8}>
           <Text>No analytics yet</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Metrics will appear once the team starts reviewing invitations and applications.
           </Text>
         </Stack>
@@ -167,7 +169,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
                 : '—'}
             </StatTile>
           </Row>
-          {trendDescription ? <Text color="$gray11">{trendDescription}</Text> : null}
+          {trendDescription ? <Text style={{ color: colors.text[theme].secondary }}>{trendDescription}</Text> : null}
         </Stack>
       )}
     </Stack>
@@ -179,14 +181,14 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
     <Stack
       gap={4}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
       borderRadius={16}
       paddingHorizontal={12}
       paddingVertical={8}
-      backgroundColor="$color2"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       style={{ minWidth: 140 }}
     >
-      <Text color="$gray11" textTransform="uppercase">
+      <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
         {label}
       </Text>
       <Text>{children}</Text>

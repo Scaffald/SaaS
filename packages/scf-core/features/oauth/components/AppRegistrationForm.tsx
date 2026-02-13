@@ -3,11 +3,13 @@
  * Self-service app registration form
  */
 
-import { Button, Card, Input, Paragraph, SizableText, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, Paragraph, SizableText, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 
 export function AppRegistrationForm() {
+  const { theme } = useThemeContext()
   const [appName, setAppName] = useState('')
   const [description, setDescription] = useState('')
   const [homepageUrl, setHomepageUrl] = useState('')
@@ -73,22 +75,22 @@ export function AppRegistrationForm() {
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
 
-            <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={8}>
+            <Stack gap={8} padding="md" style={{ backgroundColor: colors.bg[theme].info }} borderRadius={8}>
               <Stack gap={4}>
                 <SizableText size="xs">Client ID</SizableText>
-                <SizableText size="sm" fontFamily="$mono">
+                <SizableText size="sm" style={{ fontFamily: 'monospace' }}>
                   {credentials.client_id}
                 </SizableText>
               </Stack>
               <Stack gap={4}>
                 <SizableText size="xs">Client Secret</SizableText>
-                <SizableText size="sm" fontFamily="$mono" color="$red10">
+                <SizableText size="sm" style={{ fontFamily: 'monospace', color: colors.text[theme].error }}>
                   {credentials.client_secret}
                 </SizableText>
               </Stack>
             </Stack>
 
-            <Paragraph size="xs" color="$yellow10">
+            <Paragraph size="xs" style={{ color: colors.text[theme].warning }}>
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 
@@ -114,7 +116,7 @@ export function AppRegistrationForm() {
         <Stack gap={16}>
           <Stack gap={8}>
             <SizableText size={24}>Register OAuth Application</SizableText>
-            <Paragraph size="xs" color="$gray11">
+            <Paragraph size="xs" style={{ color: colors.text[theme].secondary }}>
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
           </Stack>

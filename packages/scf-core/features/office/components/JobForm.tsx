@@ -15,6 +15,7 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@unicornlove/beyond-ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
@@ -24,6 +25,7 @@ import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { Card, Switch } from '@unicornlove/beyond-ui'
 import { JobPreviewModal } from './JobPreviewModal'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   ApplicationProcessSection,
   ApplicationScreeningSection,
@@ -168,6 +170,7 @@ type JobFormProps = {
 }
 
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
   const { data: organizationsData } = useAllOrganizations()
@@ -649,7 +652,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {selectedSkills.map((skill) => (
               <Row
                 key={skill.id}
-                backgroundColor="$gray3"
+                style={{ backgroundColor: colors.bg[theme].muted }}
                 paddingHorizontal={8}
                 paddingVertical={4}
                 borderRadius={12}
@@ -689,7 +692,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     unstyled
                     onPress={() => handleAddSkill(skill)}
                     padding="sm"
-                    hoverStyle={{ backgroundColor: '$gray2' }}
+                    hoverStyle={{ backgroundColor: colors.bg[theme].subtle }}
                   >
                     <Text>{skill.name}</Text>
                   </Button>
@@ -811,7 +814,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {selectedCerts.map((cert) => (
               <Row
                 key={cert.id}
-                backgroundColor="$gray3"
+                style={{ backgroundColor: colors.bg[theme].muted }}
                 paddingHorizontal={8}
                 paddingVertical={4}
                 borderRadius={12}
@@ -851,7 +854,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     unstyled
                     onPress={() => handleAddCertification(cert)}
                     padding="sm"
-                    hoverStyle={{ backgroundColor: '$gray2' }}
+                    hoverStyle={{ backgroundColor: colors.bg[theme].subtle }}
                   >
                     <Text>{cert.name}</Text>
                   </Button>
@@ -887,10 +890,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <Stack
           gap={16}
           padding="md"
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[theme].default }}
           borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
         >
           <Text>Details</Text>
 
@@ -971,11 +974,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           <Stack gap={8}>
             <Text>Elevate Teams</Text>
             {!formData.organization_id ? (
-              <Text color="$gray11">Select an organization to load available teams.</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Select an organization to load available teams.</Text>
             ) : teamsLoading ? (
-              <Text color="$gray11">Loading teams…</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Loading teams…</Text>
             ) : teams.length === 0 ? (
-              <Text color="$gray11">No teams available for this organization.</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>No teams available for this organization.</Text>
             ) : (
               <ResponsiveSelect
                 value={primaryTeamId || ''}
@@ -993,7 +996,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 }))}
               />
             )}
-            <Text color="$gray11">Not visible on job posting</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Not visible on job posting</Text>
           </Stack>
         </Stack>
 
@@ -1001,10 +1004,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <Stack
           gap={16}
           padding="md"
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[theme].default }}
           borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
         >
           <Text>Application</Text>
 
@@ -1160,15 +1163,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <Stack
           gap={12}
           padding="md"
-          backgroundColor="$color2"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
           borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
         >
           <Row gap={12} align="center" justify="space-between">
             <Stack flex={1} gap={4}>
-              <Text color="$gray11">Schedule Publish</Text>
-              <Text color="$gray11">Set a date and time to automatically publish this job</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Schedule Publish</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Set a date and time to automatically publish this job</Text>
             </Stack>
             <Switch
               checked={!!formData.scheduled_publish_at}
@@ -1195,7 +1198,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Row>
           {formData.scheduled_publish_at && (
             <Stack gap={8}>
-              <Text color="$gray11">Publish Date & Time</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Publish Date & Time</Text>
               <Input
                 value={
                   formData.scheduled_publish_at
@@ -1227,7 +1230,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 disabled={isLoading}
                 keyboardType="default"
               />
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {formData.scheduled_publish_at &&
                   `Will be published on ${new Date(formData.scheduled_publish_at).toLocaleString()}`}
               </Text>

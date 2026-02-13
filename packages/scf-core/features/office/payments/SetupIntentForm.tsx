@@ -1,11 +1,12 @@
 import { useStripeConfig } from '@scf/core/features/payments/hooks/useStripeConfig'
 import { api } from '@scf/core/utils/api'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
 import { Card } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type SetupIntentFormProps = {
   organizationId: string
@@ -14,6 +15,7 @@ type SetupIntentFormProps = {
 }
 
 export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIntentFormProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const config = useStripeConfig(true)
 
@@ -63,16 +65,16 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (config.isLoading || !stripePromise) {
     return (
-      <Card padding="sm" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text color="$gray11">Preparing secure payment form…</Text>
+      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].subtle }} borderColor={colors.border[theme].default} borderWidth={1}>
+        <Text style={{ color: colors.text[theme].secondary }}>Preparing secure payment form…</Text>
       </Card>
     )
   }
 
   if (!config.publishableKey) {
     return (
-      <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-        <Text color="$red11">
+      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].errorSubtle }} borderColor={colors.border[theme].error} borderWidth={1}>
+        <Text style={{ color: colors.text[theme].error }}>
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
       </Card>
@@ -83,11 +85,11 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
     return (
       <Stack gap={12}>
         <Text>Add Payment Method</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Click the button below to securely add a payment method for this organization.
         </Text>
         {config.testMode && (
-          <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
+          <Text style={{ color: colors.text[theme].warning }}>Stripe test mode is active. Use test card numbers only.</Text>
         )}
         <Row gap={8}>
           <Button size="md" color="primary" onPress={handleInitialize} disabled={isInitializing}>
@@ -174,20 +176,20 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
   }
 
   return (
-    <Card padding="md" borderColor="$borderColor" borderWidth={1} gap={12}>
+    <Card padding="md" borderColor={colors.border[theme].default} borderWidth={1} gap={12}>
       <Stack gap={4}>
         <Text>Add Payment Method</Text>
         {testMode && (
-          <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
+          <Text style={{ color: colors.text[theme].warning }}>Stripe test mode is active. Use test card numbers only.</Text>
         )}
       </Stack>
 
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+        <Card padding="sm" style={{ backgroundColor: colors.bg[theme].errorSubtle }} borderColor={colors.border[theme].error} borderWidth={1}>
           <Row gap={8} align="center">
-            <Text color="$red11" flex={1}>
+            <Text style={{ color: colors.text[theme].error }} flex={1}>
               {errorMessage}
             </Text>
           </Row>

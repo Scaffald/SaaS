@@ -60,19 +60,26 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
+    <Card
+      borderWidth={1}
+      style={{
+        borderColor: colors.border[theme].error,
+        backgroundColor: colors.bg[theme].error,
+      }}
+      padding="md"
+    >
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color="$red11" size="lg" />
-          <Text color="$red11">Delete Organization</Text>
+          <AlertTriangle color={colors.text[theme].error} size="lg" />
+          <Text style={{ color: colors.text[theme].error }}>Delete Organization</Text>
         </Row>
 
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Permanently delete this organization and all associated data. This action cannot be
           undone.
         </Text>
 
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           • All payment data will be anonymized • All payment methods will be removed from Stripe •
           Organization members will lose access • All jobs and applications will be archived
         </Text>
@@ -138,7 +145,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                     Cancel
                   </Button>
                   <Button
-                    backgroundColor="$red9"
+                    style={{ backgroundColor: colors.bg[theme].error }}
                     color="white"
                     iconStart={Trash2}
                     onPress={handleDelete}

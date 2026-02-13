@@ -4,7 +4,7 @@ import {
   TEAM_INVITATION_TTL_MIN,
 } from '@scf/schemas'
 import { useInviteTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { Mail, UserPlus } from 'lucide-react-native'
@@ -23,6 +23,7 @@ import {
 } from '@unicornlove/beyond-ui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type InviteType = 'email' | 'user'
 
@@ -43,6 +44,7 @@ export function TeamInviteModal({
   defaultRoleId,
   onInvited,
 }: TeamInviteModalProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [inviteType, setInviteType] = useState<InviteType>('email')
   const [email, setEmail] = useState('')
@@ -160,7 +162,7 @@ export function TeamInviteModal({
     >
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="$gray11">{inviteTypeDescription}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{inviteTypeDescription}</Text>
           <RadioGroup
             value={inviteType}
             onValueChange={(next) => setInviteType(next as InviteType)}
@@ -198,7 +200,7 @@ export function TeamInviteModal({
               disabled={inviteMutation.isPending}
             />
             {formErrorSource === 'email' && formError ? (
-              <Text color="$red10">{formError}</Text>
+              <Text style={{ color: colors.text[theme].error }}>{formError}</Text>
             ) : null}
           </Stack>
         ) : (
@@ -226,10 +228,10 @@ export function TeamInviteModal({
           {isLoadingRoles ? (
             <Row gap={8} align="center">
               <Spinner size="sm" />
-              <Text color="$gray11">Loading roles…</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Loading roles…</Text>
             </Row>
           ) : roleOptions.length === 0 ? (
-            <Text color="$gray11">No roles are configured for this organization.</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>No roles are configured for this organization.</Text>
           ) : (
             <ResponsiveSelect
               value={selectedRoleId || defaultRoleId || roleOptions[0]?.id || ''}
@@ -272,14 +274,14 @@ export function TeamInviteModal({
             }}
             disabled={inviteMutation.isPending}
           />
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN},
             maximum {TEAM_INVITATION_TTL_MAX}.
           </Text>
         </Stack>
 
         {formErrorSource === 'general' && formError ? (
-          <Text color="$red10">{formError}</Text>
+          <Text style={{ color: colors.text[theme].error }}>{formError}</Text>
         ) : null}
 
         <Row gap={12} justify="flex-end">
@@ -291,13 +293,13 @@ export function TeamInviteModal({
             Cancel
           </Button>
           <Button
-            backgroundColor="$color9"
-            color="$gray11"
+            style={{ backgroundColor: colors.bg[theme].primary }}
+            style={{ color: colors.text[theme].secondary }}
             iconStart={inviteType === 'email' ? Mail : UserPlus}
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >
-            {inviteMutation.isPending ? <Spinner size="sm" color="$gray11" /> : 'Send Invitation'}
+            {inviteMutation.isPending ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Send Invitation'}
           </Button>
         </Row>
       </Stack>

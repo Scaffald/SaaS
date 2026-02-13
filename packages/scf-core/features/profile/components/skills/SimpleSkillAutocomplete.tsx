@@ -1,6 +1,7 @@
 import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -34,7 +35,9 @@ interface SimpleSkillAutocompleteProps {
  * Simple Skill Autocomplete Component
  * Decoupled from SearchSelect and ResponsiveSelect to avoid infinite loops
  */
-export function SimpleSkillAutocomplete({
+export function SimpleSkillAutocomplete() {
+  const { theme } = useThemeContext()
+{
   value,
   onChangeText,
   onSearch,
@@ -119,8 +122,8 @@ export function SimpleSkillAutocomplete({
           placeholder={placeholder}
           paddingRight={40}
           size="md"
-          borderColor="$borderColor"
-          focusStyle={{ borderColor: '$blue9' }}
+          style={{ borderColor: colors.border[theme].default }}
+          focusStyle={{ borderColor: colors.bg[theme].primary }}
         />
 
         {value.length > 0 && (
@@ -153,14 +156,14 @@ export function SimpleSkillAutocomplete({
           marginTop={4}
           maxHeight={300}
           zIndex={2000}
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[theme].default }}
         >
           <ScrollView>
             <Stack>
               {isLoading || isSearching ? (
                 <Stack padding="md" align="center" justify="center">
                   <Spinner size="sm" />
-                  <Text color="$gray11" marginTop={8}>
+                  <Text style={{ color: colors.text[theme].secondary }} marginTop={8}>
                     Searching...
                   </Text>
                 </Stack>
@@ -180,7 +183,7 @@ export function SimpleSkillAutocomplete({
                       <Row justify="space-between" align="center">
                         <Stack flex={1}>
                           <Text>{skill.name}</Text>
-                          {skill.code && <Text color="$gray11">{skill.code}</Text>}
+                          {skill.code && <Text style={{ color: colors.text[theme].secondary }}>{skill.code}</Text>}
                         </Stack>
                         {isExisting && <Text color="$blue9">Added</Text>}
                       </Row>
@@ -189,7 +192,7 @@ export function SimpleSkillAutocomplete({
                 })
               ) : (
                 <Stack padding="md" align="center">
-                  <Text color="$gray11">No skills found</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>No skills found</Text>
                 </Stack>
               )}
             </Stack>

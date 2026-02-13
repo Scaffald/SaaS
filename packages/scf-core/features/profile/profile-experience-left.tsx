@@ -12,13 +12,14 @@ import {
   DashboardWidget,
   MonthYearPicker,
   ResponsiveSelect,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, CheckCircle, Plus, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { H4, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { H4, Input, Label, Spinner, Text, TextArea, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -79,6 +80,8 @@ interface SaveExperienceContext {
  * Form for managing work experience history
  */
 export function ProfileExperienceLeft() {
+  const { theme } = useThemeContext()
+) {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
   const syncStatus = useAdaptiveProfileSync(300)
@@ -338,7 +341,7 @@ export function ProfileExperienceLeft() {
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading experience data...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -349,7 +352,7 @@ export function ProfileExperienceLeft() {
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text color="$red10">Failed to load experience data</Text>
+          <Text style={{ color: colors.text[theme].error }}>Failed to load experience data</Text>
           <Button onPress={() => experienceQuery.refetch()}>Retry</Button>
         </Stack>
       </DashboardWidget>
@@ -365,7 +368,7 @@ export function ProfileExperienceLeft() {
         <Row gap={12}>
           <Stack gap={8} flex={1}>
             <Text>Total Years Experience</Text>
-            <Text color="$blue10">
+            <Text style={{ color: colors.text[theme].info }}>
               {totalExperience.years} years {totalExperience.months} months
             </Text>
           </Stack>
@@ -405,7 +408,7 @@ export function ProfileExperienceLeft() {
               gap={12}
               padding="sm"
               borderWidth={1}
-              borderColor="$borderColor"
+              style={{ borderColor: colors.border[theme].default }}
               borderRadius={16}
             >
               <Row justify="space-between" align="center">
@@ -428,13 +431,13 @@ export function ProfileExperienceLeft() {
                         value={field.value}
                         onChangeText={field.onChange}
                         borderColor={
-                          errors.experience_entries?.[index]?.job_title ? '$red8' : '$borderColor'
+                          errors.experience_entries?.[index]?.job_title ? colors.border[theme].error : colors.border[theme].default
                         }
                       />
                     )}
                   />
                   {errors.experience_entries?.[index]?.job_title && (
-                    <Text color="$red10">
+                    <Text style={{ color: colors.text[theme].error }}>
                       {errors.experience_entries[index]?.job_title?.message}
                     </Text>
                   )}
@@ -452,14 +455,14 @@ export function ProfileExperienceLeft() {
                         onChangeText={field.onChange}
                         borderColor={
                           errors.experience_entries?.[index]?.company_name
-                            ? '$red8'
-                            : '$borderColor'
+                            ? colors.border[theme].error
+                            : colors.border[theme].default
                         }
                       />
                     )}
                   />
                   {errors.experience_entries?.[index]?.company_name && (
-                    <Text color="$red10">
+                    <Text style={{ color: colors.text[theme].error }}>
                       {errors.experience_entries[index]?.company_name?.message}
                     </Text>
                   )}
@@ -504,10 +507,10 @@ export function ProfileExperienceLeft() {
                     error={errors.experience_entries?.[index]?.location?.message}
                   />
                   {watch(`experience_entries.${index}.is_remote`) && (
-                    <Text color="$gray11">Enter company headquarters location</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Enter company headquarters location</Text>
                   )}
                   {errors.experience_entries?.[index]?.location && (
-                    <Text color="$red10">
+                    <Text style={{ color: colors.text[theme].error }}>
                       {errors.experience_entries[index]?.location?.message}
                     </Text>
                   )}
@@ -621,7 +624,7 @@ export function ProfileExperienceLeft() {
 
           {fields.length === 0 && (
             <Stack padding="md" align="center" gap={8}>
-              <Text color="$gray11">No work experience added yet</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>No work experience added yet</Text>
             </Stack>
           )}
         </Stack>
@@ -633,17 +636,17 @@ export function ProfileExperienceLeft() {
             padding="sm"
             gap={8}
             borderWidth={1}
-            borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
-            backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
+            borderColor={saveBanner.type === 'success' ? colors.border[theme].success : colors.border[theme].error}
+            backgroundColor={saveBanner.type === 'success' ? colors.bg[theme].success : colors.bg[theme].error}
             borderRadius={16}
           >
             <Row gap={8} align="center">
               {saveBanner.type === 'success' ? (
-                <CheckCircle size={18} color="$green10" />
+                <CheckCircle size={18} style={{ color: colors.text[theme].success }} />
               ) : (
-                <AlertTriangle size={18} color="$red10" />
+                <AlertTriangle size={18} style={{ color: colors.text[theme].error }} />
               )}
-              <Text color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
+              <Text color={saveBanner.type === 'success' ? colors.text[theme].success : colors.text[theme].error}>
                 {saveBanner.message}
               </Text>
             </Row>
@@ -679,12 +682,12 @@ export function ProfileExperienceLeft() {
           >
             {saveState === 'success' ? (
               <Row gap={8} align="center">
-                <Check size={18} color="$green10" />
-                <Text color="$green10">Saved!</Text>
+                <Check size={18} style={{ color: colors.text[theme].success }} />
+                <Text style={{ color: colors.text[theme].success }}>Saved!</Text>
               </Row>
             ) : isSyncing && saveState === 'saving' ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" color="$gray11" />
+                <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
                 <Text>Saving...</Text>
               </Row>
             ) : editingEntryId ? (

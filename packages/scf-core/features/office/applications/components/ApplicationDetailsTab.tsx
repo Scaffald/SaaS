@@ -1,6 +1,7 @@
 import { Download } from 'lucide-react-native'
-import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface ApplicationDetailsTabProps {
   application: MockApplication
@@ -10,7 +11,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
   return (
     <Stack gap={16}>
       {/* Screening Answers */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Screening Questions</Text>
         <Stack gap={12}>
           <Row justify="space-between">
@@ -38,7 +39,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
 
       {/* Custom Questions */}
       {application.customAnswers.length > 0 && (
-        <Card padding="md" backgroundColor="$color2">
+        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Text marginBottom={12}>Custom Questions</Text>
           <Stack gap={16}>
             {application.customAnswers.map((qa, index) => (
@@ -46,7 +47,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                 <Text>{qa.question}</Text>
                 <Text opacity={0.8}>{qa.answer}</Text>
                 {index < application.customAnswers.length - 1 && (
-                  <Stack height={1} backgroundColor="$color5" marginTop={8} />
+                  <Stack height={1} style={{ backgroundColor: colors.bg[theme].inactive }} marginTop={8} />
                 )}
               </Stack>
             ))}
@@ -55,7 +56,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       )}
 
       {/* Attachments */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Attachments</Text>
         <Stack gap={8}>
           {application.attachments.resume && (
@@ -63,7 +64,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               justify="space-between"
               align="center"
               padding="sm"
-              backgroundColor="$color3"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
             >
               <Stack flex={1}>
@@ -83,7 +84,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               justify="space-between"
               align="center"
               padding="sm"
-              backgroundColor="$color3"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
             >
               <Stack flex={1}>
@@ -103,7 +104,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               justify="space-between"
               align="center"
               padding="sm"
-              backgroundColor="$color3"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
             >
               <Stack flex={1}>
@@ -122,12 +123,12 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       </Card>
 
       {/* Stage History */}
-      <Card padding="md" backgroundColor="$color2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text marginBottom={12}>Application Timeline</Text>
         <Stack gap={12}>
           {application.stageHistory.map((history, index) => (
             <Row key={`history-${history.changedAt}-${index}`} gap={12}>
-              <Stack width={3} backgroundColor="$blue9" borderRadius={8} />
+              <Stack width={3} style={{ backgroundColor: colors.bg[theme].primary }} borderRadius={8} />
               <Stack flex={1} gap={4}>
                 <Text textTransform="capitalize">{history.toStage}</Text>
                 <Text opacity={0.7}>

@@ -14,13 +14,14 @@ import {
   DashboardWidget,
   LocationListInput,
   ToggleCard,
-} from '@unicornlove/beyond-ui'
+} , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
@@ -51,7 +52,9 @@ interface EmploymentSectionProps {
  * Shared Employment Section Component
  * Works in both user dashboard and admin office contexts
  */
-export function EmploymentSection({
+export function EmploymentSection() {
+  const { theme } = useThemeContext()
+{
   userId,
   mode = 'user',
   readOnly = false,
@@ -193,14 +196,14 @@ export function EmploymentSection({
                     field.onChange(Number.isNaN(numValue) ? 0 : numValue)
                   }}
                   keyboardType="numeric"
-                  borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
+                  borderColor={errors.hourly_rate ? colors.border[theme].error : colors.border[theme].default}
                   editable={!readOnly}
                   opacity={readOnly ? 0.7 : 1}
                 />
               </Row>
             )}
           />
-          {errors.hourly_rate && <Text color="$red10">{errors.hourly_rate.message}</Text>}
+          {errors.hourly_rate && <Text style={{ color: colors.text[theme].error }}>{errors.hourly_rate.message}</Text>}
         </Stack>
 
         {/* Preferred Work Locations */}
@@ -285,7 +288,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  iconStart={<Car size="xs" color="$gray11" />}
+                  iconStart={<Car size="xs" style={{ color: colors.text[theme].secondary }} />}
                   title="I have a valid driver's license"
                   description="Class D (standard license) is automatically selected. Add any additional classes below."
                   checked={isExpanded}
@@ -363,7 +366,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  iconStart={<Shield size="xs" color="$gray11" />}
+                  iconStart={<Shield size="xs" style={{ color: colors.text[theme].secondary }} />}
                   title="Former/Current Military"
                   description="Select all that apply"
                   checked={isExpanded}
@@ -417,7 +420,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  iconStart={<Calendar size="xs" color="$gray11" />}
+                  iconStart={<Calendar size="xs" style={{ color: colors.text[theme].secondary }} />}
                   title="I'm available for work"
                   description="Select all that apply"
                   checked={isExpanded}

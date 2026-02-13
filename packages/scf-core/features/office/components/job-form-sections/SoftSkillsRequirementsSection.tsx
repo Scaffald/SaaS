@@ -1,7 +1,8 @@
 import { useSoftSkillsByCategory } from '@scf/core/utils/reviews-sdk-hooks'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, Spinner } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface SoftSkillsRequirementsSectionProps {
   requiredSoftSkills?: Array<{ skill_id: string; importance: number }> | null
@@ -27,6 +28,7 @@ export function SoftSkillsRequirementsSection({
   requiredSoftSkills,
   onUpdate,
 }: SoftSkillsRequirementsSectionProps) {
+  const { theme } = useThemeContext()
   const { data: softSkillsData, isLoading } = useSoftSkillsByCategory()
 
   const [selectedSkills, setSelectedSkills] = useState<Map<string, number>>(() => {
@@ -81,15 +83,15 @@ export function SoftSkillsRequirementsSection({
       <Stack
         gap={16}
         padding="md"
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[theme].default}
       >
         <Text>Soft Skills Requirements</Text>
         <Stack align="center" padding="md">
-          <Spinner size="lg" color="$blue10" />
-          <Text marginTop={8} color="$gray11">
+          <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+          <Text marginTop={8} style={{ color: colors.text[theme].secondary }}>
             Loading soft skills catalog...
           </Text>
         </Stack>
@@ -102,13 +104,13 @@ export function SoftSkillsRequirementsSection({
       <Stack
         gap={16}
         padding="md"
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[theme].default}
       >
         <Text>Soft Skills Requirements</Text>
-        <Text color="$gray11">Soft skills catalog is not available.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Soft skills catalog is not available.</Text>
       </Stack>
     )
   }
@@ -119,19 +121,19 @@ export function SoftSkillsRequirementsSection({
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       <Stack gap={8}>
         <Text>Soft Skills Requirements</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Select which soft skills are required for this job and set their importance level (1-5).
           Candidates will see how well their soft skills match your requirements.
         </Text>
         {selectedCount > 0 && (
-          <Text color="$blue11">
+          <Text style={{ color: colors.text[theme].info }}>
             {selectedCount} {selectedCount === 1 ? 'skill' : 'skills'} selected
           </Text>
         )}
@@ -143,7 +145,7 @@ export function SoftSkillsRequirementsSection({
 
         return (
           <Stack key={category} gap={12}>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
             </Text>
             <Row gap={8} flexWrap="wrap">
@@ -163,7 +165,7 @@ export function SoftSkillsRequirementsSection({
                     </Button>
                     {isSelected && (
                       <Stack gap={4}>
-                        <Label color="$gray11">
+                        <Label style={{ color: colors.text[theme].secondary }}>
                           Importance:{' '}
                           {IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]}
                         </Label>
@@ -195,12 +197,12 @@ export function SoftSkillsRequirementsSection({
         <Stack
           gap={8}
           padding="sm"
-          backgroundColor="$blue2"
+          style={{ backgroundColor: colors.bg[theme].info }}
           borderRadius={12}
           borderWidth={1}
-          borderColor="$blue7"
+          borderColor={colors.border[theme].info}
         >
-          <Text color="$blue11">Preview: How candidates will see this</Text>
+          <Text style={{ color: colors.text[theme].info }}>Preview: How candidates will see this</Text>
           <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               type SoftSkill = {
@@ -217,7 +219,7 @@ export function SoftSkillsRequirementsSection({
               const importanceLabel =
                 IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
-                <Text key={skillId} color="$blue11">
+                <Text key={skillId} style={{ color: colors.text[theme].info }}>
                   • {skill.name} ({importanceLabel} - {importance}/5)
                 </Text>
               )

@@ -1,10 +1,11 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@scf/schemas'
 import { ApplicationStep } from '@scf/schemas'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { SaveStatusIndicator } from '@unicornlove/beyond-ui'
+import { SaveStatusIndicator, useThemeContext } from '@unicornlove/beyond-ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Button, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
 import { AttachmentsStep } from './AttachmentsStep'
@@ -73,6 +74,7 @@ export function ApplicationWizard({
 }: ApplicationWizardProps) {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [submittedApplicationId, setSubmittedApplicationId] = useState<string | null>(null)
+  const { theme } = useThemeContext()
 
   const {
     currentStep,
@@ -177,21 +179,21 @@ export function ApplicationWizard({
   }
 
   return (
-    <Stack flex={1} backgroundColor="$background">
+    <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
       {/* Header */}
       <Stack
         padding="md"
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         borderBottomWidth={1}
-        borderBottomColor="$borderColor"
+        style={{ borderBottomColor: colors.border[theme].default }}
         gap={12}
       >
         <Row justify="space-between" align="flex-start" width="100%">
           <Stack gap={4} flex={1}>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
             </Text>
-            <Text color="$gray11">{organizationName}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{organizationName}</Text>
           </Stack>
           {/* Save Status Indicator */}
           <SaveStatusIndicator
@@ -211,10 +213,10 @@ export function ApplicationWizard({
 
       {/* Error Display */}
       {submitError && (
-        <Stack padding="md" backgroundColor="$red2" borderBottomWidth={1} borderBottomColor="$red7">
+        <Stack padding="md" style={{ backgroundColor: colors.bg[theme].error }} borderBottomWidth={1} style={{ borderBottomColor: colors.border[theme].error }}>
           <Row gap={8} align="center">
-            <AlertCircle size="lg" color="$red10" />
-            <Text color="$red11" flex={1}>
+            <AlertCircle size="lg" style={{ color: colors.text[theme].error }} />
+            <Text style={{ color: colors.text[theme].error }} flex={1}>
               {submitError.message || 'An error occurred'}
             </Text>
           </Row>
@@ -314,18 +316,18 @@ export function ApplicationWizard({
           padding="md"
         >
           <Stack
-            backgroundColor="$background"
+            style={{ backgroundColor: colors.bg[theme].default }}
             borderRadius={16}
             padding="xl"
             gap={16}
             maxWidth={400}
             width="100%"
             borderWidth={1}
-            borderColor="$borderColor"
+            style={{ borderColor: colors.border[theme].default }}
           >
             <Stack gap={8}>
-              <Text color="$gray11">Cancel Application?</Text>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>Cancel Application?</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Your progress has been auto-saved. You can return to complete your application
                 later.
               </Text>

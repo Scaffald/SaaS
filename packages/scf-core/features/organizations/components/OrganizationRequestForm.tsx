@@ -3,7 +3,8 @@ import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizati
 import { type OrganizationRequest, organizationRequestSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, Loader2 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
@@ -33,6 +34,7 @@ export function OrganizationRequestForm({
   defaultName = '',
   defaultSlug = '',
 }: OrganizationRequestFormProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
 
   const form = useForm<OrganizationRequest>({
@@ -83,7 +85,7 @@ export function OrganizationRequestForm({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Label htmlFor="organization-request-name" color="$gray11">
+        <Label htmlFor="organization-request-name" style={{ color: colors.text[theme].secondary }}>
           Organization Name
         </Label>
         <Controller
@@ -106,11 +108,11 @@ export function OrganizationRequestForm({
             />
           )}
         />
-        {formState.errors.name ? <Text color="$red10">{formState.errors.name.message}</Text> : null}
+        {formState.errors.name ? <Text style={{ color: colors.text[theme].error }}>{formState.errors.name.message}</Text> : null}
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-slug" color="$gray11">
+        <Label htmlFor="organization-request-slug" style={{ color: colors.text[theme].secondary }}>
           Preferred Slug
         </Label>
         <Controller
@@ -127,11 +129,11 @@ export function OrganizationRequestForm({
             />
           )}
         />
-        {formState.errors.slug ? <Text color="$red10">{formState.errors.slug.message}</Text> : null}
+        {formState.errors.slug ? <Text style={{ color: colors.text[theme].error }}>{formState.errors.slug.message}</Text> : null}
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-website" color="$gray11">
+        <Label htmlFor="organization-request-website" style={{ color: colors.text[theme].secondary }}>
           Website (optional)
         </Label>
         <Controller
@@ -149,12 +151,12 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.website ? (
-          <Text color="$red10">{formState.errors.website.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>{formState.errors.website.message}</Text>
         ) : null}
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-notes" color="$gray11">
+        <Label htmlFor="organization-request-notes" style={{ color: colors.text[theme].secondary }}>
           Notes for the review team (optional)
         </Label>
         <Controller
@@ -171,7 +173,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.notes ? (
-          <Text color="$red10">{formState.errors.notes.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>{formState.errors.notes.message}</Text>
         ) : null}
       </Stack>
 
@@ -188,10 +190,10 @@ export function OrganizationRequestForm({
       {submissionSucceeded ? (
         <Card bordered theme="success" padding="md" gap={12}>
           <Row gap={12} align="center">
-            <CheckCircle2 size="lg" color="$green10" />
-            <Text color="$green10">Request submitted successfully</Text>
+            <CheckCircle2 size="lg" style={{ color: colors.text[theme].success }} />
+            <Text style={{ color: colors.text[theme].success }}>Request submitted successfully</Text>
           </Row>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             We&apos;ve logged your request. Our team will review it and follow up if we need
             additional details.
           </Text>

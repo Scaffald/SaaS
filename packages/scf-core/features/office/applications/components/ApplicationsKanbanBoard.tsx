@@ -1,6 +1,6 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/beyond-ui'
+import { DraggableCard, DroppableColumn, KanbanCard , useThemeContext} from '@unicornlove/beyond-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useQueryClient } from '@tanstack/react-query'
@@ -19,6 +19,7 @@ import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-moc
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { CandidateDetailModal } from './CandidateDetailModal'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 const STATUSES: ApplicationStatus[] = [
   'new',
@@ -41,13 +42,13 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
 }
 
 const STATUS_COLORS: Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> = {
-  new: '$blue9',
-  screen: '$yellow9',
+  new: colors.bg[theme].primary,
+  screen: colors.bg[theme].warning,
   inquired: '$purple9',
-  interview: '$red9',
-  offer: '$green9',
-  hired: '$green11',
-  rejected: '$red9',
+  interview: colors.bg[theme].error,
+  offer: colors.bg[theme].success,
+  hired: colors.text[theme].success,
+  rejected: colors.bg[theme].error,
 }
 
 interface ApplicationsKanbanBoardProps {
@@ -216,11 +217,11 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         <Row
           gap={12}
           padding="sm"
-          backgroundColor="$blue2"
+          style={{ backgroundColor: colors.bg[theme].info }}
           align="center"
           justify="space-between"
           borderBottomWidth={1}
-          borderBottomColor="$borderColor"
+          borderBottomColor={colors.border[theme].default}
           flexWrap="wrap"
         >
           <Text>
@@ -275,13 +276,13 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                 <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
                   <Text >{STATUS_LABELS[status]}</Text>
                   <Stack
-                    backgroundColor="$color5"
+                    style={{ backgroundColor: colors.bg[theme].inactive }}
                     paddingHorizontal={8}
                     paddingVertical={4}
                     borderRadius={8}
                     marginTop={4}
                   >
-                    <Text color="$gray11">{groupedApplications[status].length}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{groupedApplications[status].length}</Text>
                   </Stack>
                 </Tabs.Tab>
               ))}
@@ -408,7 +409,7 @@ function InquiryComparisonModal({
 
   return (
     <Stack
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
     >
       <InquiryComparisonView

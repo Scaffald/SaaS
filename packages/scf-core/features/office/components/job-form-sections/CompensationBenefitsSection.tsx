@@ -1,6 +1,7 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, TextArea } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string
@@ -48,6 +49,7 @@ export function CompensationBenefitsSection({
   payFrequency,
   onUpdate,
 }: CompensationBenefitsSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     benefits_summary: benefitsSummary,
     has_bonus_structure: hasBonusStructure,
@@ -74,13 +76,13 @@ export function CompensationBenefitsSection({
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       <Text>Compensation & Benefits</Text>
-      <Text color="$gray11">Detailed compensation information and benefits package</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>Detailed compensation information and benefits package</Text>
 
       {/* Benefits Summary */}
       <Stack gap={8}>
@@ -97,7 +99,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has bonus structure</Label>
-          <Text color="$gray11">Performance or other bonus opportunities</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Performance or other bonus opportunities</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_bonus_structure || false}
@@ -122,7 +124,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has equity compensation</Label>
-          <Text color="$gray11">Stock options, RSUs, or other equity</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Stock options, RSUs, or other equity</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_equity || false}
@@ -163,7 +165,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has relocation package</Label>
-          <Text color="$gray11">Relocation assistance available</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Relocation assistance available</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_relocation_package || false}
@@ -188,7 +190,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Overtime eligible</Label>
-          <Text color="$gray11">Position eligible for overtime pay</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Position eligible for overtime pay</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.overtime_eligible || false}

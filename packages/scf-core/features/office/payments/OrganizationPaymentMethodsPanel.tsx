@@ -1,9 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { CreditCard, Plus, Trash2 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { SetupIntentForm } from './SetupIntentForm'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OrganizationPaymentMethodsPanelProps = {
   organizationId: string
@@ -22,6 +23,7 @@ const formatExpiry = (month: number | null, year: number | null): string => {
 export function OrganizationPaymentMethodsPanel({
   organizationId,
 }: OrganizationPaymentMethodsPanelProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [showAddForm, setShowAddForm] = useState(false)
 
@@ -79,7 +81,7 @@ export function OrganizationPaymentMethodsPanel({
       <Card bordered padding="md">
         <Stack gap={12} align="center" paddingVertical={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading payment method…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading payment method…</Text>
         </Stack>
       </Card>
     )
@@ -110,20 +112,20 @@ export function OrganizationPaymentMethodsPanel({
             gap={12}
             align="center"
             padding="sm"
-            backgroundColor="$color2"
+            style={{ backgroundColor: colors.bg[theme].subtle }}
             borderRadius={16}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[theme].default}
           >
-            <CreditCard size={24} color="$gray11" />
+            <CreditCard size={24} style={{ color: colors.text[theme].secondary }} />
             <Stack flex={1} gap={4}>
               <Row gap={8} align="center">
                 <Text>
                   {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                 </Text>
-                {paymentMethod.isDefault && <Text color="$blue11">Default</Text>}
+                {paymentMethod.isDefault && <Text style={{ color: colors.text[theme].info }}>Default</Text>}
               </Row>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
                 {paymentMethod.billingName ? ` • ${paymentMethod.billingName}` : ''}
               </Text>
@@ -134,8 +136,8 @@ export function OrganizationPaymentMethodsPanel({
               iconStart={Trash2}
               onPress={handleDelete}
               disabled={deleteMutation.isPending}
-              borderColor="$red8"
-              color="$red11"
+              borderColor={colors.border[theme].error}
+              style={{ color: colors.text[theme].error }}
             >
               Remove
             </Button>
@@ -145,9 +147,9 @@ export function OrganizationPaymentMethodsPanel({
           </Button>
         </Stack>
       ) : (
-        <Stack gap={8} padding="sm" backgroundColor="$color2" borderRadius={16}>
-          <Text color="$gray11">No payment method on file</Text>
-          <Text color="$gray11">
+        <Stack gap={8} padding="sm" style={{ backgroundColor: colors.bg[theme].subtle }} borderRadius={16}>
+          <Text style={{ color: colors.text[theme].secondary }}>No payment method on file</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Add a payment method to enable automatic billing for this organization.
           </Text>
         </Stack>

@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react-native'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface ProfileEmptyStateProps {
   icon: LucideIcon
@@ -10,19 +11,21 @@ interface ProfileEmptyStateProps {
  * Profile Empty State Component
  * Displays a consistent empty state across all profile sections
  */
-export function ProfileEmptyState({ icon: Icon, message }: ProfileEmptyStateProps) {
+export function ProfileEmptyState() {
+  const { theme } = useThemeContext()
+{ icon: Icon, message }: ProfileEmptyStateProps) {
   return (
     <Stack
       padding="md"
       align="center"
       gap={8}
-      backgroundColor="$background"
+      style={{ backgroundColor: colors.bg[theme].default }}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      style={{ borderColor: colors.border[theme].default }}
     >
-      <Icon size={48} color="$gray11" />
-      <Text color="$gray11">{message}</Text>
+      <Icon size={48} style={{ color: colors.text[theme].secondary }} />
+      <Text style={{ color: colors.text[theme].secondary }}>{message}</Text>
     </Stack>
   )
 }

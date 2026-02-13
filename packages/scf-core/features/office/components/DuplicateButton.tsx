@@ -1,8 +1,9 @@
 import { Copy } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { Dialog } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface DuplicateButtonProps {
   /**
@@ -51,6 +52,7 @@ export function DuplicateButton({
   size = '$2',
   variant = 'outlined',
 }: DuplicateButtonProps) {
+  const { theme } = useThemeContext()
   const [isOpen, setIsOpen] = useState(false)
   const [isDuplicating, setIsDuplicating] = useState(false)
   const toast = useToast()
@@ -96,7 +98,7 @@ export function DuplicateButton({
             </Dialog.Description>
 
             <Stack gap={8}>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 A new {itemType} will be created as a draft with "(Copy)" appended to the title. All
                 settings, requirements, and team assignments will be copied.
               </Text>
