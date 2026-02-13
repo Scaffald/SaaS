@@ -1,8 +1,9 @@
 import { api } from '@scf/core/utils/api';
+import { useQueryClient } from '@tanstack/react-query';
 import type { AssessmentStep } from '../utils/assessment-steps';
 
 export function usePersonalityAssessment() {
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
 
   // Get assessment status
   const {
@@ -14,7 +15,7 @@ export function usePersonalityAssessment() {
   // Save Luscher 1
   const saveLuscher1 = api.personalityAssessment.saveLuscher1.useMutation({
     onSuccess: () => {
-      utils.personalityAssessment.getAssessmentStatus.invalidate();
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
     },
   });
 
@@ -22,22 +23,22 @@ export function usePersonalityAssessment() {
   const saveIPIPProgress = api.personalityAssessment.saveIPIPProgress
     .useMutation({
       onSuccess: () => {
-        utils.personalityAssessment.getAssessmentStatus.invalidate();
+        queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
       },
     });
 
   // Save Luscher 2
   const saveLuscher2 = api.personalityAssessment.saveLuscher2.useMutation({
     onSuccess: () => {
-      utils.personalityAssessment.getAssessmentStatus.invalidate();
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
     },
   });
 
   // Generate report
   const generateReport = api.personalityAssessment.generateReport.useMutation({
     onSuccess: () => {
-      utils.personalityAssessment.getAssessmentStatus.invalidate();
-      utils.personalityAssessment.getResults.invalidate();
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getResults']] });
     },
   });
 
@@ -45,7 +46,7 @@ export function usePersonalityAssessment() {
   const updateCurrentStep = api.personalityAssessment.updateCurrentStep
     .useMutation({
       onSuccess: () => {
-        utils.personalityAssessment.getAssessmentStatus.invalidate();
+        queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
       },
     });
 

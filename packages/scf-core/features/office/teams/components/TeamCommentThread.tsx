@@ -2,6 +2,7 @@ import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
@@ -26,7 +27,7 @@ export function TeamCommentThread({
   mentionOptions = [],
 }: TeamCommentThreadProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const [commentBody, setCommentBody] = useState('')
   const [selectedMentionId, setSelectedMentionId] = useState<string | null>(null)
 
@@ -50,8 +51,8 @@ export function TeamCommentThread({
     onSuccess: async () => {
       setCommentBody('')
       setSelectedMentionId(null)
-      await utils.teams.analytics.comments.invalidate({ teamId, applicationId, limit: 50 })
-      await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
+      await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'comments']] })
+      await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
       toast.show({
           title: 'Comment posted',
           message: 'Your update was shared with the team.',

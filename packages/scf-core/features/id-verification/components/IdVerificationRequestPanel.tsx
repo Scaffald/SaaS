@@ -8,6 +8,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { Button, Input, Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
@@ -39,7 +40,7 @@ export function IdVerificationRequestPanel({
   onOrganizationChange,
 }: IdVerificationRequestPanelProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const { data: organizationsData } = useAllOrganizations()
   const organizations = useMemo<OrganizationOption[]>(
@@ -98,7 +99,7 @@ export function IdVerificationRequestPanel({
           message: 'Worker receives a Persona link immediately.',
           variant: 'success',
         })
-      await utils.idVerification.listVerifications.invalidate()
+      await queryClient.invalidateQueries({ queryKey: [['idVerification', 'listVerifications']] })
       resetForm()
     },
     onError: (error: unknown) => {

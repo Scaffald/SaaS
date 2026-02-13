@@ -7,6 +7,7 @@ import { supabase } from '@scf/core/utils/supabase/client'
 import { organizationCreateSchema, type OrganizationCreate } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -36,7 +37,7 @@ type SlugAvailabilityState =
 export function OrganizationForm({ mode, organizationId, initialData }: OrganizationFormProps) {
   const router = useRouter()
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
   const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([])
   const [slugStatus, setSlugStatus] = useState<SlugAvailabilityState>({ state: 'idle' })
@@ -138,9 +139,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setSlugStatus({ state: 'checking' })
     const timeoutId = setTimeout(async () => {
       try {
-        const result = await utils.office.checkOrganizationSlug.fetch({
-          slug: normalizedSlug,
-          organizationId,
+        // Fetch using queryClient to check slug availability
+        const result = await queryClient.fetchQuery({
+          queryKey: [['office', 'checkOrganizationSlug'], { input: { slug: normalizedSlug, organizationId } }],
         })
 
         if (isCancelled) return
@@ -186,7 +187,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       isCancelled = true
       clearTimeout(timeoutId)
     }
-  }, [slugValue, utils, organizationId, mode, initialSlug])
+  }, [slugValue, queryClient, organizationId, mode, initialSlug])
 
   const createMutation = api.office.createOrganization.useMutation({
     onSuccess: () => {

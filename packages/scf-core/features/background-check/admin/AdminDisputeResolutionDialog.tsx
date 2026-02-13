@@ -16,6 +16,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
@@ -47,7 +48,7 @@ export function AdminDisputeResolutionDialog({
   onResolved,
 }: AdminDisputeResolutionDialogProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const [resolutionStatus, setResolutionStatus] =
     useState<(typeof RESOLUTION_STATUSES)[number]['value']>('resolved')
@@ -68,8 +69,8 @@ export function AdminDisputeResolutionDialog({
           message: 'The worker and requester will receive notifications shortly.',
         })
       await Promise.all([
-        utils.backgroundChecks.adminListDisputes.invalidate(),
-        utils.backgroundChecks.adminListChecks.invalidate(),
+        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListDisputes']] }),
+        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListChecks']] }),
       ])
       onResolved()
     },

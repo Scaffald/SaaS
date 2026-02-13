@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data';
 
@@ -38,11 +39,11 @@ export const useApplicationStatusChange =
       StatusChangeParams | null
     >(null);
 
-    const utils = api.useUtils();
+    const queryClient = useQueryClient();
     const updateMutation = api.applications.update.useMutation({
       onSuccess: () => {
         // Invalidate applications query to refetch
-        utils.applications.getUserApplications.invalidate();
+        queryClient.invalidateQueries({ queryKey: ['applications'] });
       },
       onError: (err: unknown) => {
         const error = err instanceof Error ? err : new Error(String(err));

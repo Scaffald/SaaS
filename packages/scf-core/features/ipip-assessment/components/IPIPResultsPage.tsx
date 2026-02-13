@@ -1,5 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -16,11 +17,11 @@ export function IPIPResultsPage() {
   const router = useRouter()
   const results = useIPIPResults()
   const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const awardXP = api.personalityAssessment.awardResultsViewXP.useMutation({
     onSuccess: () => {
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
     },
     onError: (error: { message?: string }) => {
       // Don't show error toast for XP - it's not critical
@@ -46,8 +47,8 @@ export function IPIPResultsPage() {
   }
 
   const handleRetry = () => {
-    utils.personalityAssessment.getAssessmentStatus.invalidate()
-    utils.personalityAssessment.getArchetype.invalidate()
+    queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
+    queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getArchetype']] })
   }
 
   // Handle critical errors (network, API failures)

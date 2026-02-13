@@ -1,6 +1,7 @@
 import { AssessmentProgress, AssessmentWizard } from '@scf/core/features/assessments'
 import { LuscherTestStep } from '@scf/core/features/personality-assessment/components/LuscherTestStep'
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
@@ -29,13 +30,14 @@ export function LuscherTestWizard() {
   // Get existing assessment if available
   const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
 
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Save Part 1 mutation
   const savePart1Mutation = api.personalityAssessment.saveLuscher1.useMutation({
     onSuccess: async () => {
       // Fetch the updated assessment to get the cooldown_end_time from the database
-      const updated = await utils.personalityAssessment.getAssessmentStatus.fetch()
+      await queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
+      const updated = await queryClient.fetchQuery({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] }) as { cooldown_end_time?: string } | undefined
       if (updated?.cooldown_end_time) {
         setCooldownEndTime(updated.cooldown_end_time)
       } else {
@@ -58,10 +60,10 @@ export function LuscherTestWizard() {
   const savePart2Mutation = api.personalityAssessment.saveLuscherTestSession.useMutation({
     onSuccess: () => {
       // Invalidate all related queries
-      utils.personalityAssessment.getLuscherTestAvailability.invalidate()
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
-      utils.personalityAssessment.getLuscherTest1Status.invalidate()
-      utils.personalityAssessment.getLuscherTest2Status.invalidate()
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getLuscherTestAvailability']] })
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getLuscherTest1Status']] })
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getLuscherTest2Status']] })
       setCurrentStep('results')
     },
     onError: (error: { message?: string }) => {

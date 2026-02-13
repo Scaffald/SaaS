@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -25,7 +26,7 @@ function formatDate(value?: string | null): string | null {
 
 export function StripeSettingsPage() {
   const toast = useToast()
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = api.stripeSettings.getSettings.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -33,7 +34,7 @@ export function StripeSettingsPage() {
 
   const updatePublishableKey = api.stripeSettings.updatePublishableKey.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
+      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
           title: 'Success',
           message: 'Publishable key updated',
@@ -51,7 +52,7 @@ export function StripeSettingsPage() {
 
   const updateApiKey = api.stripeSettings.updateApiKey.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
+      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
           title: 'Success',
           message: 'Secret key stored securely',
@@ -69,7 +70,7 @@ export function StripeSettingsPage() {
 
   const updateWebhookSecret = api.stripeSettings.updateWebhookSecret.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
+      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
           title: 'Success',
           message: 'Webhook secret stored securely',
@@ -87,7 +88,7 @@ export function StripeSettingsPage() {
 
   const updateTestMode = api.stripeSettings.updateTestMode.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
+      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to update mode'
@@ -100,7 +101,7 @@ export function StripeSettingsPage() {
 
   const testConnection = api.stripeSettings.testConnection.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
+      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
           title: 'Success',
           message: 'Stripe connection verified',

@@ -16,6 +16,7 @@ import { useToast } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useMemo, useState } from 'react'
 import { Card, Checkbox, TextArea } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type AdminPackageRecord = RouterOutputs['backgroundChecks']['adminListPackages'][number]
@@ -110,7 +111,7 @@ const formatDocuments = (documents: string[]) => {
 
 export function AdminCatalogManager() {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const packagesQuery = api.backgroundChecks.adminListPackages.useQuery(undefined, {
     staleTime: 60_000,
@@ -139,10 +140,10 @@ export function AdminCatalogManager() {
 
   const invalidateCatalog = useCallback(async () => {
     await Promise.all([
-      utils.backgroundChecks.adminListPackages.invalidate(),
-      utils.backgroundChecks.adminListCheckTypes.invalidate(),
+      queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListPackages']] }),
+      queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListCheckTypes']] }),
     ])
-  }, [utils])
+  }, [queryClient])
 
   const resetPackageDialog = () => {
     setPackageDialog(null)

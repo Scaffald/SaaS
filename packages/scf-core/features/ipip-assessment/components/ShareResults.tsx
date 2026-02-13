@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -15,7 +16,7 @@ export interface ShareResultsProps {
  */
 export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const [shareLink, setShareLink] = useState<string | null>(null)
   const [expiresInDays, setExpiresInDays] = useState<number>(30)
   const [includeArchetype, setIncludeArchetype] = useState(true)
@@ -31,7 +32,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           title: 'Share link created!',
           message: 'Your results are now shareable. Copy the link to share.',
         })
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
     },
     onError: (error: { message?: string }) => {
       toast.show({
@@ -49,7 +50,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           title: 'Share link revoked',
           message: 'Your share link has been deactivated.',
         })
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
     },
     onError: (error: { message?: string }) => {
       toast.show({

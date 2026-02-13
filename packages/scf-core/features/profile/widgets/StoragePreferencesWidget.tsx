@@ -14,6 +14,7 @@ import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicor
 import type { ComponentType } from 'react'
 import { useState, useEffect } from 'react'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 type StorageBackend = 'supabase' | 'dropbox' | 'google_drive'
 
@@ -54,11 +55,11 @@ export function StoragePreferencesWidget() {
   const [hasChanges, setHasChanges] = useState(false)
 
   const { data, isLoading, error } = api.documents.getStoragePreference.useQuery()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.documents.setStoragePreference.useMutation({
     onSuccess: () => {
-      utils.documents.getStoragePreference.invalidate()
+      queryClient.invalidateQueries({ queryKey: [['documents', 'getStoragePreference']] })
       setHasChanges(false)
     },
   })

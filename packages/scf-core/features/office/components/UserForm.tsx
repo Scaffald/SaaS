@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
@@ -27,7 +28,7 @@ interface UserFormProps {
 
 export function UserForm({ userId, initialProfile, initialPrivateData }: UserFormProps) {
   const router = useRouter()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Profile state
   const [firstName, setFirstName] = useState(initialProfile.first_name || '')
@@ -54,8 +55,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
   const updateUserMutation = api.office.updateUser.useMutation({
     onSuccess: () => {
-      utils.office.getUser.invalidate({ id: userId })
-      utils.office.listUsers.invalidate()
+      queryClient.invalidateQueries({ queryKey: [['office', 'getUser'], { input: { id: userId } }] })
+      queryClient.invalidateQueries({ queryKey: [['office', 'listUsers']] })
       router.back()
     },
   })

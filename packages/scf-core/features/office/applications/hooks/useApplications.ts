@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
 import type { AppRouter } from '@scf/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 
@@ -65,12 +66,12 @@ export function useApplication(id: string) {
  * Hook to update application status
  */
 export function useUpdateApplicationStatus() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.applications.update.useMutation({
     onSuccess: () => {
       // Invalidate and refetch applications
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -87,11 +88,11 @@ export function useUpdateApplicationStatus() {
  * Hook to withdraw an application
  */
 export function useWithdrawApplication() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.applications.withdraw.useMutation({
     onSuccess: () => {
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -108,11 +109,11 @@ export function useWithdrawApplication() {
  * Hook to submit a new application
  */
 export function useSubmitApplication() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.applications.submit.useMutation({
     onSuccess: () => {
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -129,12 +130,12 @@ export function useSubmitApplication() {
  * Hook to update application step
  */
 export function useUpdateApplicationStep() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.applications.updateStep.useMutation({
     onSuccess: (data: { id: string }) => {
       // Invalidate specific application
-      utils.applications.getById.invalidate({ id: data.id })
+      queryClient.invalidateQueries({ queryKey: ['applications', 'detail', data.id] })
     },
   })
 
@@ -166,13 +167,13 @@ export function useGetUploadUrl() {
  * Hook to confirm file upload
  */
 export function useConfirmUpload() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.applications.confirmUpload.useMutation({
     onSuccess: (data: { id: string }) => {
       // Invalidate specific application
-      utils.applications.getById.invalidate({ id: data.id })
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications', 'detail', data.id] })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -189,12 +190,12 @@ export function useConfirmUpload() {
  * Hook to calculate application score
  */
 export function useCalculateScore() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const mutation = api.applications.calculateScore.useMutation({
     onSuccess: (_data: unknown) => {
       // Invalidate applications list after scoring
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 

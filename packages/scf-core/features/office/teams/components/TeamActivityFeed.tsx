@@ -2,6 +2,7 @@ import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
@@ -35,7 +36,7 @@ export function TeamActivityFeed({
   memberDirectory = {},
 }: TeamActivityFeedProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const [commentBody, setCommentBody] = useState('')
   const [mentions, setMentions] = useState<MentionOption[]>([])
   const [mentionSelection, setMentionSelection] = useState('none')
@@ -56,7 +57,7 @@ export function TeamActivityFeed({
     onSuccess: async () => {
       setCommentBody('')
       setMentions([])
-      await utils.teams.analytics.activity.invalidate({ teamId, pageSize: PAGE_SIZE })
+      await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
       toast.show({
           title: 'Comment posted',
           message: 'Your update is now visible to the team.',

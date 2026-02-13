@@ -6,6 +6,7 @@ import type { InquiryCreateInput } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Button, Spinner, Tabs, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -123,7 +124,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const teamIdForQuery = teamId ?? '00000000-0000-0000-0000-000000000000'
   const { user: currentUser } = useUser()
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   const membersQuery = api.teams.members.list.useQuery(
     { teamId: teamIdForQuery },
@@ -150,12 +151,8 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           message: 'You are now responsible for follow-up.',
         })
       if (teamId) {
-        await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
-        await utils.teams.analytics.comments.invalidate({
-          teamId,
-          applicationId: application.id,
-          limit: 50,
-        })
+        await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
+        await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'comments']] })
       }
     },
     onError: (error: unknown) => {
@@ -179,7 +176,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   }, [inquiryData?.inquiry])
 
   const handleInquirySuccess = async () => {
-    await utils.inquiries.getByApplication.invalidate({ applicationId: application.id })
+    await queryClient.invalidateQueries({ queryKey: ['inquiries', 'detail', application.id] })
     setInquiryMode('view')
   }
 

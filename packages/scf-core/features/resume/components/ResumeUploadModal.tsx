@@ -5,6 +5,7 @@ import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 const ACCEPTED_MIME_TYPES = [
   'application/pdf',
@@ -45,7 +46,7 @@ export function ResumeUploadModal({
   onUploadComplete,
 }: ResumeUploadModalProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const uploadResumeMutation = api.resume.upload.useMutation()
   const parseResumeMutation = api.resume.parse.useMutation()
 
@@ -194,7 +195,7 @@ export function ResumeUploadModal({
           return
         }
 
-        await utils.resume.hasUploaded.invalidate()
+        await queryClient.invalidateQueries({ queryKey: [['resume', 'hasUploaded']] })
 
         if (sequence !== uploadSequenceRef.current) {
           return
@@ -232,7 +233,7 @@ export function ResumeUploadModal({
       parseResumeMutation,
       toast,
       uploadResumeMutation,
-      utils.resume.hasUploaded,
+      queryClient,
     ]
   )
 

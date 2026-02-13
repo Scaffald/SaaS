@@ -1,9 +1,9 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
-import { api } from '@scf/core/utils/api'
 import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/beyond-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import {
@@ -77,7 +77,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     [selectedApplicationIds, applications]
   )
 
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Fetch inquiry IDs when selection changes
   useEffect(() => {
@@ -87,8 +87,8 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
       for (const app of selectedApplications) {
         try {
-          const inquiryData = await utils.inquiries.getByApplication.fetch({
-            applicationId: app.id,
+          const inquiryData = await queryClient.fetchQuery({
+            queryKey: ['inquiries', 'detail', app.id],
           })
           if (inquiryData?.inquiry?.id) {
             ids.push(inquiryData.inquiry.id)
@@ -109,7 +109,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       setComparisonInquiryIds([])
       setInquiryToApplicationMap({})
     }
-  }, [selectedApplications, utils])
+  }, [selectedApplications, queryClient])
 
   const { changeStatus, isChanging, pendingChange, confirmChange, cancelChange } =
     useApplicationStatusChange()

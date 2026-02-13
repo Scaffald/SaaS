@@ -25,6 +25,7 @@ import {
   getStatusMetadata,
   getStatusToneColors,
 } from '../components/status.utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
@@ -120,7 +121,7 @@ export function AdminCheckReviewDialog({
   onUpdated,
 }: AdminCheckReviewDialogProps) {
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const checkId = check?.id ?? null
 
   const detailQuery = api.backgroundChecks.adminGetCheck.useQuery(
@@ -174,11 +175,11 @@ export function AdminCheckReviewDialog({
           message: 'Status changes have been saved and notifications queued.',
         })
       await Promise.all([
-        utils.backgroundChecks.adminListChecks.invalidate(),
-        utils.backgroundChecks.adminListDisputes.invalidate(),
+        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListChecks']] }),
+        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListDisputes']] }),
         checkId
-          ? utils.backgroundChecks.adminGetCheck.invalidate({
-              background_check_id: checkId,
+          ? queryClient.invalidateQueries({
+              queryKey: [['backgroundChecks', 'adminGetCheck'], { background_check_id: checkId }],
             })
           : Promise.resolve(),
       ])
@@ -238,8 +239,8 @@ export function AdminCheckReviewDialog({
           title: 'Privacy settings updated',
           message: 'Visibility preferences have been saved.',
         })
-            await utils.backgroundChecks.adminGetCheck.invalidate({
-              background_check_id: detailedCheck.id,
+            await queryClient.invalidateQueries({
+              queryKey: [['backgroundChecks', 'adminGetCheck'], { background_check_id: detailedCheck.id }],
             })
           },
           onError: (error: unknown) => {
@@ -260,7 +261,7 @@ export function AdminCheckReviewDialog({
       sharePublicly,
       sharedOrganizations,
       toast,
-      utils.backgroundChecks.adminGetCheck,
+      queryClient,
     ]
   )
 

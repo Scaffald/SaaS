@@ -7,6 +7,7 @@ import {
   type ProfileWizardProgress,
   type ProfileWizardStepId,
 } from '../utils/wizardSteps';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface GeneralInfoStepData {
   firstName: string;
@@ -121,12 +122,6 @@ export interface ProfileWizardProgressResponse extends ProfileWizardProgress {
   stepData: WizardStepData;
 }
 
-interface ProfileWizardUtils {
-  getProgress: {
-    invalidate: () => Promise<unknown>;
-  };
-}
-
 export interface WizardState {
   currentStep: ProfileWizardStepId;
   stepData: WizardStepData;
@@ -165,10 +160,6 @@ const DEFAULT_STATE: WizardState = {
 
 const profileWizardApi =
   (api as unknown as { profileWizard: ProfileWizardApi }).profileWizard;
-
-const profileWizardUtils = () =>
-  (api.useUtils() as unknown as { profileWizard: ProfileWizardUtils })
-    .profileWizard;
 
 function getAdjacentStep(
   current: ProfileWizardStepId,
@@ -219,7 +210,7 @@ export function useProfileWizard(
     currentStep: initialStep ?? DEFAULT_STATE.currentStep,
   });
 
-  const utils = profileWizardUtils();
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, refetch } = profileWizardApi.getProgress
     .useQuery(undefined, {
       staleTime: 60_000,
@@ -279,11 +270,11 @@ export function useProfileWizard(
         isSaving: false,
       }));
 
-      await utils.getProgress.invalidate();
+      await queryClient.invalidateQueries({ queryKey: [['profileWizard', 'getProgress']] });
 
       return result;
     },
-    [saveStepMutation, utils],
+    [saveStepMutation, queryClient],
   );
 
   const markStepSkipped = useCallback((step: ProfileWizardStepId) => {
@@ -316,11 +307,11 @@ export function useProfileWizard(
         isCompleting: false,
       }));
 
-      await utils.getProgress.invalidate();
+      await queryClient.invalidateQueries({ queryKey: [['profileWizard', 'getProgress']] });
 
       return result;
     },
-    [completeMutation, utils],
+    [completeMutation, queryClient],
   );
 
   const refresh = useCallback(async () => {
