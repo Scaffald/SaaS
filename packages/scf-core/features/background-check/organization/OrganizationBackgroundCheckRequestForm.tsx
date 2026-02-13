@@ -6,6 +6,8 @@ import {
   useRequestBackgroundCheckMutation,
   useConfirmCheckPaymentMutation,
 } from '@scf/core/utils/background-checks-sdk-hooks'
+import { useWorkers } from '@scf/core/utils/workers-sdk-hooks'
+import type { Worker } from '@scaffald/sdk/resources/workers'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
@@ -20,7 +22,7 @@ import { Button, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@unic
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
-type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
+type WorkerSummary = Worker
 type JobSummary = RouterOutputs['office']['listJobs']['jobs'][number]
 type OrganizationSummary = RouterOutputs['office']['getOrganizations']['organizations'][number]
 
@@ -80,12 +82,10 @@ export function OrganizationBackgroundCheckRequestForm() {
   const { data: packagesData, isLoading: isLoadingPackages } = useBackgroundCheckPackages()
   const packages = useMemo<PackageSummary[]>(() => packagesData ?? [], [packagesData])
 
-  const workersQuery = api.workers.getWorkers.useQuery(
-    { search: workerSearch || undefined, limit: 50 },
-    {
-      staleTime: 30 * 1000,
-    }
-  )
+  const workersQuery = useWorkers({
+    search: workerSearch || undefined,
+    limit: 50,
+  })
   const workers = useMemo<WorkerSummary[]>(
     () => workersQuery.data?.workers ?? [],
     [workersQuery.data?.workers]

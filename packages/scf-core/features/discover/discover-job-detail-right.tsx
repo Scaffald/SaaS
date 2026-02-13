@@ -6,7 +6,7 @@ import {
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { SoftSkillsMatchIndicator } from '@scf/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, Chip, extractPlainText } from '@unicornlove/beyond-ui'
+import { Button, Chip } from '@unicornlove/beyond-ui'
 import {
   Award,
   Briefcase,
@@ -25,7 +25,18 @@ import {
 import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
 import { useMemo } from 'react'
-import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView } from 'react-native'
+import { Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+
+// Helper function to extract plain text from TipTap JSON content
+function extractPlainText(content: JSONContent): string {
+  if (!content) return ''
+  if (content.text) return content.text
+  if (content.content) {
+    return content.content.map((node: JSONContent) => extractPlainText(node)).join(' ')
+  }
+  return ''
+}
 
 interface DiscoverJobDetailRightProps {
   jobId: string

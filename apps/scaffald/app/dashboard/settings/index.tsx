@@ -545,7 +545,7 @@ export default function NotificationsCenterScreen() {
               <Button
                 key={item.value}
                 theme={isActive ? 'blue' : 'gray'}
-                {...(!isActive ? { variant: 'outlined' as const } : {})}
+                {...(!isActive ? { variant: 'outline' as const } : {})}
                 onPress={() => {
                   setFilter(item.value)
                   notificationsQuery.refetch()
@@ -553,7 +553,7 @@ export default function NotificationsCenterScreen() {
               >
                 {item.label}
                 {item.value === 'unread' && unreadCount > 0 && (
-                  <NotificationTag marginLeft={8} themeName="error">
+                  <NotificationTag themeName="error">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </NotificationTag>
                 )}
