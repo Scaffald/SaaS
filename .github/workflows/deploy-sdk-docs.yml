@@ -34,8 +34,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Install monorepo dependencies
         run: pnpm install --frozen-lockfile
@@ -60,5 +58,4 @@ jobs:
           publish_branch: gh-pages
           user_name: 'Scaffald CI'
           user_email: 'dev@scaffald.com'
-          # Uncomment if using custom domain:
-          # cname: docs.scaffald.com
+          cname: docs.scaffald.com
