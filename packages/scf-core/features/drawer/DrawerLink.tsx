@@ -2,7 +2,8 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { Check, ChevronRight, Clock } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useCallback, useMemo } from 'react'
-import { Paragraph, Row, Stack } from '@unicornlove/beyond-ui'
+import { Paragraph, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
@@ -24,6 +25,7 @@ export const DrawerLink = ({
   const isManualExpandable = item.isExpandable && !item.expandOnActive
   const isAutoExpandable = item.isExpandable && item.expandOnActive
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
 
   const resolveTitle = useCallback(() => {
     if (item.titleKey) {
@@ -37,8 +39,13 @@ export const DrawerLink = ({
 
   const renderIcon = useCallback(() => {
     if (!Icon) return null
-    return <Icon size="lg" color={active ? '$color1' : '$color12'} />
-  }, [Icon, active])
+    return (
+      <Icon
+        size="lg"
+        color={active ? colors.icon[theme].active : colors.icon[theme].primary}
+      />
+    )
+  }, [Icon, active, theme])
 
   const renderContent = useCallback(() => {
     const iconWrapper = (
@@ -48,7 +55,13 @@ export const DrawerLink = ({
         width={collapsed ? 48 : 32}
         height={collapsed ? 48 : 32}
         borderRadius={32}
-        backgroundColor={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
+        style={{
+          backgroundColor: collapsed
+            ? active
+              ? colors.bg[theme].primary
+              : colors.bg[theme].inactive
+            : 'transparent',
+        }}
       >
         {renderIcon()}
       </Row>
@@ -61,12 +74,17 @@ export const DrawerLink = ({
     return (
       <Row align="center" gap={12}>
         {iconWrapper}
-        <Paragraph size="md" color={active ? '$color1' : '$color12'}>
+        <Paragraph
+          size="md"
+          style={{
+            color: active ? colors.text[theme].active : colors.text[theme].primary,
+          }}
+        >
           {title}
         </Paragraph>
       </Row>
     )
-  }, [active, collapsed, renderIcon, title])
+  }, [active, collapsed, renderIcon, title, theme])
 
   const renderRightSide = useCallback(() => {
     if (collapsed) {
@@ -79,20 +97,27 @@ export const DrawerLink = ({
           <Row
             paddingHorizontal={8}
             paddingVertical={4}
-            borderRadius="$10"
-            backgroundColor="$red9"
+            borderRadius={8}
+            style={{ backgroundColor: colors.bg[theme].error }}
             minWidth={20}
             align="center"
           >
-            <Paragraph size={4} color={active ? '$color1' : '$color12'}>
+            <Paragraph
+              size="sm"
+              style={{
+                color: active ? colors.text[theme].active : colors.text[theme].primary,
+              }}
+            >
               {item.badge}
             </Paragraph>
           </Row>
         )}
-        {!item.isExpandable && item.hasChevron && <ChevronRight size="md" color="$gray11" />}
+        {!item.isExpandable && item.hasChevron && (
+          <ChevronRight size="md" color={colors.icon[theme].secondary} />
+        )}
       </Row>
     )
-  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable])
+  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable, theme])
 
   if (collapsed && depth > 0) {
     return null
