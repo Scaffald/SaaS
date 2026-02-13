@@ -323,5 +323,5 @@ if (receivedState !== expectedState) {
 ## Next Steps
 
 - [Client Configuration](/docs/api/client) - Configure the SDK
-- [Authentication Guide](/docs/guide/authentication) - Detailed OAuth tutorial
-- [Security Best Practices](/docs/guide/security) - Protect user data
+- [Rate Limiting](/docs/api/rate-limiting) - Manage API limits
+- [API Overview](/docs/api/overview) - Browse all API resources

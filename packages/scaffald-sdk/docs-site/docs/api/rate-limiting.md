@@ -218,6 +218,6 @@ The `retry_after` field indicates seconds to wait before retrying.
 
 ## Next Steps
 
-- [Error Handling](/docs/guide/error-handling) - Handle API errors
 - [Client Configuration](/docs/api/client) - Configure retry behavior
-- [Best Practices](/docs/guide/best-practices) - Optimize API usage
+- [OAuth API](/docs/api/oauth) - Implement authentication
+- [API Overview](/docs/api/overview) - Browse all API resources

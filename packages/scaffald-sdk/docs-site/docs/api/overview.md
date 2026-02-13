@@ -296,7 +296,7 @@ const client = new Scaffald({
 })
 ```
 
-[View full authentication guide →](/docs/guide/authentication)
+[View OAuth API documentation →](/docs/api/oauth)
 
 ## Error Handling
 
@@ -318,7 +318,7 @@ try {
 }
 ```
 
-[View error handling guide →](/docs/guide/error-handling)
+[View rate limiting documentation →](/docs/api/rate-limiting)
 
 ## TypeScript Support
 
@@ -346,10 +346,9 @@ const jobs: Job[] = response.data
 ## Next Steps
 
 - 📖 [Getting Started Guide](/docs/intro) - Complete SDK tutorial
-- ⚛️ [React Integration](/docs/guide/react-integration) - Use with React hooks
-- 🔐 [Authentication Guide](/docs/guide/authentication) - OAuth setup
-- 📝 [Examples](/docs/examples) - Code examples and recipes
-- 🏗️ [Architecture](/docs/advanced/architecture) - SDK internals
+- 🔐 [OAuth API](/docs/api/oauth) - OAuth 2.0 authentication setup
+- 📘 [Type Definitions](/docs/api/types) - TypeScript type reference
+- ⏱️ [Rate Limiting](/docs/api/rate-limiting) - Manage API limits
 
 ## Need Help?
 

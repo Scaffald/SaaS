@@ -219,5 +219,5 @@ interface Application {
 ## Next Steps
 
 - [Jobs API](/docs/api/jobs) - Find jobs to apply for
-- [Application Guide](/docs/guide/applications) - Best practices
 - [Type Definitions](/docs/api/types) - Complete type reference
+- [API Overview](/docs/api/overview) - Browse all API resources

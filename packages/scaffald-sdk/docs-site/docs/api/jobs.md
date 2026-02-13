@@ -194,5 +194,5 @@ interface Job {
 ## Next Steps
 
 - [Applications API](/docs/api/applications) - Submit applications for jobs
-- [Search Guide](/docs/guide/search) - Advanced search techniques
 - [Type Definitions](/docs/api/types) - Complete type reference
+- [API Overview](/docs/api/overview) - Browse all API resources
