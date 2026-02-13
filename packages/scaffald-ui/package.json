@@ -13,7 +13,7 @@
     "scaffald",
     "scaffald-ui"
   ],
-  "homepage": "https://scaffald.github.io/ui/",
+  "homepage": "https://ui.scaffald.com",
   "bugs": {
     "url": "https://github.com/Scaffald/ui/issues"
   },
@@ -46,22 +46,19 @@
     "LICENSE",
     "CHANGELOG.md"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --declaration",
     "build-storybook": "storybook build",
     "check:type": "tsc --noEmit",
+    "docs:build": "cd docs-site && pnpm build",
+    "docs:dev": "cd docs-site && pnpm start",
+    "docs:serve": "cd docs-site && pnpm serve",
     "format": "biome format ./src",
     "format:fix": "biome format --write ./src",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
     "storybook": "storybook dev -p 6006",
     "storybook:serve": "npx http-server storybook-static -p 6007",
-    "docs:dev": "cd docs-site && pnpm start",
-    "docs:build": "cd docs-site && pnpm build",
-    "docs:serve": "cd docs-site && pnpm serve",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run",
@@ -129,5 +126,8 @@
     "react-native-safe-area-context": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

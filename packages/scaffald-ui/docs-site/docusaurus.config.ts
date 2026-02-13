@@ -11,8 +11,8 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://scaffald.github.io',
-  baseUrl: '/ui/',
+  url: 'https://ui.scaffald.com',
+  baseUrl: '/',
 
   organizationName: 'Scaffald',
   projectName: 'ui',

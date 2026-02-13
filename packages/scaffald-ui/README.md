@@ -337,3 +337,4 @@ MIT © Scaffald
 ## Related Packages
 
 - Legacy UI package has been superseded by Beyond UI.
+<!-- Automated sync test Fri Feb 13 01:46:52 EST 2026 -->

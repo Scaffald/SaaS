@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@scaffald/ui.svg)](https://www.npmjs.com/package/@scaffald/ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Documentation](https://img.shields.io/badge/docs-scaffald.github.io-brightgreen)](https://scaffald.github.io/ui/)
+[![Documentation](https://img.shields.io/badge/docs-ui.scaffald.com-brightgreen)](https://ui.scaffald.com)
 
 Production-ready component library built with inline styles for React Native and web. Designed from the Forsured Design System with 90+ components, comprehensive theming, and excellent TypeScript support.
 
@@ -57,13 +57,13 @@ function LoginForm() {
 
 ## 📚 Documentation
 
-**[Read the full documentation →](https://scaffald.github.io/ui/)**
+**[Read the full documentation →](https://ui.scaffald.com)**
 
-- [Installation Guide](https://scaffald.github.io/ui/docs/guide/installation)
-- [Quick Start Tutorial](https://scaffald.github.io/ui/docs/guide/quick-start)
-- [Components Overview](https://scaffald.github.io/ui/docs/components/overview)
-- [Theming Guide](https://scaffald.github.io/ui/docs/guide/theming)
-- [Design Tokens](https://scaffald.github.io/ui/docs/tokens/overview)
+- [Installation Guide](https://ui.scaffald.comdocs/guide/installation)
+- [Quick Start Tutorial](https://ui.scaffald.comdocs/guide/quick-start)
+- [Components Overview](https://ui.scaffald.comdocs/components/overview)
+- [Theming Guide](https://ui.scaffald.comdocs/guide/theming)
+- [Design Tokens](https://ui.scaffald.comdocs/tokens/overview)
 
 ## 🎨 Component Categories
 
@@ -85,7 +85,7 @@ Card, Table, List, Avatar, Chip, Icon, Image
 ### Typography
 Text, Heading, Link
 
-[View all 90+ components →](https://scaffald.github.io/ui/docs/components/overview)
+[View all 90+ components →](https://ui.scaffald.comdocs/components/overview)
 
 ## 🎯 Why Scaffald UI?
 
@@ -118,7 +118,7 @@ MIT © Scaffald
 
 ## 🔗 Links
 
-- **[Documentation](https://scaffald.github.io/ui/)** - Full documentation and guides
+- **[Documentation](https://ui.scaffald.com)** - Full documentation and guides
 - **[npm Package](https://www.npmjs.com/package/@scaffald/ui)** - Install from npm
 - **[GitHub](https://github.com/Scaffald/ui)** - Source code (mirror)
 - **[Issues](https://github.com/Scaffald/ui/issues)** - Report bugs
