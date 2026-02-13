@@ -4,7 +4,7 @@ import { useReviewsBySubject } from '@scf/core/utils/reviews-sdk-hooks'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useRef } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface CategoryRating {
   category: string

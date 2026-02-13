@@ -2,9 +2,9 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { ExternalLink, MapPin, User, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Avatar, Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type PreviewSkill = {
   csiSkillId?: string | null

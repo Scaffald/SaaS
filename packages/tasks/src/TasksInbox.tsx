@@ -2,9 +2,9 @@
  * TasksInbox - Task inbox/list view with filtering
  */
 
-import { Stack, Row, Box, Text } from '@unicornlove/beyond-ui'
-import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
-import type { StackProps } from '@unicornlove/beyond-ui'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import { Inbox, Clock, CheckCircle, AlertTriangle } from 'lucide-react-native'
 import { useState } from 'react'
 import { ScrollView, Pressable } from 'react-native'

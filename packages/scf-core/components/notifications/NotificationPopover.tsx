@@ -1,4 +1,4 @@
-import { Popover } from '@unicornlove/beyond-ui'
+import { Popover } from '@scaffald/ui'
 import { AlertCircle, Bell, Info, ShieldAlert, X } from 'lucide-react-native'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
@@ -14,7 +14,7 @@ import {
   type TextProps,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 export interface NotificationItem {
   id: string

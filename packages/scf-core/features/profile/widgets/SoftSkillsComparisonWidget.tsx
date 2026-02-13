@@ -14,10 +14,10 @@ import {
   SkillsChart,
   spacing,
   type SkillsChartDataset,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**

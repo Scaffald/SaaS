@@ -2,7 +2,7 @@ import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider
 import { supabase } from '@scf/core/utils/supabase/client'
 import { LogOut, Moon, Sun } from 'lucide-react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Button, Row } from '@unicornlove/beyond-ui'
+import { Button, Row } from '@scaffald/ui'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer

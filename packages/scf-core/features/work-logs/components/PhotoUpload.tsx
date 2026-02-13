@@ -1,6 +1,6 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@scaffald/ui'
 import { Camera, ImagePlus, UploadCloud } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
@@ -14,7 +14,7 @@ import {
   View,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { type UploadCandidate, usePhotoUpload } from '../hooks/usePhotoUpload'
 import type { WorkLogPhotoType } from '../types/photos'
 import { PhotoGallery } from './PhotoGallery'

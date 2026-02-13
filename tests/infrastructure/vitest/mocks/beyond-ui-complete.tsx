@@ -144,5 +144,5 @@ export function createBeyondUICompleteMock() {
  * Setup Beyond UI mocks globally. Call from test setup when needed.
  */
 export function setupBeyondUIMocks() {
-  vi.mock('@unicornlove/beyond-ui', () => createBeyondUICompleteMock())
+  vi.mock('@scaffald/ui', () => createBeyondUICompleteMock())
 }

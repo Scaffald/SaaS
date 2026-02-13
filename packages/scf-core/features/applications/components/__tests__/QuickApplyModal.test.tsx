@@ -38,13 +38,13 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockShowToast,
   }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   AddressAutocomplete: ({
     value,
     onChange,

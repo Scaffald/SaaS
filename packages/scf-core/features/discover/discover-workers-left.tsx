@@ -1,6 +1,6 @@
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { type RefObject, useMemo } from 'react'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
 import { useTalentProfiles } from './hooks/useTalentProfiles'

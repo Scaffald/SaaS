@@ -1,7 +1,7 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Trash2, Mail, RefreshCcw, Send, Plus } from 'lucide-react';
-import { Stack, Row, Text, Button, H1, Card, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, H1, Card, Spinner } from '@scaffald/ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAdminAction, AUDIT_ACTIONS } from '../../services/auditLogService';

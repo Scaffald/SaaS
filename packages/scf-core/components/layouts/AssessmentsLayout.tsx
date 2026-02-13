@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ScrollView } from 'react-native'
-import { Row, Stack } from '@unicornlove/beyond-ui'
+import { Row, Stack } from '@scaffald/ui'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 

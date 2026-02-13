@@ -1,6 +1,6 @@
-import { Table } from '@unicornlove/beyond-ui'
+import { Table } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Text, Row } from '@unicornlove/beyond-ui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, Row } from '@scaffald/ui'
 import {
   useDocumentDownloadUrl,
   useDocumentUploadSession,

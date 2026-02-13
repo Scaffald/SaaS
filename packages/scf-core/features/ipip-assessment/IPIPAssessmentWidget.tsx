@@ -4,10 +4,10 @@ import {
   useAssessmentStatus,
   useIPIPStatus,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, spacing } from '@scaffald/ui'
 import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useIPIPResults } from './hooks/useIPIPResults'
 import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/domainGrouping'
 

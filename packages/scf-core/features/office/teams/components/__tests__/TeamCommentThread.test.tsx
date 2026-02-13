@@ -26,11 +26,11 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({ show: mockShow }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (

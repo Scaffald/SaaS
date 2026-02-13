@@ -5,7 +5,7 @@ import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { ArrowLeft } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 const PERMITTED_ROLES = new Set(['super_admin', 'partner_admin', 'office', 'admin', 'manager'])
 
@@ -82,11 +82,13 @@ export default function OfficeTeamSettingsPage() {
         </Row>
 
         {team.isArchived ? (
-          <Card padding={12} gap={8}>
-            <Text>Archived team</Text>
-            <Text color="gray">
-              This team has been archived. Update its settings after restoring the team.
-            </Text>
+          <Card padding="md">
+            <Stack gap={8}>
+              <Text>Archived team</Text>
+              <Text color="gray">
+                This team has been archived. Update its settings after restoring the team.
+              </Text>
+            </Stack>
           </Card>
         ) : null}
 
@@ -115,10 +117,12 @@ function CenteredMessage({
 }) {
   return (
     <Stack align="center" justify="center" gap={12}>
-      <Card padding={16} gap={12}>
-        <Text>{title}</Text>
-        <Text color="gray">{description}</Text>
-        <Button onPress={onAction}>{actionLabel}</Button>
+      <Card padding="md">
+        <Stack gap={12}>
+          <Text>{title}</Text>
+          <Text color="gray">{description}</Text>
+          <Button onPress={onAction}>{actionLabel}</Button>
+        </Stack>
       </Card>
     </Stack>
   )

@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Stack, Row, Text, H3, Label, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H3, Label, Grid } from '@scaffald/ui'
 import Button from '../Common/Button'
 import Input from '../Common/Input'
 import Select from '../Common/Select'

@@ -10,7 +10,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
 

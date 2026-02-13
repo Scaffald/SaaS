@@ -2,7 +2,7 @@ import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Avatar, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface Follower {
   id: string

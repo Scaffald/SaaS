@@ -1,7 +1,7 @@
 // src/pages/docs/Patterns.tsx
 import React from 'react';
-import { Stack, Row, Box, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H1, H2, H3 } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius } from '@scaffald/ui';
 import Button from '../../components/Common/Button';
 import Input from '../../components/Common/Input';
 

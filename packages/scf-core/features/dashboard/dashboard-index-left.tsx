@@ -1,5 +1,5 @@
 import { InquiryOverviewWidget } from '@scf/core/features/inquiries/components/InquiryOverviewWidget'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { ProfileSnapshotWidget, SoftSkillsComparisonWidget } from '../profile/widgets'

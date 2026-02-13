@@ -26,7 +26,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@unicornlove/beyond-ui": "workspace:*",
+    "@scaffald/ui": "workspace:*",
     "lucide-react-native": "^0.562.0"
   },
   "devDependencies": {

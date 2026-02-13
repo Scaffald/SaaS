@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, Input } from '@scaffald/ui';
 import Modal from '../Common/Modal';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useProjects } from '../../hooks/useProjects';

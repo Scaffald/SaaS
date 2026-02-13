@@ -3,7 +3,7 @@
  * Inbox vs Assigned by Me View
  */
 import React from 'react';
-import { Row, Stack, Text, Button, Chip } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text, Button, Chip } from '@scaffald/ui';
 import { Inbox, Send } from 'lucide-react';
 import { TaskViewType } from '../../hooks/useTaskViewFilter';
 

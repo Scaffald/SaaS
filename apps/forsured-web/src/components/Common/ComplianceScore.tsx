@@ -3,7 +3,7 @@
 
  */
 import React from 'react'
-import { Row, Stack, Text } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text } from '@scaffald/ui'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 
 interface ComplianceScoreProps {

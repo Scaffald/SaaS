@@ -2,7 +2,7 @@ import { useUpdateBackgroundCheckPrivacyMutation } from '@scf/core/utils/backgro
 import { Share2 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Alert } from 'react-native'
-import { Button, Separator, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Switch, Text, Row, Stack } from '@scaffald/ui'
 
 import type { BackgroundCheckDetail } from './status.utils'
 

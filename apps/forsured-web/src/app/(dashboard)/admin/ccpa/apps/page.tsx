@@ -11,7 +11,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@scaffald/ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 

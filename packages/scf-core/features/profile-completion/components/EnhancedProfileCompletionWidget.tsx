@@ -1,5 +1,5 @@
 import type { ProfileWizardStepId } from '@scf/supabase/client-types'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import { LinearGradient } from 'expo-linear-gradient'
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react-native'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -13,7 +13,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { resolveSectionMetadata } from '../constants/sectionMetadata'
 import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../hooks/useCompletionStatus'

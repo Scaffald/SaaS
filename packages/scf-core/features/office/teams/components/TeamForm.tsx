@@ -8,11 +8,11 @@ import {
   teamRoleKeySchema,
 } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   Input,
@@ -23,11 +23,11 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import type { z } from 'zod'
 
 import { useTeamFormOptions } from '../hooks/useTeamFormOptions'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
 type TeamRoleKey = z.infer<typeof teamRoleKeySchema>

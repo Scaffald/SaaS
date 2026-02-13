@@ -27,7 +27,7 @@
 
 import { useEffect, useRef, useCallback, type ReactNode, type CSSProperties } from 'react';
 import { X } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 
 export interface SimpleModalProps {
   /** Whether the modal is visible */

@@ -1,9 +1,9 @@
 import { usePortfolioItems } from '@scf/core/utils/portfolio-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
+import { DashboardWidget, ResponsiveModal } from '@scaffald/ui'
 import { Eye } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, H4, Image, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, H4, Image, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {

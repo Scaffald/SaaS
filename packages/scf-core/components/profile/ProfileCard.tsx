@@ -1,7 +1,7 @@
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
 import type { ComponentRef, ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
-import { Paragraph, Text, Row, useWindowDimensions } from '@unicornlove/beyond-ui'
+import { Paragraph, Text, Row, useWindowDimensions } from '@scaffald/ui'
 import {
   CardBadges,
   CardHeader,
@@ -9,7 +9,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 /**
  * Profile card badge configuration

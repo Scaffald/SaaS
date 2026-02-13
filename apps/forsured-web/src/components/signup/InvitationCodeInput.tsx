@@ -2,7 +2,7 @@
  * InvitationCodeInput - Invitation code input using Beyond UI
  */
 import React from 'react';
-import { Stack, Text, Input } from '@unicornlove/beyond-ui';
+import { Stack, Text, Input } from '@scaffald/ui';
 
 interface InvitationCodeInputProps {
   value: string;

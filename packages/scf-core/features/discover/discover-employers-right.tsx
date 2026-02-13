@@ -1,4 +1,4 @@
-import { ScrollView, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Stack } from '@scaffald/ui'
 import { AddOrganizationWidget } from './components/AddOrganizationWidget'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 

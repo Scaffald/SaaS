@@ -2,10 +2,10 @@ import { PaymentIntentForm } from '@scf/core/features/payments/components/Paymen
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import { AlertCircle } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 type PricingRow = {

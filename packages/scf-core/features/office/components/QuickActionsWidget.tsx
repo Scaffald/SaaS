@@ -1,7 +1,7 @@
-import { DashboardWidget, Text } from '@unicornlove/beyond-ui'
+import { DashboardWidget, Text } from '@scaffald/ui'
 import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, Stack } from '@unicornlove/beyond-ui'
+import { Button, Stack } from '@scaffald/ui'
 
 export interface QuickActionsWidgetProps {
   /** Context of the page (determines which actions to show) */

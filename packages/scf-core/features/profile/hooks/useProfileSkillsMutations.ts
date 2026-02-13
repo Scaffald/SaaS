@@ -5,7 +5,7 @@ import {
   useSearchParentSkillsMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useMemo, useRef } from 'react'
 import type { ParentSkill } from '../types/profile-skills-types'
 import {

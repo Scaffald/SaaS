@@ -4,7 +4,7 @@
  */
 
 import { FileQuestion, DollarSign, Calendar, User } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, CardContent } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, CardContent } from '@scaffald/ui';
 import { CoverageRequest } from '../../types';
 import StatusBadge from '../Common/StatusBadge';
 

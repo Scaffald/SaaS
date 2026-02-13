@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Stack, Row, Text, H3, Button, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H3, Button, Grid } from '@scaffald/ui'
 import ButtonCommon from '../Common/Button'
 import Input from '../Common/Input'
 import Select from '../Common/Select'

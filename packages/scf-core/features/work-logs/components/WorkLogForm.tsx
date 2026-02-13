@@ -13,8 +13,8 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
 import { PhotoUpload } from './PhotoUpload'
 import { ProjectSelector } from './ProjectSelector'

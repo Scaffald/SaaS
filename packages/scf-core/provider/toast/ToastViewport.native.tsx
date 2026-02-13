@@ -1,4 +1,4 @@
-import { ToastContainer } from '@unicornlove/beyond-ui'
+import { ToastContainer } from '@scaffald/ui'
 import type { ToastViewportProps } from './ToastViewport'
 
 export const ToastViewport = ({ noSafeArea: _noSafeArea }: ToastViewportProps) => {

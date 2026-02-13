@@ -5,7 +5,7 @@
  * Displays notification with actions (mark as read, archive, delete)
  */
 
-import { Row, Stack, Text, Card, Button, Chip } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text, Card, Button, Chip } from '@scaffald/ui'
 import {
   Bell,
   CheckCircle,

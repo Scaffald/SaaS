@@ -2,7 +2,7 @@
  * ConnectionDialog - Scaffald connection dialog using Beyond UI
  */
 import React from 'react';
-import { Stack, Row, Text, Modal, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Modal, Button } from '@scaffald/ui';
 
 interface ConnectionDialogProps {
   isOpen: boolean;

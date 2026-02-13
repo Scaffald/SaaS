@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Stack, Row, Text, H2, H3, Alert, Tabs, Box } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, H3, Alert, Tabs, Box } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius } from '@scaffald/ui';
 import { Loader2 } from 'lucide-react';
 import ComponentShowcase from '../ComponentShowcase';
 import Button from '../../Common/Button';

@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
 import { CreditCard, DollarSign, Plus } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Button, Card, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Card, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type OrganizationCreditsPanelProps = {
   organizationId: string

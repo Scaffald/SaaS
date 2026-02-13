@@ -3,9 +3,9 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
-import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface TeamAnalyticsSummaryProps {
   teamId: string

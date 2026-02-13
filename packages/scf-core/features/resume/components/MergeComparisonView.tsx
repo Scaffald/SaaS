@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 import type { ResumeMergeStrategy, ResumeWizardSection } from '../hooks/useResumeWizard'
 

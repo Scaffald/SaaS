@@ -7,10 +7,10 @@ import {
   Heading,
   LoadingState,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 import type { SkillWidgetEntry } from '@scaffald/sdk'

@@ -2,7 +2,7 @@ import { TeamInvitationList } from '@scf/core/features/dashboard/components'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { RefreshCw } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, Spinner, Text, Row, Stack, useToast } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack, useToast } from '@scaffald/ui'
 import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 
 export default function DashboardTeamInvitationsScreen() {

@@ -10,12 +10,12 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { Progress, TextArea } from '@unicornlove/beyond-ui'
+import { Progress, TextArea } from '@scaffald/ui'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {

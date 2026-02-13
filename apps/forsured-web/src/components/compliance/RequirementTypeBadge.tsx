@@ -3,7 +3,7 @@
  * Visual type indicator for coverage requirements
  */
 
-import { Row, Text } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
 import {
   Shield,
   Umbrella,

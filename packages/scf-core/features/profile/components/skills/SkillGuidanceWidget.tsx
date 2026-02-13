@@ -1,4 +1,4 @@
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import type { SkillSuggestion } from '../../constants/skill-guidance'
 
 interface SkillGuidanceWidgetProps {

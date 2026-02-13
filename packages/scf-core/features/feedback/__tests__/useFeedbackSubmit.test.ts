@@ -20,7 +20,7 @@ const storageMocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@unicornlove/beyond-ui", () => ({
+vi.mock("@scaffald/ui", () => ({
   useToast: () => ({
     show: toastShow,
   }),

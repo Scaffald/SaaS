@@ -1,7 +1,7 @@
 import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
 import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
-import { Text, Stack, Spinner } from '@unicornlove/beyond-ui'
+import { Text, Stack, Spinner } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView } from 'react-native'
 

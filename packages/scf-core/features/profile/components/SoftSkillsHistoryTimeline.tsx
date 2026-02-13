@@ -1,9 +1,9 @@
 import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
-import { SkillsChart } from '@unicornlove/beyond-ui'
+import { SkillsChart } from '@scaffald/ui'
 import { Calendar, TrendingUp } from 'lucide-react-native'
-import { Button } from '@unicornlove/beyond-ui'
+import { Button } from '@scaffald/ui'
 import { useMemo, useState, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsHistoryTimelineProps {

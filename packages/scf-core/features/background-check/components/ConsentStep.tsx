@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Switch, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Switch, Text, TextArea, Row, Stack } from '@scaffald/ui'
 
 import type { ConsentDetails } from '../hooks/useBackgroundCheckForm'
 

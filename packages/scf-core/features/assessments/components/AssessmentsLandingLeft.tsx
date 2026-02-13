@@ -1,6 +1,6 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, DashboardWidget, spacing, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, spacing, Text, Stack } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {

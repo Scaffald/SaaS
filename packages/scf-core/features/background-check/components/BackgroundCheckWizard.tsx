@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
 import { ConsentStep } from './ConsentStep'

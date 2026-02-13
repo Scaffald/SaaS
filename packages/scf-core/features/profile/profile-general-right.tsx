@@ -1,9 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ResumeUploadButton, ResumeUploadModal } from '@scf/core/features/resume'
-import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { DashboardWidget, spacing } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { H3, H4, Text, Stack } from '@unicornlove/beyond-ui'
+import { H3, H4, Text, Stack } from '@scaffald/ui'
 import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**

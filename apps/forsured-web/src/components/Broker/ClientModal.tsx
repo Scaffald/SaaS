@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { Stack, Row, Text, H2, Input, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Input, Card } from '@scaffald/ui';
 import { BrokerClient, ClientType, RiskLevel } from '../../types';
 import Button from '../Common/Button';
 

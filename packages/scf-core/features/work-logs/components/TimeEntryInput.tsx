@@ -2,7 +2,7 @@ import { MinusCircle } from 'lucide-react-native'
 import { memo } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { Platform } from 'react-native'
-import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
 
 import type { CreateWorkLogInput } from '@scf/schemas'
 

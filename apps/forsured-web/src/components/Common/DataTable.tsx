@@ -8,8 +8,8 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table';
-import { Table, type TableColumn } from '@unicornlove/beyond-ui';
-import type { TableRowData } from '@unicornlove/beyond-ui';
+import { Table, type TableColumn } from '@scaffald/ui';
+import type { TableRowData } from '@scaffald/ui';
 
 export interface DataTableProps<TData> {
   data: TData[];

@@ -2,8 +2,8 @@ import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
 import { Home, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
 
 interface ErrorFallbackProps {
   error: Error | null

@@ -2,7 +2,7 @@ import { RouteBuilder } from '@scf/core/constants/routes'
 import { useProject } from '@scf/core/utils/projects-sdk-hooks'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
 import { useLocalSearchParams } from 'expo-router'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()

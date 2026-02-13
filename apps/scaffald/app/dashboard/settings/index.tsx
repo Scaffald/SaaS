@@ -24,7 +24,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'

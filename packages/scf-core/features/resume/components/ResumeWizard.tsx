@@ -6,7 +6,7 @@ import { useEmployment } from '@scf/core/utils/profile-employment-sdk-hooks'
 import { useEducation } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useUserCertificationTree } from '@scf/core/utils/profile-certifications-sdk-hooks'
 import { useUserSkillsMultiTaxonomy } from '@scf/core/utils/profile-skills-sdk-hooks'
-import { Button, ToggleCard, spacing } from '@unicornlove/beyond-ui'
+import { Button, ToggleCard, spacing } from '@scaffald/ui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -26,7 +26,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 import {
   type ResumeMergeStrategy,

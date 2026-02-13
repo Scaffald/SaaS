@@ -14,12 +14,12 @@ import {
   LoadingState,
   ResponsiveModal,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Download } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useMemo, useState, type FC } from 'react'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**

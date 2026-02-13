@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Crown, LogOut, Plus, UserMinus } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -17,13 +17,13 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 import { AddTeamMemberModal } from './AddTeamMemberModal'
 import { RemoveMemberModal } from './RemoveMemberModal'
 import { TeamMemberRoleSelect } from './TeamMemberRoleSelect'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 interface TeamMembersListProps {
   teamId: string

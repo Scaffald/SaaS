@@ -1,8 +1,8 @@
-import { Text, ToggleSwitch, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { HelpCircle } from 'lucide-react-native'
 import { useState } from 'react'
-import { Label } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface AutoRejectCriteria {
   score_minimum?: number

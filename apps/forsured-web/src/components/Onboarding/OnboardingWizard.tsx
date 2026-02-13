@@ -3,7 +3,7 @@
  * Onboarding Wizard Base Component
  */
 import React from 'react';
-import { Stack } from '@unicornlove/beyond-ui';
+import { Stack } from '@scaffald/ui';
 import OnboardingProgress from './OnboardingProgress';
 import OnboardingNavigation from './OnboardingNavigation';
 

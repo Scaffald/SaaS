@@ -4,7 +4,7 @@
 
  */
 import React from 'react'
-import { Stack, Row, Text, Chip } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Chip } from '@scaffald/ui'
 import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react'
 import { Task, TaskSeverity, TASK_SEVERITY_CONFIG } from '../../types'
 import { countTasksBySeverity, enrichTasksWithSeverity } from '../../lib/tasks/severityUtils'

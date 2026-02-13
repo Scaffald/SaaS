@@ -6,7 +6,7 @@
  * Handles broker invitation code input and validation
  */
 import { useState } from 'react'
-import { Stack, Row, Text, Button, Input } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Input } from '@scaffald/ui'
 import { Shield, Loader2 } from 'lucide-react'
 import {
   validateInvitationWithRateLimit,

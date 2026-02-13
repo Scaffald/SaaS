@@ -1,6 +1,6 @@
-import { Text, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
-import { Card } from '@unicornlove/beyond-ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Card } from '@scaffald/ui'
 
 type PaymentIntentFormProps = {
   clientSecret?: string

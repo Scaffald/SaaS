@@ -4,7 +4,7 @@
 
  */
 import React, { Component, ErrorInfo, ReactNode } from 'react'
-import { Stack, Text, Button } from '@unicornlove/beyond-ui'
+import { Stack, Text, Button } from '@scaffald/ui'
 
 interface ErrorBoundaryProps {
   children: ReactNode

@@ -1,4 +1,4 @@
-import { Button, Text, ToggleSwitch, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, ToggleSwitch, Row, Stack } from '@scaffald/ui'
 import { Check, X } from 'lucide-react-native'
 import { useState } from 'react'
 

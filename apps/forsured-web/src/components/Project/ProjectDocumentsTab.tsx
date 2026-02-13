@@ -20,7 +20,7 @@ import {
   Plus,
   File,
 } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import Button from '../Common/Button';
 import { useProjectDocuments, type ProjectDocument } from '../../hooks/useProjectDocuments';
 

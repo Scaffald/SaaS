@@ -5,10 +5,10 @@ import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
+import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@scaffald/ui'
 import { MessageSquarePlus } from 'lucide-react-native'
 import { useState } from 'react'
-import { Avatar, Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Avatar, Button, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {

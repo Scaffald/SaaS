@@ -8,7 +8,7 @@
  */
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, Card } from '@scaffald/ui'
 import { Loader2 } from 'lucide-react'
 import { trpc } from '../lib/trpc'
 import { toast } from 'sonner'

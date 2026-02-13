@@ -1,7 +1,7 @@
 import { useBackgroundCheck } from '@scf/core/utils/background-checks-sdk-hooks'
 import { RefreshCcw, X } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { getStatusMetadata } from '../components/status.utils'
 
 type OrganizationCheckSummary = {

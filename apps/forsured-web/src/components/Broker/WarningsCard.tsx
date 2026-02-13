@@ -1,5 +1,5 @@
 import { AlertTriangle, ChevronRight } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 
 interface WarningsCardProps {
   count: number;

@@ -23,7 +23,7 @@ vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: { id: 'user-1' } }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({ show: vi.fn() }),
 }))
 

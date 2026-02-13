@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { X, UserPlus, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Button, SearchSelect } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, SearchSelect } from '@scaffald/ui';
 import { toast } from 'sonner';
 import { trpc } from '../../lib/trpc';
 

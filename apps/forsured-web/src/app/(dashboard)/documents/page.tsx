@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Stack, Row, Text, Card, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, H1 } from '@scaffald/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   DocumentList,

@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/broker/BrokerInfoStep.tsx
 // Broker Onboarding - Broker Information Step
 import { useState } from 'react';
-import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
+import { Stack, Text, H2, Input, Button } from '@scaffald/ui';
 
 interface BrokerInfoStepProps {
   onComplete: (data: any) => Promise<void>;

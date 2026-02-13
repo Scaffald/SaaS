@@ -10,7 +10,7 @@ import {
   Accordion as BeyondAccordion,
   type AccordionMode,
   type AccordionValue,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 export interface AccordionItem {
   id: string

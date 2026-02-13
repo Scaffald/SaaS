@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { DashboardWidget, spacing } from '@scaffald/ui'
 import { FileText, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { ResumeUploadButton } from './ResumeUploadButton'
 import { ResumeUploadModal } from './ResumeUploadModal'
 

@@ -1,5 +1,5 @@
 import { Briefcase, Calendar, MapPin } from 'lucide-react-native'
-import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, Text, Row, Stack } from '@scaffald/ui'
 
 interface Experience {
   id: string

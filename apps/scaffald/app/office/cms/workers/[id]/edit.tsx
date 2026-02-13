@@ -4,7 +4,7 @@ import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profi
 import { ProfileCertificationsLeft } from '@scf/core/features/profile/profile-certifications-left'
 import { ProfileEducationLeft } from '@scf/core/features/profile/profile-education-left'
 import { ProfileExperienceLeft } from '@scf/core/features/profile/profile-experience-left'
-import { Button, H2, Separator, Text, Row, Stack, Card } from '@unicornlove/beyond-ui'
+import { Button, H2, Separator, Text, Row, Stack, Card } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 

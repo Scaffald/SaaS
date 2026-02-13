@@ -2,9 +2,9 @@
  * PolicyStatusBadge - Status indicator for insurance policies
  */
 
-import { Row, Text } from '@unicornlove/beyond-ui'
-import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
-import type { RowProps } from '@unicornlove/beyond-ui'
+import { Row, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { RowProps } from '@scaffald/ui'
 import {
   Shield,
   Clock,

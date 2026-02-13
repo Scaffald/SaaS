@@ -1,6 +1,6 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Slider, Text, Row, Stack } from '@scaffald/ui'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */

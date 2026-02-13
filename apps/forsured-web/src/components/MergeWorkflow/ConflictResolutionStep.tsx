@@ -7,7 +7,7 @@
  * with radio buttons for selecting which value to keep.
  */
 import { useState, useCallback, useMemo } from 'react'
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, Card } from '@scaffald/ui'
 import { User, Building, Check, Loader2 } from 'lucide-react'
 import Button from '../Common/Button'
 

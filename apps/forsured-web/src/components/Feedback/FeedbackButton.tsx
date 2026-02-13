@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { MessageSquarePlus } from 'lucide-react';
-import { Stack, Button, Text } from '@unicornlove/beyond-ui';
+import { Stack, Button, Text } from '@scaffald/ui';
 import { trpc } from '../../lib/trpc';
 
 interface FeedbackButtonProps {

@@ -4,11 +4,11 @@ import {
   TEAM_INVITATION_TTL_MIN,
 } from '@scf/schemas'
 import { useInviteTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveModal, useThemeContext } from '@unicornlove/beyond-ui'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useThemeContext } from '@scaffald/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import { UserSearch } from '@scf/core/components/user'
 import { Mail, UserPlus } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
@@ -20,10 +20,10 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 type InviteType = 'email' | 'user'
 

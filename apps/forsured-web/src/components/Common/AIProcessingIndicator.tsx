@@ -2,7 +2,7 @@
  * AIProcessingIndicator - AI processing indicator using Beyond UI
 
  */
-import { Row, Stack, Text, Spinner } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text, Spinner } from '@scaffald/ui'
 import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react'
 
 export type AIProcessingState = 'analyzing' | 'processing' | 'complete' | 'error'

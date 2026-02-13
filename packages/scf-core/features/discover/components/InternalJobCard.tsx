@@ -1,11 +1,11 @@
 import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Chip, DiscoverCard, extractPlainText } from '@unicornlove/beyond-ui'
+import { Chip, DiscoverCard, extractPlainText } from '@scaffald/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * Internal job type definition with all enhanced fields

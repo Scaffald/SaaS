@@ -1,10 +1,10 @@
 import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { ScrollView, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
 import { Check } from 'lucide-react-native'
 import { type ReactNode, useMemo } from 'react'
-import { Card } from '@unicornlove/beyond-ui'
+import { Card } from '@scaffald/ui'
 import { InquiryCommentThread } from './InquiryCommentThread'
 
 interface InquiryViewOrganizationProps {

@@ -4,7 +4,7 @@ import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Stack } from 'expo-router/stack'
 import { useEffect } from 'react'
-import { Spinner, Text, Stack as UIStack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack as UIStack } from '@scaffald/ui'
 
 export default function OnboardingLayout() {
   const { isLoading, user } = useProtectedRoute()

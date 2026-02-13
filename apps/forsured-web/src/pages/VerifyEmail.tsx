@@ -3,8 +3,8 @@
  * Similar to Scaffald's MagicLinkPending but simpler for web
  */
 import { useSearchParams } from 'react-router-dom';
-import { Stack, Row, Text, H1 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1 } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius, shadows } from '@scaffald/ui';
 import { Mail } from 'lucide-react';
 
 function VerifyEmailPage() {

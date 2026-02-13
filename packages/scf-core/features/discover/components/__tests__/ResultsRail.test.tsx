@@ -7,8 +7,8 @@ import { describe, expect, it, vi } from 'vitest'
 const mockScrollToCard = vi.fn()
 
 // Beyond UI mock: override only Stack for visibility style assertions; use real beyond-ui for the rest
-vi.mock('@unicornlove/beyond-ui', async () => {
-  const actual = (await vi.importActual('@unicornlove/beyond-ui')) as Record<string, unknown>
+vi.mock('@scaffald/ui', async () => {
+  const actual = (await vi.importActual('@scaffald/ui')) as Record<string, unknown>
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}

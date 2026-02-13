@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Info } from 'lucide-react';
-import { Stack, Row, Text, H2, Input, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Input, Card } from '@scaffald/ui';
 import Textarea from '../Common/Textarea';
 import { Task, BrokerClient, PolicyData, Project, User, TaskType, TaskTypeCategory } from '../../types';
 import Button from '../Common/Button';

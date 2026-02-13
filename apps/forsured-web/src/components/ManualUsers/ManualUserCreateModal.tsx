@@ -11,7 +11,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { UserPlus, X } from 'lucide-react'
-import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H2 } from '@scaffald/ui'
 import { toast } from 'sonner'
 import { ManualUserForm, type ManualUserRole, type ManualUserFormData } from './ManualUserForm'
 import { trpc } from '../../lib/trpc'

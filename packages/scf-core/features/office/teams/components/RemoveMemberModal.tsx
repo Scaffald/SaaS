@@ -8,8 +8,8 @@ import {
   TextArea,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface RemoveMemberModalProps {
   open: boolean

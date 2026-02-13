@@ -6,11 +6,11 @@ import {
   useSaveCareerAssessmentMutation,
 } from '@scf/core/utils/onet-sdk-hooks'
 import { Plus, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * OccupationAssessmentWizard - Standalone wizard for Occupation Preferences

@@ -1,6 +1,6 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useCallback, useEffect, useState } from 'react'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 
 export interface ResultsStepProps {
   feedbackMessage?: string

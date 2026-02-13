@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { AlertTriangle } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   Dialog,
@@ -15,7 +15,7 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 const RESOLUTION_STATUSES = [

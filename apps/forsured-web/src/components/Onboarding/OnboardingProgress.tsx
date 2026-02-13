@@ -2,7 +2,7 @@
  * OnboardingProgress - Progress indicator using Beyond UI
  */
 import React from 'react';
-import { Stack, Text } from '@unicornlove/beyond-ui';
+import { Stack, Text } from '@scaffald/ui';
 
 interface OnboardingProgressProps {
   current: number;

@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Button, Text, Row, Stack, Spinner } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack, Spinner } from '@scaffald/ui'
 import { api } from '@scf/core/utils/api'
 
 /**

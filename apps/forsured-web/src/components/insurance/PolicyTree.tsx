@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { InsurancePolicy } from '../../types';
 import { getAllPolicies } from '../../lib/api/insurancePolicyService';
 import PolicyCard from './PolicyCard';

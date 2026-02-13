@@ -6,7 +6,7 @@
  * with status, dates, and download links
  */
 
-import { Text, Row, Stack, Button } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, Button } from '@scaffald/ui'
 
 /**
  * Request status type

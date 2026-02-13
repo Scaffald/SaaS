@@ -1,5 +1,5 @@
 import { captureException, captureMessage } from '@scf/core/utils/sentry'
-import { Button, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 
 /**
  * Test buttons for verifying Sentry integration

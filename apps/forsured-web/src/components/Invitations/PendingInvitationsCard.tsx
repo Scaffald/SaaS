@@ -8,7 +8,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@scaffald/ui'
 import { Mail, UserPlus, Check, X, ChevronRight, AlertTriangle } from 'lucide-react'
 import { trpc } from '../../lib/trpc'
 

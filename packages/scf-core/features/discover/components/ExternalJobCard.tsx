@@ -1,8 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { DiscoverCard } from '@unicornlove/beyond-ui'
+import { DiscoverCard } from '@scaffald/ui'
 import { Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 export interface ExternalJob {
   id: string

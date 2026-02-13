@@ -25,7 +25,7 @@ import {
   Select,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Checkbox from '../../../../../ui/Checkbox'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'

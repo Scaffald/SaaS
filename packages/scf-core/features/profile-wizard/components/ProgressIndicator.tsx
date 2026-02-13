@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Progress, Separator, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 

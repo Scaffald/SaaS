@@ -12,8 +12,8 @@ import {
   Box,
   H1,
   H3,
-} from '@unicornlove/beyond-ui';
-import { colors, spacing, borderRadius, shadows, typography } from '@unicornlove/beyond-ui';
+} from '@scaffald/ui';
+import { colors, spacing, borderRadius, shadows, typography } from '@scaffald/ui';
 import { supabase } from '../lib/supabase';
 
 /**

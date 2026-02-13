@@ -1,4 +1,4 @@
-import { ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Text, Row, Stack } from '@scaffald/ui'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 import { PhotoCard } from './PhotoCard'

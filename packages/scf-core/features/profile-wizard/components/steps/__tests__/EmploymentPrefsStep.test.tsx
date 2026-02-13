@@ -93,7 +93,7 @@ vi.mock('@scf/core/forms', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -231,7 +231,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   ResponsiveSelect: ({
     value,
     onValueChange,

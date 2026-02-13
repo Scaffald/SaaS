@@ -1,11 +1,11 @@
-import { Button, H2, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, H2, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import type { Applications } from './hooks/useApplications'
 import { useApplications } from './hooks/useApplications'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',

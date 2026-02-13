@@ -16,7 +16,7 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockToastShow,
   }),
@@ -104,7 +104,7 @@ vi.mock('@scf/core/features/career-assessment/components/RiasecQuickAssessment',
 }))
 
 // Mock Button
-vi.mock('@unicornlove/beyond-ui', async () => {
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
     Button: ({ children, onPress, disabled, ...props }: {

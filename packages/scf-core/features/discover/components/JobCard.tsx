@@ -1,6 +1,6 @@
-import { DiscoverCard } from '@unicornlove/beyond-ui'
+import { DiscoverCard } from '@scaffald/ui'
 import { Briefcase, Building2, DollarSign, MapPin } from 'lucide-react-native'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {

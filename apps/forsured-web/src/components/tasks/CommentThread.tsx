@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react'
 import type { User } from '../../types'
 import type { TaskComment } from '../../lib/api/taskService'
-import { Stack, Row, Button, Card, Text } from '@unicornlove/beyond-ui'
+import { Stack, Row, Button, Card, Text } from '@scaffald/ui'
 import Textarea from '../Common/Textarea'
 import { Loader2 } from 'lucide-react'
 

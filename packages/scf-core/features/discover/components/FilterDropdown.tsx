@@ -1,7 +1,7 @@
-import { Popover, ToggleSwitch } from '@unicornlove/beyond-ui'
+import { Popover, ToggleSwitch } from '@scaffald/ui'
 import { ChevronDown, SlidersHorizontal } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
-import { Button, Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
 
 type FilterDropdownProps = {
   showWorkers?: boolean

@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
@@ -11,7 +11,7 @@ import {
   Row,
   Stack,
   useToast,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'

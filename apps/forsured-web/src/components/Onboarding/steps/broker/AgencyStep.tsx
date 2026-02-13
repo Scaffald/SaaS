@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/broker/AgencyStep.tsx
 // Broker Onboarding - Agency Setup Step
 import { useState } from 'react';
-import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
+import { Stack, Text, H2, Input, Button } from '@scaffald/ui';
 
 interface AgencyStepProps {
   onComplete: (data: any) => Promise<void>;

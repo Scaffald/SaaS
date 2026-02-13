@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { AlertTriangle, MapPin, MessageSquare, X } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
 
 export interface SiteOverlapNotificationProps {
   notificationId: string

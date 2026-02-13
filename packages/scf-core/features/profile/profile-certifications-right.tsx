@@ -5,11 +5,11 @@ import {
 } from '@scf/core/utils/profile-certifications-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, DashboardWidget, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Award, ChevronDown, ChevronRight, ExternalLink, Trash2, Upload } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface UserCertification {

@@ -6,7 +6,7 @@ import {
   useDeclineConnectionMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
 import { useProfileViews, useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
-import { Card } from '@unicornlove/beyond-ui'
+import { Card } from '@scaffald/ui'
 import {
   ArrowDown,
   ArrowUp,
@@ -18,7 +18,7 @@ import {
   X,
 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 /**

@@ -1,4 +1,4 @@
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
@@ -12,7 +12,7 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Plus, X } from 'lucide-react-native'
 import { useState } from 'react'
 

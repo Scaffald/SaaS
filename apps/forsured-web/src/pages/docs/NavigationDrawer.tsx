@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack, Row, Box, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text } from '@scaffald/ui';
 import {
   X,
   ChevronDown,

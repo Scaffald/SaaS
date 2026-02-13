@@ -8,8 +8,8 @@
  */
 
 import type { ReactNode } from 'react'
-import { ThemeProvider as BeyondThemeProvider } from '@unicornlove/beyond-ui'
-import type { ThemeMode } from '@unicornlove/beyond-ui'
+import { ThemeProvider as BeyondThemeProvider } from '@scaffald/ui'
+import type { ThemeMode } from '@scaffald/ui'
 
 interface BeyondUIProviderProps {
   children: ReactNode

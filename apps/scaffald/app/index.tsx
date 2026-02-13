@@ -6,7 +6,7 @@ import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()

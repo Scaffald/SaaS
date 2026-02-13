@@ -2,8 +2,8 @@
  * RelationshipCard - Relationship card using Beyond UI
  */
 import React from 'react';
-import { Row, Stack, Text, Card } from '@unicornlove/beyond-ui';
-import { Chip as Badge } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text, Card } from '@scaffald/ui';
+import { Chip as Badge } from '@scaffald/ui';
 import {
   Building,
   TrendingUp,

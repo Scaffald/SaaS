@@ -54,7 +54,7 @@
     "@rnmapbox/maps": "catalog:",
     "@sentry/react": "^10.28.0",
     "@trpc/server": "catalog:",
-    "@unicornlove/beyond-ui": "workspace:*",
+    "@scaffald/ui": "workspace:*",
     "babel-plugin-module-resolver": "catalog:",
     "burnt": "catalog:",
     "expo": "55.0.0-preview.9",

@@ -11,12 +11,12 @@ import {
   Button,
   DashboardWidget,
   PhoneNumberInput,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,

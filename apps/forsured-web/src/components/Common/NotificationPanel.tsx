@@ -3,7 +3,7 @@
 
  */
 import React from 'react'
-import { Row, Stack, Text, Button } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text, Button } from '@scaffald/ui'
 import { X, AlertTriangle, Clock, Info, AlertCircle } from 'lucide-react'
 import { Alert } from '../../types'
 

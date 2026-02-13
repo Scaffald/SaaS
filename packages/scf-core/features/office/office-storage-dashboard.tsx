@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
@@ -18,7 +18,7 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 type StorageAnalytics = inferRouterOutputs<AppRouter>['office']['storage']['analytics']
 

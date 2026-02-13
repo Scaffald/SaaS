@@ -36,7 +36,7 @@
     "@trpc/client": "catalog:",
     "@trpc/react-query": "catalog:",
     "@trpc/server": "catalog:",
-    "@unicornlove/beyond-ui": "workspace:*",
+    "@scaffald/ui": "workspace:*",
     "@unicornlove/compliance": "workspace:*",
     "@unicornlove/forsured": "workspace:*",
     "@unicornlove/insurance": "workspace:*",

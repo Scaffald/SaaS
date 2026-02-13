@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Tabs, Row } from '@unicornlove/beyond-ui'
+import { Tabs, Row } from '@scaffald/ui'
 
 export interface ImportSectionTab {
   id: string

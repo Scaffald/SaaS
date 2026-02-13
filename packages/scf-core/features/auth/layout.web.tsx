@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Hide, Row, Stack } from '@unicornlove/beyond-ui'
+import { Hide, Row, Stack } from '@scaffald/ui'
 import { WelcomeScreen } from './welcome-screen'
 
 export type AuthLayoutProps = {

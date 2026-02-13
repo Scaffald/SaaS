@@ -1,10 +1,10 @@
 import { useUpdateTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
-import { useToast } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 interface TeamMemberRoleSelectProps {
   teamId: string

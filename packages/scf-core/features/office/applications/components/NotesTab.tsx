@@ -1,6 +1,6 @@
 import { TeamCommentThread } from '@scf/core/features/office/teams'
-import { Text, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Text, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface NotesTabProps {
   applicationId: string

@@ -2,7 +2,7 @@ import { flattenRoutes, matchesRoute, type RouteConfig, ROUTES } from '@scf/core
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { usePathname } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
-import type { BreadcrumbItem, BreadcrumbSibling } from '@unicornlove/beyond-ui'
+import type { BreadcrumbItem, BreadcrumbSibling } from '@scaffald/ui'
 
 export interface UseBreadcrumbsOptions {
   /** Whether to auto-generate breadcrumbs from route (default: false) */

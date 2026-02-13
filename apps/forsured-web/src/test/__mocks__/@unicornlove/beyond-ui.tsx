@@ -1,5 +1,5 @@
 /**
- * Mock for @unicornlove/beyond-ui package
+ * Mock for @scaffald/ui package
  *
  * Provides minimal HTML-based implementations of UI components for testing.
  * This avoids the complex react-native dependency chain that causes

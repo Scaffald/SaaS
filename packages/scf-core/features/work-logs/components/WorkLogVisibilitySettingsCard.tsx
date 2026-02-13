@@ -6,10 +6,10 @@ import {
 } from '@scf/core/utils/work-logs-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 
-import { DashboardWidget, ToggleSwitch } from '@unicornlove/beyond-ui'
-import { useToast } from '@unicornlove/beyond-ui'
+import { DashboardWidget, ToggleSwitch } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Button, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { WorkLogListItem } from '@scf/schemas'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 

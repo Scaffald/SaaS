@@ -7,7 +7,7 @@ import {
   Sheet,
   ToggleSwitch,
   type ViewportBounds,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import {
   List as ListIcon,
@@ -27,7 +27,7 @@ import {
   useWindowDimensions,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { MapFilterBar } from './components/MapFilterBar'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'

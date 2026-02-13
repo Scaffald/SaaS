@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { usePreferencesWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * PreferencesWidget

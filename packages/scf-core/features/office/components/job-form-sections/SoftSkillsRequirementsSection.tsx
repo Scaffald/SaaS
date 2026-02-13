@@ -1,8 +1,8 @@
 import { useSoftSkillsByCategory } from '@scf/core/utils/reviews-sdk-hooks'
-import { Button, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, Spinner } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Label, Spinner } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface SoftSkillsRequirementsSectionProps {
   requiredSoftSkills?: Array<{ skill_id: string; importance: number }> | null

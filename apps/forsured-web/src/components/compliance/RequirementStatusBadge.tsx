@@ -3,7 +3,7 @@
  * Visual status indicator for compliance requirements
  */
 
-import { Row, Text } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
 import type { RequirementStatus } from '../../server/schemas/forsured/compliance-requirements.schema';
 
 interface RequirementStatusBadgeProps {

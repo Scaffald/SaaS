@@ -7,11 +7,11 @@ import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
-import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget } from '@scaffald/ui'
 import { AlertCircle, Check, Clock, Copy } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
-import { H4, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { H4, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type UpdateSlugResult = {
   success: boolean

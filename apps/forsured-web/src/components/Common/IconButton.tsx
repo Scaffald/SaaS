@@ -4,7 +4,7 @@
  */
 import React, { forwardRef } from 'react'
 import { LucideIcon } from 'lucide-react'
-import { Button, Row, Text } from '@unicornlove/beyond-ui'
+import { Button, Row, Text } from '@scaffald/ui'
 
 export type IconButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
 export type IconButtonSize = 'sm' | 'md' | 'lg'

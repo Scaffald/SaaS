@@ -1,4 +1,4 @@
-import { ToastContainer } from '@unicornlove/beyond-ui'
+import { ToastContainer } from '@scaffald/ui'
 
 export interface ToastViewportProps {
   noSafeArea?: boolean

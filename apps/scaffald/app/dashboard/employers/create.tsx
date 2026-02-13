@@ -4,7 +4,7 @@ import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/nor
 import { OrganizationRequestForm } from '@scf/core/features/organizations/components/OrganizationRequestForm'
 import { Building2, Info } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Row, Separator, Stack, Text } from '@unicornlove/beyond-ui'
+import { Button, Row, Separator, Stack, Text } from '@scaffald/ui'
 
 export default function DashboardOrganizationCreatePage() {
   const router = useRouter()

@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import { ComplianceRequirement, CoverageType } from '../../lib/compliance/types';
 import { listRequirements } from '../../lib/compliance/requirementService';
 

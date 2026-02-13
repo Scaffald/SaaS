@@ -1,4 +1,4 @@
-import type { GetThemeValueForKey } from '@unicornlove/beyond-ui'
+import type { GetThemeValueForKey } from '@scaffald/ui'
 
 export type ConfidenceLevel = 'high' | 'medium' | 'low'
 

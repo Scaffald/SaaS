@@ -1,10 +1,10 @@
 import { useUpdateTeam } from '@scaffald/sdk/react'
-import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Input, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Input, Switch, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 const WORKLOAD_STRATEGIES = [
   { value: 'manual', label: 'Manual assignment' },

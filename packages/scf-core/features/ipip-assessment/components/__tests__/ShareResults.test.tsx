@@ -7,7 +7,7 @@ import { ShareResults } from '../ShareResults'
 const toastShow = vi.fn()
 const invalidateAssessment = vi.fn()
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: toastShow,
   }),

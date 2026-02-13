@@ -7,14 +7,14 @@ import {
   useReorderPortfolioItemsMutation,
 } from '@scf/core/utils/portfolio-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
+import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@scaffald/ui'
 import { ImageUpload } from '@scf/core/components/ui'
 import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
 import { useCallback, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { H4, Image, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { H4, Image, Input, Text, Row, Stack } from '@scaffald/ui'
 import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
 import type { ProfileWidgetProps } from './types'
 

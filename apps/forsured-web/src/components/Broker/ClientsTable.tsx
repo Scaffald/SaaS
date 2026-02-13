@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pressable, View as RNView, type LayoutChangeEvent } from 'react-native';
 import { ChevronRight, ChevronDown, ChevronUp, Search, Calendar, MessageSquare, Users, Shield, Building2, HardHat } from 'lucide-react';
-import { Stack, Row, Text, H2, Card, ButtonGroup, Input, Button, Dropdown, DropdownMenu, DropdownItem, Chip, ProgressBarBase, Avatar } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Card, ButtonGroup, Input, Button, Dropdown, DropdownMenu, DropdownItem, Chip, ProgressBarBase, Avatar } from '@scaffald/ui';
 import type { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
 import type { ClientBrokerCount } from '../../hooks/useClientBrokerCounts';

@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React from 'react'
-import { ProgressBar as BeyondProgressBar, type ProgressBarColor } from '@unicornlove/beyond-ui'
+import { ProgressBar as BeyondProgressBar, type ProgressBarColor } from '@scaffald/ui'
 import { View, Text, StyleSheet } from 'react-native'
 
 export type ProgressVariant = 'primary' | 'success' | 'warning' | 'error'

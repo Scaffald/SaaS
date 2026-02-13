@@ -5,8 +5,8 @@
  */
 import { useState, useMemo } from 'react'
 import { RefreshCw, Filter, Users } from 'lucide-react'
-import { Stack, Row, Text, SearchSelect } from '@unicornlove/beyond-ui'
-import type { SearchSelectOption } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, SearchSelect } from '@scaffald/ui'
+import type { SearchSelectOption } from '@scaffald/ui'
 import { EmptyState } from '../../ui/EmptyState'
 import { useLexicon } from '../../contexts/LexiconContext'
 import { useClients } from '../../hooks/useClients'

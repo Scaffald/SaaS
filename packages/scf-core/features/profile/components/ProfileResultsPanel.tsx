@@ -1,6 +1,6 @@
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, Stack, type YStackProps } from '@unicornlove/beyond-ui'
+import { ScrollView, Spinner, Text, Stack, type YStackProps } from '@scaffald/ui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */

@@ -4,7 +4,7 @@
  */
 import React from 'react'
 import { Home } from 'lucide-react'
-import { Breadcrumb as BeyondBreadcrumb, type BreadcrumbItemData } from '@unicornlove/beyond-ui'
+import { Breadcrumb as BeyondBreadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 
 const HOME_PATH = '/' as const
 

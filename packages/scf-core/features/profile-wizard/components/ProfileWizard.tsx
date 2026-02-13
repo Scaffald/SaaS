@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Paragraph, ScrollView, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, ScrollView, Spinner, Text, Stack } from '@scaffald/ui'
 import { useProfileWizard, type WizardStepPayloads } from '../hooks/useProfileWizard'
 import { useWizardAutoSave } from '../hooks/useWizardAutoSave'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'

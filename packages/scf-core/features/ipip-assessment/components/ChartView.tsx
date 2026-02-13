@@ -1,8 +1,8 @@
 import type { IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
-import { BarChart, SkillsChart } from '@unicornlove/beyond-ui'
+import { BarChart, SkillsChart } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { View } from 'react-native'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES, DOMAIN_ORDER } from '../utils/domainGrouping'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
 

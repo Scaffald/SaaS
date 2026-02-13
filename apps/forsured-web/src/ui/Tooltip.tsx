@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React, { ReactNode } from 'react'
-import { Tooltip as BeyondTooltip, type TooltipArrowPosition } from '@unicornlove/beyond-ui'
+import { Tooltip as BeyondTooltip, type TooltipArrowPosition } from '@scaffald/ui'
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 

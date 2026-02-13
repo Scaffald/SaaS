@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Users, UserPlus, Shield, Mail, Clock } from 'lucide-react'
-import { Stack, Row, Text, H2, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, Card, Grid } from '@scaffald/ui'
 import { useUsers } from '../../hooks/useUsers'
 import { useClients } from '../../hooks/useClients'
 import { useUserInvitations } from '../../hooks/useUserInvitations'

@@ -21,11 +21,11 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({ show: mockShow }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   ResponsiveModal: ({
     open,
     children,
@@ -79,7 +79,7 @@ vi.mock('@scf/core/components/user', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({ children, testID }: { children?: ReactNode; testID?: string }) => (
     <div data-testid={testID}>{children}</div>
   )

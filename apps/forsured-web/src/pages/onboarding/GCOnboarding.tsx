@@ -1,7 +1,7 @@
 // src/pages/onboarding/GCOnboarding.tsx
 // General contractor onboarding page
 import React from 'react'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 import { useOnboarding } from '../../hooks/useOnboarding'
 import OnboardingWizard from '../../components/Onboarding/OnboardingWizard'
 import CompanyStep from '../../components/Onboarding/steps/gc/CompanyStep'

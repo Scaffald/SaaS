@@ -1,4 +1,4 @@
-import { isWeb } from '@unicornlove/beyond-ui'
+import { isWeb } from '@scaffald/ui'
 
 import { replaceLocalhost } from './getLocalhost.native'
 

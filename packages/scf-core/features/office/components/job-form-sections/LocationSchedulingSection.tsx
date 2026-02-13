@@ -1,7 +1,7 @@
-import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, TextArea } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Label, TextArea } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface LocationSchedulingSectionProps {
   relocationAssistanceOffered?: boolean

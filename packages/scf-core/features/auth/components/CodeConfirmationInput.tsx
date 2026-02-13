@@ -1,7 +1,7 @@
 import type { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import { Input, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Input, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface FormFields {
   [key: string]: string

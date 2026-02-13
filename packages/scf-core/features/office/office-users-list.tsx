@@ -1,13 +1,13 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import type { TableColumnVisibilityOption } from '@unicornlove/beyond-ui'
+import type { TableColumnVisibilityOption } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Paragraph, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Paragraph, Stack, useThemeContext } from '@scaffald/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 type User = {
   id: string

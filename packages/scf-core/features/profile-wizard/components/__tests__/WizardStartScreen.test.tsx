@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { WizardStartScreen } from '../WizardStartScreen'
 
 // Beyond UI mock: Card.Header used by component; beyond-ui exports CardHeader separately
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,

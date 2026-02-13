@@ -1,7 +1,7 @@
-import { AddressForm, type AddressResult } from '@unicornlove/beyond-ui'
+import { AddressForm, type AddressResult } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { type FieldPath, type FieldValues, type PathValue, useWatch } from 'react-hook-form'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import type { ControlledAddressFormProps, CustomAddressFieldMapping } from './types'
 
 /**

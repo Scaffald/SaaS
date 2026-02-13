@@ -3,7 +3,7 @@ import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useOfficeRouteProtection } from '@scf/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@scf/core/utils/auth/useRoleProtectedRoute'
 import { Drawer } from 'expo-router/drawer'
-import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])

@@ -2,12 +2,12 @@ import {
   useCareerAssessmentStatus,
   useSaveCareerAssessmentMutation,
 } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, spacing } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { OccupationSearch } from './components/OccupationSearch'
 import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import {

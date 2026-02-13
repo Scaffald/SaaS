@@ -1,7 +1,7 @@
-import { ToggleCard } from '@unicornlove/beyond-ui'
-import type { ToggleCardProps } from '@unicornlove/beyond-ui'
+import { ToggleCard } from '@scaffald/ui'
+import type { ToggleCardProps } from '@scaffald/ui'
 import { Plane } from 'lucide-react-native'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 import { MaximumTravelDistanceCard } from './MaximumTravelDistanceCard'
 
 export interface OpenToTravelCardProps

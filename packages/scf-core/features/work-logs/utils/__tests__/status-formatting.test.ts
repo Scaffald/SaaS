@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { colors } from '@unicornlove/beyond-ui/tokens';
+import { colors } from '@scaffald/ui/tokens';
 
 import { getStatusColor, getStatusLabel } from '../status-formatting';
 

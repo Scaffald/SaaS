@@ -4,7 +4,7 @@ import {
   useSearchParentSkillsMutation,
   usePrimaryIndustry,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
-import type { AddressResult } from '@unicornlove/beyond-ui'
+import type { AddressResult } from '@scaffald/ui'
 import {
   AddressForm,
   Button,
@@ -16,16 +16,16 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
-import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { Card, Switch } from '@unicornlove/beyond-ui'
+import { Card, Switch } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 import {
   ApplicationProcessSection,
   ApplicationScreeningSection,

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { FileText } from 'lucide-react';
-import { Stack, Row, Text, H3 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H3 } from '@scaffald/ui';
 
 interface DocumentPreviewProps {
   documentUrl?: string;

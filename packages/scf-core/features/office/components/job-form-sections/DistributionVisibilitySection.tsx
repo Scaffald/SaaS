@@ -1,7 +1,7 @@
-import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean

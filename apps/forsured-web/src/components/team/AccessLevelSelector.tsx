@@ -3,7 +3,7 @@
  * Team Member Management UI
  */
 import React from 'react';
-import { Stack, Text } from '@unicornlove/beyond-ui';
+import { Stack, Text } from '@scaffald/ui';
 
 export type AccessLevel = 'admin' | 'manager' | 'user' | 'broker' | 'subcontractor';
 

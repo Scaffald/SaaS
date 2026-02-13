@@ -10,12 +10,12 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useMemo, useState } from 'react'
-import { Card, Checkbox, TextArea } from '@unicornlove/beyond-ui'
+import { Card, Checkbox, TextArea } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>

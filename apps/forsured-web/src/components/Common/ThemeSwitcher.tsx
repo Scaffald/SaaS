@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react'
 import { Sun, Moon, Leaf } from 'lucide-react'
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button } from '@scaffald/ui'
 
 type Theme = 'light' | 'dark' | 'earth'
 

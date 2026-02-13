@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { api } from '@scf/core/utils/api'
 import { DataCategorySummary } from './components/DataCategorySummary'
 import { PrivacyRightsList } from './components/PrivacyRightsList'

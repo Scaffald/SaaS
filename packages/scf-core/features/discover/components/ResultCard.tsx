@@ -1,11 +1,11 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { DiscoverCard } from '@unicornlove/beyond-ui'
+import { DiscoverCard } from '@scaffald/ui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import { Button, Paragraph, SizableText, Text, Row } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, SizableText, Text, Row } from '@scaffald/ui'
 
 import type { TalentProfile } from '../types'
 

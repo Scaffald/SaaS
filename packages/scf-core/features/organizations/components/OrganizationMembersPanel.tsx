@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@scf/schemas'
-import { Table, useThemeContext } from '@unicornlove/beyond-ui'
+import { Table, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -15,8 +15,8 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   useInviteOrganizationMember,
   useOrganizationInvites,

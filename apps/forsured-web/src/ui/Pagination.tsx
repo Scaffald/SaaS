@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React from 'react'
-import { Pagination as BeyondPagination } from '@unicornlove/beyond-ui'
+import { Pagination as BeyondPagination } from '@scaffald/ui'
 
 export interface PaginationProps {
   currentPage: number

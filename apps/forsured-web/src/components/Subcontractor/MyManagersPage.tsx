@@ -3,8 +3,8 @@
 
  */
 import React, { useState } from 'react'
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui'
-import { Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card } from '@scaffald/ui'
+import { Button } from '@scaffald/ui'
 import { Building, Users, TrendingUp, CheckCircle } from 'lucide-react'
 import RelationshipCard from '../Shared/RelationshipCard'
 

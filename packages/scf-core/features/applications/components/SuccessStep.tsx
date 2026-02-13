@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { Check, ExternalLink, Home } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface SuccessStepProps {
   /**

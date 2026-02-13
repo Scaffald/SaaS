@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Input, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import { toConfidenceLevel } from '../utils/importConfidence'
 import { ConfidenceBadge } from './ConfidenceBadge'
 

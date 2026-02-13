@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, AlertCircle } from 'lucide-react';
-import { Stack, Row, Text, Card, Button as BeyondButton } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button as BeyondButton } from '@scaffald/ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { useProjects } from '../../hooks/useProjects';
 import { useRelationships } from '../../hooks/useRelationships';

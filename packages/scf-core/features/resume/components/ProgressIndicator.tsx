@@ -1,4 +1,4 @@
-import { Button, Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Circle, Text, Row, Stack } from '@scaffald/ui'
 
 import type { ResumeWizardStep } from '../hooks/useResumeWizard'
 

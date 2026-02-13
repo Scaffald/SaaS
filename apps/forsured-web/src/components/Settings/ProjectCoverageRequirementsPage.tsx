@@ -19,7 +19,7 @@ import {
   AlertCircle,
   Building2,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H2, Card, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H2, Card, Button } from '@scaffald/ui'
 import ButtonCommon from '../Common/Button'
 import CardCommon from '../Common/Card'
 import Modal from '../Common/Modal'

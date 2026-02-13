@@ -9,7 +9,7 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: vi.fn(),
   }),
@@ -83,7 +83,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   ResponsiveModal: (props: { children: ReactNode; open: boolean; title: string }) =>
     props.open ? (
       <div data-testid="worker-preview-modal">
@@ -94,7 +94,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   Spinner: () => <div>Loading...</div>,
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Stack: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Row: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Text: (props: { children: ReactNode }) => <span>{props.children}</span>,

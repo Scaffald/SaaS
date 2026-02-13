@@ -3,11 +3,11 @@ import {
   useOrganization,
   useOrganizationOpenJobsCount,
 } from '@scf/core/utils/organizations-sdk-hooks'
-import { extractPlainText, ResponsiveModal } from '@unicornlove/beyond-ui'
+import { extractPlainText, ResponsiveModal } from '@scaffald/ui'
 import { Briefcase, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface OrganizationPreviewModalProps {
   organizationId: string | null

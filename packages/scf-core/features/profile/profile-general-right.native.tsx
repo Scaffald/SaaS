@@ -1,5 +1,5 @@
-import { DashboardWidget } from '@unicornlove/beyond-ui'
-import { H3, Text, Stack } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
+import { H3, Text, Stack } from '@scaffald/ui'
 
 /**
  * Profile General Right Component

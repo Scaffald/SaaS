@@ -3,7 +3,7 @@
 
  */
 import React, { forwardRef, TextareaHTMLAttributes } from 'react'
-import { Stack, Row, Text } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text } from '@scaffald/ui'
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string

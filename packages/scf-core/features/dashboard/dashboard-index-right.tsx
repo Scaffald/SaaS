@@ -3,8 +3,8 @@ import {
   TeamInvitationsWidget,
 } from '@scf/core/features/dashboard/components'
 import { NewsWidget } from '@scf/core/features/news'
-import { DashboardWidget, StackedCards } from '@unicornlove/beyond-ui'
-import { H4, Text, Stack } from '@unicornlove/beyond-ui'
+import { DashboardWidget, StackedCards } from '@scaffald/ui'
+import { H4, Text, Stack } from '@scaffald/ui'
 
 const profileTipCards = [
   {

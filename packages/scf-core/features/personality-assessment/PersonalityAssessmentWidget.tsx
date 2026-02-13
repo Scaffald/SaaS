@@ -1,9 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useAssessmentStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, spacing, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * PersonalityAssessmentWidget - Dashboard widget for personality assessment

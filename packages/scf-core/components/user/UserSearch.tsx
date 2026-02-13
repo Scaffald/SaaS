@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useEffect, useState } from 'react'
-import { Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export interface UserSearchProps {
   value?: string // user ID

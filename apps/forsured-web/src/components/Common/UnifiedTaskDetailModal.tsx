@@ -17,7 +17,7 @@ import {
   History,
   Ban,
 } from 'lucide-react'
-import { Stack, Row, Text, H2 } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2 } from '@scaffald/ui'
 import type { Task, User as UserType, EntityType } from '../../types'
 import Modal from './Modal'
 import Button from './Button'

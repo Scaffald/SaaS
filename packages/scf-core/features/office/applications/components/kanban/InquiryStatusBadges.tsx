@@ -1,8 +1,8 @@
 import { useUser } from '@scf/core/utils/useUser'
-import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { Check, MessageSquare } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 interface InquiryStatusBadgesProps {
   inquiryData: {

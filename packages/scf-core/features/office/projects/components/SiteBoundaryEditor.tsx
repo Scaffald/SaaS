@@ -1,4 +1,4 @@
-import type { Boundary } from '@unicornlove/beyond-ui'
+import type { Boundary } from '@scaffald/ui'
 import { SiteBoundaryDrawer } from '@scf/core/components/sites'
 
 export interface SiteBoundaryEditorProps {

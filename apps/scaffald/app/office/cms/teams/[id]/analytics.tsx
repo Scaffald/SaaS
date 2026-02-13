@@ -11,7 +11,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type MemberRecord = NonNullable<MembersListOutput['members']>[number]
@@ -163,10 +163,12 @@ function FallbackCard({
 }) {
   return (
     <Stack align="center" justify="center">
-      <Card padding={16} gap={12}>
-        <Text>{title}</Text>
-        <Text color="gray">{description}</Text>
-        <Button onPress={onAction}>{actionLabel}</Button>
+      <Card padding="md">
+        <Stack gap={12}>
+          <Text>{title}</Text>
+          <Text color="gray">{description}</Text>
+          <Button onPress={onAction}>{actionLabel}</Button>
+        </Stack>
       </Card>
     </Stack>
   )

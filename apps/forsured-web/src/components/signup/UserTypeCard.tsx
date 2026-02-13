@@ -2,7 +2,7 @@
  * UserTypeCard - User type selection card using Beyond UI
  */
 import { useState, useEffect } from 'react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button } from '@scaffald/ui';
 import { Loader2 } from 'lucide-react';
 
 interface UserTypeCardProps {

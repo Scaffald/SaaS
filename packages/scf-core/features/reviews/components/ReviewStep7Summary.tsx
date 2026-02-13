@@ -1,4 +1,4 @@
-import { Text, TextArea, Stack } from '@unicornlove/beyond-ui'
+import { Text, TextArea, Stack } from '@scaffald/ui'
 
 interface ReviewStep7SummaryProps {
   comment: string

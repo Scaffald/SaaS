@@ -1,6 +1,6 @@
 import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react-native'
 import type { FC } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface SoftSkillsMatchIndicatorProps {
   skillName: string

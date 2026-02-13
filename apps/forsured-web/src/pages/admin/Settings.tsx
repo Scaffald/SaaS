@@ -1,7 +1,7 @@
 // src/pages/admin/Settings.tsx
 import React from 'react';
 import { Settings } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, Card } from '@scaffald/ui';
 
 function AdminSettings() {
   return (

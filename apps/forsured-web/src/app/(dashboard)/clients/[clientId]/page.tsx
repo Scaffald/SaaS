@@ -14,7 +14,7 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, Building2, Clock } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, Heading, colors, spacing } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, Heading, colors, spacing } from '@scaffald/ui';
 import { trpc } from '../../../../lib/trpc';
 import StatusBadge from '../../../../components/Common/StatusBadge';
 

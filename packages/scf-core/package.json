@@ -31,7 +31,7 @@
     "@tanstack/react-table": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/react-query": "catalog:",
-    "@unicornlove/beyond-ui": "workspace:*",
+    "@scaffald/ui": "workspace:*",
     "awesome-phonenumber": "catalog:",
     "burnt": "catalog:",
     "expo-apple-authentication": "catalog:",

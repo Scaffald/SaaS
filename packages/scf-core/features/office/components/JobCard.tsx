@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DiscoverCard, useThemeContext } from '@unicornlove/beyond-ui'
+import { DiscoverCard, useThemeContext } from '@scaffald/ui'
 import {
   Briefcase,
   Building2,
@@ -11,8 +11,8 @@ import {
 } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { type GetThemeValueForKey, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { type GetThemeValueForKey, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]

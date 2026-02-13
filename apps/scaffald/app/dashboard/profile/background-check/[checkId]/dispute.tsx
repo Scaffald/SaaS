@@ -6,7 +6,7 @@ import { Stack as ExpoStack, useLocalSearchParams, useRouter } from 'expo-router
 import { useCallback, useMemo } from 'react'
 import { ScrollView } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, Row, Spinner, Stack, Text } from '@unicornlove/beyond-ui'
+import { Button, Row, Spinner, Stack, Text } from '@scaffald/ui'
 
 type BackgroundCheckSummary = BackgroundCheck
 

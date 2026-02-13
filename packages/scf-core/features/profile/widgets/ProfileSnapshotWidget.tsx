@@ -8,9 +8,9 @@ import {
   useEducationWidget,
 } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { DashboardWidget, spacing } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * ProfileSnapshotWidget

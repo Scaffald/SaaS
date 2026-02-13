@@ -21,7 +21,7 @@ import {
   Trash2,
   AlertCircle,
 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import {
   useCreateComplianceRequirement,
   useUpdateComplianceRequirement,

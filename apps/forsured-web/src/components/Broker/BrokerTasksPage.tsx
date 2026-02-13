@@ -14,7 +14,7 @@ import {
   List,
   Plus,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H3, Card, Input, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H3, Card, Input, Grid } from '@scaffald/ui'
 import { useTasks } from '../../hooks/useTasks'
 import { useProjects } from '../../hooks/useProjects'
 import { useClients } from '../../hooks/useClients'

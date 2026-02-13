@@ -4,11 +4,11 @@ import {
 } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
 import { MessageSquare, Send } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import { Avatar } from '@unicornlove/beyond-ui'
+import { Avatar } from '@scaffald/ui'
 
 interface InquiryCommentThreadProps {
   inquiryId: string

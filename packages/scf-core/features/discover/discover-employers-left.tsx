@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useRouter } from 'expo-router'
-import { ScrollView, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Spinner, Text, Stack } from '@scaffald/ui'
 import { type Employer, EmployerCard } from './components/EmployerCard'
 
 interface DiscoverEmployersLeftProps {

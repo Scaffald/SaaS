@@ -13,7 +13,7 @@ import {
   BarChart3,
   Handshake,
 } from 'lucide-react'
-import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid } from '@scaffald/ui'
 import ForsuredLogo from '../Common/ForsuredLogo'
 import Button from '../Common/Button'
 import { useUser } from '../../contexts/UserContext'

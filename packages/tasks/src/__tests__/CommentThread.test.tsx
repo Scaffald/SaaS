@@ -5,7 +5,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-vi.mock('@unicornlove/beyond-ui', async () => {
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
     Stack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children),
@@ -15,7 +15,7 @@ vi.mock('@unicornlove/beyond-ui', async () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui/tokens', () => ({
+vi.mock('@scaffald/ui/tokens', () => ({
   colors: { gray: {}, bg: { primary: '#fff' }, border: { default: '#eee' }, info: {}, error: {} },
   spacing: { 4: 4, 8: 8, 12: 12, 16: 16, 24: 24 },
   borderRadius: { l: 12, max: 999, m: 10 },

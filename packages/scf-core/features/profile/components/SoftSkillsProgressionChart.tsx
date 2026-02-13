@@ -1,7 +1,7 @@
 import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react-native'
 import { useMemo, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsProgressionChartProps {

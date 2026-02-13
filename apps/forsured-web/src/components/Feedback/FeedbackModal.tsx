@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button } from '@scaffald/ui';
 import { FeedbackList } from './FeedbackList';
 import { FeedbackForm } from './FeedbackForm';
 import { FeedbackConversation } from './FeedbackConversation';

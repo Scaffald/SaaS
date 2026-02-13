@@ -1,8 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, spacing } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 
 /**
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences

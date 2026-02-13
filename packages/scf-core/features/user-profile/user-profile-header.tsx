@@ -1,5 +1,5 @@
 import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from 'lucide-react-native'
-import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
 
 interface UserProfileHeaderProps {
   profile: {

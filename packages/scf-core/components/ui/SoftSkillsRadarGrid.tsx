@@ -1,10 +1,10 @@
 import { type FC, useMemo } from 'react'
-import { IndividualSkillRadarChart } from '@unicornlove/beyond-ui'
+import { IndividualSkillRadarChart } from '@scaffald/ui'
 import type {
   SoftSkill,
   SoftSkillCategory,
 } from '@scf/core/features/profile/components/SoftSkillsCategoryTabs'
-import { Text, View, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, View, Row, Stack } from '@scaffald/ui'
 
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]

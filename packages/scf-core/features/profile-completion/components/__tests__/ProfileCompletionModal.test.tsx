@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProfileCompletionModal } from '../ProfileCompletionModal'
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   ResponsiveModal: ({
     open,
     onOpenChange,
@@ -27,7 +27,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
     ) : null,
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest

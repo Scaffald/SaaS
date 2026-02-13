@@ -1,12 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { BarChart, LineChart, PieChart, useThemeContext } from '@unicornlove/beyond-ui'
+import { BarChart, LineChart, PieChart, useThemeContext } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
-import { Card, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Card, Spinner, Text, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type OverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
 type MetricRecord = NonNullable<OverviewOutput['metrics']>[number]

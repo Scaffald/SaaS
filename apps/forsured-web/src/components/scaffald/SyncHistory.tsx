@@ -1,7 +1,7 @@
 /**
  * SyncHistory - Sync history table using Beyond UI
  */
-import { Stack, Text, Chip } from '@unicornlove/beyond-ui';
+import { Stack, Text, Chip } from '@scaffald/ui';
 import { DataTable } from '../Common/DataTable';
 import type { ColumnDef } from '@tanstack/react-table';
 

@@ -1,7 +1,7 @@
-import { Button } from '@unicornlove/beyond-ui'
+import { Button } from '@scaffald/ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {

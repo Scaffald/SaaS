@@ -1,11 +1,11 @@
 import type { OrganizationLocation } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete, useThemeContext } from '@unicornlove/beyond-ui'
+import type { AddressResult } from '@scaffald/ui'
+import { AddressAutocomplete, useThemeContext } from '@scaffald/ui'
 import { Plus, X } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
-import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]

@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Bug, Lightbulb, HelpCircle, MessageCircle, ChevronRight, Inbox } from 'lucide-react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button } from '@scaffald/ui';
 import { trpc } from '../../lib/trpc';
 
 interface FeedbackListProps {

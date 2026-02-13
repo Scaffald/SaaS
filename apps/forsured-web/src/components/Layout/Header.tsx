@@ -3,7 +3,7 @@
 
  */
 import React from 'react'
-import { Row, Button } from '@unicornlove/beyond-ui'
+import { Row, Button } from '@scaffald/ui'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function Header() {

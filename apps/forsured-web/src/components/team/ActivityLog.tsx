@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { LogIn, LogOut, Edit, Plus, Trash2, Info } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 
 export interface ActivityEntry {
   id: string;

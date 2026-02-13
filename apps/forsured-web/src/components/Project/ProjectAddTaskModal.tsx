@@ -9,7 +9,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { X, Save, Loader2, Calendar, User, AlertTriangle } from 'lucide-react';
-import { Stack, Row, Text, H2, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Input } from '@scaffald/ui';
 import Textarea from '../Common/Textarea';
 import Button from '../Common/Button';
 import type { Task, TaskStatus, TaskPriority, ProjectParticipant } from '../../types';

@@ -9,7 +9,7 @@ global.confirm = mockConfirm
 
 // Mock toast
 const mockShow = vi.fn()
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockShow,
   }),
@@ -115,7 +115,7 @@ vi.mock('@scf/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Button: ({
     children,
     onPress,
@@ -228,7 +228,7 @@ vi.mock('../components', () => ({
 }))
 
 // Beyond UI mock
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,

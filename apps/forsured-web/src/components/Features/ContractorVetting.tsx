@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   XCircle,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Card, Input } from '@scaffald/ui';
 import ComplianceScore from '../Common/ComplianceScore';
 import StatusBadge from '../Common/StatusBadge';
 import Button from '../Common/Button';

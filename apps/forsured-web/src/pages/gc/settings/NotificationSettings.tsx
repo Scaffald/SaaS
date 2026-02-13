@@ -1,7 +1,7 @@
 // src/pages/gc/settings/NotificationSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Button, SettingsNotificationTable, SettingsSectionHeader } from '@unicornlove/beyond-ui';
-import type { NotificationPreference } from '@unicornlove/beyond-ui';
+import { Stack, Button, SettingsNotificationTable, SettingsSectionHeader } from '@scaffald/ui';
+import type { NotificationPreference } from '@scaffald/ui';
 import { Bell } from 'lucide-react-native';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';

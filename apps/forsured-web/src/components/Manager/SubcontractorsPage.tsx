@@ -16,7 +16,7 @@ import {
   Copy,
   Clock,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H2, H3, Card, Grid } from '@scaffald/ui'
 import Button from '../Common/Button'
 import SubcontractorDetailModal from './SubcontractorDetailModal'
 import { ManualUserCreateModal } from '../ManualUsers/ManualUserCreateModal'

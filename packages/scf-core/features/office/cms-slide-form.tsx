@@ -1,9 +1,9 @@
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@scf/schemas'
-import { IconSelector, ToggleSwitch } from '@unicornlove/beyond-ui'
+import { IconSelector, ToggleSwitch } from '@scaffald/ui'
 import { ImageUpload } from '@scf/core/components/ui'
 import { Save } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Form, H4, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Form, H4, Input, Label, Text, TextArea, Row, Stack } from '@scaffald/ui'
 
 interface CMSSlideFormProps {
   initialData?: WelcomeSlideUpdate

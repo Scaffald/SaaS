@@ -1,8 +1,8 @@
 import { api } from '@scf/core/utils/api'
-import { Dialog, useThemeContext } from '@unicornlove/beyond-ui'
+import { Dialog, useThemeContext } from '@scaffald/ui'
 import { Download, X } from 'lucide-react-native'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type TransactionReceiptModalProps = {
   transactionId: string

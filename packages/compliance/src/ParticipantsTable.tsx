@@ -3,9 +3,9 @@
  * Beyond UI Component Library
  */
 
-import { Stack, Row, Text } from '@unicornlove/beyond-ui'
-import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
-import type { StackProps } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import {
   User,
   Building,

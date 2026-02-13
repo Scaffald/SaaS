@@ -13,7 +13,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react'
 import { Search, Users as UsersIcon } from 'lucide-react'
-import { Stack, Row, Text, Card, Button, Input, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Button, Input, Grid } from '@scaffald/ui'
 import { TeamMemberCard, type TeamMember } from './TeamMemberCard'
 
 type RoleFilter = 'all' | TeamMember['role']

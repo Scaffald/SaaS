@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Row, Stack, Text } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text } from '@scaffald/ui';
 import { Settings } from 'lucide-react';
 import SettingsNav from './SettingsNav';
 

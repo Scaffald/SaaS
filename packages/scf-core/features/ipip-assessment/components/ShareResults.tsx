@@ -5,9 +5,9 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import { Button, Separator, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Switch, Text, Row, Stack } from '@scaffald/ui'
 
 export interface ShareResultsProps {
   isComplete: boolean

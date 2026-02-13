@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React, { forwardRef, useCallback, useId } from 'react'
-import { Checkbox as BeyondCheckbox, type CheckboxSize } from '@unicornlove/beyond-ui'
+import { Checkbox as BeyondCheckbox, type CheckboxSize } from '@scaffald/ui'
 
 export interface CheckboxProps {
   label?: string

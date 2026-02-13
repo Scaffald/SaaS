@@ -14,7 +14,7 @@ import {
   Text,
   Input,
   Button,
-} from '@unicornlove/beyond-ui';
+} from '@scaffald/ui';
 import { SimpleModal } from '../Common/SimpleModal';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useUser } from '../../contexts/UserContext';

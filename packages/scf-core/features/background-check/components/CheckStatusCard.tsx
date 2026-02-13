@@ -1,8 +1,8 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import { AlertTriangle, Eye, RefreshCcw } from 'lucide-react-native'
 import { memo, useMemo } from 'react'
-import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Progress, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   type BackgroundCheckSummary,

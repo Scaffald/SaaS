@@ -1,7 +1,7 @@
 import type { ApplicationStepType } from '@scf/schemas'
 import { CheckCircle2 } from 'lucide-react-native'
-import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface ProgressIndicatorProps {
   /**

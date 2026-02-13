@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Progress, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { getChoices, getQuestions, type IPIPAnswer, type IPIPChoice } from '../lib/ipip'
 
 export interface CooldownStepProps {

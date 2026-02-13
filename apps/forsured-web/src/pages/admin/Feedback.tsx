@@ -37,7 +37,7 @@ import {
   Input,
   Spinner,
   SearchSelect,
-} from '@unicornlove/beyond-ui';
+} from '@scaffald/ui';
 import { toast } from 'sonner';
 import { trpc } from '../../lib/trpc';
 import { FeedbackReassignModal } from '../../components/Admin/FeedbackReassignModal';

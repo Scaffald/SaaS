@@ -6,7 +6,7 @@
  * with options to view permissions and revoke access
  */
 
-import { Text, Row, Stack, Button } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, Button } from '@scaffald/ui'
 
 /**
  * Connected app structure

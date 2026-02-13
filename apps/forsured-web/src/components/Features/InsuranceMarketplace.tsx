@@ -8,7 +8,7 @@ import {
   Eye,
   Plus,
 } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import Button from '../Common/Button';
 import IconButton from '../Common/IconButton';
 

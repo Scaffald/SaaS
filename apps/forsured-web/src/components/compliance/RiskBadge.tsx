@@ -9,8 +9,8 @@
  *   CRITICAL (red): Major violations
  */
 import React from 'react';
-import { Row, Text } from '@unicornlove/beyond-ui';
-import { Chip as Badge } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
+import { Chip as Badge } from '@scaffald/ui';
 import { CheckCircle, AlertCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { RiskLevel, riskCalculationService } from '../../lib/compliance/riskCalculationService';
 

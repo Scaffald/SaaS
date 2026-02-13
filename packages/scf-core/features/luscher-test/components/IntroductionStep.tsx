@@ -1,4 +1,4 @@
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 export interface IntroductionStepProps {
   onBegin: () => void

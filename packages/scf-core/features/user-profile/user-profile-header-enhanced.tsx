@@ -26,7 +26,7 @@ import {
   UserPlus,
   X,
 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -38,7 +38,7 @@ import {
   useWindowDimensions,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 interface UserProfileHeaderEnhancedProps {
   profile: {

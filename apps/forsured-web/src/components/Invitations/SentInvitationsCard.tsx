@@ -6,7 +6,7 @@
  * Shows invitee info, status, and when the invitation was sent.
  */
 
-import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@scaffald/ui'
 import { Mail, Send, ChevronRight, Check, X, Clock } from 'lucide-react'
 import type React from 'react'
 import { useNavigate } from 'react-router-dom'

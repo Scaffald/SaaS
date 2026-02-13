@@ -9,9 +9,9 @@ import {
   useUnfollowUserMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
 import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Text, Row } from '@unicornlove/beyond-ui'
+import { Button, Text, Row } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 interface ConnectionFollowButtonsInlineProps {

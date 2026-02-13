@@ -8,7 +8,7 @@ import { Link, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 import { api } from '@scf/core/utils/api'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { Button, Card, Badge, Row, Stack, Text } from '@unicornlove/beyond-ui'
+import { Button, Card, Badge, Row, Stack, Text } from '@scaffald/ui'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import type { WebhookConfig } from '@scf/schemas'
 

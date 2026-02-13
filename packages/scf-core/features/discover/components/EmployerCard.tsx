@@ -1,7 +1,7 @@
-import { DiscoverCard, extractPlainText } from '@unicornlove/beyond-ui'
+import { DiscoverCard, extractPlainText } from '@scaffald/ui'
 import { Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface Employer {
   id: string

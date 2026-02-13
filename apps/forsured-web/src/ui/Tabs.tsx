@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Tabs as BeyondUITabs, Chip, colors, spacing } from '@unicornlove/beyond-ui'
+import { Tabs as BeyondUITabs, Chip, colors, spacing } from '@scaffald/ui'
 import type { ReactNode } from 'react'
 
 /**

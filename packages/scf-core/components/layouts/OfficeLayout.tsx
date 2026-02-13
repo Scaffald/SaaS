@@ -5,9 +5,9 @@ import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { useWindowDimensions, Row, Stack } from '@unicornlove/beyond-ui'
-import type { StackProps } from '@unicornlove/beyond-ui'
-import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/beyond-ui'
+import { useWindowDimensions, Row, Stack } from '@scaffald/ui'
+import type { StackProps } from '@scaffald/ui'
+import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type OfficeLayoutProps = {

@@ -4,8 +4,8 @@
 
 import { CheckCircle, AlertTriangle, XCircle, TrendingUp, TrendingDown } from 'lucide-react-native'
 import { View, StyleSheet } from 'react-native'
-import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
 import type { ViewStyle } from 'react-native'
 
 export interface ComplianceScoreProps {

@@ -2,7 +2,7 @@
  * BrokerDashboard - Broker dashboard page using Beyond UI
  */
 import React from 'react';
-import { Stack, Text } from '@unicornlove/beyond-ui';
+import { Stack, Text } from '@scaffald/ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { LayoutDashboard } from 'lucide-react';
 import PageTransition from '../../components/Common/PageTransition';

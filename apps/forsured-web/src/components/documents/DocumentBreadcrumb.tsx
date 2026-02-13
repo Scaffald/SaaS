@@ -3,7 +3,7 @@
  * Document Organization by Client/Project/GC
  */
 import React from 'react';
-import { Row, Text } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
 import { ChevronRight, Home } from 'lucide-react';
 
 export interface DocumentBreadcrumbProps {

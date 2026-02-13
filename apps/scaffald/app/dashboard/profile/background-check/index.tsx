@@ -1,7 +1,7 @@
 import { CheckStatusDashboard } from '@scf/core/features/background-check'
 import { Stack as ExpoStack } from 'expo-router'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 
 export default function BackgroundCheckDashboardScreen() {
   const insets = useSafeAreaInsets()

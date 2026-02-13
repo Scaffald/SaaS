@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 import { Check, MessageSquare } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
-import { Avatar, Card, type GetThemeValueForKey, Separator } from '@unicornlove/beyond-ui'
+import { Avatar, Card, type GetThemeValueForKey, Separator } from '@scaffald/ui'
 import { ComparisonField } from './ComparisonField'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 

@@ -15,7 +15,7 @@ import {
   SizableText,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useState } from 'react'
 
 interface ConsentScreenProps {

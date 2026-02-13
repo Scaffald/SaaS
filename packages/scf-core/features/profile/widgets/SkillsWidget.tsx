@@ -20,11 +20,11 @@ import {
   Tab,
   TabGroup,
   type SkillsChartDataset,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } from '@scaffald/ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 

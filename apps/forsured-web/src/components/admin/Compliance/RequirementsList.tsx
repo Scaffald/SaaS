@@ -42,7 +42,7 @@ import {
   Button,
   H2,
   Card,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import {
   useComplianceRequirements,
   useArchiveComplianceRequirement,

@@ -18,7 +18,7 @@ import {
   ChevronDown,
   Check,
 } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import { IntegrationStatus } from '../../types';
 import { mockIntegrations } from '../../utils/mockData';
 import ConnectionWizard from '../Integrations/ConnectionWizard';

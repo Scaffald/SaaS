@@ -1,11 +1,10 @@
 import { TeamForm } from '@scf/core/features/office/teams'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Check, ChevronDown } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Label, Select, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, ResponsiveSelect, Spinner, Text, Stack } from '@scaffald/ui'
 
 type OfficeOrganizationsOutput = inferRouterOutputs<AppRouter>['office']['getOrganizations']
 type OrganizationOption = OfficeOrganizationsOutput['organizations'][number]
@@ -24,6 +23,15 @@ export default function CreateTeamPage() {
       setSelectedOrganizationId(organizations[0].id as string)
     }
   }, [organizations, selectedOrganizationId])
+
+  const organizationOptions = useMemo(
+    () =>
+      organizations.map((org) => ({
+        value: org.id as string,
+        label: (org.name as string) ?? 'Untitled Organization',
+      })),
+    [organizations]
+  )
 
   if (isLoading) {
     return (
@@ -48,43 +56,13 @@ export default function CreateTeamPage() {
   return (
     <Stack padding={16} gap={16}>
       <Stack gap={8} style={{ maxWidth: 520 }}>
-        <Label htmlFor="team-create-organization">Select organization</Label>
-        <Select
-          id="team-create-organization"
+        <ResponsiveSelect
+          label="Select organization"
+          placeholder="Select organization"
           value={selectedOrganizationId ?? ''}
-          onValueChange={(value) => setSelectedOrganizationId(value)}
-          disablePreventBodyScroll
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value
-              placeholder={
-                selectedOrganizationId
-                  ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
-                    'Select organization')
-                  : 'Select organization'
-              }
-            />
-          </Select.Trigger>
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Organizations</Select.Label>
-                {organizations.map((org, index) => (
-                  <Select.Item key={org.id} value={org.id} index={index}>
-                    <Select.ItemText>
-                      {(org.name as string) ?? 'Untitled Organization'}
-                    </Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size="lg" />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          onValueChange={(value: string) => setSelectedOrganizationId(value)}
+          options={organizationOptions}
+        />
       </Stack>
 
       {selectedOrganizationId ? (

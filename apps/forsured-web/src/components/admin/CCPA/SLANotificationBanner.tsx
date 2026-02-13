@@ -8,7 +8,7 @@
 
 import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui'
 import { trpc } from '../../../lib/trpc'
 import {
   generateSLASummary,

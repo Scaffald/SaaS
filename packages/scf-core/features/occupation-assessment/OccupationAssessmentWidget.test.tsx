@@ -23,7 +23,7 @@ vi.mock('@scf/core/utils/api', () => ({
 }))
 
 // Beyond UI mock
-vi.mock('@unicornlove/beyond-ui', async () => {
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
     Button: ({ children, onPress, ...props }: { children: React.ReactNode; onPress?: () => void; [key: string]: unknown }) => (

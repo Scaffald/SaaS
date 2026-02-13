@@ -7,7 +7,7 @@
  */
 
 import type { ReactNode } from 'react'
-import { Stack, Text, Tooltip } from '@unicornlove/beyond-ui'
+import { Stack, Text, Tooltip } from '@scaffald/ui'
 import { useCCPAPermissions } from '../../../hooks/useCCPAPermissions'
 import type { CCPAPermission } from '../../../lib/auth/ccpaPermissions'
 

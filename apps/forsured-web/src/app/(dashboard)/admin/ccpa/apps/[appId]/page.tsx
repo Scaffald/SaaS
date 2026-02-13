@@ -25,7 +25,7 @@ import {
   Switch,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Checkbox from '../../../../../../ui/Checkbox'
 import Textarea from '../../../../../../components/Common/Textarea'
 import { useRouter, useParams } from 'next/navigation'

@@ -18,7 +18,7 @@
  */
 import { useEffect, useState } from 'react';
 import type { ReactNode, CSSProperties } from 'react';
-import { Stack, FadeTransition } from '@unicornlove/beyond-ui';
+import { Stack, FadeTransition } from '@scaffald/ui';
 
 export interface PageTransitionProps {
   /** Page content */

@@ -12,7 +12,7 @@ import {
   Stack,
   AlertDialog,
   Separator,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 import type { OAuthApp } from '@scf/schemas/oauth'

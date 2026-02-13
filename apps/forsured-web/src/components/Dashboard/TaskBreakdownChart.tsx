@@ -3,9 +3,9 @@
  * Displays task breakdown using DonutChart
  */
 
-import { Stack, Text, Card } from '@unicornlove/beyond-ui'
-import { DonutChart } from '@unicornlove/beyond-ui'
-import type { DonutChartData } from '@unicornlove/beyond-ui'
+import { Stack, Text, Card } from '@scaffald/ui'
+import { DonutChart } from '@scaffald/ui'
+import type { DonutChartData } from '@scaffald/ui'
 
 export interface TaskBreakdownChartProps {
   /**

@@ -3,7 +3,7 @@
 
  */
 import React from 'react'
-import { Row, Chip } from '@unicornlove/beyond-ui'
+import { Row, Chip } from '@scaffald/ui'
 import { CheckCircle, AlertTriangle, XCircle, Clock, FileText, Edit } from 'lucide-react'
 
 type AckStatus =

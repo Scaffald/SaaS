@@ -2,9 +2,9 @@
  * CommentThread - Threaded comments component
  */
 
-import { Stack, Row, Box, Text } from '@unicornlove/beyond-ui'
-import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
-import type { StackProps } from '@unicornlove/beyond-ui'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import { Send, MoreHorizontal, Reply, Heart } from 'lucide-react-native'
 import { useState } from 'react'
 import { Pressable, TextInput } from 'react-native'

@@ -29,7 +29,7 @@ import {
   Button,
   H3,
   H4,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import {
   useComplianceRequirements,
   useRequirementVersionHistory,

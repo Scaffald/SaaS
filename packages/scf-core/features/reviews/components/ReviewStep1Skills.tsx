@@ -1,4 +1,4 @@
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import { StarRating } from './StarRating'
 
 // Mock skills data - will be replaced with real data from API

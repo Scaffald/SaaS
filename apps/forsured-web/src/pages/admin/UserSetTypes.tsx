@@ -23,7 +23,7 @@ import {
   Check,
   AlertTriangle,
 } from 'lucide-react'
-import { Stack, Row, Text, Button, Card, H1, H3, Spinner, Input } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H1, H3, Spinner, Input } from '@scaffald/ui'
 import { EmptyState } from '../../ui/EmptyState'
 import Textarea from '../../components/Common/Textarea'
 import { trpc } from '../../lib/trpc'

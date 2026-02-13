@@ -1,5 +1,5 @@
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 interface ReviewStep8RecommendationProps {
   recommendation: boolean | null

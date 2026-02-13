@@ -1,6 +1,6 @@
 // src/pages/admin/Dashboard.tsx
-import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, Card } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius } from '@scaffald/ui';
 import PageTransition from '../../components/Common/PageTransition';
 import AnimatedList from '../../components/Common/AnimatedList';
 

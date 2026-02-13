@@ -4,9 +4,9 @@ import {
   usePublishedJobs,
   useUserApplications,
 } from '@scf/core/utils/jobs-sdk-hooks'
-import { extractPlainText, SkeletonList } from '@unicornlove/beyond-ui'
+import { extractPlainText, SkeletonList } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
-import { ScrollView, Text, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView, Text, Stack } from '@scaffald/ui'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 

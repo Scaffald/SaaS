@@ -1,13 +1,13 @@
 import { Send } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import {
   useApplicationMessages,
   useSendApplicationMessageMutation,
 } from '@scf/core/utils/jobs-sdk-hooks'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 interface MessagesTabProps {
   applicationId: string

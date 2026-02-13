@@ -18,9 +18,9 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { api } from '@scf/core/utils/api'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * Request status type for admin view

@@ -18,7 +18,7 @@ import {
   Input,
   Button,
   H3,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import {
   useComplianceRequirements,
   type ComplianceRequirement,

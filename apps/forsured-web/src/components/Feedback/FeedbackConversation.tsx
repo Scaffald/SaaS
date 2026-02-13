@@ -15,7 +15,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button } from '@scaffald/ui';
 import { toast } from 'sonner';
 import { trpc } from '../../lib/trpc';
 import { FeedbackMessage } from './FeedbackMessage';

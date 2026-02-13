@@ -1,7 +1,7 @@
 import type { AppRouter } from '@scf/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 import { memo } from 'react'
-import { Button, Card, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]

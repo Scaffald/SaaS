@@ -1,7 +1,7 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { RefreshCcw } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
-import { Button } from '@unicornlove/beyond-ui'
+import { Button } from '@scaffald/ui'
 interface ResendTimerProps {
   onComplete: () => void
   onResendClick: () => void

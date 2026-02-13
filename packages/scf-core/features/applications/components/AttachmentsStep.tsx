@@ -2,8 +2,8 @@ import { useGetUploadUrlMutation, useConfirmUploadMutation } from '@scf/core/uti
 import type { AttachmentMetadata } from '@scf/schemas'
 import { ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react-native'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
-import { Button, Progress, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Progress, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
 

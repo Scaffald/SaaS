@@ -16,13 +16,13 @@ import {
   plainTextToTipTap,
   RichTextEditor,
   SkeletonForm,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useSafeToast } from '@scf/core/hooks/useSafeToast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {

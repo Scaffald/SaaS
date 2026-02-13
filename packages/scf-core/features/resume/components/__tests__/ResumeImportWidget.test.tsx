@@ -35,7 +35,7 @@ vi.mock('lucide-react-native', () => ({
   Users: () => <span data-testid="users" />,
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   interface StackProps {
     children?: ReactNode
     [key: string]: unknown
@@ -102,7 +102,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),

@@ -1,7 +1,7 @@
 import { Check, Edit3, Eye, EyeOff, Tag, Trash2, X } from 'lucide-react-native'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   Image,
@@ -13,7 +13,7 @@ import {
   View,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 

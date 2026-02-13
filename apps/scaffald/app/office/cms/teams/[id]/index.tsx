@@ -16,7 +16,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
@@ -249,7 +249,7 @@ export default function OfficeTeamDetailPage() {
 
           {(isMembersLoading || membersError) && (
             <InfoBanner
-              iconStart={RefreshCcw}
+              icon={RefreshCcw}
               title="Member list status"
               message={
                 membersError instanceof Error
@@ -300,10 +300,12 @@ function CenteredMessageCard({
 }) {
   return (
     <Stack align="center" justify="center" gap={12}>
-      <Card padding={16} gap={12}>
-        <Text>{title}</Text>
-        <Text color="gray">{description}</Text>
-        <Button onPress={onAction}>{actionLabel}</Button>
+      <Card padding="md">
+        <Stack gap={12}>
+          <Text>{title}</Text>
+          <Text color="gray">{description}</Text>
+          <Button onPress={onAction}>{actionLabel}</Button>
+        </Stack>
       </Card>
     </Stack>
   )
@@ -321,15 +323,17 @@ function InfoBanner({
   onAction: () => void
 }) {
   return (
-    <Card padding={16} gap={12}>
-      <Row gap={8} align="center">
-        <Icon size={18} />
-        <Text>{title}</Text>
-      </Row>
-      <Text color="gray">{message}</Text>
-      <Button size="md" onPress={onAction}>
-        Refresh
-      </Button>
+    <Card padding="md">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Icon size={18} />
+          <Text>{title}</Text>
+        </Row>
+        <Text color="gray">{message}</Text>
+        <Button size="md" onPress={onAction}>
+          Refresh
+        </Button>
+      </Stack>
     </Card>
   )
 }

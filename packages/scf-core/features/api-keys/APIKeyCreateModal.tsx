@@ -17,7 +17,7 @@ import {
   Stack,
   Checkbox,
   Spinner,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react-native'
 import { format, addMonths } from 'date-fns'
 

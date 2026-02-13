@@ -1,4 +1,4 @@
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { HelpCircle, Info } from 'lucide-react-native'
 
 export function InquiryHelpSidebar() {

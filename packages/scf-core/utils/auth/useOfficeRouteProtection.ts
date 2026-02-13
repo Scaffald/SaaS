@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { useWindowDimensions } from 'react-native'

@@ -1,8 +1,8 @@
 import { useInquiryHistory } from '@scf/core/utils/inquiries-sdk-hooks'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Avatar, type GetThemeValueForKey } from '@unicornlove/beyond-ui'
+import { Avatar, type GetThemeValueForKey } from '@scaffald/ui'
 
 interface InquiryHistoryTimelineProps {
   inquiryId: string

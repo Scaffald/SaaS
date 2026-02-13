@@ -12,7 +12,7 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { ZoomIn, ZoomOut, Maximize, AlertTriangle, Info, Loader2 } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import type { DependencyNode } from '../../lib/compliance/dependency-resolver';
 import type { CoverageType } from '../../lib/compliance/dependency-types';
 import { DependencyType } from '../../lib/compliance/dependency-types';

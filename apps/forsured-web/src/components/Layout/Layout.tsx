@@ -8,8 +8,8 @@
  */
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, Navigate } from 'react-router-dom'
-import { Stack, SkipLink, CommandMenu } from '@unicornlove/beyond-ui'
-import type { CommandMenuItemData } from '@unicornlove/beyond-ui'
+import { Stack, SkipLink, CommandMenu } from '@scaffald/ui'
+import type { CommandMenuItemData } from '@scaffald/ui'
 import Sidebar from './Sidebar'
 import DashboardHeader from './DashboardHeader'
 import ProfileModal from '../Settings/ProfileModal'

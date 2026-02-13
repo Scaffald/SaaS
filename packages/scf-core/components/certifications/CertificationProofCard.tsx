@@ -1,6 +1,6 @@
 import { ExternalLink, Link as LinkIcon, Upload, X } from 'lucide-react-native'
 import { type ChangeEvent, useState } from 'react'
-import { Button, Card, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, Text, Row, Stack } from '@scaffald/ui'
 
 interface CertificationProofCardProps {
   certificationTitle: string

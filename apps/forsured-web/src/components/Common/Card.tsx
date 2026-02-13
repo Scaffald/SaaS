@@ -1,5 +1,5 @@
 /**
- * Card - Re-export from @unicornlove/beyond-ui
+ * Card - Re-export from @scaffald/ui
 
  *
  * Note: Beyond UI Card has CardHeader, CardContent, CardFooter
@@ -10,13 +10,13 @@ export {
   CardHeader,
   CardContent,
   CardFooter,
-} from '@unicornlove/beyond-ui'
-export type { CardProps } from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
+export type { CardProps } from '@scaffald/ui'
 
 // CardTitle and CardDescription aliases using Typography components
-import { H4 as CardTitle, Text as CardDescription } from '@unicornlove/beyond-ui'
+import { H4 as CardTitle, Text as CardDescription } from '@scaffald/ui'
 export { CardTitle, CardDescription }
 
 // Default export for backward compatibility
-import { Card as DataDisplayCard } from '@unicornlove/beyond-ui'
+import { Card as DataDisplayCard } from '@scaffald/ui'
 export default DataDisplayCard

@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
 import { ExternalLink } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string

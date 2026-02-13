@@ -1,6 +1,6 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
-import { Button, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
 

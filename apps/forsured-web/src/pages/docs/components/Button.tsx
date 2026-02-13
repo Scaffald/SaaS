@@ -1,6 +1,6 @@
 // src/pages/docs/components/Button.tsx
 import React from 'react';
-import { Box } from '@unicornlove/beyond-ui';
+import { Box } from '@scaffald/ui';
 import ComponentDocumentationTemplate from '../Components';
 import Button from '../../../components/Common/Button';
 

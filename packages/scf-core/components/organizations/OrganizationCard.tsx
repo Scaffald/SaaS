@@ -1,14 +1,14 @@
 import { Building, MapPin, Users } from 'lucide-react-native'
 import { forwardRef, memo } from 'react'
 import type { ComponentRef } from 'react'
-import { Text, Row } from '@unicornlove/beyond-ui'
+import { Text, Row } from '@scaffald/ui'
 import {
   CardActions,
   CardHeader,
   CardMetadata,
   SelectableCard,
   type MetadataItem,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 /**
  * Organization address data

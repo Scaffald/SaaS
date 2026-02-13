@@ -3,7 +3,7 @@
  * Merge progress
  * Merge workflow progress
  */
-import { Row, Text, Stack } from '@unicornlove/beyond-ui'
+import { Row, Text, Stack } from '@scaffald/ui'
 import { Check } from 'lucide-react'
 
 interface MergeProgressProps {

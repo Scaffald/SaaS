@@ -5,8 +5,8 @@
  */
 
 import { useState } from 'react'
-import { Stack } from '@unicornlove/beyond-ui'
-import { useToast } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
 import { APIKeysList } from './APIKeysList'
 import { APIKeyCreateModal } from './APIKeyCreateModal'
 import { APIKeyScopesManager } from './APIKeyScopesManager'

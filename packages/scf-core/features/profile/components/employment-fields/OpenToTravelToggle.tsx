@@ -1,5 +1,5 @@
-import { ToggleCard } from '@unicornlove/beyond-ui'
-import type { ToggleCardProps } from '@unicornlove/beyond-ui'
+import { ToggleCard } from '@scaffald/ui'
+import type { ToggleCardProps } from '@scaffald/ui'
 import { Plane } from 'lucide-react-native'
 
 export interface OpenToTravelToggleProps

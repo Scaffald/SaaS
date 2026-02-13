@@ -4,9 +4,9 @@
  */
 
 import { useState } from 'react'
-import { Stack, Row, Box, Text } from '@unicornlove/beyond-ui'
-import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
-import type { StackProps } from '@unicornlove/beyond-ui'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import {
   CheckCircle,
   Circle,

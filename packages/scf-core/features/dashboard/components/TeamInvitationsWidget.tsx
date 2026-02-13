@@ -2,10 +2,10 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 import type { TeamInvitation } from '@scaffald/sdk'
 import { CheckCircle, Clock, Users, XCircle } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type InvitationRecord = TeamInvitation
 

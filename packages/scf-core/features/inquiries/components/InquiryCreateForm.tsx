@@ -17,13 +17,13 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Info } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, FormProvider } from 'react-hook-form'
 import { Platform } from 'react-native'
-import { Switch, TextArea } from '@unicornlove/beyond-ui'
+import { Switch, TextArea } from '@scaffald/ui'
 import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { useInquiryForm } from '../hooks/useInquiryForm'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'

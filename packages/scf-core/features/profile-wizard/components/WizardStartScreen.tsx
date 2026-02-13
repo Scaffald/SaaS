@@ -12,7 +12,7 @@ import {
   Zap,
 } from 'lucide-react-native'
 import { memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@scaffald/ui'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
 export interface WizardStartScreenProps {

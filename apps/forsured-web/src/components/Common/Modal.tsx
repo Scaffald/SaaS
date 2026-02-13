@@ -17,7 +17,7 @@ import {
   useFocusTrap,
   FadeTransition,
   ScaleTransition,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 export interface ModalProps {
   /** Whether the modal is open (alias for 'open' prop) */

@@ -7,7 +7,7 @@ const selectHandler = vi.fn()
 const closeHandler = vi.fn()
 
 // Beyond UI mock before imports
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
@@ -63,7 +63,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   AddressAutocomplete: (props: {
     onChange: (value: string) => void
     onAddressSelect: (result: {

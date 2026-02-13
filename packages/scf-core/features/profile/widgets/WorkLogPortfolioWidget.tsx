@@ -3,7 +3,7 @@ import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
 import { usePublicWorkLogsFeed } from '@scf/core/utils/work-logs-sdk-hooks'
 import { ShieldCheck } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface WorkLogPortfolioWidgetProps {
   userId: string

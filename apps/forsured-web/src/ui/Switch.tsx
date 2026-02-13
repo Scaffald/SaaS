@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React, { forwardRef, useCallback, useId } from 'react'
-import { Toggle, type ToggleSize } from '@unicornlove/beyond-ui'
+import { Toggle, type ToggleSize } from '@scaffald/ui'
 
 export interface SwitchProps {
   label?: string

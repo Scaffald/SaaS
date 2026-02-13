@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
-import { DashboardWidget, extractPlainText } from '@unicornlove/beyond-ui'
+import { DashboardWidget, extractPlainText } from '@scaffald/ui'
 import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string

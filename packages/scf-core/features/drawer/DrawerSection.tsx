@@ -1,4 +1,4 @@
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 import { DrawerLink } from './DrawerLink'
 import type { DrawerSectionProps } from './types'
 

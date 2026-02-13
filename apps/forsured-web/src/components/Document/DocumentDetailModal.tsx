@@ -12,7 +12,7 @@ import {
   History as HistoryIcon,
   FileCheck,
 } from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, H3, Card } from '@scaffald/ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import {

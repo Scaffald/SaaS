@@ -6,8 +6,8 @@ import {
   useMarkAsReadMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { shadows, useThemeContext, useWindowDimensions, Row } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { shadows, useThemeContext, useWindowDimensions, Row } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from 'lucide-react-native'

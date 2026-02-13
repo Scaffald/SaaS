@@ -1,4 +1,4 @@
-import { ToggleSwitch } from '@unicornlove/beyond-ui'
+import { ToggleSwitch } from '@scaffald/ui'
 import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -9,7 +9,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 type FilterPopupProps = {
   isOpen: boolean

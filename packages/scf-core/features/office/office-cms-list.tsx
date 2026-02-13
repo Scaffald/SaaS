@@ -4,8 +4,8 @@ import { OfficeLayout } from '@scf/core/components/layouts'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useState } from 'react'
-import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export function OfficeCMSList() {
   const { theme } = useThemeContext()

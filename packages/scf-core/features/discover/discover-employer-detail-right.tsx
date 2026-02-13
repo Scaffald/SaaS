@@ -14,12 +14,12 @@ import type {
   RemoveEmploymentResponse,
 } from '@scaffald/sdk'
 import { useOrganizationOpenJobsCount } from '@scf/core/utils/organizations-sdk-hooks'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import { BellPlus, Briefcase, CheckCircle2, Loader2, Network, UserPlus } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 type OrganizationIdentifier = { organizationId: string }
 

@@ -4,7 +4,7 @@ import {
   useSendInquiryMutation,
 } from '@scf/core/utils/inquiries-sdk-hooks'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 

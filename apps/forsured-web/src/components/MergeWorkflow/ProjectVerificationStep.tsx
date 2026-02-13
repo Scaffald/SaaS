@@ -7,7 +7,7 @@
  * allowing the real user to confirm which ones to transfer.
  */
 import { useState, useCallback } from 'react'
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, Card } from '@scaffald/ui'
 import { Building, Calendar, User, Check, AlertTriangle } from 'lucide-react'
 import Button from '../Common/Button'
 

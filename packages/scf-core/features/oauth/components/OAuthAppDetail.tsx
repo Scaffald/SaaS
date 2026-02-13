@@ -15,7 +15,7 @@ import {
   Checkbox,
   AlertDialog,
   Input,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 import { useRouter } from 'expo-router'

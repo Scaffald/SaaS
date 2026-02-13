@@ -3,7 +3,7 @@
 
  */
 import { Shield, FileText, Users, AlertCircle } from 'lucide-react'
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card } from '@scaffald/ui'
 import Modal from '../Common/Modal'
 import { Project, Task } from '../../types'
 import { useProjects } from '../../hooks/useProjects'

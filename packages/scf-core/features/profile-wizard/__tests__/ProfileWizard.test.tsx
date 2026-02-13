@@ -267,7 +267,7 @@ vi.mock('../components/steps/EducationStep', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     onPress,

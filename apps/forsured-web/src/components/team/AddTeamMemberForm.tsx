@@ -14,7 +14,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Input, Button } from '@scaffald/ui';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 
 interface AddTeamMemberFormProps {

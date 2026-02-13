@@ -4,7 +4,7 @@
  *
  * Displays role options (Manager/Contractor) with dynamic lexicon labels
  */
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button } from '@scaffald/ui'
 import { Building2, HardHat, ChevronLeft, Loader2 } from 'lucide-react'
 import type { UserSetType } from './IndustrySelection'
 

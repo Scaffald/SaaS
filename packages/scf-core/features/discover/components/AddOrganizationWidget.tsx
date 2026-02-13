@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizations-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import {
   AlertTriangle,
   ArrowRight,
@@ -11,10 +11,10 @@ import {
   Loader2,
   Pencil,
 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Input, Label, Separator, Stack, Text, Row } from '@unicornlove/beyond-ui'
+import { Button, Input, Label, Separator, Stack, Text, Row } from '@scaffald/ui'
 import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2

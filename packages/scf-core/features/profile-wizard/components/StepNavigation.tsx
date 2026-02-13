@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 export interface StepNavigationProps {
   canGoBack: boolean

@@ -14,7 +14,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
 import { useWorkLogSync } from '../hooks/useWorkLogSync'

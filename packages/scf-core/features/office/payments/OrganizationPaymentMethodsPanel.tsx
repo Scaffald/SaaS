@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
 import { CreditCard, Plus, Trash2 } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { SetupIntentForm } from './SetupIntentForm'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 type OrganizationPaymentMethodsPanelProps = {
   organizationId: string

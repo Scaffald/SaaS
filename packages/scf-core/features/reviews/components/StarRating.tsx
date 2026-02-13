@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react-native'
 import { Pressable } from 'react-native'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 interface StarRatingProps {
   label: string

@@ -2,7 +2,7 @@ import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
 
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, Stack } from '@unicornlove/beyond-ui'
+import { Button, Stack } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 
 type InquiryQueryOutput = NonNullable<

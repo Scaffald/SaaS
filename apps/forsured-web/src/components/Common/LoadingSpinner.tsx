@@ -1,7 +1,7 @@
 /**
  * LoadingSpinner - Loading spinner using Beyond UI
  */
-import { Stack, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Spinner } from '@scaffald/ui';
 
 /**
  * Full-screen loading spinner

@@ -6,7 +6,7 @@ import {
   useUpdateProjectMutation,
 } from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
@@ -20,7 +20,7 @@ import {
   Stack,
   useThemeContext,
   useToast,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 

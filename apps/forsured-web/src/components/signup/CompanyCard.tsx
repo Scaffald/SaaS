@@ -2,7 +2,7 @@
  * CompanyCard - Company card component using Beyond UI
  */
 import React from 'react';
-import { Stack, Row, Text, Card, CardContent } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, CardContent } from '@scaffald/ui';
 
 interface Address {
   street: string;

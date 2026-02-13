@@ -11,7 +11,7 @@ import {
   ChevronRight,
   Plus,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H3, Card, Grid } from '@scaffald/ui'
 import { Tabs as TabsCustom } from '../../ui/Tabs'
 import { usePolicies } from '../../hooks/usePolicies'
 import { useClients } from '../../hooks/useClients'

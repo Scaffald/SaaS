@@ -20,7 +20,7 @@ import {
   ArrowLeft,
   Check,
 } from 'lucide-react';
-import { Stack, Row, Text, H2, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Input } from '@scaffald/ui';
 import Button from '../Common/Button';
 import {
   useOrganizationSubcontractors,

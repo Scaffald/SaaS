@@ -19,7 +19,7 @@ import {
 } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useAdaptiveLoading } from '@scf/core/utils/useAdaptiveLoading'
 import { useQueryClient } from '@tanstack/react-query'
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveModal } from '@scaffald/ui'
 import {
   Award,
   BadgeCheck,
@@ -37,10 +37,10 @@ import {
   UserPlus,
   X,
 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface WorkerPreviewModalProps {
   userId: string | null

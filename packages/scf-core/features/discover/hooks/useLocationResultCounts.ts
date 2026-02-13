@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import type { ViewportBounds } from '@unicornlove/beyond-ui'
+import type { ViewportBounds } from '@scaffald/ui'
 
 /**
  * Calculate approximate viewport bounds from a location point

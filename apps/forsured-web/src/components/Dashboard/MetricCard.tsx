@@ -1,12 +1,12 @@
 /**
  * MetricCard - Metric card component using Beyond UI MetricWidget
  * Reusable metric card component
- * Now uses MetricWidget from @unicornlove/beyond-ui internally
+ * Now uses MetricWidget from @scaffald/ui internally
  */
 import React from 'react'
-import { Card, Row, Stack } from '@unicornlove/beyond-ui'
-import { MetricWidget } from '@unicornlove/beyond-ui'
-import type { MetricWidgetType, MetricChangeType } from '@unicornlove/beyond-ui'
+import { Card, Row, Stack } from '@scaffald/ui'
+import { MetricWidget } from '@scaffald/ui'
+import type { MetricWidgetType, MetricChangeType } from '@scaffald/ui'
 
 export interface MetricCardProps {
   title: string

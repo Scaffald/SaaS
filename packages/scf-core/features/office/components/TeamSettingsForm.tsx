@@ -2,14 +2,14 @@ import { useUpdateTeam } from '@scaffald/sdk/react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Info } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { Button, Card, Separator, Spinner, Switch, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { Button, Card, Separator, Spinner, Switch, Text, Row, Stack } from '@scaffald/ui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 const DEFAULT_SETTINGS = {
   defaultRoleId: null as string | null,

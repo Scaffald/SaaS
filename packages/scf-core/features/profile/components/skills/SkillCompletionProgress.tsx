@@ -1,5 +1,5 @@
 import { Sparkles } from 'lucide-react-native'
-import { Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Progress, Text, Row, Stack } from '@scaffald/ui'
 
 interface SkillCompletionProgressProps {
   /** Current skill count */

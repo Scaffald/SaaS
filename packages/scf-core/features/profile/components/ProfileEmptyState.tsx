@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react-native'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 
 interface ProfileEmptyStateProps {
   icon: LucideIcon

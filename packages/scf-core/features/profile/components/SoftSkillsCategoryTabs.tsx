@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { Tab, TabGroup } from '@unicornlove/beyond-ui'
+import { Tab, TabGroup } from '@scaffald/ui'
 
 export type SoftSkillCategory = 'reliability' | 'collaboration' | 'professionalism' | 'technical'
 

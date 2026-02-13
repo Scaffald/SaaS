@@ -13,7 +13,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { Search, FileText, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Card, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button } from '@scaffald/ui';
 import Input from '../Common/Input';
 import { DocumentFilterPanel } from './DocumentFilterPanel';
 import type {

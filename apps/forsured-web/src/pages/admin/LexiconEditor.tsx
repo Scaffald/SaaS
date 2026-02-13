@@ -34,7 +34,7 @@ import {
   Spinner,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { EmptyState } from '../../ui/EmptyState'
 import { trpc } from '../../lib/trpc'
 import { DEFAULT_LEXICON } from '../../contexts/LexiconContext'

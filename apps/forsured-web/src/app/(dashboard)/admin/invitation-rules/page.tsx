@@ -19,7 +19,7 @@ import {
   Input,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Switch from '../../../../ui/Switch'
 import Textarea from '../../../../components/Common/Textarea'
 import { trpc } from '../../../../lib/trpc'

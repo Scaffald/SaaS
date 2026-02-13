@@ -6,7 +6,7 @@ import {
 import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
-import { Button, Spinner, Text, View, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, View, Row, Stack } from '@scaffald/ui'
 
 interface ProfileHoverCardProps {
   /** Pin ID (user ID or organization ID) */

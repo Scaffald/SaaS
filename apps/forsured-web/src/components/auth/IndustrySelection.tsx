@@ -4,7 +4,7 @@
  *
  * Displays available industries for user selection during signup
  */
-import { Stack, Row, Text } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text } from '@scaffald/ui'
 import { Factory, Home, Briefcase, Loader2 } from 'lucide-react'
 
 /** User set type data from API */

@@ -1,6 +1,6 @@
 // src/components/admin/EnumEditor.tsx
 import React, { useState, useEffect } from 'react';
-import { Stack, Row, Text, H3, Card, Button, Input, Label } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H3, Card, Button, Input, Label } from '@scaffald/ui';
 
 interface EnumValue {
   id: string;

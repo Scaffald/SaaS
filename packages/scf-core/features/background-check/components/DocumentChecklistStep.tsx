@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Button, Card, Checkbox, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Checkbox, Text, Row, Stack } from '@scaffald/ui'
 
 import type { DocumentDraft } from '../hooks/useBackgroundCheckForm'
 

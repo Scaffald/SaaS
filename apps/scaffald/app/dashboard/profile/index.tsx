@@ -11,7 +11,7 @@ import {
   PreferencesWidget,
 } from '@scf/core/features/profile/widgets'
 import { useUser } from '@scf/core/utils/useUser'
-import { Stack } from '@unicornlove/beyond-ui'
+import { Stack } from '@scaffald/ui'
 
 /**
  * Profile Index - Own profile view

@@ -6,7 +6,7 @@ import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect } from 'react'
-import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()

@@ -4,7 +4,7 @@
 
  */
 import React, { useState } from 'react'
-import { Row, Stack, Text, Chip } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text, Chip } from '@scaffald/ui'
 import { AlertTriangle, AlertCircle, Info, CheckCircle, ShieldAlert } from 'lucide-react'
 import { TaskSeverity, TASK_SEVERITY_CONFIG, ConsequenceType } from '../../types'
 

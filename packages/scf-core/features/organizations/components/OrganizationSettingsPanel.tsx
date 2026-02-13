@@ -12,7 +12,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import {
   useOrganizationSettings,
   useOrganizationStorageUsage,

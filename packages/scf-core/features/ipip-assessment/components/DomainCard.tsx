@@ -5,7 +5,7 @@ import type {
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { ChevronDown, ChevronUp } from 'lucide-react-native'
 import { memo, useState } from 'react'
-import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Progress, Text, Row, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'
 import { FacetList } from './FacetList'
 

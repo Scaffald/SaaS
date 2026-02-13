@@ -1,5 +1,5 @@
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
-import { Box, Text, ThemeProvider, ToastContainer, ToastProvider } from '@unicornlove/beyond-ui'
+import { Box, Text, ThemeProvider, ToastContainer, ToastProvider } from '@scaffald/ui'
 import { Stack } from 'expo-router'
 
 export default function Layout() {

@@ -1,9 +1,9 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveModal } from '@scaffald/ui'
 import { Briefcase, Building2, Clock, DollarSign, ExternalLink, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface JobData {
   id?: string

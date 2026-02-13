@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React, { ReactNode } from 'react'
-import { Separator, Row, Text } from '@unicornlove/beyond-ui'
+import { Separator, Row, Text } from '@scaffald/ui'
 
 export interface DividerProps {
   orientation?: 'horizontal' | 'vertical'

@@ -1,4 +1,4 @@
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import type { TagData } from '../types'
 
 interface TagCloudProps {

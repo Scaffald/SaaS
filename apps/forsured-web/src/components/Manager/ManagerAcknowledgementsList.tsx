@@ -12,7 +12,7 @@ import {
   X,
   Plus,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Card } from '@scaffald/ui';
 import {
   useManagerAcknowledgements,
   PacketStatus,

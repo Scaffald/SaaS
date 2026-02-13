@@ -2,7 +2,7 @@
  * InvitationForm - Invitation form using Beyond UI
  */
 import React, { useState } from 'react';
-import { Stack, Row, Text, Button, Input, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Input, Card } from '@scaffald/ui';
 
 interface InvitationFormProps {
   onSubmit: (data: { email: string; expiresAt: string; maxUses: number }) => void;

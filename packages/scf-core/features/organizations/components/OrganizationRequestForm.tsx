@@ -3,11 +3,11 @@ import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizati
 import { type OrganizationRequest, organizationRequestSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, Loader2 } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { useToast, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, Label, Text, TextArea, Row, Stack } from '@scaffald/ui'
 
 interface OrganizationRequestSummary {
   id: string

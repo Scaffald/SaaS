@@ -11,8 +11,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
-import { Stack, Row, Text, Button, Card, H1, H2, Spinner } from '@unicornlove/beyond-ui'
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H1, H2, Spinner } from '@scaffald/ui'
+import { colors, spacing, fontSize, borderRadius } from '@scaffald/ui'
 import Textarea from '../components/Common/Textarea'
 import { Mail, UserPlus, Check, X, AlertTriangle, ArrowRight, LogIn, Quote } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'

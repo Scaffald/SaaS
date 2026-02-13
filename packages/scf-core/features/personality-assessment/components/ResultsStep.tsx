@@ -1,7 +1,7 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { IPIPAnswer } from '../lib/ipip'
 import { getResults, getScore, type IPIPScores } from '../lib/ipip'
 

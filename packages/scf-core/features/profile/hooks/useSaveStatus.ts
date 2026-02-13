@@ -1,4 +1,4 @@
-import type { SaveStatus } from '@unicornlove/beyond-ui'
+import type { SaveStatus } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 

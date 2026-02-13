@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { DashboardWidget, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { DashboardWidget, Text, Row, Stack } from '@scaffald/ui'
 import { ArrowRight } from 'lucide-react-native'
 import { Link, usePathname } from 'expo-router'
 

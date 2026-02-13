@@ -1,5 +1,5 @@
 import type { IPIPResults, IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import { DOMAIN_ORDER } from '../utils/domainGrouping'
 import { generateOverallSummary } from '../utils/narrativeGenerator'
 import type { NormalizedScores } from '../utils/scoreNormalizer'

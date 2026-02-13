@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react-native'
-import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ApplicationDetailsTabProps {
   application: MockApplication

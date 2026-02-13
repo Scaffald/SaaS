@@ -1,9 +1,9 @@
 import { api } from '@scf/core/utils/api'
-import { NotificationTag, useThemeContext } from '@unicornlove/beyond-ui'
+import { NotificationTag, useThemeContext } from '@scaffald/ui'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface NotificationDelivery {
   id: string

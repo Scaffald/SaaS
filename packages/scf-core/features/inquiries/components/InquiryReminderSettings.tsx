@@ -2,7 +2,7 @@ import {
   useOrganizationReminderSettings,
   useUpdateOrganizationReminderSettingsMutation,
 } from '@scf/core/utils/organizations-sdk-hooks'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import {
   Button,
@@ -15,7 +15,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 type InquiryReminderSettingsProps = {
   organizationId: string

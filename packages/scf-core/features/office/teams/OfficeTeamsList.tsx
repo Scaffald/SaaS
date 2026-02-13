@@ -1,15 +1,15 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@scf/schemas'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 import { useTeams, useArchiveTeam } from '@scaffald/sdk/react'
 import type { TeamResponse } from '@scaffald/sdk'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
 type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>

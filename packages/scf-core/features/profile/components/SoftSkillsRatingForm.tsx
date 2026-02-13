@@ -3,14 +3,14 @@ import {
   useUpdateSoftSkillsMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator } from '@unicornlove/beyond-ui'
+import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator } from '@scaffald/ui'
 import { CheckCircle2 } from 'lucide-react-native'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Slider, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Slider, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { softSkillsUpdateSchema, type SoftSkillsUpdateInput } from '@scf/schemas/profile'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
 

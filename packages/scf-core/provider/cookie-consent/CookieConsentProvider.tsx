@@ -2,7 +2,7 @@ import {
   CookieConsentBanner,
   CookiePreferencesDialog,
   CookieConsentProvider as BeyondCookieConsentProvider,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import type { ReactNode } from 'react'
 
 const STORAGE_KEY = 'scf-cookie-consent'

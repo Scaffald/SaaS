@@ -1,13 +1,13 @@
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, useThemeContext } from '@unicornlove/beyond-ui'
+import { DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, H4, Input, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, H4, Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import { z } from 'zod'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 const universitySchema = z.object({
   name: z.string().min(1, 'Name is required'),

@@ -43,7 +43,7 @@ vi.mock('expo-router', () => ({
 }))
 
 // Mock toast
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockShow,
   }),
@@ -76,7 +76,7 @@ vi.mock('@scf/core/constants/routes', () => ({
 }))
 
 // Beyond UI mock
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,

@@ -5,7 +5,7 @@ import { careerAssessmentDefaults, type RiasecScores } from '../config/career-as
 import { renderWithProviders } from '@test-helpers/test-utils'
 
 // Beyond UI mock
-vi.mock('@unicornlove/beyond-ui', async () => {
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
     Slider: {

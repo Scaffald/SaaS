@@ -72,7 +72,7 @@ vi.mock('@scf/core/utils/supabase/client', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mocks.toastShow,
   }),

@@ -8,11 +8,11 @@ import {
   LoadingState,
   ResponsiveModal,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Card, Text, Row, Stack } from '@scaffald/ui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'
 

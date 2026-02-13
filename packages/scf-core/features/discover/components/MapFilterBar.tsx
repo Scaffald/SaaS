@@ -1,8 +1,8 @@
-import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete } from '@unicornlove/beyond-ui'
+import type { AddressResult } from '@scaffald/ui'
+import { AddressAutocomplete } from '@scaffald/ui'
 import { List, RotateCcw } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Button, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {

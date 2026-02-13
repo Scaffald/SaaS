@@ -6,7 +6,7 @@
  * Shows success message with checkmark, summary of transferred data,
  * and "Go to Dashboard" button.
  */
-import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, Card } from '@scaffald/ui'
 import { CheckCircle, ClipboardList, Building, FileText, ArrowRight } from 'lucide-react'
 import Button from '../Common/Button'
 

@@ -1,7 +1,7 @@
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import { Paragraph, Text, Row } from '@unicornlove/beyond-ui'
+import { Paragraph, Text, Row } from '@scaffald/ui'
 import {
   CardActions,
   CardBadges,
@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 /**
  * Job card organization data

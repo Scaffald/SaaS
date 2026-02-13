@@ -1,6 +1,6 @@
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Text, Row, Stack, useToast } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, Spinner, Text, Row, Stack, useToast } from '@scaffald/ui'
 
 export default function GeographicSettingsPage() {
   const toast = useToast()

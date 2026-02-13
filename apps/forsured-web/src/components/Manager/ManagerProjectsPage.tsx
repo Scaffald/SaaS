@@ -15,7 +15,7 @@ import {
   Users,
   Loader2,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Card, Input } from '@scaffald/ui';
 import { useProjects } from '../../hooks/useProjects';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import Button from '../Common/Button';

@@ -4,7 +4,7 @@
  * Organized by tabs for easy navigation
  */
 
-import type { CommandMenuItemData } from '@unicornlove/beyond-ui'
+import type { CommandMenuItemData } from '@scaffald/ui'
 import {
   LayoutDashboard,
   Users,

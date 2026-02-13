@@ -4,7 +4,7 @@ import { useRespondToTeamInvitationWithToken } from '@scaffald/sdk/react'
 import { AlertTriangle, CheckCircle, LogIn, XCircle } from 'lucide-react-native'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Stack } from '@scaffald/ui'
 
 type InvitationAction = 'accept' | 'decline'
 

@@ -1,10 +1,10 @@
 /* c8 ignore file */
 
-import { FieldError, FormWrapper } from '@unicornlove/beyond-ui'
+import { FieldError, FormWrapper } from '@scaffald/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import type { ComponentProps, ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { Form, type FormProps, Input, Theme } from '@unicornlove/beyond-ui'
+import { Form, type FormProps, Input, Theme } from '@scaffald/ui'
 import { z } from 'zod'
 
 // Create a basic TextField component

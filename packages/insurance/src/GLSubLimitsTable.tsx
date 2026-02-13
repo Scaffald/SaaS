@@ -2,9 +2,9 @@
  * GLSubLimitsTable - Display GL sub-limits with validation status.
  */
 
-import { Stack, Row, Text, Spinner } from '@unicornlove/beyond-ui'
-import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
-import type { StackProps } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Spinner } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import { Check, X, AlertCircle, AlertTriangle } from 'lucide-react-native'
 import { Pressable, View } from 'react-native'
 

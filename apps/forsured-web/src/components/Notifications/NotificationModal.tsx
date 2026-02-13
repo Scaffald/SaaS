@@ -16,7 +16,7 @@ import {
   Button,
   ButtonGroup,
   Spinner,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Bell } from 'lucide-react'
 import { NotificationItem } from './NotificationItem'
 import { useNotifications, type NotificationStatus } from '../../hooks/useNotifications'

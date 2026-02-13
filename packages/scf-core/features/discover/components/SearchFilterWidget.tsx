@@ -1,6 +1,6 @@
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import { X } from 'lucide-react-native'
-import { Button, Input, Label, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Input, Label, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 export interface SearchFilterWidgetProps {
   /** Title displayed in the header */

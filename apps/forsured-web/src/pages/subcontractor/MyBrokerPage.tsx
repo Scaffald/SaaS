@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Card, Button, Input, Spinner, H1, H3 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button, Input, Spinner, H1, H3 } from '@scaffald/ui';
 import { Mail, Copy, Clock, CheckCircle, AlertCircle, UserPlus, Users } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUser } from '../../contexts/UserContext';

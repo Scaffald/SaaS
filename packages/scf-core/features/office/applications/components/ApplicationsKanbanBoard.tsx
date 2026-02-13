@@ -1,6 +1,6 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/beyond-ui'
+import { DraggableCard, DroppableColumn, KanbanCard } from '@scaffald/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useQueryClient } from '@tanstack/react-query'
@@ -14,12 +14,12 @@ import {
   useWindowDimensions,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { CandidateDetailModal } from './CandidateDetailModal'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 const STATUSES: ApplicationStatus[] = [
   'new',

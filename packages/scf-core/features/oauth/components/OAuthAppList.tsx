@@ -3,7 +3,7 @@
  * Admin OAuth app list
  */
 
-import { Button, Card, SizableText, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, SizableText, Row, Stack } from '@scaffald/ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 

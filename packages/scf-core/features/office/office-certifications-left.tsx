@@ -4,10 +4,10 @@ import {
   DashboardWidget,
   ResponsiveSelect,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
@@ -21,9 +21,9 @@ import {
   useWindowDimensions,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { z } from 'zod'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 const certificationSchema = z.object({
   name: z.string().min(1, 'Name is required'),

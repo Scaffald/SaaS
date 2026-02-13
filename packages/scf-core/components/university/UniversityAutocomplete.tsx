@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { SizableText, Stack } from '@unicornlove/beyond-ui'
-import { SearchSelect, type SearchSelectOption } from '@unicornlove/beyond-ui'
+import { SizableText, Stack } from '@scaffald/ui'
+import { SearchSelect, type SearchSelectOption } from '@scaffald/ui'
 
 export interface University {
   id: string

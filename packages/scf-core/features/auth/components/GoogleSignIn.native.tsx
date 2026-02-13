@@ -4,7 +4,7 @@ import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { useRouter } from 'expo-router'
-import { Button } from '@unicornlove/beyond-ui'
+import { Button } from '@scaffald/ui'
 
 import { IconGoogle } from './IconGoogle'
 

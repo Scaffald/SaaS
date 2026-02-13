@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H2 } from '@scaffald/ui';
 import { X } from 'lucide-react';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 import { ActivityLog, type ActivityEntry } from './ActivityLog';

@@ -8,8 +8,8 @@
 import React, { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { View, Text as RNText, Pressable, StyleSheet, Platform } from 'react-native'
-import { Stack, Row, Button, Text, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui'
+import { Stack, Row, Button, Text, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui'
 
 export interface CodeBlockProps {
   code: string

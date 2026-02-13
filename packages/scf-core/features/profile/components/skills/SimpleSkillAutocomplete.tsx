@@ -1,6 +1,6 @@
 import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues

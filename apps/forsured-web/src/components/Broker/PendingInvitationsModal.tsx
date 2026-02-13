@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, Clock, Building2, HardHat, RefreshCw, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { toast } from 'sonner';
 import {
   resendRelationshipInvitation,

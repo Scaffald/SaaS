@@ -16,7 +16,7 @@ import {
   Input,
   SaaSSectionHeader,
   Grid,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Search, LayoutDashboard } from 'lucide-react'
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService'
 import { useLexicon } from '../../../contexts/LexiconContext'

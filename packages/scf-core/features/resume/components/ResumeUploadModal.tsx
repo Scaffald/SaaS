@@ -1,10 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { FileUpload, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
+import { FileUpload, ResponsiveModal, spacing } from '@scaffald/ui'
 import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 const ACCEPTED_MIME_TYPES = [

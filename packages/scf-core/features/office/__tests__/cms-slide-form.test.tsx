@@ -7,7 +7,7 @@ vi.mock('lucide-react-native', () => ({
   Save: () => <span data-testid="save-icon" />,
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Form: ({ children, onSubmit }: { children: ReactNode; onSubmit?: () => void }) => (
     <form
       onSubmit={(event) => {

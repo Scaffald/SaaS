@@ -8,10 +8,10 @@ import {
   useSaveIPIPProgressMutation,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Button, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
 
 interface SaveIPIPProgressResult {

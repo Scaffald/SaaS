@@ -1,6 +1,6 @@
-import { CustomCheckbox } from '@unicornlove/beyond-ui'
+import { CustomCheckbox } from '@scaffald/ui'
 import { useCallback } from 'react'
-import { Label, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Label, Text, Row, Stack } from '@scaffald/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 import { SimpleSkillAutocomplete } from './SimpleSkillAutocomplete'
 

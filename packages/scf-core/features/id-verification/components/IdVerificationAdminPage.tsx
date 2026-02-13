@@ -7,7 +7,7 @@ import { RefreshCcw } from 'lucide-react-native'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   Card,
@@ -17,7 +17,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type VerificationListResponse = RouterOutputs['idVerification']['listVerifications']

@@ -1,7 +1,7 @@
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { memo, useMemo } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export interface ProjectSelectorOrganization {
   id: string

@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock all profile form components to test cancel behavior pattern
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: vi.fn(),
   }),
@@ -63,7 +63,7 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const React = require('react') as typeof import('react')
   const Button = ({
     children,
@@ -109,7 +109,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Row: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,

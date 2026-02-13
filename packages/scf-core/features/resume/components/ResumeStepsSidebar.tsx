@@ -1,6 +1,6 @@
 import { AssessmentProgress } from '@scf/core/features/assessments'
 import { useMemo } from 'react'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 

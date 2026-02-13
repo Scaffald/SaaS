@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react'
 import { UserPlus, AlertTriangle, Check, Users } from 'lucide-react'
-import { Stack, Row, Text, Button, Input, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Input, Card } from '@scaffald/ui'
 import Modal from '../Common/Modal'
 import { trpc } from '../../lib/trpc'
 import type { InvitationRule } from '../../lib/invitations/types'

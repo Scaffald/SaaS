@@ -2,7 +2,7 @@
  * GCDashboard - GC dashboard page using Beyond UI
  */
 import React from 'react'
-import { Stack, Row, Text, Card, Button, Chip } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Button, Chip } from '@scaffald/ui'
 import { EmptyState } from '../../ui/EmptyState'
 import { Archive, Building2, Users, CheckCircle, Plus } from 'lucide-react'
 import { useLexicon } from '../../contexts/LexiconContext'

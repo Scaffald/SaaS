@@ -1,9 +1,9 @@
 import { Eye, Pencil, X } from 'lucide-react-native'
 import { useEffect, useRef } from 'react'
-import { Button, Row } from '@unicornlove/beyond-ui'
+import { Button, Row } from '@scaffald/ui'
 import { DeleteButton } from './DeleteButton'
 import { DuplicateButton } from './DuplicateButton'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface RowActionOverlayProps<TData> {
   /** The row data */

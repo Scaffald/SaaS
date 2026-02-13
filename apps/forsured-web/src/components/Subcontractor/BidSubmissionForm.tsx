@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Upload, FileText, DollarSign, Calendar, CheckCircle } from 'lucide-react'
-import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid } from '@scaffald/ui'
 import Modal from '../Common/Modal'
 import Button from '../Common/Button'
 import Input from '../Common/Input'

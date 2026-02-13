@@ -7,7 +7,7 @@
  * 3. Comprehensive coverage of component functionality
  * 4. Clear test organization and naming
  *
- * Updated for Beyond UI-based Button from @unicornlove/beyond-ui
+ * Updated for Beyond UI-based Button from @scaffald/ui
  */
 
 import { describe, it, expect, vi } from 'vitest';

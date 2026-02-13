@@ -3,8 +3,8 @@
  */
 
 import { StyleSheet, Pressable } from 'react-native'
-import { Text, Row, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
+import { Text, Row, useThemeContext } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
 import type { ViewStyle } from 'react-native'
 import type { ComplianceStatus } from './ParticipantsTable'
 

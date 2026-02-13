@@ -3,7 +3,7 @@
  * Provides backwards-compatible API for existing code
  */
 import React, { forwardRef, useCallback, useId } from 'react'
-import { Radio as BeyondRadio, type RadioSize } from '@unicornlove/beyond-ui'
+import { Radio as BeyondRadio, type RadioSize } from '@scaffald/ui'
 
 export interface RadioProps {
   label?: string

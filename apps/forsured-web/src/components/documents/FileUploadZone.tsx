@@ -5,7 +5,7 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { Upload, X, CheckCircle, XCircle } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { DocumentService } from '../../lib/documents/documentService';
 import type { Document } from '../../types/document';
 

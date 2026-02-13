@@ -1,17 +1,17 @@
 import { useCreateJobApplicationMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import type { ScreeningAnswers } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/beyond-ui'
+import type { AddressResult } from '@scaffald/ui'
 import {
   AddressAutocomplete,
   Dialog,
   ResponsiveSelect,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { CheckCircle2, X } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
-import { Button, Label, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Label, ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface QuickApplyModalProps {
   /**

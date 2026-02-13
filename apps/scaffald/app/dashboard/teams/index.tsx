@@ -3,7 +3,7 @@ import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { Users } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useTeams } from '@scaffald/sdk/react'
 import type { Team } from '@scaffald/sdk'
 

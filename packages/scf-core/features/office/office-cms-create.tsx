@@ -3,7 +3,7 @@ import { api } from '@scf/core/utils/api'
 import type { WelcomeSlideCreate } from '@scf/schemas'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { useRouter } from 'expo-router'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSCreate() {

@@ -1,4 +1,4 @@
-import { Card, Text, Stack } from '@unicornlove/beyond-ui'
+import { Card, Text, Stack } from '@scaffald/ui'
 
 interface UserProfileAboutProps {
   bio: string

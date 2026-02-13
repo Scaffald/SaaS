@@ -11,7 +11,7 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import { Stack, Row, Text, Button, Card, H3, H4 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H3, H4 } from '@scaffald/ui';
 import { trpc } from '../../lib/trpc';
 
 // =============================================================================

@@ -15,9 +15,9 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@scf/core/components/certifications'
-import { Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@scaffald/ui'
 import { Award, PlusCircle, UploadCloud } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useState } from 'react'
 import {
   Card,
@@ -29,7 +29,7 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { ProfileEmptyState } from './components'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 import { invalidateProfileQueries } from './utils/profile-sync'

@@ -27,7 +27,7 @@ import {
   Building,
   Phone,
 } from 'lucide-react'
-import { Stack, Row, Text, Button, Card, Input, H1 } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Input, H1 } from '@scaffald/ui'
 import { toast } from 'sonner'
 import { ManualUserBadge } from './ManualUserBadge'
 import { trpc } from '../../lib/trpc'

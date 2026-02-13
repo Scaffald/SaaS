@@ -1,4 +1,4 @@
-import { Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Slider, Text, Row, Stack } from '@scaffald/ui'
 
 type RadiusSliderProps = {
   value: number

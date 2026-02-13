@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import Input from '../Common/Input';
 import { OCRField } from '../../types/ocr.types';
 

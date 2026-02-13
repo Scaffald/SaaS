@@ -22,7 +22,7 @@ vi.mock('../MilestoneBadge', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),
@@ -34,7 +34,7 @@ vi.mock('expo-linear-gradient', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const createStack = (dataTestId: string) =>
     function Stack({
       children,

@@ -1,5 +1,5 @@
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import {
   createContext,
   type ReactNode,

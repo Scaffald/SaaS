@@ -1,6 +1,6 @@
 import { supabase } from '@scf/core/utils/supabase/client'
 import type { Database } from '@scf/supabase/types'
-import type { ViewportBounds } from '@unicornlove/beyond-ui'
+import type { ViewportBounds } from '@scaffald/ui'
 import { useQuery } from '@tanstack/react-query'
 import type { TalentProfile } from '../types'
 

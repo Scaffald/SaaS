@@ -1,5 +1,5 @@
 import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from 'lucide-react-native'
-import { type GetThemeValueForKey, Text, Row } from '@unicornlove/beyond-ui'
+import { type GetThemeValueForKey, Text, Row } from '@scaffald/ui'
 
 type BadgeStatus = 'active' | 'expired' | 'revoked' | null | undefined
 

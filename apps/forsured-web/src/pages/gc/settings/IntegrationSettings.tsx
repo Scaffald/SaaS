@@ -1,8 +1,8 @@
 // src/pages/gc/settings/IntegrationSettings.tsx
 import { useState } from 'react';
 import { RefreshCcw } from 'lucide-react-native';
-import { Stack, Row, Text, Button, H3, Spinner, Modal, ModalHeader, ModalContent, SettingsIntegrationsGrid, SettingsSectionHeader } from '@unicornlove/beyond-ui';
-import type { Integration } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, H3, Spinner, Modal, ModalHeader, ModalContent, SettingsIntegrationsGrid, SettingsSectionHeader } from '@scaffald/ui';
+import type { Integration } from '@scaffald/ui';
 import { Plug, Figma, Github, Notion, Slack, Mail } from 'lucide-react-native';
 import SyncStatus from '../../../components/scaffald/SyncStatus';
 import SyncHistory from '../../../components/scaffald/SyncHistory';

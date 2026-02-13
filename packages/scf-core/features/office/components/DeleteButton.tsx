@@ -1,9 +1,9 @@
 import { Trash2 } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { Dialog } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Dialog } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface DeleteButtonProps {
   /**

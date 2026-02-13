@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, Paragraph, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import { z } from 'zod'
 import type { GeneralInfoStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'

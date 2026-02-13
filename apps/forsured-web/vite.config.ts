@@ -235,14 +235,14 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    // Alias @unicornlove/beyond-ui to source for proper test transformation
+    // Alias @scaffald/ui to source for proper test transformation
     alias: {
-      '@unicornlove/beyond-ui': path.resolve(__dirname, '../../packages/beyond-ui/src'),
+      '@scaffald/ui': path.resolve(__dirname, '../../packages/beyond-ui/src'),
     },
     // Dependencies that need to be transformed for tests
     deps: {
       inline: [
-        '@unicornlove/beyond-ui',
+        '@scaffald/ui',
         'react-native-reanimated',
       ],
     },

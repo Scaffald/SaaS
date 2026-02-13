@@ -3,8 +3,8 @@ import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { AlertCircle, Image as ImageIcon, Trash2, Upload } from 'lucide-react-native'
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Image, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { useFilePicker, MediaTypeOptions } from '@unicornlove/beyond-ui'
+import { Button, Image, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useFilePicker, MediaTypeOptions } from '@scaffald/ui'
 
 export interface ImageUploadProps {
   /** Current image URL (for edit mode) */

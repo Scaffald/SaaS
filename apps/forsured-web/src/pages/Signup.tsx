@@ -4,8 +4,8 @@
  */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Text, Spinner, H1 } from '@unicornlove/beyond-ui'
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui'
+import { Stack, Text, Spinner, H1 } from '@scaffald/ui'
+import { colors, spacing, fontSize, borderRadius } from '@scaffald/ui'
 import { useAuth } from '../contexts/AuthContext'
 import { createProfile } from '../services/userProfileService'
 import { markInvitationUsed, type Invitation } from '../lib/invitations'

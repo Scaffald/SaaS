@@ -7,7 +7,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import type { User, UserRole } from '../../types'
 import { User as UserIcon, ChevronDown, Check, Loader2, AlertTriangle } from 'lucide-react'
-import { Stack, Row, Text, Input, Button, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Input, Button, Card } from '@scaffald/ui'
 import { ManualUserBadge } from '../ManualUsers'
 
 /**

@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react'
-import { Stack, Row, Text, Button, Heading, Card, colors, spacing } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Heading, Card, colors, spacing } from '@scaffald/ui'
 import { useUser } from '../../contexts/UserContext'
 import { RequirementsList } from '../../components/Admin/Compliance/RequirementsList'
 import { RequirementEditor } from '../../components/Admin/Compliance/RequirementEditor'

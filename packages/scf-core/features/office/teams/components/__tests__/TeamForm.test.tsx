@@ -33,7 +33,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({ useToast: () => toastMock }))
+vi.mock('@scaffald/ui', () => ({ useToast: () => toastMock }))
 
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
@@ -162,8 +162,8 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui', async () => {
-  const actual = await vi.importActual<typeof import('@unicornlove/beyond-ui')>('@unicornlove/beyond-ui')
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual<typeof import('@scaffald/ui')>('@scaffald/ui')
 
   const Input = ({
     value,

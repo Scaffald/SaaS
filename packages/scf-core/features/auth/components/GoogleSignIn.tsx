@@ -1,7 +1,7 @@
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Button, useToast } from '@unicornlove/beyond-ui'
+import { Button, useToast } from '@scaffald/ui'
 import { logger } from '@scf/core'
 
 import { IconGoogle } from './IconGoogle'

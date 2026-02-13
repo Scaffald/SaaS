@@ -1,6 +1,6 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Box, Paragraph, Spinner, Stack, Text, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Box, Paragraph, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface SuccessViewProps {
   isVisible: boolean

@@ -5,8 +5,8 @@
  */
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Text, Button, H2 } from '@unicornlove/beyond-ui'
-import { colors, spacing, fontSize } from '@unicornlove/beyond-ui'
+import { Stack, Text, Button, H2 } from '@scaffald/ui'
+import { colors, spacing, fontSize } from '@scaffald/ui'
 import LoadingSpinner from '../components/Common/LoadingSpinner'
 import { useAuth } from '../contexts/AuthContext'
 import { getProfile, createProfile } from '../services/userProfileService'

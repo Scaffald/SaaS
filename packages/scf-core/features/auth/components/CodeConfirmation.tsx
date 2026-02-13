@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box, Form, Row } from '@unicornlove/beyond-ui'
+import { Box, Form, Row } from '@scaffald/ui'
 
 import { CodeConfirmationInput, type FormFields } from './CodeConfirmationInput'
 

@@ -13,7 +13,7 @@ import {
 } from '@scf/schemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function EditTeamPage() {
   const router = useRouter()

@@ -6,13 +6,13 @@ import {
   DashboardWidget,
   ResponsiveSelect,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
-import { Input, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Input, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,

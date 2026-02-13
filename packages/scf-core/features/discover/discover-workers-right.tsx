@@ -9,7 +9,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {

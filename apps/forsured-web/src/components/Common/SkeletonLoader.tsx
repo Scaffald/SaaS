@@ -3,7 +3,7 @@
 
  */
 import React from 'react'
-import { Skeleton, SkeletonText, SkeletonCard, Stack, Row } from '@unicornlove/beyond-ui'
+import { Skeleton, SkeletonText, SkeletonCard, Stack, Row } from '@scaffald/ui'
 
 interface SkeletonLoaderProps {
   variant?: 'card' | 'table' | 'chart' | 'text'

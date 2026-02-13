@@ -16,7 +16,7 @@ import {
   List,
   Plus,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H3, Card, Tabs, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H3, Card, Tabs, Grid } from '@scaffald/ui'
 import Tooltip from '../../ui/Tooltip'
 import Button from '../Common/Button'
 import { useProjectDetail } from '../../hooks/useProjectDetail'

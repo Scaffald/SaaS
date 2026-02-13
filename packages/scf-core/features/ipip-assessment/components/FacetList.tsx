@@ -3,7 +3,7 @@ import type {
   IPIPResultFacets,
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { memo } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface FacetListProps {
   facets: Record<string, IPIPFacetScore>

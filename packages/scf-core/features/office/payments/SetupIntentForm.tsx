@@ -1,12 +1,12 @@
 import { useStripeConfig } from '@scf/core/features/payments/hooks/useStripeConfig'
 import { api } from '@scf/core/utils/api'
-import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import { Card } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Card } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type SetupIntentFormProps = {
   organizationId: string

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Card } from '@scaffald/ui';
 import type { EvaluationResult } from '../../lib/compliance/evaluator';
 import { ComplianceStatus } from '../../lib/compliance/evaluator/types';
 

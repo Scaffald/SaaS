@@ -1,8 +1,8 @@
-import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete } from '@unicornlove/beyond-ui'
+import type { AddressResult } from '@scaffald/ui'
+import { AddressAutocomplete } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { AnimatePresence, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Text, Row, Stack } from '@scaffald/ui'
 
 type MapSearchInputProps = {
   isVisible: boolean

@@ -1,4 +1,4 @@
-import type { AddressResult } from '@unicornlove/beyond-ui'
+import type { AddressResult } from '@scaffald/ui'
 import type {
   Control,
   FieldPath,

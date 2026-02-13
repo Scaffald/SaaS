@@ -3,8 +3,8 @@ import {
   type UploadSelection,
   UploadSurface,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, Upload, X } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
@@ -19,7 +19,7 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 import type { DisputeAttachment, DisputeFormValues, DisputeReasonOption } from '../hooks/useDispute'
 

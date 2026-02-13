@@ -1,6 +1,6 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Caption, Row, Separator, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Caption, Row, Separator, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import { AppleSignIn } from './AppleSignIn'
 import { GoogleSignIn } from './GoogleSignIn'

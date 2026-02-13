@@ -1,10 +1,10 @@
 import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { DashboardWidget } from '@scaffald/ui'
 import { CheckCircle, ChevronRight, Circle } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Button, H4, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, H4, Progress, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**

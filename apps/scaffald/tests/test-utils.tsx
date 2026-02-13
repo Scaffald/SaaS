@@ -9,7 +9,7 @@
 import { render, RenderOptions } from '@testing-library/react-native';
 import { ReactElement, ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ThemeProvider } from '@unicornlove/beyond-ui';
+import { ThemeProvider } from '@scaffald/ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 /**

@@ -1,7 +1,7 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { Mail } from 'lucide-react-native'
-import { Box, H1, Paragraph, Row, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Box, H1, Paragraph, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface EmailHeaderProps {
   email: string

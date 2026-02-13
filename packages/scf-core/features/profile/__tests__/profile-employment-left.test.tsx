@@ -32,7 +32,7 @@ vi.mock('../utils/profile-sync-store', () => ({
   useAdaptiveProfileSync: () => 'idle',
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockToastShow,
   }),
@@ -49,7 +49,7 @@ vi.mock('lucide-react-native', () => ({
   Check: () => null,
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   const View = ({ children, ...rest }: { children?: ReactNode } & Record<string, unknown>) => (
     <div {...rest}>{children}</div>
   )
@@ -230,7 +230,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
   }
 })
 
-vi.mock('@unicornlove/beyond-ui', () => {
+vi.mock('@scaffald/ui', () => {
   type DivProps = ComponentPropsWithoutRef<'div'>
 
   type TextInputProps = ComponentPropsWithoutRef<'input'> & {

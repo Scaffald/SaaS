@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack, Row, Box, Text, H1, H2 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H1, H2 } from '@scaffald/ui';
 import NavigationDrawer, { DrawerToggle } from './NavigationDrawer';
 import ThemeSwitcher from '../../components/Common/ThemeSwitcher';
 import FoundationsSection from './sections/FoundationsSection';

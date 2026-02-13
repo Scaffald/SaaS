@@ -12,10 +12,10 @@ import {
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { useProfileBySlug } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useRecordViewMutation } from '@scf/core/utils/profile-views-sdk-hooks'
-import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
+import type { BreadcrumbItem } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 
 /**
  * Public User Profile Route (Vanity URL)

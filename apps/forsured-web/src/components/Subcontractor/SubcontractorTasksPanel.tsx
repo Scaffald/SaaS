@@ -11,7 +11,7 @@ import {
   Mail,
   DollarSign,
 } from 'lucide-react';
-import { Stack, Row, Text, Card, Button, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button, H1 } from '@scaffald/ui';
 import { Task, SeverityLevel, SubcontractorTaskMetadata } from '../../types';
 import { formatDate, isOverdue } from '../../utils/dateHelpers';
 import CommonButton from '../Common/Button';

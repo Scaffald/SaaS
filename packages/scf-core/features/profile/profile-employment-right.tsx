@@ -1,4 +1,4 @@
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 
 /**
  * Profile Employment Right Component

@@ -1,6 +1,6 @@
 import { OrganizationForm } from '@scf/core/features/office/components/OrganizationForm'
 import { api } from '@scf/core/utils/api'
-import { Spinner, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditOrganizationPage() {

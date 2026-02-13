@@ -14,7 +14,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H1 } from '@scaffald/ui';
 import { Plus } from 'lucide-react';
 import {
   TeamMembersList,

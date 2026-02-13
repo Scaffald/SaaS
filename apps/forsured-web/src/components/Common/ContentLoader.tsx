@@ -17,7 +17,7 @@
  * ```
  */
 import type { ReactNode } from 'react';
-import { Stack, Spinner, FadeTransition, Skeleton } from '@unicornlove/beyond-ui';
+import { Stack, Spinner, FadeTransition, Skeleton } from '@scaffald/ui';
 
 export interface ContentLoaderProps {
   /** Whether content is loading */

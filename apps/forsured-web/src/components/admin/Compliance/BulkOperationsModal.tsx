@@ -25,7 +25,7 @@ import {
   Input,
   Button,
   H2,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { trpc } from '../../../lib/trpc'
 import { LoadingSpinner } from '../../Common/LoadingSpinner'
 

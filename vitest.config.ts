@@ -52,14 +52,14 @@ export default defineConfig({
         replacement: resolve(workspaceRoot, "packages/ui/src"),
       },
       {
-        find: "@unicornlove/beyond-ui/tokens",
+        find: "@scaffald/ui/tokens",
         replacement: resolve(
           workspaceRoot,
           "tests/infrastructure/vitest/mocks/beyond-ui-tokens.ts",
         ),
       },
       {
-        find: "@unicornlove/beyond-ui",
+        find: "@scaffald/ui",
         replacement: resolve(
           workspaceRoot,
           "tests/infrastructure/vitest/mocks/beyond-ui.tsx",

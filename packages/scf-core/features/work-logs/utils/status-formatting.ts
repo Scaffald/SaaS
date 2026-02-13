@@ -1,5 +1,5 @@
-import { colors } from '@unicornlove/beyond-ui/tokens'
-import type { Theme } from '@unicornlove/beyond-ui'
+import { colors } from '@scaffald/ui/tokens'
+import type { Theme } from '@scaffald/ui'
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Draft',

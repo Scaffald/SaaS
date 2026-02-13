@@ -1,6 +1,6 @@
 import { Clock } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Progress, Text, TextArea, Stack } from '@unicornlove/beyond-ui'
+import { Progress, Text, TextArea, Stack } from '@scaffald/ui'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends

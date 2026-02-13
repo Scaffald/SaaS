@@ -98,7 +98,7 @@ const mockBeyondUI = vi.hoisted(() => {
   }
 })
 
-// Use real @unicornlove/beyond-ui (no mock) so CertificationSearch renders correctly
+// Use real @scaffald/ui (no mock) so CertificationSearch renders correctly
 
 vi.mock('lucide-react-native', () => ({
   Search: () => <span data-testid="icon-search" />,

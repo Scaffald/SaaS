@@ -16,7 +16,7 @@ import {
 import { useUserSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { buildSkillLookup } from '../utils/data-normalizers'
-import { ToggleSwitch } from '@unicornlove/beyond-ui'
+import { ToggleSwitch } from '@scaffald/ui'
 import {
   Activity,
   DownloadCloud,
@@ -26,7 +26,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Alert, Linking, ScrollView } from 'react-native'
@@ -40,7 +40,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 import { PhotoGallery } from '../components/PhotoGallery'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'

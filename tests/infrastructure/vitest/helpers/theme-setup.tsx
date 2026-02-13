@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ThemeProvider } from '@unicornlove/beyond-ui'
+import { ThemeProvider } from '@scaffald/ui'
 
 /**
  * Wraps children with Beyond-UI ThemeProvider for tests.

@@ -7,10 +7,10 @@ import {
   Heading,
   LoadingState,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { GraduationCap } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } from '@scaffald/ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
 import type { EducationWidgetEntry } from '@scaffald/sdk'

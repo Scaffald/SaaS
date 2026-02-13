@@ -3,7 +3,7 @@ import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
 import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@scf/core/features/resume'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Stack, Text } from '@unicornlove/beyond-ui'
+import { Button, Stack, Text } from '@scaffald/ui'
 
 function useResumeIdFromParams() {
   const params = useLocalSearchParams<{ resumeId?: string }>()

@@ -6,11 +6,11 @@ import {
   type RiasecScores,
 } from '@scf/core/features/career-assessment/config/career-assessment-schema'
 import { useRIASECStatus, useSaveCareerAssessmentMutation } from '@scf/core/utils/onet-sdk-hooks'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Button, Stack } from '@unicornlove/beyond-ui'
+import { Button, Stack } from '@scaffald/ui'
 
 /**
  * RIASECAssessmentWizard - Standalone wizard for RIASEC Career Interests

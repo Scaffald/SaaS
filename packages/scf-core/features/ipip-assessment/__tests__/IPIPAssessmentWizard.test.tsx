@@ -22,7 +22,7 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockToastShow,
   }),

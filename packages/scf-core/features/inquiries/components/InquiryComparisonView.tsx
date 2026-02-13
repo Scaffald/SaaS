@@ -1,5 +1,5 @@
 import { useMultipleInquiries } from '@scf/core/utils/inquiries-sdk-hooks'
-import { Button, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
 

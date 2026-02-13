@@ -1,4 +1,4 @@
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { Alert, Platform } from 'react-native'
 
 /**

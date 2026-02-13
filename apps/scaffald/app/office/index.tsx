@@ -1,7 +1,7 @@
 import { OfficeNotificationsConsole } from '@scf/core/features/office/office-notifications-console'
 import { OfficeStorageDashboard } from '@scf/core/features/office/office-storage-dashboard'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { Separator, Stack } from '@unicornlove/beyond-ui'
+import { Separator, Stack } from '@scaffald/ui'
 
 export default function OfficeIndex() {
   return (

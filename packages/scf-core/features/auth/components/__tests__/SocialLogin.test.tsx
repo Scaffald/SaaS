@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 let mockPlatform: 'web' | 'ios' = 'web'
 
-vi.mock('@unicornlove/beyond-ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Row: ({ children }: { children?: ReactNode }) => (
     <div data-testid="social-login-row">{children}</div>
   ),
@@ -20,7 +20,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   useThemeContext: () => ({ theme: 'light' as const, setTheme: () => {}, toggleTheme: () => {} }),
 }))
 
-vi.mock('@unicornlove/beyond-ui/tokens', () => ({
+vi.mock('@scaffald/ui/tokens', () => ({
   colors: {
     bg: { primary: '#fff' },
     text: {

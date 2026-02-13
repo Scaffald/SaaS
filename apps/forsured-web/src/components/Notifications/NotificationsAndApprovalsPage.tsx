@@ -17,7 +17,7 @@ import {
   CheckSquare,
   Square,
 } from 'lucide-react'
-import { Stack, Row, Text, Card, Spinner, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Spinner, Grid } from '@scaffald/ui'
 import { Tabs as TabsCustom } from '../../ui/Tabs'
 import Button from '../Common/Button'
 import Input from '../Common/Input'

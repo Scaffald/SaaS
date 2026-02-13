@@ -1,5 +1,5 @@
 // Define MapPinType locally to avoid import conflicts with MapPin component
-// This matches the MapPin interface from @unicornlove/beyond-ui
+// This matches the MapPin interface from @scaffald/ui
 export type MapPinType = {
   id: string
   coordinate: [number, number] // [longitude, latitude]

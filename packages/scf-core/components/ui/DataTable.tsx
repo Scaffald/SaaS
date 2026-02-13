@@ -18,8 +18,8 @@ import {
 } from '@tanstack/react-table'
 import { useRef, useState } from 'react'
 import { Platform, ScrollView, View } from 'react-native'
-import { Button, Input, Text } from '@unicornlove/beyond-ui'
-import { Table } from '@unicornlove/beyond-ui'
+import { Button, Input, Text } from '@scaffald/ui'
+import { Table } from '@scaffald/ui'
 
 const isWeb = Platform.OS === 'web'
 

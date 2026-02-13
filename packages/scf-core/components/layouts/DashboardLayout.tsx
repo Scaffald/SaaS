@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ScrollView } from 'react-native'
-import { Row, Stack } from '@unicornlove/beyond-ui'
-import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/beyond-ui'
+import { Row, Stack } from '@scaffald/ui'
+import { Breadcrumb, type BreadcrumbItem } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type DashboardLayoutProps = {

@@ -2,7 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { InquiryViewCandidate } from '@scf/core/features/inquiries/components/InquiryViewCandidate'
 import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
-import { Text, Stack, Spinner } from '@unicornlove/beyond-ui'
+import { Text, Stack, Spinner } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 import type { ReactElement } from 'react'
 

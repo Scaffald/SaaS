@@ -1,5 +1,5 @@
 import { Link } from 'lucide-react-native'
-import { Button, Checkbox, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Checkbox, Text, Row, Stack } from '@scaffald/ui'
 
 interface Certification {
   id: string

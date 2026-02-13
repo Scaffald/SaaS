@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react'
 import { X, Calendar, User, MessageSquare, CheckCircle2 } from 'lucide-react'
-import { Stack, Row, Text, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, H3, Card, Grid } from '@scaffald/ui'
 import { Task } from '../../types'
 import Modal from '../Common/Modal'
 import Button from '../Common/Button'

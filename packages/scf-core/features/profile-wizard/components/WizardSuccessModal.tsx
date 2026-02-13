@@ -1,6 +1,6 @@
 import { ArrowRight, Star, Trophy } from 'lucide-react-native'
 import { memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@scaffald/ui'
 
 export interface WizardSuccessModalProps {
   completionPercentage: number

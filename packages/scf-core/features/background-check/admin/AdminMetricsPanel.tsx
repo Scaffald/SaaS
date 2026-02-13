@@ -1,7 +1,7 @@
 import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCcw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
-import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type MetricsSummary = RouterOutputs['backgroundChecks']['adminGetMetrics']

@@ -1,8 +1,8 @@
-import { DiscoverCard } from '@unicornlove/beyond-ui'
+import { DiscoverCard } from '@scaffald/ui'
 import { Building, MapPin, Users } from 'lucide-react-native'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import { Button, SizableText, Text, Row } from '@unicornlove/beyond-ui'
+import { Button, SizableText, Text, Row } from '@scaffald/ui'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 
 type OrganizationCardProps = {

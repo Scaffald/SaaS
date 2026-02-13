@@ -1,6 +1,6 @@
 // src/pages/docs/components/Modal.tsx
 import React from 'react';
-import { Box, Text } from '@unicornlove/beyond-ui';
+import { Box, Text } from '@scaffald/ui';
 import ComponentDocumentationTemplate from '../Components';
 
 function ModalDoc() {

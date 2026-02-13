@@ -1,10 +1,10 @@
-import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import type { PaymentIntent, StripeElementsOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useMemo, useState } from 'react'
-import { Card } from '@unicornlove/beyond-ui'
+import { Card } from '@scaffald/ui'
 
 import { useStripeConfig } from '../../hooks/useStripeConfig'
 

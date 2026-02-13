@@ -5,7 +5,7 @@
 
 import { useState, useMemo } from 'react';
 import { ChevronUp, ChevronDown, FileText, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import { Task } from '../../types';
 import { TaskStatusBadge } from './TaskStatusBadge';
 

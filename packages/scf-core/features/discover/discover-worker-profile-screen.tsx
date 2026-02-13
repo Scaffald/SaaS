@@ -9,12 +9,12 @@ import {
 } from '@scf/core/features/profile/widgets'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { type BreadcrumbItem, DashboardWidget } from '@unicornlove/beyond-ui'
+import { type BreadcrumbItem, DashboardWidget } from '@scaffald/ui'
 import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { Animated, Easing } from 'react-native'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 const SHIMMER_WIDTH = 220
 

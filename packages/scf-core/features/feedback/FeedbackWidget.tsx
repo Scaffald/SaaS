@@ -3,7 +3,7 @@ import {
   FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
 } from '@scf/schemas/feedback'
-import type { UploadSelection } from '@unicornlove/beyond-ui'
+import type { UploadSelection } from '@scaffald/ui'
 import {
   Button,
   FieldError,
@@ -17,7 +17,7 @@ import {
   UploadSurface,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { MessageCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'

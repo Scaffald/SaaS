@@ -7,7 +7,7 @@ import { getResults, getScore } from '@scf/core/features/personality-assessment/
 import { api } from '@scf/core/utils/api'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Tabs, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Tabs, Text, Stack } from '@scaffald/ui'
 
 /**
  * Shared IPIP Results Page Route

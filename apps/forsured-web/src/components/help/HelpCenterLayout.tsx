@@ -2,7 +2,7 @@
  * HelpCenterLayout - Help center layout using Beyond UI
  */
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { Row, Stack, Text } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text } from '@scaffald/ui';
 
 interface HelpCenterLayoutProps {
   userType: 'gc' | 'contractor' | 'broker' | 'admin';

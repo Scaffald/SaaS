@@ -4,7 +4,7 @@ import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 import { CheckStatusCard } from './CheckStatusCard'
 import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'

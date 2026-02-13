@@ -1,9 +1,9 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
-import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/beyond-ui'
+import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@scaffald/ui'
 import { ChevronsUpDown, Filter, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void

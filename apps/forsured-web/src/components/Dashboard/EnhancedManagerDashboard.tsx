@@ -16,7 +16,7 @@ import {
   FolderPlus,
   UserPlus,
 } from 'lucide-react'
-import { Stack, Row, Text, Button, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Grid } from '@scaffald/ui'
 import {
   EmptyState,
   LoadingContainer,

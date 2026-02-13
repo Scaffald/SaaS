@@ -8,7 +8,7 @@ import {
   Spinner,
   ThemeProvider,
   type OnboardingStepInfo,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { UserSearch, Share2, Sprout } from 'lucide-react-native'
 import type { ComponentType } from 'react'
 

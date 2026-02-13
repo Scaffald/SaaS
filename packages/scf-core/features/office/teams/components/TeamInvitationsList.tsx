@@ -6,11 +6,11 @@ import {
 import type { TeamInvitation } from '@scaffald/sdk'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
 import { Clock, RefreshCw, XCircle } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
@@ -19,7 +19,7 @@ import {
   Text,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 type InvitationRecord = TeamInvitation
 type InvitationStatus = (typeof TEAM_INVITATION_STATUSES)[number]

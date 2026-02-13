@@ -6,7 +6,7 @@
  * and links to exercise each right
  */
 
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * Privacy right structure

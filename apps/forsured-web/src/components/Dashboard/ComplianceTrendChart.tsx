@@ -4,9 +4,9 @@
  */
 
 import { useState } from 'react'
-import { Stack, Text, Card } from '@unicornlove/beyond-ui'
-import { Chart, LinearChart } from '@unicornlove/beyond-ui'
-import type { ChartPeriod } from '@unicornlove/beyond-ui'
+import { Stack, Text, Card } from '@scaffald/ui'
+import { Chart, LinearChart } from '@scaffald/ui'
+import type { ChartPeriod } from '@scaffald/ui'
 
 export interface ComplianceTrendChartProps {
   /**

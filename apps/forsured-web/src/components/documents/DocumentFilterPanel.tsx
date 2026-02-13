@@ -13,7 +13,7 @@
 
 import React, { useCallback, useMemo } from 'react'
 import { Loader2 } from 'lucide-react'
-import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid } from '@scaffald/ui'
 import {
   DocumentFilterPanelProps,
   DocumentFilterState,

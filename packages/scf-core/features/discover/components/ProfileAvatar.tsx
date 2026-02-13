@@ -1,5 +1,5 @@
 import { Building } from 'lucide-react-native'
-import { type GetThemeValueForKey, Image, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { type GetThemeValueForKey, Image, Text, Row, Stack } from '@scaffald/ui'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {

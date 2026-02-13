@@ -11,7 +11,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { UserX } from 'lucide-react'
-import { Row, Text } from '@unicornlove/beyond-ui'
+import { Row, Text } from '@scaffald/ui'
 
 interface ManualUserBadgeProps {
   size?: 'sm' | 'md' | 'lg'

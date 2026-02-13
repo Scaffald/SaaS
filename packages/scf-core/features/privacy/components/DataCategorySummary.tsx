@@ -6,7 +6,7 @@
  * showing what types of personal information are collected
  */
 
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * CCPA data category type

@@ -3,7 +3,7 @@
 
  */
 import React from 'react'
-import { Stack, Row, Text, Button, Chip } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Chip } from '@scaffald/ui'
 import { CheckCircle, AlertTriangle, Sparkles, TrendingUp, FileCheck } from 'lucide-react'
 
 interface AISummaryScreenProps {

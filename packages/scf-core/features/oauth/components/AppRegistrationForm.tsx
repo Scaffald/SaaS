@@ -12,8 +12,8 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 

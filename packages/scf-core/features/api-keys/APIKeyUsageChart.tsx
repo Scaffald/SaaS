@@ -14,7 +14,7 @@ import {
   Spinner,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import {
   Activity,
   AlertCircle,

@@ -3,7 +3,7 @@ import {
   type CookieConsentStorage,
   CookiePreferencesDialog,
   CookieConsentProvider as BeyondCookieConsentProvider,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { ReactNode } from 'react'
 

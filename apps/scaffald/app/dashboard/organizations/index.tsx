@@ -3,7 +3,7 @@ import { OrganizationDocumentsPanel } from '@scf/core/features/organizations/com
 import { OrganizationMembersPanel } from '@scf/core/features/organizations/components/OrganizationMembersPanel'
 import { OrganizationSettingsPanel } from '@scf/core/features/organizations/components/OrganizationSettingsPanel'
 import { useLocalSearchParams } from 'expo-router'
-import { Paragraph, Stack } from '@unicornlove/beyond-ui'
+import { Paragraph, Stack } from '@scaffald/ui'
 
 export default function DashboardOrganizationsPage() {
   const params = useLocalSearchParams<{ organizationId?: string }>()

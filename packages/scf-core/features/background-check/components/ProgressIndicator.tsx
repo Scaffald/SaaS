@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Circle, Text, Row, Stack } from '@scaffald/ui'
 
 import type { BackgroundCheckWizardStep } from '../hooks/useBackgroundCheckForm'
 

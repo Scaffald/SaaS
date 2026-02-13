@@ -10,7 +10,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { X, Mail, Copy, Loader2, Building2, HardHat, UserPlus, Users } from 'lucide-react'
-import { Stack, Row, Text, Card, Input, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Input, Button } from '@scaffald/ui'
 import { toast } from 'sonner'
 import { createRelationshipInvitation } from '../../lib/relationshipInvitations'
 import {

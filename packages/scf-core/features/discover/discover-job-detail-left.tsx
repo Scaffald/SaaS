@@ -7,7 +7,7 @@ import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, Stack, Row } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Stack, Row } from '@scaffald/ui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string

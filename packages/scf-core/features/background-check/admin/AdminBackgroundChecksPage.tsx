@@ -8,8 +8,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/beyond-ui'
-import { Button, Card, Spinner, Tabs, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { Button, Card, Spinner, Tabs, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   BACKGROUND_CHECK_STATUSES,

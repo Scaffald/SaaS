@@ -4,10 +4,10 @@ import {
   SaveStatusIndicator,
   SavingModal,
   SkeletonForm,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Check } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { InlineSkillSearch } from './components'
 import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'

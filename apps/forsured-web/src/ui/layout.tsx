@@ -11,7 +11,7 @@ import {
   type StackProps,
   type RowProps,
   type CardProps,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 /**
  * PageContainer - Standard page layout container

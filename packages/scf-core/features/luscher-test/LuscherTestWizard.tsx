@@ -8,9 +8,9 @@ import {
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'

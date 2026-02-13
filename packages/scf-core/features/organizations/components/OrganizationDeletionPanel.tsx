@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -11,8 +11,8 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type OrganizationDeletionPanelProps = {
   organizationId: string

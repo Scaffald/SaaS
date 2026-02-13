@@ -1,4 +1,4 @@
-import { DashboardWidget, spacing, Text, Stack } from '@unicornlove/beyond-ui'
+import { DashboardWidget, spacing, Text, Stack } from '@scaffald/ui'
 
 export const AssessmentsLandingRight = () => {
   return (

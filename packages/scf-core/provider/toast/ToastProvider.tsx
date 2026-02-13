@@ -1,4 +1,4 @@
-import { ToastProvider as ToastProviderOG, ToastContainer } from '@unicornlove/beyond-ui'
+import { ToastProvider as ToastProviderOG, ToastContainer } from '@scaffald/ui'
 import type { ReactNode } from 'react'
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {

@@ -9,7 +9,7 @@ import {
   Briefcase,
   ClipboardList,
 } from 'lucide-react'
-import { Stack, Row, Text, H2, H3, Card, Grid, Box } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, H3, Card, Grid, Box } from '@scaffald/ui'
 import { BrokerClient, PolicyData, Project, Task } from '../../types'
 
 interface ComplianceOverviewWidgetProps {

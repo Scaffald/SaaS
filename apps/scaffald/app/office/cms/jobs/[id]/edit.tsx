@@ -1,6 +1,6 @@
 import { JobForm } from '@scf/core/features/office/components/JobForm'
 import { api } from '@scf/core/utils/api'
-import { Spinner, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditJobPage() {

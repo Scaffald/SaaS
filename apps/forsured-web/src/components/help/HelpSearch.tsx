@@ -2,7 +2,7 @@
  * HelpSearch - Help search component using Beyond UI
  */
 import React, { useState } from 'react';
-import { Stack, Row, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Input } from '@scaffald/ui';
 import { Search } from 'lucide-react';
 
 function HelpSearch() {

@@ -1,6 +1,6 @@
 import { X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, Card, type CardProps, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, type CardProps, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */

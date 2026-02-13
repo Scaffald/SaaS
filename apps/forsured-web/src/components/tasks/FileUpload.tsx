@@ -4,7 +4,7 @@
  */
 import type React from 'react'
 import { useState, useRef } from 'react'
-import { Stack, Text } from '@unicornlove/beyond-ui'
+import { Stack, Text } from '@scaffald/ui'
 import { Upload, CloudUpload } from 'lucide-react'
 
 interface FileUploadProps {

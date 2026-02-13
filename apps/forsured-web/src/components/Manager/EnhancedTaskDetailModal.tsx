@@ -10,7 +10,7 @@ import {
   CheckCircle,
   MessageSquare,
 } from 'lucide-react'
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, H3, Card } from '@scaffald/ui'
 import Button from '../Common/Button'
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext'

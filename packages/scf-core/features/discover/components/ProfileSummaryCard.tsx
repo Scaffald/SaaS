@@ -1,4 +1,4 @@
-import { Card, Paragraph, Text, Row } from '@unicornlove/beyond-ui'
+import { Card, Paragraph, Text, Row } from '@scaffald/ui'
 import type { TalentProfile } from '../types'
 
 interface ProfileSummaryCardProps {

@@ -18,7 +18,7 @@ import {
   Trash2,
   Loader2,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H3, Card, Grid, Chip, CardHeader, CardContent, ButtonGroup } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H3, Card, Grid, Chip, CardHeader, CardContent, ButtonGroup } from '@scaffald/ui'
 import { Tabs as TabsCustom } from '../../ui/Tabs'
 import { useClients } from '../../hooks/useClients'
 import { usePolicies } from '../../hooks/usePolicies'

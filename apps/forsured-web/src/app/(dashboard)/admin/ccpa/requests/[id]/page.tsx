@@ -24,7 +24,7 @@ import {
   Modal,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Textarea from '../../../../../../components/Common/Textarea'
 import { useRouter, useParams } from 'next/navigation'
 import { trpc } from '../../../../../../lib/trpc'

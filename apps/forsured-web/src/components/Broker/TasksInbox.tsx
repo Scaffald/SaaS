@@ -11,8 +11,8 @@ import {
   ButtonGroup,
   SearchSelect,
   Chip,
-} from '@unicornlove/beyond-ui'
-import type { SearchSelectOption } from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
+import type { SearchSelectOption } from '@scaffald/ui'
 import { Task } from '../../types'
 import { formatDate, getDaysUntil, isOverdue } from '../../utils/dateHelpers'
 import TaskStatusBadge from '../Common/TaskStatusBadge'

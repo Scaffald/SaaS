@@ -24,14 +24,14 @@ import {
   LocationListInput,
   SkeletonForm,
   ToggleCard,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Label, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Label, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,

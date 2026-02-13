@@ -1,7 +1,7 @@
 import { type InquiryCreateInput, type InquiryUpdateInput, inquiryCreateSchema } from '@scf/schemas'
 import { useUpdateInquiryMutation } from '@scf/core/utils/inquiries-sdk-hooks'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'

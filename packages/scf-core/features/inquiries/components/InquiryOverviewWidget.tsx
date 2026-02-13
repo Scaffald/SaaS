@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUserApplications } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, SkeletonCard, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, SkeletonCard, Text, Stack } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 

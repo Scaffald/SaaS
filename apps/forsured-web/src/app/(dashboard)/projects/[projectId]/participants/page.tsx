@@ -8,7 +8,7 @@
 'use client';
 
 import React from 'react';
-import { Stack, Row, Text, Button, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, H1 } from '@scaffald/ui';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ParticipantsComplianceView } from '../../../../../components/participants/ParticipantsComplianceView';

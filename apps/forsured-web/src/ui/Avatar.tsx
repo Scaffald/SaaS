@@ -8,7 +8,7 @@ import {
   AvatarGroup as BeyondAvatarGroup,
   type AvatarSize as BeyondAvatarSize,
   type AvatarStatus,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 

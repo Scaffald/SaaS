@@ -8,7 +8,7 @@ import {
   H2,
   SettingsFormField,
   SettingsSectionHeader,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { User } from 'lucide-react-native'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useSettings } from '../../../hooks/useSettings'

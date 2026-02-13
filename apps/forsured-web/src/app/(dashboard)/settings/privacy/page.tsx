@@ -12,7 +12,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Stack, Row, Text, H1, H2, H3, Card, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Card, Button } from '@scaffald/ui';
 
 // Types for CCPA data
 interface DataCategory {

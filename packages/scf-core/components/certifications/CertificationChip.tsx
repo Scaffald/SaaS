@@ -1,5 +1,5 @@
 import { X } from 'lucide-react-native'
-import { Button, Text, Row } from '@unicornlove/beyond-ui'
+import { Button, Text, Row } from '@scaffald/ui'
 
 interface CertificationChipProps {
   certification: {

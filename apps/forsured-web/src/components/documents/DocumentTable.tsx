@@ -6,9 +6,9 @@
 
 import React, { useMemo } from 'react'
 import { Download, RotateCw, Trash2, FileText } from 'lucide-react'
-import { Stack, Row, Text, Card, Table, TableCell } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Table, TableCell } from '@scaffald/ui'
 import type { Document, DocumentStatus } from '../../types/document'
-import type { TableColumn, TableRowData } from '@unicornlove/beyond-ui'
+import type { TableColumn, TableRowData } from '@scaffald/ui'
 
 interface DocumentTableProps {
   documents: Document[]

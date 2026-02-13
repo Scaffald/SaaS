@@ -17,7 +17,7 @@ import {
   Stack,
   Checkbox,
   ScrollView,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from 'lucide-react-native'
 
 interface APIKeyScopesManagerProps {

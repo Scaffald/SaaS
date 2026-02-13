@@ -1,6 +1,6 @@
 import { Trophy } from 'lucide-react-native'
 import { memo } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import type { CompletionMilestone } from '../hooks/useCompletionStatus'
 
 interface MilestoneBadgeProps {

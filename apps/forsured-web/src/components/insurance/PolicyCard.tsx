@@ -4,7 +4,7 @@
  */
 
 import { ChevronDown, ChevronRight, Shield, Calendar, DollarSign, Layers } from 'lucide-react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button } from '@scaffald/ui';
 import { InsurancePolicy } from '../../types';
 import Card from '../Common/Card';
 import StatusBadge from '../Common/StatusBadge';

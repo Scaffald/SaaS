@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
 export interface AssessmentWizardProps {

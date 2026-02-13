@@ -22,7 +22,7 @@ import {
   StickyNote,
   Clock,
 } from 'lucide-react'
-import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid } from '@scaffald/ui'
 import { useClients } from '../../hooks/useClients'
 import { useCompliance } from '../../hooks/useCompliance'
 import { useProjects } from '../../hooks/useProjects'

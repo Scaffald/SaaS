@@ -1,5 +1,5 @@
 import { CheckCircle2, Circle } from 'lucide-react-native'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 interface Skill {
   id: string

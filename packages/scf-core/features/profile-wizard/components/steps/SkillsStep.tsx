@@ -7,7 +7,7 @@ import {
   usePrimaryIndustry,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Button, Card, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Card, Paragraph, Text, Row, Stack } from '@scaffald/ui'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'

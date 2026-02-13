@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveModal, useThemeContext } from '@unicornlove/beyond-ui'
-import { extractPlainText } from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useThemeContext } from '@scaffald/ui'
+import { extractPlainText } from '@scaffald/ui'
 import {
   Award,
   Briefcase,
@@ -10,8 +10,8 @@ import {
   MapPin,
   Users,
 } from 'lucide-react-native'
-import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface JobData {
   id?: string

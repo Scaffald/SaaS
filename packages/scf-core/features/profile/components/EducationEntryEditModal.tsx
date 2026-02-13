@@ -9,10 +9,10 @@ import {
   MonthYearPicker,
   ResponsiveModal,
   ResponsiveSelect,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
@@ -24,7 +24,7 @@ import {
   useWindowDimensions,
   Row,
   Stack,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { DEGREE_TYPE_OPTIONS, singleEducationEntrySchema } from '../config'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
 import { normalizeEducationEntry } from '../utils/education-entry'

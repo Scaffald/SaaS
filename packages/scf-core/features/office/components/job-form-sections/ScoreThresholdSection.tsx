@@ -1,7 +1,7 @@
-import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, Slider } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Label, Slider } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ScoreThresholdSectionProps {
   minimumScore?: number

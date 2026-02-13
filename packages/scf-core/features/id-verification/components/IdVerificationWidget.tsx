@@ -1,9 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, Stack } from '@unicornlove/beyond-ui'
+import { Text, Stack } from '@scaffald/ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {

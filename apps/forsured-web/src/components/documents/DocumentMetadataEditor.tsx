@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Stack, Row, Text, H1, Card, Button, Checkbox } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, Card, Button, Checkbox } from '@scaffald/ui';
 import { OCRFieldDisplay } from './OCRFieldDisplay';
 import { ValidationFeedback } from './ValidationFeedback';
 import { DocumentPreview } from './DocumentPreview';

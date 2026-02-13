@@ -1,7 +1,7 @@
-import { ResponsiveModal } from '@unicornlove/beyond-ui'
+import { ResponsiveModal } from '@scaffald/ui'
 import { PartyPopper, UploadCloud } from 'lucide-react-native'
 import { memo } from 'react'
-import { Button, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, Text, Row, Stack } from '@scaffald/ui'
 
 type ModalMode = 'first-login' | 'progress-reminder'
 

@@ -5,7 +5,7 @@
  */
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Row, Stack, Text } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text } from '@scaffald/ui'
 import { CheckCircle, Clock, Eye, XCircle, HelpCircle, Send } from 'lucide-react'
 import type { ProjectTaskStatus } from '../../types'
 

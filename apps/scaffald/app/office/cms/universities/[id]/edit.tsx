@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficeUniversitiesForm } from '@scf/core/features/office/office-universities-form'
 import { api } from '@scf/core/utils/api'
-import { Spinner, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 
 export default function EditUniversityPage() {

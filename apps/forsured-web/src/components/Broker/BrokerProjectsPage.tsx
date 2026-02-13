@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Building, Filter, Eye, Shield, Calendar } from 'lucide-react'
-import { Stack, Row, Text, H1, H2, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H2, Card, Grid } from '@scaffald/ui'
 import { useProjects } from '../../hooks/useProjects'
 import { useClients } from '../../hooks/useClients'
 import ProjectCard from '../Shared/ProjectCard'

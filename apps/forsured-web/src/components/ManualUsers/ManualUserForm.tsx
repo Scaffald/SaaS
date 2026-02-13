@@ -15,7 +15,7 @@
 
 import React, { useState, useCallback } from 'react'
 import { Loader2 } from 'lucide-react'
-import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Input, Button } from '@scaffald/ui'
 
 export type ManualUserRole = 'contractor' | 'broker' | 'manager'
 

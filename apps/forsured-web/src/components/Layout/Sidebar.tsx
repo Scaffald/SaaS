@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   useSidebarState,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import type { User as UserType } from '../../types'
 import ForsuredLogo from '../Common/ForsuredLogo'
 import { SidebarUserProfile } from './SidebarUserProfile'

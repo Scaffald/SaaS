@@ -2,9 +2,9 @@ import { DashboardLayout } from '@scf/core/components/layouts'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
 import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
-import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
+import type { BreadcrumbItem } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
-import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 
 /**
  * Public Job Detail Route (Vanity URL)

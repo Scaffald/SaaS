@@ -26,7 +26,7 @@ import {
   Input,
   Spinner,
   Switch,
-} from '@unicornlove/beyond-ui';
+} from '@scaffald/ui';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 

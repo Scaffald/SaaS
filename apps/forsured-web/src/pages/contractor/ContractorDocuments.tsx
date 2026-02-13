@@ -1,6 +1,6 @@
 // src/pages/contractor/ContractorDocuments.tsx
 import { FileText } from 'lucide-react';
-import { Stack, H1 } from '@unicornlove/beyond-ui';
+import { Stack, H1 } from '@scaffald/ui';
 import { EmptyState } from '../../ui/EmptyState';
 
 function ContractorDocuments() {

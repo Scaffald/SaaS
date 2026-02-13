@@ -8,7 +8,7 @@ import {
 import { api } from '@scf/core/utils/api'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Button, Paragraph, Row, Spinner, Stack, Text } from '@unicornlove/beyond-ui'
+import { Button, Paragraph, Row, Spinner, Stack, Text } from '@scaffald/ui'
 
 function ResumeImportContent() {
   const router = useRouter()

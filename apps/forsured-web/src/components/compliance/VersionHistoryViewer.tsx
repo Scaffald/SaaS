@@ -25,7 +25,7 @@ import {
   Edit3,
   Loader2,
 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import { trpc } from '../../lib/trpc';
 
 // =============================================================================

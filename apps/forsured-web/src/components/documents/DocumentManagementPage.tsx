@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { X, Loader2 } from 'lucide-react'
-import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, Card } from '@scaffald/ui'
 import { FileUploadZone } from './FileUploadZone'
 import { DocumentTable } from './DocumentTable'
 import { DocumentService } from '../../lib/documents/documentService'

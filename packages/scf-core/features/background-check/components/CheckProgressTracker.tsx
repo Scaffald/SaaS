@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Progress, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   type BackgroundCheckDetail,

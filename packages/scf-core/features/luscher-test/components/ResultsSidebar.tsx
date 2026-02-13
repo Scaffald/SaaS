@@ -1,6 +1,6 @@
 import { Award, Clock } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface ResultsSidebarProps {
   xpAwarded?: number

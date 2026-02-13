@@ -10,10 +10,10 @@
 
 import { api } from '@scf/core/utils/api'
 import { Cloud, Database, HardDrive } from 'lucide-react-native'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@scaffald/ui'
 import type { ComponentType } from 'react'
 import { useState, useEffect } from 'react'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 type StorageBackend = 'supabase' | 'dropbox' | 'google_drive'

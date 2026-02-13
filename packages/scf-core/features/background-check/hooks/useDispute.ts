@@ -4,9 +4,9 @@ import {
   useSubmitBackgroundCheckDisputeMutation,
 } from '@scf/core/utils/background-checks-sdk-hooks'
 import { supabase } from '@scf/core/utils/supabase/client'
-import type { UploadSelection } from '@unicornlove/beyond-ui'
+import type { UploadSelection } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { Buffer } from 'buffer'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'

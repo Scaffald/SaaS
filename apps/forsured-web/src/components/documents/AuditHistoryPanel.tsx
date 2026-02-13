@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { AuditEntry } from '../../types/ocr.types';
 import { History, ChevronDown, ChevronUp } from 'lucide-react';
 
