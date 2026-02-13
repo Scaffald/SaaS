@@ -540,7 +540,7 @@ export function AdminCatalogManager() {
                     </Stack>
                     <Row gap={8} flexWrap="wrap">
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         iconStart={Edit3}
                         onPress={() => openPackageDialog('edit', pkg)}
@@ -548,7 +548,7 @@ export function AdminCatalogManager() {
                         Edit
                       </Button>
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         disabled={packageToggleId === pkg.id}
                         onPress={() => {
@@ -673,7 +673,7 @@ export function AdminCatalogManager() {
                     </Stack>
                     <Row gap={8} flexWrap="wrap">
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         iconStart={Edit3}
                         onPress={() => openCheckTypeDialog('edit', type)}
@@ -681,7 +681,7 @@ export function AdminCatalogManager() {
                         Edit
                       </Button>
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         disabled={checkTypeToggleId === type.id}
                         onPress={() => {

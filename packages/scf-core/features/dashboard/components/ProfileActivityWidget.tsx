@@ -132,7 +132,7 @@ export function ProfileActivityWidget() {
                 <Text color="$gray11">Recent Views</Text>
               </Row>
               {profileViews && profileViews.total > 0 && (
-                <Button size="xs" variant="outline" onPress={handleViewAllProfileViews}>
+                <Button size="sm" variant="outline" onPress={handleViewAllProfileViews}>
                   View All
                 </Button>
               )}
@@ -270,7 +270,7 @@ export function ProfileActivityWidget() {
                   </Row>
                 )}
               </Row>
-              <Button size="xs" variant="outline" onPress={handleManageConnections}>
+              <Button size="sm" variant="outline" onPress={handleManageConnections}>
                 Manage
               </Button>
             </Row>
@@ -322,7 +322,7 @@ export function ProfileActivityWidget() {
                       </Row>
                       <Row gap={4}>
                         <Button
-                          size="xs"
+                          size="sm"
                           iconStart={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
                           theme="success"
                           onPress={() => handleAcceptRequest(request.id)}
@@ -331,7 +331,7 @@ export function ProfileActivityWidget() {
                           }
                         />
                         <Button
-                          size="xs"
+                          size="sm"
                           iconStart={declineRequestMutation.isPending ? Loader2 : X}
                           variant="outline"
                           onPress={() => handleDeclineRequest(request.id)}

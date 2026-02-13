@@ -59,7 +59,7 @@ export function GeneralInfoWidget({
           <Text color="$gray11">{error.message}</Text>
           <Button
             variant="filled" color="primary"
-            size="xs"
+            size="sm"
             onPress={() => {
               void refetch()
             }}

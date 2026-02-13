@@ -99,7 +99,7 @@ export function OfficeViolationReports() {
             return (
               <Row gap={4}>
                 <Button
-                  size="xs"
+                  size="sm"
                   variant="outline"
                   color="primary"
                   onPress={() => {

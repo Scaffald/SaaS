@@ -22,7 +22,7 @@ export function OAuthAppList() {
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
         <SizableText size={24}>OAuth Applications</SizableText>
-        <SizableText size="xs" color="$gray11">
+        <SizableText size="sm" color="$gray11">
           Manage and approve OAuth applications
         </SizableText>
       </Stack>
@@ -34,7 +34,7 @@ export function OAuthAppList() {
               key={status}
               variant={statusFilter === status ? 'default' : 'outlined'}
               onPress={() => setStatusFilter(status)}
-              size="xs"
+              size="sm"
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </Button>
@@ -50,16 +50,16 @@ export function OAuthAppList() {
                 <SizableText size="md" data-testid="oauth-app-name">
                   {app.display_name}
                 </SizableText>
-                <SizableText size="xs" color="$gray11" data-testid="oauth-app-description">
+                <SizableText size="sm" color="$gray11" data-testid="oauth-app-description">
                   {app.description}
                 </SizableText>
-                <SizableText size="xs" color="$gray11" data-testid="oauth-app-metadata">
+                <SizableText size="sm" color="$gray11" data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </SizableText>
               </Stack>
               <Button
                 href={`/office/oauth-apps/${app.id}`}
-                size="xs"
+                size="sm"
                 data-testid="oauth-app-view-button"
               >
                 View

@@ -11,7 +11,7 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
     <Card
       alignSelf="center"
       elevate
-      size="xs"
+      size="sm"
       backgroundColor="$background"
       padding="sm"
       gap={8}

@@ -131,7 +131,7 @@ export function DisputeStatusTracker({
       <Row justify="space-between" align="center">
         <Text color="$gray11">Dispute status</Text>
         <Button
-          size="xs"
+          size="sm"
           variant="outline"
           iconStart={RefreshCcw}
           onPress={onRefresh}

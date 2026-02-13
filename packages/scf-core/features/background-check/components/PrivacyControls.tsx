@@ -181,7 +181,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
             >
               <Text color="$gray11">{organizationId}</Text>
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 theme="error"
                 onPress={() => handleRevokeAccess(organizationId)}

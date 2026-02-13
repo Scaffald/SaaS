@@ -125,7 +125,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 </Text>
               </Row>
               {syncStatus === 'error' && (
-                <Button size="xs" variant="outline" onPress={resetProfileSyncError} marginTop={8}>
+                <Button size="sm" variant="outline" onPress={resetProfileSyncError} marginTop={8}>
                   Dismiss
                 </Button>
               )}

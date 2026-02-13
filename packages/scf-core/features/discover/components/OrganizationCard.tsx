@@ -50,7 +50,7 @@ export const OrganizationCard = memo(
           )}
 
           <Button
-            size="xs"
+            size="sm"
             borderRadius={8}
             backgroundColor={isSelected ? '$color1' : '$blue9'}
             color={isSelected ? '$blue9' : '$color1'}

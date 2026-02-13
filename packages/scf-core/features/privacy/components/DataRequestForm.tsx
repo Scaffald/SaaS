@@ -297,7 +297,7 @@ export function DataRequestForm({
               {requestType === 'correction' ? 'Describe Correction' : 'Select Data Categories'}
             </Text>
             {requestType !== 'correction' && (
-              <Button size="xs" variant="outline" onPress={selectAllCategories}>
+              <Button size="sm" variant="outline" onPress={selectAllCategories}>
                 Select All
               </Button>
             )}

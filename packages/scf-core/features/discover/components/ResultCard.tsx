@@ -131,12 +131,12 @@ export const ResultCard = memo(
 
           <Row gap={4} flexWrap="wrap">
             {profile.certifications.slice(0, 2).map((certification) => (
-              <Button key={certification} size="xs" borderRadius={32}>
+              <Button key={certification} size="sm" borderRadius={32}>
                 {certification}
               </Button>
             ))}
             {profile.skills.slice(0, 3).map((skill) => (
-              <Button key={skill} size="xs" borderRadius={32}>
+              <Button key={skill} size="sm" borderRadius={32}>
                 {skill}
               </Button>
             ))}

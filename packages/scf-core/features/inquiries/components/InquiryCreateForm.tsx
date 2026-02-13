@@ -966,7 +966,7 @@ export function InquiryCreateForm({
                     <Row justify="space-between" align="center">
                       <Row align="center" gap={8}>
                         <Text>Endurance</Text>
-                        <Button size="xs" chromeless iconStart={Info} aria-label="Endurance info" />
+                        <Button size="sm" chromeless iconStart={Info} aria-label="Endurance info" />
                       </Row>
                       <Controller
                         control={control}

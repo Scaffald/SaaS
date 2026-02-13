@@ -489,7 +489,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="drivers_license_classes"
-                iconStart={<Car size="xs" color="$gray11" />}
+                iconStart={<Car size="sm" color="$gray11" />}
                 title="I have a valid driver's license"
                 description="Select all license classes that apply"
                 options={DRIVERS_LICENSE_OPTIONS}
@@ -509,7 +509,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="military_status"
-                iconStart={<Shield size="xs" color="$gray11" />}
+                iconStart={<Shield size="sm" color="$gray11" />}
                 title="Former/Current Military"
                 description="Select all that apply"
                 options={MILITARY_STATUS_OPTIONS}
@@ -523,7 +523,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="availability"
-                iconStart={<Calendar size="xs" color="$gray11" />}
+                iconStart={<Calendar size="sm" color="$gray11" />}
                 title="I'm available for work"
                 description="Select all that apply"
                 options={AVAILABILITY_OPTIONS}

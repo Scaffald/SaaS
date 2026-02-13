@@ -175,7 +175,7 @@ export function SoftSkillsRequirementsSection({
                           {[1, 2, 3, 4, 5].map((level) => (
                             <Button
                               key={level}
-                              size="xs"
+                              size="sm"
                               variant={importance === level ? 'outlined' : 'outlined'}
                               theme={importance === level ? 'blue' : undefined}
                               onPress={() => handleImportanceChange(skill.id, level)}

@@ -216,7 +216,7 @@ export function ProfileExperienceRight() {
                 {/* Edit Button */}
                 <Row justify="flex-end" marginTop={8}>
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="outline"
                     iconStart={Pencil}
                     aria-label={`Edit ${exp.job_title} at ${exp.company_name}`}

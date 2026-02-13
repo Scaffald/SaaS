@@ -94,7 +94,7 @@ export function AuthorizedAppsList() {
                       )}
                       {app?.homepage_url && (
                         <SizableText
-                          size="xs"
+                          size="sm"
                           color="$blue10"
                           data-testid="authorized-app-homepage"
                         >
@@ -111,10 +111,10 @@ export function AuthorizedAppsList() {
                       <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
                           <Row key={scope} gap={8} align="center">
-                            <SizableText size="xs" color="$gray11">
+                            <SizableText size="sm" color="$gray11">
                               •
                             </SizableText>
-                            <SizableText size="xs" color="$gray11">
+                            <SizableText size="sm" color="$gray11">
                               {scope}
                             </SizableText>
                           </Row>
@@ -124,11 +124,11 @@ export function AuthorizedAppsList() {
 
                     {/* Metadata */}
                     <Stack gap={4}>
-                      <SizableText size="xs" color="$gray11">
+                      <SizableText size="sm" color="$gray11">
                         Authorized on {grantedAt.toLocaleDateString()}
                       </SizableText>
                       {expiresAt && (
-                        <SizableText size="xs" color="$gray11">
+                        <SizableText size="sm" color="$gray11">
                           Expires on {expiresAt.toLocaleDateString()}
                         </SizableText>
                       )}

@@ -145,12 +145,12 @@ function RequestRow({
       {/* Actions */}
       <Row gap={8} minWidth={120} justify="flex-end">
         {canDownload && (
-          <Button size="xs" onPress={() => onDownload?.(request.id)}>
+          <Button size="sm" onPress={() => onDownload?.(request.id)}>
             Download
           </Button>
         )}
         {canCancel && (
-          <Button size="xs" variant="outline" onPress={() => onCancel?.(request.id)}>
+          <Button size="sm" variant="outline" onPress={() => onCancel?.(request.id)}>
             Cancel
           </Button>
         )}

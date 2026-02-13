@@ -82,7 +82,7 @@ export function DisputeBackgroundCheckContent({
         </Stack>
         {(renderHeaderAction?.({ isSubmitting, isUploading }) as ReactNode) ?? (
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             disabled={isSubmitting || isUploading}
             onPress={onClose}

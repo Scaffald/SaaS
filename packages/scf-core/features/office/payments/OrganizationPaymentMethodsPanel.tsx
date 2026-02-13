@@ -133,7 +133,7 @@ export function OrganizationPaymentMethodsPanel({
               </Text>
             </Stack>
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               iconStart={Trash2}
               onPress={handleDelete}

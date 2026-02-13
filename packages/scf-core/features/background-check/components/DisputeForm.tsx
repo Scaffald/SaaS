@@ -219,7 +219,7 @@ export function DisputeForm({
                 <Text style={{ color: colors.text[theme].secondary }}>
                   or <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>browse your device</Text>
                 </Text>
-                <Button size="xs" variant="outline" onPress={open} iconStart={Upload}>
+                <Button size="sm" variant="outline" onPress={open} iconStart={Upload}>
                   Choose file
                 </Button>
                 <Text style={{ color: colors.text[theme].secondary }}>
@@ -268,7 +268,7 @@ export function DisputeForm({
                     </Text>
                   </Stack>
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="outline"
                     iconStart={X}
                     onPress={() => onRemoveAttachment(attachment.id)}

@@ -86,7 +86,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
                   <Table.Cell>{new Date(document.updated_at).toLocaleDateString()}</Table.Cell>
                   <Table.Cell>
                     <Button
-                      size="xs"
+                      size="sm"
                       onPress={() => handleDownload(document.id)}
                       disabled={downloadMutation.isPending}
                     >

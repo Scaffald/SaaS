@@ -320,7 +320,7 @@ export function TeamAutomationSettings({
       <Row justify="space-between" align="center">
         <Text style={{ color: colors.text[theme].secondary }}>{statusLabel}</Text>
         <Button
-          size="xs"
+          size="sm"
           variant="outline"
           disabled={!canEdit || updateMutation.isPending}
           onPress={() => setFormState(DEFAULT_FORM_STATE)}
@@ -353,7 +353,7 @@ function SettingsToggle({
         <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
       </Stack>
       <Switch
-        size="xs"
+        size="sm"
         checked={value}
         disabled={disabled}
         onChange={(checked) => onValueChange(Boolean(checked))}

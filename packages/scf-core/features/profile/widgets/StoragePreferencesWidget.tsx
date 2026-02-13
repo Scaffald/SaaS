@@ -108,7 +108,7 @@ export function StoragePreferencesWidget() {
             <Text color="$gray11">Choose where your documents are stored</Text>
           </Stack>
           {hasChanges && (
-            <Button variant="filled" color="primary" size="xs" disabled={mutation.isPending} onPress={handleSave}>
+            <Button variant="filled" color="primary" size="sm" disabled={mutation.isPending} onPress={handleSave}>
               {mutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           )}

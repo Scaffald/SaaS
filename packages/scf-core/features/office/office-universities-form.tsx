@@ -187,7 +187,7 @@ export function OfficeUniversitiesForm({
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               onPress={onCancel}
               iconStart={X}

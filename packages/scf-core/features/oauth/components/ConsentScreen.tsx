@@ -115,7 +115,7 @@ export function ConsentScreen({
             <Stack flex={1} gap={4}>
               <SizableText size={24}>{app.name} wants to access your Scaffald account</SizableText>
               {app.description && (
-                <Paragraph size="xs" color="$gray11">
+                <Paragraph size="sm" color="$gray11">
                   {app.description}
                 </Paragraph>
               )}
@@ -123,7 +123,7 @@ export function ConsentScreen({
           </Row>
 
           {app.homepage_url && (
-            <Paragraph size="xs">
+            <Paragraph size="sm">
               <a href={app.homepage_url} target="_blank" rel="noopener noreferrer">
                 Visit {app.name}
               </a>
@@ -168,7 +168,7 @@ export function ConsentScreen({
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
           <Stack gap={4}>
-            <SizableText size="xs" color="$gray11" textAlign="center">
+            <SizableText size="sm" color="$gray11" textAlign="center">
               <a
                 href={app.privacy_policy_url}
                 target="_blank"
@@ -213,7 +213,7 @@ function ScopePermissionItem({ scope }: { scope: string }) {
       <SizableText size="sm">•</SizableText>
       <Stack flex={1}>
         <SizableText size="sm">{description}</SizableText>
-        <SizableText size="xs" color="$gray11">
+        <SizableText size="sm" color="$gray11">
           {scope}
         </SizableText>
       </Stack>

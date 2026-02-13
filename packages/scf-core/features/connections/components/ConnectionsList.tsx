@@ -174,7 +174,7 @@ export function ConnectionsList() {
           const conn = row.original
           return (
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               iconStart={Trash2}
               onPress={() => handleRemove(conn.id)}

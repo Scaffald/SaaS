@@ -93,7 +93,7 @@ export function CooldownStep({
           <Text color="$gray11">Please wait 60 seconds before taking the second color test</Text>
           <Text color="$blue10">{formatTime(timeRemaining)}</Text>
         </Stack>
-        <Progress value={cooldownProgress} max={100} size="xs">
+        <Progress value={cooldownProgress} max={100} size="sm">
           <Progress.Indicator animation="quick" />
         </Progress>
       </Stack>

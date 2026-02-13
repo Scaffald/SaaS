@@ -375,7 +375,7 @@ export function ProfileCertificationsRight() {
                         <Row gap={8}>
                           {hasProof && (
                             <Button
-                              size="xs"
+                              size="sm"
                               chromeless
                               iconStart={<ExternalLink size="md" />}
                               onPress={(e) => {
@@ -390,7 +390,7 @@ export function ProfileCertificationsRight() {
                             </Button>
                           )}
                           <Button
-                            size="xs"
+                            size="sm"
                             chromeless
                             iconStart={<Trash2 size="md" />}
                             onPress={(e) => {

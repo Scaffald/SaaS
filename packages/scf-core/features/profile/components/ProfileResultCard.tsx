@@ -70,7 +70,7 @@ export function ProfileResultCard({
             {actions}
             {onRemove && (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={isLoading ? undefined : X}
                 onPress={onRemove}

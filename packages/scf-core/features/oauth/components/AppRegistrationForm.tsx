@@ -91,13 +91,13 @@ export function AppRegistrationForm() {
               borderRadius={8}
             >
               <Stack gap={4}>
-                <SizableText size="xs">Client ID</SizableText>
+                <SizableText size="sm">Client ID</SizableText>
                 <SizableText size="sm" style={{ fontFamily: 'monospace' }}>
                   {credentials.client_id}
                 </SizableText>
               </Stack>
               <Stack gap={4}>
-                <SizableText size="xs">Client Secret</SizableText>
+                <SizableText size="sm">Client Secret</SizableText>
                 <SizableText
                   size="sm"
                   style={{ fontFamily: 'monospace', color: theme === "light" ? colors.error[700] : colors.error[300] }}
@@ -107,19 +107,19 @@ export function AppRegistrationForm() {
               </Stack>
             </Stack>
 
-            <Paragraph size="xs" style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+            <Paragraph size="sm" style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 
             <Stack gap={8}>
               <SizableText size="md">Next Steps</SizableText>
-              <Paragraph size="xs">
+              <Paragraph size="sm">
                 1. Test your app with the limited scopes (openid, profile, email)
               </Paragraph>
-              <Paragraph size="xs">
+              <Paragraph size="sm">
                 2. Request additional scopes via the developer dashboard
               </Paragraph>
-              <Paragraph size="xs">3. Wait for admin approval for elevated permissions</Paragraph>
+              <Paragraph size="sm">3. Wait for admin approval for elevated permissions</Paragraph>
             </Stack>
           </Stack>
         </Card>
@@ -133,7 +133,7 @@ export function AppRegistrationForm() {
         <Stack gap={16}>
           <Stack gap={8}>
             <SizableText size={24}>Register OAuth Application</SizableText>
-            <Paragraph size="xs" style={{ color: colors.text[theme].secondary }}>
+            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
           </Stack>
@@ -189,7 +189,7 @@ export function AppRegistrationForm() {
                 </Row>
               ))}
               {redirectUris.length < 10 && (
-                <Button onPress={addRedirectUri} variant="outline" size="xs">
+                <Button onPress={addRedirectUri} variant="outline" size="sm">
                   Add Redirect URI
                 </Button>
               )}

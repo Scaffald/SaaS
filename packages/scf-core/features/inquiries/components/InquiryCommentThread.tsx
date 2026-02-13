@@ -139,7 +139,7 @@ export function InquiryCommentThread({
                   <Text color="$gray11">{comment.content}</Text>
                   {isUnread && (
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       onPress={() => handleMarkRead(comment.id)}
                       marginTop={4}

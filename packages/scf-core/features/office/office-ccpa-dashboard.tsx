@@ -253,16 +253,16 @@ function RequestRow({
 
       {/* Actions */}
       <Row gap={8} minWidth={200} justify="flex-end">
-        <Button size="xs" variant="outline" onPress={() => onView?.(request.id)}>
+        <Button size="sm" variant="outline" onPress={() => onView?.(request.id)}>
           View
         </Button>
         {request.status === 'pending' && (
-          <Button size="xs" variant="outline" onPress={() => onAssign?.(request.id)}>
+          <Button size="sm" variant="outline" onPress={() => onAssign?.(request.id)}>
             Assign
           </Button>
         )}
         {(request.status === 'pending' || request.status === 'processing') && (
-          <Button size="xs" onPress={() => onProcess?.(request.id)}>
+          <Button size="sm" onPress={() => onProcess?.(request.id)}>
             Process
           </Button>
         )}
@@ -298,7 +298,7 @@ function FilterBar({
           {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <Button
               key={status}
-              size="xs"
+              size="sm"
               variant={statusFilter === status ? undefined : 'outlined'}
               onPress={() => onStatusChange(status)}
             >
@@ -314,7 +314,7 @@ function FilterBar({
           {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
             <Button
               key={type}
-              size="xs"
+              size="sm"
               variant={typeFilter === type ? undefined : 'outlined'}
               onPress={() => onTypeChange(type)}
             >
@@ -332,7 +332,7 @@ function FilterBar({
           {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
               key={priority}
-              size="xs"
+              size="sm"
               variant={priorityFilter === priority ? undefined : 'outlined'}
               onPress={() => onPriorityChange(priority)}
             >

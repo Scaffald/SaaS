@@ -295,7 +295,7 @@ export function TeamInvitationsList({
                   align="stretch"
                 >
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="outline"
                     iconStart={RefreshCw}
                     disabled={!isPending || isLoading}
@@ -306,7 +306,7 @@ export function TeamInvitationsList({
                     Resend
                   </Button>
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="outline"
                     style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
                     iconStart={XCircle}

@@ -127,7 +127,7 @@ export function AdminDisputeResolutionDialog({
             <Row justify="space-between" align="center">
               <Dialog.Title>Resolve dispute</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="xs" variant="outline" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>

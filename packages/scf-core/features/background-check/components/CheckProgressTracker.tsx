@@ -107,7 +107,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
           <Text color="$gray11">Overall progress</Text>
           <Text color="$gray11">{progress}%</Text>
         </Row>
-        <Progress value={progress} max={100} backgroundColor="$color3" size="xs">
+        <Progress value={progress} max={100} backgroundColor="$color3" size="sm">
           <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
         </Progress>
         <Text color="$gray11">{statusMeta.description}</Text>

@@ -177,7 +177,7 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Actions',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               iconStart={Eye}
               onPress={() => setSelectedCheckId(row.original.id)}

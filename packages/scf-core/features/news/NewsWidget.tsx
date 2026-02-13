@@ -561,7 +561,7 @@ export function NewsWidget({
             <Row justify="space-between" align="center">
               <Paragraph size="sm">Match my skills</Paragraph>
               <Switch
-                size="xs"
+                size="sm"
                 checked={preferences.matchSkills}
                 onChange={(value) => updatePreference('matchSkills', value)}
               />
@@ -570,7 +570,7 @@ export function NewsWidget({
             <Row justify="space-between" align="center">
               <Paragraph size="sm">Match my industry</Paragraph>
               <Switch
-                size="xs"
+                size="sm"
                 checked={preferences.matchIndustry}
                 onChange={(value) => updatePreference('matchIndustry', value)}
               />
@@ -579,7 +579,7 @@ export function NewsWidget({
             <Row justify="space-between" align="center">
               <Paragraph size="sm">Boost trending stories</Paragraph>
               <Switch
-                size="xs"
+                size="sm"
                 checked={preferences.prioritizeTrending}
                 onChange={(value) => updatePreference('prioritizeTrending', value)}
               />
@@ -588,7 +588,7 @@ export function NewsWidget({
             <Row justify="space-between" align="center">
               <Paragraph size="sm">Show recent stories only</Paragraph>
               <Switch
-                size="xs"
+                size="sm"
                 checked={preferences.recentOnly}
                 onChange={(value) => updatePreference('recentOnly', value)}
               />

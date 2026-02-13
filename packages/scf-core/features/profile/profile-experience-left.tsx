@@ -410,7 +410,7 @@ export function ProfileExperienceLeft() {
             >
               <Row justify="space-between" align="center">
                 <Text>Position {index + 1}</Text>
-                <Button size="xs" variant="outline" onPress={() => remove(index)} iconStart={X}>
+                <Button size="sm" variant="outline" onPress={() => remove(index)} iconStart={X}>
                   Remove
                 </Button>
               </Row>

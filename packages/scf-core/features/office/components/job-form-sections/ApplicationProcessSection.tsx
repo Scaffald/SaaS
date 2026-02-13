@@ -254,7 +254,7 @@ export function ApplicationProcessSection({
                       </Row>
                     </Stack>
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       iconStart={X}
                       onPress={() => handleRemoveQuestion(index)}

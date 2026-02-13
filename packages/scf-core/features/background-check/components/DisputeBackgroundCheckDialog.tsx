@@ -91,7 +91,7 @@ export function DisputeBackgroundCheckDialog({
             <Row justify="space-between" align="center">
               <Dialog.Title>Dispute background check</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="xs" variant="outline" disabled={isSubmitting || isUploading}>
+                <Button size="sm" variant="outline" disabled={isSubmitting || isUploading}>
                   Close
                 </Button>
               </Dialog.Close>

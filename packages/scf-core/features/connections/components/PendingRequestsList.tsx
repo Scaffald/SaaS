@@ -176,7 +176,7 @@ export function PendingRequestsList() {
           if (request.type === 'sent') {
             return (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={X}
                 onPress={() => handleCancel(request.id)}
@@ -190,14 +190,14 @@ export function PendingRequestsList() {
           return (
             <Row gap={4}>
               <Button
-                size="xs"
+                size="sm"
                 iconStart={CheckCircle2}
                 theme="success"
                 onPress={() => handleAccept(request.id)}
                 disabled={isLoading}
               />
               <Button
-                size="xs"
+                size="sm"
                 iconStart={X}
                 variant="outline"
                 onPress={() => handleDecline(request.id)}

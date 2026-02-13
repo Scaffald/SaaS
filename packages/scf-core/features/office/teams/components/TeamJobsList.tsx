@@ -46,7 +46,7 @@ export function TeamJobsList({
         <Text accessibilityRole="header">Team jobs</Text>
         <Row gap={8} align="flex-start" flexDirection="column" width="100%">
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             iconStart={RefreshCcw}
             onPress={() => onRefresh?.()}
@@ -57,7 +57,7 @@ export function TeamJobsList({
             Refresh
           </Button>
           <Button
-            size="xs"
+            size="sm"
             iconStart={ArrowRight}
             onPress={() => {
               if (onCreateJob) {

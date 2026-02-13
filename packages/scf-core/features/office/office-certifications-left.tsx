@@ -195,7 +195,7 @@ export function OfficeCertificationsLeft({
         <Row justify="space-between" align="center">
           <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
           {isEditing && (
-            <Button size="xs" variant="outline" onPress={onCancel} iconStart={X}>
+            <Button size="sm" variant="outline" onPress={onCancel} iconStart={X}>
               Cancel
             </Button>
           )}

@@ -92,7 +92,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
             </Text>
             {error.stack ? (
               <Text
-                size="xs"
+                size="sm"
                 color={colors.text[theme].tertiary}
                 style={{
                   fontFamily: 'monospace',

@@ -281,7 +281,7 @@ export function TeamActivityFeed({
           <Text accessibilityRole="header">Team activity</Text>
         </Row>
         <Button
-          size="xs"
+          size="sm"
           variant="outline"
           onPress={() => void activityQuery.refetch()}
           disabled={activityQuery.isFetching}
@@ -315,7 +315,7 @@ export function TeamActivityFeed({
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}
-                  size="xs"
+                  size="sm"
                   variant="outline"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
@@ -329,7 +329,7 @@ export function TeamActivityFeed({
                   value={mentionSelection}
                   onValueChange={(value) => handleMentionSelection(value)}
                   placeholder="Mention teammate"
-                  size="xs"
+                  size="sm"
                   options={[
                     { value: 'none', label: 'Select teammate' },
                     ...availableMentionOptions.map((option) => ({

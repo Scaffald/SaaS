@@ -591,7 +591,7 @@ export function ProfileEducationLeft({
               >
                 <Row justify="space-between" align="center">
                   <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
-                  <Button size="xs" variant="outline" onPress={() => remove(index)} iconStart={X}>
+                  <Button size="sm" variant="outline" onPress={() => remove(index)} iconStart={X}>
                     Remove
                   </Button>
                 </Row>
@@ -639,7 +639,7 @@ export function ProfileEducationLeft({
                                     }
                                   />
                                   <Button
-                                    size="xs"
+                                    size="sm"
                                     variant="outline"
                                     onPress={() => {
                                       setManualEntryMode((prev) => ({ ...prev, [index]: true }))
@@ -667,7 +667,7 @@ export function ProfileEducationLeft({
                                   />
                                   <FieldError message={entryErrors?.institution_name?.message} />
                                   <Button
-                                    size="xs"
+                                    size="sm"
                                     variant="outline"
                                     onPress={() => {
                                       setManualEntryMode((prev) => ({ ...prev, [index]: false }))
@@ -1149,7 +1149,7 @@ function SmartSelect({
             <Stack gap={4}>
               {allowClear && (
                 <Button
-                  size="xs"
+                  size="sm"
                   chromeless
                   justify="flex-start"
                   onPress={() => handleSelect(undefined)}

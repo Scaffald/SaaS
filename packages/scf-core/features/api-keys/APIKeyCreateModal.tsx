@@ -238,7 +238,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                     onChangeText={setKeyName}
                     disabled={isCreating}
                   />
-                  <Paragraph size="xs" color="$gray11">
+                  <Paragraph size="sm" color="$gray11">
                     A descriptive name to identify this key
                   </Paragraph>
                 </Stack>
@@ -270,7 +270,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                           />
                           <Stack f={1} gap={4}>
                             <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="xs" color="$gray11">
+                            <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                           </Stack>
@@ -302,7 +302,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                           />
                           <Stack f={1} gap={4}>
                             <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="xs" color="$gray11">
+                            <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                           </Stack>
@@ -311,7 +311,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                     ))}
                   </Stack>
 
-                  <Paragraph size="xs" color="$gray11">
+                  <Paragraph size="sm" color="$gray11">
                     Selected: {selectedScopes.length} permission
                     {selectedScopes.length !== 1 ? 's' : ''}
                   </Paragraph>
@@ -334,7 +334,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       </Button>
                     ))}
                   </Row>
-                  <Paragraph size="xs" color="$gray11">
+                  <Paragraph size="sm" color="$gray11">
                     {expirationDays
                       ? `Key will expire on ${format(addMonths(new Date(), expirationDays / 30), 'MMM d, yyyy')}`
                       : 'Key will never expire (not recommended for production)'}
@@ -420,14 +420,14 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
               {/* Key Details */}
               <Stack gap={8}>
-                <Paragraph size="xs" color="$gray11">
+                <Paragraph size="sm" color="$gray11">
                   Name
                 </Paragraph>
                 <Paragraph>{createdKey?.name}</Paragraph>
               </Stack>
 
               <Stack gap={8}>
-                <Paragraph size="xs" color="$gray11">
+                <Paragraph size="sm" color="$gray11">
                   Permissions
                 </Paragraph>
                 <Row gap={8} flexWrap="wrap">
@@ -439,7 +439,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       paddingVertical={4}
                       borderRadius={8}
                     >
-                      <Paragraph size="xs" color="$blue11">
+                      <Paragraph size="sm" color="$blue11">
                         {scope}
                       </Paragraph>
                     </Card>
@@ -449,7 +449,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
               {createdKey?.expires_at && (
                 <Stack gap={8}>
-                  <Paragraph size="xs" color="$gray11">
+                  <Paragraph size="sm" color="$gray11">
                     Expires
                   </Paragraph>
                   <Paragraph color="$orange11">

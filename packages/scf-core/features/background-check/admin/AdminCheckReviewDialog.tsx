@@ -345,7 +345,7 @@ export function AdminCheckReviewDialog({
             <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
               <Dialog.Title>Review background check</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="xs" variant="outline" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>
@@ -562,7 +562,7 @@ export function AdminCheckReviewDialog({
                               </Text>
                             </Stack>
                             <Button
-                              size="xs"
+                              size="sm"
                               variant="outline"
                               disabled={isDocumentLoading}
                               onPress={() => handleDownloadDocument(document.id)}
@@ -645,7 +645,7 @@ export function AdminCheckReviewDialog({
                           >
                             <Text color="$gray11">{organizationId}</Text>
                             <Button
-                              size="xs"
+                              size="sm"
                               variant="outline"
                               disabled={isPrivacySaving}
                               onPress={() =>

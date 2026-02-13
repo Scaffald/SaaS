@@ -124,7 +124,7 @@ export const ProjectSelector = memo(function ProjectSelector({
           </Text>
           {onRetry && (
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               iconStart={RefreshCw}
               onPress={onRetry}

@@ -94,7 +94,7 @@ export function UserProfilePanel({
       {/* Close button */}
       <Row justify="flex-end">
         <Button
-          size="xs"
+          size="sm"
           chromeless
           iconStart={X}
           onPress={handleClose}

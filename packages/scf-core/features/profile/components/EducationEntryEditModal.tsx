@@ -210,7 +210,7 @@ export function EducationEntryEditModal({
                               }
                             />
                             <Button
-                              size="xs"
+                              size="sm"
                               variant="outline"
                               onPress={() => {
                                 setManualEntryMode(true)
@@ -233,7 +233,7 @@ export function EducationEntryEditModal({
                             />
                             <FieldError message={errors.institution_name?.message} />
                             <Button
-                              size="xs"
+                              size="sm"
                               variant="outline"
                               onPress={() => {
                                 setManualEntryMode(false)

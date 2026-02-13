@@ -329,7 +329,7 @@ export function VanityUrlSection() {
                             {availabilityStatus.suggestions.map((suggestion) => (
                               <Button
                                 key={suggestion}
-                                size="xs"
+                                size="sm"
                                 variant="outline"
                                 onPress={() => {
                                   setSlugInput(suggestion)

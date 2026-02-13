@@ -120,7 +120,7 @@ export function ProfileSnapshotWidget() {
         <Row justify="space-between" align="center">
           <H4>Profile</H4>
           <Button
-            size="xs"
+            size="sm"
             chromeless
             style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
@@ -237,7 +237,7 @@ export function ProfileSnapshotWidget() {
             <Row justify="space-between" align="center">
               <Text>Top Skills</Text>
               <Button
-                size="xs"
+                size="sm"
                 chromeless
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >

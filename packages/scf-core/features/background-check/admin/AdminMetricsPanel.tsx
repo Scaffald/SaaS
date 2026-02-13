@@ -116,7 +116,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
       >
         <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>
           <Text color="$gray11">Package distribution</Text>
-          <Button variant="outline" size="xs" iconStart={RefreshCcw} onPress={onRefresh}>
+          <Button variant="outline" size="sm" iconStart={RefreshCcw} onPress={onRefresh}>
             Refresh
           </Button>
         </Row>

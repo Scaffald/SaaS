@@ -79,7 +79,7 @@ export function TeamInvitationList({
               </Stack>
               <Row gap={8} marginLeft={16} flexShrink={0} flexWrap="wrap" justify="flex-end">
                 <Button
-                  size="xs"
+                  size="sm"
                   iconStart={XCircle}
                   variant="outline"
                   color="$red10"
@@ -96,7 +96,7 @@ export function TeamInvitationList({
                   Decline
                 </Button>
                 <Button
-                  size="xs"
+                  size="sm"
                   iconStart={CheckCircle}
                   backgroundColor="$color9"
                   color="$gray11"
@@ -188,7 +188,7 @@ export function TeamInvitationsWidget() {
         </Row>
         <Button
           variant="outline"
-          size="xs"
+          size="sm"
           onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
         >
           Manage

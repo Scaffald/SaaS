@@ -166,7 +166,7 @@ export function OfficeTransactionHistory() {
         header: 'Actions',
         cell: (info) => (
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             iconStart={FileText}
             onPress={() => setSelectedTransactionId(info.getValue())}

@@ -416,7 +416,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
           <Stack gap={16}>
             <Row justify="space-between" align="center">
               <H4>{editingId ? 'Edit Portfolio Item' : 'Add Portfolio Item'}</H4>
-              <Button size="xs" variant="outline" onPress={handleCancel}>
+              <Button size="sm" variant="outline" onPress={handleCancel}>
                 Cancel
               </Button>
             </Row>
@@ -494,14 +494,14 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   <Row gap={8}>
                     {/* Reorder buttons */}
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       iconStart={ArrowUp}
                       onPress={() => handleMoveUp(index)}
                       disabled={index === 0 || reorderMutation.isPending}
                     />
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       iconStart={ArrowDown}
                       onPress={() => handleMoveDown(index)}
@@ -509,7 +509,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                     />
                     {/* Edit button */}
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       iconStart={Edit3}
                       onPress={() => handleEdit(item)}

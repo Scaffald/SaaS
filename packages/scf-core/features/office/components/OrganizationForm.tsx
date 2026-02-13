@@ -332,7 +332,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                     {slugStatus.suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         onPress={() => setValue('slug', suggestion, { shouldValidate: true })}
                       >

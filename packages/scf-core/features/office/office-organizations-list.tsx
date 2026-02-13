@@ -345,7 +345,7 @@ export function OfficeOrganizationsList() {
               <Row justify="space-between" align="center">
                 <Text>Moderation Summary</Text>
                 <Button
-                  size="xs"
+                  size="sm"
                   variant="outline"
                   iconStart={RefreshCw}
                   disabled={isRequestsLoading || isRequestsRefetching}
@@ -417,7 +417,7 @@ export function OfficeOrganizationsList() {
                       </Stack>
                       <Row gap={8}>
                         <Button
-                          size="xs"
+                          size="sm"
                           theme="success"
                           iconStart={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isPending}
@@ -426,7 +426,7 @@ export function OfficeOrganizationsList() {
                           Approve
                         </Button>
                         <Button
-                          size="xs"
+                          size="sm"
                           variant="outline"
                           theme="error"
                           iconStart={XIcon}

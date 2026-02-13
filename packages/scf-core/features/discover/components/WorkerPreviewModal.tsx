@@ -492,7 +492,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     <Text color="$gray11">Top Skills</Text>
                   </Row>
                   {skills.length > 10 && (
-                    <Button size="xs" variant="outline" onPress={handleViewFullProfile}>
+                    <Button size="sm" variant="outline" onPress={handleViewFullProfile}>
                       View All ({skills.length})
                     </Button>
                   )}
@@ -545,7 +545,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     <Text color="$gray11">Certifications</Text>
                   </Row>
                   {certifications.length > 5 && (
-                    <Button size="xs" variant="outline" onPress={handleViewFullProfile}>
+                    <Button size="sm" variant="outline" onPress={handleViewFullProfile}>
                       View All ({certifications.length})
                     </Button>
                   )}
@@ -577,7 +577,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     <Text color="$gray11">Recent Experience</Text>
                   </Row>
                   {experience.length > 3 && (
-                    <Button size="xs" variant="outline" onPress={handleViewFullProfile}>
+                    <Button size="sm" variant="outline" onPress={handleViewFullProfile}>
                       View All ({experience.length})
                     </Button>
                   )}

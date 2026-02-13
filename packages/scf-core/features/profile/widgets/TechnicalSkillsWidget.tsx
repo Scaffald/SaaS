@@ -56,7 +56,7 @@ export function TechnicalSkillsWidget({
           <Text color="$gray11">{error.message}</Text>
           <Button
             variant="filled" color="primary"
-            size="xs"
+            size="sm"
             onPress={() => {
               void refetch()
             }}
@@ -104,7 +104,7 @@ export function TechnicalSkillsWidget({
           {showEdit && (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}

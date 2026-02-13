@@ -122,7 +122,7 @@ export function CooldownStep({
           </Text>
           <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formatTime(timeRemaining)}</Text>
         </Stack>
-        <Progress value={cooldownProgress} max={100} size="xs">
+        <Progress value={cooldownProgress} max={100} size="sm">
           <Progress.Indicator animation="quick" />
         </Progress>
       </Stack>

@@ -102,7 +102,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
 
       {/* View Details Button */}
       <Button
-        size="xs"
+        size="sm"
         backgroundColor={isSelected ? '$yellow8' : '$color4'}
         color={isSelected ? '$yellow12' : '$color11'}
         hoverStyle={{

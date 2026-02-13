@@ -211,7 +211,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                     <Row gap={8} align="center">
                       {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                       <Button
-                        size="xs"
+                        size="sm"
                         iconStart={Pencil}
                         onPress={() => {
                           router.push(

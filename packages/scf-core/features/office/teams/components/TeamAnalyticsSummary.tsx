@@ -119,14 +119,14 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
             placeholder="Select range"
-            size="xs"
+            size="sm"
             options={RANGE_OPTIONS.map((option) => ({
               value: String(option.value),
               label: option.label,
             }))}
           />
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             iconStart={RefreshCw}
             onPress={() => void analyticsQuery.refetch()}

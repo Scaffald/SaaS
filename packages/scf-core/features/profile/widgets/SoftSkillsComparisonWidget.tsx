@@ -232,7 +232,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
           {showEdit && (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}

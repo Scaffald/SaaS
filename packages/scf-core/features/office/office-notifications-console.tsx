@@ -93,7 +93,7 @@ export function OfficeNotificationsConsole() {
         <Row justify="space-between" align="center">
           <Text>Delivery Queue</Text>
           <Button
-            size="xs"
+            size="sm"
             theme="info"
             iconStart={RefreshCw}
             onPress={() => deliveriesQuery.refetch()}
@@ -110,7 +110,7 @@ export function OfficeNotificationsConsole() {
             return (
               <Button
                 key={value}
-                size="xs"
+                size="sm"
                 theme={isActive ? 'info' : 'gray'}
                 {...(!isActive ? { variant: 'outlined' as const } : {})}
                 onPress={() => {
@@ -219,7 +219,7 @@ export function OfficeNotificationsConsole() {
         <Row justify="space-between" align="center">
           <Text>Digest Backlog</Text>
           <Button
-            size="xs"
+            size="sm"
             theme="info"
             iconStart={RefreshCw}
             onPress={() => digestQuery.refetch()}

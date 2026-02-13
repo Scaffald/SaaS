@@ -186,7 +186,7 @@ export function PhotoCard({
           <Row gap={8}>
             {canToggleVisibility ? (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={photo.showOnProfile ? Eye : EyeOff}
                 disabled={disabled}
@@ -201,7 +201,7 @@ export function PhotoCard({
             )}
             {canDelete ? (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={Trash2}
                 disabled={disabled || isDeleting}
@@ -226,7 +226,7 @@ export function PhotoCard({
               />
               <Row gap={8}>
                 <Button
-                  size="xs"
+                  size="sm"
                   iconStart={Check}
                   disabled={isSavingCaption}
                   onPress={handleSaveCaption}
@@ -234,7 +234,7 @@ export function PhotoCard({
                   Save
                 </Button>
                 <Button
-                  size="xs"
+                  size="sm"
                   iconStart={X}
                   variant="outline"
                   disabled={isSavingCaption}
@@ -250,7 +250,7 @@ export function PhotoCard({
                 {photo.caption ?? 'No caption provided.'}
               </Text>
               <Button
-                size="xs"
+                size="sm"
                 iconStart={Edit3}
                 variant="outline"
                 disabled={disabled}

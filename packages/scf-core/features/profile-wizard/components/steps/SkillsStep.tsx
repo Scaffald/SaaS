@@ -210,7 +210,7 @@ export function SkillsStep({
                       </Text>
                     </Stack>
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       onPress={() => handleRemoveSkill(skill.id)}
                       aria-label={`Remove ${skill.name}`}

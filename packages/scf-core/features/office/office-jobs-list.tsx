@@ -249,7 +249,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           value={statusFilter ?? 'all'}
           onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
           placeholder="All statuses"
-          size="xs"
+          size="sm"
           options={[
             { value: 'all', label: 'All statuses' },
             { value: 'draft', label: 'Draft' },
@@ -266,7 +266,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
             value={organizationFilter ?? 'all'}
             onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
             placeholder="All organizations"
-            size="xs"
+            size="sm"
             options={[
               { value: 'all', label: 'All organizations' },
               ...organizationsData.organizations.map(
@@ -285,7 +285,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
           placeholder={teamFilterPlaceholder}
-          size="xs"
+          size="sm"
           disabled={teamsLoading}
           options={[
             { value: 'all', label: 'All teams' },
@@ -298,7 +298,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       </Row>
       <Row gap={8} align="center">
         <Text style={{ color: colors.text[theme].secondary }}>My teams only</Text>
-        <Switch size="xs" checked={myTeamsOnly} onChange={setMyTeamsOnly}>
+        <Switch size="sm" checked={myTeamsOnly} onChange={setMyTeamsOnly}>
           <Switch.Thumb />
         </Switch>
       </Row>
@@ -308,7 +308,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           value={sortBy}
           onValueChange={(value: string) => setSortBy(value as SortOption)}
           placeholder="Sort by"
-          size="xs"
+          size="sm"
           options={[
             { value: 'created_desc', label: 'Newest first' },
             { value: 'created_asc', label: 'Oldest first' },
@@ -399,10 +399,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           rightAccessory: (
             <Row gap={8} align="center">
               {filtersAccessory}
-              <Button size="xs" onPress={() => setViewMode('kanban')} variant="outline">
+              <Button size="sm" onPress={() => setViewMode('kanban')} variant="outline">
                 Kanban
               </Button>
-              <Button size="xs" onPress={() => setViewMode('list')}>
+              <Button size="sm" onPress={() => setViewMode('list')}>
                 List
               </Button>
             </Row>

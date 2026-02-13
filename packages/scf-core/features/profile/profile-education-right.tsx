@@ -197,7 +197,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                     <Row gap={8} marginLeft="auto">
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         iconStart={Pencil}
                         aria-label="Edit education entry"
@@ -215,7 +215,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         }}
                       />
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         iconStart={Trash2}
                         aria-label="Delete education entry"

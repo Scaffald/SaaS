@@ -228,7 +228,7 @@ export const ResultsViewer = memo(function ResultsViewer({
                   <Text color="$gray11">{document.file_name}</Text>
                   <Text color="$gray11">Uploaded {formatDate(document.uploaded_at)}</Text>
                 </Stack>
-                <Button size="xs" variant="outline" disabled>
+                <Button size="sm" variant="outline" disabled>
                   View
                 </Button>
               </Row>

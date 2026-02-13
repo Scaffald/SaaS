@@ -200,7 +200,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
               {showCarouselControls && (
                 <Row gap={4}>
                   <Button
-                    size="xs"
+                    size="sm"
                     chromeless
                     width={32}
                     height={32}
@@ -212,7 +212,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     onPress={retreatBenefit}
                   />
                   <Button
-                    size="xs"
+                    size="sm"
                     chromeless
                     width={32}
                     height={32}

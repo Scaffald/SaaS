@@ -161,7 +161,7 @@ export function OfficeStorageDashboard() {
                 value={clamped}
                 max={100}
                 style={{ backgroundColor: colors.bg[theme].muted }}
-                size="xs"
+                size="sm"
               >
                 <Progress.Indicator
                   animation="bouncy"
@@ -311,7 +311,7 @@ export function OfficeStorageDashboard() {
                       value={entry.percent}
                       max={100}
                       style={{ backgroundColor: colors.bg[theme].muted }}
-                      size="xs"
+                      size="sm"
                     >
                       <Progress.Indicator
                         animation="bouncy"
@@ -334,7 +334,7 @@ export function OfficeStorageDashboard() {
               <Row justify="space-between" align="center">
                 <Text>Top users by storage consumption</Text>
                 <Button
-                  size="xs"
+                  size="sm"
                   variant="outline"
                   onPress={() => analyticsQuery.refetch()}
                   disabled={analyticsQuery.isRefetching}

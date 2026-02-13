@@ -59,7 +59,7 @@ export function OrganizationCheckDetails({
         <Text color="$gray11">Background Check Details</Text>
         <Row gap={8}>
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             iconStart={RefreshCcw}
             onPress={() => checkQuery.refetch()}
@@ -67,7 +67,7 @@ export function OrganizationCheckDetails({
           >
             Refresh
           </Button>
-          <Button size="xs" variant="outline" iconStart={X} onPress={onClose}>
+          <Button size="sm" variant="outline" iconStart={X} onPress={onClose}>
             Close
           </Button>
         </Row>

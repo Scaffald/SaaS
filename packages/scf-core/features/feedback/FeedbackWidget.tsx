@@ -251,7 +251,7 @@ export function FeedbackWidget() {
                     <Text color="$gray11">
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
                     </Text>
-                    <Button size="xs" marginTop={8} onPress={open}>
+                    <Button size="sm" marginTop={8} onPress={open}>
                       Choose File
                     </Button>
                   </Stack>
@@ -292,7 +292,7 @@ export function FeedbackWidget() {
                           : screenshot.mimeType}
                       </Text>
                     </Stack>
-                    <Button size="xs" variant="outline" onPress={handleRemoveScreenshot}>
+                    <Button size="sm" variant="outline" onPress={handleRemoveScreenshot}>
                       Remove
                     </Button>
                   </Row>
@@ -314,7 +314,7 @@ export function FeedbackWidget() {
               </Stack>
 
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 onPress={() => {
                   void processQueue()

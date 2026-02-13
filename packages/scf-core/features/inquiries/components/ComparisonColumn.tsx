@@ -148,7 +148,7 @@ export function ComparisonColumn({
           </Stack>
           {canRemove && onRemove && (
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               color="$red11"
               borderColor="$red8"

@@ -283,12 +283,12 @@ export function APIKeyScopesManager({
                           />
                           <Stack f={1} gap={8}>
                             <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="xs" color="$gray11">
+                            <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.requires && scope.requires.length > 0 && (
                               <Row ai="center" gap={8} flexWrap="wrap">
-                                <Paragraph size="xs" color="$gray11">
+                                <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
@@ -299,7 +299,7 @@ export function APIKeyScopesManager({
                                     paddingVertical={4}
                                     borderRadius={8}
                                   >
-                                    <Paragraph size="xs" color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="sm" color="$gray11" fontFamily="$mono">
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -339,7 +339,7 @@ export function APIKeyScopesManager({
                           />
                           <Stack f={1} gap={8}>
                             <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="xs" color="$gray11">
+                            <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.warning && (
@@ -351,7 +351,7 @@ export function APIKeyScopesManager({
                               >
                                 <Row ai="flex-start" gap={8}>
                                   <AlertCircle size="md" color="$orange11" mt={2} />
-                                  <Paragraph size="xs" color="$orange11" f={1}>
+                                  <Paragraph size="sm" color="$orange11" f={1}>
                                     {scope.warning}
                                   </Paragraph>
                                 </Row>
@@ -359,7 +359,7 @@ export function APIKeyScopesManager({
                             )}
                             {scope.requires && scope.requires.length > 0 && (
                               <Row ai="center" gap={8} flexWrap="wrap">
-                                <Paragraph size="xs" color="$gray11">
+                                <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
@@ -370,7 +370,7 @@ export function APIKeyScopesManager({
                                     paddingVertical={4}
                                     borderRadius={8}
                                   >
-                                    <Paragraph size="xs" color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="sm" color="$gray11" fontFamily="$mono">
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -389,7 +389,7 @@ export function APIKeyScopesManager({
             {/* Summary */}
             <Card backgroundColor="$gray3" padding="sm">
               <Stack gap={8}>
-                <Paragraph size="xs" color="$gray11">
+                <Paragraph size="sm" color="$gray11">
                   Selected Permissions
                 </Paragraph>
                 <Row gap={8} flexWrap="wrap">
@@ -406,7 +406,7 @@ export function APIKeyScopesManager({
                         paddingVertical={4}
                         borderRadius={8}
                       >
-                        <Paragraph size="xs" color="$blue11">
+                        <Paragraph size="sm" color="$blue11">
                           {scope}
                         </Paragraph>
                       </Card>

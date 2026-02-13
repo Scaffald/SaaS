@@ -27,7 +27,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
         <Text color="$gray11">{completionPercentage}%</Text>
       </Row>
 
-      <Progress size="xs" value={completionPercentage} max={100} backgroundColor="$color3">
+      <Progress size="sm" value={completionPercentage} max={100} backgroundColor="$color3">
         <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
       </Progress>
 

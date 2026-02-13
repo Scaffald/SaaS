@@ -256,7 +256,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   gap={12}
                 >
                   <Text flex={1}>{task}</Text>
-                  <Button size="xs" variant="outline" onPress={() => removeTask(index)}>
+                  <Button size="sm" variant="outline" onPress={() => removeTask(index)}>
                     Remove
                   </Button>
                 </Row>

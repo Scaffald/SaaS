@@ -188,7 +188,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                   align="center"
                   justify="center"
                 >
-                  <EventIcon size="xs" color="white" />
+                  <EventIcon size="sm" color="white" />
                 </Stack>
                 {!isLast && <Stack flex={1} width={2} backgroundColor="$gray5" height={40} />}
               </Stack>
@@ -196,7 +196,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
               {/* Event details */}
               <Stack flex={1} gap={4}>
                 <Row gap={8} align="center">
-                  <Avatar size="xs">
+                  <Avatar size="sm">
                     <Avatar.Image src={event.actor?.avatar_path || undefined} />
                     <Avatar.Fallback backgroundColor="$blue9">
                       <Text color="white">

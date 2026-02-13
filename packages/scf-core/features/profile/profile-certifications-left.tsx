@@ -742,7 +742,7 @@ export function ProfileCertificationsLeft({
                     </Button>
                     {customForm.file && (
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         onPress={handleClearCustomFile}
                         disabled={isSavingCustom}

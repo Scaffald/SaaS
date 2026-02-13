@@ -109,7 +109,7 @@ export function FollowingList() {
           const follow = row.original
           return (
             <Button
-              size="xs"
+              size="sm"
               variant="outline"
               iconStart={UserMinus}
               onPress={() => handleUnfollow(follow.id, follow.followee_id)}

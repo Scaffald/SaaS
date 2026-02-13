@@ -55,7 +55,7 @@ export function CertificationsWidget({
           <Text color="$gray11">{error.message}</Text>
           <Button
             variant="filled" color="primary"
-            size="xs"
+            size="sm"
             onPress={() => {
               void refetch()
             }}
@@ -91,7 +91,7 @@ export function CertificationsWidget({
           {showEdit && (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
             >
               Edit

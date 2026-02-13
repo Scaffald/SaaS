@@ -127,7 +127,7 @@ export function OrganizationProjectPrivacySettings({
             </Text>
             {overrideCount > 0 && (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={ExternalLink}
                 onPress={() => {

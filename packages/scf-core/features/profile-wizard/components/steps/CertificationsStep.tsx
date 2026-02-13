@@ -121,7 +121,7 @@ export function CertificationsStep({
                   </Row>
                 </Stack>
                 <Button
-                  size="xs"
+                  size="sm"
                   variant="outline"
                   onPress={() => removeCertification(cert.id)}
                   aria-label={`Remove ${cert.name}`}

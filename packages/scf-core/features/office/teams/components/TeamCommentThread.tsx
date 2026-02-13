@@ -124,7 +124,7 @@ export function TeamCommentThread({
             {mentionOptions.map((option) => (
               <Button
                 key={option.id}
-                size="xs"
+                size="sm"
                 variant={selectedMentionId === option.id ? 'outlined' : undefined}
                 onPress={() =>
                   setSelectedMentionId((current) => (current === option.id ? null : option.id))

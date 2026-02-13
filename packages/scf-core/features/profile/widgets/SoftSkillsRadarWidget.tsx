@@ -118,7 +118,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             {!showCompact && (
               <Button
                 variant="outline"
-                size="xs"
+                size="sm"
                 iconStart={Download}
                 onPress={handleExport}
                 testID="soft-skills-export-button"
@@ -129,7 +129,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             {showEdit && (
               <Button
                 variant="outline"
-                size="xs"
+                size="sm"
                 onPress={() => {
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }}

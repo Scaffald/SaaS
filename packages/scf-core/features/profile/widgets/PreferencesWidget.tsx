@@ -67,7 +67,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {showEdit && (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
             >
               Edit

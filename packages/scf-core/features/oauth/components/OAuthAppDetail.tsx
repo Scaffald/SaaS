@@ -331,7 +331,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                       />
                       <Stack flex={1}>
                         <SizableText size="sm">{scope.display_name}</SizableText>
-                        <SizableText size="xs" color="$gray11">
+                        <SizableText size="sm" color="$gray11">
                           {scope.description}
                         </SizableText>
                       </Stack>
@@ -359,7 +359,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                     Trusted
                   </Button>
                 </Row>
-                <Paragraph size="xs" color="$gray11">
+                <Paragraph size="sm" color="$gray11">
                   {trustLevel === 'active'
                     ? 'Active apps require user consent for each authorization'
                     : 'Trusted apps can skip the consent screen'}

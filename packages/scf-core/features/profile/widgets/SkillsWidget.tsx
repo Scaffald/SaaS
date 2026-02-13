@@ -145,7 +145,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           <Text color="$gray11">{error.message}</Text>
           <Button
             variant="filled" color="primary"
-            size="xs"
+            size="sm"
             onPress={() => {
               void refetch()
             }}
@@ -195,7 +195,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           {showEdit && (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -231,7 +231,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               <Text color="$gray11">{(error as unknown as Record<string, unknown>).message}</Text>
               <Button
                 variant="filled" color="primary"
-                size="xs"
+                size="sm"
                 onPress={() => {
                   void (refetch as unknown as () => Promise<unknown>)()
                 }}
@@ -327,7 +327,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               <Text color="$gray11">{softSkillsError.message}</Text>
               <Button
                 variant="filled" color="primary"
-                size="xs"
+                size="sm"
                 onPress={() => {
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }}

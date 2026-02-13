@@ -281,7 +281,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     </Stack>
                     {canTransferToMember ? (
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         iconStart={Crown}
                         disabled={transferOwnershipMutation.isPending}

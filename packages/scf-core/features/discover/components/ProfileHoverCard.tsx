@@ -150,7 +150,7 @@ export function ProfileHoverCard({
             </Stack>
             {profileUrl ? (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={ExternalLink}
                 aria-label="View full profile in new tab"
@@ -218,7 +218,7 @@ export function ProfileHoverCard({
             </Stack>
             {profileUrl ? (
               <Button
-                size="xs"
+                size="sm"
                 variant="outline"
                 iconStart={ExternalLink}
                 aria-label="View organization in new tab"

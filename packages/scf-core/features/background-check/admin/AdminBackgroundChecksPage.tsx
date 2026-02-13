@@ -229,7 +229,7 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             iconStart={ClipboardList}
             onPress={() => setSelectedCheck(row.original.raw)}
@@ -276,7 +276,7 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size="xs"
+            size="sm"
             variant="outline"
             iconStart={AlertTriangle}
             onPress={() => setSelectedDispute(row.original.raw)}

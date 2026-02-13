@@ -54,7 +54,7 @@ export function EducationWidget({
           <Text color="$gray11">{error.message}</Text>
           <Button
             variant="filled" color="primary"
-            size="xs"
+            size="sm"
             onPress={() => {
               void refetch()
             }}
@@ -79,7 +79,7 @@ export function EducationWidget({
           {showEdit && (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
             >
               Edit

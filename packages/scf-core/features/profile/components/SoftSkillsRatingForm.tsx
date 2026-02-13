@@ -223,7 +223,7 @@ export const SoftSkillsRatingForm: FC = () => {
       <Stack gap={16} align="center" paddingVertical={32}>
         <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Failed to load assessment</Text>
         <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
-        <Button variant="filled" color="primary" size="xs" onPress={() => void refetch()}>
+        <Button variant="filled" color="primary" size="sm" onPress={() => void refetch()}>
           Retry
         </Button>
       </Stack>
@@ -318,7 +318,7 @@ export const SoftSkillsRatingForm: FC = () => {
                             </Slider.Track>
                             <Slider.Thumb
                               index={0}
-                              size="xs"
+                              size="sm"
                               backgroundColor="$blue9"
                               borderWidth={2}
                               borderColor="$blue11"

@@ -367,7 +367,7 @@ export function ImportReviewScreen() {
                   <Row justify="space-between" align="center">
                     <ConfidenceBadge level={confidenceLevel} />
                     <Button
-                      size="xs"
+                      size="sm"
                       variant={isSelected ? 'outlined' : undefined}
                       onPress={() => handleToggleItem(currentSection.id, item.id)}
                     >

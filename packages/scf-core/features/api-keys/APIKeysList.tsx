@@ -142,7 +142,7 @@ export function APIKeysList({
                           paddingVertical={4}
                           borderRadius={8}
                         >
-                          <Paragraph size="xs" color="$red11">
+                          <Paragraph size="sm" color="$red11">
                             REVOKED
                           </Paragraph>
                         </Card>
@@ -162,7 +162,7 @@ export function APIKeysList({
                         </Paragraph>
                       </Card>
                       <Button
-                        size="xs"
+                        size="sm"
                         chromeless
                         iconStart={Copy}
                         onPress={() => copyToClipboard(key.key_prefix, key.id)}
@@ -180,7 +180,7 @@ export function APIKeysList({
                 <Row gap={16} flexWrap="wrap">
                   {/* Rate Limit Tier */}
                   <Stack gap={4}>
-                    <Paragraph size="xs" color="$gray11">
+                    <Paragraph size="sm" color="$gray11">
                       Rate Limit
                     </Paragraph>
                     <Card
@@ -189,7 +189,7 @@ export function APIKeysList({
                       paddingVertical={4}
                       borderRadius={8}
                     >
-                      <Paragraph size="xs" color="$gray12">
+                      <Paragraph size="sm" color="$gray12">
                         {key.rate_limit_tier.toUpperCase()} -{' '}
                         {getRateLimitDescription(key.rate_limit_tier)}
                       </Paragraph>
@@ -198,7 +198,7 @@ export function APIKeysList({
 
                   {/* Scopes */}
                   <Stack gap={4} f={1}>
-                    <Paragraph size="xs" color="$gray11">
+                    <Paragraph size="sm" color="$gray11">
                       Scopes
                     </Paragraph>
                     <Row gap={8} flexWrap="wrap">
@@ -210,7 +210,7 @@ export function APIKeysList({
                           paddingVertical={4}
                           borderRadius={8}
                         >
-                          <Paragraph size="xs" color="$blue11">
+                          <Paragraph size="sm" color="$blue11">
                             {scope}
                           </Paragraph>
                         </Card>
@@ -220,7 +220,7 @@ export function APIKeysList({
 
                   {/* Last Used */}
                   <Stack gap={4}>
-                    <Paragraph size="xs" color="$gray11">
+                    <Paragraph size="sm" color="$gray11">
                       Last Used
                     </Paragraph>
                     <Paragraph size="sm">
@@ -232,7 +232,7 @@ export function APIKeysList({
 
                   {/* Created */}
                   <Stack gap={4}>
-                    <Paragraph size="xs" color="$gray11">
+                    <Paragraph size="sm" color="$gray11">
                       Created
                     </Paragraph>
                     <Paragraph size="sm">
@@ -243,7 +243,7 @@ export function APIKeysList({
                   {/* Expires */}
                   {key.expires_at && (
                     <Stack gap={4}>
-                      <Paragraph size="xs" color="$gray11">
+                      <Paragraph size="sm" color="$gray11">
                         Expires
                       </Paragraph>
                       <Paragraph size="sm" color="$orange11">
