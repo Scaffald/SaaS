@@ -1,14 +1,22 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@scaffald/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
-import { ScrollView } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
 import {
   Button,
-  type GetThemeValueForKey,
+  KanbanCard,
+  KanbanColumn,
   Tabs,
   Text,
   useWindowDimensions,
@@ -42,10 +50,10 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   rejected: 'Rejected',
 }
 
-const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> => ({
-  new: colors.bg[theme].primary,
+const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, string> => ({
+  new: colors.bg[theme].default,
   screen: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-  inquired: '$purple9',
+  inquired: theme === "light" ? colors.purple[50] : colors.purple[900],
   interview: theme === "light" ? colors.error[50] : colors.error[900],
   offer: theme === "light" ? colors.green[50] : colors.green[900],
   hired: theme === "light" ? colors.green[700] : colors.green[300],
@@ -220,11 +228,13 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         <Row
           gap={12}
           padding="sm"
-          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          style={{
+            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border[theme].default,
+          }}
           align="center"
           justify="space-between"
-          borderBottomWidth={1}
-          borderBottomColor={colors.border[theme].default}
           wrap
         >
           <Text>
@@ -276,7 +286,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   <Stack align="center">
                     <Text>{STATUS_LABELS[status]}</Text>
                     <Stack
-                      style={{ backgroundColor: colors.bg[theme].inactive }}
+                      style={{ backgroundColor: colors.bg[theme].muted }}
                       paddingHorizontal={8}
                       paddingVertical={4}
                       borderRadius={8}
@@ -329,26 +339,35 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
         <DragOverlay>
           {activeApplication ? (
-            <KanbanCard
-              id={activeApplication.id}
-              applicantName={activeApplication.candidate.name}
-              applicantAvatar={activeApplication.candidate.photo}
-              jobTitle={activeApplication.job.title}
-              applicationDate={new Date(activeApplication.appliedAt)}
-              score={activeApplication.score}
-              status={activeApplication.status}
-              attachmentCount={
-                (activeApplication.attachments.resume ? 1 : 0) +
-                (activeApplication.attachments.coverLetter ? 1 : 0) +
-                (activeApplication.attachments.portfolio ? 1 : 0)
-              }
-              commentCount={activeApplication.notes.length}
-              durationDays={Math.floor(
-                (Date.now() - new Date(activeApplication.appliedAt).getTime()) /
-                  (1000 * 60 * 60 * 24)
-              )}
-              isDragging
-            />
+            <KanbanCard id={activeApplication.id} isDragging>
+              <Stack gap={8} padding="sm">
+                <Text style={{ color: colors.text[theme].primary }}>
+                  {activeApplication.candidate.name}
+                </Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  {activeApplication.job.title}
+                </Text>
+                <Row gap={8} justify="space-between">
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                    {Math.floor(
+                      (Date.now() - new Date(activeApplication.appliedAt).getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    )}
+                    d ago
+                  </Text>
+                  {((activeApplication.attachments.resume ? 1 : 0) +
+                    (activeApplication.attachments.coverLetter ? 1 : 0) +
+                    (activeApplication.attachments.portfolio ? 1 : 0)) > 0 && (
+                    <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                      {((activeApplication.attachments.resume ? 1 : 0) +
+                        (activeApplication.attachments.coverLetter ? 1 : 0) +
+                        (activeApplication.attachments.portfolio ? 1 : 0))}{' '}
+                      attachments
+                    </Text>
+                  )}
+                </Row>
+              </Stack>
+            </KanbanCard>
           ) : null}
         </DragOverlay>
       </DndContext>
@@ -434,10 +453,90 @@ function InquiryComparisonModal({
   )
 }
 
+/** Local droppable column using @dnd-kit (scaffald does not export DroppableColumn) */
+function DroppableColumn({
+  id,
+  title,
+  count,
+  color,
+  emptyMessage,
+  children,
+}: {
+  id: string
+  align?: string[]
+  title: string
+  count: number
+  color?: string
+  emptyMessage?: string
+  children?: React.ReactNode
+}) {
+  const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
+  return (
+    <View ref={setNodeRef} style={isOver ? { opacity: 0.9 } : undefined}>
+      <KanbanColumn
+        id={id}
+        title={title}
+        count={count}
+        color={color}
+        emptyMessage={emptyMessage}
+      >
+        {children}
+      </KanbanColumn>
+    </View>
+  )
+}
+
+/** Local draggable card using @dnd-kit (scaffald does not export DraggableCard) */
+function DraggableCard({
+  id,
+  kanbanCardProps,
+}: {
+  id: string
+  kanbanCardProps: {
+    applicantName: string
+    applicantAvatar?: string
+    jobTitle: string
+    applicationDate: Date
+    score?: number
+    status: ApplicationStatus
+    attachmentCount: number
+    commentCount: number
+    durationDays: number
+    isSelected: boolean
+    onToggleSelection: () => void
+    onView: () => void
+  }
+}) {
+  const { attributes, listeners, setNodeRef } = useDraggable({ id, data: { type: 'card' } })
+  const { theme } = useThemeContext()
+  return (
+    <View ref={setNodeRef} {...attributes} {...listeners}>
+      <KanbanCard id={id} isDragging={false}>
+        <Pressable onPress={kanbanCardProps.onView}>
+          <Stack gap={8} padding="sm">
+            <Text style={{ color: colors.text[theme].primary }}>{kanbanCardProps.applicantName}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{kanbanCardProps.jobTitle}</Text>
+            <Row gap={8} justify="space-between">
+              <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                {kanbanCardProps.durationDays}d ago
+              </Text>
+              {kanbanCardProps.attachmentCount > 0 && (
+                <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                  {kanbanCardProps.attachmentCount} attachments
+                </Text>
+              )}
+            </Row>
+          </Stack>
+        </Pressable>
+      </KanbanCard>
+    </View>
+  )
+}
+
 interface StatusColumnProps {
   status: ApplicationStatus
   label: string
-  color: GetThemeValueForKey<'backgroundColor'>
+  color: string
   applications: MockApplication[]
   selectedApplicationIds: Set<string>
   onSelectApplication: (application: MockApplication) => void

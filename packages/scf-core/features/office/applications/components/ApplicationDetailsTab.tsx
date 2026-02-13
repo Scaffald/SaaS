@@ -14,26 +14,26 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
     <Stack gap={16}>
       {/* Screening Answers */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Screening Questions</Text>
+        <Text style={{ marginBottom: 12 }}>Screening Questions</Text>
         <Stack gap={12}>
           <Row justify="space-between">
-            <Text opacity={0.7}>Current Location</Text>
+            <Text style={{ opacity: 0.7 }}>Current Location</Text>
             <Text>{application.screeningAnswers.currentLocation}</Text>
           </Row>
           <Row justify="space-between">
-            <Text opacity={0.7}>Willing to Relocate</Text>
+            <Text style={{ opacity: 0.7 }}>Willing to Relocate</Text>
             <Text>{application.screeningAnswers.willingToRelocate ? 'Yes' : 'No'}</Text>
           </Row>
           <Row justify="space-between">
-            <Text opacity={0.7}>Years of Experience</Text>
+            <Text style={{ opacity: 0.7 }}>Years of Experience</Text>
             <Text>{application.screeningAnswers.yearsExperience}</Text>
           </Row>
           <Row justify="space-between">
-            <Text opacity={0.7}>Authorized to Work</Text>
+            <Text style={{ opacity: 0.7 }}>Authorized to Work</Text>
             <Text>{application.screeningAnswers.isAuthorizedToWork ? 'Yes' : 'No'}</Text>
           </Row>
           <Row justify="space-between">
-            <Text opacity={0.7}>Earliest Start Date</Text>
+            <Text style={{ opacity: 0.7 }}>Earliest Start Date</Text>
             <Text>{application.screeningAnswers.earliestStartDate}</Text>
           </Row>
         </Stack>
@@ -42,16 +42,16 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       {/* Custom Questions */}
       {application.customAnswers.length > 0 && (
         <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-          <Text marginBottom={12}>Custom Questions</Text>
+          <Text style={{ marginBottom: 12 }}>Custom Questions</Text>
           <Stack gap={16}>
             {application.customAnswers.map((qa, index) => (
               <Stack key={`qa-${qa.question}-${index}`} gap={8}>
                 <Text>{qa.question}</Text>
-                <Text opacity={0.8}>{qa.answer}</Text>
+                <Text style={{ opacity: 0.8 }}>{qa.answer}</Text>
                 {index < application.customAnswers.length - 1 && (
                   <Stack
                     height={1}
-                    style={{ backgroundColor: colors.bg[theme].inactive }}
+                    style={{ backgroundColor: colors.border[theme].subtle }}
                     marginTop={8}
                   />
                 )}
@@ -63,7 +63,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
 
       {/* Attachments */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Attachments</Text>
+        <Text style={{ marginBottom: 12 }}>Attachments</Text>
         <Stack gap={8}>
           {application.attachments.resume && (
             <Row
@@ -75,12 +75,12 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
             >
               <Stack flex={1}>
                 <Text>Resume</Text>
-                <Text opacity={0.7}>
+                <Text style={{ opacity: 0.7 }}>
                   {application.attachments.resume.filename} •{' '}
                   {(application.attachments.resume.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="sm" iconStart={Download} chromeless>
+              <Button size="sm" variant="outline" iconStart={Download}>
                 Download
               </Button>
             </Row>
@@ -95,12 +95,12 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
             >
               <Stack flex={1}>
                 <Text>Cover Letter</Text>
-                <Text opacity={0.7}>
+                <Text style={{ opacity: 0.7 }}>
                   {application.attachments.coverLetter.filename} •{' '}
                   {(application.attachments.coverLetter.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="sm" iconStart={Download} chromeless>
+              <Button size="sm" variant="outline" iconStart={Download}>
                 Download
               </Button>
             </Row>
@@ -115,12 +115,12 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
             >
               <Stack flex={1}>
                 <Text>Portfolio</Text>
-                <Text opacity={0.7}>
+                <Text style={{ opacity: 0.7 }}>
                   {application.attachments.portfolio.filename} •{' '}
                   {(application.attachments.portfolio.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="sm" iconStart={Download} chromeless>
+              <Button size="sm" variant="outline" iconStart={Download}>
                 Download
               </Button>
             </Row>
@@ -130,18 +130,18 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
 
       {/* Stage History */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Application Timeline</Text>
+        <Text style={{ marginBottom: 12 }}>Application Timeline</Text>
         <Stack gap={12}>
           {application.stageHistory.map((history, index) => (
             <Row key={`history-${history.changedAt}-${index}`} gap={12}>
               <Stack
                 width={3}
-                style={{ backgroundColor: colors.bg[theme].primary }}
+                style={{ backgroundColor: colors.fg[theme].active }}
                 borderRadius={8}
               />
               <Stack flex={1} gap={4}>
-                <Text textTransform="capitalize">{history.toStage}</Text>
-                <Text opacity={0.7}>
+                <Text style={{ textTransform: 'capitalize' }}>{history.toStage}</Text>
+                <Text style={{ opacity: 0.7 }}>
                   {history.changedBy} •{' '}
                   {new Date(history.changedAt).toLocaleDateString('en-US', {
                     month: 'short',
@@ -151,7 +151,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   })}
                 </Text>
                 {history.reason && (
-                  <Text opacity={0.8} marginTop={4}>
+                  <Text style={{ opacity: 0.8, marginTop: 4 }}>
                     {history.reason}
                   </Text>
                 )}

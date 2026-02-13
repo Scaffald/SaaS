@@ -38,7 +38,7 @@ export const ApplicationsFilters = ({
     >
       {/* Job Filter */}
       <Stack width={200}>
-        <Text marginBottom={8} opacity={0.7}>
+        <Text style={{ marginBottom: 8, opacity: 0.7 }}>
           Filter by Job
         </Text>
         <ResponsiveSelect
@@ -57,13 +57,12 @@ export const ApplicationsFilters = ({
               label: job.title,
             })),
           ]}
-          triggerProps={{ width: 200 }}
         />
       </Stack>
 
       {/* Status Filter */}
       <Stack width={200}>
-        <Text marginBottom={8} opacity={0.7}>
+        <Text style={{ marginBottom: 8, opacity: 0.7 }}>
           Filter by Status
         </Text>
         <ResponsiveSelect
@@ -84,7 +83,6 @@ export const ApplicationsFilters = ({
             { value: 'hired', label: 'Hired' },
             { value: 'rejected', label: 'Rejected' },
           ]}
-          triggerProps={{ width: 200 }}
         />
       </Stack>
 
@@ -93,7 +91,7 @@ export const ApplicationsFilters = ({
         <Stack justify="flex-end">
           <Button
             size="sm"
-            chromeless
+            variant="outline"
             onPress={() => {
               onFiltersChange({
                 jobId: null,
