@@ -24,7 +24,6 @@ export default function WebhooksPage() {
   return (
     <OfficePageLayout
       title="Webhooks"
-      description="Manage webhook endpoints for real-time event notifications"
       breadcrumbs={[
         { label: 'Office', href: ROUTES.OFFICE.path },
         { label: 'Webhooks', href: ROUTES.OFFICE.WEBHOOKS.path },

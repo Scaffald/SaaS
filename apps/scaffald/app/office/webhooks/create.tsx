@@ -93,7 +93,6 @@ export default function CreateWebhookPage() {
     return (
       <OfficePageLayout
         title="Webhook Created"
-        description="Save your webhook secret"
         breadcrumbs={[
           { label: 'Office', href: ROUTES.OFFICE.path },
           { label: 'Webhooks', href: ROUTES.OFFICE.WEBHOOKS.path },
@@ -129,7 +128,6 @@ export default function CreateWebhookPage() {
   return (
     <OfficePageLayout
       title="Create Webhook"
-      description="Configure a new webhook endpoint"
       breadcrumbs={[
         { label: 'Office', href: ROUTES.OFFICE.path },
         { label: 'Webhooks', href: ROUTES.OFFICE.WEBHOOKS.path },
