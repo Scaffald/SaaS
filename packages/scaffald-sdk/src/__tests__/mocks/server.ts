@@ -77,6 +77,10 @@ export const handlers = [
         employmentTypes: ['full_time', 'part_time'],
         locations: ['San Francisco', 'New York'],
         remoteOptions: ['remote', 'hybrid', 'on_site'],
+        industries: [
+          { id: 'ind_1', name: 'Technology' },
+          { id: 'ind_2', name: 'Healthcare' },
+        ],
       },
     })
   }),
@@ -201,7 +205,7 @@ export const handlers = [
     const body = (await request.json()) as Record<string, any>
     return HttpResponse.json(
       {
-        id: 'app_new',
+        id: 'app_new_123',
         user_id: 'user_1',
         status: 'pending',
         is_complete: false,
@@ -1336,96 +1340,6 @@ export const handlers = [
   }),
 
   // POST /v1/profiles/portfolio - Create portfolio item
-  http.post(`${BASE_URL}/v1/profiles/portfolio`, async ({ request }) => {
-    const body = (await request.json()) as Record<string, any>
-    return HttpResponse.json(
-      {
-        id: 'port_new',
-        user_id: 'user_1',
-        ...body,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      { status: 201 }
-    )
-  }),
-
-  // PATCH /v1/profiles/portfolio/:id - Update portfolio item
-  http.patch(`${BASE_URL}/v1/profiles/portfolio/:id`, async ({ params, request }) => {
-    const { id } = params
-
-    // Return 404 for invalid ID
-    if (id === 'invalid') {
-      return HttpResponse.json({ error: 'Portfolio item not found' }, { status: 404 })
-    }
-
-    const body = (await request.json()) as Record<string, any>
-    return HttpResponse.json({
-      id,
-      user_id: 'user_1',
-      ...body,
-      updated_at: new Date().toISOString(),
-    })
-  }),
-
-  // DELETE /v1/profiles/portfolio/:id - Delete portfolio item
-  http.delete(`${BASE_URL}/v1/profiles/portfolio/:id`, ({ params }) => {
-    const { id } = params
-
-    // Return 404 for invalid ID
-    if (id === 'invalid') {
-      return HttpResponse.json({ error: 'Portfolio item not found' }, { status: 404 })
-    }
-
-    return HttpResponse.json({
-      success: true,
-      deletedItem: {
-        id,
-        user_id: 'user_1',
-        title: 'Deleted Item',
-        display_order: 1,
-        created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z',
-      },
-    })
-  }),
-
-  // POST /v1/profiles/portfolio/reorder - Reorder portfolio items
-  http.post(`${BASE_URL}/v1/profiles/portfolio/reorder`, async ({ request }) => {
-    const body = (await request.json()) as Record<string, any>
-    return HttpResponse.json({
-      success: true,
-      portfolio_items: body.portfolio_items || [],
-    })
-  }),
-
-  // POST /v1/profiles/portfolio/upload-image - Upload portfolio image
-  http.post(`${BASE_URL}/v1/profiles/portfolio/upload-image`, async ({ request }) => {
-    const body = (await request.json()) as any
-
-    // Validate file type
-    if (body.contentType && !body.contentType.startsWith('image/')) {
-      return HttpResponse.json(
-        { error: 'Invalid file type. Only images allowed.' },
-        { status: 400 }
-      )
-    }
-
-    // Validate file size (assume file is base64 encoded string)
-    if (body.file && body.file.length > 5000000) {
-      // > ~5MB
-      return HttpResponse.json(
-        { error: 'File size exceeds maximum allowed' },
-        { status: 400 }
-      )
-    }
-
-    return HttpResponse.json({
-      image_url: 'https://example.com/uploaded-image.jpg',
-      file_path: '/uploads/portfolio/image.jpg',
-    })
-  }),
-
   // GET /v1/profiles/:username - Get user profile
   http.get(`${BASE_URL}/v1/profiles/:username`, ({ params }) => {
     const { username } = params
@@ -5232,8 +5146,8 @@ export const handlers = [
   // Portfolio handlers
   // ============================================================================
 
-  // GET /v1/portfolio - List portfolio items
-  http.get(`${BASE_URL}/v1/portfolio`, ({ request }) => {
+  // GET /v1/profiles/portfolio - List portfolio items
+  http.get(`${BASE_URL}/v1/profiles/portfolio`, ({ request }) => {
     const url = new URL(request.url)
     const userId = url.searchParams.get('userId')
 
@@ -5281,8 +5195,8 @@ export const handlers = [
     ])
   }),
 
-  // POST /v1/portfolio - Create portfolio item
-  http.post(`${BASE_URL}/v1/portfolio`, async ({ request }) => {
+  // POST /v1/profiles/portfolio - Create portfolio item
+  http.post(`${BASE_URL}/v1/profiles/portfolio`, async ({ request }) => {
     const body = (await request.json()) as any
 
     if (!body.title) {
@@ -5302,8 +5216,8 @@ export const handlers = [
     })
   }),
 
-  // PATCH /v1/portfolio/:id - Update portfolio item
-  http.patch(`${BASE_URL}/v1/portfolio/:id`, async ({ params, request }) => {
+  // PATCH /v1/profiles/portfolio/:id - Update portfolio item
+  http.patch(`${BASE_URL}/v1/profiles/portfolio/:id`, async ({ params, request }) => {
     const { id } = params
     const body = (await request.json()) as any
 
@@ -5324,8 +5238,8 @@ export const handlers = [
     })
   }),
 
-  // DELETE /v1/portfolio/:id - Delete portfolio item
-  http.delete(`${BASE_URL}/v1/portfolio/:id`, ({ params }) => {
+  // DELETE /v1/profiles/portfolio/:id - Delete portfolio item
+  http.delete(`${BASE_URL}/v1/profiles/portfolio/:id`, ({ params }) => {
     const { id } = params
 
     if (id === 'invalid_id') {
@@ -5348,8 +5262,8 @@ export const handlers = [
     })
   }),
 
-  // POST /v1/portfolio/reorder - Reorder portfolio items
-  http.post(`${BASE_URL}/v1/portfolio/reorder`, async ({ request }) => {
+  // POST /v1/profiles/portfolio/reorder - Reorder portfolio items
+  http.post(`${BASE_URL}/v1/profiles/portfolio/reorder`, async ({ request }) => {
     const body = (await request.json()) as any
 
     if (!body.items || !Array.isArray(body.items)) {
@@ -5362,8 +5276,8 @@ export const handlers = [
     })
   }),
 
-  // POST /v1/portfolio/upload-image - Upload portfolio image
-  http.post(`${BASE_URL}/v1/portfolio/upload-image`, async ({ request }) => {
+  // POST /v1/profiles/portfolio/upload-image - Upload portfolio image
+  http.post(`${BASE_URL}/v1/profiles/portfolio/upload-image`, async ({ request }) => {
     const body = (await request.json()) as any
 
     if (!body.file || !body.fileName) {

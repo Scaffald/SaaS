@@ -84,14 +84,14 @@ export class Portfolio extends Resource {
    * Returns portfolio items ordered by display_order
    */
   async list(params?: ListPortfolioItemsParams): Promise<PortfolioItem[]> {
-    return this.get<PortfolioItem[]>('/v1/portfolio', params)
+    return this.get<PortfolioItem[]>('/v1/profiles/portfolio', params)
   }
 
   /**
    * Create a new portfolio item
    */
   async create(params: CreatePortfolioItemParams): Promise<PortfolioItem> {
-    return this.post<PortfolioItem>('/v1/portfolio', params)
+    return this.post<PortfolioItem>('/v1/profiles/portfolio', params)
   }
 
   /**
@@ -99,14 +99,14 @@ export class Portfolio extends Resource {
    */
   async update(params: UpdatePortfolioItemParams): Promise<PortfolioItem> {
     const { id, ...updates } = params
-    return this.patch<PortfolioItem>(`/v1/portfolio/${id}`, updates)
+    return this.patch<PortfolioItem>(`/v1/profiles/portfolio/${id}`, updates)
   }
 
   /**
    * Delete a portfolio item
    */
   async delete(params: DeletePortfolioItemParams): Promise<DeletePortfolioItemResponse> {
-    return this.del<DeletePortfolioItemResponse>(`/v1/portfolio/${params.id}`)
+    return this.del<DeletePortfolioItemResponse>(`/v1/profiles/portfolio/${params.id}`)
   }
 
   /**
@@ -114,7 +114,7 @@ export class Portfolio extends Resource {
    * Updates display_order for multiple items at once
    */
   async reorder(params: ReorderPortfolioItemsParams): Promise<ReorderPortfolioItemsResponse> {
-    return this.post<ReorderPortfolioItemsResponse>('/v1/portfolio/reorder', params)
+    return this.post<ReorderPortfolioItemsResponse>('/v1/profiles/portfolio/reorder', params)
   }
 
   /**
@@ -122,6 +122,6 @@ export class Portfolio extends Resource {
    * Handles file upload to storage and returns file path + URL
    */
   async uploadImage(params: UploadPortfolioImageParams): Promise<UploadPortfolioImageResponse> {
-    return this.post<UploadPortfolioImageResponse>('/v1/portfolio/upload-image', params)
+    return this.post<UploadPortfolioImageResponse>('/v1/profiles/portfolio/upload-image', params)
   }
 }
