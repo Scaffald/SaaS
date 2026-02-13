@@ -29,6 +29,10 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.mjs",
       "require": "./dist/react/index.js"
+    },
+    "./resources/*": {
+      "types": "./src/resources/*.ts",
+      "import": "./src/resources/*.ts"
     }
   },
   "main": "./dist/index.js",

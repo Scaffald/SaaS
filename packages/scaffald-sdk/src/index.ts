@@ -477,6 +477,22 @@ export type {
 } from './resources/workers.js'
 
 export type {
+  BackgroundCheckPackage,
+  BackgroundCheck,
+  ConsentDetails,
+  RequestCheckParams,
+  RequestCheckResponse,
+  ConfirmCheckPaymentParams,
+  CreateUploadUrlParams,
+  CreateUploadUrlResponse,
+  AddDocumentMetadataParams,
+  BackgroundCheckDocument,
+  UpdatePrivacyParams,
+  SubmitDisputeParams,
+  Dispute,
+} from './resources/background-checks.js'
+
+export type {
   PersonalityAssessment,
   IPIPAnswer,
   AssessmentStatus,

@@ -48,7 +48,7 @@ export const MapSearchInput = ({
   isVisible,
   onClose,
   onLocationSelect,
-  railVisible = false,
+  railVisible: _railVisible = false,
 }: MapSearchInputProps) => {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -126,13 +126,9 @@ export const MapSearchInput = ({
             >
               <Row align="center" gap={8}>
                 <AlertCircle size={18} color="$red10" />
-                <Text color="$red10">
-                  Map Search Unavailable
-                </Text>
+                <Text color="$red10">Map Search Unavailable</Text>
               </Row>
-              <Text color="gray">
-                {tokenValidation.error}
-              </Text>
+              <Text color="gray">{tokenValidation.error}</Text>
             </Stack>
           )}
         </Row>

@@ -23,7 +23,7 @@ export const FilterBar = ({
   onResetPress,
   onResultsPress,
   resultsCount = 0,
-  railVisible = false,
+  railVisible: _railVisible = false,
   searchActive = false,
   filterActive = false,
 }: FilterBarProps) => {

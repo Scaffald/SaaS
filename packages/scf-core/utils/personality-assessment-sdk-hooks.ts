@@ -1,15 +1,15 @@
-import { useMutation, useQuery, useQueryClient, type UseMutationOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationOptions,
+} from '@tanstack/react-query'
 import type {
-  AssessmentStatus,
   AwardResultsViewXPResponse,
   GenerateReportParams,
   GenerateReportResponse,
   GenerateShareTokenParams,
   GenerateShareTokenResponse,
-  IPIPStatus,
-  LuscherTest1Status,
-  LuscherTest2Status,
-  LuscherTestAvailability,
   RevokeShareTokenParams,
   SaveIPIPProgressParams,
   SaveLuscher1Params,
@@ -127,6 +127,7 @@ export function useSaveLuscher1Mutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-1'] })
+      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
       await (options?.onSuccess as any)?.(data, variables, context)
     },
   })
@@ -149,6 +150,7 @@ export function useSaveIPIPProgressMutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'ipip'] })
+      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
       await (options?.onSuccess as any)?.(data, variables, context)
     },
   })
@@ -171,6 +173,7 @@ export function useSaveLuscher2Mutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-2'] })
+      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
       await (options?.onSuccess as any)?.(data, variables, context)
     },
   })
@@ -193,6 +196,7 @@ export function useUpdateCurrentStepMutation(
     ...options,
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
       await (options?.onSuccess as any)?.(data, variables, context)
     },
   })
@@ -215,6 +219,7 @@ export function useSaveLuscherTestSessionMutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher'] })
+      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
       await (options?.onSuccess as any)?.(data, variables, context)
     },
   })
@@ -237,6 +242,7 @@ export function useGenerateReportMutation(
     ...options,
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
       await (options?.onSuccess as any)?.(data, variables, context)
     },
   })
@@ -246,7 +252,11 @@ export function useGenerateReportMutation(
  * Generate share token for IPIP results
  */
 export function useGenerateShareTokenMutation(
-  options?: UseMutationOptions<GenerateShareTokenResponse, Error, GenerateShareTokenParams | void>
+  options?: UseMutationOptions<
+    GenerateShareTokenResponse,
+    Error,
+    GenerateShareTokenParams | undefined
+  >
 ) {
   const client = useScaffaldJobsClient()
   return useMutation({

@@ -47,7 +47,7 @@ export default function BackgroundCheckDisputeScreen() {
           <Stack flex={1} gap={16} padding={16}>
             {checksQuery.isLoading && (
               <Stack gap={12} align="center" paddingVertical={24}>
-                <Spinner size="large" color="secondary" />
+                <Spinner size="lg" color="secondary" />
                 <Text size="sm" color="secondary">
                   Loading background checks…
                 </Text>
