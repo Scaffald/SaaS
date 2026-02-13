@@ -26,11 +26,15 @@ test.describe('Dashboard browser check', () => {
     await page.goto(FORSURED_BASE + '/');
     await expect(page.getByText(/Welcome to ForSured/)).toBeVisible({ timeout: 10000 });
 
-    // Click Test as GC / Manager
-    await page.getByRole('button', { name: /Test as GC \/ Manager/ }).click();
+    // Wait for test login button to be ready (not loading)
+    const testButton = page.getByRole('button', { name: /Test as GC \/ Manager/ });
+    await expect(testButton).toBeEnabled({ timeout: 5000 });
 
-    // Should redirect to manager dashboard
-    await expect(page).toHaveURL(/\/(manager\/dashboard|dashboard)/, { timeout: 15000 });
+    // Click and wait for navigation in parallel (login is async)
+    await Promise.all([
+      page.waitForURL(/\/(manager\/dashboard|dashboard)/, { timeout: 20000 }),
+      testButton.click(),
+    ]);
 
     // Log results
     console.log('[Forsured] Console errors:', consoleErrors);
@@ -49,8 +53,12 @@ test.describe('Dashboard browser check', () => {
     }
     // First login at Forsured
     await page.goto(FORSURED_BASE + '/');
-    await page.getByRole('button', { name: /Test as GC \/ Manager/ }).click();
-    await expect(page).toHaveURL(/\/(manager\/dashboard|dashboard)/, { timeout: 15000 });
+    const testButton = page.getByRole('button', { name: /Test as GC \/ Manager/ });
+    await expect(testButton).toBeEnabled({ timeout: 5000 });
+    await Promise.all([
+      page.waitForURL(/\/(manager\/dashboard|dashboard)/, { timeout: 20000 }),
+      testButton.click(),
+    ]);
 
     // Navigate to Scaffald - session may carry over (same Supabase)
     await page.goto(SCAFFALD_BASE + '/');
