@@ -318,8 +318,8 @@ export function AttachmentsStep({
           <Row
             padding="md"
             borderRadius={16}
-            borderWidth={2}
             style={{
+              borderWidth: 2,
               borderColor: theme === "light" ? colors.green[300] : colors.green[700],
               backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
             }}
@@ -328,7 +328,7 @@ export function AttachmentsStep({
             gap={12}
           >
             <Row gap={12} align="center" flex={1}>
-              <CheckCircle2 size={24} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
               <Stack flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('resume')?.filename}
@@ -351,17 +351,17 @@ export function AttachmentsStep({
             <Stack
               padding="xl"
               borderRadius={16}
-              borderWidth={2}
               style={{
+                borderWidth: 2,
                 borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
                 backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
               }}
               align="center"
               gap={12}
             >
-              <Upload size={32} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
               <Stack gap={8} width="100%">
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
                 </Text>
                 <ProgressBarBase
@@ -369,7 +369,7 @@ export function AttachmentsStep({
                   color="primary"
                   style={{ backgroundColor: colors.bg[theme].default }}
                 />
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   {uploadProgress.resume || 0}%
                 </Text>
               </Stack>
@@ -379,11 +379,11 @@ export function AttachmentsStep({
           <Stack gap={8}>
             <label htmlFor="resume-upload">
               <Stack
-                asChild
                 padding="xl"
                 borderRadius={16}
-                borderWidth={2}
                 style={{
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
                   borderColor: errors.resume
                     ? theme === "light" ? colors.error[300] : colors.error[700]
                     : dragOverRefs.current.resume
@@ -393,14 +393,8 @@ export function AttachmentsStep({
                     ? theme === "light" ? colors.blue[50] : colors.blue[900]
                     : colors.bg[theme].default,
                 }}
-                borderStyle="dashed"
                 align="center"
                 gap={12}
-                cursor="pointer"
-                hoverStyle={{
-                  borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                  backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
-                }}
               >
                 <section
                   aria-label="Resume upload drop zone"
@@ -417,7 +411,7 @@ export function AttachmentsStep({
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
                     </Text>
-                    <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                    <Text style={{ color: colors.text[theme].secondary }} align="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </Stack>
@@ -456,8 +450,8 @@ export function AttachmentsStep({
           <Row
             padding="md"
             borderRadius={16}
-            borderWidth={2}
             style={{
+              borderWidth: 2,
               borderColor: theme === "light" ? colors.green[300] : colors.green[700],
               backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
             }}
@@ -466,7 +460,7 @@ export function AttachmentsStep({
             gap={12}
           >
             <Row gap={12} align="center" flex={1}>
-              <CheckCircle2 size={24} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
               <Stack flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('cover_letter')?.filename}
@@ -489,17 +483,17 @@ export function AttachmentsStep({
             <Stack
               padding="xl"
               borderRadius={16}
-              borderWidth={2}
               style={{
+                borderWidth: 2,
                 borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
                 backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
               }}
               align="center"
               gap={12}
             >
-              <Upload size={32} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
               <Stack gap={8} width="100%">
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
                 </Text>
                 <ProgressBarBase
@@ -507,7 +501,7 @@ export function AttachmentsStep({
                   color="primary"
                   style={{ backgroundColor: colors.bg[theme].default }}
                 />
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   {uploadProgress.cover_letter || 0}%
                 </Text>
               </Stack>
@@ -517,11 +511,11 @@ export function AttachmentsStep({
           <Stack gap={8}>
             <label htmlFor="cover-letter-upload">
               <Stack
-                asChild
                 padding="xl"
                 borderRadius={16}
-                borderWidth={2}
                 style={{
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
                   borderColor: errors.cover_letter
                     ? theme === "light" ? colors.error[300] : colors.error[700]
                     : dragOverRefs.current.cover_letter
@@ -531,14 +525,8 @@ export function AttachmentsStep({
                     ? theme === "light" ? colors.blue[50] : colors.blue[900]
                     : colors.bg[theme].default,
                 }}
-                borderStyle="dashed"
                 align="center"
                 gap={12}
-                cursor="pointer"
-                hoverStyle={{
-                  borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                  backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
-                }}
               >
                 <section
                   aria-label="Cover letter upload drop zone"
@@ -557,7 +545,7 @@ export function AttachmentsStep({
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
                     </Text>
-                    <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                    <Text style={{ color: colors.text[theme].secondary }} align="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </Stack>
@@ -596,8 +584,8 @@ export function AttachmentsStep({
           <Row
             padding="md"
             borderRadius={16}
-            borderWidth={2}
             style={{
+              borderWidth: 2,
               borderColor: theme === "light" ? colors.green[300] : colors.green[700],
               backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
             }}
@@ -606,7 +594,7 @@ export function AttachmentsStep({
             gap={12}
           >
             <Row gap={12} align="center" flex={1}>
-              <CheckCircle2 size={24} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
               <Stack flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('portfolio')?.filename}
@@ -629,17 +617,17 @@ export function AttachmentsStep({
             <Stack
               padding="xl"
               borderRadius={16}
-              borderWidth={2}
               style={{
+                borderWidth: 2,
                 borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
                 backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
               }}
               align="center"
               gap={12}
             >
-              <Upload size={32} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
               <Stack gap={8} width="100%">
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
                 </Text>
                 <ProgressBarBase
@@ -647,7 +635,7 @@ export function AttachmentsStep({
                   color="primary"
                   style={{ backgroundColor: colors.bg[theme].default }}
                 />
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   {uploadProgress.portfolio || 0}%
                 </Text>
               </Stack>
@@ -657,11 +645,11 @@ export function AttachmentsStep({
           <Stack gap={8}>
             <label htmlFor="portfolio-upload">
               <Stack
-                asChild
                 padding="xl"
                 borderRadius={16}
-                borderWidth={2}
                 style={{
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
                   borderColor: errors.portfolio
                     ? theme === "light" ? colors.error[300] : colors.error[700]
                     : dragOverRefs.current.portfolio
@@ -671,14 +659,8 @@ export function AttachmentsStep({
                     ? theme === "light" ? colors.blue[50] : colors.blue[900]
                     : colors.bg[theme].default,
                 }}
-                borderStyle="dashed"
                 align="center"
                 gap={12}
-                cursor="pointer"
-                hoverStyle={{
-                  borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                  backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
-                }}
               >
                 <section
                   aria-label="Portfolio upload drop zone"
@@ -697,7 +679,7 @@ export function AttachmentsStep({
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
                     </Text>
-                    <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                    <Text style={{ color: colors.text[theme].secondary }} align="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </Stack>
@@ -729,8 +711,11 @@ export function AttachmentsStep({
       <Stack
         padding="md"
         borderRadius={16}
-        style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900], borderColor: colors.border[theme].subtle }}
-        borderWidth={1}
+        style={{
+          backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+          borderColor: colors.border[theme].subtle,
+          borderWidth: 1,
+        }}
       >
         <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
           💡 Tip: Make sure your documents are up-to-date and clearly showcase your relevant
@@ -751,7 +736,7 @@ export function AttachmentsStep({
         </Button>
         <Button
           size="md"
-          theme="info"
+          color="primary"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}
         >
