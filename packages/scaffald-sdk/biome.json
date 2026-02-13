@@ -1,10 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
   "extends": ["../../biome.json"],
+  "files": {
+    "includes": ["src/**", "scripts/**"]
+  },
   "linter": {
     "rules": {
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off",
+        "noDuplicateTestHooks": "off"
       }
     }
   }

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
-import * as React from 'react'
+import type * as React from 'react'
 import { ScaffaldProvider, useScaffald } from '../react/provider'
 import {
   useJobs,
