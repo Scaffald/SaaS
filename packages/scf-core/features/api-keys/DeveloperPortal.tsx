@@ -12,6 +12,7 @@ import { APIKeyCreateModal } from './APIKeyCreateModal'
 import { APIKeyScopesManager } from './APIKeyScopesManager'
 import { APIKeyUsageChart } from './APIKeyUsageChart'
 import { useAPIKeys, useCreateAPIKey, useUpdateAPIKey, useRevokeAPIKey } from './hooks'
+import type { ApiKeyScope } from '@scaffald/sdk'
 import type { CreateKeyParams } from './APIKeyCreateModal'
 
 export function DeveloperPortal() {
@@ -40,8 +41,8 @@ export function DeveloperPortal() {
     try {
       const result = await createKey.mutateAsync({
         name: params.name,
-        scopes: params.scopes,
-        expiresAt: params.expiresAt,
+        scopes: params.scopes as ApiKeyScope[],
+        expires_at: params.expiresAt,
         environment: 'live',
         rate_limit_tier: 'free',
       })
@@ -57,7 +58,7 @@ export function DeveloperPortal() {
         name: result.name,
         scopes: result.scopes,
         created_at: result.created_at,
-        expires_at: result.expires_at,
+        expires_at: result.expires_at ?? undefined,
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to create API key'
@@ -74,7 +75,7 @@ export function DeveloperPortal() {
     try {
       await updateKey.mutateAsync({
         id: keyId,
-        scopes,
+        params: { scopes: scopes as ApiKeyScope[] },
       })
 
       toast.show({
@@ -101,7 +102,7 @@ export function DeveloperPortal() {
     }
 
     try {
-      await revokeKey.mutateAsync({ id: keyId })
+      await revokeKey.mutateAsync(keyId)
 
       toast.show({
         title: 'API Key Revoked',
@@ -165,14 +166,16 @@ export function DeveloperPortal() {
       {/* Usage Chart (shown as overlay or separate view) */}
       {usageKeyId && (
         <Stack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="$background"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: '#ffffff',
+            zIndex: 100,
+          }}
           padding="md"
-          zi={100}
         >
           <APIKeyUsageChart apiKeyId={usageKeyId} onClose={() => setUsageKeyId(null)} />
         </Stack>

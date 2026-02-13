@@ -19,7 +19,7 @@ import {
 } from '@scaffald/ui'
 import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from 'lucide-react-native'
 
-interface APIKeyScopesManagerProps {
+export interface APIKeyScopesManagerProps {
   isOpen: boolean
   onClose: () => void
   apiKey: {
@@ -188,7 +188,7 @@ export function APIKeyScopesManager({
 
   return (
     <Modal visible={isOpen} onClose={handleClose}>
-      <ModalHeader title="Manage API Key Permissions" subtitle={apiKey.name} />
+      <ModalHeader title="Manage API Key Permissions" description={apiKey.name} />
       <ModalContent>
         <Stack gap={16}>
             {!apiKey.is_active && (

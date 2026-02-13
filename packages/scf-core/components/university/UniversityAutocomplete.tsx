@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react'
-import { SizableText, Stack } from '@scaffald/ui'
-import { SearchSelect, type SearchSelectOption } from '@scaffald/ui'
+import { useCallback, useEffect, useState } from 'react'
+import { Input, Text, Stack, Spinner } from '@scaffald/ui'
+import { Pressable, ScrollView, StyleSheet } from 'react-native'
 
 export interface University {
   id: string
@@ -25,26 +25,13 @@ export interface UniversityAutocompleteProps {
   onInputChange?: (value: string) => void
 }
 
+const MIN_SEARCH_LENGTH = 3
+
 /**
  * University Autocomplete Component
  *
  * Provides autocomplete search for universities from catalog.
  * Defaults to US universities with minimum 3 character search.
- *
- * @example
- * ```tsx
- * <UniversityAutocomplete
- *   value={universityName}
- *   universityId={universityId}
- *   onUniversitySelect={(uni) => {
- *     setUniversityId(uni.id)
- *     setUniversityName(uni.name)
- *   }}
- *   onSearch={handleSearch}
- *   results={searchResults}
- *   loading={isSearching}
- * />
- * ```
  */
 export function UniversityAutocomplete({
   value = '',
@@ -60,74 +47,127 @@ export function UniversityAutocomplete({
   inputValue: controlledInputValue,
   onInputChange,
 }: UniversityAutocompleteProps) {
-  // Handle input change - trigger search when input changes
-  // Don't call onChange here to avoid loops - only sync on selection
+  const [isOpen, setIsOpen] = useState(false)
+  const [inputValue, setInputValue] = useState(value)
+  const isControlled = controlledInputValue !== undefined
+  const displayValue = isControlled ? controlledInputValue : inputValue
+
   const handleInputChange = useCallback(
-    (inputValue: string) => {
-      // Only call onInputChange if we're not in controlled mode to avoid loops
-      // When controlledInputValue is provided, SearchSelect manages the input value
-      if (controlledInputValue === undefined) {
-        onInputChange?.(inputValue)
-      }
-      if (inputValue.trim().length >= 3) {
-        onSearch(inputValue)
-      }
-    },
-    [onSearch, onInputChange, controlledInputValue]
-  )
-
-  // Handle selection
-  const handleChange = useCallback(
-    (university: University | University[] | null) => {
-      if (university && !Array.isArray(university)) {
-        onUniversitySelect?.(university)
-        onChange?.(university.name)
+    (text: string) => {
+      if (!isControlled) setInputValue(text)
+      onInputChange?.(text)
+      if (text.trim().length >= MIN_SEARCH_LENGTH) {
+        onSearch(text)
+        setIsOpen(true)
       } else {
-        onChange?.('')
+        setIsOpen(false)
       }
     },
-    [onUniversitySelect, onChange]
+    [isControlled, onSearch, onInputChange]
   )
 
-  // Find matching university from results if value matches
-  const selectedUniversity = useMemo(() => {
-    if (!value) return null
-    return results.find((uni) => uni.name === value) || null
-  }, [value, results])
-
-  // Custom render function for university results
-  const renderOption = useCallback(
-    (option: SearchSelectOption<University>) => (
-      <Stack gap={4} style={{ flex: 1 }} align="flex-start">
-        <SizableText color="gray">{option.raw.name}</SizableText>
-        {option.raw.country && <SizableText color="gray">{option.raw.country}</SizableText>}
-      </Stack>
-    ),
-    []
+  const handleSelect = useCallback(
+    (university: University) => {
+      if (!isControlled) setInputValue(university.name)
+      onUniversitySelect?.(university)
+      onChange?.(university.name)
+      setIsOpen(false)
+    },
+    [isControlled, onUniversitySelect, onChange]
   )
 
-  // If we have a value but it's not in results, and we have controlledInputValue,
-  // use it to display the value in the input field
-  // Otherwise, let SearchSelect manage the input value internally
-  const inputValueToUse = controlledInputValue !== undefined ? controlledInputValue : undefined
+  useEffect(() => {
+    if (!isControlled && value !== inputValue) {
+      setInputValue(value)
+    }
+  }, [value, isControlled, inputValue])
+
+  const errorMessage = error || searchError
+  const showDropdown = isOpen && displayValue.trim().length >= MIN_SEARCH_LENGTH
 
   return (
-    <SearchSelect<University>
-      value={selectedUniversity}
-      onChange={handleChange}
-      onInputChange={handleInputChange}
-      {...(inputValueToUse !== undefined ? { inputValue: inputValueToUse } : {})}
-      options={results}
-      getOptionLabel={(university) => university.name}
-      getOptionValue={(university) => university.id}
-      getOptionDescription={(university) => university.country}
-      isLoading={loading}
-      error={error || searchError || undefined}
-      disabled={disabled}
-      placeholder={placeholder}
-      minSearchLength={3}
-      enableFuzzyMatch={false}
-      renderOption={renderOption}
-    />
+    <Stack gap={4} style={styles.container}>
+      <Input
+        value={displayValue}
+        onChangeText={handleInputChange}
+        placeholder={placeholder}
+        disabled={disabled}
+        error={!!errorMessage}
+        helperText={errorMessage}
+        onFocus={() => displayValue.trim().length >= MIN_SEARCH_LENGTH && setIsOpen(true)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        style={{ flex: 1 }}
+      />
+      {showDropdown && (
+        <Stack style={styles.dropdown}>
+          {loading ? (
+            <Stack padding="md" align="center">
+              <Spinner size="sm" />
+            </Stack>
+          ) : results.length === 0 ? (
+            <Stack padding="md">
+              <Text size="sm" color="secondary">
+                No results found
+              </Text>
+            </Stack>
+          ) : (
+            <ScrollView style={styles.resultsList} keyboardShouldPersistTaps="handled">
+              {results.map((uni) => (
+                <Pressable
+                  key={uni.id}
+                  onPress={() => handleSelect(uni)}
+                  style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+                >
+                  <Stack gap={2}>
+                    <Text size="sm">{uni.name}</Text>
+                    {uni.country && (
+                      <Text size="sm" color="secondary">
+                        {uni.country}
+                      </Text>
+                    )}
+                  </Stack>
+                </Pressable>
+              ))}
+            </ScrollView>
+          )}
+        </Stack>
+      )}
+    </Stack>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    marginTop: 4,
+    maxHeight: 250,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e4e4e7',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    zIndex: 1000,
+  },
+  resultsList: {
+    maxHeight: 220,
+  },
+  option: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f4f4f5',
+  },
+  optionPressed: {
+    backgroundColor: '#f4f4f5',
+  },
+})

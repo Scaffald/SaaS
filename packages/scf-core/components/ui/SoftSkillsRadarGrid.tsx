@@ -1,10 +1,10 @@
 import { type FC, useMemo } from 'react'
-import { IndividualSkillRadarChart } from '@scaffald/ui'
+import { View } from 'react-native'
 import type {
   SoftSkill,
   SoftSkillCategory,
 } from '@scf/core/features/profile/components/SoftSkillsCategoryTabs'
-import { Text, View, Row, Stack } from '@scaffald/ui'
+import { Card, Text, Row, Stack } from '@scaffald/ui'
 
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]
@@ -60,12 +60,14 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
           {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
               key={key}
-              width="100%"
-              height={200}
-              backgroundColor="$color3"
-              borderRadius={16}
-              borderWidth={1}
-              borderColor="$color5"
+              style={{
+                width: '100%',
+                height: 200,
+                backgroundColor: '#e4e4e7',
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: '#a1a1aa',
+              }}
             >
               {/* Skeleton loader */}
             </View>
@@ -89,17 +91,24 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
     <Stack gap={16} padding={16}>
       <Row wrap gap={12}>
         {filteredSkills.map((skill) => (
-          <View key={skill.id} width="100%">
-            <IndividualSkillRadarChart
-              skillName={skill.name}
-              selfRating={skill.selfRating}
-              peerRating={skill.peerRating}
-              versionHistory={skill.versionHistory}
-              showTrend={skill.versionHistory && skill.versionHistory.length > 1}
-              size="md"
-              onPress={onSkillPress ? () => onSkillPress(skill.id) : undefined}
-            />
-          </View>
+          <Card
+            key={skill.id}
+            style={{ flex: 1, minWidth: 200 }}
+            padding="md"
+            variant="outlined"
+            pressable={!!onSkillPress}
+            onPress={onSkillPress ? () => onSkillPress(skill.id) : undefined}
+          >
+            <Text weight="semibold">{skill.name}</Text>
+            <Row gap={8}>
+              <Text size="sm" color="secondary">
+                Self: {skill.selfRating}
+              </Text>
+              <Text size="sm" color="secondary">
+                Peer: {skill.peerRating}
+              </Text>
+            </Row>
+          </Card>
         ))}
       </Row>
     </Stack>

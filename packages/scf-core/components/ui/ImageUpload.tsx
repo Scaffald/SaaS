@@ -3,8 +3,10 @@ import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { AlertCircle, Image as ImageIcon, Trash2, Upload } from 'lucide-react-native'
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Image, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { useFilePicker, MediaTypeOptions } from '@scaffald/ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useFilePicker } from '@scaffald/ui'
+import * as ImagePicker from 'expo-image-picker'
+import { Image } from 'react-native'
 
 export interface ImageUploadProps {
   /** Current image URL (for edit mode) */
@@ -219,11 +221,12 @@ export function ImageUpload({
     }
   }, [bucket, onChange, onError, value])
 
-  const { open, getRootProps, dragStatus } = useFilePicker({
-    typeOfPicker: 'image',
-    mediaTypes: [MediaTypeOptions.Images],
-    multiple: false,
-    onPick: async ({ webFiles, nativeFiles }) => {
+  const handlePicked = useCallback(
+    async (param: {
+      webFiles: File[] | null
+      nativeFiles: Array<{ uri: string; width?: number; height?: number; type?: string }> | null
+    }) => {
+      const { webFiles, nativeFiles } = param
       if (webFiles?.length) {
         await handleFileUpload(webFiles[0])
       } else if (nativeFiles?.length) {
@@ -305,6 +308,26 @@ export function ImageUpload({
         }
       }
     },
+    [bucket, maxSizeMB, onChange, onError, value]
+  )
+
+  const openNativePicker = useCallback(async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+    })
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0]
+      await handlePicked({
+        webFiles: null,
+        nativeFiles: [{ uri: asset.uri, width: asset.width, height: asset.height, type: asset.mimeType ?? undefined }],
+      })
+    }
+  }, [handlePicked])
+
+  const { open, getRootProps, dragStatus } = useFilePicker({
+    onPick: handlePicked,
+    onOpenNative: openNativePicker,
   })
 
   // Trigger file picker (defined after useFilePicker so open is available)
@@ -329,15 +352,14 @@ export function ImageUpload({
 
       {/* Upload Area */}
       <Stack
-        borderWidth={2}
-        borderColor={
-          isDragActive ? '$blue8' : error ? '$red8' : hasImage ? '$borderColor' : '$borderColor'
-        }
-        borderStyle={isDragActive ? 'solid' : 'dashed'}
-        borderRadius={16}
+        style={{
+          borderWidth: 2,
+          borderColor: isDragActive ? '#3b82f6' : error ? '#ef4444' : '#e4e4e7',
+          borderStyle: isDragActive ? 'solid' : 'dashed',
+          borderRadius: 16,
+          opacity: disabled ? 0.5 : 1,
+        }}
         padding={16}
-        backgroundColor={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
-        opacity={disabled ? 0.5 : 1}
         {...(Platform.OS === 'web' && getRootProps
           ? (getRootProps() as Record<string, unknown>)
           : {})}
@@ -345,25 +367,32 @@ export function ImageUpload({
         {hasImage ? (
           // Image Preview Mode
           <Stack gap={12} align="center">
-            <Stack position="relative">
+            <Stack style={{ position: 'relative' }}>
               <Image
                 source={{ uri: value }}
-                width={200}
-                height={200}
+                style={{
+                  width: 200,
+                  height: 200,
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: '#e4e4e7',
+                }}
                 resizeMode="contain"
-                borderRadius={16}
-                borderWidth={1}
-                borderColor="$borderColor"
               />
               {isUploading && (
                 <Stack
-                  position="absolute"
-                  backgroundColor="$background"
-                  opacity={0.8}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: '#ffffff',
+                    opacity: 0.8,
+                  }}
                   align="center"
                   justify="center"
                   borderRadius={16}
-                  style={{ top: 0, left: 0, right: 0, bottom: 0 }}
                 >
                   <Spinner size="lg" />
                 </Stack>
@@ -383,7 +412,7 @@ export function ImageUpload({
               <Button
                 size="sm"
                 variant="outline"
-                color="$red10"
+                color="error"
                 onPress={handleDelete}
                 disabled={disabled || isUploading}
                 iconStart={Trash2}
@@ -453,7 +482,7 @@ export function ImageUpload({
 
       {/* Error Message */}
       {error && (
-        <Row gap={8} align="center" padding={8} backgroundColor="$red2" borderRadius={12}>
+        <Row gap={8} align="center" padding={8} style={{ backgroundColor: '#fee2e2', borderRadius: 12 }}>
           <AlertCircle size="lg" color="$red10" />
           <Text color="$red10" style={{ flex: 1 }}>
             {error}

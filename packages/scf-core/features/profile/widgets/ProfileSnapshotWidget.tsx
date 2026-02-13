@@ -10,16 +10,7 @@ import {
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import {
-  Avatar,
-  Button,
-  H4,
-  ProgressBarBase,
-  Spinner,
-  Text,
-  Row,
-  Stack,
-} from '@scaffald/ui'
+import { Avatar, Button, H4, ProgressBarBase, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
@@ -65,7 +56,10 @@ export function ProfileSnapshotWidget() {
     return (
       <DashboardWidget>
         <Stack gap={spacing.md} align="center" paddingVertical={spacing.xl}>
-          <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+          <Spinner
+            size="lg"
+            style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}
+          />
           <Text style={{ color: colors.text[theme].secondary }}>Loading profile...</Text>
         </Stack>
       </DashboardWidget>
@@ -131,7 +125,7 @@ export function ProfileSnapshotWidget() {
           <Button
             size="sm"
             chromeless
-            style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}
+            style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
           >
             View Full Profile
@@ -182,7 +176,12 @@ export function ProfileSnapshotWidget() {
 
         {/* Current Role */}
         {currentRole && (
-          <Stack gap={4} style={{ backgroundColor: colors.bg[theme].muted }} padding="sm" borderRadius={12}>
+          <Stack
+            gap={4}
+            style={{ backgroundColor: colors.bg[theme].muted }}
+            padding="sm"
+            borderRadius={12}
+          >
             <Text style={{ color: colors.text[theme].secondary }}>Current Role</Text>
             <Text>{currentRole.job_title}</Text>
             <Text style={{ color: colors.text[theme].secondary }}>{currentRole.company_name}</Text>
@@ -213,7 +212,9 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{skills?.length || 0}</Text>
+              <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>
+                {skills?.length || 0}
+              </Text>
               <Text style={{ color: colors.text[theme].secondary }}>Skills</Text>
             </Stack>
 
@@ -226,7 +227,9 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{certifications?.length || 0}</Text>
+              <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
+                {certifications?.length || 0}
+              </Text>
               <Text style={{ color: colors.text[theme].secondary }}>Certs</Text>
             </Stack>
 
@@ -239,7 +242,9 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formattedYearsOfExperience}</Text>
+              <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>
+                {formattedYearsOfExperience}
+              </Text>
               <Text style={{ color: colors.text[theme].secondary }}>Years</Text>
             </Stack>
           </Row>
@@ -296,7 +301,8 @@ export function ProfileSnapshotWidget() {
         {/* Quick Actions */}
         <Stack gap={spacing.xs}>
           <Button
-            variant="filled" color="primary"
+            variant="filled"
+            color="primary"
             size="sm"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
             width="100%"
@@ -305,7 +311,9 @@ export function ProfileSnapshotWidget() {
           </Button>
           {completion < 100 && (
             <Stack align="center">
-              <Text style={{ color: colors.text[theme].secondary }}>Complete your profile to attract more opportunities</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Complete your profile to attract more opportunities
+              </Text>
             </Stack>
           )}
         </Stack>

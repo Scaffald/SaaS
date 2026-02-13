@@ -391,11 +391,24 @@ pnpm supa stop --project-id UNI-Construct
 pnpm supa start
 ```
 
-### 5. Network Request Failures
+### 5. tRPC/Edge Functions 503 (Service Temporarily Unavailable)
+If requests to `/functions/v1/trpc/*` return 503:
+1. **Start Edge Functions** in a separate terminal: `pnpm supa:functions` – Supabase DB and Edge Functions run as separate processes
+2. **If worker boot error** mentions "Unsupported lockfile version '5'": delete `packages/supabase/functions/trpc/deno.lock` and restart `pnpm supa:functions` – the lockfile was created with a newer Deno than the Supabase Edge Runtime supports
+3. **Optional**: set `SUPABASE_FUNCTIONS_WATCH_LIMIT=4000` if you see "too many files" warnings
+
+### 6. CORS on /v1/prerequisites/check (or other SDK endpoints)
+If you see "No 'Access-Control-Allow-Origin' header" when fetching `http://127.0.0.1:54321/v1/...` from `http://localhost:8081`:
+- **Cause**: The request is hitting Kong at `/v1/*` instead of the API Edge Function at `/functions/v1/api/v1/*`. Kong does not add CORS for unknown routes.
+- **Fix**: Set `EXPO_PUBLIC_SCAFFALD_API_URL=http://127.0.0.1:54321/functions/v1/api` in `.env` to force the correct base URL.
+- **Also**: Ensure `EXPO_PUBLIC_SUPABASE_URL` is set (e.g. `http://127.0.0.1:54321`). The providers derive the API URL from it by appending `/functions/v1/api`.
+
+### 7. Network Request Failures
 If the app shows network errors or requests fail to 127.0.0.1:54321:
 1. **Ensure Supabase is running**: `pnpm supa status` – if containers are down, run `pnpm supa start`
-2. **Check API health**: `curl http://127.0.0.1:54321/functions/v1/api/health` (should return 200)
-3. **Auth redirects**: `packages/supabase/config.toml` includes `http://localhost:8081` and `http://127.0.0.1:8081` in `additional_redirect_urls`
+2. **Ensure Edge Functions are served**: `pnpm supa:functions` – required for tRPC and other Edge Functions
+3. **Check API health**: `curl http://127.0.0.1:54321/functions/v1/api/health` (should return 200)
+4. **Auth redirects**: `packages/supabase/config.toml` includes `http://localhost:8081` and `http://127.0.0.1:8081` in `additional_redirect_urls`
 
 ## Getting Help
 

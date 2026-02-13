@@ -450,7 +450,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 <Paragraph size="sm" color="$blue11">
                   Check out our SDK documentation to learn how to use your API key:
                 </Paragraph>
-                <Paragraph size="sm" color="$blue11" fontFamily="$mono">
+                <Paragraph size="sm" color="$blue11" style={{ fontFamily: 'monospace' }}>
                   packages/scaffald-sdk/docs/getting-started.md
                 </Paragraph>
               </Stack>
