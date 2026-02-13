@@ -102,13 +102,17 @@ export function useJobs(
   options?: Omit<UseQueryOptions<JobListResponse>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffald()
+  const queryKey = ['jobs', params] as const
 
-  return useQuery({
-    queryKey: ['jobs', params],
-    queryFn: () => client.jobs.list(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    ...options,
-  })
+  return {
+    ...useQuery({
+      queryKey,
+      queryFn: () => client.jobs.list(params),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      ...options,
+    }),
+    queryKey,
+  }
 }
 
 /**
@@ -192,13 +196,17 @@ export function useSimilarJobs(
  */
 export function useJobFilterOptions(options?: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'>) {
   const client = useScaffald()
+  const queryKey = ['jobs', 'filterOptions'] as const
 
-  return useQuery({
-    queryKey: ['jobs', 'filterOptions'],
-    queryFn: () => client.jobs.filterOptions(),
-    staleTime: 30 * 60 * 1000, // 30 minutes (rarely changes)
-    ...options,
-  })
+  return {
+    ...useQuery({
+      queryKey,
+      queryFn: () => client.jobs.filterOptions(),
+      staleTime: 30 * 60 * 1000, // 30 minutes (rarely changes)
+      ...options,
+    }),
+    queryKey,
+  }
 }
 
 /**
@@ -225,13 +233,15 @@ export function useCreateJob(
 
   return useMutation({
     mutationFn: (params: CreateJobParams) => client.jobs.create(params),
-    onSuccess: (data) => {
+    ...options,
+    onSuccess: async (data, variables, context) => {
       // Invalidate jobs list
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
       // Set the cache for the new job
       queryClient.setQueryData(['jobs', data.id], data)
+      // Call user's onSuccess if provided
+      await (options?.onSuccess as any)?.(data, variables, context)
     },
-    ...options,
   })
 }
 
@@ -361,13 +371,15 @@ export function useCreateApplication(
 
   return useMutation({
     mutationFn: (params: CreateApplicationParams) => client.applications.create(params),
-    onSuccess: (data) => {
+    ...options,
+    onSuccess: async (data, variables, context) => {
       // Invalidate applications list (if we had one)
       queryClient.invalidateQueries({ queryKey: ['applications'] })
       // Set the cache for the new application
       queryClient.setQueryData(['applications', data.id], data)
+      // Call user's onSuccess if provided
+      await (options?.onSuccess as any)?.(data, variables, context)
     },
-    ...options,
   })
 }
 

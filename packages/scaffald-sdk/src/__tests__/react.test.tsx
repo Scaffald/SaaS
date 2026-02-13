@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React from 'react'
-import { http, HttpResponse } from 'msw'
-import { server } from './mocks/server'
+import { QueryClient } from '@tanstack/react-query'
+import * as React from 'react'
 import { ScaffaldProvider, useScaffald } from '../react/provider'
 import {
   useJobs,
@@ -39,18 +37,20 @@ describe('React Hooks', () => {
     })
   })
 
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ScaffaldProvider
-      config={{ apiKey: 'test_api_key', baseUrl: 'https://api.scaffald.com' }}
-      queryClient={queryClient}
-    >
-      {children}
-    </ScaffaldProvider>
-  )
+  const createWrapper = () => {
+    return ({ children }: { children: React.ReactNode }) => (
+      <ScaffaldProvider
+        config={{ apiKey: 'test_api_key', baseUrl: 'https://api.scaffald.com' }}
+        queryClient={queryClient}
+      >
+        {children}
+      </ScaffaldProvider>
+    )
+  }
 
   describe('Provider', () => {
     it('should provide Scaffald client via context', () => {
-      const { result } = renderHook(() => useScaffald(), { wrapper })
+      const { result } = renderHook(() => useScaffald(), { wrapper: createWrapper() })
 
       expect(result.current).toBeDefined()
       expect(result.current.jobs).toBeDefined()
@@ -68,7 +68,7 @@ describe('React Hooks', () => {
   describe('Jobs Hooks', () => {
     describe('useJobs', () => {
       it('should fetch jobs list', async () => {
-        const { result } = renderHook(() => useJobs({ limit: 10 }), { wrapper })
+        const { result } = renderHook(() => useJobs({ limit: 10 }), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -78,7 +78,7 @@ describe('React Hooks', () => {
       })
 
       it('should use correct query key', () => {
-        const { result } = renderHook(() => useJobs({ limit: 10, status: 'published' }), { wrapper })
+        const { result } = renderHook(() => useJobs({ limit: 10, status: 'published' }), { wrapper: createWrapper() })
 
         expect(result.current.queryKey).toEqual(['jobs', { limit: 10, status: 'published' }])
       })
@@ -86,7 +86,7 @@ describe('React Hooks', () => {
 
     describe('useJob', () => {
       it('should fetch single job', async () => {
-        const { result } = renderHook(() => useJob('job_123'), { wrapper })
+        const { result } = renderHook(() => useJob('job_123'), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -96,7 +96,7 @@ describe('React Hooks', () => {
       })
 
       it('should not fetch when id is empty', () => {
-        const { result } = renderHook(() => useJob(''), { wrapper })
+        const { result } = renderHook(() => useJob(''), { wrapper: createWrapper() })
 
         expect(result.current.fetchStatus).toBe('idle')
       })
@@ -104,7 +104,7 @@ describe('React Hooks', () => {
 
     describe('useSimilarJobs', () => {
       it('should fetch similar jobs', async () => {
-        const { result } = renderHook(() => useSimilarJobs('job_123', { limit: 5 }), { wrapper })
+        const { result } = renderHook(() => useSimilarJobs('job_123', { limit: 5 }), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -115,7 +115,7 @@ describe('React Hooks', () => {
 
     describe('useJobFilterOptions', () => {
       it('should fetch filter options', async () => {
-        const { result } = renderHook(() => useJobFilterOptions(), { wrapper })
+        const { result } = renderHook(() => useJobFilterOptions(), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -126,7 +126,7 @@ describe('React Hooks', () => {
 
     describe('useCreateJob', () => {
       it('should create a new job', async () => {
-        const { result } = renderHook(() => useCreateJob(), { wrapper })
+        const { result } = renderHook(() => useCreateJob(), { wrapper: createWrapper() })
 
         result.current.mutate({
           title: 'Senior Developer',
@@ -142,11 +142,12 @@ describe('React Hooks', () => {
       })
 
       it('should invalidate jobs list on success', async () => {
-        const { result } = renderHook(() => useCreateJob(), { wrapper })
+        const { result } = renderHook(() => useCreateJob(), { wrapper: createWrapper() })
 
         // First fetch jobs list
-        const { result: jobsResult } = renderHook(() => useJobs(), { wrapper })
+        const { result: jobsResult } = renderHook(() => useJobs(), { wrapper: createWrapper() })
         await waitFor(() => expect(jobsResult.current.isSuccess).toBe(true))
+        const initialDataUpdatedAt = jobsResult.current.dataUpdatedAt
 
         // Create new job
         result.current.mutate({
@@ -158,14 +159,17 @@ describe('React Hooks', () => {
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-        // Jobs list should be invalidated
-        await waitFor(() => expect(jobsResult.current.isRefetching).toBe(true))
+        // Jobs list should be invalidated - check that dataUpdatedAt changed
+        await waitFor(
+          () => expect(jobsResult.current.dataUpdatedAt).not.toBe(initialDataUpdatedAt),
+          { timeout: 3000 }
+        )
       })
     })
 
     describe('useUpdateJob', () => {
       it('should update an existing job', async () => {
-        const { result } = renderHook(() => useUpdateJob('job_123'), { wrapper })
+        const { result } = renderHook(() => useUpdateJob('job_123'), { wrapper: createWrapper() })
 
         result.current.mutate({
           title: 'Updated Title',
@@ -183,7 +187,7 @@ describe('React Hooks', () => {
 
     describe('useDeleteJob', () => {
       it('should delete a job', async () => {
-        const { result } = renderHook(() => useDeleteJob('job_123'), { wrapper })
+        const { result } = renderHook(() => useDeleteJob('job_123'), { wrapper: createWrapper() })
 
         result.current.mutate()
 
@@ -192,11 +196,11 @@ describe('React Hooks', () => {
 
       it('should remove job from cache on success', async () => {
         // First fetch the job
-        const { result: jobResult } = renderHook(() => useJob('job_123'), { wrapper })
+        const { result: jobResult } = renderHook(() => useJob('job_123'), { wrapper: createWrapper() })
         await waitFor(() => expect(jobResult.current.isSuccess).toBe(true))
 
         // Delete the job
-        const { result: deleteResult } = renderHook(() => useDeleteJob('job_123'), { wrapper })
+        const { result: deleteResult } = renderHook(() => useDeleteJob('job_123'), { wrapper: createWrapper() })
         deleteResult.current.mutate()
 
         await waitFor(() => expect(deleteResult.current.isSuccess).toBe(true))
@@ -211,7 +215,7 @@ describe('React Hooks', () => {
   describe('Applications Hooks', () => {
     describe('useApplication', () => {
       it('should fetch single application', async () => {
-        const { result } = renderHook(() => useApplication('app_123'), { wrapper })
+        const { result } = renderHook(() => useApplication('app_123'), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -223,7 +227,7 @@ describe('React Hooks', () => {
 
     describe('useCreateApplication', () => {
       it('should create a new application', async () => {
-        const { result } = renderHook(() => useCreateApplication(), { wrapper })
+        const { result } = renderHook(() => useCreateApplication(), { wrapper: createWrapper() })
 
         result.current.mutate({
           jobId: 'job_123',
@@ -239,7 +243,7 @@ describe('React Hooks', () => {
 
     describe('useUpdateApplication', () => {
       it('should update an application', async () => {
-        const { result } = renderHook(() => useUpdateApplication('app_123'), { wrapper })
+        const { result } = renderHook(() => useUpdateApplication('app_123'), { wrapper: createWrapper() })
 
         result.current.mutate({
           currentLocation: 'New York',
@@ -254,7 +258,7 @@ describe('React Hooks', () => {
 
     describe('useWithdrawApplication', () => {
       it('should withdraw an application', async () => {
-        const { result } = renderHook(() => useWithdrawApplication('app_123'), { wrapper })
+        const { result } = renderHook(() => useWithdrawApplication('app_123'), { wrapper: createWrapper() })
 
         result.current.mutate({
           reason: 'Accepted another offer',
@@ -267,7 +271,7 @@ describe('React Hooks', () => {
       })
 
       it('should work without reason', async () => {
-        const { result } = renderHook(() => useWithdrawApplication('app_123'), { wrapper })
+        const { result } = renderHook(() => useWithdrawApplication('app_123'), { wrapper: createWrapper() })
 
         result.current.mutate()
 
@@ -279,7 +283,7 @@ describe('React Hooks', () => {
   describe('Profiles Hooks', () => {
     describe('useUserProfile', () => {
       it('should fetch user profile', async () => {
-        const { result } = renderHook(() => useUserProfile('johndoe'), { wrapper })
+        const { result } = renderHook(() => useUserProfile('johndoe'), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -291,7 +295,7 @@ describe('React Hooks', () => {
 
     describe('useOrganizationProfile', () => {
       it('should fetch organization profile', async () => {
-        const { result } = renderHook(() => useOrganizationProfile('acme-corp'), { wrapper })
+        const { result } = renderHook(() => useOrganizationProfile('acme-corp'), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -303,7 +307,7 @@ describe('React Hooks', () => {
 
     describe('useEmployerProfile', () => {
       it('should fetch employer profile', async () => {
-        const { result } = renderHook(() => useEmployerProfile('tech-startup'), { wrapper })
+        const { result } = renderHook(() => useEmployerProfile('tech-startup'), { wrapper: createWrapper() })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
 

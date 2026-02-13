@@ -40,8 +40,8 @@ export class Follows extends Resource {
    */
   async getFollowing(params?: { limit?: number; offset?: number }): Promise<FollowsListResponse> {
     const queryParams = new URLSearchParams()
-    if (params?.limit) queryParams.append('limit', params.limit.toString())
-    if (params?.offset) queryParams.append('offset', params.offset.toString())
+    if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString())
+    if (params?.offset !== undefined) queryParams.append('offset', params.offset.toString())
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
     return this.get<FollowsListResponse>(`/v1/follows/following${query}`)
   }
@@ -51,8 +51,8 @@ export class Follows extends Resource {
    */
   async getFollowers(params?: { limit?: number; offset?: number }): Promise<FollowsListResponse> {
     const queryParams = new URLSearchParams()
-    if (params?.limit) queryParams.append('limit', params.limit.toString())
-    if (params?.offset) queryParams.append('offset', params.offset.toString())
+    if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString())
+    if (params?.offset !== undefined) queryParams.append('offset', params.offset.toString())
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
     return this.get<FollowsListResponse>(`/v1/follows/followers${query}`)
   }

@@ -63,6 +63,11 @@ export class Engagement extends Resource {
    * Get recent activity for the current user
    */
   async getRecentActivity(params?: GetRecentActivityParams): Promise<RecentActivityResponse> {
+    // Validate params
+    if (params?.eventTypes !== undefined && params.eventTypes.length === 0) {
+      throw new Error('eventTypes cannot be empty')
+    }
+
     const queryParams = new URLSearchParams()
     if (params?.limit) queryParams.append('limit', params.limit.toString())
     if (params?.eventTypes) {
@@ -79,7 +84,7 @@ export class Engagement extends Resource {
    */
   async getMetrics(params?: GetEngagementMetricsParams): Promise<EngagementMetrics> {
     const queryParams = new URLSearchParams()
-    if (params?.days) queryParams.append('days', params.days.toString())
+    if (params?.days !== undefined) queryParams.append('days', params.days.toString())
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
     return this.get<EngagementMetrics>(`/v1/engagement/metrics${query}`)
   }

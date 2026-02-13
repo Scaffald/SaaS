@@ -11,6 +11,7 @@ describe('Education', () => {
     client = new Scaffald({
       apiKey: 'test_key',
       baseUrl: 'https://api.scaffald.com',
+      maxRetries: 0,
     })
   })
 

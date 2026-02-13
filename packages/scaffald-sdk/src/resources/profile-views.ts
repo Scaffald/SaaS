@@ -92,6 +92,6 @@ export class ProfileViews extends Resource {
    * Get aggregated view statistics
    */
   async getViewAnalytics(): Promise<ViewAnalytics> {
-    return this.get('/profile-views/analytics')
+    return this.get('/v1/profile-views/analytics')
   }
 }
