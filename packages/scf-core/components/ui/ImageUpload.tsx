@@ -308,7 +308,7 @@ export function ImageUpload({
         }
       }
     },
-    [bucket, maxSizeMB, onChange, onError, value]
+    [bucket, maxSizeMB, onChange, onError, generateFilePath, handleFileUpload]
   )
 
   const openNativePicker = useCallback(async () => {
