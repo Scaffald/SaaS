@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@scaffald/ui'
+import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { Spinner, Text, Stack } from '@scaffald/ui'
 
@@ -8,6 +8,7 @@ import { Spinner, Text, Stack } from '@scaffald/ui'
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
  */
 export function OccupationAssessmentWidget() {
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   const { data: status, isLoading } = useOccupationStatus()

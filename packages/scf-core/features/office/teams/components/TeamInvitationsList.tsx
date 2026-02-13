@@ -32,13 +32,13 @@ const STATUS_LABELS: Record<InvitationStatus, string> = {
   revoked: 'Revoked',
 }
 
-const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
+const getStatusColors = (theme: 'light' | 'dark'): Record<InvitationStatus, GetThemeValueForKey<'color'>> => ({
   pending: colors.text[theme].warning,
   accepted: colors.text[theme].success,
   declined: colors.text[theme].error,
   expired: colors.text[theme].secondary,
   revoked: colors.text[theme].secondary,
-}
+})
 
 interface TeamInvitationsListProps {
   teamId: string
@@ -54,6 +54,7 @@ export function TeamInvitationsList({
   const { theme } = useThemeContext()
   const toast = useToast()
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending')
+  const STATUS_COLORS = getStatusColors(theme)
 
   const invitationsQuery = useTeamInvitations(teamId, {
     enabled: Boolean(teamId),

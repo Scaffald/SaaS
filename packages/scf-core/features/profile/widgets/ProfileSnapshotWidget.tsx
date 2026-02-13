@@ -8,9 +8,10 @@ import {
   useEducationWidget,
 } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, spacing } from '@scaffald/ui'
+import { DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * ProfileSnapshotWidget
@@ -18,6 +19,7 @@ import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@scaffa
  * Shows stats, skills preview, and quick actions
  */
 export function ProfileSnapshotWidget() {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const { data: user } = useCurrentUser()
 
@@ -54,8 +56,8 @@ export function ProfileSnapshotWidget() {
     return (
       <DashboardWidget>
         <Stack gap={spacing.md} align="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="lg" color="$blue7" />
-          <Text color="$gray11">Loading profile...</Text>
+          <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+          <Text style={{ color: colors.text[theme].secondary }}>Loading profile...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -65,7 +67,7 @@ export function ProfileSnapshotWidget() {
     return (
       <DashboardWidget>
         <Stack gap={spacing.md} align="center" paddingVertical={spacing['2xl']}>
-          <Text color="$gray11">Profile data unavailable</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Profile data unavailable</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -120,7 +122,7 @@ export function ProfileSnapshotWidget() {
           <Button
             size="xs"
             chromeless
-            color="$blue7"
+            style={{ color: colors.text[theme].info }}
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
           >
             View Full Profile
@@ -142,7 +144,7 @@ export function ProfileSnapshotWidget() {
             <Text>{displayName}</Text>
             {generalInfo.headline && (
               <Stack align="center">
-                <Text color="$gray11">{generalInfo.headline}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{generalInfo.headline}</Text>
               </Stack>
             )}
           </Stack>
@@ -164,10 +166,10 @@ export function ProfileSnapshotWidget() {
 
         {/* Current Role */}
         {currentRole && (
-          <Stack gap={4} backgroundColor="$color2" padding="sm" borderRadius={12}>
-            <Text color="$gray11">Current Role</Text>
+          <Stack gap={4} style={{ backgroundColor: colors.bg[theme].muted }} padding="sm" borderRadius={12}>
+            <Text style={{ color: colors.text[theme].secondary }}>Current Role</Text>
             <Text>{currentRole.job_title}</Text>
-            <Text color="$gray11">{currentRole.company_name}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{currentRole.company_name}</Text>
           </Stack>
         )}
 
@@ -178,11 +180,11 @@ export function ProfileSnapshotWidget() {
           {/* Completion Bar */}
           <Stack gap={8}>
             <Row justify="space-between">
-              <Text color="$gray11">Completion</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Completion</Text>
               <Text>{completion}%</Text>
             </Row>
             <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
+              <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.bg[theme].info }} />
             </Progress>
           </Stack>
 
@@ -192,39 +194,39 @@ export function ProfileSnapshotWidget() {
               gap={4}
               flex={1}
               minWidth={80}
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               padding={spacing.sm}
               borderRadius={12}
               align="center"
             >
-              <Text color="$blue8">{skills?.length || 0}</Text>
-              <Text color="$gray11">Skills</Text>
+              <Text style={{ color: colors.text[theme].info }}>{skills?.length || 0}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Skills</Text>
             </Stack>
 
             <Stack
               gap={4}
               flex={1}
               minWidth={80}
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               padding={spacing.sm}
               borderRadius={12}
               align="center"
             >
-              <Text color="$green10">{certifications?.length || 0}</Text>
-              <Text color="$gray11">Certs</Text>
+              <Text style={{ color: colors.text[theme].success }}>{certifications?.length || 0}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Certs</Text>
             </Stack>
 
             <Stack
               gap={4}
               flex={1}
               minWidth={80}
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               padding={spacing.sm}
               borderRadius={12}
               align="center"
             >
-              <Text color="$blue7">{formattedYearsOfExperience}</Text>
-              <Text color="$gray11">Years</Text>
+              <Text style={{ color: colors.text[theme].info }}>{formattedYearsOfExperience}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Years</Text>
             </Stack>
           </Row>
         </Stack>
@@ -288,7 +290,7 @@ export function ProfileSnapshotWidget() {
           </Button>
           {completion < 100 && (
             <Stack align="center">
-              <Text color="$gray11">Complete your profile to attract more opportunities</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Complete your profile to attract more opportunities</Text>
             </Stack>
           )}
         </Stack>

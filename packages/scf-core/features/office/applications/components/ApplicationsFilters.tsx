@@ -1,4 +1,4 @@
-import { Button, ResponsiveSelect, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ResponsiveSelect, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -25,6 +25,7 @@ export const ApplicationsFilters = ({
   onFiltersChange,
   jobs,
 }: ApplicationsFiltersProps) => {
+  const { theme } = useThemeContext()
   return (
     <Row
       gap={12}

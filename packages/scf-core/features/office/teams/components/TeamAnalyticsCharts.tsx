@@ -295,6 +295,7 @@ function AnalyticsCard({
   emptyMessage?: string
   summary?: string
 }) {
+  const { theme } = useThemeContext()
   return (
     <Card
       borderWidth={1}

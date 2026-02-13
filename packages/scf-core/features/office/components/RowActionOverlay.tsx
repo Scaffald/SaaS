@@ -1,6 +1,6 @@
 import { Eye, Pencil, X } from 'lucide-react-native'
 import { useEffect, useRef } from 'react'
-import { Button, Row } from '@scaffald/ui'
+import { Button, Row, useThemeContext } from '@scaffald/ui'
 import { DeleteButton } from './DeleteButton'
 import { DuplicateButton } from './DuplicateButton'
 import { colors } from '@scaffald/ui/tokens'
@@ -56,6 +56,7 @@ export function RowActionOverlay<TData>({
   itemName,
   itemType,
 }: RowActionOverlayProps<TData>) {
+  const { theme } = useThemeContext()
   const overlayRef = useRef<HTMLDivElement>(null)
 
   // Handle Escape key

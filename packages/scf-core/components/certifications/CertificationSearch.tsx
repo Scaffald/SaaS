@@ -210,6 +210,7 @@ export function CertificationSearch({
                     {groupedResults.depth0.map((cert) => (
                       <Card
                         key={cert.id}
+                        pressable
                         style={{
                           padding: 12,
                           borderRadius: 0,
@@ -218,7 +219,6 @@ export function CertificationSearch({
                           borderColor: '$borderColor',
                           cursor: 'pointer',
                         }}
-                        pressStyle={{ backgroundColor: '$backgroundHover' }}
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-0"
                       >
@@ -258,6 +258,7 @@ export function CertificationSearch({
                     {certs.map((cert) => (
                       <Card
                         key={cert.id}
+                        pressable
                         style={{
                           padding: 12,
                           borderRadius: 0,
@@ -266,7 +267,6 @@ export function CertificationSearch({
                           borderColor: '$borderColor',
                           cursor: 'pointer',
                         }}
-                        pressStyle={{ backgroundColor: '$backgroundHover' }}
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-1"
                       >
@@ -312,6 +312,7 @@ export function CertificationSearch({
                       return (
                         <Card
                           key={cert.id}
+                          pressable
                           style={{
                             padding: 12,
                             borderRadius: 0,
@@ -320,7 +321,6 @@ export function CertificationSearch({
                             borderColor: '$borderColor',
                             cursor: 'pointer',
                           }}
-                          pressStyle={{ backgroundColor: '$backgroundHover' }}
                           onPress={() => handleSelect(cert)}
                           testID="cert-search-card-2"
                         >

@@ -1,5 +1,5 @@
 import { TeamCommentThread } from '@scf/core/features/office/teams'
-import { Text, Stack } from '@scaffald/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface NotesTabProps {
@@ -9,6 +9,7 @@ interface NotesTabProps {
 }
 
 export const NotesTab = ({ applicationId, teamId, mentionOptions = [] }: NotesTabProps) => {
+  const { theme } = useThemeContext()
   if (!teamId) {
     return (
       <Stack gap={12}>

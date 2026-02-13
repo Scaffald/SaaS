@@ -56,23 +56,23 @@ export function SentryTestButtons() {
       </Text>
 
       <Stack gap={8} marginTop={12}>
-        <Button onPress={testJSError} theme="blue">
+        <Button onPress={testJSError} color="primary">
           Test JS Error (Handled)
         </Button>
 
-        <Button onPress={testMessage} theme="success">
+        <Button onPress={testMessage} color="success">
           Test Info Message
         </Button>
 
-        <Button onPress={testWarning} theme="info">
+        <Button onPress={testWarning} color="primary">
           Test Warning Message
         </Button>
 
-        <Button onPress={testCriticalError} theme="error">
+        <Button onPress={testCriticalError} color="error">
           Test Critical Error
         </Button>
 
-        <Button onPress={testUnhandledError} theme="error" chromeless>
+        <Button onPress={testUnhandledError} color="error" variant="ghost">
           Test Unhandled Error (Crashes Component)
         </Button>
       </Stack>

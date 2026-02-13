@@ -179,6 +179,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
 }
 
 function StatTile({ label, children }: { label: string; children: ReactNode }) {
+  const { theme } = useThemeContext()
   return (
     <Stack
       gap={4}

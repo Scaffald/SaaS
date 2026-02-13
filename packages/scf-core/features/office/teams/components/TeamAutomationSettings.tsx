@@ -345,6 +345,7 @@ function SettingsToggle({
   onValueChange: (value: boolean) => void
   disabled: boolean
 }) {
+  const { theme } = useThemeContext()
   return (
     <Row justify="space-between" gap={12} align="center" flexWrap="wrap">
       <Stack gap={4} flex={1} style={{ minWidth: 200 }}>

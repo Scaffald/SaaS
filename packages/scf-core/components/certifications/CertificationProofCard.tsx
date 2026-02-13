@@ -63,7 +63,7 @@ export function CertificationProofCard({
       <Stack gap={16}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Add Proof</Text>
-          <Button size="sm" chromeless onPress={onClose}>
+          <Button size="sm" variant="ghost" onPress={onClose}>
             <X size="lg" />
           </Button>
         </Row>

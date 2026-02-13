@@ -2,7 +2,7 @@ import {
   useCareerAssessmentStatus,
   useSaveCareerAssessmentMutation,
 } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@scaffald/ui'
+import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
@@ -27,6 +27,7 @@ import {
  * @returns JSX element
  */
 export function CareerAssessmentWidget() {
+  const { theme } = useThemeContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToast()
 

@@ -392,6 +392,7 @@ function SettingsToggle({
     | 'jobAssignment.autoAssignApplications'
     | 'jobAssignment.requireApproval'
 }) {
+  const { theme } = useThemeContext()
   return (
     <Controller
       control={control}
@@ -425,6 +426,7 @@ function SettingsToggle({
 }
 
 function PermissionBanner() {
+  const { theme } = useThemeContext()
   return (
     <Row
       gap={12}

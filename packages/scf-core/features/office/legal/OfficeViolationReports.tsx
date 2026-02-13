@@ -29,7 +29,7 @@ const formatStatus = (status: string): string => {
     .join(' ')
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string, theme: 'light' | 'dark') => {
   switch (status) {
     case 'pending':
       return colors.text[theme].warning
@@ -88,7 +88,7 @@ export function OfficeViolationReports() {
         header: 'Status',
         cell: (info) => {
           const status = info.getValue()
-          return <Text color={getStatusColor(status)}>{formatStatus(status)}</Text>
+          return <Text color={getStatusColor(status, theme)}>{formatStatus(status)}</Text>
         },
       }),
       columnHelper.accessor('id', {

@@ -162,6 +162,7 @@ interface StatusColumnProps {
 }
 
 function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: StatusColumnProps) {
+  const { theme } = useThemeContext()
   return (
     <DroppableColumn id={status} align={jobs.map((job) => job.id)}>
       <Stack

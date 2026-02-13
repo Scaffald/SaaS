@@ -1,4 +1,4 @@
-import { Button, H2, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
@@ -33,6 +33,7 @@ function formatPayRange(minCents?: number | null, maxCents?: number | null, type
 }
 
 export const OfficeApplicationsScreen = () => {
+  const { theme } = useThemeContext()
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filters, setFilters] = useState<{
     jobId: string | null

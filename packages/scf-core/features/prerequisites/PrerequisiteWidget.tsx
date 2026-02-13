@@ -6,6 +6,7 @@ import {
   DashboardWidget,
   ResponsiveSelect,
   spacing,
+  useThemeContext,
 } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
@@ -13,6 +14,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
 import { Input, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
@@ -33,6 +35,7 @@ import {
  * @returns JSX element
  */
 export function PrerequisiteWidget() {
+  const { theme } = useThemeContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToast()
 
@@ -136,16 +139,16 @@ export function PrerequisiteWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="$gray11">Complete Your Profile</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>Complete Your Profile</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Please complete these required fields to continue using Scaffald
           </Text>
         </Stack>
 
         {isCheckingStatus ? (
           <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
-            <Spinner size="lg" color="$blue7" />
-            <Text color="$gray11">Loading...</Text>
+            <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+            <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
           </Stack>
         ) : (
           <>
@@ -193,7 +196,7 @@ export function PrerequisiteWidget() {
             {/* 2. Address */}
             <Stack gap={12}>
               <Text>Address *</Text>
-              <Text color="$gray11" marginBottom={8}>
+              <Text style={{ color: colors.text[theme].secondary }} marginBottom={8}>
                 Search and select your home address
               </Text>
               <ControlledAddressForm
@@ -282,7 +285,7 @@ export function PrerequisiteWidget() {
                     {isLoadingIndustries ? (
                       <Row gap={8} align="center">
                         <Spinner size="sm" />
-                        <Text color="$gray11">Loading industries...</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>Loading industries...</Text>
                       </Row>
                     ) : industriesData?.data && industriesData.data.length > 0 ? (
                       <ResponsiveSelect
@@ -297,7 +300,7 @@ export function PrerequisiteWidget() {
                         )}
                       />
                     ) : (
-                      <Text color="$gray11">No industries available</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>No industries available</Text>
                     )}
                   </Stack>
                 )}
@@ -336,8 +339,7 @@ export function PrerequisiteWidget() {
                         <Text nativeID="checkbox-legal-privacy-policy-label">
                           I accept the{' '}
                           <Text
-                            color="$blue7"
-                            textDecorationLine="underline"
+                            style={{ color: colors.text[theme].info, textDecorationLine: 'underline' }}
                             onPress={(event) => {
                               event.stopPropagation?.()
                               if (typeof window !== 'undefined') {
@@ -382,8 +384,7 @@ export function PrerequisiteWidget() {
                         <Text nativeID="checkbox-legal-terms-of-service-label">
                           I accept the{' '}
                           <Text
-                            color="$blue7"
-                            textDecorationLine="underline"
+                            style={{ color: colors.text[theme].info, textDecorationLine: 'underline' }}
                             onPress={(event) => {
                               event.stopPropagation?.()
                               if (typeof window !== 'undefined') {

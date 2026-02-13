@@ -56,24 +56,26 @@ interface AdminCCPARequest {
 /**
  * Status badge colors
  */
-const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = {
+const getStatusColors = (
+  theme: 'light' | 'dark'
+): Record<AdminRequestStatus, { bg: string; text: string }> => ({
   pending: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
   processing: { bg: colors.bg[theme].info, text: colors.text[theme].info },
   completed: { bg: colors.bg[theme].successSubtle, text: colors.text[theme].success },
   failed: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
   cancelled: { bg: '$color4', text: colors.text[theme].secondary },
   appealed: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
-}
+})
 
 /**
  * Priority badge colors
  */
-const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
+const getPriorityColors = (theme: 'light' | 'dark'): Record<string, { bg: string; text: string }> => ({
   low: { bg: '$color4', text: colors.text[theme].secondary },
   medium: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
   high: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
   urgent: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
-}
+})
 
 /**
  * Format date string
@@ -93,10 +95,11 @@ function formatDate(dateString: string): string {
  * Status badge component
  */
 function StatusBadge({ status }: { status: AdminRequestStatus }) {
-  const colors = STATUS_COLORS[status]
+  const { theme } = useThemeContext()
+  const statusColors = getStatusColors(theme)[status]
   return (
-    <Row backgroundColor={colors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text color={colors.text} textTransform="capitalize">
+    <Row backgroundColor={statusColors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+      <Text color={statusColors.text} textTransform="capitalize">
         {status}
       </Text>
     </Row>
@@ -107,10 +110,12 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
  * Priority badge component
  */
 function PriorityBadge({ priority }: { priority: string }) {
-  const colors = PRIORITY_COLORS[priority] || PRIORITY_COLORS.low
+  const { theme } = useThemeContext()
+  const priorityColors = getPriorityColors(theme)
+  const selectedColors = priorityColors[priority] || priorityColors.low
   return (
-    <Row backgroundColor={colors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text color={colors.text} textTransform="capitalize">
+    <Row backgroundColor={selectedColors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+      <Text color={selectedColors.text} textTransform="capitalize">
         {priority}
       </Text>
     </Row>
@@ -124,13 +129,15 @@ function MetricCard({
   label,
   value,
   trend,
-  color = colors.text[theme].primary,
+  color,
 }: {
   label: string
   value: string | number
   trend?: 'up' | 'down' | 'neutral'
   color?: string
 }) {
+  const { theme } = useThemeContext()
+  const defaultColor = color || colors.text[theme].primary
   const trendColor =
     trend === 'up'
       ? colors.text[theme].success
@@ -150,7 +157,7 @@ function MetricCard({
       gap={4}
     >
       <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
-      <Text color={color}>{value}</Text>
+      <Text color={defaultColor}>{value}</Text>
       {trend && (
         <Text color={trendColor}>
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} vs last month
@@ -174,6 +181,7 @@ function RequestRow({
   onProcess?: (id: string) => void
   onView?: (id: string) => void
 }) {
+  const { theme } = useThemeContext()
   return (
     <Row
       padding="sm"
@@ -281,6 +289,7 @@ function FilterBar({
   onTypeChange: (type: string) => void
   onPriorityChange: (priority: string) => void
 }) {
+  const { theme } = useThemeContext()
   return (
     <Row gap={12} flexWrap="wrap" align="center">
       <Stack gap={4}>

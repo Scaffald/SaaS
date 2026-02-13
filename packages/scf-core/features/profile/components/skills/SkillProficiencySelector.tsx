@@ -1,6 +1,7 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Separator, Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */
@@ -29,6 +30,7 @@ export function SkillProficiencySelector({
   onAdd,
   onCancel,
 }: SkillProficiencySelectorProps) {
+  const { theme } = useThemeContext()
   const currentLevel = getProficiencyLevel(proficiency)
 
   return (
@@ -36,12 +38,12 @@ export function SkillProficiencySelector({
       <Text>Set Proficiency Level</Text>
 
       {/* Selected Skill */}
-      <Card bordered backgroundColor="$color3">
+      <Card bordered style={{ backgroundColor: colors.bg[theme].muted }}>
         <Card.Header>
           <Stack gap={4}>
             <Text>{skill.name}</Text>
             {skill.code && (
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
@@ -70,14 +72,14 @@ export function SkillProficiencySelector({
         </Slider>
 
         {/* Current Level Display */}
-        <Card bordered backgroundColor="$color3">
+        <Card bordered style={{ backgroundColor: colors.bg[theme].muted }}>
           <Card.Header>
             <Row justify="space-between" align="center">
               <Stack>
-                <Text color="$green9">{currentLevel?.label}</Text>
-                <Text color="$gray11">{currentLevel?.description}</Text>
+                <Text style={{ color: colors.text[theme].success }}>{currentLevel?.label}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{currentLevel?.description}</Text>
               </Stack>
-              <Text color="$green9">{proficiency}</Text>
+              <Text style={{ color: colors.text[theme].success }}>{proficiency}</Text>
             </Row>
           </Card.Header>
         </Card>

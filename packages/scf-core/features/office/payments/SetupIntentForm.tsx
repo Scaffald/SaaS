@@ -143,6 +143,7 @@ type InnerProps = SetupIntentFormProps & {
 }
 
 function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }: InnerProps) {
+  const { theme } = useThemeContext()
   const stripe = useStripe()
   const elements = useElements()
   const savePaymentMethodMutation = api.payments.savePaymentMethod.useMutation()

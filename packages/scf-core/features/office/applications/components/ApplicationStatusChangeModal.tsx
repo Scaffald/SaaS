@@ -11,6 +11,7 @@ import {
   Row,
   Stack,
   useToast,
+  useThemeContext,
 } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
@@ -47,6 +48,7 @@ export const ApplicationStatusChangeModal = ({
   isLoading = false,
   application,
 }: ApplicationStatusChangeModalProps) => {
+  const { theme } = useThemeContext()
   const [reason, setReason] = useState('')
   const toast = useToast()
   const successFeeMutation = api.successFees.createSuccessFee.useMutation()
@@ -510,6 +512,7 @@ function HireSummaryCard({
   successFeeStatus?: SuccessFeeStatusResult
   isStatusLoading?: boolean
 }) {
+  const { theme } = useThemeContext()
   if (hasMissingData) {
     return (
       <Card

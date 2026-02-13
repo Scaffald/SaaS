@@ -202,6 +202,7 @@ export function TeamJobsList({
 }
 
 function StatusChip({ status }: { status: string }) {
+  const { theme } = useThemeContext()
   const normalized = status.replace(/_/g, ' ')
   const isOpen = status === 'open'
   const background = isOpen ? colors.bg[theme].successSubtle : colors.bg[theme].muted
@@ -226,6 +227,7 @@ function StatusChip({ status }: { status: string }) {
 }
 
 function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
+  const { theme } = useThemeContext()
   const background = isPrimary ? colors.bg[theme].info : colors.bg[theme].muted
   const border = isPrimary ? colors.border[theme].info : colors.border[theme].default
   const textColor = isPrimary ? '$blue11' : colors.text[theme].secondary

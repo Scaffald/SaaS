@@ -4,7 +4,7 @@ import {
   useAssessmentStatus,
   useIPIPStatus,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@scaffald/ui'
+import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -15,6 +15,7 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/do
  * IPIPAssessmentWidget - Dashboard widget with CTA and results preview
  */
 export function IPIPAssessmentWidget() {
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   const { data: statusData, isLoading } = useIPIPStatus()

@@ -14,6 +14,7 @@ import {
   useWindowDimensions,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
@@ -41,7 +42,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   rejected: 'Rejected',
 }
 
-const STATUS_COLORS: Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> = {
+const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> => ({
   new: colors.bg[theme].primary,
   screen: colors.bg[theme].warning,
   inquired: '$purple9',
@@ -49,13 +50,15 @@ const STATUS_COLORS: Record<ApplicationStatus, GetThemeValueForKey<'backgroundCo
   offer: colors.bg[theme].success,
   hired: colors.text[theme].success,
   rejected: colors.bg[theme].error,
-}
+})
 
 interface ApplicationsKanbanBoardProps {
   applications: MockApplication[]
 }
 
 export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoardProps) => {
+  const { theme } = useThemeContext()
+  const STATUS_COLORS = getStatusColors(theme)
   const [selectedApplication, setSelectedApplication] = useState<MockApplication | null>(null)
   const [selectedApplicationIds, setSelectedApplicationIds] = useState<Set<string>>(new Set())
   const [showBulkInquiry, setShowBulkInquiry] = useState(false)
@@ -405,6 +408,7 @@ function InquiryComparisonModal({
   onClose,
   onRemoveInquiry,
 }: InquiryComparisonModalProps) {
+  const { theme } = useThemeContext()
   if (!open || inquiryIds.length < 2) {
     return null
   }

@@ -202,6 +202,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 }
 
 function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  const { theme } = useThemeContext()
   return (
     <Row
       gap={8}

@@ -61,7 +61,7 @@ const getVisibilityLabel = (visibility: Project['location_visibility']) => {
   }
 }
 
-const createColumns = (_router: ReturnType<typeof useRouter>) => [
+const createColumns = (_router: ReturnType<typeof useRouter>, theme: 'light' | 'dark') => [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),
@@ -111,7 +111,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     offset: 0,
   })
 
-  const _columns = useMemo(() => createColumns(router), [router])
+  const _columns = useMemo(() => createColumns(router, theme), [router, theme])
 
   const projects = data?.projects || []
 

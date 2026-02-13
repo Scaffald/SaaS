@@ -9,7 +9,7 @@ import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Button, Spinner, Tabs, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { CandidateProfileTab } from './CandidateProfileTab'
@@ -59,6 +59,7 @@ interface CandidateDetailModalProps {
 }
 
 export const CandidateDetailModal = ({ application, open, onClose }: CandidateDetailModalProps) => {
+  const { theme } = useThemeContext()
   const [activeTab, setActiveTab] = useState<
     'profile' | 'application' | 'notes' | 'messages' | 'inquiry'
   >('profile')

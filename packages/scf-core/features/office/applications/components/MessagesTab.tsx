@@ -1,6 +1,6 @@
 import { Send } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack, useThemeContext } from '@scaffald/ui'
 import {
   useApplicationMessages,
   useSendApplicationMessageMutation,
@@ -23,6 +23,7 @@ interface Message {
 }
 
 export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
+  const { theme } = useThemeContext()
   const [newMessage, setNewMessage] = useState('')
   const toast = useToast()
   const queryClient = useQueryClient()

@@ -118,6 +118,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
 }
 
 function StatItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  const { theme } = useThemeContext()
   return (
     <Row
       gap={8}
@@ -147,6 +148,7 @@ function Chip({
   children: ReactNode
   tone?: 'surface' | 'warning'
 }) {
+  const { theme } = useThemeContext()
   const background = tone === 'warning' ? colors.bg[theme].warningSubtle : colors.bg[theme].muted
   const border = tone === 'warning' ? colors.border[theme].warning : colors.border[theme].default
   const textColor = tone === 'warning' ? colors.text[theme].warning : colors.text[theme].secondary

@@ -1,4 +1,5 @@
-import { Slider, Text, Row, Stack } from '@scaffald/ui'
+import { Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type RadiusSliderProps = {
   value: number
@@ -23,11 +24,12 @@ export const RadiusSlider = ({
   max = 100000, // 100km
   step = 1000,
 }: RadiusSliderProps) => {
+  const { theme } = useThemeContext()
   return (
     <Stack gap={8} flex={1}>
       <Row justify="space-between" align="center">
-        <Text color="$gray11">Search Radius</Text>
-        <Text color="$blue10">{formatRadius(value)}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Search Radius</Text>
+        <Text style={{ color: colors.text[theme].info }}>{formatRadius(value)}</Text>
       </Row>
 
       <Slider
@@ -45,23 +47,22 @@ export const RadiusSlider = ({
         borderRadius={8}
       >
         <Slider.Track>
-          <Slider.TrackActive backgroundColor="$blue9" />
+          <Slider.TrackActive style={{ backgroundColor: colors.bg[theme].info }} />
         </Slider.Track>
         <Slider.Thumb
           index={0}
-          backgroundColor="$blue10"
+          style={{ backgroundColor: colors.bg[theme].info }}
           borderWidth={2}
-          borderColor="$blue11"
+          borderColor={colors.border[theme].info}
           borderRadius="$10"
           width={20}
           height={20}
-          style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
         />
       </Slider>
 
       <Row justify="space-between" align="center">
-        <Text color="$gray11">{formatRadius(min)}</Text>
-        <Text color="$gray11">{formatRadius(max)}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{formatRadius(min)}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{formatRadius(max)}</Text>
       </Row>
     </Stack>
   )

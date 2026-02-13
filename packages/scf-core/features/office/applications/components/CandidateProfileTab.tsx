@@ -1,4 +1,4 @@
-import { Card, Text, Row, Stack } from '@scaffald/ui'
+import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -22,6 +22,7 @@ export const CandidateProfileTab = ({
   isContactLocked = false,
   lockReason,
 }: CandidateProfileTabProps) => {
+  const { theme } = useThemeContext()
   const resolvedEmail = contactInfo?.email ?? candidate.email
   const resolvedPhone = contactInfo?.phone ?? candidate.phone
   const contactLocationFromProfile = [contactInfo?.employment_city, contactInfo?.employment_state]

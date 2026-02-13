@@ -42,6 +42,8 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Edit URL points to public repo
           editUrl: 'https://github.com/Scaffald/sdk/tree/main/docs-site/',
+          remarkPlugins: [],
+          rehypePlugins: [],
         },
         blog: false, // Disable blog for SDK documentation
         theme: {
@@ -50,6 +52,12 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+
+  themes: ['@docusaurus/theme-mermaid'],
+
+  markdown: {
+    mermaid: true,
+  },
 
   themeConfig: {
     // Replace with your project's social card
