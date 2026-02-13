@@ -81,7 +81,7 @@ export default function TeamAnalyticsPage() {
 
   if (teamQuery.isLoading && !team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap="$3">
+      <Stack flex={1} align="center" justify="center" gap={12}>
         <Spinner size="lg" />
         <Text color="$color11">Loading team analytics…</Text>
       </Stack>
@@ -105,16 +105,16 @@ export default function TeamAnalyticsPage() {
 
   return (
     <ScrollView>
-      <Stack gap="$5" padding="$4" paddingBottom="$8">
-        <Row justify="space-between" align="center" flexWrap="wrap" gap="$3">
-          <Row gap="$2" align="center">
+      <Stack gap={20} padding={16} paddingBottom={32}>
+        <Row justify="space-between" align="center" gap={12}>
+          <Row gap={8} align="center">
             <Button
-              size="$2"
+              size={8}
               variant="outline"
               icon={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
             >Back to team</Button>
-            <Row gap="$2" align="center">
+            <Row gap={8} align="center">
               <BarChart3 size={20} />
               <Stack>
                 <Text>
@@ -128,7 +128,7 @@ export default function TeamAnalyticsPage() {
           </Row>
 
           <Button
-            size="$2"
+            size={8}
             variant="outline"
             onPress={() => router.push(RouteBuilder.officeTeamsSettings(team.id))}
           >Team settings</Button>
@@ -160,13 +160,13 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} align="center" justify="center" paddingHorizontal="$4">
+    <Stack flex={1} align="center" justify="center" paddingHorizontal={16}>
       <Card
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color2"
-        padding="$4"
-        gap="$3"
+        padding={16}
+        gap={12}
       >
         <Text>
           {title}

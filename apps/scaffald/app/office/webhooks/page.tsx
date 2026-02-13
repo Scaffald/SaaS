@@ -35,12 +35,12 @@ export default function WebhooksPage() {
         </Link>
       }
     >
-      <ScrollView flex={1} padding="$4">
+      <ScrollView flex={1} padding={16}>
         {/* Documentation Banner */}
-        <Card padding="$5" marginBottom="$4">
-          <Stack gap="$3">
+        <Card padding={20}>
+          <Stack gap={12}>
             <Text>Getting Started with Webhooks</Text>
-            <Text color="$gray11" lineHeight="$4">
+            <Text color="$gray11">
               Webhooks allow you to receive real-time notifications when events occur in your
               organization. Configure endpoints to receive POST requests when jobs are created,
               applications are submitted, and more.
@@ -53,13 +53,13 @@ export default function WebhooksPage() {
 
         {/* Webhooks List */}
         {isLoading ? (
-          <Stack padding="$8" align="center" justify="center">
+          <Stack padding={32} align="center" justify="center">
             <Text color="$gray11">Loading webhooks...</Text>
           </Stack>
         ) : webhooks.length === 0 ? (
-          <Card padding="$8" align="center" gap="$4">
+          <Card padding={32} align="center" gap={16}>
             <Text>No webhooks configured</Text>
-            <Text color="$gray11" textAlign="center" maxWidth={400}>
+            <Text color="$gray11" maxWidth={400}>
               Create your first webhook endpoint to start receiving real-time event notifications.
             </Text>
             <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
@@ -67,7 +67,7 @@ export default function WebhooksPage() {
             </Link>
           </Card>
         ) : (
-          <Stack gap="$3">
+          <Stack gap={12}>
             {webhooks.map((webhook: WebhookConfig) => (
               <WebhookCard
                 key={webhook.id}
@@ -82,12 +82,12 @@ export default function WebhooksPage() {
 
         {/* Event Types Reference */}
         {webhooks.length > 0 && (
-          <Card padding="$5">
-            <Text marginBottom="$2">Available Event Types</Text>
-            <Text color="$gray11" marginBottom="$4">
+          <Card padding={20}>
+            <Text>Available Event Types</Text>
+            <Text color="$gray11">
               Subscribe to these events to receive notifications:
             </Text>
-            <Row flexWrap="wrap" gap="$2" marginBottom="$4">
+            <Row gap={8}>
               <EventTypeBadge label="job.created" category="Jobs" />
               <EventTypeBadge label="job.published" category="Jobs" />
               <EventTypeBadge label="application.submitted" category="Applications" />
@@ -115,7 +115,7 @@ interface WebhookCardProps {
 function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCardProps) {
   return (
     <Card
-      padding="$4"
+      padding={16}
       borderWidth={2}
       borderColor={isSelected ? '$blue8' : '$borderColor'}
       backgroundColor={isSelected ? '$blue2' : '$background'}
@@ -123,9 +123,9 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
       onPress={onPress}
       cursor="pointer"
     >
-      <Stack gap="$4">
-        <Stack gap="$2">
-          <Row gap="$3" align="center" justify="space-between">
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Row gap={12} align="center" justify="space-between">
             <Text flex={1}>{webhook.url}</Text>
             <Badge
               variant={webhook.is_active ? 'success' : 'neutral'}
@@ -139,12 +139,12 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
           )}
         </Stack>
 
-        <Row gap="$6">
-          <Stack gap="$1">
+        <Row gap={24}>
+          <Stack gap={4}>
             <Text color="$gray11">Events</Text>
             <Text>{webhook.events.length}</Text>
           </Stack>
-          <Stack gap="$1">
+          <Stack gap={4}>
             <Text color="$gray11">Success Rate</Text>
             <Text>
               {webhook.total_deliveries > 0
@@ -152,7 +152,7 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
                 : 'N/A'}
             </Text>
           </Stack>
-          <Stack gap="$1">
+          <Stack gap={4}>
             <Text color="$gray11">Last Delivery</Text>
             <Text>
               {webhook.last_delivery_at
@@ -177,7 +177,7 @@ interface EventTypeBadgeProps {
 
 function EventTypeBadge({ label, category }: EventTypeBadgeProps) {
   return (
-    <Stack padding="$2" paddingHorizontal="$3" backgroundColor="$gray3" borderRadius="$3" gap="$1">
+    <Stack padding={8} paddingHorizontal={12} backgroundColor="$gray3" borderRadius={12} gap={4}>
       <Text fontFamily="monospace" color="$gray12">{label}</Text>
       <Text color="$gray10">{category}</Text>
     </Stack>

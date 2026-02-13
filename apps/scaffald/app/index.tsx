@@ -162,11 +162,11 @@ export default function RootIndex() {
   // Show error if verification failed
   if (verificationError) {
     return (
-      <Stack flex={1} justify="center" align="center" padding="$4">
-        <Text color="$red10" textAlign="center" marginBottom="$4">
+      <Stack flex={1} justify="center" align="center" padding={16}>
+        <Text color="$red10">
           Verification failed: {verificationError}
         </Text>
-        <Text textAlign="center">Please try requesting a new magic link.</Text>
+        <Text>Please try requesting a new magic link.</Text>
       </Stack>
     )
   }

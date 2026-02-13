@@ -27,7 +27,7 @@ export default function OnboardingLayout() {
     return (
       <UIStack flex={1} justify="center" align="center">
         <Spinner size="lg" />
-        <Text marginTop={16}>Loading...</Text>
+        <Text>Loading...</Text>
       </UIStack>
     )
   }

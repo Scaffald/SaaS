@@ -53,7 +53,7 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <Stack align="center" justify="center" style={{ minHeight: 400 }} gap="$4">
+          <Stack align="center" justify="center" style={{ minHeight: 400 }} gap={16}>
             <Text color="$color11">
               Job Not Found
             </Text>

@@ -148,8 +148,8 @@ export default function OnboardingPage() {
         flex={1}
         justify="center"
         align="center"
-        padding="$4"
-        paddingVertical="$8"
+        padding={16}
+        paddingVertical={32}
         minHeight="100vh"
       >
         <Stack
@@ -157,8 +157,8 @@ export default function OnboardingPage() {
           width="100%"
           gap={spacing.md}
           backgroundColor="$background"
-          padding="$6"
-          borderRadius="$4"
+          padding={24}
+          borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -179,9 +179,9 @@ export default function OnboardingPage() {
           ) : (
             <>
               {/* 1. Name Fields */}
-              <Stack gap="$3">
-                <Row gap="$3">
-                  <Stack gap="$2" flex={1}>
+              <Stack gap={12}>
+                <Row gap={12}>
+                  <Stack gap={8} flex={1}>
                     <Text>First Name *</Text>
                     <Controller
                       name="first_name"
@@ -202,7 +202,7 @@ export default function OnboardingPage() {
                     )}
                   </Stack>
 
-                  <Stack gap="$2" flex={1}>
+                  <Stack gap={8} flex={1}>
                     <Text>Last Name *</Text>
                     <Controller
                       name="last_name"
@@ -228,9 +228,9 @@ export default function OnboardingPage() {
               <Separator />
 
               {/* 2. Address */}
-              <Stack gap="$3">
+              <Stack gap={12}>
                 <Text>Address *</Text>
-                <Text color="$color11" marginBottom="$2">
+                <Text color="$color11">
                   Search and select your home address
                 </Text>
                 <ControlledAddressForm
@@ -254,15 +254,15 @@ export default function OnboardingPage() {
               <Separator />
 
               {/* 3. User Types */}
-              <Stack gap="$3">
+              <Stack gap={12}>
                 <Text>I am a (select all that apply) *</Text>
                 <Controller
                   name="user_types"
                   control={control}
                   render={({ field }) => (
-                    <Stack gap="$2">
+                    <Stack gap={8}>
                       {USER_TYPE_OPTIONS.map((option) => (
-                        <Row key={option.value} gap="$3" align="center">
+                        <Row key={option.value} gap={12} align="center">
                           <Checkbox
                             checked={field.value?.includes(option.value as UserType)}
                             onChange={(checked: boolean) => {
@@ -311,15 +311,15 @@ export default function OnboardingPage() {
               <Separator />
 
               {/* 4. Primary Industry */}
-              <Stack gap="$3">
+              <Stack gap={12}>
                 <Text>Primary Industry *</Text>
                 <Controller
                   name="industry_id"
                   control={control}
                   render={({ field }) => (
-                    <Stack gap="$2">
+                    <Stack gap={8}>
                       {isLoadingIndustries ? (
-                        <Row gap="$2" align="center">
+                        <Row gap={8} align="center">
                           <Spinner size="small" />
                           <Text color="$color11">Loading industries...</Text>
                         </Row>
@@ -353,7 +353,7 @@ export default function OnboardingPage() {
               <Separator />
 
               {/* 5. Legal Agreements */}
-              <Stack gap="$3">
+              <Stack gap={12}>
                 <Text>Legal Agreements *</Text>
 
                 {/* Privacy Policy */}
@@ -361,8 +361,8 @@ export default function OnboardingPage() {
                   name="accepts_privacy_policy"
                   control={control}
                   render={({ field }) => (
-                    <Stack gap="$2">
-                      <Row gap="$3" align="center">
+                    <Stack gap={8}>
+                      <Row gap={12} align="center">
                         <Checkbox
                           checked={field.value}
                           onChange={(checked) => {
@@ -413,8 +413,8 @@ export default function OnboardingPage() {
                   name="accepts_terms_of_service"
                   control={control}
                   render={({ field }) => (
-                    <Stack gap="$2">
-                      <Row gap="$3" align="center">
+                    <Stack gap={8}>
+                      <Row gap={12} align="center">
                         <Checkbox
                           checked={field.value}
                           onChange={(checked) => {

@@ -147,9 +147,9 @@ export default function DashboardTeamDetailPage() {
   }
 
   const overviewActions = (
-    <Row gap="$2" flexWrap="wrap">
+    <Row gap={8}>
       <Button
-        size="$2"
+        size={8}
         variant="outline"
         icon={RefreshCw}
         onPress={handleRefresh}
@@ -158,7 +158,7 @@ export default function DashboardTeamDetailPage() {
         Refresh
       </Button>
       <Button
-        size="$2"
+        size={8}
         backgroundColor="$color9"
         color="$color1"
         icon={UserPlus}
@@ -170,7 +170,7 @@ export default function DashboardTeamDetailPage() {
   )
 
   const mainContent = isLoading ? (
-    <Stack align="center" justify="center" paddingVertical="$6" gap="$2">
+    <Stack align="center" justify="center" paddingVertical={24} gap={8}>
       <Spinner size="lg" />
       <Text color="$color11">Loading team details…</Text>
     </Stack>
@@ -182,25 +182,25 @@ export default function DashboardTeamDetailPage() {
       onAction={handleRefresh}
     />
   ) : team ? (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color1"
-        gap="$4"
+        gap={16}
       >
         <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color1"
-        gap="$4"
+        gap={16}
       >
         <TeamAutomationSettings
           teamId={teamId}
@@ -214,11 +214,11 @@ export default function DashboardTeamDetailPage() {
       </Card>
 
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color1"
-        gap="$4"
+        gap={16}
       >
         <TeamActivityFeed
           teamId={teamId}
@@ -228,28 +228,28 @@ export default function DashboardTeamDetailPage() {
       </Card>
 
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color1"
-        gap="$4"
+        gap={16}
       >
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
       </Card>
 
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color1"
-        gap="$4"
+        gap={16}
       >
         <TeamInvitationsList
           teamId={teamId}
           refreshKey={invitationRefreshKey}
           headerAction={
             <Button
-              size="$2"
+              size={8}
               backgroundColor="$color9"
               color="$color1"
               icon={UserPlus}
@@ -308,20 +308,20 @@ function ErrorCard({
 }) {
   return (
     <Card
-      padding="$4"
+      padding={16}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$3"
+      gap={12}
       backgroundColor="$color2"
     >
-      <Row gap="$2" align="center">
+      <Row gap={8} align="center">
         <AlertTriangle size={20} color="$yellow10" />
         <Text>
           {title}
         </Text>
       </Row>
       <Text color="$color11">{message}</Text>
-      <Button size="$3" onPress={onAction}>
+      <Button size={12} onPress={onAction}>
         {actionLabel}
       </Button>
     </Card>

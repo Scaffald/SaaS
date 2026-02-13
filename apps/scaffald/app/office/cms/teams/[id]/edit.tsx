@@ -34,7 +34,7 @@ export default function EditTeamPage() {
 
   if (!teamId) {
     return (
-      <Stack flex={1} align="center" justify="center" gap="$4" padding="$6">
+      <Stack flex={1} align="center" justify="center" gap={16} padding={24}>
         <Text>
           Missing team identifier
         </Text>
@@ -57,14 +57,14 @@ export default function EditTeamPage() {
 
   if (error || !data?.team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap="$3" padding="$6">
+      <Stack flex={1} align="center" justify="center" gap={12} padding={24}>
         <Text>
           Unable to load team
         </Text>
         <Text color="$color11" style={{ textAlign: 'center' }}>
           {error?.message ?? 'We ran into a problem retrieving this team. Please try again.'}
         </Text>
-        <Row gap="$2">
+        <Row gap={8}>
           <Button onPress={() => router.back()} variant="outline">Go Back</Button>
           <Button onPress={() => refetch()}>Try Again</Button>
         </Row>
@@ -94,7 +94,7 @@ export default function EditTeamPage() {
     : undefined
 
   return (
-    <Stack flex={1} gap="$6" padding="$4">
+    <Stack flex={1} gap={24} padding={16}>
       <TeamForm
         mode="edit"
         organizationId={team.organizationId}
@@ -128,7 +128,7 @@ export default function EditTeamPage() {
           <Button
             backgroundColor="$color9"
             color="$color1"
-            size="$3"
+            size={12}
             onPress={() => setIsInviteModalOpen(true)}
           >Invite member</Button>
         }

@@ -35,7 +35,7 @@ export default function CreateTeamPage() {
 
   if (!organizations.length) {
     return (
-      <Stack flex={1} align="center" justify="center" gap="$2">
+      <Stack flex={1} align="center" justify="center" gap={8}>
         <Text>
           No organizations available
         </Text>
@@ -46,8 +46,8 @@ export default function CreateTeamPage() {
   }
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Stack gap="$2" style={{ maxWidth: 520 }}>
+    <Stack flex={1} padding={16} gap={16}>
+      <Stack gap={8} style={{ maxWidth: 520 }}>
         <Label htmlFor="team-create-organization">Select organization</Label>
         <Select
           id="team-create-organization"
@@ -95,11 +95,11 @@ export default function CreateTeamPage() {
         />
       ) : (
         <Stack
-          padding="$6"
+          padding={24}
           backgroundColor="$color3"
-          borderRadius="$6"
+          borderRadius={24}
           align="center"
-          gap="$2"
+          gap={8}
         >
           <Text>
             Choose an organization to continue

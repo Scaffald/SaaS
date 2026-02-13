@@ -7,7 +7,7 @@ export default function OfficeIndex() {
   return (
     <OfficeLayout
       leftContent={
-        <Stack gap="$8" flex={1}>
+        <Stack gap={32} flex={1}>
           <OfficeNotificationsConsole />
           <Separator backgroundColor="$color4" />
           <OfficeStorageDashboard />

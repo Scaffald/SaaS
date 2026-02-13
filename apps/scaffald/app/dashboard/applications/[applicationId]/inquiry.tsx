@@ -22,26 +22,26 @@ export default function DashboardApplicationInquiryRoute() {
 
   if (!enabled) {
     content = (
-      <Stack flex={1} align="center" justify="center" padding="$4">
+      <Stack flex={1} align="center" justify="center" padding={16}>
         <Text color="$color11">Missing application ID</Text>
       </Stack>
     )
   } else if (isLoading) {
     content = (
-      <Stack flex={1} align="center" justify="center" padding="$4" gap="$2">
+      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
         <Spinner size="lg" />
         <Text>Loading inquiry...</Text>
       </Stack>
     )
   } else if (error || !data || !data.inquiry) {
     content = (
-      <Stack flex={1} align="center" justify="center" padding="$4" gap="$2">
+      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
         <Text color="$red10">Unable to load inquiry</Text>
       </Stack>
     )
   } else {
     content = (
-      <Stack gap="$4" padding="$4" flex={1}>
+      <Stack gap={16} padding={16} flex={1}>
         <InquiryViewCandidate applicationId={applicationParam} inquiryId={data.inquiry.id} />
       </Stack>
     )

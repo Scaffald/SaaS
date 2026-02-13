@@ -119,7 +119,7 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <Stack align="center" justify="center" style={{ minHeight: 400 }} gap="$4">
+          <Stack align="center" justify="center" style={{ minHeight: 400 }} gap={16}>
             <Text color="$color11">
               Profile Not Found
             </Text>
@@ -148,7 +148,7 @@ export default function PublicUserProfilePage() {
     <DashboardLayout
       breadcrumbItems={breadcrumbItems}
       leftContent={
-        <Stack gap="$4">
+        <Stack gap={16}>
           <GeneralInfoWidget userId={profileData.id} showEdit={false} />
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
@@ -158,7 +158,7 @@ export default function PublicUserProfilePage() {
         </Stack>
       }
       rightContent={
-        <Stack gap="$4">
+        <Stack gap={16}>
           {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
           {visibility.certifications && (
             <CertificationsWidget userId={profileData.id} showEdit={false} />

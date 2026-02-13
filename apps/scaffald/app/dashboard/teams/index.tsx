@@ -18,9 +18,9 @@ export default function DashboardTeamsIndexPage() {
   const teams = useMemo<TeamRecord[]>(() => data?.data ?? [], [data?.data])
 
   const mainContent = (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <Row justify="space-between" align="center">
-        <Stack gap="$1">
+        <Stack gap={4}>
           <Text>
             Teams
           </Text>
@@ -30,7 +30,7 @@ export default function DashboardTeamsIndexPage() {
         </Stack>
         <Button
           variant="outline"
-          size="$3"
+          size={12}
           onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
         >
           Manage invitations
@@ -38,17 +38,17 @@ export default function DashboardTeamsIndexPage() {
       </Row>
 
       {isLoading || isRefetching ? (
-        <Stack align="center" justify="center" paddingVertical="$6" gap="$2">
+        <Stack align="center" justify="center" paddingVertical={24} gap={8}>
           <Spinner size="lg" />
           <Text color="$color11">Loading your teams…</Text>
         </Stack>
       ) : error ? (
         <Stack
-          gap="$3"
+          gap={12}
           borderWidth={1}
           borderColor="$red8"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$red2"
         >
           <Text color="$red11">
@@ -57,17 +57,17 @@ export default function DashboardTeamsIndexPage() {
           <Text color="$red10">
             {error.message ?? 'An unexpected error occurred while loading your teams.'}
           </Text>
-          <Button size="$3" onPress={() => refetch()}>
+          <Button size={12} onPress={() => refetch()}>
             Try again
           </Button>
         </Stack>
       ) : teams.length === 0 ? (
         <Stack
-          gap="$3"
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$color2"
         >
           <Text>No teams yet</Text>
@@ -76,7 +76,7 @@ export default function DashboardTeamsIndexPage() {
             to an administrator to be added.
           </Text>
           <Button
-            size="$3"
+            size={12}
             variant="outline"
             onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
           >
@@ -84,15 +84,15 @@ export default function DashboardTeamsIndexPage() {
           </Button>
         </Stack>
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {teams.map((team) => {
             const formattedPurpose = team.purpose
               ? team.purpose.replace(/^\w/, (char: string) => char.toUpperCase())
               : 'General'
 
             return (
-              <Card key={team.id} padding="$4" borderWidth={1} borderColor="$borderColor" gap="$3">
-                <Row gap="$3" align="center">
+              <Card key={team.id} padding={16} borderWidth={1} borderColor="$borderColor" gap={12}>
+                <Row gap={12} align="center">
                   <Users size={20} />
                   <Text>
                     {team.name || 'Untitled team'}
@@ -103,7 +103,7 @@ export default function DashboardTeamsIndexPage() {
                 ) : (
                   <Text color="$color11">No description provided for this team.</Text>
                 )}
-                <Row gap="$3" align="center">
+                <Row gap={12} align="center">
                   <Text color="$color10">
                     {formattedPurpose}
                   </Text>
@@ -111,15 +111,15 @@ export default function DashboardTeamsIndexPage() {
                     Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
                   </Text>
                 </Row>
-                <Row gap="$2">
+                <Row gap={8}>
                   <Button
-                    size="$3"
+                    size={12}
                     onPress={() => router.push(RouteBuilder.dashboardTeamDetail(team.id))}
                   >
                     Open team
                   </Button>
                   <Button
-                    size="$3"
+                    size={12}
                     variant="outline"
                     onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
                   >

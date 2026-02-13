@@ -86,7 +86,7 @@ export default function AcceptTeamInvitationScreen() {
 
     if (authLoading) {
       return (
-        <Stack gap="$3" align="center" paddingVertical="$6">
+        <Stack gap={12} align="center" paddingVertical={24}>
           <Spinner size="lg" />
           <Text color="$color11">Preparing secure invitation…</Text>
         </Stack>
@@ -95,7 +95,7 @@ export default function AcceptTeamInvitationScreen() {
 
     if (!session?.user) {
       return (
-        <Stack gap="$4">
+        <Stack gap={16}>
           <Text>
             Sign in to continue
           </Text>
@@ -106,7 +106,7 @@ export default function AcceptTeamInvitationScreen() {
             href={`${ROUTES.AUTH.LOGIN.path}?redirect_to=${encodeURIComponent(redirectPath)}`}
             asChild
           >
-            <Button icon={LogIn} size="$4">
+            <Button icon={LogIn} size={16}>
               Sign in or create an account
             </Button>
           </Link>
@@ -116,9 +116,9 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'success') {
       return (
-        <Stack gap="$4" align="center" paddingVertical="$4">
+        <Stack gap={16} align="center" paddingVertical={16}>
           <CheckCircle size={48} color="$green9" />
-          <Stack gap="$2" align="center">
+          <Stack gap={8} align="center">
             <Text>
               You&apos;re in!
             </Text>
@@ -126,7 +126,7 @@ export default function AcceptTeamInvitationScreen() {
               You now have access to the team workspace. We&apos;ve added it to your dashboard.
             </Text>
           </Stack>
-          <Button size="$4" onPress={handleViewTeam}>
+          <Button size={16} onPress={handleViewTeam}>
             Go to team
           </Button>
         </Stack>
@@ -135,9 +135,9 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'declined') {
       return (
-        <Stack gap="$4" align="center" paddingVertical="$4">
+        <Stack gap={16} align="center" paddingVertical={16}>
           <XCircle size={48} color="$red9" />
-          <Stack gap="$2" align="center">
+          <Stack gap={8} align="center">
             <Text>
               Invitation declined
             </Text>
@@ -145,7 +145,7 @@ export default function AcceptTeamInvitationScreen() {
               You can always accept later from your dashboard if you change your mind.
             </Text>
           </Stack>
-          <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
+          <Button size={16} onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
             Return to dashboard
           </Button>
         </Stack>
@@ -157,8 +157,8 @@ export default function AcceptTeamInvitationScreen() {
     }
 
     return (
-      <Stack gap="$5">
-        <Stack gap="$2">
+      <Stack gap={20}>
+        <Stack gap={8}>
           <Text>
             Join this team
           </Text>
@@ -167,9 +167,9 @@ export default function AcceptTeamInvitationScreen() {
             tools.
           </Text>
         </Stack>
-        <Stack gap="$3">
+        <Stack gap={12}>
           <Button
-            size="$4"
+            size={16}
             icon={CheckCircle}
             disabled={isProcessing}
             onPress={() => handleRespond('accept')}
@@ -177,7 +177,7 @@ export default function AcceptTeamInvitationScreen() {
             Accept invitation
           </Button>
           <Button
-            size="$4"
+            size={16}
             variant="outline"
             icon={XCircle}
             disabled={isProcessing}
@@ -187,7 +187,7 @@ export default function AcceptTeamInvitationScreen() {
           </Button>
         </Stack>
         {isProcessing ? (
-          <Stack gap="$2" align="center">
+          <Stack gap={8} align="center">
             <Spinner size="lg" />
             <Text color="$color11">Processing your response…</Text>
           </Stack>
@@ -199,7 +199,7 @@ export default function AcceptTeamInvitationScreen() {
   return (
     <Stack
       flex={1}
-      padding="$4"
+      padding={16}
       backgroundColor="$color2"
       justify="center"
       align="center"
@@ -207,8 +207,8 @@ export default function AcceptTeamInvitationScreen() {
       <Card
         width="100%"
         maxWidth={480}
-        padding="$5"
-        gap="$5"
+        padding={20}
+        gap={20}
         borderWidth={1}
         borderColor="$borderColor"
       >
@@ -220,9 +220,9 @@ export default function AcceptTeamInvitationScreen() {
 
 function ErrorState({ title, message }: { title: string; message: string }) {
   return (
-    <Stack gap="$3" align="center" paddingVertical="$4">
+    <Stack gap={12} align="center" paddingVertical={16}>
       <AlertTriangle size={48} color="$yellow9" />
-      <Stack gap="$2" align="center">
+      <Stack gap={8} align="center">
         <Text>
           {title}
         </Text>

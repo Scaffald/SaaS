@@ -40,7 +40,7 @@ export default function OfficeTeamSettingsPage() {
 
   if ((isLoading || isFetching) && !teamData?.team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap="$3">
+      <Stack flex={1} align="center" justify="center" gap={12}>
         <Spinner size="lg" />
         <Text color="$color11">Loading team settings…</Text>
       </Stack>
@@ -69,10 +69,10 @@ export default function OfficeTeamSettingsPage() {
 
   return (
     <ScrollView>
-      <Stack flex={1} gap="$6" padding="$4">
+      <Stack flex={1} gap={24} padding={16}>
         <Row>
           <Button
-            size="$2"
+            size={8}
             variant="outline"
             icon={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
@@ -84,8 +84,8 @@ export default function OfficeTeamSettingsPage() {
             borderWidth={1}
             borderColor="$borderColor"
             backgroundColor="$color2"
-            padding="$3"
-            gap="$2"
+            padding={12}
+            gap={8}
           >
             <Text>Archived team</Text>
             <Text color="$color11">
@@ -118,13 +118,13 @@ function CenteredMessage({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} align="center" justify="center" gap="$3" paddingHorizontal="$4">
+    <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color2"
-        gap="$3"
+        gap={12}
       >
         <Text>
           {title}

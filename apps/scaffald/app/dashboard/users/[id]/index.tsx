@@ -99,14 +99,14 @@ export default function UserProfilePage() {
       }}
       pageTitleDeps={[isProfileLoading, profileData, displayName, isOwnProfile]}
       leftContent={
-        <Stack gap="$4">
+        <Stack gap={16}>
           <GeneralInfoWidget userId={id} showEdit={false} />
           <ExperienceWidget userId={id} showEdit={false} />
           <EducationWidget userId={id} showEdit={false} />
         </Stack>
       }
       rightContent={
-        <Stack gap="$4">
+        <Stack gap={16}>
           <SkillsWidget userId={id} showEdit={false} />
           <CertificationsWidget userId={id} showEdit={false} />
           <ReviewsWidget userId={id} showEdit />

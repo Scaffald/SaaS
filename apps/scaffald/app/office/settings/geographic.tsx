@@ -85,7 +85,7 @@ export default function GeographicSettingsPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding="$4" gap="$4" align="center" justify="center">
+      <Stack flex={1} padding={16} gap={16} align="center" justify="center">
         <Text>
           Geographic Settings
         </Text>
@@ -95,8 +95,8 @@ export default function GeographicSettingsPage() {
   }
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Stack gap="$2">
+    <Stack flex={1} padding={16} gap={16}>
+      <Stack gap={8}>
         <Text>
           Geographic Settings
         </Text>
@@ -104,10 +104,10 @@ export default function GeographicSettingsPage() {
           Configure geographic validation settings for site boundaries
         </Text>
       </Stack>
-      <Stack gap="$4" style={{ maxWidth: 600 }}>
-        <Card padding="$4">
-          <Stack gap="$4">
-            <Stack gap="$2">
+      <Stack gap={16} style={{ maxWidth: 600 }}>
+        <Card padding={16}>
+          <Stack gap={16}>
+            <Stack gap={8}>
               <Text>
                 Site Overlap Threshold
               </Text>
@@ -118,9 +118,9 @@ export default function GeographicSettingsPage() {
               </Text>
             </Stack>
 
-            <Stack gap="$2">
+            <Stack gap={8}>
               <Text>Threshold Percentage</Text>
-              <Row gap="$2" align="center">
+              <Row gap={8} align="center">
                 <Input
                   value={threshold}
                   onChangeText={setThreshold}
@@ -136,8 +136,8 @@ export default function GeographicSettingsPage() {
               </Text>
             </Stack>
 
-            <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-              <Stack gap="$2">
+            <Card padding={12} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+              <Stack gap={8}>
                 <Text>
                   Current Setting
                 </Text>
@@ -150,7 +150,7 @@ export default function GeographicSettingsPage() {
               </Stack>
             </Card>
 
-            <Row justify="flex-end" gap="$2">
+            <Row justify="flex-end" gap={8}>
               <Button
                 variant="outline"
                 onPress={() => {
@@ -172,8 +172,8 @@ export default function GeographicSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-          <Stack gap="$2">
+        <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+          <Stack gap={8}>
             <Text>
               About Site Overlaps
             </Text>

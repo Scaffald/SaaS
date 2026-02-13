@@ -181,17 +181,17 @@ export default function NewsPage() {
   }
 
   const content = (
-    <Stack gap="$4" paddingHorizontal={spacing.lg} paddingVertical={spacing.lg}>
-      <Stack gap="$2">
+    <Stack gap={16} paddingHorizontal={spacing.lg} paddingVertical={spacing.lg}>
+      <Stack gap={8}>
         <Text color="$color12">
           Industry News
         </Text>
-        <Paragraph size="$4" color="$color10">
+        <Paragraph size={16} color="$color10">
           Curated headlines across construction, safety, technology, and workforce development.
         </Paragraph>
       </Stack>
 
-      <Row gap="$2">
+      <Row gap={8}>
         <Button
           size="sm"
           variant="outline"
@@ -210,7 +210,7 @@ export default function NewsPage() {
       </Row>
 
       {isLoading && newsItems.length === 0 ? (
-        <Stack align="center" gap="$3" paddingVertical="$8">
+        <Stack align="center" gap={12} paddingVertical={32}>
           <Spinner size="lg" color="$blue7" />
           <Text color="$color11">
             Loading latest news…
@@ -219,7 +219,7 @@ export default function NewsPage() {
       ) : null}
 
       {isError ? (
-        <Stack align="center" gap="$3" paddingVertical="$8">
+        <Stack align="center" gap={12} paddingVertical={32}>
           <AlertCircle size={32} color="$red10" />
           <Text color="$red11" style={{ textAlign: 'center' }}>
             Unable to load news at the moment.
@@ -241,7 +241,7 @@ export default function NewsPage() {
       ) : null}
 
       {!isLoading && !isError && newsItems.length === 0 ? (
-        <Stack align="center" gap="$3" paddingVertical="$8">
+        <Stack align="center" gap={12} paddingVertical={32}>
           <Text color="$color11">
             No articles found
           </Text>
@@ -251,7 +251,7 @@ export default function NewsPage() {
         </Stack>
       ) : null}
 
-      <Stack gap="$4">
+      <Stack gap={16}>
         {newsItems.map((item: NewsItem) => (
           <NewsCard
             key={item.id}
@@ -262,7 +262,7 @@ export default function NewsPage() {
             fullCardClickable
             minHeight={220}
             footer={
-              <Row gap="$3" align="center">
+              <Row gap={12} align="center">
                 <Text color="$color11">
                   {formatTimeAgo(item.pubDate)}
                 </Text>

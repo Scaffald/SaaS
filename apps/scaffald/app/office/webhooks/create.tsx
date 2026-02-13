@@ -100,17 +100,17 @@ export default function CreateWebhookPage() {
           { label: 'Created', href: ROUTES.OFFICE.WEBHOOKS.CREATE.path },
         ]}
       >
-        <ScrollView flex={1} padding="$4">
-          <Card padding="$8" gap="$5" align="center" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
-            <Text textAlign="center">
+        <ScrollView flex={1} padding={16}>
+          <Card padding={32} gap={20} align="center" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+            <Text>
               ⚠️ Save Your Webhook Secret
             </Text>
-            <Text color="$gray11" textAlign="center" maxWidth={400}>
+            <Text color="$gray11" maxWidth={400}>
               This is the only time you will see this secret. Store it securely.
             </Text>
 
-            <Stack width="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-              <Text fontFamily="monospace" textAlign="center" selectable>
+            <Stack width="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius={16} padding={16}>
+              <Text fontFamily="monospace" selectable>
                 {secret}
               </Text>
             </Stack>
@@ -132,7 +132,7 @@ export default function CreateWebhookPage() {
         { label: 'Create', href: ROUTES.OFFICE.WEBHOOKS.CREATE.path },
       ]}
       actions={
-        <Row gap="$3">
+        <Row gap={12}>
           <Button
             variant="ghost"
             size="md"
@@ -148,12 +148,12 @@ export default function CreateWebhookPage() {
         </Row>
       }
     >
-      <ScrollView flex={1} padding="$4">
+      <ScrollView flex={1} padding={16}>
         {/* Endpoint Configuration */}
-        <Card padding="$5" gap="$5" marginBottom="$4">
+        <Card padding={20} gap={20}>
           <Text>Endpoint Configuration</Text>
 
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>Endpoint URL *</Text>
             <Input
               value={url}
@@ -167,7 +167,7 @@ export default function CreateWebhookPage() {
             </Text>
           </Stack>
 
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>Description (Optional)</Text>
             <TextArea
               value={description}
@@ -179,27 +179,27 @@ export default function CreateWebhookPage() {
         </Card>
 
         {/* Event Selection */}
-        <Card padding="$5" gap="$5" marginBottom="$4">
+        <Card padding={20} gap={20}>
           <Text>Event Subscriptions *</Text>
           <Text color="$gray11">
             Select the events you want to receive notifications for
           </Text>
 
-          <Stack gap="$6">
+          <Stack gap={24}>
             {Object.entries(eventsByCategory).map(([category, events]) => (
-              <Stack key={category} gap="$3">
-                <Text color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+              <Stack key={category} gap={12}>
+                <Text color="$gray11" letterSpacing={0.5}>
                   {category}
                 </Text>
-                <Stack gap="$2">
+                <Stack gap={8}>
                   {events.map((event) => (
                     <Row
                       key={event.value}
-                      gap="$3"
+                      gap={12}
                       align="center"
-                      padding="$3"
+                      padding={12}
                       backgroundColor="$gray2"
-                      borderRadius="$4"
+                      borderRadius={16}
                       borderWidth={1}
                       borderColor="$gray4"
                       pressStyle={{ backgroundColor: '$gray3' }}
@@ -210,7 +210,7 @@ export default function CreateWebhookPage() {
                         checked={selectedEvents.has(event.value as WebhookEventType)}
                         onChange={() => handleToggleEvent(event.value as WebhookEventType)}
                       />
-                      <Stack flex={1} gap="$1">
+                      <Stack flex={1} gap={4}>
                         <Text fontFamily="monospace">{event.value}</Text>
                         <Text color="$gray11">{event.label}</Text>
                       </Stack>
@@ -227,11 +227,11 @@ export default function CreateWebhookPage() {
         </Card>
 
         {/* Configuration Info */}
-        <Card padding="$5" backgroundColor="$gray2">
-          <Text marginBottom="$3">
+        <Card padding={20} backgroundColor="$gray2">
+          <Text>
             Configuration Details
           </Text>
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Row justify="space-between">
               <Text color="$gray11">Max Retries:</Text>
               <Text>3 attempts</Text>

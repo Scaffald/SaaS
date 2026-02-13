@@ -11,7 +11,7 @@ export default function ProjectDetailPage() {
 
   if (!id) {
     return (
-      <Stack flex={1} padding="$4" gap="$4">
+      <Stack flex={1} padding={16} gap={16}>
         <Text>
           Project Not Found
         </Text>
@@ -22,7 +22,7 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding="$4" gap="$4" align="center" justify="center">
+      <Stack flex={1} padding={16} gap={16} align="center" justify="center">
         <Text>
           Loading Project...
         </Text>
@@ -33,7 +33,7 @@ export default function ProjectDetailPage() {
 
   if (!data) {
     return (
-      <Stack flex={1} padding="$4" gap="$4">
+      <Stack flex={1} padding={16} gap={16}>
         <Text>
           Project Not Found
         </Text>
@@ -99,8 +99,8 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Stack gap="$2">
+    <Stack flex={1} padding={16} gap={16}>
+      <Stack gap={8}>
         <Text>
           {project.name}
         </Text>
@@ -110,10 +110,10 @@ export default function ProjectDetailPage() {
           </Text>
         )}
       </Stack>
-      <Stack gap="$4">
+      <Stack gap={16}>
         {/* Project Info */}
-        <Card padding="$4">
-          <Stack gap="$4">
+        <Card padding={16}>
+          <Stack gap={16}>
             <Row justify="space-between" align="center">
               <Text>
                 {project.name}
@@ -128,8 +128,8 @@ export default function ProjectDetailPage() {
 
             {project.description && <Text>{project.description}</Text>}
 
-            <Row gap="$4" flexWrap="wrap">
-              <Stack gap="$1">
+            <Row gap={16}>
+              <Stack gap={4}>
                 <Text color="$gray10">
                   Status
                 </Text>
@@ -139,7 +139,7 @@ export default function ProjectDetailPage() {
               </Stack>
 
               {project.start_date && (
-                <Stack gap="$1">
+                <Stack gap={4}>
                   <Text color="$gray10">
                     Start Date
                   </Text>
@@ -148,7 +148,7 @@ export default function ProjectDetailPage() {
               )}
 
               {project.end_date && (
-                <Stack gap="$1">
+                <Stack gap={4}>
                   <Text color="$gray10">
                     End Date
                   </Text>
@@ -156,11 +156,11 @@ export default function ProjectDetailPage() {
                 </Stack>
               )}
 
-              <Stack gap="$1">
+              <Stack gap={4}>
                 <Text color="$gray10">
                   Location Visibility
                 </Text>
-                <Row gap="$2" align="center">
+                <Row gap={8} align="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Text>{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
@@ -175,13 +175,13 @@ export default function ProjectDetailPage() {
         </Card>
 
         {/* Location Section */}
-        <Card padding="$4">
-          <Stack gap="$4">
+        <Card padding={16}>
+          <Stack gap={16}>
             <Row justify="space-between" align="center">
               <Text>
                 Location
               </Text>
-              <Button size="$2" icon={Plus}>
+              <Button size={8} icon={Plus}>
                 Add Site
               </Button>
             </Row>
@@ -189,12 +189,12 @@ export default function ProjectDetailPage() {
             {sites.length === 0 && addresses.length === 0 ? (
               <Text color="$gray10">No location data added yet</Text>
             ) : (
-              <Stack gap="$4">
+              <Stack gap={16}>
                 {sites.length > 0 && (
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     <Text>Site Boundaries</Text>
                     {sites.map((ps: (typeof sites)[0]) => (
-                      <Card key={ps.id} padding="$2" backgroundColor="$gray2">
+                      <Card key={ps.id} padding={8} backgroundColor="$gray2">
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
@@ -209,10 +209,10 @@ export default function ProjectDetailPage() {
                 )}
 
                 {addresses.length > 0 && (
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     <Text>Property Addresses</Text>
                     {addresses.map((pa: (typeof addresses)[0]) => (
-                      <Card key={pa.id} padding="$2" backgroundColor="$gray2">
+                      <Card key={pa.id} padding={8} backgroundColor="$gray2">
                         <Text>
                           {pa.address?.address?.street || ''}
                           {pa.address?.address?.city && `, ${pa.address.address.city}`}
@@ -230,7 +230,7 @@ export default function ProjectDetailPage() {
                 )}
 
                 {/* TODO: Add Mapbox map display here */}
-                <Text color="$gray10" fontStyle="italic">
+                <Text color="$gray10">
                   Map display coming soon - will show site boundaries and address pins
                 </Text>
               </Stack>
@@ -239,13 +239,13 @@ export default function ProjectDetailPage() {
         </Card>
 
         {/* Workers Section */}
-        <Card padding="$4">
-          <Stack gap="$4">
+        <Card padding={16}>
+          <Stack gap={16}>
             <Row justify="space-between" align="center">
               <Text>
                 Workers
               </Text>
-              <Button size="$2" icon={Plus}>
+              <Button size={8} icon={Plus}>
                 Add Worker
               </Button>
             </Row>
@@ -253,16 +253,16 @@ export default function ProjectDetailPage() {
             {workers.length === 0 ? (
               <Text color="$gray10">No workers assigned yet</Text>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {workers.map((worker: (typeof workers)[0]) => {
                   const StatusIcon = getWorkerStatusIcon(worker.status)
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
-                    <Card key={worker.id} padding="$3" backgroundColor="$gray2">
+                    <Card key={worker.id} padding={12} backgroundColor="$gray2">
                       <Row justify="space-between" align="center">
-                        <Stack gap="$1" flex={1}>
-                          <Row gap="$2" align="center">
+                        <Stack gap={4} flex={1}>
+                          <Row gap={8} align="center">
                             <StatusIcon size={16} color={statusColor} />
                             <Text>Worker {worker.user_id?.slice(0, 8)}</Text>
                           </Row>
@@ -288,9 +288,9 @@ export default function ProjectDetailPage() {
                           )}
                         </Stack>
                         {worker.status === 'pending' && (
-                          <Row gap="$2">
+                          <Row gap={8}>
                             <Button
-                              size="$2"
+                              size={8}
                               backgroundColor="$green9"
                               color="$green12"
                               onPress={async () => {
@@ -299,7 +299,7 @@ export default function ProjectDetailPage() {
                               }}
                             >Approve</Button>
                             <Button
-                              size="$2"
+                              size={8}
                               backgroundColor="$red9"
                               color="$red12"
                               onPress={async () => {

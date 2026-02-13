@@ -22,9 +22,9 @@ export default function EditUserPage() {
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <Stack padding="$4" gap="$4">
+      <Stack padding={16} gap={16}>
         {/* Header */}
-        <Stack gap="$3">
+        <Stack gap={12}>
           <Row align="center" justify="space-between">
             <H2>Edit User Profile</H2>
             <Button onPress={() => router.back()} variant="outline">Back to Users</Button>
@@ -36,7 +36,7 @@ export default function EditUserPage() {
         </Stack>
 
         {/* General Profile Section */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Text>
             General Information
           </Text>
@@ -44,7 +44,7 @@ export default function EditUserPage() {
         </Stack>
 
         {/* Employment Section */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Text>
             Employment Preferences
           </Text>
@@ -52,11 +52,11 @@ export default function EditUserPage() {
         </Stack>
 
         {/* Skills Section - Note: Currently operates on current admin user */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Text>
             Skills & Expertise
           </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
+          <Card bordered backgroundColor="$yellow2" padding={12}>
             <Text color="$yellow11">
               ⚠️ Note: Skills section currently shows/edits the logged-in admin's skills. Full
               multi-user support coming soon.
@@ -68,11 +68,11 @@ export default function EditUserPage() {
         </Stack>
 
         {/* Experience Section - Note: Currently operates on current admin user */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Text>
             Work Experience
           </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
+          <Card bordered backgroundColor="$yellow2" padding={12}>
             <Text color="$yellow11">
               ⚠️ Note: Experience section currently shows/edits the logged-in admin's experience.
               Full multi-user support coming soon.
@@ -82,11 +82,11 @@ export default function EditUserPage() {
         </Stack>
 
         {/* Education Section - Note: Currently operates on current admin user */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Text>
             Education
           </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
+          <Card bordered backgroundColor="$yellow2" padding={12}>
             <Text color="$yellow11">
               ⚠️ Note: Education section currently shows/edits the logged-in admin's education. Full
               multi-user support coming soon.
@@ -96,11 +96,11 @@ export default function EditUserPage() {
         </Stack>
 
         {/* Certifications Section - Note: Currently operates on current admin user */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Text>
             Certifications
           </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
+          <Card bordered backgroundColor="$yellow2" padding={12}>
             <Text color="$yellow11">
               ⚠️ Note: Certifications section currently shows/edits the logged-in admin's
               certifications. Full multi-user support coming soon.

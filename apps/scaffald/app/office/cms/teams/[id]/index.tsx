@@ -99,7 +99,7 @@ export default function OfficeTeamDetailPage() {
 
   if ((isTeamLoading || isTeamFetching) && !team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap="$3">
+      <Stack flex={1} align="center" justify="center" gap={12}>
         <Spinner size="lg" />
         <Text color="$color11">Loading team details…</Text>
       </Stack>
@@ -140,22 +140,22 @@ export default function OfficeTeamDetailPage() {
     ? [
         <Button
           key="edit"
-          size="$2"
+          size={8}
           variant="outline"
           icon={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
         >Edit team</Button>,
         <Button
           key="analytics"
-          size="$2"
+          size={8}
           variant="outline"
           icon={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
         >View analytics</Button>,
-        <Button key="invite" size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
+        <Button key="invite" size={8} icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
         <Button
           key="assign"
-          size="$2"
+          size={8}
           icon={Briefcase}
           onPress={() =>
             router.push({
@@ -172,10 +172,10 @@ export default function OfficeTeamDetailPage() {
   return (
     <>
       <ScrollView>
-        <Stack flex={1} gap="$6" padding="$4">
+        <Stack flex={1} gap={24} padding={16}>
           <Row>
             <Button
-              size="$2"
+              size={8}
               variant="outline"
               icon={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
@@ -186,7 +186,7 @@ export default function OfficeTeamDetailPage() {
             team={team}
             actions={
               quickActions ? (
-                <Row gap="$2" flexWrap="wrap" justify="flex-end">
+                <Row gap={8} justify="flex-end">
                   {quickActions}
                 </Row>
               ) : undefined
@@ -199,13 +199,13 @@ export default function OfficeTeamDetailPage() {
           />
 
           <Button
-            size="$3"
+            size={12}
             variant="outline"
             icon={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
           >View analytics</Button>
 
-          <Stack gap="$4">
+          <Stack gap={16}>
             <TeamMembersList teamId={team.id} organizationId={team.organizationId} />
 
             <TeamJobsList
@@ -229,7 +229,7 @@ export default function OfficeTeamDetailPage() {
               refreshKey={inviteRefreshKey}
               headerAction={
                 canManageTeam ? (
-                  <Button size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
+                  <Button size={8} icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
                 ) : null
               }
             />
@@ -252,11 +252,11 @@ export default function OfficeTeamDetailPage() {
 
           {isInvitationsLoading && (
             <Stack
-              gap="$2"
+              gap={8}
               borderWidth={1}
               borderColor="$borderColor"
-              borderRadius="$4"
-              padding="$3"
+              borderRadius={16}
+              padding={12}
             >
               <Spinner size="small" />
               <Text color="$color11">Updating invitation statistics…</Text>
@@ -293,13 +293,13 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} align="center" justify="center" gap="$3" paddingHorizontal="$4">
+    <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
       <Card
-        padding="$4"
+        padding={16}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color2"
-        gap="$3"
+        gap={12}
       >
         <Text>
           {title}
@@ -327,17 +327,17 @@ function InfoBanner({
       borderWidth={1}
       borderColor="$borderColor"
       backgroundColor="$color2"
-      padding="$4"
-      gap="$3"
+      padding={16}
+      gap={12}
     >
-      <Row gap="$2" align="center">
+      <Row gap={8} align="center">
         <Icon size={18} />
         <Text>
           {title}
         </Text>
       </Row>
       <Text color="$color11">{message}</Text>
-      <Button size="$3" onPress={onAction}>Refresh</Button>
+      <Button size={12} onPress={onAction}>Refresh</Button>
     </Card>
   )
 }

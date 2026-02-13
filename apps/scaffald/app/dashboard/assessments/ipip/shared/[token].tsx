@@ -96,7 +96,7 @@ export default function SharedIPIPResultsRoute() {
        
       >
         <Tabs.List
-          separator={<Stack width="$1" />}
+          separator={<Stack width={4} />}
           disablePassBorderRadius="bottom"
           aria-label="Manage your personality results view"
         >
@@ -112,13 +112,13 @@ export default function SharedIPIPResultsRoute() {
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Content value="narrative" padding="$4">
+        <Tabs.Content value="narrative" padding={16}>
           <Stack
             backgroundColor="$color1"
-            borderRadius="$4"
+            borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
-            padding="$4"
+            padding={16}
           >
             {processedResults ? (
               <NarrativeView
@@ -129,7 +129,7 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <Stack align="center" padding="$4">
+              <Stack align="center" padding={16}>
                 <Text color="$color11">
                   Processing results...
                 </Text>
@@ -138,13 +138,13 @@ export default function SharedIPIPResultsRoute() {
           </Stack>
         </Tabs.Content>
 
-        <Tabs.Content value="chart" padding="$4">
+        <Tabs.Content value="chart" padding={16}>
           <Stack
             backgroundColor="$color1"
-            borderRadius="$4"
+            borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
-            padding="$4"
+            padding={16}
           >
             {processedResults ? (
               <ChartView
@@ -163,7 +163,7 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <Stack align="center" padding="$4">
+              <Stack align="center" padding={16}>
                 <Text color="$color11">
                   Processing results...
                 </Text>
