@@ -314,7 +314,7 @@ export default function NotificationsCenterScreen() {
               </Text>
             </Stack>
             <Button
-              variant="primary"
+              variant="filled"
               size={8}
               disabled={savePreferencesMutation.isPending}
               onPress={handleSavePreferences}
@@ -405,7 +405,7 @@ export default function NotificationsCenterScreen() {
                       quietHours: { end: prev.quietHours?.end ?? '', start: text },
                     }))
                   }
-                  width={100}
+                 
                 />
                 <Text color="$color11">to</Text>
                 <Input
@@ -417,7 +417,7 @@ export default function NotificationsCenterScreen() {
                       quietHours: { end: text, start: prev.quietHours?.start ?? '' },
                     }))
                   }
-                  width={100}
+                 
                 />
                 <Button
                   size={8}
@@ -485,7 +485,7 @@ export default function NotificationsCenterScreen() {
             </Text>
             {devicesQuery.isLoading ? (
               <Row gap={8} align="center">
-                <Spinner size="small" color="$color10" />
+                <Spinner size="sm" color="$color10" />
                 <Text color="$color10">
                   Checking devices…
                 </Text>
@@ -499,7 +499,7 @@ export default function NotificationsCenterScreen() {
                 borderWidth={1}
                 borderColor="$borderColor"
                 borderRadius={12}
-                overflow="hidden"
+               
               >
                 <Row backgroundColor="$color2" padding={8}>
                   <Text flex={2}>

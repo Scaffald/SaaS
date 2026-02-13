@@ -31,7 +31,7 @@ export default function WebhooksPage() {
       ]}
       actions={
         <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
-          <Button variant="primary" size="md">Create Webhook</Button>
+          <Button variant="filled" size="md">Create Webhook</Button>
         </Link>
       }
     >
@@ -63,7 +63,7 @@ export default function WebhooksPage() {
               Create your first webhook endpoint to start receiving real-time event notifications.
             </Text>
             <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
-              <Button variant="primary" size="md">Create Your First Webhook</Button>
+              <Button variant="filled" size="md">Create Your First Webhook</Button>
             </Link>
           </Card>
         ) : (

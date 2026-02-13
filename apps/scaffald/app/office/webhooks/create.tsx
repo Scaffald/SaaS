@@ -115,7 +115,7 @@ export default function CreateWebhookPage() {
               </Text>
             </Stack>
 
-            <Button variant="primary" size="md" onPress={() => router.push(ROUTES.OFFICE.WEBHOOKS.path)}>I've Saved My Secret</Button>
+            <Button variant="filled" size="md" onPress={() => router.push(ROUTES.OFFICE.WEBHOOKS.path)}>I've Saved My Secret</Button>
           </Card>
         </ScrollView>
       </OfficePageLayout>
@@ -140,7 +140,7 @@ export default function CreateWebhookPage() {
             disabled={createWebhook.isPending}
           >Cancel</Button>
           <Button
-            variant="primary"
+            variant="filled"
             size="md"
             onPress={handleSubmit}
             disabled={createWebhook.isPending}

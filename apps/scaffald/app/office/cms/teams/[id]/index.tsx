@@ -258,7 +258,7 @@ export default function OfficeTeamDetailPage() {
               borderRadius={16}
               padding={12}
             >
-              <Spinner size="small" />
+              <Spinner size="sm" />
               <Text color="$color11">Updating invitation statistics…</Text>
             </Stack>
           )}

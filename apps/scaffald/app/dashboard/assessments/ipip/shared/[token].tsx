@@ -96,7 +96,7 @@ export default function SharedIPIPResultsRoute() {
        
       >
         <Tabs.List
-          separator={<Stack width={4} />}
+          separator={<Stack />}
           disablePassBorderRadius="bottom"
           aria-label="Manage your personality results view"
         >

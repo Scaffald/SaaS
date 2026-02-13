@@ -320,7 +320,7 @@ export default function OnboardingPage() {
                     <Stack gap={8}>
                       {isLoadingIndustries ? (
                         <Row gap={8} align="center">
-                          <Spinner size="small" />
+                          <Spinner size="sm" />
                           <Text color="$color11">Loading industries...</Text>
                         </Row>
                       ) : industriesData?.data && industriesData.data.length > 0 ? (
