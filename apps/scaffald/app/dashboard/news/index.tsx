@@ -55,8 +55,8 @@ const NewsCard = ({ title, description, image, footer, onPress, fullCardClickabl
         onError={() => setImageError(true)}
       />
       <View style={styles.newsCardOverlay} />
-      <Stack padding={spacing[5]} style={styles.newsCardContent}>
-        <Stack gap={spacing[3]}>
+      <Stack padding={spacing[6]} style={styles.newsCardContent}>
+        <Stack gap={spacing[4]}>
           <Text
             size="lg"
             weight="bold"
@@ -74,7 +74,7 @@ const NewsCard = ({ title, description, image, footer, onPress, fullCardClickabl
               {description}
             </Text>
           )}
-          {footer && <Row gap={spacing[3]} style={styles.newsCardFooter}>{footer}</Row>}
+          {footer && <Row gap={spacing[4]} style={styles.newsCardFooter}>{footer}</Row>}
         </Stack>
       </Stack>
     </Pressable>

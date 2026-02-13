@@ -512,7 +512,7 @@ export default function NotificationsCenterScreen() {
                     Last seen
                   </Text>
                 </Row>
-                {deviceRows.map((device, index) => (
+                {deviceRows.map((device, _index) => (
                   <Row
                     key={device.id}
                     padding={8}

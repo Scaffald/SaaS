@@ -112,7 +112,7 @@ interface WebhookCardProps {
   onViewDetails: () => void
 }
 
-function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCardProps) {
+function WebhookCard({ webhook, isSelected: _isSelected, onPress, onViewDetails }: WebhookCardProps) {
   return (
     <Card
       padding={16}
