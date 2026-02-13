@@ -1,5 +1,6 @@
 {
   "imports": {
+    "@hono/zod-openapi": "npm:@hono/zod-openapi@0.18.2",
     "@trpc/server": "npm:@trpc/server@10.45.0",
     "@trpc/server/adapters/fetch": "npm:@trpc/server@10.45.0/adapters/fetch",
     "@supabase/supabase-js": "npm:@supabase/supabase-js@2.86.0",
