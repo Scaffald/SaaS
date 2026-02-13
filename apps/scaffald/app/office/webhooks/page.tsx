@@ -133,7 +133,7 @@ function WebhookCard({ webhook, isSelected: _isSelected, onPress, onViewDetails 
             />
           </Row>
           {webhook.description && (
-            <Text color="$gray11" numberOfLines={2}>
+            <Text color="$gray11">
               {webhook.description}
             </Text>
           )}

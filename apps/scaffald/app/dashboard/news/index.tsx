@@ -61,7 +61,7 @@ const NewsCard = ({ title, description, image, footer, onPress, fullCardClickabl
             size="lg"
             weight="bold"
             color={colors.text[theme].primary}
-            numberOfLines={2}
+           
           >
             {title}
           </Text>
@@ -69,7 +69,7 @@ const NewsCard = ({ title, description, image, footer, onPress, fullCardClickabl
             <Text
               size="sm"
               color={colors.text[theme].secondary}
-              numberOfLines={3}
+             
             >
               {description}
             </Text>

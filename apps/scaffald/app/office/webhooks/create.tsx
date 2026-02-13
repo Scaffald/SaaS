@@ -173,7 +173,7 @@ export default function CreateWebhookPage() {
               value={description}
               onChangeText={setDescription}
               placeholder="Production webhook for order notifications"
-              numberOfLines={3}
+             
             />
           </Stack>
         </Card>

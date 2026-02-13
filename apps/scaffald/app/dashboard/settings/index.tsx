@@ -519,7 +519,7 @@ export default function NotificationsCenterScreen() {
                    
                     gap={8}
                   >
-                    <Text color="$color11" numberOfLines={1}>
+                    <Text color="$color11">
                       {device.token}
                     </Text>
                     <Text color="$color11">

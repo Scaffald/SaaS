@@ -386,7 +386,7 @@ export default function OnboardingPage() {
                             I accept the{' '}
                             <Text
                               color="$blue7"
-                              textDecorationLine="underline"
+                             
                               onPress={(event) => {
                                 event.stopPropagation?.()
                                 if (typeof window !== 'undefined') {
@@ -438,7 +438,7 @@ export default function OnboardingPage() {
                             I accept the{' '}
                             <Text
                               color="$blue7"
-                              textDecorationLine="underline"
+                             
                               onPress={(event) => {
                                 event.stopPropagation?.()
                                 if (typeof window !== 'undefined') {
