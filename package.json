@@ -189,11 +189,13 @@
     "typescript": "catalog:",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.18",
-    "vitest-mock-extended": "^3.1.0"
+    "vitest-mock-extended": "^3.1.0",
+    "baseline-browser-mapping": "^2.9.19"
   },
   "packageManager": "pnpm@10.20.0",
   "pnpm": {
     "overrides": {
+      "baseline-browser-mapping": ">=2.9.19",
       "react-dom": "19.2.0",
       "esbuild@<=0.24.2": ">=0.25.0",
       "vite@>=7.1.0 <=7.1.10": ">=7.1.11",
