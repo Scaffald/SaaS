@@ -18,6 +18,7 @@
     "check": "pnpm locales:validate && nx run-many -t lint && nx run-many -t typecheck --parallel=1",
     "check:affected": "pnpm locales:validate && nx affected -t lint && nx affected -t typecheck --parallel=1",
     "check:affected:fast": "nx affected -t lint && nx affected -t typecheck",
+    "precommit": "pnpm lint:routes && pnpm lint:sorted-keys && nx affected -t lint,typecheck",
     "check-circular-deps": "nx graph --file=output.html",
     "check-deps": "check-dependency-version-consistency .",
     "deploy": "pnpm prod",
