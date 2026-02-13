@@ -191,7 +191,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
     >
       {/* Candidate Header */}
       <Row gap={12} align="center">
-        <Avatar circular size={24}>
+        <Avatar  size={24}>
           <Avatar.Image src={application.candidate.photo} />
           <Avatar.Fallback backgroundColor="$blue9">
             <Text color="white">{application.candidate.name.charAt(0)}</Text>

@@ -154,7 +154,7 @@ export function DiscoverWorkersRight({
               <Slider.Track>
                 <Slider.TrackActive />
               </Slider.Track>
-              <Slider.Thumb circular index={0} size="$0.75" />
+              <Slider.Thumb  index={0} size="$0.75" />
             </Slider>
           </Stack>
 
@@ -194,7 +194,7 @@ export function DiscoverWorkersRight({
                     align="center"
                   >
                     <Text color="$blue11">{skill}</Text>
-                    <Button size={4} circular unstyled onPress={() => handleRemoveSkill(skill)}>
+                    <Button size={4}  unstyled onPress={() => handleRemoveSkill(skill)}>
                       <X size="sm" color="$blue11" />
                     </Button>
                   </Row>
@@ -245,7 +245,7 @@ export function DiscoverWorkersRight({
                     <Text color="$green11">{cert}</Text>
                     <Button
                       size={4}
-                      circular
+                      
                       unstyled
                       onPress={() => handleRemoveCertification(cert)}
                     >

@@ -80,7 +80,7 @@ export function FollowingList() {
 
           return (
             <Row align="center" gap={8}>
-              <Avatar circular size={32}>
+              <Avatar  size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (

@@ -659,7 +659,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 <Text>{skill.name}</Text>
                 <Button
                   size={4}
-                  circular
+                  
                   unstyled
                   onPress={() => handleRemoveSkill(skill.id)}
                   disabled={disabled}
@@ -821,7 +821,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 <Text>{cert.name}</Text>
                 <Button
                   size={4}
-                  circular
+                  
                   unstyled
                   onPress={() => handleRemoveCertification(cert.id)}
                   disabled={disabled}

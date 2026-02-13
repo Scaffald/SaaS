@@ -59,7 +59,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
         case 'pressStyle':
         case 'scaleIcon':
         case 'variant':
-        case 'circular':
+        case '':
         case 'icon':
         case 'color':
         case 'size':

@@ -331,7 +331,7 @@ export function UserProfileHeaderEnhanced({
             zIndex: 10,
           }}
         >
-          <Avatar circular size={isMobile ? 120 : 160} borderWidth={4} borderColor="$background">
+          <Avatar  size={isMobile ? 120 : 160} borderWidth={4} borderColor="$background">
             {avatarUrl ? (
               <Avatar.Image source={{ uri: avatarUrl }} />
             ) : (
@@ -477,7 +477,7 @@ export function UserProfileHeaderEnhanced({
                 Leave Review
               </Button>
             )}
-            <Button size={isMobile ? '$3' : '$4'} variant="outline" circular icon={MoreVertical} />
+            <Button size={isMobile ? '$3' : '$4'} variant="outline"  icon={MoreVertical} />
           </Row>
         </Row>
 

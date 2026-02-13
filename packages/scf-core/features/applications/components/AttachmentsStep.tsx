@@ -331,7 +331,7 @@ export function AttachmentsStep({
             </Row>
             <Button
               size="sm"
-              circular
+              
               variant="outline"
               icon={X}
               onPress={() => handleFileRemove('resume')}
@@ -444,7 +444,7 @@ export function AttachmentsStep({
             </Row>
             <Button
               size="sm"
-              circular
+              
               variant="outline"
               icon={X}
               onPress={() => handleFileRemove('cover_letter')}
@@ -565,7 +565,7 @@ export function AttachmentsStep({
             </Row>
             <Button
               size="sm"
-              circular
+              
               variant="outline"
               icon={X}
               onPress={() => handleFileRemove('portfolio')}

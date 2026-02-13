@@ -130,7 +130,7 @@ export function SimpleSkillAutocomplete({
             top={4}
             bottom={4}
             size="xs"
-            circular
+            
             chromeless
             onPress={() => {
               onChangeText('')

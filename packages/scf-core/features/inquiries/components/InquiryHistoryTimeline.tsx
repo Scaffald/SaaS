@@ -196,7 +196,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
               {/* Event details */}
               <Stack flex={1} gap={4}>
                 <Row gap={8} align="center">
-                  <Avatar size="xs" circular>
+                  <Avatar size="xs" >
                     <Avatar.Image src={event.actor?.avatar_path || undefined} />
                     <Avatar.Fallback backgroundColor="$blue9">
                       <Text color="white">

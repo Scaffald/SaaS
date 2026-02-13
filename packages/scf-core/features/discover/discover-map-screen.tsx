@@ -840,7 +840,7 @@ const MobileSearchHeader = ({
 
       <Button
         size="md"
-        circular
+        
         variant="outline"
         icon={SlidersHorizontal}
         aria-label="Open filters"
@@ -933,7 +933,7 @@ const MobileFiltersContent = ({
         <Text>Filters</Text>
         <Button
           size="sm"
-          circular
+          
           variant="outline"
           icon={X}
           aria-label="Close filters"

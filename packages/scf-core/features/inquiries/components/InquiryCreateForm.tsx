@@ -972,7 +972,7 @@ export function InquiryCreateForm({
                         <Text>Endurance</Text>
                         <Button
                           size="xs"
-                          circular
+                          
                           chromeless
                           icon={Info}
                           aria-label="Endurance info"

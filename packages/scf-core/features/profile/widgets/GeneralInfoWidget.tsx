@@ -140,7 +140,7 @@ export function GeneralInfoWidget({
 
           {/* Avatar & Name Section */}
           <Stack gap={12} align="center">
-            <Avatar circular size="$10">
+            <Avatar  size="$10">
               <Avatar.Image
                 source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
               />

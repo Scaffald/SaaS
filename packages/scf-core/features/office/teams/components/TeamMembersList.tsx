@@ -241,7 +241,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                   width="100%"
                 >
                   <Row gap={12} width="100%" flexDirection="column" align="flex-start">
-                    <Avatar circular size="md">
+                    <Avatar  size="md">
                       <Avatar.Image
                         accessibilityLabel={member.displayName ?? 'Member avatar'}
                         src={member.avatarPath ?? undefined}

@@ -155,7 +155,7 @@ export function ProfileActivityWidget() {
                     viewed_at?: string
                   }) => (
                     <Row key={view.id} align="center" gap={8}>
-                      <Avatar circular size={32}>
+                      <Avatar  size={32}>
                         {view.viewer?.avatar_url ? (
                           <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
                         ) : (
@@ -216,7 +216,7 @@ export function ProfileActivityWidget() {
                     created_at?: string
                   }) => (
                     <Row key={follow.id} align="center" gap={8}>
-                      <Avatar circular size={32}>
+                      <Avatar  size={32}>
                         {follow.user?.avatar_url ? (
                           <Avatar.Image source={{ uri: follow.user.avatar_url }} />
                         ) : (
@@ -293,7 +293,7 @@ export function ProfileActivityWidget() {
                   }) => (
                     <Row key={request.id} align="center" gap={8} justify="space-between">
                       <Row align="center" gap={8} flex={1}>
-                        <Avatar circular size={32}>
+                        <Avatar  size={32}>
                           {request.user?.avatar_url ? (
                             <Avatar.Image source={{ uri: request.user.avatar_url }} />
                           ) : (
@@ -323,7 +323,7 @@ export function ProfileActivityWidget() {
                       <Row gap={4}>
                         <Button
                           size="xs"
-                          circular
+                          
                           icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
                           theme="success"
                           onPress={() => handleAcceptRequest(request.id)}
@@ -333,7 +333,7 @@ export function ProfileActivityWidget() {
                         />
                         <Button
                           size="xs"
-                          circular
+                          
                           icon={declineRequestMutation.isPending ? Loader2 : X}
                           variant="outline"
                           onPress={() => handleDeclineRequest(request.id)}

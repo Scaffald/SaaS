@@ -139,7 +139,7 @@ export const FilterPopup = ({
               <Text>Filters</Text>
               <Button
                 size="xs"
-                circular
+                
                 variant="outline"
                 onPress={onClose}
                 icon={X}

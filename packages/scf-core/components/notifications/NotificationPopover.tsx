@@ -286,7 +286,7 @@ export function NotificationPopover({
           <Row>
             <Button
               size={8}
-              circular
+              
               icon={X}
               onPress={() => handleOpenChange(false)}
               backgroundColor="transparent"

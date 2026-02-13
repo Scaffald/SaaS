@@ -1,6 +1,6 @@
 import type { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import { Input } from '@unicornlove/beyond-ui'
+import { Input, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface FormFields {
@@ -28,6 +28,8 @@ export function CodeConfirmationInput({
   switchInputPlace,
   onSubmit,
 }: CodeConfirmationInputProps) {
+  const { theme } = useThemeContext()
+
   return (
     <Controller
       name={`code${id}`}
@@ -81,10 +83,10 @@ export function CodeConfirmationInput({
             width: 50,
             aspectRatio: 1,
             backgroundColor: invalid
-              ? colors.error[200]
+              ? colors.bg[theme].error
               : value
-                ? colors.gray[100]
-                : colors.gray[200],
+                ? colors.bg[theme].subtle
+                : colors.bg[theme].muted,
           }}
         />
       )}

@@ -113,7 +113,7 @@ export function FeedbackWidget() {
       <Stack position="absolute" bottom={16} right={16} style={{ zIndex: 1000 }}>
         <Button
           size={24}
-          circular
+          
           icon={MessageCircle}
           backgroundColor="$blue9"
           color="$gray11"

@@ -32,7 +32,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
           <Slider.Track>
             <Slider.TrackActive />
           </Slider.Track>
-          <Slider.Thumb circular index={0} />
+          <Slider.Thumb  index={0} />
         </Slider>
 
         <Row gap={8}>

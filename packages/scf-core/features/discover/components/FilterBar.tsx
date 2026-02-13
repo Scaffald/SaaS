@@ -61,7 +61,7 @@ export const FilterBar = ({
       >
         <Button
           size="md"
-          circular
+          
           onPress={onResultsPress}
           variant="outline"
           backgroundColor="$background"
@@ -72,7 +72,7 @@ export const FilterBar = ({
         </Button>
         <Button
           size="md"
-          circular
+          
           icon={Search}
           scaleIcon={1.4}
           onPress={onSearchPress}
@@ -84,7 +84,7 @@ export const FilterBar = ({
         />
         <Button
           size="md"
-          circular
+          
           icon={SlidersHorizontal}
           scaleIcon={1.4}
           onPress={onFilterPress}
@@ -96,7 +96,7 @@ export const FilterBar = ({
         />
         <Button
           size="md"
-          circular
+          
           icon={RotateCcw}
           scaleIcon={1.4}
           onPress={onResetPress}

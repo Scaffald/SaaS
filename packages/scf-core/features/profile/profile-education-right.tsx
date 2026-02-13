@@ -199,7 +199,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                       <Button
                         size="xs"
                         variant="outline"
-                        circular
+                        
                         icon={Pencil}
                         aria-label="Edit education entry"
                         accessibilityLabel="Edit education entry"
@@ -218,7 +218,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                       <Button
                         size="xs"
                         variant="outline"
-                        circular
+                        
                         icon={Trash2}
                         aria-label="Delete education entry"
                         accessibilityLabel="Delete education entry"

@@ -66,7 +66,7 @@ export function SkillProficiencySelector({
           <Slider.Track backgroundColor="$color4" height={6}>
             <Slider.TrackActive backgroundColor="$green9" />
           </Slider.Track>
-          <Slider.Thumb index={0} circular size={4} />
+          <Slider.Thumb index={0}  size={4} />
         </Slider>
 
         {/* Current Level Display */}

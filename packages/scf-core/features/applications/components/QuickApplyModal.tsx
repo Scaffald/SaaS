@@ -272,7 +272,7 @@ export function QuickApplyModal({
                 <Text color="$gray11">{jobTitle}</Text>
               </Stack>
               <Dialog.Close asChild>
-                <Button size="sm" circular icon={X} chromeless />
+                <Button size="sm"  icon={X} chromeless />
               </Dialog.Close>
             </Row>
           </Stack>

@@ -95,7 +95,7 @@ export function UserProfilePanel({
       <Row justify="flex-end">
         <Button
           size="xs"
-          circular
+          
           chromeless
           icon={X}
           onPress={handleClose}
@@ -119,14 +119,14 @@ export function UserProfilePanel({
           <Row gap={12} align="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
-              <Avatar circular size="md">
+              <Avatar  size="md">
                 <Avatar.Image source={{ uri: avatarUrl }} />
                 <Avatar.Fallback backgroundColor="$color3">
                   <User size={24} color="$gray11" />
                 </Avatar.Fallback>
               </Avatar>
             ) : (
-              <Avatar circular size="md" backgroundColor="$color3">
+              <Avatar  size="md" backgroundColor="$color3">
                 <User size={24} color="$gray11" />
               </Avatar>
             )}

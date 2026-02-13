@@ -40,7 +40,7 @@ export const DrawerFooter = () => {
       {/* Theme Toggle Button */}
       <Button
         size="sm"
-        circular
+        
         backgroundColor="$color3"
         borderColor="$color4"
         borderWidth={1}
@@ -61,7 +61,7 @@ export const DrawerFooter = () => {
       {/* Logout Button */}
       <Button
         size="sm"
-        circular
+        
         backgroundColor="$color3"
         borderColor="$color4"
         borderWidth={1}

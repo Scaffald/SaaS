@@ -129,7 +129,7 @@ export function ProfileSnapshotWidget() {
 
         {/* Avatar & Name Section */}
         <Stack gap={12} align="center">
-          <Avatar circular size={32}>
+          <Avatar  size={32}>
             <Avatar.Image
               source={{
                 uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',

@@ -140,7 +140,7 @@ export function PendingRequestsList() {
 
           return (
             <Row align="center" gap={8}>
-              <Avatar circular size={32}>
+              <Avatar  size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
@@ -191,7 +191,7 @@ export function PendingRequestsList() {
             <Row gap={4}>
               <Button
                 size="xs"
-                circular
+                
                 icon={CheckCircle2}
                 theme="success"
                 onPress={() => handleAccept(request.id)}
@@ -199,7 +199,7 @@ export function PendingRequestsList() {
               />
               <Button
                 size="xs"
-                circular
+                
                 icon={X}
                 variant="outline"
                 onPress={() => handleDecline(request.id)}

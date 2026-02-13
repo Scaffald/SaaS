@@ -74,7 +74,7 @@ export function RiasecQuickAssessment({
                 <Slider.Track height={8}>
                   <Slider.TrackActive />
                 </Slider.Track>
-                <Slider.Thumb index={0} circular size={24} />
+                <Slider.Thumb index={0}  size={24} />
               </Slider>
             </Stack>
             <Text color="$gray11" width={20}>
