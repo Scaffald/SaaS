@@ -468,6 +468,14 @@ export type {
   GetContactInfoParams,
 } from './resources/user-profiles.js'
 
+export type {
+  Worker,
+  WorkerDetailed,
+  GetWorkersParams,
+  GetWorkersResponse,
+  GetWorkerByIdParams,
+} from './resources/workers.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

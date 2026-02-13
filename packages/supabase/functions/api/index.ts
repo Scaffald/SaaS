@@ -17,6 +17,26 @@ import followsRouter from "./routes/follows.ts";
 import engagementRouter from "./routes/engagement.ts";
 import notificationsRouter from "./routes/notifications.ts";
 import userProfilesRouter from "./routes/user-profiles.ts";
+import skillsRouter from "./routes/skills.ts";
+import experienceRouter from "./routes/experience.ts";
+import employmentRouter from "./routes/employment.ts";
+import educationRouter from "./routes/education.ts";
+import certificationsRouter from "./routes/certifications.ts";
+import portfolioRouter from "./routes/portfolio.ts";
+import profileWidgetsRouter from "./routes/profile-widgets.ts";
+import profileCompletionRouter from "./routes/profile-completion.ts";
+import profileImportRouter from "./routes/profile-import.ts";
+import profileViewsRouter from "./routes/profile-views.ts";
+import backgroundChecksRouter from "./routes/background-checks.ts";
+import inquiriesRouter from "./routes/inquiries.ts";
+import workLogsRouter from "./routes/work-logs.ts";
+import organizationsRouter from "./routes/organizations.ts";
+import webhooksRouter from "./routes/webhooks.ts";
+import reviewsRouter from "./routes/reviews.ts";
+import projectsRouter from "./routes/projects.ts";
+import employersRouter from "./routes/employers.ts";
+import onetRouter from "./routes/onet.ts";
+import workersRouter from "./routes/workers.ts";
 import openapi from "./openapi.ts";
 import { authMiddleware } from "./middleware/auth.ts";
 import {
@@ -65,6 +85,26 @@ app.route("/v1/follows", followsRouter); // User follows
 app.route("/v1/engagement", engagementRouter); // Engagement tracking/analytics
 app.route("/v1/notifications", notificationsRouter); // User notifications
 app.route("/v1/user-profiles", userProfilesRouter); // User profile data
+app.route("/v1/profiles/skills", skillsRouter); // Skills management (soft/hard/multi-taxonomy)
+app.route("/v1/profiles/experience", experienceRouter); // Work experience
+app.route("/v1/profiles/employment", employmentRouter); // Employment preferences
+app.route("/v1/profiles/education", educationRouter); // Education history
+app.route("/v1/profiles/certifications", certificationsRouter); // Professional certifications
+app.route("/v1/profiles/portfolio", portfolioRouter); // Portfolio items
+app.route("/v1/profiles/widgets", profileWidgetsRouter); // Profile widgets
+app.route("/v1/profiles/completion", profileCompletionRouter); // Profile completion tracking
+app.route("/v1/profiles/import", profileImportRouter); // Profile import
+app.route("/v1/profile-views", profileViewsRouter); // Profile views tracking
+app.route("/v1/background-checks", backgroundChecksRouter); // Background checks
+app.route("/v1/inquiries", inquiriesRouter); // User inquiries
+app.route("/v1/work-logs", workLogsRouter); // Work logs
+app.route("/v1/organizations", organizationsRouter); // Organizations
+app.route("/v1/webhooks", webhooksRouter); // Webhooks
+app.route("/reviews", reviewsRouter); // Reviews
+app.route("/v1/projects", projectsRouter); // Projects
+app.route("/v1/employers", employersRouter); // Employers
+app.route("/v1/onet", onetRouter); // O*NET data
+app.route("/v1/workers", workersRouter); // Workers discovery
 
 // OpenAPI documentation
 app.route("/", openapi);
