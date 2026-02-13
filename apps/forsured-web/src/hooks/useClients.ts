@@ -1,9 +1,5 @@
 /**
  * Clients Hook
-<<<<<<< HEAD
- * Shared database architecture
-=======
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
  *
  * Fetches broker's clients from relationship_invitations table.
  * Clients can be:
@@ -14,19 +10,9 @@
  * the inviter or invitee, and the other party is a manager or subcontractor.
  */
 
-<<<<<<< HEAD
-import { useCallback, useEffect, useState } from "react";
-import type { BrokerClient, ClientType } from "../types";
-import {
-  core as coreQuery,
-  forsured as forsuredQuery,
-  supabaseServiceRole,
-} from "../lib/supabase";
-=======
 import { useState, useEffect, useCallback } from 'react'
 import type { BrokerClient, ClientType } from '../types'
 import { supabaseServiceRole, forsured as forsuredQuery } from '../lib/supabase'
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
 // Relationship invitation row from the database
 interface RelationshipInvitationRow {
@@ -146,18 +132,9 @@ export function useClients(brokerOrgId?: string) {
       // If no brokerOrgId provided, we can't filter by broker
       // Fall back to fetching all organizations (for backwards compatibility)
       if (!brokerOrgId) {
-<<<<<<< HEAD
-        const { data: orgs, error: orgError } = await coreQuery(
-          "organizations",
-          client,
-        )
-          .select("*")
-          .order("created_at", { ascending: false });
-=======
         const { data: orgs, error: orgError } = await forsuredQuery('organizations', client)
           .select('*')
-          .order('created_at', { ascending: false })
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
+          .order('created_at', { ascending: false });
 
         if (orgError) throw orgError;
 
@@ -268,18 +245,9 @@ export function useClients(brokerOrgId?: string) {
         return;
       }
 
-<<<<<<< HEAD
-      const { data: orgs, error: orgsError } = await coreQuery(
-        "organizations",
-        client,
-      )
-        .select("*")
-        .in("id", clientOrgIds);
-=======
       const { data: orgs, error: orgsError } = await forsuredQuery('organizations', client)
         .select('*')
-        .in('id', clientOrgIds)
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
+        .in('id', clientOrgIds);
 
       if (orgsError) throw orgsError;
 
@@ -380,14 +348,7 @@ export function useClients(brokerOrgId?: string) {
       // 2. Create broker-client relationship in a broker_clients table
       // 3. Store additional metadata (risk_level, compliance_score, client_type, etc.)
       // For now, we only create the basic organization record.
-<<<<<<< HEAD
-      const { data, error: insertError } = await coreQuery(
-        "organizations",
-        supaClient,
-      )
-=======
       const { data, error: insertError } = await forsuredQuery('organizations', supaClient)
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .insert({
           name: client.company_name,
           // Map BrokerClient fields to organization fields where possible
@@ -424,14 +385,7 @@ export function useClients(brokerOrgId?: string) {
         updateData.name = updates.company_name;
       }
 
-<<<<<<< HEAD
-      const { data, error: updateError } = await coreQuery(
-        "organizations",
-        supaClient,
-      )
-=======
       const { data, error: updateError } = await forsuredQuery('organizations', supaClient)
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .update(updateData)
         .eq("id", id)
         .select()

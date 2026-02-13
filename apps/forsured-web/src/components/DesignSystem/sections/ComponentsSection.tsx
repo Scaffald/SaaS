@@ -111,7 +111,7 @@ export default function ComponentsSection() {
                   { value: 'option3', label: 'Option 3' },
                 ]}
               />
-            </div>
+            </Box>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -532,7 +532,7 @@ export default function ComponentsSection() {
             </Box>
           </ComponentShowcase>
         </Stack>
-      </div>
+      </Box>
 
       <Box id="layout">
         <H3 style={{ fontSize: fontSize.h4, fontWeight: 600, color: colors.text.light.primary, marginBottom: spacing[16] }}>

@@ -14,19 +14,11 @@
  * - edited_at (timestamptz, nullable)
  */
 
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
-import { Comment, EntityType } from "../types";
-import { useDatabase } from "../contexts/DatabaseContext";
-import { formatSupabaseError } from "../lib/database/formatSupabaseError";
-import { core } from "../lib/supabase";
-=======
 import { useState, useEffect } from 'react';
 import { Comment, EntityType } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
 import { forsured } from '../lib/supabase';
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
 interface UseCommentsOptions {
   entityType?: EntityType;
@@ -96,15 +88,9 @@ export function useComments(options: UseCommentsOptions = {}) {
 
       if (uniqueUserIds.length > 0) {
         try {
-<<<<<<< HEAD
-          const { data: usersData, error: usersError } = await core("users")
-            .select("id, display_name, username")
-            .in("id", uniqueUserIds);
-=======
           const { data: usersData, error: usersError } = await forsured('users')
             .select('id, display_name, username')
             .in('id', uniqueUserIds);
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
           if (!usersError && usersData) {
             usersData.forEach((user) => {

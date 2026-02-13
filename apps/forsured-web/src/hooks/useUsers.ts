@@ -1,9 +1,5 @@
 /**
  * Users Hook
-<<<<<<< HEAD
- * Code Updates for Shared Database Architecture
-=======
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
  *
  * Manages user data from forsured.users table.
  *
