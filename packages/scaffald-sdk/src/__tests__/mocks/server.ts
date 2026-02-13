@@ -2980,12 +2980,12 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/connections`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')
     const apiKey = authHeader?.replace('Bearer ', '')
-    
+
     // Simulate server error for test_key_server_error
     if (apiKey === 'test_key_server_error') {
       return HttpResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-    
+
     // Return empty for test_key_empty
     if (apiKey === 'test_key_empty') {
       return HttpResponse.json({ data: [], total: 0 })
@@ -3039,8 +3039,18 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-12T10:00:00Z',
           updated_at: '2024-01-12T12:00:00Z',
-          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
-          addressee: { id: 'user_4', first_name: 'David', last_name: 'Brown', avatar_url: 'https://example.com/avatar4.jpg' },
+          requester: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
+          addressee: {
+            id: 'user_4',
+            first_name: 'David',
+            last_name: 'Brown',
+            avatar_url: 'https://example.com/avatar4.jpg',
+          },
         },
         {
           id: 'conn_4',
@@ -3049,8 +3059,18 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-13T10:00:00Z',
           updated_at: '2024-01-13T12:00:00Z',
-          requester: { id: 'user_5', first_name: 'Eve', last_name: 'Williams', avatar_url: 'https://example.com/avatar5.jpg' },
-          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          requester: {
+            id: 'user_5',
+            first_name: 'Eve',
+            last_name: 'Williams',
+            avatar_url: 'https://example.com/avatar5.jpg',
+          },
+          addressee: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
         },
         {
           id: 'conn_5',
@@ -3059,8 +3079,18 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-14T10:00:00Z',
           updated_at: '2024-01-14T12:00:00Z',
-          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
-          addressee: { id: 'user_6', first_name: 'Frank', last_name: 'Miller', avatar_url: 'https://example.com/avatar6.jpg' },
+          requester: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
+          addressee: {
+            id: 'user_6',
+            first_name: 'Frank',
+            last_name: 'Miller',
+            avatar_url: 'https://example.com/avatar6.jpg',
+          },
         },
         {
           id: 'conn_6',
@@ -3069,8 +3099,18 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-15T10:00:00Z',
           updated_at: '2024-01-15T12:00:00Z',
-          requester: { id: 'user_7', first_name: 'Grace', last_name: 'Davis', avatar_url: 'https://example.com/avatar7.jpg' },
-          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          requester: {
+            id: 'user_7',
+            first_name: 'Grace',
+            last_name: 'Davis',
+            avatar_url: 'https://example.com/avatar7.jpg',
+          },
+          addressee: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
         },
         {
           id: 'conn_7',
@@ -3079,18 +3119,38 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-16T10:00:00Z',
           updated_at: '2024-01-16T12:00:00Z',
-          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
-          addressee: { id: 'user_8', first_name: 'Henry', last_name: 'Taylor', avatar_url: 'https://example.com/avatar8.jpg' },
+          requester: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
+          addressee: {
+            id: 'user_8',
+            first_name: 'Henry',
+            last_name: 'Taylor',
+            avatar_url: 'https://example.com/avatar8.jpg',
+          },
         },
-                {
+        {
           id: 'conn_8',
           requester_id: 'user_9',
           addressee_id: 'user_1',
           status: 'accepted',
           created_at: '2024-01-17T10:00:00Z',
           updated_at: '2024-01-17T12:00:00Z',
-          requester: { id: 'user_9', first_name: 'Ivy', last_name: 'Anderson', avatar_url: 'https://example.com/avatar9.jpg' },
-          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          requester: {
+            id: 'user_9',
+            first_name: 'Ivy',
+            last_name: 'Anderson',
+            avatar_url: 'https://example.com/avatar9.jpg',
+          },
+          addressee: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
         },
         {
           id: 'conn_9',
@@ -3099,8 +3159,18 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-18T10:00:00Z',
           updated_at: '2024-01-18T12:00:00Z',
-          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
-          addressee: { id: 'user_10', first_name: 'Jack', last_name: 'White', avatar_url: 'https://example.com/avatar10.jpg' },
+          requester: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
+          addressee: {
+            id: 'user_10',
+            first_name: 'Jack',
+            last_name: 'White',
+            avatar_url: 'https://example.com/avatar10.jpg',
+          },
         },
         {
           id: 'conn_10',
@@ -3109,8 +3179,18 @@ export const handlers = [
           status: 'accepted',
           created_at: '2024-01-19T10:00:00Z',
           updated_at: '2024-01-19T12:00:00Z',
-          requester: { id: 'user_11', first_name: 'Kate', last_name: 'Harris', avatar_url: 'https://example.com/avatar11.jpg' },
-          addressee: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          requester: {
+            id: 'user_11',
+            first_name: 'Kate',
+            last_name: 'Harris',
+            avatar_url: 'https://example.com/avatar11.jpg',
+          },
+          addressee: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
         },
       ],
       total: 10,
@@ -3121,7 +3201,7 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/connections/pending`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')
     const apiKey = authHeader?.replace('Bearer ', '')
-    
+
     // Return empty for test_key_empty
     if (apiKey === 'test_key_empty') {
       return HttpResponse.json({ sent: [], received: [] })
@@ -3134,7 +3214,12 @@ export const handlers = [
           addressee_id: 'user_pending_sent',
           status: 'pending',
           created_at: '2024-01-12T10:00:00Z',
-          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          requester: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
         },
         {
           id: 'conn_pending_3',
@@ -3142,7 +3227,12 @@ export const handlers = [
           addressee_id: 'user_12',
           status: 'pending',
           created_at: '2024-01-20T10:00:00Z',
-          requester: { id: 'user_1', first_name: 'Alice', last_name: 'Johnson', avatar_url: 'https://example.com/avatar1.jpg' },
+          requester: {
+            id: 'user_1',
+            first_name: 'Alice',
+            last_name: 'Johnson',
+            avatar_url: 'https://example.com/avatar1.jpg',
+          },
         },
       ],
       received: [
@@ -3152,7 +3242,12 @@ export const handlers = [
           addressee_id: 'user_1',
           status: 'pending',
           created_at: '2024-01-13T10:00:00Z',
-          requester: { id: 'user_5', first_name: 'Eve', last_name: 'Williams', avatar_url: 'https://example.com/avatar5.jpg' },
+          requester: {
+            id: 'user_5',
+            first_name: 'Eve',
+            last_name: 'Williams',
+            avatar_url: 'https://example.com/avatar5.jpg',
+          },
         },
         {
           id: 'conn_pending_4',
@@ -3160,7 +3255,12 @@ export const handlers = [
           addressee_id: 'user_1',
           status: 'pending',
           created_at: '2024-01-21T10:00:00Z',
-          requester: { id: 'user_13', first_name: 'Laura', last_name: 'Martin', avatar_url: 'https://example.com/avatar13.jpg' },
+          requester: {
+            id: 'user_13',
+            first_name: 'Laura',
+            last_name: 'Martin',
+            avatar_url: 'https://example.com/avatar13.jpg',
+          },
         },
         {
           id: 'conn_pending_5',
@@ -3168,7 +3268,12 @@ export const handlers = [
           addressee_id: 'user_1',
           status: 'pending',
           created_at: '2024-01-22T10:00:00Z',
-          requester: { id: 'user_14', first_name: 'Mike', last_name: 'Thompson', avatar_url: 'https://example.com/avatar14.jpg' },
+          requester: {
+            id: 'user_14',
+            first_name: 'Mike',
+            last_name: 'Thompson',
+            avatar_url: 'https://example.com/avatar14.jpg',
+          },
         },
       ],
     })
@@ -3236,7 +3341,10 @@ export const handlers = [
 
     // Cannot send to self
     if (body.targetUserId === 'user_self' || body.targetUserId === 'user_1') {
-      return HttpResponse.json({ error: 'Cannot send connection request to yourself' }, { status: 400 })
+      return HttpResponse.json(
+        { error: 'Cannot send connection request to yourself' },
+        { status: 400 }
+      )
     }
 
     // User not found
@@ -3279,7 +3387,10 @@ export const handlers = [
 
     // Blocked user
     if (body.targetUserId === 'user_blocked') {
-      return HttpResponse.json({ error: 'Cannot send connection request to blocked user' }, { status: 403 })
+      return HttpResponse.json(
+        { error: 'Cannot send connection request to blocked user' },
+        { status: 403 }
+      )
     }
 
     // Network error simulation
@@ -3330,7 +3441,11 @@ export const handlers = [
     }
 
     // Not found
-    if (connectionId === 'invalid_id' || connectionId === 'conn_nonexistent' || connectionId === 'invalid-id-format') {
+    if (
+      connectionId === 'invalid_id' ||
+      connectionId === 'conn_nonexistent' ||
+      connectionId === 'invalid-id-format'
+    ) {
       return HttpResponse.json({ error: 'Connection not found' }, { status: 404 })
     }
 
@@ -3413,8 +3528,15 @@ export const handlers = [
     }
 
     // Cannot remove pending request (must cancel instead)
-    if (connectionId === 'conn_pending_1' || connectionId === 'conn_pending' || connectionId === 'conn_pending_5') {
-      return HttpResponse.json({ error: 'Cannot remove pending connection. Use cancel instead.' }, { status: 400 })
+    if (
+      connectionId === 'conn_pending_1' ||
+      connectionId === 'conn_pending' ||
+      connectionId === 'conn_pending_5'
+    ) {
+      return HttpResponse.json(
+        { error: 'Cannot remove pending connection. Use cancel instead.' },
+        { status: 400 }
+      )
     }
 
     // Already removed - idempotent
@@ -3435,13 +3557,23 @@ export const handlers = [
     }
 
     // Cannot cancel request you received (must decline instead)
-    if (connectionId === 'conn_you_received' || connectionId === 'conn_pending_2' || connectionId === 'conn_pending_received_1') {
-      return HttpResponse.json({ error: 'Cannot cancel request you received. Use decline instead.' }, { status: 403 })
+    if (
+      connectionId === 'conn_you_received' ||
+      connectionId === 'conn_pending_2' ||
+      connectionId === 'conn_pending_received_1'
+    ) {
+      return HttpResponse.json(
+        { error: 'Cannot cancel request you received. Use decline instead.' },
+        { status: 403 }
+      )
     }
 
     // Cannot cancel accepted connection
     if (connectionId === 'conn_already_accepted' || connectionId === 'conn_1') {
-      return HttpResponse.json({ error: 'Cannot cancel accepted connection. Use remove instead.' }, { status: 409 })
+      return HttpResponse.json(
+        { error: 'Cannot cancel accepted connection. Use remove instead.' },
+        { status: 409 }
+      )
     }
 
     // Already canceled - idempotent
@@ -6640,10 +6772,7 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/employers/:id`, ({ params }) => {
     const { id } = params
     if (id === 'invalid_id' || id === 'emp_error') {
-      return HttpResponse.json(
-        { error: 'Employer not found' },
-        { status: 404 }
-      )
+      return HttpResponse.json({ error: 'Employer not found' }, { status: 404 })
     }
     return HttpResponse.json({
       id,
@@ -6804,10 +6933,7 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/profile/completion/sections/:section`, ({ params }) => {
     const { section } = params
     if (section === 'invalid_section' || section === 'invalid') {
-      return HttpResponse.json(
-        { error: 'Section not found' },
-        { status: 404 }
-      )
+      return HttpResponse.json({ error: 'Section not found' }, { status: 404 })
     }
     return HttpResponse.json({
       data: {
@@ -6924,12 +7050,9 @@ export const handlers = [
 
   // POST /v1/profile/import/linkedin - Import from LinkedIn
   http.post(`${BASE_URL}/v1/profile/import/linkedin`, async ({ request }) => {
-    const body = await request.json() as { linkedin_url: string }
+    const body = (await request.json()) as { linkedin_url: string }
     if (body.linkedin_url === 'invalid-url') {
-      return HttpResponse.json(
-        { error: 'Invalid LinkedIn URL' },
-        { status: 400 }
-      )
+      return HttpResponse.json({ error: 'Invalid LinkedIn URL' }, { status: 400 })
     }
     return HttpResponse.json({
       data: {
@@ -6949,12 +7072,9 @@ export const handlers = [
 
   // POST /v1/profile/import/resume - Import from resume
   http.post(`${BASE_URL}/v1/profile/import/resume`, async ({ request }) => {
-    const body = await request.json() as { file_url?: string }
+    const body = (await request.json()) as { file_url?: string }
     if (body.file_url === 'https://example.com/resume.txt') {
-      return HttpResponse.json(
-        { error: 'Unsupported file format' },
-        { status: 400 }
-      )
+      return HttpResponse.json({ error: 'Unsupported file format' }, { status: 400 })
     }
     return HttpResponse.json({
       data: {
@@ -7028,10 +7148,7 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/profile/import/:id`, ({ params }) => {
     const { id } = params
     if (id === 'invalid_id') {
-      return HttpResponse.json(
-        { error: 'Import not found' },
-        { status: 404 }
-      )
+      return HttpResponse.json({ error: 'Import not found' }, { status: 404 })
     }
     if (id === 'import_124') {
       return HttpResponse.json({
@@ -7119,7 +7236,12 @@ export const handlers = [
       headline: 'Software Engineer',
       location: 'San Francisco, CA',
       topSkills: [
-        { proficiency: 5, taxonomy: 'JavaScript', csiSkillId: 'skill_1', onetOccupationId: 'onet_1' },
+        {
+          proficiency: 5,
+          taxonomy: 'JavaScript',
+          csiSkillId: 'skill_1',
+          onetOccupationId: 'onet_1',
+        },
         { proficiency: 4, taxonomy: 'React', csiSkillId: 'skill_2', onetOccupationId: 'onet_2' },
       ],
     })
@@ -7154,9 +7276,7 @@ export const handlers = [
   }),
 
   // GET /v1/user-profiles/:userId/skills - User skills
-  http.get(`${BASE_URL}/v1/user-profiles/:userId/skills`, ({ params }) => {
-    const { userId } = params
-
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/skills`, () => {
     return HttpResponse.json([
       {
         id: 'skill_1',
@@ -7241,7 +7361,7 @@ export const handlers = [
   }),
 
   // GET /v1/user-profiles/:userId/reviews-summary - Reviews summary
-  http.get(`${BASE_URL}/v1/user-profiles/:userId/reviews-summary`, ({ params }) => {
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/reviews-summary`, () => {
     return HttpResponse.json({
       totalReviews: 15,
       averageRating: 4.7,
@@ -7273,7 +7393,7 @@ export const handlers = [
   }),
 
   // GET /v1/user-profiles/:userId/contact-info - Contact info
-  http.get(`${BASE_URL}/v1/user-profiles/:userId/contact-info`, ({ params }) => {
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/contact-info`, () => {
     return HttpResponse.json({
       accessible: true,
       email: 'test@example.com',
@@ -7285,7 +7405,7 @@ export const handlers = [
   // GET /v1/workers - List workers
   http.get(`${BASE_URL}/v1/workers`, ({ request }) => {
     const url = new URL(request.url)
-    const limit = parseInt(url.searchParams.get('limit') || '20')
+    const limit = parseInt(url.searchParams.get('limit') || '20', 10)
 
     if (limit < 0) {
       return HttpResponse.json({ error: 'Invalid limit parameter' }, { status: 400 })
@@ -7332,9 +7452,8 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/personality-assessment/status`, ({ request }) => {
     // Check for authentication
     const authHeader = request.headers.get('Authorization')
-    const apiKeyHeader = request.headers.get('X-API-Key')
 
-    if (apiKeyHeader === 'invalid_key') {
+    if (authHeader === 'Bearer invalid_key') {
       return HttpResponse.json({ error: 'Invalid API key' }, { status: 401 })
     }
 
@@ -7406,7 +7525,7 @@ export const handlers = [
 
   // POST /v1/personality-assessment/luscher-1 - Save Luscher Test 1
   http.post(`${BASE_URL}/v1/personality-assessment/luscher-1`, async ({ request }) => {
-    const body = (await request.json()) as any
+    const _body = (await request.json()) as any
 
     return HttpResponse.json({
       success: true,
@@ -7416,7 +7535,7 @@ export const handlers = [
 
   // POST /v1/personality-assessment/ipip - Save IPIP progress
   http.post(`${BASE_URL}/v1/personality-assessment/ipip`, async ({ request }) => {
-    const body = (await request.json()) as any
+    const _body = (await request.json()) as any
 
     return HttpResponse.json({
       success: true,
@@ -7426,7 +7545,7 @@ export const handlers = [
 
   // PUT /v1/personality-assessment/step - Update current step
   http.put(`${BASE_URL}/v1/personality-assessment/step`, async ({ request }) => {
-    const body = (await request.json()) as any
+    const _body = (await request.json()) as any
 
     return HttpResponse.json({
       success: true,
