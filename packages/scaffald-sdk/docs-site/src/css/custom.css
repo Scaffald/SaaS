@@ -61,7 +61,7 @@
   --ifm-navbar-background-color: rgba(255, 255, 255, 0.98);
   --ifm-navbar-shadow: 0 2px 8px 0 rgba(251, 97, 42, 0.08), 0 1px 3px 0 rgba(251, 97, 42, 0.06);
   --ifm-navbar-link-hover-color: var(--ifm-color-primary);
-  --ifm-navbar-padding-horizontal: 1.5rem;
+  --ifm-navbar-padding-horizontal: 2.5rem;
   --ifm-navbar-padding-vertical: 1.25rem;
 
   /* Sidebar - Earth tones */
@@ -209,8 +209,8 @@ body, p {
 
 .navbar__logo {
   margin-right: 1rem;
-  height: 35px;
-  width: 36px;
+  height: 18px;
+  width: 18px;
 }
 
 .navbar__link {
@@ -228,7 +228,7 @@ body, p {
 }
 
 .navbar__item {
-  padding: 0 0.25rem;
+  padding: 0 0.75rem;
 }
 
 /* ============================================

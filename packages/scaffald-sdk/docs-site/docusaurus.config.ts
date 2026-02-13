@@ -70,8 +70,8 @@ const config: Config = {
       logo: {
         alt: 'Scaffald Logo',
         src: 'img/scaffald-logo.svg',
-        width: 36,
-        height: 35,
+        width: 18,
+        height: 18,
       },
       items: [
         {
