@@ -69,9 +69,9 @@ const config: Config = {
       title: 'Scaffald SDK',
       logo: {
         alt: 'Scaffald Logo',
-        src: 'img/scaffald-logo.png',
-        width: 32,
-        height: 32,
+        src: 'img/scaffald-logo.svg',
+        width: 40,
+        height: 40,
       },
       items: [
         {

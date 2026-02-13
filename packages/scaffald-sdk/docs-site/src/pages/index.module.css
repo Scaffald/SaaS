@@ -40,14 +40,16 @@
 }
 
 .heroBanner h1 {
-  font-size: 3.5rem;
-  font-weight: 800;
+  font-family: 'Roboto', sans-serif;
+  font-size: 4rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, #fb612a 0%, #d54e21 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 [data-theme='dark'] .heroBanner h1 {
@@ -58,12 +60,14 @@
 }
 
 .heroBanner p {
+  font-family: 'Roboto', sans-serif;
   font-size: 1.5rem;
   color: #6b6055;
   max-width: 600px;
   margin: 0 auto 2rem;
-  line-height: 1.6;
+  line-height: 1.5;
   font-weight: 400;
+  letter-spacing: 0;
 }
 
 [data-theme='dark'] .heroBanner p {
@@ -159,10 +163,13 @@
 }
 
 .feature h3 {
+  font-family: 'Roboto', sans-serif;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 1rem;
   color: #3a342f;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
 [data-theme='dark'] .feature h3 {
@@ -170,9 +177,11 @@
 }
 
 .feature p {
+  font-family: 'Roboto', sans-serif;
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.5;
   color: #6b6055;
+  letter-spacing: 0;
 }
 
 [data-theme='dark'] .feature p {
