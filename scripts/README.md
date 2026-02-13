@@ -370,6 +370,10 @@ These scripts are kept for reference but are superseded by the unified `deploy.s
 - `deploy-reset.sh` - Standalone database reset script (`pnpm deploy:reset`)
 - `deploy-aws.sh` - Standalone AWS deployment script (`pnpm deploy:aws`)
 - `verify-prod-deployment.sh` - Production deployment verification (`pnpm deploy:verify`)
+- `test-api.sh` - Quick REST API health checks (see [API Testing Guide](../docs/API_TESTING_GUIDE.md))
+- `test-api-keys.mjs` / `test-api-keys.sh` - API key validation
+- `apply-inbound-email-migration.sh` - Inbound email setup
+- `setup-docs-domain.sh` / `setup-docs-domain-github-pages.sh` - Docs site domain setup
 
 ## Security Notes
 

@@ -338,7 +338,7 @@ Once you verify the API works locally:
 
 ## Quick Test Script
 
-Save this as `test-api.sh`:
+Save as `scripts/test-api.sh` or run from repo root:
 
 ```bash
 #!/bin/bash
@@ -374,7 +374,7 @@ fi
 
 Run with:
 ```bash
-chmod +x test-api.sh && ./test-api.sh
+chmod +x scripts/test-api.sh && ./scripts/test-api.sh
 ```
 
 ---

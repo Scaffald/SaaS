@@ -7,13 +7,18 @@
 - [GoTrue env config](gotrue-env-config.md)
 - [Manual validation checklist](MANUAL-VALIDATION-CHECKLIST.md)
 
+## Guides
+
+- [API testing guide](API_TESTING_GUIDE.md) — REST API local testing with curl, health checks, auth
+
 ## Agents
 
 Project-specific context for AI agents: **[AGENTINFO.md](../AGENTINFO.md)** (canonical). See [agents/](agents/) for per-agent pointers.
 
-## Audits
+## Audits and archive
 
-[audits/](audits/) — legacy audit reports have been removed; see AGENTINFO and code for current behavior.
+- [audits/](audits/) — legacy audit reports
+- [archive/](archive/) — historical completion reports, migration summaries, and status snapshots
 
 ## Package docs
 
