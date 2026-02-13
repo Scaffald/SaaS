@@ -126,7 +126,7 @@ export const ProjectSelector = memo(function ProjectSelector({
             <Button
               size="xs"
               variant="outline"
-              icon={RefreshCw}
+              iconStart={RefreshCw}
               onPress={onRetry}
               aria-label="Retry loading projects"
             />

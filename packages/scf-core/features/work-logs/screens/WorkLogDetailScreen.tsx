@@ -406,7 +406,7 @@ export function WorkLogDetailScreen() {
                 Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
             </Stack>
-            <Button size="sm" variant="outline" icon={Edit} onPress={() => workLogQuery.refetch()}>
+            <Button size="sm" variant="outline" iconStart={Edit} onPress={() => workLogQuery.refetch()}>
               Refresh
             </Button>
           </Row>
@@ -418,17 +418,17 @@ export function WorkLogDetailScreen() {
             <Text>Summary</Text>
             <Row gap={16} flexWrap="wrap">
               <SummaryMetric
-                icon={Activity}
+                iconStart={Activity}
                 label="Total hours"
                 value={`${totalHours.toFixed(2)}h`}
               />
               <SummaryMetric
-                icon={FileText}
+                iconStart={FileText}
                 label="Entry type"
                 value={workLog.entry_type ?? 'Daily'}
               />
               <SummaryMetric
-                icon={ShieldCheck}
+                iconStart={ShieldCheck}
                 label="Visibility"
                 value={workLog.visibility === 'public' ? 'Public' : 'Private'}
               />
@@ -624,7 +624,7 @@ export function WorkLogDetailScreen() {
               <Text>Collaborators</Text>
               <Button
                 size="sm"
-                icon={Users}
+                iconStart={Users}
                 variant="outline"
                 onPress={() => collaboratorsQuery.refetch()}
               >
@@ -679,7 +679,7 @@ export function WorkLogDetailScreen() {
               </Row>
               <Button
                 size="sm"
-                icon={Users}
+                iconStart={Users}
                 loading={addCollaboratorMutation.isPending}
                 onPress={handleAddCollaborator}
               >
@@ -695,7 +695,7 @@ export function WorkLogDetailScreen() {
               <Text>Conversation</Text>
               <Button
                 size="sm"
-                icon={MessageSquare}
+                iconStart={MessageSquare}
                 variant="outline"
                 onPress={() => conversationQuery.refetch()}
               >
@@ -725,7 +725,7 @@ export function WorkLogDetailScreen() {
               />
               <Button
                 size="sm"
-                icon={MessageSquare}
+                iconStart={MessageSquare}
                 loading={addCommentMutation.isPending}
                 onPress={handleAddComment}
               >
@@ -745,7 +745,7 @@ export function WorkLogDetailScreen() {
             <Row gap={12} flexWrap="wrap">
               <Button
                 size="md"
-                icon={DownloadCloud}
+                iconStart={DownloadCloud}
                 loading={exportMutation.isPending && exportMutation.variables?.format === 'pdf'}
                 onPress={() =>
                   exportMutation.mutate({
@@ -758,7 +758,7 @@ export function WorkLogDetailScreen() {
               </Button>
               <Button
                 size="md"
-                icon={DownloadCloud}
+                iconStart={DownloadCloud}
                 variant="outline"
                 loading={exportMutation.isPending && exportMutation.variables?.format === 'csv'}
                 onPress={() =>

@@ -123,7 +123,7 @@ export function RowActionOverlay<TData>({
         <Button
           size="xs"
           variant="outline"
-          icon={Eye}
+          iconStart={Eye}
           onPress={() => {
             onView(row)
             onClose()
@@ -135,7 +135,7 @@ export function RowActionOverlay<TData>({
       <Button
         size="xs"
         variant="outline"
-        icon={Pencil}
+        iconStart={Pencil}
         onPress={() => {
           onEdit(row)
           onClose()
@@ -159,7 +159,7 @@ export function RowActionOverlay<TData>({
         size="xs"
         variant="outline"
       />
-      <Button size="xs" variant="outline" icon={X} onPress={onClose}>
+      <Button size="xs" variant="outline" iconStart={X} onPress={onClose}>
         Close
       </Button>
     </Row>

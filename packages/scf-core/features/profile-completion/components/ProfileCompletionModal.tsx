@@ -55,7 +55,7 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
           <Button size="lg" themeInverse onPress={onStartWizard}>
             {isFirstTime ? 'Start Wizard' : 'Continue Profile'}
           </Button>
-          <Button size="lg" icon={UploadCloud} onPress={onUploadResume}>
+          <Button size="lg" iconStart={UploadCloud} onPress={onUploadResume}>
             Upload Resume
           </Button>
           <Button size="sm" chromeless onPress={onDismiss}>

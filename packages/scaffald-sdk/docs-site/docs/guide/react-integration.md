@@ -118,7 +118,7 @@ function JobsList() {
 }
 ```
 
-**Parameters:** See [Jobs API Reference](./api-reference.md#jobs)
+**Parameters:** See [Jobs API Reference](/docs/api/jobs)
 
 **Returns:**
 
@@ -878,7 +878,7 @@ function Component() {
 
 ## Next Steps
 
-- [API Reference](./api-reference.md)
-- [Error Handling Guide](./error-handling.md)
-- [Webhooks Guide](./webhooks.md)
-- [OAuth Guide](./oauth.md)
+- [API Reference](/docs/api/overview)
+- [Error Handling Guide](/docs/guide/error-handling)
+- [Webhooks Guide](/docs/advanced/webhooks)
+- [OAuth Guide](/docs/guide/authentication)

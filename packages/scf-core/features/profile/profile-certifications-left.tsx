@@ -612,7 +612,7 @@ export function ProfileCertificationsLeft({
             <Text>Custom Certifications</Text>
             <Button
               size="sm"
-              icon={PlusCircle}
+              iconStart={PlusCircle}
               variant={showCustomForm ? 'outlined' : undefined}
               theme={showCustomForm ? undefined : 'accent'}
               onPress={() =>
@@ -733,7 +733,7 @@ export function ProfileCertificationsLeft({
                   <Row gap={8} flexWrap="wrap" align="center">
                     <Button
                       size="sm"
-                      icon={UploadCloud}
+                      iconStart={UploadCloud}
                       variant="outline"
                       onPress={handleCustomFileSelect}
                       disabled={isSavingCustom}
@@ -816,7 +816,7 @@ export function ProfileCertificationsLeft({
             )
           ) : (
             <ProfileEmptyState
-              icon={Award}
+              iconStart={Award}
               message="Search and select certification categories above to get started."
             />
           )}

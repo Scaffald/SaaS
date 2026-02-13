@@ -443,7 +443,7 @@ export function NewsWidget({
           {/* <Button
             size="sm"
             variant="outline"
-            icon={<Settings2 size="md" />}
+            iconStart={<Settings2 size="md" />}
             onPress={() => setPreferencesOpen(true)}
           /> */}
           <Button
@@ -453,7 +453,7 @@ export function NewsWidget({
               void refetch()
             }}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="sm" /> : <RefreshCw size="md" />}
+            iconStart={isLoading ? <Spinner size="sm" /> : <RefreshCw size="md" />}
           />
         </Row>
       </Row>

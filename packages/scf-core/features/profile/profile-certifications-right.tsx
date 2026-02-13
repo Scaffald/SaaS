@@ -5,7 +5,8 @@ import {
 } from '@scf/core/utils/profile-certifications-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Award, ChevronDown, ChevronRight, ExternalLink, Trash2, Upload } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -34,6 +35,7 @@ interface CertificationTree {
  * Displays all certifications at all depth levels with proof management
  */
 export function ProfileCertificationsRight() {
+  const { theme } = useThemeContext()
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set())
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({})
   const [urlInputs, setUrlInputs] = useState<Record<string, string>>({})
@@ -166,10 +168,10 @@ export function ProfileCertificationsRight() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingTop={32}>
-          <Award size={48} color="$gray11" />
+          <Award size={48} style={{ color: colors.text[theme].secondary }} />
           <Stack gap={8} align="center">
             <H4>Your Certifications</H4>
-            <Text color="$gray11">Search and add certifications on the left</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Search and add certifications on the left</Text>
           </Stack>
         </Stack>
       </DashboardWidget>
@@ -186,7 +188,7 @@ export function ProfileCertificationsRight() {
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
               <Stack gap={8}>
-                <Text color="$blue11">Top-Level Categories</Text>
+                <Text style={{ color: colors.text[theme].info }}>Top-Level Categories</Text>
                 {depth0.map((cert) => {
                   const changeStatus = recentlyChangedCerts[cert.certification_id]
                   return (
@@ -195,28 +197,28 @@ export function ProfileCertificationsRight() {
                       padding="sm"
                       bordered
                       animation="quick"
-                      backgroundColor={
-                        changeStatus === 'added'
-                          ? '$green2'
+                      style={{
+                        backgroundColor: changeStatus === 'added'
+                          ? colors.bg[theme].success
                           : changeStatus === 'removed'
-                            ? '$red2'
-                            : '$color1'
-                      }
-                      borderColor={
-                        changeStatus === 'added'
-                          ? '$green7'
+                            ? colors.bg[theme].error
+                            : colors.bg[theme].default,
+                        borderColor: changeStatus === 'added'
+                          ? colors.border[theme].success
                           : changeStatus === 'removed'
-                            ? '$red7'
-                            : '$borderColor'
-                      }
+                            ? colors.border[theme].error
+                            : colors.border[theme].default,
+                      }}
                     >
                       <Row justify="space-between" align="center">
                         <Stack flex={1} gap={4}>
                           <Row gap={8} align="center">
                             <Text>{cert.catalog.title}</Text>
                             <Text
-                              color="$blue9"
-                              backgroundColor="$blue2"
+                              style={{
+                                color: colors.text[theme].info,
+                                backgroundColor: colors.bg[theme].info,
+                              }}
                               paddingHorizontal={8}
                               paddingVertical={2}
                               borderRadius={8}
@@ -225,12 +227,12 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text color="$gray11">{cert.catalog.description}</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>{cert.catalog.description}</Text>
                           )}
                         </Stack>
                       </Row>
                       {changeStatus === 'added' && (
-                        <Text marginTop={8} color="$green11">
+                        <Text marginTop={8} style={{ color: colors.text[theme].success }}>
                           ✓ Added to profile
                         </Text>
                       )}
@@ -369,7 +371,7 @@ export function ProfileCertificationsRight() {
                             <Button
                               size="xs"
                               chromeless
-                              icon={<ExternalLink size="md" />}
+                              iconStart={<ExternalLink size="md" />}
                               onPress={(e) => {
                                 e.stopPropagation()
                                 const url =
@@ -384,7 +386,7 @@ export function ProfileCertificationsRight() {
                           <Button
                             size="xs"
                             chromeless
-                            icon={<Trash2 size="md" />}
+                            iconStart={<Trash2 size="md" />}
                             onPress={(e) => {
                               e.stopPropagation()
                               handleRemove(cert)
@@ -411,7 +413,7 @@ export function ProfileCertificationsRight() {
                             <Row gap={8} style={{ alignItems: 'center' }}>
                               <Button
                                 flex={1}
-                                icon={<Upload size="md" />}
+                                iconStart={<Upload size="md" />}
                                 onPress={() => {
                                   // Trigger file input
                                   const input = document.createElement('input')
@@ -431,7 +433,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                               {selectedFiles[cert.id] && (
                                 <Button
-                                  icon={<Upload size="md" />}
+                                  iconStart={<Upload size="md" />}
                                   onPress={() => handleSaveFile(cert.id)}
                                   disabled={updateProof.isPending}
                                 >
@@ -460,7 +462,7 @@ export function ProfileCertificationsRight() {
                               />
                               <Button
                                 variant="primary"
-                                icon={<ExternalLink size="md" />}
+                                iconStart={<ExternalLink size="md" />}
                                 onPress={() => handleSaveUrl(cert.id)}
                                 disabled={!urlInputs[cert.id] || updateProof.isPending}
                               >

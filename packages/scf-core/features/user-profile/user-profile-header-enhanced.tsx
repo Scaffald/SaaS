@@ -374,7 +374,7 @@ export function UserProfileHeaderEnhanced({
           {/* Action Buttons */}
           <Row gap={8} flexWrap="wrap" align="center">
             {isOwnProfile && onEdit && (
-              <Button size={isMobile ? '$3' : '$4'} theme="info" icon={Edit3} onPress={onEdit}>
+              <Button size={isMobile ? '$3' : '$4'} theme="info" iconStart={Edit3} onPress={onEdit}>
                 Edit Profile
               </Button>
             )}
@@ -386,7 +386,7 @@ export function UserProfileHeaderEnhanced({
                   <Button
                     size={isMobile ? '$3' : '$4'}
                     theme="info"
-                    icon={isConnectionMutating ? Loader2 : UserPlus}
+                    iconStart={isConnectionMutating ? Loader2 : UserPlus}
                     onPress={handleConnect}
                     disabled={isConnectionMutating}
                   >
@@ -395,7 +395,7 @@ export function UserProfileHeaderEnhanced({
                 )}
 
                 {connectionButtonState.type === 'pending_sent' && (
-                  <Button size={isMobile ? '$3' : '$4'} variant="outline" icon={Loader2} disabled>
+                  <Button size={isMobile ? '$3' : '$4'} variant="outline" iconStart={Loader2} disabled>
                     Pending
                   </Button>
                 )}
@@ -405,7 +405,7 @@ export function UserProfileHeaderEnhanced({
                     <Button
                       size={isMobile ? '$3' : '$4'}
                       theme="info"
-                      icon={CheckCircle2}
+                      iconStart={CheckCircle2}
                       onPress={handleAccept}
                       disabled={isConnectionMutating}
                     >
@@ -414,7 +414,7 @@ export function UserProfileHeaderEnhanced({
                     <Button
                       size={isMobile ? '$3' : '$4'}
                       variant="outline"
-                      icon={X}
+                      iconStart={X}
                       onPress={handleDecline}
                       disabled={isConnectionMutating}
                     >
@@ -427,7 +427,7 @@ export function UserProfileHeaderEnhanced({
                   <Button
                     size={isMobile ? '$3' : '$4'}
                     variant="outline"
-                    icon={UserCheck}
+                    iconStart={UserCheck}
                     onPress={handleRemoveConnection}
                     disabled={isConnectionMutating}
                   >
@@ -444,7 +444,7 @@ export function UserProfileHeaderEnhanced({
                 <Button
                   size={isMobile ? '$3' : '$4'}
                   variant="outline"
-                  icon={isFollowMutating ? Loader2 : UserPlus}
+                  iconStart={isFollowMutating ? Loader2 : UserPlus}
                   onPress={handleFollow}
                   disabled={isFollowMutating}
                 >
@@ -454,7 +454,7 @@ export function UserProfileHeaderEnhanced({
                 <Button
                   size={isMobile ? '$3' : '$4'}
                   variant="outline"
-                  icon={isFollowMutating ? Loader2 : UserMinus}
+                  iconStart={isFollowMutating ? Loader2 : UserMinus}
                   onPress={handleUnfollow}
                   disabled={isFollowMutating}
                 >
@@ -463,7 +463,7 @@ export function UserProfileHeaderEnhanced({
               ))}
 
             {!isOwnProfile && (
-              <Button size={isMobile ? '$3' : '$4'} variant="outline" icon={Share2}>
+              <Button size={isMobile ? '$3' : '$4'} variant="outline" iconStart={Share2}>
                 Share
               </Button>
             )}
@@ -471,13 +471,13 @@ export function UserProfileHeaderEnhanced({
               <Button
                 size={isMobile ? '$3' : '$4'}
                 theme="info"
-                icon={MessageSquare}
+                iconStart={MessageSquare}
                 onPress={onLeaveReview}
               >
                 Leave Review
               </Button>
             )}
-            <Button size={isMobile ? '$3' : '$4'} variant="outline"  icon={MoreVertical} />
+            <Button size={isMobile ? '$3' : '$4'} variant="outline"  iconStart={MoreVertical} />
           </Row>
         </Row>
 

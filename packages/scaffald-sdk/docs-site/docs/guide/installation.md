@@ -106,7 +106,7 @@ const client = new Scaffald({
 })
 ```
 
-See the [OAuth Guide](./oauth.md) for a complete implementation guide.
+See the [OAuth Guide](/docs/guide/authentication) for a complete implementation guide.
 
 ## Making Your First Request
 
@@ -278,7 +278,7 @@ async function safeApiCall() {
 }
 ```
 
-See the [Error Handling Guide](./error-handling.md) for more details.
+See the [Error Handling Guide](/docs/guide/error-handling) for more details.
 
 ## Rate Limiting
 
@@ -314,10 +314,10 @@ if (client.isRateLimitApproaching()) {
 
 Now that you've made your first requests, explore:
 
-1. **[API Reference](./api-reference.md)** - Complete API documentation
-2. **[React Hooks](./react-hooks.md)** - Using the SDK with React
-3. **[Webhooks](./webhooks.md)** - Receiving real-time events
-4. **[OAuth Guide](./oauth.md)** - User authentication flow
+1. **[API Reference](/docs/api/overview)** - Complete API documentation
+2. **[React Hooks](/docs/guide/react-integration)** - Using the SDK with React
+3. **[Webhooks](/docs/advanced/webhooks)** - Receiving real-time events
+4. **[OAuth Guide](/docs/guide/authentication)** - User authentication flow
 5. **[Examples](../examples/)** - Working code examples
 
 ## Common Patterns

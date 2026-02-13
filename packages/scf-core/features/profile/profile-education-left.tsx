@@ -548,7 +548,7 @@ export function ProfileEducationLeft({
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text>Education History</Text>
-            <Button size="sm" onPress={addEducationEntry} icon={Plus}>
+            <Button size="sm" onPress={addEducationEntry} iconStart={Plus}>
               Add Education
             </Button>
           </Row>
@@ -591,7 +591,7 @@ export function ProfileEducationLeft({
               >
                 <Row justify="space-between" align="center">
                   <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
-                  <Button size="xs" variant="outline" onPress={() => remove(index)} icon={X}>
+                  <Button size="xs" variant="outline" onPress={() => remove(index)} iconStart={X}>
                     Remove
                   </Button>
                 </Row>

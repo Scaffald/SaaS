@@ -363,7 +363,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                   color="primary"
                   onPress={handleCreate}
                   disabled={isCreating}
-                  icon={isCreating ? <Spinner /> : undefined}
+                  iconStart={isCreating ? <Spinner /> : undefined}
                 >
                   {isCreating ? 'Creating...' : 'Create API Key'}
                 </Button>
@@ -407,7 +407,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       {createdKey?.key}
                     </Paragraph>
                     <Button
-                      icon={Copy}
+                      iconStart={Copy}
                       onPress={copyToClipboard}
                       theme={keyCopied ? 'green' : 'blue'}
                       disabled={keyCopied}

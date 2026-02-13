@@ -89,7 +89,7 @@ export function ExperienceWidget({
 
         {experiences.length === 0 ? (
           <EmptyState
-            icon={<Briefcase />}
+            iconStart={<Briefcase />}
             title="No work experience added yet"
             description="Add your work experience to showcase your career history"
             action={

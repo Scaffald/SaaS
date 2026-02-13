@@ -74,7 +74,7 @@ export default function OfficeTeamSettingsPage() {
           <Button
             size="md"
             variant="outline"
-            icon={ArrowLeft}
+            iconStart={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
           >Back to teams</Button>
         </Row>

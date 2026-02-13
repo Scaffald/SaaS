@@ -119,7 +119,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                 <Button
                   variant="primary"
                   size="xs"
-                  icon={<MessageSquarePlus size="md" />}
+                  iconStart={<MessageSquarePlus size="md" />}
                   onPress={handleLeaveReview}
                 >
                   Leave Review
@@ -190,7 +190,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               <Button
                 variant="primary"
                 size="xs"
-                icon={<MessageSquarePlus size="md" />}
+                iconStart={<MessageSquarePlus size="md" />}
                 onPress={handleLeaveReview}
               >
                 Leave Review

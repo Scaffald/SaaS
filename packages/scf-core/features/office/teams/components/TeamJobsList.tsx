@@ -46,7 +46,7 @@ export function TeamJobsList({
           <Button
             size="xs"
             variant="outline"
-            icon={RefreshCcw}
+            iconStart={RefreshCcw}
             onPress={() => onRefresh?.()}
             disabled={isLoading}
             accessibilityLabel="Refresh assigned jobs list"
@@ -56,7 +56,7 @@ export function TeamJobsList({
           </Button>
           <Button
             size="xs"
-            icon={ArrowRight}
+            iconStart={ArrowRight}
             onPress={() => {
               if (onCreateJob) {
                 onCreateJob()

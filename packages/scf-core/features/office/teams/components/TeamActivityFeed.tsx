@@ -342,7 +342,7 @@ export function TeamActivityFeed({
             size="sm"
             backgroundColor="$color9"
             color="$gray11"
-            icon={Send}
+            iconStart={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}
             accessibilityLabel="Post update"

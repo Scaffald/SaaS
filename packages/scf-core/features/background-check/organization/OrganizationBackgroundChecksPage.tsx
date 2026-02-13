@@ -179,7 +179,7 @@ export function OrganizationBackgroundChecksPage() {
             <Button
               size="xs"
               variant="outline"
-              icon={Eye}
+              iconStart={Eye}
               onPress={() => setSelectedCheckId(row.original.id)}
             >
               View
@@ -239,7 +239,7 @@ export function OrganizationBackgroundChecksPage() {
           <Button
             size="sm"
             variant="outline"
-            icon={RefreshCcw}
+            iconStart={RefreshCcw}
             onPress={() => checksQuery.refetch()}
             disabled={checksQuery.isLoading}
           >
@@ -248,7 +248,7 @@ export function OrganizationBackgroundChecksPage() {
           <Button
             size="sm"
             color="primary"
-            icon={ExternalLink}
+            iconStart={ExternalLink}
             onPress={handleNavigateToRequest}
             disabled={!selectedOrganizationId}
           >

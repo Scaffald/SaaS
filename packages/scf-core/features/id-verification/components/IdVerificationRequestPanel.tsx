@@ -251,7 +251,7 @@ export function IdVerificationRequestPanel({
         <Button
           size="md"
           color="primary"
-          icon={CreditCard}
+          iconStart={CreditCard}
           disabled={!canSubmit || requestVerification.isPending}
           onPress={createPaymentSession}
         >
@@ -280,7 +280,7 @@ export function IdVerificationRequestPanel({
         <Button
           size="sm"
           variant="outline"
-          icon={RefreshCcw}
+          iconStart={RefreshCcw}
           disabled={confirmVerification.isPending}
           onPress={resetForm}
         >

@@ -81,7 +81,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
           variant="outline"
           style={{ borderColor: colors.border[theme].error }}
           color="error"
-          icon={Trash2}
+          iconStart={Trash2}
           onPress={() => setIsOpen(true)}
         >
           Request Organization Deletion
@@ -140,7 +140,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                   <Button
                     backgroundColor="$red9"
                     color="white"
-                    icon={Trash2}
+                    iconStart={Trash2}
                     onPress={handleDelete}
                     disabled={confirmText !== 'DELETE' || deletionMutation.isPending}
                   >

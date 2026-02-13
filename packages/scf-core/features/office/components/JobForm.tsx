@@ -1250,7 +1250,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <Button
               data-testid="job-preview-button"
               variant="outline"
-              icon={Eye}
+              iconStart={Eye}
               onPress={() => setPreviewOpen(true)}
               disabled={isLoading || !formData.title || !formData.organization_id}
             >

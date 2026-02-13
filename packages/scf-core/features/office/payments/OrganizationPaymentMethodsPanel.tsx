@@ -90,7 +90,7 @@ export function OrganizationPaymentMethodsPanel({
       <Row justify="space-between" align="center">
         <Text>Payment Method</Text>
         {!showAddForm && !paymentMethod && (
-          <Button size="sm" color="primary" icon={Plus} onPress={() => setShowAddForm(true)}>
+          <Button size="sm" color="primary" iconStart={Plus} onPress={() => setShowAddForm(true)}>
             Add Payment Method
           </Button>
         )}
@@ -131,7 +131,7 @@ export function OrganizationPaymentMethodsPanel({
             <Button
               size="xs"
               variant="outline"
-              icon={Trash2}
+              iconStart={Trash2}
               onPress={handleDelete}
               disabled={deleteMutation.isPending}
               borderColor="$red8"
@@ -140,7 +140,7 @@ export function OrganizationPaymentMethodsPanel({
               Remove
             </Button>
           </Row>
-          <Button size="sm" variant="outline" icon={Plus} onPress={() => setShowAddForm(true)}>
+          <Button size="sm" variant="outline" iconStart={Plus} onPress={() => setShowAddForm(true)}>
             Replace Payment Method
           </Button>
         </Stack>

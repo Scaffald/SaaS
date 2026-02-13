@@ -25,7 +25,7 @@ export function OfficePageHeader({
         onChangeText={onSearchChange}
       />
       {createButtonLabel && onCreateClick && (
-        <Button icon={Plus} onPress={onCreateClick} themeInverse>
+        <Button iconStart={Plus} onPress={onCreateClick} themeInverse>
           {createButtonLabel}
         </Button>
       )}

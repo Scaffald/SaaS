@@ -188,7 +188,7 @@ export function OfficeCertificationsLeft({
         <Row justify="space-between" align="center">
           <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
           {isEditing && (
-            <Button size="xs" variant="outline" onPress={onCancel} icon={X}>
+            <Button size="xs" variant="outline" onPress={onCancel} iconStart={X}>
               Cancel
             </Button>
           )}
@@ -370,7 +370,7 @@ export function OfficeCertificationsLeft({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
+              iconStart={isLoading ? <Spinner /> : isEditing ? Save : Plus}
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>

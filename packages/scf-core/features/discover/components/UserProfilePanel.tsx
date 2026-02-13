@@ -97,7 +97,7 @@ export function UserProfilePanel({
           size="xs"
           
           chromeless
-          icon={X}
+          iconStart={X}
           onPress={handleClose}
           opacity={0.7}
           hoverStyle={{ opacity: 1 }}
@@ -192,7 +192,7 @@ export function UserProfilePanel({
 
           {/* Action Button */}
           <Row gap={8} paddingTop={8}>
-            <Button flex={1} theme="info" onPress={handleViewProfile} icon={ExternalLink}>
+            <Button flex={1} theme="info" onPress={handleViewProfile} iconStart={ExternalLink}>
               View Profile
             </Button>
           </Row>

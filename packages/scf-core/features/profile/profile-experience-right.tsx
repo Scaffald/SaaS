@@ -135,7 +135,7 @@ export function ProfileExperienceRight() {
 
       {experienceEntries.length === 0 ? (
         <ProfileEmptyState
-          icon={Briefcase}
+          iconStart={Briefcase}
           message="No work experience saved yet. Add your first position in the left panel."
         />
       ) : (
@@ -218,7 +218,7 @@ export function ProfileExperienceRight() {
                   <Button
                     size="xs"
                     variant="outline"
-                    icon={Pencil}
+                    iconStart={Pencil}
                     aria-label={`Edit ${exp.job_title} at ${exp.company_name}`}
                     accessibilityLabel={`Edit ${exp.job_title} at ${exp.company_name}`}
                     onPress={() => {

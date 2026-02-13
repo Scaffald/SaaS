@@ -126,7 +126,7 @@ export const ResultsViewer = memo(function ResultsViewer({
             <Text color="$gray11">Last updated {formatDate(detail.updated_at)}</Text>
           </Row>
         </Stack>
-        <Button size="sm" variant="outline" icon={CloseIcon} onPress={onClose}>
+        <Button size="sm" variant="outline" iconStart={CloseIcon} onPress={onClose}>
           Close
         </Button>
       </Row>
@@ -195,7 +195,7 @@ export const ResultsViewer = memo(function ResultsViewer({
           <Button
             size="sm"
             variant="outline"
-            icon={DownloadCloud}
+            iconStart={DownloadCloud}
             onPress={() =>
               Alert.alert(
                 'Download coming soon',

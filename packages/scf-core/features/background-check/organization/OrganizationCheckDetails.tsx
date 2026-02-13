@@ -61,13 +61,13 @@ export function OrganizationCheckDetails({
           <Button
             size="xs"
             variant="outline"
-            icon={RefreshCcw}
+            iconStart={RefreshCcw}
             onPress={() => checkQuery.refetch()}
             disabled={checkQuery.isLoading}
           >
             Refresh
           </Button>
-          <Button size="xs" variant="outline" icon={X} onPress={onClose}>
+          <Button size="xs" variant="outline" iconStart={X} onPress={onClose}>
             Close
           </Button>
         </Row>
@@ -86,7 +86,7 @@ export function OrganizationCheckDetails({
           <Button
             size="sm"
             variant="outline"
-            icon={RefreshCcw}
+            iconStart={RefreshCcw}
             onPress={() => checkQuery.refetch()}
             disabled={checkQuery.isLoading}
           >

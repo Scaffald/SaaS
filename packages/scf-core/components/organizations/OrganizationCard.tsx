@@ -97,7 +97,7 @@ export const OrganizationCard = memo(
           <CardHeader
             title={name}
             isSelected={isSelected}
-            icon={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
+            iconStart={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
           />
 
           {/* Industry badge */}

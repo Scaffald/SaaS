@@ -82,23 +82,23 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
 
       <Row gap={16} flexWrap="wrap">
         <StatItem
-          icon={<Users size="md" />}
+          iconStart={<Users size="md" />}
           label="Members"
           value={memberCount !== undefined ? memberCount.toString() : '—'}
         />
         <StatItem
-          icon={<Briefcase size="md" />}
+          iconStart={<Briefcase size="md" />}
           label="Active jobs"
           value={jobCount !== undefined ? jobCount.toString() : '—'}
         />
         <StatItem
-          icon={<Mail size="md" />}
+          iconStart={<Mail size="md" />}
           label="Pending invites"
           value={pendingInvitations !== undefined ? pendingInvitations.toString() : '—'}
         />
         {team.defaultRole?.name ? (
           <StatItem
-            icon={<Shield size="md" />}
+            iconStart={<Shield size="md" />}
             label="Default role"
             value={team.defaultRole.name}
           />

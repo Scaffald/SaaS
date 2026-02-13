@@ -9,18 +9,18 @@ BEGIN;
 -- =========================================================
 -- TEST USER IDS REFERENCE
 -- =========================================================
--- IMPORTANT: Migration 256 creates these organizations, so we MUST use those IDs
+-- Org IDs come from 002_seed-organizations.sql
 -- test-gc@forsured.test:
 --   User ID: 10000000-0000-0000-0000-000000000001
---   Org ID: 20000000-0000-0000-0000-000000000001 (MRC Construction Co.)
+--   Org ID: 60000000-0000-0000-0000-000000000031 (Test Construction Company)
 --
 -- test-contractor@forsured.test:
 --   User ID: 10000000-0000-0000-0000-000000000002
---   Org ID: 20000000-0000-0000-0000-000000000002 (Test Contractor LLC)
+--   Org ID: 60000000-0000-0000-0000-000000000032 (Test Contractor Services)
 --
 -- test-broker@forsured.test:
 --   User ID: 10000000-0000-0000-0000-000000000003
---   Org ID: 20000000-0000-0000-0000-000000000003 (Test Insurance Broker)
+--   Org ID: 60000000-0000-0000-0000-000000000033 (Test Insurance Brokers)
 -- =========================================================
 
 -- =========================================================
@@ -45,7 +45,7 @@ VALUES
     'John Smith',
     'Smith Electrical Services',
     NULL,
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '{"email": "john@smith-electrical.test", "phone": "+1 (555) 200-0001", "address": "100 Electric Ave, New York, NY"}',
     NOW() - INTERVAL '80 days'
   ),
@@ -54,7 +54,7 @@ VALUES
     'Sarah Johnson',
     'Johnson Plumbing Co',
     NULL,
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '{"email": "sarah@johnson-plumbing.test", "phone": "+1 (555) 200-0002", "address": "200 Pipe St, New York, NY"}',
     NOW() - INTERVAL '70 days'
   ),
@@ -63,7 +63,7 @@ VALUES
     'Mike Davis',
     'Davis HVAC Solutions',
     NULL,
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '{"email": "mike@davis-hvac.test", "phone": "+1 (555) 200-0003", "address": "300 Air Way, New York, NY"}',
     NOW() - INTERVAL '60 days'
   ),
@@ -72,8 +72,8 @@ VALUES
     '91000000-0000-0000-0000-000000000004',
     'Test Contractor User',
     'Test Contractor Services',
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '{"email": "test-contractor@forsured.test", "phone": "+1 (555) 005-0002", "address": "200 Contractor Ave, Houston, TX"}',
     NOW() - INTERVAL '50 days'
   )
@@ -88,10 +88,8 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO forsured.project_subcontractors (
   project_id,
   subcontractor_id,
-  organization_id,
   status,
   invited_at,
-  joined_at,
   created_at,
   updated_at
 )
@@ -100,30 +98,24 @@ VALUES
   (
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000001',  -- Smith Electrical
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '85 days',
-    NOW() - INTERVAL '84 days',
     NOW() - INTERVAL '85 days',
     NOW() - INTERVAL '84 days'
   ),
   (
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '80 days',
-    NOW() - INTERVAL '79 days',
     NOW() - INTERVAL '80 days',
     NOW() - INTERVAL '79 days'
   ),
   (
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '75 days',
-    NOW() - INTERVAL '74 days',
     NOW() - INTERVAL '75 days',
     NOW() - INTERVAL '74 days'
   ),
@@ -131,20 +123,16 @@ VALUES
   (
     '90000000-0000-0000-0000-000000000002',  -- Residential Complex
     '91000000-0000-0000-0000-000000000001',  -- Smith Electrical
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '55 days',
-    NOW() - INTERVAL '54 days',
     NOW() - INTERVAL '55 days',
     NOW() - INTERVAL '54 days'
   ),
   (
     '90000000-0000-0000-0000-000000000002',  -- Residential Complex
     '91000000-0000-0000-0000-000000000003',  -- Davis HVAC
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '50 days',
-    NOW() - INTERVAL '49 days',
     NOW() - INTERVAL '50 days',
     NOW() - INTERVAL '49 days'
   ),
@@ -152,20 +140,16 @@ VALUES
   (
     '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
     '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '25 days',
-    NOW() - INTERVAL '24 days',
     NOW() - INTERVAL '25 days',
     NOW() - INTERVAL '24 days'
   ),
   (
     '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
     'active',
     NOW() - INTERVAL '20 days',
-    NOW() - INTERVAL '19 days',
     NOW() - INTERVAL '20 days',
     NOW() - INTERVAL '19 days'
   )
@@ -199,7 +183,7 @@ VALUES
     '92000000-0000-0000-0000-000000000001',
     '91000000-0000-0000-0000-000000000001',  -- Smith Electrical
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'smith_electrical_coi_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000001.pdf',
@@ -215,7 +199,7 @@ VALUES
     '92000000-0000-0000-0000-000000000002',
     '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'johnson_plumbing_coi_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000002.pdf',
@@ -232,7 +216,7 @@ VALUES
     '92000000-0000-0000-0000-000000000011',
     '91000000-0000-0000-0000-000000000001',  -- Smith Electrical
     '90000000-0000-0000-0000-000000000002',  -- Residential Complex
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'smith_electrical_wc_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000011.pdf',
@@ -248,7 +232,7 @@ VALUES
     '92000000-0000-0000-0000-000000000012',
     '91000000-0000-0000-0000-000000000003',  -- Davis HVAC
     '90000000-0000-0000-0000-000000000002',  -- Residential Complex
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'davis_hvac_coi_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000012.pdf',
@@ -265,7 +249,7 @@ VALUES
     '92000000-0000-0000-0000-000000000021',
     '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
     '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'johnson_plumbing_auto_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000021.pdf',
@@ -306,7 +290,7 @@ VALUES
     '95000000-0000-0000-0000-000000000001',
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000001',  -- Smith Electrical
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'Review Smith Electrical COI',
     'Verify that Smith Electrical Services has current certificate of insurance with adequate coverage limits.',
@@ -321,7 +305,7 @@ VALUES
     '95000000-0000-0000-0000-000000000002',
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'Request additional insured endorsement from Johnson Plumbing',
     'Project requires additional insured endorsement on GL policy. Contact contractor to add.',
@@ -336,7 +320,7 @@ VALUES
     '95000000-0000-0000-0000-000000000003',
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'Verify Test Contractor insurance coverage',
     'New subcontractor added. Review all insurance documentation.',
@@ -352,7 +336,7 @@ VALUES
     '95000000-0000-0000-0000-000000000011',
     '90000000-0000-0000-0000-000000000002',  -- Residential Complex
     '91000000-0000-0000-0000-000000000001',  -- Smith Electrical
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'Approve Smith Electrical workers comp certificate',
     'Workers comp certificate submitted. Review and approve if coverage meets requirements.',
@@ -367,7 +351,7 @@ VALUES
     '95000000-0000-0000-0000-000000000012',
     '90000000-0000-0000-0000-000000000002',  -- Residential Complex
     '91000000-0000-0000-0000-000000000003',  -- Davis HVAC
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'Review Davis HVAC COI',
     'HVAC contractor submitted COI. Review coverage limits and endorsements.',
@@ -383,7 +367,7 @@ VALUES
     '95000000-0000-0000-0000-000000000021',
     '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
     '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc
     'Collect updated auto liability certificate',
     'Auto liability certificate expires in 30 days. Request renewal certificate.',
@@ -406,10 +390,8 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO forsured.project_subcontractors (
   project_id,
   subcontractor_id,
-  organization_id,
   status,
   invited_at,
-  joined_at,
   created_at,
   updated_at
 )
@@ -419,10 +401,8 @@ VALUES
   (
     '70000000-0000-0000-0000-000000000001',  -- Downtown Office Tower (Acme Construction)
     '71000000-0000-0000-0000-000000000001',  -- Johnson Electrical (or create new link)
-    '60000000-0000-0000-0000-000000000001',  -- Acme Construction
     'active',
     NOW() - INTERVAL '85 days',
-    NOW() - INTERVAL '84 days',
     NOW() - INTERVAL '85 days',
     NOW() - INTERVAL '84 days'
   )
@@ -444,7 +424,7 @@ VALUES
     '91000000-0000-0000-0000-000000000005',
     'Test Contractor User',
     'Test Contractor Services',
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '60000000-0000-0000-0000-000000000001',  -- Acme Construction (another manager)
     '{"email": "test-contractor@forsured.test", "phone": "+1 (555) 005-0002", "address": "200 Contractor Ave, Houston, TX"}',
     NOW() - INTERVAL '100 days'
@@ -454,7 +434,7 @@ VALUES
     '91000000-0000-0000-0000-000000000006',
     'Test Contractor User',
     'Test Contractor Services',
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '60000000-0000-0000-0000-000000000002',  -- BuildRight Contractors (another manager)
     '{"email": "test-contractor@forsured.test", "phone": "+1 (555) 005-0002", "address": "200 Contractor Ave, Houston, TX"}',
     NOW() - INTERVAL '90 days'
@@ -465,10 +445,8 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO forsured.project_subcontractors (
   project_id,
   subcontractor_id,
-  organization_id,
   status,
   invited_at,
-  joined_at,
   created_at,
   updated_at
 )
@@ -477,10 +455,8 @@ VALUES
   (
     '70000000-0000-0000-0000-000000000001',  -- Downtown Office Tower (Acme)
     '91000000-0000-0000-0000-000000000005',  -- Test Contractor (linked to Acme)
-    '60000000-0000-0000-0000-000000000001',  -- Acme Construction
     'active',
     NOW() - INTERVAL '80 days',
-    NOW() - INTERVAL '79 days',
     NOW() - INTERVAL '80 days',
     NOW() - INTERVAL '79 days'
   ),
@@ -488,10 +464,8 @@ VALUES
   (
     '70000000-0000-0000-0000-000000000012',  -- Tech Campus Building B (BuildRight)
     '91000000-0000-0000-0000-000000000006',  -- Test Contractor (linked to BuildRight)
-    '60000000-0000-0000-0000-000000000002',  -- BuildRight Contractors
     'active',
     NOW() - INTERVAL '25 days',
-    NOW() - INTERVAL '24 days',
     NOW() - INTERVAL '25 days',
     NOW() - INTERVAL '24 days'
   )
@@ -524,7 +498,7 @@ VALUES
     '95000000-0000-0000-0000-000000000031',
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation (test-gc)
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'Upload updated COI for Downtown Office Renovation',
     'Your certificate of insurance needs to be updated for this project. Please upload the latest COI.',
@@ -539,7 +513,7 @@ VALUES
     '95000000-0000-0000-0000-000000000032',
     '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion (test-gc)
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'Add additional insured endorsement',
     'Project requires additional insured endorsement on your GL policy. Please coordinate with your broker.',
@@ -555,7 +529,7 @@ VALUES
     '95000000-0000-0000-0000-000000000033',
     '70000000-0000-0000-0000-000000000001',  -- Downtown Office Tower (Acme)
     '91000000-0000-0000-0000-000000000005',  -- Test Contractor (linked to Acme)
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'Renew workers compensation certificate',
     'Your workers comp certificate expires soon. Please renew and upload updated certificate.',
@@ -570,7 +544,7 @@ VALUES
     '95000000-0000-0000-0000-000000000034',
     '70000000-0000-0000-0000-000000000012',  -- Tech Campus Building B (BuildRight)
     '91000000-0000-0000-0000-000000000006',  -- Test Contractor (linked to BuildRight)
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'Complete safety training module',
     'Annual safety training is required. Please complete the online safety training module.',
@@ -583,9 +557,9 @@ VALUES
   ),
   (
     '95000000-0000-0000-0000-000000000035',
-    NULL,  -- General task, not project-specific
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'Update company profile information',
     'Please review and update your company profile information, including contact details and specialties.',
@@ -626,7 +600,7 @@ VALUES
     '92000000-0000-0000-0000-000000000031',
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'test_contractor_coi_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000031.pdf',
@@ -642,7 +616,7 @@ VALUES
     '92000000-0000-0000-0000-000000000032',
     '91000000-0000-0000-0000-000000000004',  -- Test Contractor
     '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'test_contractor_wc_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000032.pdf',
@@ -659,7 +633,7 @@ VALUES
     '92000000-0000-0000-0000-000000000033',
     '91000000-0000-0000-0000-000000000005',  -- Test Contractor (linked to Acme)
     '70000000-0000-0000-0000-000000000001',  -- Downtown Office Tower (Acme)
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services org
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     'test_contractor_auto_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000033.pdf',
@@ -708,7 +682,7 @@ VALUES
   -- We'll use the seed file IDs (60000000-...) to be consistent
   (
     '80000000-0000-0000-0000-000000000004',
-    '20000000-0000-0000-0000-000000000003',  -- Test Insurance Brokers
+    '60000000-0000-0000-0000-000000000033',  -- Test Insurance Brokers
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'broker',
     'test-gc@forsured.test',
@@ -718,7 +692,7 @@ VALUES
     'BKR-TEST-004',
     'email',
     'connected',
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000001',  -- test-gc user
     NOW() - INTERVAL '30 days',
     NOW() - INTERVAL '28 days',
@@ -728,7 +702,7 @@ VALUES
   -- test-broker -> test-contractor connection (ensure it exists)
   (
     '80000000-0000-0000-0000-000000000005',
-    '20000000-0000-0000-0000-000000000003',  -- Test Insurance Brokers
+    '60000000-0000-0000-0000-000000000033',  -- Test Insurance Brokers
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'broker',
     'test-contractor@forsured.test',
@@ -738,7 +712,7 @@ VALUES
     'BKR-TEST-005',
     'email',
     'connected',
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services
     '10000000-0000-0000-0000-000000000002',  -- test-contractor user
     NOW() - INTERVAL '25 days',
     NOW() - INTERVAL '24 days',
@@ -778,9 +752,9 @@ VALUES
   -- Documents for test-gc (test-broker's client)
   (
     '92000000-0000-0000-0000-000000000041',
-    NULL,  -- Organization-level document
-    NULL,  -- Not project-specific
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company (test-gc's org)
+    '91000000-0000-0000-0000-000000000001',  -- Smith Electrical (broker's client sub)
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company (test-gc's org)
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'test_construction_company_policy_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000041.pdf',
@@ -795,9 +769,9 @@ VALUES
   -- Documents for test-contractor (test-broker's client)
   (
     '92000000-0000-0000-0000-000000000042',
-    NULL,  -- Organization-level document
-    NULL,  -- Not project-specific
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services (test-contractor's org)
+    '91000000-0000-0000-0000-000000000004',  -- Test Contractor (broker's client sub)
+    '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services (test-contractor's org)
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'test_contractor_services_policy_2024.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000042.pdf',
@@ -812,9 +786,9 @@ VALUES
   -- Project-specific document for test-gc's project
   (
     '92000000-0000-0000-0000-000000000043',
-    NULL,
+    '91000000-0000-0000-0000-000000000002',  -- Johnson Plumbing
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation (test-gc's project)
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'downtown_office_renovation_umbrella_policy.pdf',
     'https://storage.forsured.test/documents/92000000-0000-0000-0000-000000000043.pdf',
@@ -853,9 +827,9 @@ VALUES
   -- Tasks for test-broker managing test-gc's insurance
   (
     '95000000-0000-0000-0000-000000000041',
-    NULL,  -- Organization-level task
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation (org-wide GL renewal)
     NULL,
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company (test-gc's org)
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company (test-gc's org)
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'Renew Test Construction Company GL policy',
     'General liability policy expires in 45 days. Contact insurance carrier to initiate renewal process.',
@@ -870,7 +844,7 @@ VALUES
     '95000000-0000-0000-0000-000000000042',
     '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
     NULL,
-    '20000000-0000-0000-0000-000000000001',  -- Test Construction Company
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'Update umbrella policy for Downtown Office Renovation',
     'Project requires $5M umbrella coverage. Verify current policy meets requirement.',
@@ -884,9 +858,9 @@ VALUES
   -- Tasks for test-broker managing test-contractor's insurance
   (
     '95000000-0000-0000-0000-000000000043',
-    NULL,  -- Organization-level task
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation (WC renewal)
     NULL,
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services (test-contractor's org)
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services (test-contractor's org)
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'Review Test Contractor Services workers comp renewal',
     'Workers compensation policy expires in 60 days. Review renewal terms and pricing.',
@@ -899,9 +873,9 @@ VALUES
   ),
   (
     '95000000-0000-0000-0000-000000000044',
-    NULL,  -- Organization-level task
+    '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion (add'l insured)
     NULL,
-    '20000000-0000-0000-0000-000000000002',  -- Test Contractor Services
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services
     '10000000-0000-0000-0000-000000000003',  -- test-broker user
     'Submit additional insured request for Test Contractor',
     'Multiple projects require additional insured endorsements. Coordinate with carrier to add all required parties.',

@@ -136,7 +136,7 @@ export function SimpleSkillAutocomplete({
               onChangeText('')
               setShowResults(false)
             }}
-            icon={X}
+            iconStart={X}
           />
         )}
       </Stack>

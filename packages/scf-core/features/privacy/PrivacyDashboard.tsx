@@ -91,7 +91,7 @@ export function PrivacyDashboard() {
         >
           <Text>Quick Actions</Text>
           <Row gap={12} flexWrap="wrap">
-            <Button onPress={() => setShowRequestForm(true)} icon={undefined} size="md">
+            <Button onPress={() => setShowRequestForm(true)} iconStart={undefined} size="md">
               Request My Data
             </Button>
             <Button onPress={() => setShowRequestForm(true)} variant="outline" size="md">

@@ -125,7 +125,7 @@ export function OccupationAssessmentWizard() {
               <Button
                 size="sm"
                 variant="outline"
-                icon={X}
+                iconStart={X}
                 onPress={() => handleRemoveTarget(index)}
                 disabled={saveMutation.isPending}
               />
@@ -134,7 +134,7 @@ export function OccupationAssessmentWizard() {
           <Button
             size="md"
             variant="outline"
-            icon={Plus}
+            iconStart={Plus}
             onPress={handleAddTarget}
             disabled={saveMutation.isPending}
           >

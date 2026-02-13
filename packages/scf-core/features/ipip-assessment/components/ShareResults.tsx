@@ -264,7 +264,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           <Button
             size="md"
             theme="info"
-            icon={Share2}
+            iconStart={Share2}
             onPress={handleGenerateShareLink}
             disabled={generateShareToken.isPending}
           >
@@ -292,12 +292,12 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
             >
               {shareLink}
             </Text>
-            <Button size="sm" icon={Copy} onPress={handleCopyLink} variant="outline">
+            <Button size="sm" iconStart={Copy} onPress={handleCopyLink} variant="outline">
               Copy
             </Button>
             <Button
               size="sm"
-              icon={X}
+              iconStart={X}
               onPress={handleRevokeLink}
               variant="outline"
               theme="error"

@@ -285,7 +285,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Car size="xs" color="$gray11" />}
+                  iconStart={<Car size="xs" color="$gray11" />}
                   title="I have a valid driver's license"
                   description="Class D (standard license) is automatically selected. Add any additional classes below."
                   checked={isExpanded}
@@ -363,7 +363,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Shield size="xs" color="$gray11" />}
+                  iconStart={<Shield size="xs" color="$gray11" />}
                   title="Former/Current Military"
                   description="Select all that apply"
                   checked={isExpanded}
@@ -417,7 +417,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Calendar size="xs" color="$gray11" />}
+                  iconStart={<Calendar size="xs" color="$gray11" />}
                   title="I'm available for work"
                   description="Select all that apply"
                   checked={isExpanded}

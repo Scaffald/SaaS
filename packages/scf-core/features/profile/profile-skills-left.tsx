@@ -143,7 +143,7 @@ export function ProfileSkillsLeft() {
                 themeInverse
                 onPress={handleForceSave}
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
-                icon={saveButtonState === 'saved' ? Check : undefined}
+                iconStart={saveButtonState === 'saved' ? Check : undefined}
               >
                 {saveButtonState === 'saving' ? (
                   <Row gap={8} align="center">

@@ -59,7 +59,7 @@ export function IPIPResultsPage() {
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
         <Row gap={12}>
-          <Button icon={RefreshCcw} onPress={handleRetry} color="primary">
+          <Button iconStart={RefreshCcw} onPress={handleRetry} color="primary">
             Retry
           </Button>
           <Button variant="outline" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
@@ -183,7 +183,7 @@ export function IPIPResultsPage() {
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
-          <Button size="sm" variant="outline" icon={RefreshCcw} onPress={handleRetry} marginTop={8}>
+          <Button size="sm" variant="outline" iconStart={RefreshCcw} onPress={handleRetry} marginTop={8}>
             Refresh Data
           </Button>
         </Stack>

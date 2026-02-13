@@ -164,7 +164,7 @@ export function OfficeTransactionHistory() {
           <Button
             size="xs"
             variant="outline"
-            icon={FileText}
+            iconStart={FileText}
             onPress={() => setSelectedTransactionId(info.getValue())}
           >
             Receipt
@@ -186,7 +186,7 @@ export function OfficeTransactionHistory() {
           <Button
             size="sm"
             variant="outline"
-            icon={Download}
+            iconStart={Download}
             onPress={handleExportCsv}
             disabled={exportCsvMutation.isFetching}
           >
@@ -195,7 +195,7 @@ export function OfficeTransactionHistory() {
           <Button
             size="sm"
             variant="outline"
-            icon={RefreshCw}
+            iconStart={RefreshCw}
             onPress={() => transactionsQuery.refetch()}
             disabled={transactionsQuery.isRefetching}
           >

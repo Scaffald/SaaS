@@ -284,7 +284,7 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
         <Button
           size="sm"
           variant="outline"
-          icon={Pencil}
+          iconStart={Pencil}
           onPress={onAddDetails}
           style={{ alignSelf: 'flex-start' }}
         >

@@ -287,7 +287,7 @@ export function NotificationPopover({
             <Button
               size={8}
               
-              icon={X}
+              iconStart={X}
               onPress={() => handleOpenChange(false)}
               backgroundColor="transparent"
               borderWidth={0}

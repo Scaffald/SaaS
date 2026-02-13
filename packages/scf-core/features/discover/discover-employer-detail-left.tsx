@@ -91,7 +91,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
         <Button
           size="sm"
           variant="outline"
-          icon={ArrowLeft}
+          iconStart={ArrowLeft}
           onPress={() => {
             // Try to go back, fallback to employers list if no history
             try {
@@ -153,7 +153,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Button
             size="md"
             variant="outline"
-            icon={ExternalLink}
+            iconStart={ExternalLink}
             onPress={() => {
               if (typeof window !== 'undefined') {
                 window.open(websiteUrl, '_blank')

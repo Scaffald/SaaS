@@ -347,7 +347,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   <Row gap={8}>
                     <Button
                       flex={1}
-                      icon={UploadCloud}
+                      iconStart={UploadCloud}
                       size="sm"
                       disabled={isUploading || isProcessing || isCapturing}
                       onPress={open}
@@ -357,7 +357,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                     {Platform.OS !== 'web' && (
                       <Button
                         flex={1}
-                        icon={Camera}
+                        iconStart={Camera}
                         size="sm"
                         disabled={isUploading || isProcessing || isCapturing}
                         onPress={handleCapturePhoto}

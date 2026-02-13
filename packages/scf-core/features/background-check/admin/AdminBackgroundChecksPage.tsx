@@ -229,7 +229,7 @@ export function AdminBackgroundChecksPage() {
           <Button
             size="xs"
             variant="outline"
-            icon={ClipboardList}
+            iconStart={ClipboardList}
             onPress={() => setSelectedCheck(row.original.raw)}
           >
             Review
@@ -274,7 +274,7 @@ export function AdminBackgroundChecksPage() {
           <Button
             size="xs"
             variant="outline"
-            icon={AlertTriangle}
+            iconStart={AlertTriangle}
             onPress={() => setSelectedDispute(row.original.raw)}
           >
             Resolve
@@ -452,7 +452,7 @@ export function AdminBackgroundChecksPage() {
               <Button
                 size="sm"
                 variant="outline"
-                icon={RefreshCcw}
+                iconStart={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
                 disabled={checksQuery.isLoading}
               >
@@ -474,7 +474,7 @@ export function AdminBackgroundChecksPage() {
             <Button
               size="sm"
               variant="outline"
-              icon={RefreshCcw}
+              iconStart={RefreshCcw}
               onPress={() => disputesQuery.refetch()}
               disabled={disputesQuery.isLoading}
             >

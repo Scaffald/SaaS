@@ -188,7 +188,7 @@ export function PhotoCard({
               <Button
                 size="xs"
                 variant="outline"
-                icon={photo.showOnProfile ? Eye : EyeOff}
+                iconStart={photo.showOnProfile ? Eye : EyeOff}
                 disabled={disabled}
                 onPress={handleToggleVisibility}
               >
@@ -203,7 +203,7 @@ export function PhotoCard({
               <Button
                 size="xs"
                 variant="outline"
-                icon={Trash2}
+                iconStart={Trash2}
                 disabled={disabled || isDeleting}
                 onPress={handleDelete}
               >
@@ -227,7 +227,7 @@ export function PhotoCard({
               <Row gap={8}>
                 <Button
                   size="xs"
-                  icon={Check}
+                  iconStart={Check}
                   disabled={isSavingCaption}
                   onPress={handleSaveCaption}
                 >
@@ -235,7 +235,7 @@ export function PhotoCard({
                 </Button>
                 <Button
                   size="xs"
-                  icon={X}
+                  iconStart={X}
                   variant="outline"
                   disabled={isSavingCaption}
                   onPress={handleCancelCaption}
@@ -251,7 +251,7 @@ export function PhotoCard({
               </Text>
               <Button
                 size="xs"
-                icon={Edit3}
+                iconStart={Edit3}
                 variant="outline"
                 disabled={disabled}
                 onPress={() => setIsEditingCaption(true)}

@@ -305,7 +305,7 @@ export function OfficeOrganizationsList() {
               </Dialog.Close>
               <Button
                 theme="error"
-                icon={isProcessingAction(rejectDialog.requestId) ? Loader2 : XIcon}
+                iconStart={isProcessingAction(rejectDialog.requestId) ? Loader2 : XIcon}
                 disabled={reviewMutation.isPending}
                 onPress={handleRejectConfirm}
               >
@@ -343,7 +343,7 @@ export function OfficeOrganizationsList() {
                 <Button
                   size="xs"
                   variant="outline"
-                  icon={RefreshCw}
+                  iconStart={RefreshCw}
                   disabled={isRequestsLoading || isRequestsRefetching}
                   onPress={refreshRequests}
                 >
@@ -399,7 +399,7 @@ export function OfficeOrganizationsList() {
                         <Button
                           size="xs"
                           theme="success"
-                          icon={isProcessingAction(request.id) ? Loader2 : Check}
+                          iconStart={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isPending}
                           onPress={() => handleApprove(request)}
                         >
@@ -409,7 +409,7 @@ export function OfficeOrganizationsList() {
                           size="xs"
                           variant="outline"
                           theme="error"
-                          icon={XIcon}
+                          iconStart={XIcon}
                           disabled={reviewMutation.isPending}
                           onPress={() => openRejectDialog(request)}
                         >

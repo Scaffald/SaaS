@@ -113,7 +113,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
         </Row>
 
         <Row gap={8} justify="flex-end">
-          <Button onPress={handleSubmit} icon={Save} disabled={isLoading || !title || !description}>
+          <Button onPress={handleSubmit} iconStart={Save} disabled={isLoading || !title || !description}>
             {isLoading ? 'Saving...' : 'Save Slide'}
           </Button>
         </Row>

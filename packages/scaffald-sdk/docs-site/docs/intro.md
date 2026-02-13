@@ -1,47 +1,77 @@
 ---
 sidebar_position: 1
+title: Introduction
 ---
 
-# Tutorial Intro
+# Scaffald SDK Documentation
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Welcome to the **Scaffald SDK** documentation! This is the official JavaScript/TypeScript SDK for the Scaffald API.
 
-## Getting Started
+## What is Scaffald SDK?
 
-Get started by **creating a new site**.
+The Scaffald SDK is a comprehensive client library that makes it easy to interact with the Scaffald API. It provides:
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+- ✅ **Type-Safe API Client**: Full TypeScript support with generated types
+- ✅ **React Integration**: Pre-built React hooks powered by TanStack Query  
+- ✅ **OAuth 2.0 Support**: Built-in support for OAuth authentication flows
+- ✅ **34 API Resources**: Complete coverage of the Scaffald API
+- ✅ **731+ Tests**: Comprehensive test coverage for reliability
+- ✅ **Developer-Friendly**: Zero configuration, works out of the box
 
-### What you'll need
+## Quick Start
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
+Install the SDK via npm:
 
 ```bash
-npm init docusaurus@latest my-website classic
+npm install @scaffald/sdk
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+### Basic Usage
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+```typescript
+import Scaffald from '@scaffald/sdk';
 
-## Start your site
+const client = new Scaffald({
+  apiKey: 'your-api-key',
+  baseURL: 'https://api.scaffald.com',
+});
 
-Run the development server:
-
-```bash
-cd my-website
-npm run start
+// List jobs
+const jobs = await client.jobs.list();
+console.log(jobs.data);
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+### React Integration
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+```typescript
+import { useJobs } from '@scaffald/sdk/react';
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+function JobsList() {
+  const { data, isLoading, error } = useJobs();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      {data.data.map(job => (
+        <div key={job.id}>{job.title}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## What's Next?
+
+- 📦 [Installation](/docs/guide/installation) - Detailed setup instructions
+- 🚀 [Quick Start](/docs/guide/quick-start) - Get up and running in 5 minutes
+- 🔐 [Authentication](/docs/guide/authentication) - Learn about API keys and OAuth
+- 📚 [API Reference](/docs/api/overview) - Complete API documentation
+- 💡 [Examples](/docs/examples) - Real-world usage examples
+
+## Getting Help
+
+- **GitHub Issues**: [Report bugs or request features](https://github.com/Scaffald/sdk/issues)
+- **GitHub Discussions**: [Ask questions and share ideas](https://github.com/Scaffald/sdk/discussions)
+- **npm Package**: [@scaffald/sdk](https://www.npmjs.com/package/@scaffald/sdk)

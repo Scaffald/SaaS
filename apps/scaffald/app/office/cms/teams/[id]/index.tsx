@@ -142,21 +142,21 @@ export default function OfficeTeamDetailPage() {
           key="edit"
           size="md"
           variant="outline"
-          icon={Pencil}
+          iconStart={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
         >Edit team</Button>,
         <Button
           key="analytics"
           size="md"
           variant="outline"
-          icon={BarChart3}
+          iconStart={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
         >View analytics</Button>,
-        <Button key="invite" size="md" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
+        <Button key="invite" size="md" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
         <Button
           key="assign"
           size="md"
-          icon={Briefcase}
+          iconStart={Briefcase}
           onPress={() =>
             router.push({
               params: { teamId: team.id },
@@ -177,7 +177,7 @@ export default function OfficeTeamDetailPage() {
             <Button
               size="md"
               variant="outline"
-              icon={ArrowLeft}
+              iconStart={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
             >Back to teams</Button>
           </Row>
@@ -201,7 +201,7 @@ export default function OfficeTeamDetailPage() {
           <Button
             size="md"
             variant="outline"
-            icon={BarChart3}
+            iconStart={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
           >View analytics</Button>
 
@@ -229,7 +229,7 @@ export default function OfficeTeamDetailPage() {
               refreshKey={inviteRefreshKey}
               headerAction={
                 canManageTeam ? (
-                  <Button size="md" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
+                  <Button size="md" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
                 ) : null
               }
             />
@@ -237,7 +237,7 @@ export default function OfficeTeamDetailPage() {
 
           {(isMembersLoading || membersError) && (
             <InfoBanner
-              icon={RefreshCcw}
+              iconStart={RefreshCcw}
               title="Member list status"
               message={
                 membersError instanceof Error

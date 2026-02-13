@@ -6,12 +6,21 @@
  * when manually-added users register with Scaffald accounts.
  */
 
+<<<<<<< HEAD
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { core, forsured } from "../../../lib/supabase";
 import { AuditService } from "../../../lib/audit/AuditService";
 import { sendMergeCompletionNotifications } from "../../../lib/mergeNotifications";
+=======
+import { z } from 'zod'
+import { TRPCError } from '@trpc/server'
+import { createTRPCRouter, protectedProcedure } from '../trpc'
+import { forsured } from '../../../lib/supabase'
+import { AuditService } from '../../../lib/audit/AuditService'
+import { sendMergeCompletionNotifications } from '../../../lib/mergeNotifications'
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
 /**
  * Fields that can have conflicts during merge

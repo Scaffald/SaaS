@@ -207,7 +207,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     height={32}
                     align="center"
                     justify="center"
-                    icon={ChevronLeft}
+                    iconStart={ChevronLeft}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View previous profile suggestion"
                     onPress={retreatBenefit}
@@ -220,7 +220,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     height={32}
                     align="center"
                     justify="center"
-                    icon={ChevronRight}
+                    iconStart={ChevronRight}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View next profile suggestion"
                     onPress={advanceBenefit}
@@ -317,7 +317,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
             Complete Profile
           </Button>
           {/* TODO: Uncomment this when we fix the route
-          <Button size="md" flex={1} icon={UploadCloud} onPress={() => {}}>
+          <Button size="md" flex={1} iconStart={UploadCloud} onPress={() => {}}>
             Import Data
           </Button>
           */}

@@ -126,7 +126,7 @@ export function ResultsStep({
             theme="info"
             onPress={handleGenerateReport}
             disabled={generatingReport || isLoading}
-            icon={generatingReport || isLoading ? <Spinner size="sm" /> : undefined}
+            iconStart={generatingReport || isLoading ? <Spinner size="sm" /> : undefined}
           >
             {generatingReport || isLoading ? 'Generating...' : 'Generate Report'}
           </Button>

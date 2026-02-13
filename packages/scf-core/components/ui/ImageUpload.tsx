@@ -376,7 +376,7 @@ export function ImageUpload({
                 variant="outline"
                 onPress={triggerFilePicker}
                 disabled={disabled || isUploading}
-                icon={Upload}
+                iconStart={Upload}
               >
                 Change Image
               </Button>
@@ -386,7 +386,7 @@ export function ImageUpload({
                 color="$red10"
                 onPress={handleDelete}
                 disabled={disabled || isUploading}
-                icon={Trash2}
+                iconStart={Trash2}
               >
                 Remove
               </Button>
@@ -422,7 +422,7 @@ export function ImageUpload({
               size="sm"
               disabled={disabled || isUploading}
               onPress={triggerFilePicker}
-              icon={Upload}
+              iconStart={Upload}
             >
               {isUploading ? 'Uploading...' : 'Choose Image'}
             </Button>

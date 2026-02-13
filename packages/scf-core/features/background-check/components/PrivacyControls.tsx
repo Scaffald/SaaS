@@ -139,7 +139,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           <Button
             size="sm"
             variant="outline"
-            icon={Share2}
+            iconStart={Share2}
             disabled
             onPress={() =>
               Alert.alert(

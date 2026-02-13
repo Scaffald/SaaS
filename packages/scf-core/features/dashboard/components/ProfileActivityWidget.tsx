@@ -324,7 +324,7 @@ export function ProfileActivityWidget() {
                         <Button
                           size="xs"
                           
-                          icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
+                          iconStart={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
                           theme="success"
                           onPress={() => handleAcceptRequest(request.id)}
                           disabled={
@@ -334,7 +334,7 @@ export function ProfileActivityWidget() {
                         <Button
                           size="xs"
                           
-                          icon={declineRequestMutation.isPending ? Loader2 : X}
+                          iconStart={declineRequestMutation.isPending ? Loader2 : X}
                           variant="outline"
                           onPress={() => handleDeclineRequest(request.id)}
                           disabled={

@@ -101,18 +101,18 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} flexWrap="wrap">
         {applicationCount !== undefined && (
           <MetricItem
-            icon={<Users size="md" />}
+            iconStart={<Users size="md" />}
             label="Applications"
             value={applicationCount.toString()}
           />
         )}
-        {teamName && <MetricItem icon={<Briefcase size="md" />} label="Team" value={teamName} />}
+        {teamName && <MetricItem iconStart={<Briefcase size="md" />} label="Team" value={teamName} />}
         {postedDate && (
-          <MetricItem icon={<Calendar size="md" />} label="Posted" value={postedDate} />
+          <MetricItem iconStart={<Calendar size="md" />} label="Posted" value={postedDate} />
         )}
         {job.created_by && (
           <MetricItem
-            icon={<User size="md" />}
+            iconStart={<User size="md" />}
             label="Created by"
             value={job.created_by.display_name || job.created_by.username || 'Unknown'}
           />

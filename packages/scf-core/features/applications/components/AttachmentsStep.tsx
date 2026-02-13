@@ -333,7 +333,7 @@ export function AttachmentsStep({
               size="sm"
               
               variant="outline"
-              icon={X}
+              iconStart={X}
               onPress={() => handleFileRemove('resume')}
               disabled={isSubmitting || uploading.resume}
             />
@@ -446,7 +446,7 @@ export function AttachmentsStep({
               size="sm"
               
               variant="outline"
-              icon={X}
+              iconStart={X}
               onPress={() => handleFileRemove('cover_letter')}
               disabled={isSubmitting || uploading.cover_letter}
             />
@@ -567,7 +567,7 @@ export function AttachmentsStep({
               size="sm"
               
               variant="outline"
-              icon={X}
+              iconStart={X}
               onPress={() => handleFileRemove('portfolio')}
               disabled={isSubmitting || uploading.portfolio}
             />
@@ -674,7 +674,7 @@ export function AttachmentsStep({
         <Button
           size="md"
           variant="outline"
-          icon={ArrowLeft}
+          iconStart={ArrowLeft}
           onPress={onPrevious}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}
         >

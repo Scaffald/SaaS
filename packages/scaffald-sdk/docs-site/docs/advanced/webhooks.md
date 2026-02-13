@@ -637,7 +637,7 @@ describe('Webhook Handler', () => {
 
 ## Next Steps
 
-- [Getting Started Guide](./getting-started.md)
-- [API Reference](./api-reference.md)
-- [OAuth Guide](./oauth.md)
-- [Error Handling](./error-handling.md)
+- [Getting Started Guide](/docs/guide/installation)
+- [API Reference](/docs/api/overview)
+- [OAuth Guide](/docs/guide/authentication)
+- [Error Handling](/docs/guide/error-handling)

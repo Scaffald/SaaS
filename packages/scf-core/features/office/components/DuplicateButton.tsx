@@ -77,7 +77,7 @@ export function DuplicateButton({
       <Button
         size={size}
         variant={variant}
-        icon={Copy}
+        iconStart={Copy}
         onPress={() => setIsOpen(true)}
         disabled={isDuplicating}
       >
@@ -112,7 +112,7 @@ export function DuplicateButton({
               <Button
                 onPress={handleDuplicate}
                 disabled={isDuplicating}
-                icon={isDuplicating ? <Spinner /> : Copy}
+                iconStart={isDuplicating ? <Spinner /> : Copy}
               >
                 {isDuplicating ? 'Duplicating...' : 'Duplicate'}
               </Button>

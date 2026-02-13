@@ -457,7 +457,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading || slugAvailabilityBlocksSubmit}
-          icon={isLoading ? <Spinner /> : undefined}
+          iconStart={isLoading ? <Spinner /> : undefined}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>

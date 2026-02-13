@@ -178,7 +178,7 @@ export function PendingRequestsList() {
               <Button
                 size="xs"
                 variant="outline"
-                icon={X}
+                iconStart={X}
                 onPress={() => handleCancel(request.id)}
                 disabled={isLoading}
               >
@@ -192,7 +192,7 @@ export function PendingRequestsList() {
               <Button
                 size="xs"
                 
-                icon={CheckCircle2}
+                iconStart={CheckCircle2}
                 theme="success"
                 onPress={() => handleAccept(request.id)}
                 disabled={isLoading}
@@ -200,7 +200,7 @@ export function PendingRequestsList() {
               <Button
                 size="xs"
                 
-                icon={X}
+                iconStart={X}
                 variant="outline"
                 onPress={() => handleDecline(request.id)}
                 disabled={isLoading}

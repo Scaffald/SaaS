@@ -78,7 +78,7 @@ export function DeleteButton({
         size={size}
         variant={variant}
         theme="error"
-        icon={Trash2}
+        iconStart={Trash2}
         onPress={() => setIsOpen(true)}
         disabled={isDeleting}
       >
@@ -112,7 +112,7 @@ export function DeleteButton({
                 theme="error"
                 onPress={handleDelete}
                 disabled={isDeleting}
-                icon={isDeleting ? <Spinner /> : Trash2}
+                iconStart={isDeleting ? <Spinner /> : Trash2}
               >
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </Button>

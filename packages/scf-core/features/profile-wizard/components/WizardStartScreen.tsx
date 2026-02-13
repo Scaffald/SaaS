@@ -108,7 +108,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
         <Button size="lg" themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
           Start Wizard
         </Button>
-        <Button size="lg" icon={Upload} onPress={onUploadResume}>
+        <Button size="lg" iconStart={Upload} onPress={onUploadResume}>
           Upload Resume
         </Button>
         <Button size="sm" chromeless onPress={onSkip}>

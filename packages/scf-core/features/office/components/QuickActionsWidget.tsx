@@ -60,12 +60,12 @@ export function QuickActionsWidget({
   const renderListActions = () => (
     <Stack gap={8}>
       {onCreate && (
-        <Button theme="info" icon={ArrowRightCircle} onPress={onCreate}>
+        <Button theme="info" iconStart={ArrowRightCircle} onPress={onCreate}>
           Create {resourceName}
         </Button>
       )}
       {onRefresh && (
-        <Button variant="outline" icon={RefreshCw} onPress={onRefresh} disabled={isLoading}>
+        <Button variant="outline" iconStart={RefreshCw} onPress={onRefresh} disabled={isLoading}>
           Refresh
         </Button>
       )}
@@ -76,12 +76,12 @@ export function QuickActionsWidget({
   const renderCreateActions = () => (
     <Stack gap={8}>
       {onSave && (
-        <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
+        <Button theme="info" iconStart={Save} onPress={onSave} disabled={isLoading}>
           Save
         </Button>
       )}
       {onCancel && (
-        <Button variant="outline" icon={X} onPress={onCancel} disabled={isLoading}>
+        <Button variant="outline" iconStart={X} onPress={onCancel} disabled={isLoading}>
           Cancel
         </Button>
       )}
@@ -92,17 +92,17 @@ export function QuickActionsWidget({
   const renderEditActions = () => (
     <Stack gap={8}>
       {onSave && (
-        <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
+        <Button theme="info" iconStart={Save} onPress={onSave} disabled={isLoading}>
           Save Changes
         </Button>
       )}
       {onCancel && (
-        <Button variant="outline" icon={X} onPress={onCancel} disabled={isLoading}>
+        <Button variant="outline" iconStart={X} onPress={onCancel} disabled={isLoading}>
           Cancel
         </Button>
       )}
       {onDelete && (
-        <Button theme="error" icon={Trash2} onPress={onDelete} disabled={isLoading}>
+        <Button theme="error" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
@@ -113,17 +113,17 @@ export function QuickActionsWidget({
   const renderDetailActions = () => (
     <Stack gap={8}>
       {onEdit && (
-        <Button theme="info" icon={Pencil} onPress={onEdit}>
+        <Button theme="info" iconStart={Pencil} onPress={onEdit}>
           Edit
         </Button>
       )}
       {onView && (
-        <Button variant="outline" icon={Eye} onPress={onView}>
+        <Button variant="outline" iconStart={Eye} onPress={onView}>
           View
         </Button>
       )}
       {onDelete && (
-        <Button theme="error" icon={Trash2} onPress={onDelete} disabled={isLoading}>
+        <Button theme="error" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}

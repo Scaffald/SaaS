@@ -228,7 +228,7 @@ export function ApplicationProcessSection({
                     <Button
                       size="xs"
                       variant="outline"
-                      icon={X}
+                      iconStart={X}
                       onPress={() => handleRemoveQuestion(index)}
                       aria-label="Remove question"
                     />
@@ -239,7 +239,7 @@ export function ApplicationProcessSection({
           )}
 
         {/* Add Question Button */}
-        <Button variant="outline" icon={Plus} onPress={() => setShowAddQuestionModal(true)}>
+        <Button variant="outline" iconStart={Plus} onPress={() => setShowAddQuestionModal(true)}>
           Add Capability Question
         </Button>
 

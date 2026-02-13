@@ -286,7 +286,7 @@ export function TeamInvitationsList({
                   <Button
                     size="xs"
                     variant="outline"
-                    icon={RefreshCw}
+                    iconStart={RefreshCw}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
                     accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
@@ -298,7 +298,7 @@ export function TeamInvitationsList({
                     size="xs"
                     variant="outline"
                     color="$red10"
-                    icon={XCircle}
+                    iconStart={XCircle}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
                     accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}

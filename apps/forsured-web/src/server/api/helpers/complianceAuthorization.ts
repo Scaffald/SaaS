@@ -7,7 +7,7 @@
  */
 
 import { TRPCError } from '@trpc/server';
-import { core } from '../../../lib/supabase';
+import { forsured } from '../../../lib/supabase';
 import type { Role, AuthorizationContext } from '../../../lib/auth/types';
 import {
   CompliancePermission,
@@ -79,8 +79,8 @@ async function fetchUserRole(
     return cached.role;
   }
 
-  // Query role_assignments from core schema with a join to roles
-  const { data, error } = await core('role_assignments')
+  // Query role_assignments from forsured schema with a join to roles
+  const { data, error } = await forsured('role_assignments')
     .select(`
       id,
       roles:role_id (

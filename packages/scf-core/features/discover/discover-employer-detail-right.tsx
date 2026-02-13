@@ -366,7 +366,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Stack gap={8}>
         <Button
           size="md"
-          icon={followButtonIcon}
+          iconStart={followButtonIcon}
           onPress={handleFollow}
           disabled={isFollowButtonDisabled}
         >
@@ -375,7 +375,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         <Button
           size="md"
           theme="success"
-          icon={employmentButtonIcon}
+          iconStart={employmentButtonIcon}
           onPress={handleWorkHere}
           disabled={isEmploymentButtonDisabled}
         >

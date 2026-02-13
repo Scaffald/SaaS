@@ -110,7 +110,7 @@ export function OfficePageLayout<TData>({
         <Row justify="space-between" align="center">
           <H2>{title}</H2>
           {!actionBarConfig && !hideCreateButton && (
-            <Button icon={Plus} onPress={onCreateClick}>
+            <Button iconStart={Plus} onPress={onCreateClick}>
               {createButtonLabel}
             </Button>
           )}

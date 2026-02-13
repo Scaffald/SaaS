@@ -89,7 +89,7 @@ export function EducationWidget({
 
         {education.length === 0 ? (
           <EmptyState
-            icon={<GraduationCap />}
+            iconStart={<GraduationCap />}
             title="No education added yet"
             description="Add your education history to complete your profile"
             action={

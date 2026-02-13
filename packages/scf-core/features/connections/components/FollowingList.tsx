@@ -111,7 +111,7 @@ export function FollowingList() {
             <Button
               size="xs"
               variant="outline"
-              icon={UserMinus}
+              iconStart={UserMinus}
               onPress={() => handleUnfollow(follow.id, follow.followee_id)}
               disabled={unfollowMutation.isPending}
             >

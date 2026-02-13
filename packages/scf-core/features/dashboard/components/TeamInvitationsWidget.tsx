@@ -80,7 +80,7 @@ export function TeamInvitationList({
               <Row gap={8} marginLeft={16} flexShrink={0} flexWrap="wrap" justify="flex-end">
                 <Button
                   size="xs"
-                  icon={XCircle}
+                  iconStart={XCircle}
                   variant="outline"
                   color="$red10"
                   disabled={isProcessing}
@@ -97,7 +97,7 @@ export function TeamInvitationList({
                 </Button>
                 <Button
                   size="xs"
-                  icon={CheckCircle}
+                  iconStart={CheckCircle}
                   backgroundColor="$color9"
                   color="$gray11"
                   disabled={isProcessing}

@@ -36,7 +36,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         <Text color="$gray11">
           We couldn’t load the latest metrics. Try refreshing to retrieve the most recent data.
         </Text>
-        <Button icon={RefreshCcw} onPress={onRefresh} size="sm" variant="outline">
+        <Button iconStart={RefreshCcw} onPress={onRefresh} size="sm" variant="outline">
           Refresh
         </Button>
       </Card>
@@ -116,7 +116,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
       >
         <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>
           <Text color="$gray11">Package distribution</Text>
-          <Button variant="outline" size="xs" icon={RefreshCcw} onPress={onRefresh}>
+          <Button variant="outline" size="xs" iconStart={RefreshCcw} onPress={onRefresh}>
             Refresh
           </Button>
         </Row>

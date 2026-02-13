@@ -181,7 +181,7 @@ export default function ProjectDetailPage() {
               <Text>
                 Location
               </Text>
-              <Button size="md" icon={Plus}>
+              <Button size="md" iconStart={Plus}>
                 Add Site
               </Button>
             </Row>
@@ -245,7 +245,7 @@ export default function ProjectDetailPage() {
               <Text>
                 Workers
               </Text>
-              <Button size="md" icon={Plus}>
+              <Button size="md" iconStart={Plus}>
                 Add Worker
               </Button>
             </Row>

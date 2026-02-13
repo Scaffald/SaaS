@@ -206,7 +206,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                       {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                       <Button
                         size="xs"
-                        icon={Pencil}
+                        iconStart={Pencil}
                         onPress={() => {
                           router.push(
                             buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id })

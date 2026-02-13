@@ -96,7 +96,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
       {educationEntries.length === 0 ? (
         <ProfileEmptyState
-          icon={GraduationCap}
+          iconStart={GraduationCap}
           message="No education history saved yet. Add your first education entry in the left panel."
         />
       ) : (
@@ -200,7 +200,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         size="xs"
                         variant="outline"
                         
-                        icon={Pencil}
+                        iconStart={Pencil}
                         aria-label="Edit education entry"
                         accessibilityLabel="Edit education entry"
                         onPress={() => {
@@ -219,7 +219,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         size="xs"
                         variant="outline"
                         
-                        icon={Trash2}
+                        iconStart={Trash2}
                         aria-label="Delete education entry"
                         accessibilityLabel="Delete education entry"
                         onPress={() => setDeleteDialogOpen(edu.id ?? null)}

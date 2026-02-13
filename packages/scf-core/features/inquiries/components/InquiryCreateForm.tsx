@@ -974,7 +974,7 @@ export function InquiryCreateForm({
                           size="xs"
                           
                           chromeless
-                          icon={Info}
+                          iconStart={Info}
                           aria-label="Endurance info"
                         />
                       </Row>

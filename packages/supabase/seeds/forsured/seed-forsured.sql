@@ -77,9 +77,17 @@
 -- =========================================================
 -- Step 8: Seed Notifications for All Users
 -- =========================================================
-\echo 'Step 8/8: Seeding notifications for all users...'
+\echo 'Step 8/9: Seeding notifications for all users...'
 \i seeds/forsured/009_seed-notifications.sql
 \echo '✅ Notifications seeded'
+\echo ''
+
+-- =========================================================
+-- Step 9: Seed Broker-Client Relationship Invitations
+-- =========================================================
+\echo 'Step 9/9: Seeding broker-client relationship invitations...'
+\i seeds/forsured/010_seed-broker-clients.sql
+\echo '✅ Broker-client invitations seeded'
 \echo ''
 
 -- =========================================================

@@ -590,8 +590,8 @@ CROSS JOIN (
   SELECT 
     u.id,
     CASE (ROW_NUMBER() OVER ())
-      WHEN 1 THEN 'pending'
-      WHEN 2 THEN 'reviewing'
+      WHEN 1 THEN 'new'
+      WHEN 2 THEN 'screen'
       WHEN 3 THEN 'interview'
       WHEN 4 THEN 'offer'
     END as status,
@@ -612,7 +612,7 @@ CROSS JOIN (
       WHEN 2 THEN jsonb_build_object('question1', 'I have 6 years of commercial electrical experience.')
       WHEN 3 THEN jsonb_build_object('question1', 'I have 8 years of experience and hold a journeyman license.')
       WHEN 4 THEN jsonb_build_object('question1', 'I have 10 years of experience and am ready to start immediately.')
-    END as answers,
+    END::jsonb as answers,
     CASE (ROW_NUMBER() OVER ())
       WHEN 1 THEN false
       WHEN 2 THEN true
@@ -678,8 +678,8 @@ CROSS JOIN (
   SELECT 
     u.id,
     CASE (ROW_NUMBER() OVER ())
-      WHEN 1 THEN 'pending'
-      WHEN 2 THEN 'reviewing'
+      WHEN 1 THEN 'new'
+      WHEN 2 THEN 'screen'
       WHEN 3 THEN 'rejected'
       WHEN 4 THEN 'hired'
     END as status,
@@ -700,7 +700,7 @@ CROSS JOIN (
       WHEN 2 THEN jsonb_build_object('question1', 'I have 4 years of plumbing experience.')
       WHEN 3 THEN jsonb_build_object('question1', 'I have 2 years of experience.')
       WHEN 4 THEN jsonb_build_object('question1', 'I have 12 years of experience and master plumber license.')
-    END as answers,
+    END::jsonb as answers,
     CASE (ROW_NUMBER() OVER ())
       WHEN 1 THEN false
       WHEN 2 THEN true
@@ -769,8 +769,8 @@ CROSS JOIN (
   SELECT 
     u.id,
     CASE (ROW_NUMBER() OVER ())
-      WHEN 1 THEN 'pending'
-      WHEN 2 THEN 'reviewing'
+      WHEN 1 THEN 'new'
+      WHEN 2 THEN 'screen'
       WHEN 3 THEN 'interview'
     END as status,
     CASE (ROW_NUMBER() OVER ())
@@ -779,7 +779,7 @@ CROSS JOIN (
       WHEN 3 THEN 'https://storage.example.com/resumes/resume-11.pdf'
     END as resume_url,
     NULL as cover_letter_url,
-    NULL as answers,
+    NULL::jsonb as answers,
     CASE (ROW_NUMBER() OVER ())
       WHEN 1 THEN false
       WHEN 2 THEN true
@@ -842,7 +842,7 @@ CROSS JOIN (
   SELECT 
     u.id,
     CASE (ROW_NUMBER() OVER ())
-      WHEN 1 THEN 'reviewing'
+      WHEN 1 THEN 'screen'
       WHEN 2 THEN 'interview'
       WHEN 3 THEN 'rejected'
       WHEN 4 THEN 'withdrawn'
@@ -864,7 +864,7 @@ CROSS JOIN (
       WHEN 2 THEN jsonb_build_object('question1', 'I have 10 years of experience with PMP certification.')
       WHEN 3 THEN jsonb_build_object('question1', 'I have 5 years of experience.')
       WHEN 4 THEN NULL
-    END as answers,
+    END::jsonb as answers,
     CASE (ROW_NUMBER() OVER ())
       WHEN 1 THEN true
       WHEN 2 THEN true
@@ -932,15 +932,15 @@ CROSS JOIN (
   SELECT 
     u.id,
     CASE (ROW_NUMBER() OVER ())
-      WHEN 1 THEN 'pending'
-      WHEN 2 THEN 'reviewing'
+      WHEN 1 THEN 'new'
+      WHEN 2 THEN 'screen'
     END as status,
     CASE (ROW_NUMBER() OVER ())
       WHEN 1 THEN 'https://storage.example.com/resumes/resume-16.pdf'
       WHEN 2 THEN 'https://storage.example.com/resumes/resume-17.pdf'
     END as resume_url,
     NULL as cover_letter_url,
-    NULL as answers,
+    NULL::jsonb as answers,
     false as is_shortlisted,
     CASE (ROW_NUMBER() OVER ())
       WHEN 1 THEN NOW() - INTERVAL '1 day'
@@ -994,10 +994,10 @@ ON CONFLICT (job_id, user_id) DO NOTHING;
 
 -- Messages for applications in interview/offer stages
 WITH application_lookup AS (
-  SELECT a.id, a.job_id, a.user_id, a.status
+  SELECT a.id, a.job_id, a.user_id, a.status, a.stage_changed_at
   FROM core.applications a
   JOIN core.jobs j ON j.id = a.job_id
-  WHERE a.status IN ('interview', 'offer', 'reviewing')
+  WHERE a.status IN ('interview', 'offer', 'screen')
   LIMIT 5
 ),
 org_user_lookup AS (
@@ -1013,7 +1013,7 @@ SELECT
   a.id,
   o.id,
   CASE a.status
-    WHEN 'reviewing' THEN 'Thank you for your application. We are currently reviewing your qualifications and will be in touch soon.'
+    WHEN 'screen' THEN 'Thank you for your application. We are currently reviewing your qualifications and will be in touch soon.'
     WHEN 'interview' THEN 'We would like to schedule an interview. Please let us know your availability for next week.'
     WHEN 'offer' THEN 'Congratulations! We are pleased to extend an offer. Please review the details and let us know if you have any questions.'
     ELSE 'Thank you for your interest in this position.'

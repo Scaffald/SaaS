@@ -22,7 +22,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { MockDatabase } from '../mockDatabase';
-import { supabaseServiceRole, forsured, core } from '../../supabase';
+import { supabaseServiceRole, forsured } from '../../supabase';
 import type { DatabaseResponse, DatabaseError, TableName, TableRow } from '../../../types/database.types';
 
 // ============================================================================
@@ -118,26 +118,8 @@ export function createSupabaseAdapter(): ContractDatabase | null {
 
   return {
     from: <T extends TableName>(table: T) => {
-      // Map table names to correct schema
-      const schemaMap: Record<TableName, 'forsured' | 'core'> = {
-        users: 'core',
-        projects: 'forsured',
-        subcontractors: 'forsured',
-        documents: 'forsured',
-        policies: 'forsured',
-        endorsements: 'forsured',
-        requirements: 'forsured',
-        compliance_scores: 'forsured',
-        tasks: 'forsured',
-      };
-
-      const schema = schemaMap[table];
-
-      if (schema === 'forsured') {
-        return forsured(table, supabaseServiceRole) as unknown as ContractQueryBuilder<T>;
-      } else {
-        return core(table as 'users', supabaseServiceRole) as unknown as ContractQueryBuilder<T>;
-      }
+      // All tables are in the forsured schema
+      return forsured(table, supabaseServiceRole) as unknown as ContractQueryBuilder<T>;
     },
   };
 }

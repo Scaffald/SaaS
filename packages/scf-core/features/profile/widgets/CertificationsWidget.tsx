@@ -101,7 +101,7 @@ export function CertificationsWidget({
 
         {certifications.length === 0 ? (
           <EmptyState
-            icon={<Award />}
+            iconStart={<Award />}
             title="No certifications added yet"
             description="Add your professional certifications and licenses"
             action={

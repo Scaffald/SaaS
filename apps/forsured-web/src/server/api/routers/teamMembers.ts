@@ -10,7 +10,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { core } from '../../../lib/supabase';
+import { forsured } from '../../../lib/supabase';
 
 /**
  * Team member role enum
@@ -75,7 +75,7 @@ export const teamMembersRouter = createTRPCRouter({
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
       // Build query
-      let query = core('users')
+      let query = forsured('users')
         .select('id, name, email, role, company, avatar, avatar_url, created_at, updated_at', {
           count: 'exact',
         })
@@ -134,7 +134,7 @@ export const teamMembersRouter = createTRPCRouter({
       // Verify user has access to this organization
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      const { data, error } = await core('users')
+      const { data, error } = await forsured('users')
         .select('id, name, email, role, company, avatar, avatar_url, broker_role, created_at, updated_at')
         .eq('id', input.memberId)
         .eq('organization_id', input.organizationId)
@@ -175,7 +175,7 @@ export const teamMembersRouter = createTRPCRouter({
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
       // Get total count
-      const { count: total, error: totalError } = await core('users')
+      const { count: total, error: totalError } = await forsured('users')
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', input.organizationId);
 
@@ -188,22 +188,22 @@ export const teamMembersRouter = createTRPCRouter({
       }
 
       // Get counts by role
-      const { data: adminData } = await core('users')
+      const { data: adminData } = await forsured('users')
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', input.organizationId)
         .eq('role', 'admin');
 
-      const { data: managerData } = await core('users')
+      const { data: managerData } = await forsured('users')
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', input.organizationId)
         .eq('role', 'manager');
 
-      const { data: brokerData } = await core('users')
+      const { data: brokerData } = await forsured('users')
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', input.organizationId)
         .eq('role', 'broker');
 
-      const { data: subcontractorData } = await core('users')
+      const { data: subcontractorData } = await forsured('users')
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', input.organizationId)
         .eq('role', 'subcontractor');
@@ -234,7 +234,7 @@ export const teamMembersRouter = createTRPCRouter({
       // Verify user has access to this organization
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      const { data, error } = await core('users')
+      const { data, error } = await forsured('users')
         .update({ role: input.role, updated_at: new Date().toISOString() })
         .eq('id', input.memberId)
         .eq('organization_id', input.organizationId)
@@ -273,7 +273,7 @@ export const teamMembersRouter = createTRPCRouter({
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
       // Instead of deleting, we nullify the organization_id
-      const { error } = await core('users')
+      const { error } = await forsured('users')
         .update({ organization_id: null, updated_at: new Date().toISOString() })
         .eq('id', input.memberId)
         .eq('organization_id', input.organizationId);
@@ -308,7 +308,7 @@ export const teamMembersRouter = createTRPCRouter({
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
       // Check if email already exists in organization
-      const { data: existingUser } = await core('users')
+      const { data: existingUser } = await forsured('users')
         .select('id, email')
         .eq('organization_id', input.organizationId)
         .eq('email', input.email.toLowerCase())
@@ -322,7 +322,7 @@ export const teamMembersRouter = createTRPCRouter({
       }
 
       // Create new user with pending status
-      const { data, error } = await core('users')
+      const { data, error } = await forsured('users')
         .insert({
           organization_id: input.organizationId,
           email: input.email.toLowerCase(),
@@ -370,7 +370,7 @@ export const teamMembersRouter = createTRPCRouter({
       // Verify user has access to this organization
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      const { data } = await core('users')
+      const { data } = await forsured('users')
         .select('id')
         .eq('organization_id', input.organizationId)
         .eq('email', input.email.toLowerCase())

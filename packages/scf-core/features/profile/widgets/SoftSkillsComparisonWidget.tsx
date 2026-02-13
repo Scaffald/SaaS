@@ -182,7 +182,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
           <EmptyState
             title="No soft skills assessment"
             description="Complete your soft skills assessment to see your profile"
-            icon={undefined}
+            iconStart={undefined}
           />
           {showCTA && (
             <Button variant="primary" onPress={handleNavigateToAssessment}>

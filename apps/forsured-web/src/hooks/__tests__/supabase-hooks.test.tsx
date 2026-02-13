@@ -23,7 +23,7 @@ import { useUsers } from '../useUsers';
 import { useClients } from '../useClients';
 import { DatabaseProvider } from '../../contexts/DatabaseContext';
 import { UserProvider } from '../../contexts/UserContext';
-import { supabaseServiceRole, forsured as forsuredQuery, core as coreQuery } from '../../lib/supabase';
+import { supabaseServiceRole, forsured as forsuredQuery } from '../../lib/supabase';
 
 // Skip integration tests unless explicitly enabled
 // These tests require:
@@ -55,14 +55,14 @@ describe.skipIf(SKIP_INTEGRATION)('Supabase Hooks Integration Tests', () => {
     }
 
     // Verify test organization exists
-    const { data: org } = await coreQuery('organizations', supabaseServiceRole)
+    const { data: org } = await forsuredQuery('organizations', supabaseServiceRole)
       .select('id')
       .eq('id', TEST_ORG_ID)
       .single();
 
     if (!org) {
       // Create test organization if it doesn't exist
-      await coreQuery('organizations', supabaseServiceRole).insert({
+      await forsuredQuery('organizations', supabaseServiceRole).insert({
         id: TEST_ORG_ID,
         name: 'Test Organization',
       });
@@ -101,7 +101,7 @@ describe.skipIf(SKIP_INTEGRATION)('Supabase Hooks Integration Tests', () => {
       .eq('organization_id', 'test-org');
 
     // Clean up test organizations/clients but not the base test org
-    await coreQuery('organizations', supabaseServiceRole)
+    await forsuredQuery('organizations', supabaseServiceRole)
       .delete()
       .ilike('name', '%test%')
       .neq('id', TEST_ORG_ID);

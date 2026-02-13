@@ -586,7 +586,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           <Button
             size="md"
             variant="outline"
-            icon={CornerDownLeft}
+            iconStart={CornerDownLeft}
             disabled={currentIndex === 0 || isSaving}
             onPress={goPrevious}
           >
@@ -597,7 +597,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
               size="md"
               variant="outline"
               color="primary"
-              icon={SkipForward}
+              iconStart={SkipForward}
               disabled={isSaving}
               onPress={() => void skipSection()}
             >
@@ -609,7 +609,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         <Button
           variant="primary"
           size="md"
-          icon={isSaving ? Spinner : UploadCloud}
+          iconStart={isSaving ? Spinner : UploadCloud}
           disabled={isSaving}
           onPress={() => void handleSaveCurrentStep()}
         >

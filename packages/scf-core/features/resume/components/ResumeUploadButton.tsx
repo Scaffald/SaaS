@@ -15,7 +15,7 @@ export function ResumeUploadButton({
   ...rest
 }: ResumeUploadButtonProps) {
   return (
-    <Button size={size} variant={variant} icon={icon} onPress={onPress} {...rest}>
+    <Button size={size} variant={variant} iconStart={icon} onPress={onPress} {...rest}>
       {label}
     </Button>
   )

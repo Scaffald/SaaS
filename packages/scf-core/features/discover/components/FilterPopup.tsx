@@ -142,7 +142,7 @@ export const FilterPopup = ({
                 
                 variant="outline"
                 onPress={onClose}
-                icon={X}
+                iconStart={X}
                 scaleIcon={1.2}
               />
             </Row>

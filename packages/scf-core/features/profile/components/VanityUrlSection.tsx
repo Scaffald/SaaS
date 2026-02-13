@@ -262,7 +262,7 @@ export function VanityUrlSection() {
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}
               </Text>
-              <Button size="sm" icon={Copy} onPress={handleCopyUrl} variant="outline">
+              <Button size="sm" iconStart={Copy} onPress={handleCopyUrl} variant="outline">
                 Copy
               </Button>
             </Row>

@@ -56,7 +56,7 @@ export function SearchFilterWidget({
       <Row justify="space-between" align="center">
         <Text color="$gray11">{title}</Text>
         {hasActiveFilters && (
-          <Button size="xs" chromeless color="$red10" icon={X} onPress={onClearFilters}>
+          <Button size="xs" chromeless color="$red10" iconStart={X} onPress={onClearFilters}>
             Clear
           </Button>
         )}

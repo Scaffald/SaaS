@@ -106,7 +106,7 @@ export default function AcceptTeamInvitationScreen() {
             href={`${ROUTES.AUTH.LOGIN.path}?redirect_to=${encodeURIComponent(redirectPath)}`}
             asChild
           >
-            <Button icon={LogIn} size="lg">
+            <Button iconStart={LogIn} size="lg">
               Sign in or create an account
             </Button>
           </Link>
@@ -170,7 +170,7 @@ export default function AcceptTeamInvitationScreen() {
         <Stack gap={12}>
           <Button
             size="lg"
-            icon={CheckCircle}
+            iconStart={CheckCircle}
             disabled={isProcessing}
             onPress={() => handleRespond('accept')}
           >
@@ -179,7 +179,7 @@ export default function AcceptTeamInvitationScreen() {
           <Button
             size="lg"
             variant="outline"
-            icon={XCircle}
+            iconStart={XCircle}
             disabled={isProcessing}
             onPress={() => handleRespond('decline')}
           >

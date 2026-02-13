@@ -184,7 +184,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       <Row justify="space-between" align="flex-start" gap={12} flexDirection="column" width="100%">
         <Text accessibilityRole="header">Team members</Text>
         <Button
-          icon={Plus}
+          iconStart={Plus}
           onPress={() => setIsAddModalOpen(true)}
           backgroundColor="$color9"
           color="$gray11"
@@ -276,7 +276,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       <Button
                         size="xs"
                         variant="outline"
-                        icon={Crown}
+                        iconStart={Crown}
                         disabled={transferOwnershipMutation.isPending}
                         onPress={() => void handleTransferOwnership(member)}
                         accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
@@ -289,7 +289,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     <Button
                       variant="outline"
                       color="$red10"
-                      icon={UserMinus}
+                      iconStart={UserMinus}
                       onPress={() =>
                         setMemberToRemove({
                           id: member.id,
@@ -348,7 +348,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         <Button
           variant="outline"
           color="$red10"
-          icon={LogOut}
+          iconStart={LogOut}
           size="sm"
           disabled={selfRemoveMutation.isPending}
           onPress={() => setIsLeaveDialogOpen(true)}
@@ -422,7 +422,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 <Button
                   backgroundColor="$red9"
                   color="$gray11"
-                  icon={LogOut}
+                  iconStart={LogOut}
                   onPress={() => void handleLeaveTeam()}
                   disabled={selfRemoveMutation.isPending}
                 >

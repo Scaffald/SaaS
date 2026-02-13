@@ -150,7 +150,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           onPress={handleSend}
           disabled={!newMessage.trim() || sendMessageMutation.isPending}
           theme="info"
-          icon={Send}
+          iconStart={Send}
         >
           {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
         </Button>

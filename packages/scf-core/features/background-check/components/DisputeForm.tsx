@@ -190,7 +190,7 @@ export function DisputeForm({
                 <Text color="$gray11">
                   or <Text color="$blue11">browse your device</Text>
                 </Text>
-                <Button size="xs" variant="outline" onPress={open} icon={Upload}>
+                <Button size="xs" variant="outline" onPress={open} iconStart={Upload}>
                   Choose file
                 </Button>
                 <Text color="$gray11">Accepted: PDF, PNG, JPG • Max 10MB each</Text>
@@ -239,7 +239,7 @@ export function DisputeForm({
                   <Button
                     size="xs"
                     variant="outline"
-                    icon={X}
+                    iconStart={X}
                     onPress={() => onRemoveAttachment(attachment.id)}
                   >
                     Remove

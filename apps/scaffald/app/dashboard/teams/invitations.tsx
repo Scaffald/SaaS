@@ -57,7 +57,7 @@ export default function DashboardTeamInvitationsScreen() {
         <Button
           variant="outline"
           size="md"
-          icon={RefreshCw}
+          iconStart={RefreshCw}
           onPress={() => invitationsQuery.refetch()}
           disabled={invitationsQuery.isFetching}
         >

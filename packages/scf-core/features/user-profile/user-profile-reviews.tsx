@@ -104,7 +104,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
               <Text color="$gray11">Reviews & Ratings</Text>
             </Row>
             {onLeaveReview && (
-              <Button size="sm" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
+              <Button size="sm" theme="info" iconStart={MessageSquarePlus} onPress={onLeaveReview}>
                 Leave Review
               </Button>
             )}
@@ -155,7 +155,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             <Text color="$gray11">Reviews & Ratings</Text>
           </Row>
           {onLeaveReview && (
-            <Button size="sm" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
+            <Button size="sm" theme="info" iconStart={MessageSquarePlus} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}

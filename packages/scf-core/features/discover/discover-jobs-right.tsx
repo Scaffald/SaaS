@@ -128,7 +128,7 @@ export function DiscoverJobsRight({
             </Row>
 
             {hasActiveFilters && (
-              <Button size="xs" variant="outline" onPress={clearAllFilters} icon={X}>
+              <Button size="xs" variant="outline" onPress={clearAllFilters} iconStart={X}>
                 Clear
               </Button>
             )}
@@ -232,7 +232,7 @@ export function DiscoverJobsRight({
                     size="xs"
                     variant="outline"
                     onPress={() => onMinSoftSkillsMatchChange(null)}
-                    icon={X}
+                    iconStart={X}
                   >
                     Clear
                   </Button>

@@ -293,7 +293,7 @@ export function TeamInviteModal({
           <Button
             backgroundColor="$color9"
             color="$gray11"
-            icon={inviteType === 'email' ? Mail : UserPlus}
+            iconStart={inviteType === 'email' ? Mail : UserPlus}
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >

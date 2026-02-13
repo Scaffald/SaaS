@@ -82,15 +82,15 @@ export function SiteOverlapNotification({
           <Button
             size="sm"
             variant="outline"
-            icon={MessageSquare}
+            iconStart={MessageSquare}
             onPress={handleRequestSurveyData}
           >
             Request Survey Data
           </Button>
-          <Button size="sm" variant="outline" icon={MapPin} onPress={handleAdjustBoundaries}>
+          <Button size="sm" variant="outline" iconStart={MapPin} onPress={handleAdjustBoundaries}>
             Adjust Boundaries
           </Button>
-          <Button size="sm" variant="outline" icon={X} onPress={handleDismiss}>
+          <Button size="sm" variant="outline" iconStart={X} onPress={handleDismiss}>
             Dismiss
           </Button>
         </Row>

@@ -23,7 +23,7 @@ export function ReviewStep8Recommendation({
           size={24}
           theme={recommendation === true ? 'success' : undefined}
           variant={recommendation === true ? undefined : 'outlined'}
-          icon={ThumbsUp}
+          iconStart={ThumbsUp}
           onPress={() => onChange(true)}
           flex={1}
           maxWidth={300}
@@ -35,7 +35,7 @@ export function ReviewStep8Recommendation({
           size={24}
           theme={recommendation === false ? 'error' : undefined}
           variant={recommendation === false ? undefined : 'outlined'}
-          icon={ThumbsDown}
+          iconStart={ThumbsDown}
           onPress={() => onChange(false)}
           flex={1}
           maxWidth={300}

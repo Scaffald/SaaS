@@ -469,7 +469,7 @@ client.getCache().invalidate(/jobs/)
 
 ## Next Steps
 
-- [API Reference](./api-reference.md)
-- [React Integration](./react.md)
-- [OAuth Guide](./oauth.md)
-- [Webhook Guide](./webhooks.md)
+- [API Reference](/docs/api/overview)
+- [React Integration](/docs/guide/react-integration)
+- [OAuth Guide](/docs/guide/authentication)
+- [Webhook Guide](/docs/advanced/webhooks)

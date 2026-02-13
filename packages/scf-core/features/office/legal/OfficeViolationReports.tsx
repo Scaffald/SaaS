@@ -132,7 +132,7 @@ export function OfficeViolationReports() {
         <Button
           size="sm"
           variant="outline"
-          icon={RefreshCw}
+          iconStart={RefreshCw}
           onPress={() => reportsQuery.refetch()}
           disabled={reportsQuery.isRefetching}
         >

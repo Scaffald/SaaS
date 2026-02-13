@@ -107,7 +107,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
         <Row gap={8} flexWrap="wrap">
           <Button
             size="sm"
-            icon={Eye}
+            iconStart={Eye}
             onPress={() => onViewDetails(check)}
             accessibilityLabel="View background check details"
           >
@@ -116,7 +116,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
           <Button
             size="sm"
             variant="outline"
-            icon={RefreshCcw}
+            iconStart={RefreshCcw}
             onPress={() => onRenew(check)}
             disabled={!renewalEligible}
           >

@@ -10,9 +10,15 @@
  * not on signin. This prevents double attribution.
  */
 
+<<<<<<< HEAD
 import { core } from "../supabase";
 import { auditService } from "../audit/AuditService";
 import type { ReferralData } from "../invitations/types";
+=======
+import { forsured } from '../supabase'
+import { auditService } from '../audit/AuditService'
+import type { ReferralData } from '../invitations/types'
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
 const COOKIE_NAME = "fs_ref";
 const STORAGE_KEY = "fs_referral";
@@ -138,12 +144,19 @@ export async function attributeReferralOnSignup(
 
   try {
     // Look up the invitation by referral code
+<<<<<<< HEAD
     const { data: invitation, error: invError } = await core(
       "generic_invitations",
     )
       .select("id, inviter_id, inviter_organization_id")
       .eq("referral_code", referralData.code)
       .single();
+=======
+    const { data: invitation, error: invError } = await forsured('generic_invitations')
+      .select('id, inviter_id, inviter_organization_id')
+      .eq('referral_code', referralData.code)
+      .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
     if (invError || !invitation) {
       console.warn(
@@ -155,7 +168,11 @@ export async function attributeReferralOnSignup(
     }
 
     // Check if this new user is the intended invitee (link invitation to user)
+<<<<<<< HEAD
     const { error: updateError } = await core("generic_invitations")
+=======
+    const { error: updateError } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
       .update({ invitee_user_id: newUserId })
       .eq("id", invitation.id)
       .is("invitee_user_id", null);
@@ -207,9 +224,15 @@ export async function getReferralStats(userId: string): Promise<{
   pendingInvitations: number;
 }> {
   try {
+<<<<<<< HEAD
     const { data: invitations, error } = await core("generic_invitations")
       .select("id, status")
       .eq("inviter_id", userId);
+=======
+    const { data: invitations, error } = await forsured('generic_invitations')
+      .select('id, status')
+      .eq('inviter_id', userId)
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
     if (error) throw error;
 

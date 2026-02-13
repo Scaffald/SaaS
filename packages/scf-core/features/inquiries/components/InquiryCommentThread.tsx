@@ -177,7 +177,7 @@ export function InquiryCommentThread({
             maxLength={2000}
           />
           <Button
-            icon={Send}
+            iconStart={Send}
             onPress={handleAddComment}
             disabled={!newComment.trim() || addCommentMutation.isPending}
             color="primary"

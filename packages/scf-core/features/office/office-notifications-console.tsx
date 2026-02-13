@@ -93,7 +93,7 @@ export function OfficeNotificationsConsole() {
           <Button
             size="xs"
             theme="info"
-            icon={RefreshCw}
+            iconStart={RefreshCw}
             onPress={() => deliveriesQuery.refetch()}
             disabled={deliveriesQuery.isRefetching}
           >
@@ -205,7 +205,7 @@ export function OfficeNotificationsConsole() {
           <Button
             size="xs"
             theme="info"
-            icon={RefreshCw}
+            iconStart={RefreshCw}
             onPress={() => digestQuery.refetch()}
             disabled={digestQuery.isRefetching}
           >

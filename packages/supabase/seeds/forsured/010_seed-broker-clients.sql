@@ -1,6 +1,7 @@
 -- =========================================================
--- 296_seed_broker_clients.sql
+-- 010_seed-broker-clients.sql
 -- Seeds broker-client relationships for test data
+-- Moved from migration 296 to seeds: depends on orgs created by 002_seed-organizations.sql
 -- =========================================================
 
 BEGIN;
@@ -11,13 +12,13 @@ BEGIN;
 -- Creates connected relationships between the test broker and clients
 -- This enables the broker to see their clients on the /broker/clients page
 --
--- Test Users (from existing seed data):
+-- Test Users (from seed data):
 -- Broker: test-broker@forsured.test (10000000-0000-0000-0000-000000000003)
---   Org: Test Insurance Broker (20000000-0000-0000-0000-000000000003)
+--   Org: Test Insurance Brokers (60000000-0000-0000-0000-000000000033)
 -- GC: test-gc@forsured.test (10000000-0000-0000-0000-000000000001)
---   Org: MRC Construction Co. (20000000-0000-0000-0000-000000000001)
+--   Org: Test Construction Company (60000000-0000-0000-0000-000000000031)
 -- Contractor: test-contractor@forsured.test (10000000-0000-0000-0000-000000000002)
---   Org: Test Contractor LLC (20000000-0000-0000-0000-000000000002)
+--   Org: Test Contractor Services (60000000-0000-0000-0000-000000000032)
 -- =========================================================
 
 INSERT INTO forsured.relationship_invitations (
@@ -42,50 +43,50 @@ INSERT INTO forsured.relationship_invitations (
 VALUES
   -- =========================================================
   -- Broker -> Manager (GC) Connection
-  -- MRC Construction Co. is a client of Test Insurance Broker
+  -- Test Construction Company is a client of Test Insurance Brokers
   -- =========================================================
   (
     '80000000-0000-0000-0000-000000000001',           -- Fixed ID for testing
-    '20000000-0000-0000-0000-000000000003',           -- Broker org (Test Insurance Broker)
+    '60000000-0000-0000-0000-000000000033',           -- Broker org (Test Insurance Brokers)
     '10000000-0000-0000-0000-000000000003',           -- Broker user (test-broker)
     'broker',
     'test-gc@forsured.test',                          -- GC user email
     'Test GC User',
-    'MRC Construction Co.',
+    'Test Construction Company',
     'manager',                                         -- GC = manager type
     'BKR-TEST-001',
     'email',
     'connected',                                       -- Already connected
-    '20000000-0000-0000-0000-000000000001',           -- GC org (MRC Construction)
+    '60000000-0000-0000-0000-000000000031',           -- GC org (Test Construction Company)
     '10000000-0000-0000-0000-000000000001',           -- GC user (test-gc)
     NOW() - INTERVAL '30 days',                       -- Invited 30 days ago
     NOW() - INTERVAL '28 days',                       -- Accepted 28 days ago
     NOW() - INTERVAL '28 days',                       -- Connected 28 days ago
-    '{"source": "migration_seed", "notes": "Test broker-GC relationship"}'::jsonb
+    '{"source": "seed", "notes": "Test broker-GC relationship"}'::jsonb
   ),
 
   -- =========================================================
   -- Broker -> Subcontractor Connection
-  -- Test Contractor LLC is a client of Test Insurance Broker
+  -- Test Contractor Services is a client of Test Insurance Brokers
   -- =========================================================
   (
     '80000000-0000-0000-0000-000000000002',           -- Fixed ID for testing
-    '20000000-0000-0000-0000-000000000003',           -- Broker org (Test Insurance Broker)
+    '60000000-0000-0000-0000-000000000033',           -- Broker org (Test Insurance Brokers)
     '10000000-0000-0000-0000-000000000003',           -- Broker user (test-broker)
     'broker',
     'test-contractor@forsured.test',                  -- Contractor user email
     'Test Contractor User',
-    'Test Contractor LLC',
+    'Test Contractor Services',
     'subcontractor',                                   -- Contractor = subcontractor type
     'BKR-TEST-002',
     'email',
     'connected',                                       -- Already connected
-    '20000000-0000-0000-0000-000000000002',           -- Contractor org (Test Contractor LLC)
+    '60000000-0000-0000-0000-000000000032',           -- Contractor org (Test Contractor Services)
     '10000000-0000-0000-0000-000000000002',           -- Contractor user (test-contractor)
     NOW() - INTERVAL '25 days',                       -- Invited 25 days ago
     NOW() - INTERVAL '24 days',                       -- Accepted 24 days ago
     NOW() - INTERVAL '24 days',                       -- Connected 24 days ago
-    '{"source": "migration_seed", "notes": "Test broker-contractor relationship"}'::jsonb
+    '{"source": "seed", "notes": "Test broker-contractor relationship"}'::jsonb
   ),
 
   -- =========================================================
@@ -94,7 +95,7 @@ VALUES
   -- =========================================================
   (
     '80000000-0000-0000-0000-000000000003',           -- Fixed ID for testing
-    '20000000-0000-0000-0000-000000000003',           -- Broker org (Test Insurance Broker)
+    '60000000-0000-0000-0000-000000000033',           -- Broker org (Test Insurance Brokers)
     '10000000-0000-0000-0000-000000000003',           -- Broker user (test-broker)
     'broker',
     'potential-client@example.com',                   -- Potential client email
@@ -109,19 +110,8 @@ VALUES
     NOW() - INTERVAL '5 days',                        -- Invited 5 days ago
     NULL,                                              -- Not accepted yet
     NULL,                                              -- Not connected yet
-    '{"source": "migration_seed", "notes": "Pending broker invitation"}'::jsonb
+    '{"source": "seed", "notes": "Pending broker invitation"}'::jsonb
   )
 ON CONFLICT (id) DO NOTHING;
 
 COMMIT;
-
--- =========================================================
--- NOTES:
--- =========================================================
--- 1. Connected relationships allow brokers to see clients on /broker/clients
--- 2. The 'manager' type maps to General Contractor (GC) in the UI
--- 3. The 'subcontractor' type maps to Contractor in the UI
--- 4. Pending invitations demonstrate the invitation flow
--- 5. Fixed UUIDs (80000000-...) ensure idempotent seeding
--- 6. Uses existing test user/org IDs (10000000-... and 20000000-...)
--- =========================================================

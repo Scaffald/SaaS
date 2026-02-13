@@ -360,7 +360,7 @@ export const SoftSkillsRatingForm: FC = () => {
           size="md"
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
-          icon={updateMutation.isPending ? undefined : CheckCircle2}
+          iconStart={updateMutation.isPending ? undefined : CheckCircle2}
           iconAfter={updateMutation.isPending ? <Spinner size="sm" /> : undefined}
         >
           {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}

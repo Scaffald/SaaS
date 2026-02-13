@@ -251,7 +251,7 @@ export function ConnectionFollowButtonsInline({
         <>
           <Button
             size={size}
-            icon={UserCheck}
+            iconStart={UserCheck}
             theme="success"
             variant="outline"
             disabled={isConnectionMutating}
@@ -260,7 +260,7 @@ export function ConnectionFollowButtonsInline({
           </Button>
           <Button
             size={size}
-            icon={UserMinus}
+            iconStart={UserMinus}
             variant="outline"
             theme="error"
             onPress={handleRemoveConnection}
@@ -272,7 +272,7 @@ export function ConnectionFollowButtonsInline({
       )}
 
       {connectionButtonState.type === 'pending_sent' && (
-        <Button size={size} icon={Loader2} variant="outline" disabled={isConnectionMutating}>
+        <Button size={size} iconStart={Loader2} variant="outline" disabled={isConnectionMutating}>
           <Text>Pending</Text>
         </Button>
       )}
@@ -281,7 +281,7 @@ export function ConnectionFollowButtonsInline({
         <>
           <Button
             size={size}
-            icon={CheckCircle2}
+            iconStart={CheckCircle2}
             theme="success"
             onPress={handleAcceptRequest}
             disabled={isConnectionMutating}
@@ -290,7 +290,7 @@ export function ConnectionFollowButtonsInline({
           </Button>
           <Button
             size={size}
-            icon={X}
+            iconStart={X}
             variant="outline"
             theme="error"
             onPress={handleDeclineRequest}
@@ -304,7 +304,7 @@ export function ConnectionFollowButtonsInline({
       {connectionButtonState.type === 'none' && (
         <Button
           size={size}
-          icon={isConnectionMutating ? Loader2 : UserPlus}
+          iconStart={isConnectionMutating ? Loader2 : UserPlus}
           color="primary"
           onPress={handleConnect}
           disabled={isConnectionMutating}
@@ -317,7 +317,7 @@ export function ConnectionFollowButtonsInline({
       {!connectionStatus.isConnected && (
         <Button
           size={size}
-          icon={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
+          iconStart={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
           variant="outline"
           theme={followStatus.isFollowing ? 'error' : 'blue'}
           onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}

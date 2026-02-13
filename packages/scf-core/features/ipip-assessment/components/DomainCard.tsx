@@ -102,7 +102,7 @@ export const DomainCard = memo(function DomainCard({
           size="sm"
           variant="outline"
           onPress={() => setIsExpanded(!isExpanded)}
-          icon={isExpanded ? ChevronUp : ChevronDown}
+          iconStart={isExpanded ? ChevronUp : ChevronDown}
         >
           {isExpanded ? 'Hide Facets' : 'Show Facets'}
         </Button>

@@ -312,7 +312,7 @@ export function IdVerificationAdminPage({
           <Button
             size="sm"
             variant="outline"
-            icon={RefreshCcw}
+            iconStart={RefreshCcw}
             onPress={() => listQuery.refetch()}
             disabled={listQuery.isFetching}
           >

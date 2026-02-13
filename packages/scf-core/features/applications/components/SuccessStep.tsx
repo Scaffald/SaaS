@@ -138,7 +138,7 @@ export function SuccessStep({
           <Button
             size="lg"
             theme="info"
-            icon={ExternalLink}
+            iconStart={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
             flex={1}
             minWidth={200}
@@ -156,7 +156,7 @@ export function SuccessStep({
         <Button
           size="lg"
           variant="outline"
-          icon={Home}
+          iconStart={Home}
           onPress={handleReturnToDashboard}
           flex={1}
           minWidth={200}

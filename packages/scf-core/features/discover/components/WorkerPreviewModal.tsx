@@ -637,7 +637,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                       <Button
                         size="md"
                         theme="info"
-                        icon={isConnectionMutating ? Loader2 : UserPlus}
+                        iconStart={isConnectionMutating ? Loader2 : UserPlus}
                         onPress={handleConnect}
                         disabled={isConnectionMutating}
                       >
@@ -646,7 +646,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {connectionButtonState.type === 'pending_sent' && (
-                      <Button size="md" variant="outline" icon={Loader2} disabled>
+                      <Button size="md" variant="outline" iconStart={Loader2} disabled>
                         Pending
                       </Button>
                     )}
@@ -656,7 +656,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                         <Button
                           size="md"
                           theme="info"
-                          icon={CheckCircle2}
+                          iconStart={CheckCircle2}
                           onPress={handleAccept}
                           disabled={isConnectionMutating}
                         >
@@ -665,7 +665,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                         <Button
                           size="md"
                           variant="outline"
-                          icon={X}
+                          iconStart={X}
                           onPress={handleDecline}
                           disabled={isConnectionMutating}
                         >
@@ -675,7 +675,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {connectionButtonState.type === 'connected' && (
-                      <Button size="md" variant="outline" icon={UserCheck} disabled>
+                      <Button size="md" variant="outline" iconStart={UserCheck} disabled>
                         Connected
                       </Button>
                     )}
@@ -688,7 +688,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     <Button
                       size="md"
                       variant="outline"
-                      icon={isFollowMutating ? Loader2 : UserPlus}
+                      iconStart={isFollowMutating ? Loader2 : UserPlus}
                       onPress={handleFollow}
                       disabled={isFollowMutating}
                     >
@@ -698,7 +698,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     <Button
                       size="md"
                       variant="outline"
-                      icon={isFollowMutating ? Loader2 : UserMinus}
+                      iconStart={isFollowMutating ? Loader2 : UserMinus}
                       onPress={handleUnfollow}
                       disabled={isFollowMutating}
                     >

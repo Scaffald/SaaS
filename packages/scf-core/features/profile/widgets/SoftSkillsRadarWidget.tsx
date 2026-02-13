@@ -100,7 +100,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
         <EmptyState
           title="No soft skills assessment"
           description="Complete your soft skills assessment to see your profile"
-          icon={undefined}
+          iconStart={undefined}
         />
       </DashboardWidget>
     )
@@ -119,7 +119,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
               <Button
                 variant="outline"
                 size="xs"
-                icon={Download}
+                iconStart={Download}
                 onPress={handleExport}
                 testID="soft-skills-export-button"
               >

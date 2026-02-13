@@ -1,9 +1,12 @@
 /**
  * Supabase Client Configuration
+<<<<<<< HEAD
  * Shared database architecture
+=======
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
  *
- * This module provides the Supabase client configured for the forsured.* schema
- * with cross-schema query support for core.* tables (Uni-Construct/Scaffald).
+ * This module provides the Supabase client configured for the forsured.* schema.
+ * All ForSured data lives in the forsured.* schema -- no core.* dependencies.
  */
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
@@ -173,6 +176,7 @@ export const table = {
   // Project-Subcontractor relationship
   projectSubcontractors: "forsured.project_subcontractors",
 
+<<<<<<< HEAD
   // Core schema tables (Uni-Construct/Scaffald - read-only)
   coreUsers: "core.users",
   coreOrganizations: "core.organizations",
@@ -187,6 +191,21 @@ export const table = {
   scaffaldProjects: "core.projects",
   /** @deprecated Use coreRoleAssignments instead */
   scaffaldRoleAssignments: "core.role_assignments",
+=======
+  // Forsured schema tables (previously in core.*)
+  users: 'forsured.users',
+  organizations: 'forsured.organizations',
+  roles: 'forsured.roles',
+  roleAssignments: 'forsured.role_assignments',
+  genericInvitations: 'forsured.generic_invitations',
+  invitationRules: 'forsured.invitation_rules',
+  userRelationships: 'forsured.user_relationships',
+  // CCPA tables
+  ccpaRequests: 'forsured.ccpa_requests',
+  ccpaRequestHistory: 'forsured.ccpa_request_history',
+  oauthApps: 'forsured.oauth_apps',
+  ccpaOauthAppRegistry: 'forsured.ccpa_oauth_app_registry',
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 };
 
 /**
@@ -215,24 +234,11 @@ export function forsured(tableName: string, client: SupabaseClient = supabase) {
 }
 
 /**
- * Type-safe query builder for core schema (Uni-Construct/Scaffald - read-only)
- *
- * @param tableName - Table name within core schema
- * @param client - Optional Supabase client (defaults to anon client)
- *
- * @example
- * ```ts
- * // Query core.users table
- * const { data } = await core('users')
- *   .select('id, name, email, organization:organizations!inner(id, name)')
- *   .eq('id', userId);
- *
- * // Use service role client for testing (bypasses RLS)
- * const { data } = await core('users', supabaseServiceRole!)
- *   .select('*');
- * ```
+ * @deprecated ForSured no longer uses core schema. Use forsured() instead.
+ * Kept temporarily for reference during migration.
  */
 export function core(tableName: string, client: SupabaseClient = supabase) {
+<<<<<<< HEAD
   return client.schema("core").from(tableName);
 }
 
@@ -242,6 +248,9 @@ export function core(tableName: string, client: SupabaseClient = supabase) {
  */
 export function scaffald(tableName: string, client: SupabaseClient = supabase) {
   return core(tableName, client);
+=======
+  return client.schema('forsured').from(tableName);
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 }
 
 /**
@@ -265,6 +274,7 @@ export async function getCurrentUser() {
  * Helper to get user's organization ID from role_assignments
  * Uses scope_org_id from role_assignments table where user has a role
  */
+<<<<<<< HEAD
 export async function getUserOrganizationId(
   userId: string,
 ): Promise<string | null> {
@@ -274,10 +284,19 @@ export async function getUserOrganizationId(
     .select("scope_org_id")
     .eq("user_id", userId)
     .not("scope_org_id", "is", null)
+=======
+export async function getUserOrganizationId(userId: string): Promise<string | null> {
+  // Query forsured.role_assignments to find user's organization
+  const { data, error } = await forsured('role_assignments')
+    .select('scope_org_id')
+    .eq('user_id', userId)
+    .not('scope_org_id', 'is', null)
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error) {
+<<<<<<< HEAD
     // PGRST116 means no rows found - user has no org assignment
     if (error.code === "PGRST116") {
       console.log(
@@ -287,6 +306,9 @@ export async function getUserOrganizationId(
       return null;
     }
     console.error("[Supabase] Error getting user organization:", error);
+=======
+    console.error('[Supabase] Error getting user organization:', error);
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
     return null;
   }
 
@@ -301,12 +323,21 @@ export async function userHasRole(
   organizationId: string,
   allowedRoles: string[],
 ): Promise<boolean> {
+<<<<<<< HEAD
   const { data, error } = await core("role_assignments")
     .select("role_type")
     .eq("user_id", userId)
     .eq("organization_id", organizationId)
     .in("role_type", allowedRoles)
     .single();
+=======
+  const { data, error } = await forsured('role_assignments')
+    .select('role_type')
+    .eq('user_id', userId)
+    .eq('organization_id', organizationId)
+    .in('role_type', allowedRoles)
+    .maybeSingle();
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
   if (error) {
     console.error("[Supabase] Error checking user role:", error);

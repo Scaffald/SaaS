@@ -172,7 +172,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           <Stack gap={12} paddingBottom={24} width="100%">
             {allResults.length === 0 ? (
               <EmptyState
-                icon={<Search size={48} color="$gray11" />}
+                iconStart={<Search size={48} color="$gray11" />}
                 title="No results found"
                 description="Try adjusting your search filters or search terms to find more workers."
               />

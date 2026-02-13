@@ -114,7 +114,7 @@ export function FeedbackWidget() {
         <Button
           size={24}
           
-          icon={MessageCircle}
+          iconStart={MessageCircle}
           backgroundColor="$blue9"
           color="$gray11"
           elevation="lg"

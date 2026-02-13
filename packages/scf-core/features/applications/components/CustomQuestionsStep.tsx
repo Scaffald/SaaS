@@ -1,8 +1,9 @@
 import type { CustomQuestionAnswer } from '@scf/schemas'
-import { ToggleSwitch } from '@unicornlove/beyond-ui'
+import { ToggleSwitch, useThemeContext } from '@unicornlove/beyond-ui'
 import { ArrowLeft } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Input, Label, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface CustomQuestion {
   id: string
@@ -65,6 +66,7 @@ export function CustomQuestionsStep({
   isSubmitting = false,
 }: CustomQuestionsStepProps) {
   const [errors, setErrors] = useState<Record<string, string | undefined>>({})
+  const { theme } = useThemeContext()
 
   /**
    * Get answer for a specific question
@@ -472,7 +474,7 @@ export function CustomQuestionsStep({
         <Button
           size="md"
           variant="outline"
-          icon={ArrowLeft}
+          iconStart={ArrowLeft}
           onPress={onPrevious}
           disabled={isSubmitting}
         >

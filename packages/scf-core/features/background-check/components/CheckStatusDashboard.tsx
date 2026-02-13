@@ -145,7 +145,7 @@ export function CheckStatusDashboard() {
               <Button
                 size="sm"
                 variant="outline"
-                icon={RefreshCcw}
+                iconStart={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
               >
                 Retry

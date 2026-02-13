@@ -74,7 +74,7 @@ export function AccountDeletionPanel() {
           variant="outline"
           borderColor="$red8"
           color="$red11"
-          icon={Trash2}
+          iconStart={Trash2}
           onPress={() => setIsOpen(true)}
         >
           Request Account Deletion
@@ -128,7 +128,7 @@ export function AccountDeletionPanel() {
                   <Button
                     backgroundColor="$red9"
                     color="white"
-                    icon={Trash2}
+                    iconStart={Trash2}
                     onPress={handleDelete}
                     disabled={confirmText !== 'DELETE' || deletionMutation.isPending}
                   >

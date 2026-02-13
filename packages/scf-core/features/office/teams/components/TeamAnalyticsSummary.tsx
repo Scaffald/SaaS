@@ -126,7 +126,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
           <Button
             size="xs"
             variant="outline"
-            icon={RefreshCw}
+            iconStart={RefreshCw}
             onPress={() => void analyticsQuery.refetch()}
             disabled={analyticsQuery.isFetching}
           >

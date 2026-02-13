@@ -106,10 +106,17 @@ const adminUpdateStatusInput = z.object({
  * Get the current user's forsured profile
  */
 async function getCurrentUserProfile(userId: string) {
+<<<<<<< HEAD
   const { data, error } = await forsured("user_profiles")
     .select("id, scaffald_user_id, user_type, name, email, company")
     .eq("scaffald_user_id", userId)
     .single();
+=======
+  const { data, error } = await getForsuredAdmin('user_profiles')
+    .select('id, scaffald_user_id, user_type, name, email, company')
+    .eq('scaffald_user_id', userId)
+    .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
   if (error || !data) {
     throw new TRPCError({
@@ -125,10 +132,17 @@ async function getCurrentUserProfile(userId: string) {
  * Check if user is an admin
  */
 async function isUserAdmin(userId: string): Promise<boolean> {
+<<<<<<< HEAD
   const { data } = await forsured("user_profiles")
     .select("user_type")
     .eq("scaffald_user_id", userId)
     .single();
+=======
+  const { data } = await getForsuredAdmin('user_profiles')
+    .select('user_type')
+    .eq('scaffald_user_id', userId)
+    .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
   return data?.user_type === "admin";
 }
@@ -137,10 +151,17 @@ async function isUserAdmin(userId: string): Promise<boolean> {
  * Get admin users for reassignment dropdown
  */
 async function getAdminUsers() {
+<<<<<<< HEAD
   const { data } = await forsured("user_profiles")
     .select("id, name, email")
     .eq("user_type", "admin")
     .order("name");
+=======
+  const { data } = await getForsuredAdmin('user_profiles')
+    .select('id, name, email')
+    .eq('user_type', 'admin')
+    .order('name')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
   return data || [];
 }

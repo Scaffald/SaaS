@@ -645,7 +645,7 @@ redirectUri: 'https://app.example.com/callback' // Same!
 
 ## Next Steps
 
-- [Getting Started Guide](./getting-started.md)
-- [API Reference](./api-reference.md)
-- [React Hooks Guide](./react-hooks.md)
-- [Webhooks Guide](./webhooks.md)
+- [Getting Started Guide](/docs/guide/installation)
+- [API Reference](/docs/api/overview)
+- [React Hooks Guide](/docs/guide/react-integration)
+- [Webhooks Guide](/docs/advanced/webhooks)

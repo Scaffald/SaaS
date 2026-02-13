@@ -8,14 +8,13 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { supabase, forsured, core } from '../lib/supabase';
+import { supabase, forsured } from '../lib/supabase';
 
 interface DatabaseContextType {
   // Supabase client for real database
   supabase: SupabaseClient;
-  // Schema-aware query builders
+  // Schema-aware query builder for forsured.* schema
   forsured: typeof forsured;
-  core: typeof core;
   // Initialization state
   isInitialized: boolean;
 }
@@ -45,7 +44,6 @@ export const DatabaseProvider: React.FC<{ children: ReactNode }> = ({ children }
   const value: DatabaseContextType = {
     supabase,
     forsured,
-    core,
     isInitialized,
   };
 

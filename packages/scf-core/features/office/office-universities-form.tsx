@@ -188,7 +188,7 @@ export function OfficeUniversitiesForm({
               size="xs"
               variant="outline"
               onPress={onCancel}
-              icon={X}
+              iconStart={X}
               data-testid="cancel-button"
             >
               Cancel
@@ -373,7 +373,7 @@ export function OfficeUniversitiesForm({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
+              iconStart={isLoading ? <Spinner /> : isEditing ? Save : Plus}
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>

@@ -359,7 +359,7 @@ export function ResumeUploadModal({
           <Stack gap={spacing.sm}>
             <Button
               size="md"
-              icon={UploadCloud}
+              iconStart={UploadCloud}
               disabled={status === 'uploading' || status === 'parsing'}
               onPress={handleNativePick}
             >
@@ -429,7 +429,7 @@ export function ResumeUploadModal({
           <Button
             size="sm"
             disabled
-            icon={showProgress ? Loader2 : undefined}
+            iconStart={showProgress ? Loader2 : undefined}
             backgroundColor={status === 'error' ? '$red4' : '$blue4'}
             color={status === 'error' ? '$red11' : '$blue11'}
             borderColor={status === 'error' ? '$red7' : '$blue7'}

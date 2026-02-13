@@ -842,7 +842,7 @@ const MobileSearchHeader = ({
         size="md"
         
         variant="outline"
-        icon={SlidersHorizontal}
+        iconStart={SlidersHorizontal}
         aria-label="Open filters"
         onPress={onFiltersPress}
         style={{ flexShrink: 0 }}
@@ -935,7 +935,7 @@ const MobileFiltersContent = ({
           size="sm"
           
           variant="outline"
-          icon={X}
+          iconStart={X}
           aria-label="Close filters"
           onPress={onClose}
         />
@@ -967,7 +967,7 @@ const MobileFiltersContent = ({
       <Button
         size="md"
         variant="outline"
-        icon={RotateCcw}
+        iconStart={RotateCcw}
         scaleIcon={1.2}
         onPress={onReset}
         aria-label="Reset filters"

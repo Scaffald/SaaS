@@ -92,7 +92,7 @@ export function SiteBoundaryDrawer({
         <Stack gap={16}>
           <Row justify="space-between" align="center">
             <Text>Site Boundary</Text>
-            <Button size={8} icon={Plus} onPress={handleAddPoint}>
+            <Button size={8} iconStart={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
           </Row>
@@ -177,14 +177,14 @@ export function SiteBoundaryDrawer({
                         <Button
                           size={8}
                           variant="outline"
-                          icon={Edit3}
+                          iconStart={Edit3}
                           onPress={() => setEditingIndex(index)}
                           disabled={editingIndex !== null}
                         />
                         <Button
                           size={8}
                           variant="outline"
-                          icon={Trash2}
+                          iconStart={Trash2}
                           onPress={() => handleRemovePoint(index)}
                           disabled={coordinates.length <= 3 || editingIndex !== null}
                         />

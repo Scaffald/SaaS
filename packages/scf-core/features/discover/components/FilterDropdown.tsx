@@ -59,7 +59,7 @@ export const FilterDropdown = ({
           color={activeFilterCount < 3 ? 'white' : '$color'}
           hoverStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
           pressStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue11' : '$backgroundPress' }}
-          icon={SlidersHorizontal}
+          iconStart={SlidersHorizontal}
           iconAfter={ChevronDown}
           scaleIcon={1.2}
         >

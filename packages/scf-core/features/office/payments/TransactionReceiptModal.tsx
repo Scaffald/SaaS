@@ -130,10 +130,10 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
               </Card>
 
               <Row gap={8} justify="flex-end">
-                <Button size="md" variant="outline" icon={Download} onPress={handleDownloadReceipt}>
+                <Button size="md" variant="outline" iconStart={Download} onPress={handleDownloadReceipt}>
                   Download Receipt
                 </Button>
-                <Button size="md" variant="outline" icon={X} onPress={() => onOpenChange(false)}>
+                <Button size="md" variant="outline" iconStart={X} onPress={() => onOpenChange(false)}>
                   Close
                 </Button>
               </Row>

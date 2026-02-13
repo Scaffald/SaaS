@@ -1,7 +1,8 @@
 import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@scf/schemas'
 import { Check, Edit3, FileText } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Checkbox, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Checkbox, Separator, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface ReviewStepProps {
   /**
@@ -60,39 +61,40 @@ export function ReviewStep({
   isEditMode = false,
 }: ReviewStepProps) {
   const [hasConsent, setHasConsent] = useState(false)
+  const { theme } = useThemeContext()
 
   return (
     <Stack gap={24} width="100%" maxWidth={800} padding="md">
       {/* Header */}
       <Stack gap={8}>
-        <Text color="$gray11">Review Your Application</Text>
-        <Text color="$gray11">Please review your information carefully before submitting.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Review Your Application</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Please review your information carefully before submitting.</Text>
       </Stack>
 
       {/* Screening Information Section */}
       <Stack
         gap={16}
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         padding="xl"
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        style={{ borderColor: colors.border[theme].default }}
         shadowColor="$gray4"
         shadowOffset={{ width: 0, height: 1 }}
         shadowOpacity={0.1}
         shadowRadius={3}
       >
         <Row justify="space-between" align="center">
-          <Text color="$gray11">Screening Questions</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Screening Questions</Text>
           <Button
             size="sm"
             variant="outline"
-            icon={Edit3}
+            iconStart={Edit3}
             onPress={() => onEdit('screening')}
             disabled={isSubmitting}
             chromeless
           >
-            <Text color="$blue10">Edit</Text>
+            <Text style={{ color: colors.text[theme].info }}>Edit</Text>
           </Button>
         </Row>
 
@@ -134,27 +136,27 @@ export function ReviewStep({
       {customQuestionAnswers.length > 0 && (
         <Stack
           gap={16}
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[theme].default }}
           padding="xl"
           borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          style={{ borderColor: colors.border[theme].default }}
           shadowColor="$gray4"
           shadowOffset={{ width: 0, height: 1 }}
           shadowOpacity={0.1}
           shadowRadius={3}
         >
           <Row justify="space-between" align="center">
-            <Text color="$gray11">Additional Questions</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Additional Questions</Text>
             <Button
               size="sm"
               variant="outline"
-              icon={Edit3}
+              iconStart={Edit3}
               onPress={() => onEdit('questions')}
               disabled={isSubmitting}
               chromeless
             >
-              <Text color="$blue10">Edit</Text>
+              <Text style={{ color: colors.text[theme].info }}>Edit</Text>
             </Button>
           </Row>
 
@@ -175,27 +177,27 @@ export function ReviewStep({
       {/* Attachments Section */}
       <Stack
         gap={16}
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         padding="xl"
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        style={{ borderColor: colors.border[theme].default }}
         shadowColor="$gray4"
         shadowOffset={{ width: 0, height: 1 }}
         shadowOpacity={0.1}
         shadowRadius={3}
       >
         <Row justify="space-between" align="center">
-          <Text color="$gray11">Documents</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Documents</Text>
           <Button
             size="sm"
             variant="outline"
-            icon={Edit3}
+            iconStart={Edit3}
             onPress={() => onEdit('attachments')}
             disabled={isSubmitting}
             chromeless
           >
-            <Text color="$blue10">Edit</Text>
+            <Text style={{ color: colors.text[theme].info }}>Edit</Text>
           </Button>
         </Row>
 
@@ -205,13 +207,13 @@ export function ReviewStep({
           {attachments.resume ? (
             <DocumentRow type="Resume" metadata={attachments.resume} required />
           ) : (
-            <Text color="$gray11">Resume: Not provided</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Resume: Not provided</Text>
           )}
 
           {attachments.cover_letter ? (
             <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} />
           ) : (
-            <Text color="$gray11">Cover Letter: Not provided</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Cover Letter: Not provided</Text>
           )}
 
           {attachments.portfolio && (
@@ -224,10 +226,10 @@ export function ReviewStep({
       <Stack
         gap={12}
         padding="md"
-        backgroundColor="$background"
+        style={{ backgroundColor: colors.bg[theme].default }}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        style={{ borderColor: colors.border[theme].default }}
       >
         <Row gap={12} align="flex-start">
           <Checkbox
@@ -238,10 +240,10 @@ export function ReviewStep({
             aria-label="I certify that the information provided is accurate and complete"
           />
           <Stack gap={4} flex={1}>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               I certify that the information provided is accurate and complete
             </Text>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               By submitting this application, you agree to our Terms of Service and Privacy Policy
             </Text>
           </Stack>
@@ -254,7 +256,7 @@ export function ReviewStep({
         theme="info"
         onPress={onSubmit}
         disabled={isSubmitting || !hasConsent}
-        icon={isSubmitting ? undefined : Check}
+        iconStart={isSubmitting ? undefined : Check}
         opacity={!hasConsent ? 0.5 : 1}
       >
         {isSubmitting
@@ -275,8 +277,8 @@ export function ReviewStep({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <Stack gap={8}>
-      <Text color="$gray11">{label}</Text>
-      <Text color="$gray11">{value}</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>{value}</Text>
     </Stack>
   )
 }
@@ -304,17 +306,17 @@ function DocumentRow({
 
   return (
     <Row gap={12} align="center">
-      <FileText size="lg" color="$blue10" />
+      <FileText size="lg" style={{ color: colors.text[theme].info }} />
       <Stack gap={4} flex={1}>
         <Row gap={8} align="center">
-          <Text color="$gray11">{type}</Text>
-          {required && <Text color="$red10">(Required)</Text>}
+          <Text style={{ color: colors.text[theme].secondary }}>{type}</Text>
+          {required && <Text style={{ color: colors.text[theme].error }}>(Required)</Text>}
         </Row>
-        <Text color="$gray11">{metadata.filename}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{metadata.filename}</Text>
         <Row gap={8} align="center">
-          <Text color="$gray11">{formatFileSize(metadata.size)}</Text>
-          <Text color="$gray11">•</Text>
-          <Text color="$gray11">Uploaded {formattedDate}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{formatFileSize(metadata.size)}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>•</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Uploaded {formattedDate}</Text>
         </Row>
       </Stack>
     </Row>

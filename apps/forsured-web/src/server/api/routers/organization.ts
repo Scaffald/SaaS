@@ -10,7 +10,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { forsured, core } from '../../../lib/supabase';
+import { forsured } from '../../../lib/supabase';
 
 /**
  * Authorization helper that verifies user belongs to the requested organization
@@ -64,8 +64,8 @@ export const organizationRouter = createTRPCRouter({
       // Verify user has access to this organization
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Query organization data from core schema
-      const { data, error } = await core('organizations')
+      // Query organization data from forsured schema
+      const { data, error } = await forsured('organizations')
         .select('id, name, created_at, updated_at')
         .eq('id', input.organizationId)
         .single();
@@ -185,7 +185,7 @@ export const organizationRouter = createTRPCRouter({
    * Demonstrates querying across multiple schemas:
    * - forsured.projects (project data)
    * - forsured.subcontractors (subcontractor data)
-   * - core.users (user data)
+   * - forsured.users (user data)
    *
    * Maintains organization-scoped authorization throughout all queries.
    */
@@ -246,10 +246,10 @@ export const organizationRouter = createTRPCRouter({
         subcontractors = subcontractorData || [];
       }
 
-      // Query 3: Get users from core schema (if requested)
+      // Query 3: Get users from forsured schema (if requested)
       let users = null;
       if (input.includeUsers) {
-        const { data: userData, error: userError } = await core('users')
+        const { data: userData, error: userError } = await forsured('users')
           .select('id, name, email, created_at')
           .eq('organization_id', input.organizationId) // Maintain organization filter
           .order('created_at', { ascending: false })

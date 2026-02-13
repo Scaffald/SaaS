@@ -841,8 +841,8 @@ interface EmployerProfile {
 
 ## Next Steps
 
-- [Getting Started Guide](./getting-started.md)
-- [React Hooks Reference](./react-hooks.md)
-- [Webhooks Guide](./webhooks.md)
-- [OAuth Guide](./oauth.md)
-- [Error Handling](./error-handling.md)
+- [Getting Started Guide](/docs/guide/installation)
+- [React Hooks Reference](/docs/guide/react-integration)
+- [Webhooks Guide](/docs/advanced/webhooks)
+- [OAuth Guide](/docs/guide/authentication)
+- [Error Handling](/docs/guide/error-handling)

@@ -59,7 +59,7 @@ export function OfficeCMSList() {
           <Row justify="space-between" align="center">
             <H2>Welcome Slides CMS</H2>
             <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
-              <Button icon={Plus}>Create Slide</Button>
+              <Button iconStart={Plus}>Create Slide</Button>
             </Link>
           </Row>
 
@@ -114,7 +114,7 @@ export function OfficeCMSList() {
                     <Row gap={8}>
                       <Button
                         size="sm"
-                        icon={slide.is_active ? EyeOff : Eye}
+                        iconStart={slide.is_active ? EyeOff : Eye}
                         onPress={() => handleToggleActive(slide)}
                         chromeless
                       />
@@ -122,11 +122,11 @@ export function OfficeCMSList() {
                         href={ROUTES.OFFICE.CMS.WELCOME.EDIT.path.replace(':id', slide.id)}
                         asChild
                       >
-                        <Button size="sm" icon={Pencil} chromeless />
+                        <Button size="sm" iconStart={Pencil} chromeless />
                       </Link>
                       <Button
                         size="sm"
-                        icon={Trash2}
+                        iconStart={Trash2}
                         onPress={() => handleDelete(slide.id, slide.title)}
                         chromeless
                         theme="error"
@@ -140,7 +140,7 @@ export function OfficeCMSList() {
                 <Stack align="center" justify="center" gap={16} paddingVertical={32}>
                   <Text opacity={0.5}>No slides found</Text>
                   <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
-                    <Button icon={Plus}>Create First Slide</Button>
+                    <Button iconStart={Plus}>Create First Slide</Button>
                   </Link>
                 </Stack>
               )}

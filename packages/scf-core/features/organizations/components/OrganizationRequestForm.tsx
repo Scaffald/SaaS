@@ -178,7 +178,7 @@ export function OrganizationRequestForm({
       <Button
         size="md"
         theme="info"
-        icon={isSubmitting ? Loader2 : undefined}
+        iconStart={isSubmitting ? Loader2 : undefined}
         disabled={isSubmitting}
         onPress={onSubmit}
       >

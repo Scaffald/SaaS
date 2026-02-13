@@ -234,7 +234,7 @@ export function OfficeStorageDashboard() {
         <Button
           size="sm"
           variant="outline"
-          icon={RefreshCw}
+          iconStart={RefreshCw}
           onPress={() => analyticsQuery.refetch()}
           disabled={analyticsQuery.isRefetching}
         >

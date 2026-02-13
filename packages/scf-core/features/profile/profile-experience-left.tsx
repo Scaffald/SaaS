@@ -394,7 +394,7 @@ export function ProfileExperienceLeft() {
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text>Work History</Text>
-            <Button size="sm" onPress={addExperienceEntry} icon={Plus}>
+            <Button size="sm" onPress={addExperienceEntry} iconStart={Plus}>
               Add Experience
             </Button>
           </Row>
@@ -410,7 +410,7 @@ export function ProfileExperienceLeft() {
             >
               <Row justify="space-between" align="center">
                 <Text>Position {index + 1}</Text>
-                <Button size="xs" variant="outline" onPress={() => remove(index)} icon={X}>
+                <Button size="xs" variant="outline" onPress={() => remove(index)} iconStart={X}>
                   Remove
                 </Button>
               </Row>

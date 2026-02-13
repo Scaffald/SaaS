@@ -255,7 +255,7 @@ export function ConnectionFollowButtons({
           <Row gap={8} flexWrap="wrap">
             <Button
               size="md"
-              icon={UserCheck}
+              iconStart={UserCheck}
               theme="success"
               variant="outline"
               disabled={isConnectionMutating}
@@ -265,7 +265,7 @@ export function ConnectionFollowButtons({
             </Button>
             <Button
               size="md"
-              icon={UserMinus}
+              iconStart={UserMinus}
               variant="outline"
               theme="error"
               onPress={handleRemoveConnection}
@@ -279,7 +279,7 @@ export function ConnectionFollowButtons({
         {connectionButtonState.type === 'pending_sent' && (
           <Button
             size="md"
-            icon={Loader2}
+            iconStart={Loader2}
             variant="outline"
             disabled={isConnectionMutating}
             flex={1}
@@ -292,7 +292,7 @@ export function ConnectionFollowButtons({
           <Row gap={8} flexWrap="wrap">
             <Button
               size="md"
-              icon={CheckCircle2}
+              iconStart={CheckCircle2}
               theme="success"
               onPress={handleAcceptRequest}
               disabled={isConnectionMutating}
@@ -302,7 +302,7 @@ export function ConnectionFollowButtons({
             </Button>
             <Button
               size="md"
-              icon={X}
+              iconStart={X}
               variant="outline"
               theme="error"
               onPress={handleDeclineRequest}
@@ -316,7 +316,7 @@ export function ConnectionFollowButtons({
         {connectionButtonState.type === 'none' && (
           <Button
             size="md"
-            icon={isConnectionMutating ? Loader2 : UserPlus}
+            iconStart={isConnectionMutating ? Loader2 : UserPlus}
             color="primary"
             onPress={handleConnect}
             disabled={isConnectionMutating}
@@ -330,7 +330,7 @@ export function ConnectionFollowButtons({
         {!connectionStatus.isConnected && (
           <Button
             size="md"
-            icon={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
+            iconStart={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
             variant={followStatus.isFollowing ? 'outlined' : 'outlined'}
             theme={followStatus.isFollowing ? 'error' : 'blue'}
             onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}

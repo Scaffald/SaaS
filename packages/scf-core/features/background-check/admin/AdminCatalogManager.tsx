@@ -486,7 +486,7 @@ export function AdminCatalogManager() {
               <Button
                 size="sm"
                 variant="outline"
-                icon={RefreshCcw}
+                iconStart={RefreshCcw}
                 disabled={packagesQuery.isLoading || checkTypesQuery.isLoading}
                 onPress={() => {
                   void packagesQuery.refetch()
@@ -497,7 +497,7 @@ export function AdminCatalogManager() {
               </Button>
               <Button
                 size="sm"
-                icon={Plus}
+                iconStart={Plus}
                 onPress={() => openPackageDialog('create')}
                 disabled={checkTypes.length === 0}
               >
@@ -542,7 +542,7 @@ export function AdminCatalogManager() {
                       <Button
                         size="xs"
                         variant="outline"
-                        icon={Edit3}
+                        iconStart={Edit3}
                         onPress={() => openPackageDialog('edit', pkg)}
                       >
                         Edit
@@ -635,7 +635,7 @@ export function AdminCatalogManager() {
               </Text>
             </Stack>
             <Row gap={8} flexWrap="wrap">
-              <Button size="sm" icon={Plus} onPress={() => openCheckTypeDialog('create')}>
+              <Button size="sm" iconStart={Plus} onPress={() => openCheckTypeDialog('create')}>
                 New check type
               </Button>
             </Row>
@@ -675,7 +675,7 @@ export function AdminCatalogManager() {
                       <Button
                         size="xs"
                         variant="outline"
-                        icon={Edit3}
+                        iconStart={Edit3}
                         onPress={() => openCheckTypeDialog('edit', type)}
                       >
                         Edit

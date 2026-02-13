@@ -186,7 +186,7 @@ export function AssessmentWizard({
         <Stack padding="md" borderTopWidth={1} borderTopColor="$borderColor">
           <Row gap={12} justify="space-between">
             {showPrevious && (
-              <Button size="md" variant="outline" icon={ChevronLeft} onPress={onPrevious}>
+              <Button size="md" variant="outline" iconStart={ChevronLeft} onPress={onPrevious}>
                 Previous
               </Button>
             )}

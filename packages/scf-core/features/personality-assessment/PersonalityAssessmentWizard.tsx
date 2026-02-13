@@ -244,7 +244,7 @@ export function PersonalityAssessmentWizard() {
             <Button
               size="md"
               variant="outline"
-              icon={ChevronLeft}
+              iconStart={ChevronLeft}
               onPress={handlePrevious}
               disabled={!canGoPrevious}
             >

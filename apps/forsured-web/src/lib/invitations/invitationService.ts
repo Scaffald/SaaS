@@ -7,6 +7,7 @@
  * relationship types with constraint checking and referral tracking.
  */
 
+<<<<<<< HEAD
 import { SupabaseClient } from "@supabase/supabase-js";
 import {
   core as defaultCore,
@@ -14,6 +15,11 @@ import {
   supabase,
 } from "../supabase";
 import { auditService } from "../audit/AuditService";
+=======
+import { SupabaseClient } from '@supabase/supabase-js'
+import { forsured as defaultForsured } from '../supabase'
+import { auditService } from '../audit/AuditService'
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 import type {
   ConstraintCheckResult,
   CreateInvitationInput,
@@ -42,10 +48,14 @@ function generateReferralCode(): string {
  * @param client - Optional Supabase client (defaults to app's anon client)
  */
 export function createInvitationService(client?: SupabaseClient) {
+<<<<<<< HEAD
   // Schema query helpers that use the provided client or default
   const core = (table: string) =>
     client ? client.schema("core").from(table) : defaultCore(table);
 
+=======
+  // Schema query helper that uses the provided client or default
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
   const forsured = (table: string) =>
     client ? client.schema("forsured").from(table) : defaultForsured(table);
 
@@ -54,10 +64,17 @@ export function createInvitationService(client?: SupabaseClient) {
      * Get all active invitation rules
      */
     async getRules(): Promise<InvitationRule[]> {
+<<<<<<< HEAD
       const { data, error } = await core("invitation_rules")
         .select("*")
         .eq("is_active", true)
         .order("source_role");
+=======
+      const { data, error } = await forsured('invitation_rules')
+        .select('*')
+        .eq('is_active', true)
+        .order('source_role')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
       if (error) throw error;
       return data || [];
@@ -67,10 +84,17 @@ export function createInvitationService(client?: SupabaseClient) {
      * Get rules available for a specific user role
      */
     async getRulesForRole(sourceRole: string): Promise<InvitationRule[]> {
+<<<<<<< HEAD
       const { data, error } = await core("invitation_rules")
         .select("*")
         .eq("source_role", sourceRole)
         .eq("is_active", true);
+=======
+      const { data, error } = await forsured('invitation_rules')
+        .select('*')
+        .eq('source_role', sourceRole)
+        .eq('is_active', true)
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
       if (error) throw error;
       return data || [];
@@ -80,10 +104,17 @@ export function createInvitationService(client?: SupabaseClient) {
      * Get a single rule by ID
      */
     async getRule(ruleId: string): Promise<InvitationRule | null> {
+<<<<<<< HEAD
       const { data, error } = await core("invitation_rules")
         .select("*")
         .eq("id", ruleId)
         .single();
+=======
+      const { data, error } = await forsured('invitation_rules')
+        .select('*')
+        .eq('id', ruleId)
+        .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
       if (error) return null;
       return data;
@@ -108,10 +139,17 @@ export function createInvitationService(client?: SupabaseClient) {
       }
 
       // Check if target user exists
+<<<<<<< HEAD
       const { data: targetUser } = await core("users")
         .select("id")
         .eq("email", targetEmail.toLowerCase())
         .single();
+=======
+      const { data: targetUser } = await forsured('users')
+        .select('id')
+        .eq('email', targetEmail.toLowerCase())
+        .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
       if (!targetUser) {
         // New user, no existing relationships
@@ -122,7 +160,11 @@ export function createInvitationService(client?: SupabaseClient) {
       const relationshipType = `${rule.source_role}_${rule.target_role}`;
 
       // Check for existing relationship of this type
+<<<<<<< HEAD
       const { data: existingRel } = await core("user_relationships")
+=======
+      const { data: existingRel } = await forsured('user_relationships')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .select(`
           id,
           source_user_id,
@@ -135,10 +177,17 @@ export function createInvitationService(client?: SupabaseClient) {
 
       if (existingRel) {
         // Fetch the source user details
+<<<<<<< HEAD
         const { data: sourceUser } = await core("users")
           .select("id, full_name, email")
           .eq("id", existingRel.source_user_id)
           .single();
+=======
+        const { data: sourceUser } = await forsured('users')
+          .select('id, full_name, email')
+          .eq('id', existingRel.source_user_id)
+          .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
         return {
           allowed: false,
@@ -181,7 +230,11 @@ export function createInvitationService(client?: SupabaseClient) {
         ).toISOString()
         : null;
 
+<<<<<<< HEAD
       const { data, error } = await core("generic_invitations")
+=======
+      const { data, error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .insert({
           rule_id: input.ruleId,
           inviter_id: inviterId,
@@ -230,8 +283,13 @@ export function createInvitationService(client?: SupabaseClient) {
       acceptingUserId: string,
     ): Promise<{ success: boolean; relationshipCreated: boolean }> {
       // Get invitation with rule
+<<<<<<< HEAD
       const { data: invitation, error: fetchError } = await core(
         "generic_invitations",
+=======
+      const { data: invitation, error: fetchError } = await forsured(
+        'generic_invitations'
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
       )
         .select(`
           *,
@@ -251,7 +309,11 @@ export function createInvitationService(client?: SupabaseClient) {
       }
 
       // Update invitation status
+<<<<<<< HEAD
       const { error: updateError } = await core("generic_invitations")
+=======
+      const { error: updateError } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .update({
           status: "accepted",
           accepted_at: new Date().toISOString(),
@@ -280,7 +342,11 @@ export function createInvitationService(client?: SupabaseClient) {
           }
         } else {
           // User-to-user relationship
+<<<<<<< HEAD
           const { error: relError } = await core("user_relationships")
+=======
+          const { error: relError } = await forsured('user_relationships')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
             .insert({
               source_user_id: invitation.inviter_id,
               source_organization_id: invitation.inviter_organization_id,
@@ -321,7 +387,11 @@ export function createInvitationService(client?: SupabaseClient) {
       decliningUserId: string,
       reason?: string,
     ): Promise<void> {
+<<<<<<< HEAD
       const { error } = await core("generic_invitations")
+=======
+      const { error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .update({
           status: "declined",
           declined_at: new Date().toISOString(),
@@ -347,10 +417,15 @@ export function createInvitationService(client?: SupabaseClient) {
     /**
      * Get pending invitations for a user (by email)
      */
+<<<<<<< HEAD
     async getPendingForEmail(
       email: string,
     ): Promise<InvitationWithRelations[]> {
       const { data, error } = await core("generic_invitations")
+=======
+    async getPendingForEmail(email: string): Promise<InvitationWithRelations[]> {
+      const { data, error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .select(`
           *,
           rule:invitation_rules (*)
@@ -366,9 +441,15 @@ export function createInvitationService(client?: SupabaseClient) {
       const inviterIds = [...new Set(invitations.map((inv) => inv.inviter_id))];
 
       if (inviterIds.length > 0) {
+<<<<<<< HEAD
         const { data: inviters } = await core("users")
           .select("id, full_name, email")
           .in("id", inviterIds);
+=======
+        const { data: inviters } = await forsured('users')
+          .select('id, full_name, email')
+          .in('id', inviterIds)
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
         const inviterMap = new Map(inviters?.map((u) => [u.id, u]) || []);
 
@@ -385,7 +466,11 @@ export function createInvitationService(client?: SupabaseClient) {
      * Get invitations sent by a user
      */
     async getSentByUser(userId: string): Promise<InvitationWithRelations[]> {
+<<<<<<< HEAD
       const { data, error } = await core("generic_invitations")
+=======
+      const { data, error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .select(`
           *,
           rule:invitation_rules (*)
@@ -400,10 +485,15 @@ export function createInvitationService(client?: SupabaseClient) {
     /**
      * Look up invitation by referral code
      */
+<<<<<<< HEAD
     async getByReferralCode(
       code: string,
     ): Promise<InvitationWithRelations | null> {
       const { data, error } = await core("generic_invitations")
+=======
+    async getByReferralCode(code: string): Promise<InvitationWithRelations | null> {
+      const { data, error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .select(`
           *,
           rule:invitation_rules (*)
@@ -415,10 +505,17 @@ export function createInvitationService(client?: SupabaseClient) {
 
       // Fetch inviter details
       if (data?.inviter_id) {
+<<<<<<< HEAD
         const { data: inviter } = await core("users")
           .select("id, full_name, email")
           .eq("id", data.inviter_id)
           .single();
+=======
+        const { data: inviter } = await forsured('users')
+          .select('id, full_name, email')
+          .eq('id', data.inviter_id)
+          .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
         if (inviter) {
           return { ...data, inviter };
@@ -431,10 +528,15 @@ export function createInvitationService(client?: SupabaseClient) {
     /**
      * Get a single invitation by ID
      */
+<<<<<<< HEAD
     async getById(
       invitationId: string,
     ): Promise<InvitationWithRelations | null> {
       const { data, error } = await core("generic_invitations")
+=======
+    async getById(invitationId: string): Promise<InvitationWithRelations | null> {
+      const { data, error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .select(`
           *,
           rule:invitation_rules (*)
@@ -446,10 +548,17 @@ export function createInvitationService(client?: SupabaseClient) {
 
       // Fetch inviter details
       if (data?.inviter_id) {
+<<<<<<< HEAD
         const { data: inviter } = await core("users")
           .select("id, full_name, email")
           .eq("id", data.inviter_id)
           .single();
+=======
+        const { data: inviter } = await forsured('users')
+          .select('id, full_name, email')
+          .eq('id', data.inviter_id)
+          .single()
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
         if (inviter) {
           return { ...data, inviter };
@@ -472,7 +581,11 @@ export function createInvitationService(client?: SupabaseClient) {
         ? "email_opened_at"
         : "email_clicked_at";
 
+<<<<<<< HEAD
       const { error } = await core("generic_invitations")
+=======
+      const { error } = await forsured('generic_invitations')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .update({ [field]: new Date().toISOString() })
         .eq("id", invitationId);
 
@@ -488,8 +601,13 @@ export function createInvitationService(client?: SupabaseClient) {
       userId: string,
       type?: string,
     ): Promise<UserRelationship[]> {
+<<<<<<< HEAD
       let query = core("user_relationships")
         .select("*")
+=======
+      let query = forsured('user_relationships')
+        .select('*')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .or(`source_user_id.eq.${userId},target_user_id.eq.${userId}`)
         .eq("status", "active");
 
@@ -512,7 +630,11 @@ export function createInvitationService(client?: SupabaseClient) {
       relationshipId: string,
       userId: string,
     ): Promise<void> {
+<<<<<<< HEAD
       const { error } = await core("user_relationships")
+=======
+      const { error } = await forsured('user_relationships')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .update({
           status: "removed",
           updated_at: new Date().toISOString(),
@@ -542,10 +664,17 @@ export function createInvitationService(client?: SupabaseClient) {
      * Get all invitation rules (including inactive) for admin
      */
     async getAllRulesAdmin(): Promise<InvitationRule[]> {
+<<<<<<< HEAD
       const { data, error } = await core("invitation_rules")
         .select("*")
         .order("source_role")
         .order("target_role");
+=======
+      const { data, error } = await forsured('invitation_rules')
+        .select('*')
+        .order('source_role')
+        .order('target_role')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
       if (error) throw error;
       return data || [];
@@ -565,7 +694,11 @@ export function createInvitationService(client?: SupabaseClient) {
       },
       adminUserId: string,
     ): Promise<InvitationRule> {
+<<<<<<< HEAD
       const { data, error } = await core("invitation_rules")
+=======
+      const { data, error } = await forsured('invitation_rules')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .update({
           ...updates,
           updated_at: new Date().toISOString(),
@@ -620,7 +753,11 @@ export function createInvitationService(client?: SupabaseClient) {
       },
       adminUserId: string,
     ): Promise<InvitationRule> {
+<<<<<<< HEAD
       const { data, error } = await core("invitation_rules")
+=======
+      const { data, error } = await forsured('invitation_rules')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
         .insert({
           ...input,
           is_active: true,
@@ -656,12 +793,21 @@ export function createInvitationService(client?: SupabaseClient) {
       activeRelationships: number;
     }> {
       const [invitationsResult, relationshipsResult] = await Promise.all([
+<<<<<<< HEAD
         core("generic_invitations")
           .select("status")
           .then(({ data }) => data || []),
         core("user_relationships")
           .select("id")
           .eq("status", "active")
+=======
+        forsured('generic_invitations')
+          .select('status')
+          .then(({ data }) => data || []),
+        forsured('user_relationships')
+          .select('id')
+          .eq('status', 'active')
+>>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
           .then(({ data }) => data || []),
       ]);
 

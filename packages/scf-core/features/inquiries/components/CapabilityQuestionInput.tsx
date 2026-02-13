@@ -29,7 +29,7 @@ export function CapabilityQuestionInput({
           theme={localValue === true ? 'success' : undefined}
           variant={localValue === true ? undefined : 'outlined'}
           onPress={() => handleValueChange(true)}
-          icon={localValue === true ? Check : undefined}
+          iconStart={localValue === true ? Check : undefined}
         >
           Yes
         </Button>
@@ -38,7 +38,7 @@ export function CapabilityQuestionInput({
           theme={localValue === false ? 'error' : undefined}
           variant={localValue === false ? undefined : 'outlined'}
           onPress={() => handleValueChange(false)}
-          icon={localValue === false ? X : undefined}
+          iconStart={localValue === false ? X : undefined}
         >
           No
         </Button>

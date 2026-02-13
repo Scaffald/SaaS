@@ -402,7 +402,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
             <Button
-              icon={Plus}
+              iconStart={Plus}
               onPress={() => {
                 setIsAdding(true)
                 setEditingId(null)
@@ -496,14 +496,14 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                     <Button
                       size="xs"
                       variant="outline"
-                      icon={ArrowUp}
+                      iconStart={ArrowUp}
                       onPress={() => handleMoveUp(index)}
                       disabled={index === 0 || reorderMutation.isPending}
                     />
                     <Button
                       size="xs"
                       variant="outline"
-                      icon={ArrowDown}
+                      iconStart={ArrowDown}
                       onPress={() => handleMoveDown(index)}
                       disabled={index === portfolioItems.length - 1 || reorderMutation.isPending}
                     />
@@ -511,7 +511,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                     <Button
                       size="xs"
                       variant="outline"
-                      icon={Edit3}
+                      iconStart={Edit3}
                       onPress={() => handleEdit(item)}
                       disabled={isEditing}
                     />

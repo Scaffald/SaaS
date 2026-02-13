@@ -96,7 +96,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
           <Text color="$gray11">Pre-funded balance for automatic payments</Text>
         </Stack>
         {!showDepositForm && (
-          <Button size="sm" color="primary" icon={Plus} onPress={() => setShowDepositForm(true)}>
+          <Button size="sm" color="primary" iconStart={Plus} onPress={() => setShowDepositForm(true)}>
             Add Credits
           </Button>
         )}
@@ -142,7 +142,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
             <Button
               size="md"
               color="primary"
-              icon={CreditCard}
+              iconStart={CreditCard}
               onPress={() => {
                 const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
                 if (Number.isNaN(amountCents) || amountCents <= 0) {

@@ -474,7 +474,7 @@ export function APIKeyScopesManager({
                 color="primary"
                 onPress={handleUpdate}
                 disabled={isUpdating || !hasChanges() || selectedScopes.length === 0 || success}
-                icon={isUpdating ? <Spinner /> : undefined}
+                iconStart={isUpdating ? <Spinner /> : undefined}
               >
                 {isUpdating ? 'Updating...' : 'Update Permissions'}
               </Button>

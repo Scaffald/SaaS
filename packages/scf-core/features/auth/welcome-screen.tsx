@@ -24,7 +24,7 @@ const createDefaultSlides = (
     Content: () => (
       <OnboardingStepContent
         title={t('auth.welcome.steps.discover.title')}
-        icon={UserSearch}
+        iconStart={UserSearch}
         description={t('auth.welcome.steps.discover.description')}
       />
     ),
@@ -34,7 +34,7 @@ const createDefaultSlides = (
     Content: () => (
       <OnboardingStepContent
         title={t('auth.welcome.steps.connect.title')}
-        icon={Share2}
+        iconStart={Share2}
         description={t('auth.welcome.steps.connect.description')}
       />
     ),
@@ -45,7 +45,7 @@ const createDefaultSlides = (
     Content: () => (
       <OnboardingStepContent
         title={t('auth.welcome.steps.grow.title')}
-        icon={Sprout}
+        iconStart={Sprout}
         description={t('auth.welcome.steps.grow.description')}
       />
     ),
@@ -81,7 +81,7 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
             Content: () => (
               <OnboardingStepContent
                 title={slide.title}
-                icon={IconComponent}
+                iconStart={IconComponent}
                 description={slide.description}
               />
             ),

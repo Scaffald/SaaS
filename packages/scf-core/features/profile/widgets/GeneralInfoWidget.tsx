@@ -128,7 +128,7 @@ export function GeneralInfoWidget({
                   <Button
                     size="sm"
                     theme="info"
-                    icon={MessageSquarePlus}
+                    iconStart={MessageSquarePlus}
                     onPress={handleLeaveReview}
                   >
                     <Text>Add Review</Text>

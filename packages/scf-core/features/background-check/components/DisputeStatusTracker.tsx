@@ -133,7 +133,7 @@ export function DisputeStatusTracker({
         <Button
           size="xs"
           variant="outline"
-          icon={RefreshCcw}
+          iconStart={RefreshCcw}
           onPress={onRefresh}
           disabled={!onRefresh}
         >

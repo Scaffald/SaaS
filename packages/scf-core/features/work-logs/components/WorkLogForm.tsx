@@ -172,7 +172,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           <Stack gap={12}>
             <Row justify="space-between" align="center">
               <Text>Time Entries</Text>
-              <Button size="sm" icon={Plus} onPress={addTimeEntry} variant="outline">
+              <Button size="sm" iconStart={Plus} onPress={addTimeEntry} variant="outline">
                 Add Entry
               </Button>
             </Row>
@@ -223,7 +223,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 placeholder="Add a task and press the plus icon"
                 flex={1}
               />
-              <Button size="sm" icon={Plus} onPress={addTask}>
+              <Button size="sm" iconStart={Plus} onPress={addTask}>
                 Add
               </Button>
             </Row>
@@ -288,7 +288,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             <Text>Location Capture</Text>
             <Row gap={8} align="center">
               <Button
-                icon={MapPin}
+                iconStart={MapPin}
                 onPress={captureLocation}
                 size="sm"
                 variant="outline"
@@ -355,7 +355,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             )}
           </Stack>
 
-          <Button icon={Save} size="lg" onPress={() => submit()} disabled={isSubmitting}>
+          <Button iconStart={Save} size="lg" onPress={() => submit()} disabled={isSubmitting}>
             {isSubmitting ? 'Saving…' : submitLabel}
           </Button>
         </Stack>

@@ -111,7 +111,7 @@ export default function TeamAnalyticsPage() {
             <Button
               size="md"
               variant="outline"
-              icon={ArrowLeft}
+              iconStart={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
             >Back to team</Button>
             <Row gap={8} align="center">

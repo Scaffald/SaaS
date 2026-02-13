@@ -4,7 +4,7 @@
 // Provides sync functionality between ForSured and Scaffald systems.
 // Uses real Supabase client for database operations.
 
-import { forsured, core } from '../lib/supabase';
+import { forsured } from '../lib/supabase';
 import { scaffaldClient } from '../lib/scaffald/client';
 import type { ScaffaldCompany, ScaffaldProject } from '../lib/scaffald/types';
 
@@ -192,8 +192,8 @@ export async function syncCompany(scaffaldCompanyId: string): Promise<SyncResult
     const existingSync = await getSyncRecord('company', scaffaldCompanyId);
 
     if (existingSync) {
-      // Update existing organization
-      const { error } = await core('organizations')
+      // Update existing organization in forsured.organizations
+      const { error } = await forsured('organizations')
         .update({
           name: scaffaldCompany.name,
           // Note: address and other fields depend on actual schema
@@ -225,8 +225,8 @@ export async function syncCompany(scaffaldCompanyId: string): Promise<SyncResult
       return { status: 'updated', id: existingSync.forsured_id };
     }
 
-    // 3. Create new organization in core.organizations
-    const { data: newOrg, error: createError } = await core('organizations')
+    // 3. Create new organization in forsured.organizations
+    const { data: newOrg, error: createError } = await forsured('organizations')
       .insert({
         scaffald_company_id: scaffaldCompanyId,
         name: scaffaldCompany.name,
@@ -271,7 +271,7 @@ export async function syncCompany(scaffaldCompanyId: string): Promise<SyncResult
 export async function disconnectCompany(forsuredOrgId: string): Promise<void> {
   try {
     // Remove scaffald_company_id from organization
-    const { error: updateError } = await core('organizations')
+    const { error: updateError } = await forsured('organizations')
       .update({ scaffald_company_id: null })
       .eq('id', forsuredOrgId);
 

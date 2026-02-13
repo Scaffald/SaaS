@@ -76,7 +76,7 @@ export function WorkLogListScreen() {
           </Stack>
           <Button
             size="md"
-            icon={Plus}
+            iconStart={Plus}
             onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
           >
             New Work Log
@@ -177,17 +177,17 @@ export function WorkLogListScreen() {
 
                   <Row gap={16} flexWrap="wrap">
                     <MetricPill
-                      icon={Activity}
+                      iconStart={Activity}
                       label="Hours"
                       value={`${item.totalHours.toFixed(2)}h`}
                     />
                     <MetricPill
-                      icon={MessagesSquare}
+                      iconStart={MessagesSquare}
                       label="Comments"
                       value={`${item.commentCount ?? 0}`}
                     />
                     <MetricPill
-                      icon={DownloadCloud}
+                      iconStart={DownloadCloud}
                       label="Photos"
                       value={`${item.photoCount ?? 0}`}
                     />
@@ -343,7 +343,7 @@ function EmptyState({ onCreate }: EmptyStateProps) {
           Create your first work log to start tracking hours, documenting tasks, and collaborating
           with your team.
         </Paragraph>
-        <Button size="md" icon={DownloadCloud} onPress={onCreate}>
+        <Button size="md" iconStart={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
       </Stack>

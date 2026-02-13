@@ -156,7 +156,7 @@ export const MapFilterBar = ({
         backgroundColor="$background"
         hoverStyle={{ backgroundColor: '$backgroundHover' }}
         pressStyle={{ backgroundColor: '$backgroundPress' }}
-        icon={resultsCount > 0 ? undefined : List}
+        iconStart={resultsCount > 0 ? undefined : List}
       >
         {resultsCount > 0 ? (
           <Text>
@@ -171,7 +171,7 @@ export const MapFilterBar = ({
       <Button
         size="md"
         variant="outline"
-        icon={RotateCcw}
+        iconStart={RotateCcw}
         scaleIcon={1.2}
         onPress={onReset}
         backgroundColor="$background"

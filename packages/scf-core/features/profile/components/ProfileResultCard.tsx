@@ -72,7 +72,7 @@ export function ProfileResultCard({
               <Button
                 size="xs"
                 variant="outline"
-                icon={isLoading ? undefined : X}
+                iconStart={isLoading ? undefined : X}
                 onPress={onRemove}
                 disabled={removeDisabled || isRemoving || isLoading}
               >

@@ -143,7 +143,7 @@ export function TeamCommentThread({
         <Row justify="flex-end">
           <Button
             size="sm"
-            icon={Send}
+            iconStart={Send}
             backgroundColor="$color9"
             color="$gray11"
             onPress={() => void handleSubmit()}

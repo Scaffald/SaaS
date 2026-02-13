@@ -102,7 +102,7 @@ export function APIKeysList({
             Manage API keys for third-party integrations and SDK access
           </Paragraph>
         </Stack>
-        <Button icon={Plus} onPress={onCreateKey} color="primary">
+        <Button iconStart={Plus} onPress={onCreateKey} color="primary">
           Create API Key
         </Button>
       </Row>
@@ -120,7 +120,7 @@ export function APIKeysList({
                 Create your first API key to start using the Scaffald SDK
               </Paragraph>
             </Stack>
-            <Button icon={Plus} onPress={onCreateKey} color="primary">
+            <Button iconStart={Plus} onPress={onCreateKey} color="primary">
               Create Your First API Key
             </Button>
           </Stack>
@@ -164,7 +164,7 @@ export function APIKeysList({
                       <Button
                         size="xs"
                         chromeless
-                        icon={Copy}
+                        iconStart={Copy}
                         onPress={() => copyToClipboard(key.key_prefix, key.id)}
                       >
                         {copiedKeyId === key.id ? 'Copied!' : ''}
@@ -173,7 +173,7 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Actions Menu */}
-                  <Button size="sm" chromeless  icon={MoreVertical} />
+                  <Button size="sm" chromeless  iconStart={MoreVertical} />
                 </Row>
 
                 {/* Key Metadata */}
@@ -268,7 +268,7 @@ export function APIKeysList({
                       size="sm"
                       variant="outline"
                       color="error"
-                      icon={Trash2}
+                      iconStart={Trash2}
                       onPress={() => onRevokeKey(key.id)}
                     >
                       Revoke

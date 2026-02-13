@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@scf/schemas'
-import { Table } from '@unicornlove/beyond-ui'
+import { Table, useThemeContext } from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -16,6 +16,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   useInviteOrganizationMember,
   useOrganizationInvites,
@@ -28,6 +29,7 @@ type OrganizationMembersPanelProps = {
 }
 
 export function OrganizationMembersPanel({ organizationId }: OrganizationMembersPanelProps) {
+  const { theme } = useThemeContext()
   const { data: members, isLoading: membersLoading } = useOrganizationMembers(organizationId)
   const {
     data: invites,
@@ -89,7 +91,9 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                   onChangeText={(value) => field.onChange(value)}
                   placeholder="teammate@example.com"
                 />
-                {fieldState.error ? <Text color="$red10">{fieldState.error?.message}</Text> : null}
+                {fieldState.error ? (
+                  <Text style={{ color: colors.text[theme].error }}>{fieldState.error?.message}</Text>
+                ) : null}
               </Stack>
             )}
           />
@@ -125,7 +129,13 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       <Card bordered padding="md" gap={12}>
         <Row justify="space-between" align="center">
           <H4>Members</H4>
-          {membersLoading ? <Spinner /> : <Text color="$gray11">{activeMembers.length} total</Text>}
+          {membersLoading ? (
+            <Spinner />
+          ) : (
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {activeMembers.length} total
+            </Text>
+          )}
         </Row>
         <Separator />
         {membersLoading ? (
@@ -157,13 +167,15 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                     <Table.Row key={member.userId}>
                       <Table.Cell>
                         <Text>{member.profile?.display_name ?? 'Unknown'}</Text>
-                        <Paragraph color="$gray11">{member.profile?.headline}</Paragraph>
+                        <Paragraph style={{ color: colors.text[theme].secondary }}>
+                          {member.profile?.headline}
+                        </Paragraph>
                       </Table.Cell>
                       <Table.Cell>{member.roles.join(', ') || 'Member'}</Table.Cell>
                       <Table.Cell>
                         {activitySummary ? `${activitySummary.actions} actions` : '—'}
                         {activitySummary?.lastActionAt ? (
-                          <Paragraph color="$gray11">
+                          <Paragraph style={{ color: colors.text[theme].secondary }}>
                             {new Date(activitySummary.lastActionAt).toLocaleDateString()}
                           </Paragraph>
                         ) : null}
@@ -180,13 +192,19 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       <Card bordered padding="md" gap={12}>
         <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
-          {invitesLoading ? <Spinner /> : <Text color="$gray11">{pendingInvites.length} pending</Text>}
+          {invitesLoading ? (
+            <Spinner />
+          ) : (
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {pendingInvites.length} pending
+            </Text>
+          )}
         </Row>
         <Separator />
         {invitesLoading ? (
           <Paragraph>Loading invitations…</Paragraph>
         ) : pendingInvites.length === 0 ? (
-          <Paragraph color="$gray11">No pending invitations</Paragraph>
+          <Paragraph style={{ color: colors.text[theme].secondary }}>No pending invitations</Paragraph>
         ) : (
           <Stack gap={8}>
             {pendingInvites.map(

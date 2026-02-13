@@ -73,7 +73,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {(application.attachments.resume.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="sm" icon={Download} chromeless>
+              <Button size="sm" iconStart={Download} chromeless>
                 Download
               </Button>
             </Row>
@@ -93,7 +93,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {(application.attachments.coverLetter.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="sm" icon={Download} chromeless>
+              <Button size="sm" iconStart={Download} chromeless>
                 Download
               </Button>
             </Row>
@@ -113,7 +113,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {(application.attachments.portfolio.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="sm" icon={Download} chromeless>
+              <Button size="sm" iconStart={Download} chromeless>
                 Download
               </Button>
             </Row>

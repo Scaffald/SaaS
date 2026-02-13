@@ -117,7 +117,7 @@ export function ProfileCompletionWidget({
                 <Button
                   size="xs"
                   theme="info"
-                  icon={ChevronRight}
+                  iconStart={ChevronRight}
                   onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
                 >
                   Complete

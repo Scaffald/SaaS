@@ -176,7 +176,7 @@ export function ConnectionsList() {
             <Button
               size="xs"
               variant="outline"
-              icon={Trash2}
+              iconStart={Trash2}
               onPress={() => handleRemove(conn.id)}
               disabled={removeConnectionMutation.isPending}
             >
@@ -209,7 +209,7 @@ export function ConnectionsList() {
           size="md"
         />
         {filteredConnections.length > 0 && (
-          <Button size="sm" variant="outline" icon={Download} onPress={handleExportCSV}>
+          <Button size="sm" variant="outline" iconStart={Download} onPress={handleExportCSV}>
             Export CSV
           </Button>
         )}

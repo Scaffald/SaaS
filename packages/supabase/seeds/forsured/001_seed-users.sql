@@ -85,13 +85,21 @@ FROM (VALUES
   ('50000000-0000-0000-0000-000000000032', 'superadmin@forsured-test.com', 'ForSured SuperAdmin', 'ForSured', 'SuperAdmin', '+1 (555) 004-0002', 'Jacksonville, FL, United States', 'super_admin'),
 
   -- =========================================================
-  -- SIMPLE TEST USERS (for Start.tsx quick login)
+  -- SIMPLE TEST USERS (for Start.tsx quick login) - legacy @forsured.test
   -- =========================================================
   -- Note: These use 10000000 IDs to match existing users in database
   ('10000000-0000-0000-0000-000000000001', 'test-gc@forsured.test', 'Test GC User', 'Test', 'GC', '+1 (555) 005-0001', 'New York, NY, United States', 'gc'),
   ('10000000-0000-0000-0000-000000000002', 'test-contractor@forsured.test', 'Test Contractor User', 'Test', 'Contractor', '+1 (555) 005-0002', 'Houston, TX, United States', 'contractor'),
   ('10000000-0000-0000-0000-000000000003', 'test-broker@forsured.test', 'Test Broker User', 'Test', 'Broker', '+1 (555) 005-0003', 'San Jose, CA, United States', 'broker'),
-  ('10000000-0000-0000-0000-000000000004', 'test-admin@forsured.test', 'Test Admin User', 'Test', 'Admin', '+1 (555) 005-0004', 'Austin, TX, United States', 'admin')
+  ('10000000-0000-0000-0000-000000000004', 'test-admin@forsured.test', 'Test Admin User', 'Test', 'Admin', '+1 (555) 005-0004', 'Austin, TX, United States', 'admin'),
+
+  -- =========================================================
+  -- MAGIC LINK TEST USERS (for Start.tsx quick login) - @example.com
+  -- =========================================================
+  ('10000000-0000-0000-0000-000000000010', 'manager@example.com', 'Test Manager', 'Test', 'Manager', '+1 (555) 006-0001', 'New York, NY, United States', 'gc'),
+  ('10000000-0000-0000-0000-000000000011', 'contractor@example.com', 'Test Contractor', 'Test', 'Contractor', '+1 (555) 006-0002', 'Houston, TX, United States', 'contractor'),
+  ('10000000-0000-0000-0000-000000000012', 'broker@example.com', 'Test Broker', 'Test', 'Broker', '+1 (555) 006-0003', 'San Jose, CA, United States', 'broker'),
+  ('10000000-0000-0000-0000-000000000013', 'admin@example.com', 'Test Admin', 'Test', 'Admin', '+1 (555) 006-0004', 'Austin, TX, United States', 'admin')
 ) AS users(id, email, name, first_name, last_name, phone, location, user_type)
 ON CONFLICT (id) DO NOTHING;
 
@@ -103,7 +111,10 @@ ON CONFLICT (id) DO NOTHING;
 -- =========================================================
 -- CREATE FORSURED USER PROFILES
 -- =========================================================
--- The test login users need forsured.user_profiles records
+-- Quick-login test users need forsured.user_profiles so
+-- ProtectedRoute allows access to dashboards.
+-- user_type must match CHECK constraint: gc, contractor, broker, admin
+-- =========================================================
 INSERT INTO forsured.user_profiles (
   scaffald_user_id,
   user_type,
@@ -111,12 +122,53 @@ INSERT INTO forsured.user_profiles (
   onboarding_step
 )
 VALUES
-  -- Test users for Start.tsx quick login (10000000 IDs)
+  -- Legacy @forsured.test quick-login users
   ('10000000-0000-0000-0000-000000000001', 'manager', true, 5),
   ('10000000-0000-0000-0000-000000000002', 'contractor', true, 5),
   ('10000000-0000-0000-0000-000000000003', 'broker', true, 5),
-  ('10000000-0000-0000-0000-000000000004', 'admin', true, 5)
+  ('10000000-0000-0000-0000-000000000004', 'admin', true, 5),
+  -- @example.com magic-link quick-login users
+  ('10000000-0000-0000-0000-000000000010', 'manager', true, 5),
+  ('10000000-0000-0000-0000-000000000011', 'contractor', true, 5),
+  ('10000000-0000-0000-0000-000000000012', 'broker', true, 5),
+  ('10000000-0000-0000-0000-000000000013', 'admin', true, 5)
 ON CONFLICT (scaffald_user_id) DO NOTHING;
+
+-- =========================================================
+-- CREATE FORSURED.USERS RECORDS
+-- =========================================================
+-- These mirror auth.users into the forsured-owned users table.
+-- Required for all forsured.* FK references (tasks, projects, etc.)
+-- =========================================================
+INSERT INTO forsured.users (id, email, name, display_name, role)
+VALUES
+  -- GC Users
+  ('50000000-0000-0000-0000-000000000001', 'gc-fresh@forsured-test.com', 'Fresh GC User', 'Fresh GC User', 'gc'),
+  ('50000000-0000-0000-0000-000000000002', 'gc-onboarding@forsured-test.com', 'Onboarding GC User', 'Onboarding GC User', 'gc'),
+  ('50000000-0000-0000-0000-000000000003', 'gc-active@forsured-test.com', 'Active GC User', 'Active GC User', 'gc'),
+  ('50000000-0000-0000-0000-000000000004', 'gc-multiproject@forsured-test.com', 'MultiProject GC User', 'MultiProject GC User', 'gc'),
+  -- Contractors
+  ('50000000-0000-0000-0000-000000000011', 'contractor-fresh@forsured-test.com', 'Fresh Contractor', 'Fresh Contractor', 'contractor'),
+  ('50000000-0000-0000-0000-000000000012', 'contractor-active@forsured-test.com', 'Active Contractor', 'Active Contractor', 'contractor'),
+  ('50000000-0000-0000-0000-000000000013', 'contractor-noncompliant@forsured-test.com', 'NonCompliant Contractor', 'NonCompliant Contractor', 'contractor'),
+  ('50000000-0000-0000-0000-000000000014', 'contractor-multiproject@forsured-test.com', 'MultiProject Contractor', 'MultiProject Contractor', 'contractor'),
+  -- Brokers
+  ('50000000-0000-0000-0000-000000000021', 'broker-fresh@forsured-test.com', 'Fresh Broker', 'Fresh Broker', 'broker'),
+  ('50000000-0000-0000-0000-000000000022', 'broker-active@forsured-test.com', 'Active Broker', 'Active Broker', 'broker'),
+  -- Admins
+  ('50000000-0000-0000-0000-000000000031', 'admin@forsured-test.com', 'ForSured Admin', 'ForSured Admin', 'admin'),
+  ('50000000-0000-0000-0000-000000000032', 'superadmin@forsured-test.com', 'ForSured SuperAdmin', 'ForSured SuperAdmin', 'super_admin'),
+  -- Legacy test users
+  ('10000000-0000-0000-0000-000000000001', 'test-gc@forsured.test', 'Test GC User', 'Test GC User', 'gc'),
+  ('10000000-0000-0000-0000-000000000002', 'test-contractor@forsured.test', 'Test Contractor User', 'Test Contractor User', 'contractor'),
+  ('10000000-0000-0000-0000-000000000003', 'test-broker@forsured.test', 'Test Broker User', 'Test Broker User', 'broker'),
+  ('10000000-0000-0000-0000-000000000004', 'test-admin@forsured.test', 'Test Admin User', 'Test Admin User', 'admin'),
+  -- Magic link test users
+  ('10000000-0000-0000-0000-000000000010', 'manager@example.com', 'Test Manager', 'Test Manager', 'gc'),
+  ('10000000-0000-0000-0000-000000000011', 'contractor@example.com', 'Test Contractor', 'Test Contractor', 'contractor'),
+  ('10000000-0000-0000-0000-000000000012', 'broker@example.com', 'Test Broker', 'Test Broker', 'broker'),
+  ('10000000-0000-0000-0000-000000000013', 'admin@example.com', 'Test Admin', 'Test Admin', 'admin')
+ON CONFLICT (id) DO NOTHING;
 
 COMMIT;
 

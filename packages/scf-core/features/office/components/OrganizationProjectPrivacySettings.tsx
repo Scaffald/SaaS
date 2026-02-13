@@ -117,7 +117,7 @@ export function OrganizationProjectPrivacySettings({
               <Button
                 size="xs"
                 variant="outline"
-                icon={ExternalLink}
+                iconStart={ExternalLink}
                 onPress={() => {
                   // TODO: Navigate to projects list filtered by this org
                   console.log('View projects with overrides')
