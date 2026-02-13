@@ -4,7 +4,8 @@ import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks
 import { SaveStatusIndicator, useThemeContext } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { ScrollView } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
@@ -186,8 +187,8 @@ export function ApplicationWizard({
         style={{
           backgroundColor: colors.bg[theme].default,
           borderBottomColor: colors.border[theme].default,
+          borderBottomWidth: 1,
         }}
-        borderBottomWidth={1}
         gap={12}
       >
         <Row justify="space-between" align="flex-start" width="100%">
@@ -220,12 +221,12 @@ export function ApplicationWizard({
           style={{
             backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
             borderBottomColor: theme === "light" ? colors.error[300] : colors.error[700],
+            borderBottomWidth: 1,
           }}
-          borderBottomWidth={1}
         >
           <Row gap={8} align="center">
-            <AlertCircle size="lg" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
-            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} flex={1}>
+            <AlertCircle size="lg" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], flex: 1 }}>
               {submitError.message || 'An error occurred'}
             </Text>
           </Row>
@@ -233,7 +234,7 @@ export function ApplicationWizard({
       )}
 
       {/* Main Content */}
-      <ScrollView flex={1}>
+      <ScrollView style={{ flex: 1 }}>
         <Stack padding="md" align="center">
           {currentStep === 'screening' && (
             <ScreeningStep
@@ -314,12 +315,14 @@ export function ApplicationWizard({
       {/* Cancel Confirmation Dialog */}
       {showCancelConfirm && (
         <Stack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
           align="center"
           justify="center"
           padding="md"
@@ -328,13 +331,13 @@ export function ApplicationWizard({
             style={{
               backgroundColor: colors.bg[theme].default,
               borderColor: colors.border[theme].default,
+              borderRadius: 16,
+              maxWidth: 400,
+              width: '100%',
+              borderWidth: 1,
             }}
-            borderRadius={16}
             padding="xl"
             gap={16}
-            maxWidth={400}
-            width="100%"
-            borderWidth={1}
           >
             <Stack gap={8}>
               <Text style={{ color: colors.text[theme].secondary }}>Cancel Application?</Text>
@@ -348,7 +351,7 @@ export function ApplicationWizard({
               <Button size="md" variant="outline" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>
-              <Button size="md" theme="error" onPress={confirmCancel}>
+              <Button size="md" color="error" onPress={confirmCancel}>
                 Exit Application
               </Button>
             </Row>

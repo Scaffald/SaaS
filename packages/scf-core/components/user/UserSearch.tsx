@@ -1,6 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useEffect, useState } from 'react'
+import { Pressable } from 'react-native'
 import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export interface UserSearchProps {
@@ -55,7 +56,10 @@ export function UserSearch({
   const [showResults, setShowResults] = useState(false)
 
   // Fetch all users (office.listUsers doesn't support search, so we filter client-side)
-  const { data, isLoading } = api.office.listUsers.useQuery(undefined, {
+  // Note: api.office typed via AppRouter; use type assertion if TS complains due to router collision
+  const { data, isLoading } = (
+    api as unknown as { office: { listUsers: { useQuery: (input?: undefined, opts?: { enabled?: boolean }) => { data?: { users: User[] }; isLoading: boolean } } } }
+  ).office.listUsers.useQuery(undefined, {
     enabled: true, // Always fetch users for filtering
   })
 
@@ -141,18 +145,17 @@ export function UserSearch({
     showResults && debouncedSearch.length >= 2 && (filteredUsers.length > 0 || isLoading)
 
   return (
-    <Stack gap={8} position="relative" width="100%">
+    <Stack gap={8} style={{ position: 'relative', width: '100%' }}>
       <Row
         gap={8}
         align="center"
-        borderWidth={1}
-        borderColor={error ? '$red8' : '$borderColor'}
-        borderRadius={16}
-        backgroundColor="$background"
-        paddingHorizontal={12}
-        paddingVertical={8}
-        focusStyle={{
-          borderColor: error ? '$red8' : '$color8',
+        style={{
+          borderWidth: 1,
+          borderColor: error ? '#ef4444' : '#e4e4e7',
+          borderRadius: 16,
+          backgroundColor: '#ffffff',
+          paddingHorizontal: 12,
+          paddingVertical: 8,
         }}
       >
         <Input
@@ -163,12 +166,10 @@ export function UserSearch({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           disabled={disabled}
-          borderWidth={0}
-          backgroundColor="transparent"
         />
         {isLoading && <Spinner size="sm" />}
         {searchTerm && !isLoading && (
-          <Text color="gray" cursor="pointer" onPress={handleClear} paddingHorizontal={8}>
+          <Text color="secondary" onPress={handleClear} style={{ paddingHorizontal: 8 }}>
             ✕
           </Text>
         )}
@@ -176,53 +177,45 @@ export function UserSearch({
 
       {showDropdown && (
         <Stack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={12}
-          backgroundColor="$background"
-          maxHeight={300}
-          overflow="scroll"
-          zIndex={1000}
-          shadowColor="$shadowColor"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.1}
-          shadowRadius={4}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: '#e4e4e7',
+            borderRadius: 12,
+            backgroundColor: '#ffffff',
+            maxHeight: 300,
+            overflow: 'scroll',
+            zIndex: 1000,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+          }}
         >
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user: User) => {
               return (
-                <Row
-                  key={user.id}
-                  padding="sm"
-                  gap={8}
-                  hoverStyle={{
-                    backgroundColor: '$backgroundHover',
-                  }}
-                  pressStyle={{
-                    backgroundColor: '$backgroundPress',
-                  }}
-                  cursor="pointer"
-                  onPress={() => handleSelect(user)}
-                >
-                  <Stack style={{ flex: 1 }} gap={4}>
-                    <Text>
+                <Pressable key={user.id} onPress={() => handleSelect(user)}>
+                  <Row padding="sm" gap={8}>
+                    <Stack style={{ flex: 1 }} gap={4}>
+                      <Text>
                       {user.first_name || user.last_name
                         ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
                         : user.display_name || user.username}
                     </Text>
-                    <Text color="gray">@{user.username}</Text>
-                  </Stack>
-                </Row>
+                      <Text color="secondary">@{user.username}</Text>
+                    </Stack>
+                  </Row>
+                </Pressable>
               )
             })
           ) : isLoading ? (
             <Stack padding={16} align="center">
-              <Text color="gray">Searching...</Text>
+              <Text color="secondary">Searching...</Text>
             </Stack>
           ) : null}
         </Stack>
@@ -230,19 +223,21 @@ export function UserSearch({
 
       {debouncedSearch.length >= 2 && !isLoading && filteredUsers.length === 0 && showResults && (
         <Stack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={12}
-          backgroundColor="$background"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: '#e4e4e7',
+            borderRadius: 12,
+            backgroundColor: '#ffffff',
+            zIndex: 1000,
+          }}
           padding="sm"
-          zIndex={1000}
         >
-          <Text color="gray">No users found for "{debouncedSearch}"</Text>
+          <Text color="secondary">No users found for "{debouncedSearch}"</Text>
         </Stack>
       )}
 

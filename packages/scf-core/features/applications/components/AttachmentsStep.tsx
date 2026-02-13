@@ -2,7 +2,8 @@ import { useGetUploadUrlMutation, useConfirmUploadMutation } from '@scf/core/uti
 import type { AttachmentMetadata } from '@scf/schemas'
 import { ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react-native'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
-import { Button, Progress, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { ProgressBarBase } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
@@ -363,13 +364,11 @@ export function AttachmentsStep({
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   Uploading...
                 </Text>
-                <Progress
+                <ProgressBarBase
                   value={uploadProgress.resume || 0}
-                  max={100}
-                  style={{ backgroundColor: colors.bg[theme].primary }}
-                >
-                  <Progress.Indicator animation="bouncy" />
-                </Progress>
+                  color="primary"
+                  style={{ backgroundColor: colors.bg[theme].default }}
+                />
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   {uploadProgress.resume || 0}%
                 </Text>
@@ -503,13 +502,11 @@ export function AttachmentsStep({
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   Uploading...
                 </Text>
-                <Progress
+                <ProgressBarBase
                   value={uploadProgress.cover_letter || 0}
-                  max={100}
-                  style={{ backgroundColor: colors.bg[theme].primary }}
-                >
-                  <Progress.Indicator animation="bouncy" />
-                </Progress>
+                  color="primary"
+                  style={{ backgroundColor: colors.bg[theme].default }}
+                />
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   {uploadProgress.cover_letter || 0}%
                 </Text>
@@ -645,13 +642,11 @@ export function AttachmentsStep({
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   Uploading...
                 </Text>
-                <Progress
+                <ProgressBarBase
                   value={uploadProgress.portfolio || 0}
-                  max={100}
-                  style={{ backgroundColor: colors.bg[theme].primary }}
-                >
-                  <Progress.Indicator animation="bouncy" />
-                </Progress>
+                  color="primary"
+                  style={{ backgroundColor: colors.bg[theme].default }}
+                />
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   {uploadProgress.portfolio || 0}%
                 </Text>
