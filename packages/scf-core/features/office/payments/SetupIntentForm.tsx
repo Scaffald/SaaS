@@ -80,7 +80,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
     return (
       <Card
         padding="sm"
-        style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
+        style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
         borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
         borderWidth={1}
       >
@@ -204,7 +204,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
       {errorMessage ? (
         <Card
           padding="sm"
-          style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
+          style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
           borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
           borderWidth={1}
         >

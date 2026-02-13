@@ -83,7 +83,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   if (error) {
     return (
       <Stack gap={12} padding="md">
-        <Card padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}>
+        <Card padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}>
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading messages</Text>
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} marginTop={8}>
             {error.message || 'Failed to load messages'}

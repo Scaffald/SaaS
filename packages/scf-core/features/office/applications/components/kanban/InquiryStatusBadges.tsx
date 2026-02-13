@@ -96,7 +96,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
         <Stack
-          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900]Subtle }}
+          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={8}

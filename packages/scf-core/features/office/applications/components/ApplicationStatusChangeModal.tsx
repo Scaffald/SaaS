@@ -279,7 +279,7 @@ export const ApplicationStatusChangeModal = ({
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
               <Card
                 padding="sm"
-                style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900]Subtle }}
+                style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
                 borderColor={theme === "light" ? colors.green[300] : colors.green[700]}
                 borderWidth={1}
               >
@@ -517,7 +517,7 @@ function HireSummaryCard({
     return (
       <Card
         padding="sm"
-        style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
+        style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
         borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
         borderWidth={1}
       >

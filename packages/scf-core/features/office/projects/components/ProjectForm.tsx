@@ -239,7 +239,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
 
           <Card
             padding="md"
-            style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
+            style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
             borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
             borderWidth={1}
           >
@@ -260,7 +260,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 <Stack
                   gap={8}
                   padding="xs"
-                  style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
+                  style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
                   borderRadius={8}
                 >
                   <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>

@@ -149,7 +149,7 @@ function Chip({
   tone?: 'surface' | 'warning'
 }) {
   const { theme } = useThemeContext()
-  const background = tone === 'warning' ? theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle : colors.bg[theme].muted
+  const background = tone === 'warning' ? theme === "light" ? colors.yellow[50] : colors.yellow[900] : colors.bg[theme].muted
   const border = tone === 'warning' ? theme === "light" ? colors.yellow[300] : colors.yellow[700] : colors.border[theme].default
   const textColor = tone === 'warning' ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].secondary
   return (

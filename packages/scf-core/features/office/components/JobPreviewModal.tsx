@@ -165,7 +165,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 )}
                 {formatRemoteOption(job.remote_option ?? null) && (
                   <Row
-                    style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900]Subtle }}
+                    style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
                     paddingHorizontal={12}
                     paddingVertical={4}
                     borderRadius={12}
@@ -304,12 +304,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Row
                 backgroundColor={
                   job.status === 'open'
-                    ? theme === "light" ? colors.green[50] : colors.green[900]Subtle
+                    ? theme === "light" ? colors.green[50] : colors.green[900]
                     : job.status === 'draft'
                       ? colors.bg[theme].muted
                       : job.status === 'paused'
-                        ? theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle
-                        : theme === "light" ? colors.error[50] : colors.error[900]Subtle
+                        ? theme === "light" ? colors.yellow[50] : colors.yellow[900]
+                        : theme === "light" ? colors.error[50] : colors.error[900]
                 }
                 paddingHorizontal={12}
                 paddingVertical={4}

@@ -207,7 +207,7 @@ export function OfficePaymentAnalytics() {
             <Card
               borderWidth={1}
               borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
-              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
+              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
               padding="md"
             >
               <Stack gap={12}>

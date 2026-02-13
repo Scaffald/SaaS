@@ -32,17 +32,17 @@ const getStatusColors = (status: string, theme: 'light' | 'dark') => {
       border: colors.border[theme].subtle,
     },
     open: {
-      backgroundColor: theme === "light" ? colors.green[50] : colors.green[900]Subtle,
+      backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
       text: theme === "light" ? colors.green[700] : colors.green[300],
       border: theme === "light" ? colors.green[300] : colors.green[700],
     },
     paused: {
-      backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle,
+      backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
       text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
       border: theme === "light" ? colors.yellow[300] : colors.yellow[700],
     },
     closed: {
-      backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle,
+      backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
       text: theme === "light" ? colors.error[700] : colors.error[300],
       border: theme === "light" ? colors.error[300] : colors.error[700],
     },

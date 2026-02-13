@@ -59,12 +59,12 @@ interface AdminCCPARequest {
 const getStatusColors = (
   theme: 'light' | 'dark'
 ): Record<AdminRequestStatus, { bg: string; text: string }> => ({
-  pending: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  pending: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900], text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
   processing: { bg: theme === "light" ? colors.blue[50] : colors.blue[900], text: theme === "light" ? colors.blue[700] : colors.blue[300] },
-  completed: { bg: theme === "light" ? colors.green[50] : colors.green[900]Subtle, text: theme === "light" ? colors.green[700] : colors.green[300] },
-  failed: { bg: theme === "light" ? colors.error[50] : colors.error[900]Subtle, text: theme === "light" ? colors.error[700] : colors.error[300] },
+  completed: { bg: theme === "light" ? colors.green[50] : colors.green[900], text: theme === "light" ? colors.green[700] : colors.green[300] },
+  failed: { bg: theme === "light" ? colors.error[50] : colors.error[900], text: theme === "light" ? colors.error[700] : colors.error[300] },
   cancelled: { bg: '$color4', text: colors.text[theme].secondary },
-  appealed: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  appealed: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900], text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
 })
 
 /**
@@ -72,9 +72,9 @@ const getStatusColors = (
  */
 const getPriorityColors = (theme: 'light' | 'dark'): Record<string, { bg: string; text: string }> => ({
   low: { bg: '$color4', text: colors.text[theme].secondary },
-  medium: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
-  high: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
-  urgent: { bg: theme === "light" ? colors.error[50] : colors.error[900]Subtle, text: theme === "light" ? colors.error[700] : colors.error[300] },
+  medium: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900], text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  high: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900], text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  urgent: { bg: theme === "light" ? colors.error[50] : colors.error[900], text: theme === "light" ? colors.error[700] : colors.error[300] },
 })
 
 /**
@@ -187,7 +187,7 @@ function RequestRow({
       padding="sm"
       style={{
         backgroundColor: request.is_overdue
-          ? theme === "light" ? colors.error[50] : colors.error[900]Subtle
+          ? theme === "light" ? colors.error[50] : colors.error[900]
           : colors.bg[theme].subtle,
       }}
       borderRadius={8}
@@ -495,7 +495,7 @@ export function CCPAAdminDashboard() {
         {(metrics?.overdue_count || 0) > 0 && (
           <Row
             padding="md"
-            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             borderRadius={12}
             borderWidth={1}
             borderColor={theme === "light" ? colors.error[300] : colors.error[700]}

@@ -205,7 +205,7 @@ function StatusChip({ status }: { status: string }) {
   const { theme } = useThemeContext()
   const normalized = status.replace(/_/g, ' ')
   const isOpen = status === 'open'
-  const background = isOpen ? theme === "light" ? colors.green[50] : colors.green[900]Subtle : colors.bg[theme].muted
+  const background = isOpen ? theme === "light" ? colors.green[50] : colors.green[900] : colors.bg[theme].muted
   const border = isOpen ? theme === "light" ? colors.green[300] : colors.green[700] : colors.border[theme].default
   const textColor = isOpen ? theme === "light" ? colors.green[700] : colors.green[300] : colors.text[theme].secondary
 

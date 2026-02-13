@@ -116,7 +116,7 @@ export function OrganizationProjectPrivacySettings({
 
         <Card
           padding="sm"
-          style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
+          style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
           borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
           borderWidth={1}
         >

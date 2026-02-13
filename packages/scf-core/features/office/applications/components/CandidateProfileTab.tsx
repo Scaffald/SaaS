@@ -73,11 +73,11 @@ export const CandidateProfileTab = ({
                 style={{
                   backgroundColor:
                     skill.proficiency === 'expert'
-                      ? theme === "light" ? colors.green[50] : colors.green[900]Subtle
+                      ? theme === "light" ? colors.green[50] : colors.green[900]
                       : skill.proficiency === 'advanced'
                         ? theme === "light" ? colors.blue[50] : colors.blue[900]
                         : skill.proficiency === 'intermediate'
-                          ? theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle
+                          ? theme === "light" ? colors.yellow[50] : colors.yellow[900]
                           : colors.bg[theme].muted,
                 }}
                 paddingHorizontal={12}
