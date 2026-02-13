@@ -181,28 +181,19 @@ export type {
 } from './resources/profile-import.js'
 
 export type {
-  NotificationStatus,
-  NotificationSeverity,
-  NotificationChannel,
-  DigestFrequency,
-  DevicePlatform,
+  NotificationType,
   Notification,
   ListNotificationsParams,
-  ListNotificationsResponse,
+  NotificationsListResponse,
+  NotificationResponse,
   UnreadCountResponse,
-  MarkAsReadParams,
-  MarkAsUnreadParams,
-  BulkIdsParams,
-  SuccessResponse,
   MarkAllAsReadResponse,
+  DeleteAllResponse,
   QuietHours,
-  ChannelSettings,
-  TypeOverride,
+  NotificationTypeSettings,
   NotificationPreferences,
-  SavePreferencesParams,
-  NotificationDevice,
-  RegisterDeviceParams,
-  RemoveDeviceParams,
+  UpdatePreferencesParams,
+  PreferencesResponse,
 } from './resources/notifications.js'
 
 export type { Industry, IndustryListResponse } from './resources/industries.js'
@@ -354,17 +345,23 @@ export type {
 } from './resources/employers.js'
 
 export type {
-  OccupationSearchResult,
-  SearchOccupationsParams,
-  SearchOccupationsResponse,
-  RIASECScores,
-  SaveCareerAssessmentParams,
-  SaveCareerAssessmentResponse,
-  CareerAssessmentStatus,
-  OccupationData,
-  GetOccupationParams,
-  RIASECStatus,
-  OccupationStatus,
+  Occupation,
+  OccupationDetails,
+  OccupationSkill,
+  OccupationKnowledge,
+  OccupationAbility,
+  AutocompleteSuggestion,
+  SearchParams,
+  GetSkillsParams,
+  GetRelatedParams,
+  AutocompleteParams,
+  OccupationsSearchResponse,
+  OccupationDetailsResponse,
+  SkillsResponse,
+  RelatedOccupationsResponse,
+  KnowledgeResponse,
+  AbilitiesResponse,
+  AutocompleteResponse,
 } from './resources/onet.js'
 
 export type {
@@ -457,8 +454,6 @@ export type {
 export type {
   UserProfilePreview,
   UserProfileDetailed,
-  UserSkill,
-  UserCertification,
   UserExperience,
   UserEducation,
   ReviewsSummary,

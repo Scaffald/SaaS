@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
-import { useScaffaldJobsClient } from './scaffald-client-provider'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ApiKey,
   ApiKeyCreated,

@@ -4,71 +4,112 @@ import { Resource } from './base'
 // Type Definitions
 // ============================================================================
 
-export interface OccupationSearchResult {
-  onetsoc_code: string
+export interface Occupation {
+  onet_code: string
   title: string
-  description?: string | null
+  description: string
+  alternate_titles: string[]
 }
 
-export interface SearchOccupationsParams {
+export interface OccupationDetails extends Occupation {
+  sample_of_reported_job_titles: string[]
+  tasks: string[]
+  technology_skills: string[]
+  knowledge: Array<{ name: string; level: number }>
+  skills: Array<{ name: string; level: number }>
+  abilities: Array<{ name: string; level: number }>
+  education: {
+    typical_education: string
+    related_experience: string
+    on_site_training: string
+  }
+  job_zone: number
+  median_wages: {
+    annual: number
+    hourly: number
+  }
+}
+
+export interface OccupationSkill {
+  skill_name: string
+  importance: number
+  level: number
+  category: string
+}
+
+export interface OccupationKnowledge {
+  knowledge_area: string
+  importance: number
+  level: number
+  description: string
+}
+
+export interface OccupationAbility {
+  ability_name: string
+  importance: number
+  level: number
+  description: string
+}
+
+export interface AutocompleteSuggestion {
+  onet_code: string
+  title: string
+}
+
+// Request Types
+export interface SearchParams {
+  keyword: string
+  page?: number
+  limit?: number
+}
+
+export interface GetSkillsParams {
+  min_importance?: number
+  category?: string
+}
+
+export interface GetRelatedParams {
+  limit?: number
+}
+
+export interface AutocompleteParams {
   query: string
   limit?: number
 }
 
-export interface SearchOccupationsResponse {
-  occupations: OccupationSearchResult[]
-  query: string
+// Response Types
+export interface OccupationsSearchResponse {
+  data: Occupation[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    total_pages: number
+  }
 }
 
-export interface RIASECScores {
-  realistic: number
-  investigative: number
-  artistic: number
-  social: number
-  enterprising: number
-  conventional: number
+export interface OccupationDetailsResponse {
+  data: OccupationDetails
 }
 
-export interface SaveCareerAssessmentParams {
-  riasec_scores?: RIASECScores
-  current_occupation_code?: string
-  target_occupation_codes?: string[]
+export interface SkillsResponse {
+  data: OccupationSkill[]
 }
 
-export interface SaveCareerAssessmentResponse {
-  success: boolean
+export interface RelatedOccupationsResponse {
+  data: Occupation[]
 }
 
-export interface CareerAssessmentStatus {
-  hasCompleted: boolean
-  riasec_scores: RIASECScores | null
-  current_occupation_code: string | null
-  target_occupation_codes: string[]
-  completed_at: string | null
+export interface KnowledgeResponse {
+  data: OccupationKnowledge[]
 }
 
-export interface OccupationData {
-  onetsoc_code: string
-  title: string
-  description?: string | null
-  [key: string]: unknown // O*NET has many additional fields
+export interface AbilitiesResponse {
+  data: OccupationAbility[]
 }
 
-export interface GetOccupationParams {
-  onetCode: string
-}
-
-export interface RIASECStatus {
-  isCompleted: boolean
-  scores: RIASECScores | null
-}
-
-export interface OccupationStatus {
-  isCompleted: boolean
-  hasCurrentOccupation: boolean
-  hasTargetOccupations: boolean
-  currentOccupationCode: string | null
-  targetOccupationCodes: string[]
+export interface AutocompleteResponse {
+  data: AutocompleteSuggestion[]
 }
 
 // ============================================================================
@@ -77,52 +118,59 @@ export interface OccupationStatus {
 
 /**
  * ONET Resource
- * Handles O*NET occupational data and career assessments (RIASEC)
+ * Handles O*NET occupational data queries
  */
 export class ONET extends Resource {
   /**
    * Search occupations by keyword
-   * Returns matching occupations from O*NET database
    */
-  async searchOccupations(params: SearchOccupationsParams): Promise<SearchOccupationsResponse> {
-    return this.get<SearchOccupationsResponse>('/v1/onet/occupations/search', params)
+  async search(params: SearchParams): Promise<OccupationsSearchResponse> {
+    return super.get<OccupationsSearchResponse>('/v1/onet/search', params)
   }
 
   /**
    * Get occupation details by O*NET code
    */
-  async getOccupation(params: GetOccupationParams): Promise<OccupationData> {
-    return this.get<OccupationData>(`/v1/onet/occupations/${params.onetCode}`)
+  async getOccupation(onetCode: string): Promise<OccupationDetailsResponse> {
+    return super.get<OccupationDetailsResponse>(`/v1/onet/occupations/${onetCode}`)
   }
 
   /**
-   * Save user's RIASEC assessment
-   * Can save RIASEC scores, occupations, or both independently
+   * Get skills for an occupation
    */
-  async saveCareerAssessment(
-    params: SaveCareerAssessmentParams
-  ): Promise<SaveCareerAssessmentResponse> {
-    return this.post<SaveCareerAssessmentResponse>('/v1/onet/career-assessment', params)
+  async getSkills(onetCode: string, params?: GetSkillsParams): Promise<SkillsResponse> {
+    return super.get<SkillsResponse>(
+      `/v1/onet/occupations/${onetCode}/skills`,
+      params    )
   }
 
   /**
-   * Get user's career assessment status
+   * Get related occupations
    */
-  async getCareerAssessmentStatus(): Promise<CareerAssessmentStatus> {
-    return this.get<CareerAssessmentStatus>('/v1/onet/career-assessment/status')
+  async getRelated(onetCode: string, params?: GetRelatedParams): Promise<RelatedOccupationsResponse> {
+    return super.get<RelatedOccupationsResponse>(
+      `/v1/onet/occupations/${onetCode}/related`,
+      params    )
   }
 
   /**
-   * Get RIASEC assessment completion status
+   * Get knowledge areas for an occupation
    */
-  async getRIASECStatus(): Promise<RIASECStatus> {
-    return this.get<RIASECStatus>('/v1/onet/riasec/status')
+  async getKnowledge(onetCode: string): Promise<KnowledgeResponse> {
+    return super.get<KnowledgeResponse>(`/v1/onet/occupations/${onetCode}/knowledge`)
   }
 
   /**
-   * Get occupation assessment completion status
+   * Get abilities for an occupation
    */
-  async getOccupationStatus(): Promise<OccupationStatus> {
-    return this.get<OccupationStatus>('/v1/onet/occupation/status')
+  async getAbilities(onetCode: string): Promise<AbilitiesResponse> {
+    return super.get<AbilitiesResponse>(`/v1/onet/occupations/${onetCode}/abilities`)
+  }
+
+  /**
+   * Autocomplete occupation titles
+   */
+  async autocomplete(params: AutocompleteParams): Promise<AutocompleteResponse> {
+    return super.get<AutocompleteResponse>('/v1/onet/autocomplete', params)
   }
 }

@@ -5293,18 +5293,6 @@ export const handlers = [
     })
   }),
 
-  // GET /v1/onet/occupations/:onetCode
-  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode`, ({ params }) => {
-    const { onetCode } = params
-    return HttpResponse.json({
-      onetsoc_code: onetCode,
-      title: 'Software Developers',
-      description: 'Research, design, and develop computer and network software',
-      tasks: ['Design software systems', 'Write code', 'Test applications'],
-      knowledge: ['Computer Science', 'Mathematics'],
-    })
-  }),
-
   // POST /v1/onet/career-assessment
   http.post(`${BASE_URL}/v1/onet/career-assessment`, async ({ request }) => {
     const _body = await request.json()
@@ -5477,6 +5465,389 @@ export const handlers = [
   }),
 
   // ===== Prerequisites Handlers =====
+  // ===== New Notifications Handlers (API v1) - Order matters! =====
+  // GET /v1/notifications - List notifications
+  http.get(`${BASE_URL}/v1/notifications`, ({ request }) => {
+    const url = new URL(request.url)
+    const read = url.searchParams.get('read')
+    const type = url.searchParams.get('type')
+
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'notif_123',
+          user_id: 'user_123',
+          type: type || 'application_status',
+          title: 'Application Updated',
+          message: 'Your application status changed',
+          read: read === 'false' ? false : true,
+          read_at: read === 'false' ? null : '2024-01-15T11:00:00Z',
+          created_at: '2024-01-15T10:00:00Z',
+        },
+      ],
+      pagination: {
+        total: 1,
+        page: 1,
+        limit: 20,
+        total_pages: 1,
+      },
+    })
+  }),
+
+  // GET /v1/notifications/preferences - Get preferences (BEFORE :id)
+  http.get(`${BASE_URL}/v1/notifications/preferences`, () => {
+    return HttpResponse.json({
+      data: {
+        user_id: 'user_123',
+        email_notifications: true,
+        push_notifications: true,
+        notification_types: {
+          application_status: { email: true, push: true },
+          connection_request: { email: true, push: true },
+          message: { email: false, push: true },
+          job_match: { email: true, push: false },
+        },
+        quiet_hours: {
+          enabled: true,
+          start: '22:00',
+          end: '08:00',
+        },
+      },
+    })
+  }),
+
+  // PATCH /v1/notifications/preferences - Update preferences (BEFORE :id)
+  http.patch(`${BASE_URL}/v1/notifications/preferences`, async ({ request }) => {
+    const body = (await request.json()) as any
+    return HttpResponse.json({
+      data: {
+        user_id: 'user_123',
+        email_notifications: body.email_notifications ?? true,
+        push_notifications: body.push_notifications ?? true,
+        notification_types: body.notification_types || {},
+        quiet_hours: body.quiet_hours,
+      },
+    })
+  }),
+
+  // GET /v1/notifications/unread-count - Get unread count (BEFORE :id)
+  http.get(`${BASE_URL}/v1/notifications/unread-count`, () => {
+    return HttpResponse.json({
+      data: {
+        unread_count: 5,
+      },
+    })
+  }),
+
+  // POST /v1/notifications/read-all - Mark all as read (BEFORE :id)
+  http.post(`${BASE_URL}/v1/notifications/read-all`, () => {
+    return HttpResponse.json({
+      data: {
+        updated_count: 5,
+      },
+    })
+  }),
+
+  // PATCH /v1/notifications/:id/read - Mark as read (BEFORE bare :id)
+  http.patch(`${BASE_URL}/v1/notifications/:id/read`, ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({
+      data: {
+        id: id as string,
+        user_id: 'user_123',
+        type: 'message',
+        title: 'New Message',
+        message: 'You have a new message',
+        read: true,
+        read_at: new Date().toISOString(),
+        created_at: '2024-01-15T10:00:00Z',
+      },
+    })
+  }),
+
+  // PATCH /v1/notifications/:id/unread - Mark as unread (BEFORE bare :id)
+  http.patch(`${BASE_URL}/v1/notifications/:id/unread`, ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({
+      data: {
+        id: id as string,
+        user_id: 'user_123',
+        type: 'message',
+        title: 'New Message',
+        message: 'You have a new message',
+        read: false,
+        created_at: '2024-01-15T10:00:00Z',
+      },
+    })
+  }),
+
+  // DELETE /v1/notifications/:id - Delete notification (BEFORE bare DELETE)
+  http.delete(`${BASE_URL}/v1/notifications/:id`, ({ params }) => {
+    const { id } = params
+    if (id === 'invalid_id') {
+      return HttpResponse.json({ error: 'Notification not found' }, { status: 404 })
+    }
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // DELETE /v1/notifications - Delete all notifications (AFTER :id DELETE)
+  http.delete(`${BASE_URL}/v1/notifications`, () => {
+    return HttpResponse.json({
+      data: {
+        deleted_count: 10,
+      },
+    })
+  }),
+
+  // GET /v1/notifications/:id - Get notification by ID (LAST for GETs)
+  http.get(`${BASE_URL}/v1/notifications/:id`, ({ params }) => {
+    const { id } = params
+    if (id === 'invalid_id') {
+      return HttpResponse.json({ error: 'Notification not found' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      data: {
+        id: id as string,
+        user_id: 'user_123',
+        type: 'message',
+        title: 'New Message',
+        message: 'You have a new message from Jane',
+        read: false,
+        created_at: '2024-01-15T10:00:00Z',
+      },
+    })
+  }),
+
+  // ===== New ONET Handlers (API v1) =====
+  // GET /v1/onet/search - Search occupations
+  http.get(`${BASE_URL}/v1/onet/search`, ({ request }) => {
+    const url = new URL(request.url)
+    const keyword = url.searchParams.get('keyword')
+
+    return HttpResponse.json({
+      data: [
+        {
+          onet_code: '15-1252.00',
+          title: 'Software Developers',
+          description: 'Research, design, and develop computer applications',
+          alternate_titles: ['Application Developer', 'Software Engineer'],
+        },
+      ],
+      pagination: {
+        total: 1,
+        page: 1,
+        limit: 20,
+        total_pages: 1,
+      },
+    })
+  }),
+
+  // GET /v1/onet/occupations/:onetCode - Get occupation details
+  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode`, ({ params }) => {
+    const { onetCode } = params
+    if (onetCode === 'invalid-code' || onetCode === '99-9999.99') {
+      return HttpResponse.json({ error: 'Occupation not found' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      data: {
+        onetsoc_code: onetCode as string,
+        title: 'Software Developers',
+        description: 'Research, design, and develop computer and network software',
+        alternate_titles: ['Application Developer', 'Software Engineer'],
+      },
+    })
+  }),
+
+  // GET /v1/onet/occupations/:onetCode/skills - Get occupation skills
+  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode/skills`, ({ request, params }) => {
+    return HttpResponse.json({
+      data: [
+        {
+          skill_name: 'Programming',
+          importance: 85,
+          level: 80,
+          category: 'Technical Skills',
+        },
+        {
+          skill_name: 'Critical Thinking',
+          importance: 78,
+          level: 75,
+          category: 'Cognitive Skills',
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/onet/occupations/:onetCode/related - Get related occupations
+  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode/related`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          onet_code: '15-1256.00',
+          title: 'Software Quality Assurance Analysts',
+          description: 'Develop and execute software tests',
+          alternate_titles: ['QA Analyst'],
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/onet/occupations/:onetCode/knowledge - Get knowledge areas
+  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode/knowledge`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          knowledge_area: 'Computers and Electronics',
+          importance: 90,
+          level: 85,
+          description: 'Knowledge of circuit boards, processors, etc.',
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/onet/occupations/:onetCode/abilities - Get abilities
+  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode/abilities`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          ability_name: 'Deductive Reasoning',
+          importance: 75,
+          level: 70,
+          description: 'The ability to apply general rules to specific problems',
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/onet/autocomplete - Autocomplete occupation titles
+  http.get(`${BASE_URL}/v1/onet/autocomplete`, ({ request }) => {
+    return HttpResponse.json({
+      data: [
+        { onet_code: '15-1252.00', title: 'Software Developers' },
+        { onet_code: '15-1256.00', title: 'Software Quality Assurance Analysts' },
+      ],
+    })
+  }),
+
+  // ===== New Prerequisites Handlers (API v1) =====
+  // ===== Prerequisites Handlers - Order matters! Specific paths before :id =====
+  // GET /v1/prerequisites - List prerequisites
+  http.get(`${BASE_URL}/v1/prerequisites`, ({ request }) => {
+    const url = new URL(request.url)
+    const category = url.searchParams.get('category')
+    const required = url.searchParams.get('required')
+    const completed = url.searchParams.get('completed')
+
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'prereq_profile',
+          name: 'Complete Profile',
+          description: 'Fill out your basic profile information',
+          category: category || 'profile',
+          required: required === 'true',
+          completed: completed === 'true',
+          completion_percentage: 100,
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/prerequisites/check - Check all prerequisites (BEFORE :id)
+  http.get(`${BASE_URL}/v1/prerequisites/check`, () => {
+    return HttpResponse.json({
+      data: {
+        all_completed: true,
+        missing: [],
+      },
+    })
+  }),
+
+  // GET /v1/prerequisites/validate - Validate prerequisites (BEFORE :id)
+  http.get(`${BASE_URL}/v1/prerequisites/validate`, ({ request }) => {
+    return HttpResponse.json({
+      data: {
+        valid: true,
+        required_prerequisites_met: true,
+        optional_prerequisites_met: true,
+        missing_required: [],
+        missing_optional: [],
+        completion_percentage: 100,
+      },
+    })
+  }),
+
+  // GET /v1/prerequisites/missing - Get missing prerequisites (BEFORE :id)
+  http.get(`${BASE_URL}/v1/prerequisites/missing`, () => {
+    return HttpResponse.json({
+      data: [],
+    })
+  }),
+
+  // GET /v1/prerequisites/stats - Get completion stats (BEFORE :id)
+  http.get(`${BASE_URL}/v1/prerequisites/stats`, () => {
+    return HttpResponse.json({
+      data: {
+        total_prerequisites: 10,
+        completed_prerequisites: 7,
+        required_prerequisites: 5,
+        required_completed: 4,
+        optional_prerequisites: 5,
+        optional_completed: 3,
+        overall_completion_percentage: 70,
+        required_completion_percentage: 80,
+        optional_completion_percentage: 60,
+      },
+    })
+  }),
+
+  // POST /v1/prerequisites/complete - Complete prerequisite (BEFORE :id)
+  http.post(`${BASE_URL}/v1/prerequisites/complete`, async ({ request }) => {
+    const body = (await request.json()) as any
+    return HttpResponse.json({
+      data: {
+        prerequisite_id: body.prerequisite_id,
+        completed: true,
+      },
+    })
+  }),
+
+  // GET /v1/prerequisites/:id/check - Check specific prerequisite (BEFORE bare :id)
+  http.get(`${BASE_URL}/v1/prerequisites/:id/check`, ({ params }) => {
+    return HttpResponse.json({
+      data: {
+        prerequisite_id: params.id as string,
+        completed: true,
+        completion_percentage: 100,
+        missing_fields: [],
+      },
+    })
+  }),
+
+  // GET /v1/prerequisites/:id - Get prerequisite by ID (LAST)
+  http.get(`${BASE_URL}/v1/prerequisites/:id`, ({ params }) => {
+    const { id } = params
+    if (id === 'invalid_id') {
+      return HttpResponse.json({ error: 'Prerequisite not found' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      data: {
+        id: id as string,
+        name: 'Complete Profile',
+        description: 'Fill out your basic profile information',
+        category: 'profile',
+        required: true,
+        completed: true,
+        completion_percentage: 100,
+        fields: [
+          { name: 'first_name', completed: true },
+          { name: 'last_name', completed: true },
+        ],
+      },
+    })
+  }),
+
   // GET /v1/prerequisites/check
   http.get(`${BASE_URL}/v1/prerequisites/check`, () => {
     return HttpResponse.json({
@@ -5672,7 +6043,160 @@ export const handlers = [
     return HttpResponse.json({ success: true })
   }),
 
-  // ===== Inquiries Handlers =====
+  // ===== New Inquiries Handlers (API v1) =====
+  // GET /v1/inquiries - List inquiries
+  http.get(`${BASE_URL}/v1/inquiries`, ({ request }) => {
+    const url = new URL(request.url)
+    const direction = url.searchParams.get('direction')
+    const status = url.searchParams.get('status')
+
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'inq_123',
+          sender_id: 'user_123',
+          recipient_id: 'user_456',
+          subject: 'Question about job posting',
+          message: 'I would like to know more about the position.',
+          inquiry_type: 'job_inquiry',
+          job_id: 'job_789',
+          status: status || 'pending',
+          created_at: '2024-01-15T10:00:00Z',
+          updated_at: '2024-01-15T10:00:00Z',
+        },
+      ],
+      pagination: {
+        total: 1,
+        page: 1,
+        limit: 20,
+        total_pages: 1,
+      },
+    })
+  }),
+
+  // GET /v1/inquiries/templates - Get inquiry templates (MUST be before :id)
+  http.get(`${BASE_URL}/v1/inquiries/templates`, ({ request }) => {
+    const url = new URL(request.url)
+    const inquiryType = url.searchParams.get('inquiry_type')
+
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'tpl_1',
+          name: 'Job Interest',
+          subject: 'Interest in {{job_title}}',
+          message: 'I am interested in the {{job_title}} position.',
+          inquiry_type: 'job_inquiry',
+        },
+        {
+          id: 'tpl_2',
+          name: 'General Question',
+          subject: 'Question about {{topic}}',
+          message: 'I have a question about {{topic}}.',
+          inquiry_type: 'general',
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/inquiries/:id - Get inquiry by ID
+  http.get(`${BASE_URL}/v1/inquiries/:id`, ({ params }) => {
+    const { id } = params
+    if (id === 'invalid_id') {
+      return HttpResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      data: {
+        id: id as string,
+        sender_id: 'user_123',
+        recipient_id: 'user_456',
+        subject: 'Question about job posting',
+        message: 'I would like to know more about the position.',
+        inquiry_type: 'job_inquiry',
+        job_id: 'job_789',
+        status: 'pending',
+        created_at: '2024-01-15T10:00:00Z',
+        updated_at: '2024-01-15T10:00:00Z',
+      },
+    })
+  }),
+
+  // POST /v1/inquiries - Create inquiry
+  http.post(`${BASE_URL}/v1/inquiries`, async ({ request }) => {
+    const body = (await request.json()) as any
+
+    // Check for validation errors
+    if (!body.message && !body.template_id) {
+      return HttpResponse.json(
+        { error: 'Validation failed', details: { message: 'Message is required' } },
+        { status: 400 }
+      )
+    }
+
+    return HttpResponse.json({
+      data: {
+        id: 'inq_124',
+        sender_id: 'user_123',
+        recipient_id: body.recipient_id,
+        subject: body.subject || 'Interest in Position',
+        message: body.message || 'Template message content',
+        inquiry_type: body.inquiry_type || 'job_inquiry',
+        job_id: body.job_id,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    })
+  }),
+
+  // POST /v1/inquiries/:id/respond - Respond to inquiry
+  http.post(`${BASE_URL}/v1/inquiries/:id/respond`, async ({ params, request }) => {
+    const { id } = params
+    const body = (await request.json()) as any
+
+    // Simulate already responded error
+    if (id === 'already_responded') {
+      return HttpResponse.json({ error: 'Inquiry already responded' }, { status: 400 })
+    }
+
+    return HttpResponse.json({
+      data: {
+        id: id as string,
+        sender_id: 'user_456',
+        recipient_id: 'user_123',
+        subject: 'Question',
+        message: 'Original message',
+        inquiry_type: 'general',
+        status: 'responded',
+        response: body.message,
+        responded_at: new Date().toISOString(),
+        created_at: '2024-01-15T10:00:00Z',
+        updated_at: new Date().toISOString(),
+      },
+    })
+  }),
+
+  // POST /v1/inquiries/bulk/mark-read - Bulk mark as read
+  http.post(`${BASE_URL}/v1/inquiries/bulk/mark-read`, async ({ request }) => {
+    const body = (await request.json()) as any
+    return HttpResponse.json({
+      data: {
+        updated_count: body.inquiry_ids?.length || 0,
+      },
+    })
+  }),
+
+  // POST /v1/inquiries/bulk/archive - Bulk archive
+  http.post(`${BASE_URL}/v1/inquiries/bulk/archive`, async ({ request }) => {
+    const body = (await request.json()) as any
+    return HttpResponse.json({
+      data: {
+        archived_count: body.inquiry_ids?.length || 0,
+      },
+    })
+  }),
+
+  // ===== Old Inquiries Handlers (Legacy) =====
   // GET /inquiries/templates
   http.get(`${BASE_URL}/inquiries/templates`, () => {
     return HttpResponse.json([

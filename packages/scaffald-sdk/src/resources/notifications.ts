@@ -4,121 +4,95 @@ import { Resource } from './base'
 // Type Definitions
 // ============================================================================
 
-export type NotificationStatus = 'all' | 'unread' | 'read' | 'archived'
-export type NotificationSeverity = 'low' | 'medium' | 'high' | 'critical'
-export type NotificationChannel = 'in_app' | 'email' | 'push' | 'sms'
-export type DigestFrequency = 'immediate' | 'digest_daily' | 'digest_weekly' | 'mute'
-export type DevicePlatform = 'ios' | 'android' | 'web'
+export type NotificationType =
+  | 'application_status'
+  | 'connection_request'
+  | 'message'
+  | 'job_match'
+  | 'system'
 
 export interface Notification {
   id: string
   user_id: string
-  type: string
-  severity: NotificationSeverity
+  type: NotificationType
   title: string
   message: string
-  preview?: string | null
-  body?: string | null
-  metadata?: Record<string, unknown> | null
   read: boolean
   read_at?: string | null
-  archived_at?: string | null
-  routed_channels?: NotificationChannel[] | null
-  cta_label?: string | null
-  cta_url?: string | null
+  metadata?: Record<string, unknown> | null
+  action_url?: string | null
   created_at: string
-  updated_at: string
+  updated_at?: string
 }
 
 export interface ListNotificationsParams {
-  status?: NotificationStatus
+  read?: boolean
+  type?: NotificationType
+  page?: number
   limit?: number
-  cursor?: string
 }
 
-export interface ListNotificationsResponse {
-  items: Notification[]
-  nextCursor: string | null
+export interface NotificationsListResponse {
+  data: Notification[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    total_pages: number
+  }
+}
+
+export interface NotificationResponse {
+  data: Notification
 }
 
 export interface UnreadCountResponse {
-  count: number
-}
-
-export interface MarkAsReadParams {
-  id: string
-}
-
-export interface MarkAsUnreadParams {
-  id: string
-}
-
-export interface BulkIdsParams {
-  ids: string[]
-}
-
-export interface SuccessResponse {
-  success: boolean
+  data: {
+    unread_count: number
+  }
 }
 
 export interface MarkAllAsReadResponse {
-  success: boolean
-  updated: number
+  data: {
+    updated_count: number
+  }
+}
+
+export interface DeleteAllResponse {
+  data: {
+    deleted_count: number
+  }
 }
 
 // Preferences Types
 export interface QuietHours {
+  enabled: boolean
   start: string // Format: HH:MM
   end: string // Format: HH:MM
 }
 
-export interface ChannelSettings {
-  in_app?: boolean
-  email?: boolean
-  push?: boolean
-  sms?: boolean
-}
-
-export interface TypeOverride {
-  channels?: Partial<ChannelSettings>
-  frequency?: DigestFrequency
+export interface NotificationTypeSettings {
+  email: boolean
+  push: boolean
 }
 
 export interface NotificationPreferences {
-  globalEnabled: boolean
-  channelEnabled: ChannelSettings
-  quietHours: QuietHours | null
-  digestFrequency: DigestFrequency
-  typeOverrides: Record<string, TypeOverride>
-  updatedAt: string | null
+  user_id: string
+  email_notifications: boolean
+  push_notifications: boolean
+  notification_types: Record<string, NotificationTypeSettings>
+  quiet_hours?: QuietHours
 }
 
-export interface SavePreferencesParams {
-  globalEnabled?: boolean
-  channelEnabled?: Partial<ChannelSettings>
-  quietHours?: QuietHours
-  digestFrequency?: DigestFrequency
-  typeOverrides?: Record<string, TypeOverride>
+export interface UpdatePreferencesParams {
+  email_notifications?: boolean
+  push_notifications?: boolean
+  notification_types?: Record<string, Partial<NotificationTypeSettings>>
+  quiet_hours?: QuietHours
 }
 
-// Devices Types
-export interface NotificationDevice {
-  id: string
-  token: string
-  platform: DevicePlatform
-  metadata?: Record<string, unknown>
-  last_seen_at: string
-  created_at: string
-}
-
-export interface RegisterDeviceParams {
-  token: string
-  platform: DevicePlatform
-  metadata?: Record<string, unknown>
-}
-
-export interface RemoveDeviceParams {
-  token: string
+export interface PreferencesResponse {
+  data: NotificationPreferences
 }
 
 // ============================================================================
@@ -127,119 +101,76 @@ export interface RemoveDeviceParams {
 
 /**
  * Notifications Resource
- * Handles user notifications, preferences, and device registration
+ * Handles user notifications and preferences
  */
 export class Notifications extends Resource {
   /**
    * List notifications with filtering and pagination
    */
-  async list(params?: ListNotificationsParams): Promise<ListNotificationsResponse> {
-    return this.get<ListNotificationsResponse>('/v1/notifications', params)
+  async list(params?: ListNotificationsParams): Promise<NotificationsListResponse> {
+    return super.get<NotificationsListResponse>('/v1/notifications', params)
   }
 
   /**
-   * Get count of unread notifications
+   * Get notification by ID
    */
-  async getUnreadCount(): Promise<UnreadCountResponse> {
-    return this.get<UnreadCountResponse>('/v1/notifications/unread-count')
+  async getById(id: string): Promise<NotificationResponse> {
+    return super.get<NotificationResponse>(`/v1/notifications/${id}`)
   }
 
   /**
    * Mark a notification as read
    */
-  async markAsRead(params: MarkAsReadParams): Promise<Notification> {
-    return this.patch<Notification>(`/v1/notifications/${params.id}/read`, {})
+  async markAsRead(id: string): Promise<NotificationResponse> {
+    return this.patch<NotificationResponse>(`/v1/notifications/${id}/read`, {})
   }
 
   /**
    * Mark a notification as unread
    */
-  async markAsUnread(params: MarkAsUnreadParams): Promise<Notification> {
-    return this.patch<Notification>(`/v1/notifications/${params.id}/unread`, {})
-  }
-
-  /**
-   * Mark multiple notifications as read
-   */
-  async markManyRead(params: BulkIdsParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/mark-read', params)
-  }
-
-  /**
-   * Mark multiple notifications as unread
-   */
-  async markManyUnread(params: BulkIdsParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/mark-unread', params)
-  }
-
-  /**
-   * Archive multiple notifications
-   */
-  async archiveMany(params: BulkIdsParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/archive', params)
-  }
-
-  /**
-   * Restore multiple notifications from archive
-   */
-  async restoreMany(params: BulkIdsParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/restore', params)
+  async markAsUnread(id: string): Promise<NotificationResponse> {
+    return this.patch<NotificationResponse>(`/v1/notifications/${id}/unread`, {})
   }
 
   /**
    * Mark all unread notifications as read
    */
   async markAllAsRead(): Promise<MarkAllAsReadResponse> {
-    return this.post<MarkAllAsReadResponse>('/v1/notifications/mark-all-read', {})
+    return this.post<MarkAllAsReadResponse>('/v1/notifications/read-all')
   }
 
   /**
-   * Delete multiple notifications (soft delete)
+   * Delete a notification
    */
-  async deleteMany(params: BulkIdsParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/delete', params)
+  async delete(id: string): Promise<void> {
+    return this.del<void>(`/v1/notifications/${id}`)
   }
 
-  // ============================================================================
-  // Preferences
-  // ============================================================================
+  /**
+   * Delete all notifications
+   */
+  async deleteAll(): Promise<DeleteAllResponse> {
+    return this.del<DeleteAllResponse>('/v1/notifications')
+  }
 
   /**
    * Get notification preferences
    */
-  async getPreferences(): Promise<NotificationPreferences> {
-    return this.get<NotificationPreferences>('/v1/notifications/preferences')
+  async getPreferences(): Promise<PreferencesResponse> {
+    return super.get<PreferencesResponse>('/v1/notifications/preferences')
   }
 
   /**
-   * Save notification preferences
+   * Update notification preferences
    */
-  async savePreferences(params: SavePreferencesParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/preferences', params)
-  }
-
-  // ============================================================================
-  // Devices
-  // ============================================================================
-
-  /**
-   * List registered notification devices
-   */
-  async listDevices(): Promise<NotificationDevice[]> {
-    return this.get<NotificationDevice[]>('/v1/notifications/devices')
+  async updatePreferences(params: UpdatePreferencesParams): Promise<PreferencesResponse> {
+    return this.patch<PreferencesResponse>('/v1/notifications/preferences', params)
   }
 
   /**
-   * Register a device for push notifications
+   * Get unread notification count
    */
-  async registerDevice(params: RegisterDeviceParams): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/v1/notifications/devices', params)
-  }
-
-  /**
-   * Remove a registered device
-   */
-  async removeDevice(params: RemoveDeviceParams): Promise<SuccessResponse> {
-    return this.del<SuccessResponse>(`/v1/notifications/devices/${params.token}`)
+  async getUnreadCount(): Promise<UnreadCountResponse> {
+    return super.get<UnreadCountResponse>('/v1/notifications/unread-count')
   }
 }
