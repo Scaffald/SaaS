@@ -82,28 +82,28 @@ export function SuccessStep({
       <Stack
         width={80}
         height={80}
-        borderRadius="$12"
+        borderRadius={16}
         style={{
           backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
           borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+          borderWidth: 2,
         }}
-        borderWidth={2}
         align="center"
         justify="center"
         aria-hidden={true}
       >
-        <Check size={48} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+        <Check size={48} color={theme === "light" ? colors.green[700] : colors.green[300]} />
       </Stack>
 
       {/* Success Message */}
       <Stack gap={8} align="center">
-        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+        <Text style={{ color: colors.text[theme].secondary }} align="center">
           Application Submitted Successfully!
         </Text>
-        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+        <Text style={{ color: colors.text[theme].secondary }} align="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
-        <Text style={{ color: colors.text[theme].secondary }} textAlign="center" marginTop={8}>
+        <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }} align="center">
           Your application has been received and is under review
         </Text>
       </Stack>
@@ -111,7 +111,7 @@ export function SuccessStep({
       {/* Application ID */}
       <Stack gap={8} align="center" marginTop={16}>
         <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Application ID: {formattedId}</Text>
-        <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+        <Text style={{ color: colors.text[theme].secondary }} align="center">
           You will receive an email confirmation shortly
         </Text>
       </Stack>
@@ -120,14 +120,14 @@ export function SuccessStep({
       <Stack
         gap={12}
         padding="md"
+        borderRadius={16}
         style={{
           backgroundColor: colors.bg[theme].default,
           borderColor: colors.border[theme].default,
+          borderWidth: 1,
+          width: '100%',
+          marginTop: 32,
         }}
-        borderRadius={16}
-        borderWidth={1}
-        width="100%"
-        marginTop={32}
       >
         <Text style={{ color: colors.text[theme].secondary }}>What happens next:</Text>
 
@@ -143,18 +143,17 @@ export function SuccessStep({
         {onViewApplication && (
           <Button
             size="lg"
-            theme="info"
+            color="primary"
             iconStart={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
-            flex={1}
-            minWidth={200}
+            style={{ flex: 1, minWidth: 200 }}
           >
             View Application Status
           </Button>
         )}
 
         {onReturnToJobs && (
-          <Button size="lg" variant="outline" onPress={onReturnToJobs} flex={1} minWidth={200}>
+          <Button size="lg" variant="outline" onPress={onReturnToJobs} style={{ flex: 1, minWidth: 200 }}>
             Browse More Jobs
           </Button>
         )}
@@ -164,8 +163,7 @@ export function SuccessStep({
           variant="outline"
           iconStart={Home}
           onPress={handleReturnToDashboard}
-          flex={1}
-          minWidth={200}
+          style={{ flex: 1, minWidth: 200 }}
         >
           Return to Dashboard
         </Button>
@@ -180,10 +178,10 @@ export function SuccessStep({
 function NextStepItem({ text, theme }: { text: string; theme: 'light' | 'dark' }) {
   return (
     <Row gap={12} align="flex-start">
-      <Text style={{ color: colors.text[theme].secondary }} marginTop={4}>
+      <Text style={{ color: colors.text[theme].secondary, marginTop: 4 }}>
         •
       </Text>
-      <Text style={{ color: colors.text[theme].secondary }} flex={1} lineHeight={4}>
+      <Text style={{ color: colors.text[theme].secondary, flex: 1, lineHeight: 24 }}>
         {text}
       </Text>
     </Row>

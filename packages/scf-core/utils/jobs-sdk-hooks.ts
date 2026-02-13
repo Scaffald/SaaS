@@ -112,13 +112,19 @@ export function useMyApplicationForJob(jobId: string | undefined, options?: { en
   })
 }
 
-export function useCreateJobApplicationMutation() {
+export function useCreateJobApplicationMutation(
+  options?: Partial<{
+    onSuccess: (data: { id: string }) => void
+    onError: (error: { message?: string }) => void
+  }>
+) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (params: Parameters<typeof client.applications.create>[0]) => {
       if (!client) throw new Error('Missing client')
       return client.applications.create(params)
     },
+    ...options,
   })
 }
 

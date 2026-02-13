@@ -1,16 +1,20 @@
 import { useCreateJobApplicationMutation } from '@scf/core/utils/jobs-sdk-hooks'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import type { ScreeningAnswers } from '@scf/schemas'
 import type { AddressResult } from '@scaffald/ui'
 import {
   AddressAutocomplete,
-  Dialog,
+  Modal,
+  ModalContent,
+  ModalHeader,
   ResponsiveSelect,
   useThemeContext,
 } from '@scaffald/ui'
-import { CheckCircle2, X } from 'lucide-react-native'
+import { CheckCircle2 } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
-import { useState } from 'react'
-import { Button, Label, ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { useMemo, useState } from 'react'
+import { ScrollView } from 'react-native'
+import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 export interface QuickApplyModalProps {
@@ -104,6 +108,10 @@ export function QuickApplyModal({
 
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
   const toast = useToast()
+  const mapboxProvider = useMemo(
+    () => (mapboxToken ? createMapboxGeocodingProvider(mapboxToken) : null),
+    [mapboxToken]
+  )
 
   const submitMutation = useCreateJobApplicationMutation({
     onSuccess: (application: { id: string }) => {
@@ -120,9 +128,10 @@ export function QuickApplyModal({
       }, 2000)
     },
     onError: (error: { message?: string }) => {
-      const _message = error.message || 'Failed to submit application. Please try again.'
+      const message = error.message || 'Failed to submit application. Please try again.'
       toast.show({
         title: 'Error',
+        message,
         variant: 'error',
       })
       setIsSubmitting(false)
@@ -267,24 +276,14 @@ export function QuickApplyModal({
   }
 
   return (
-    <Dialog modal open={open} onOpenChange={handleClose}>
-      <Dialog.Portal>
-        <Dialog.Overlay key="overlay" />
-        <Dialog.Content key="content" gap={16} width="90%" maxWidth={600} maxHeight="90%">
-          {/* Header */}
-          <Stack gap={8}>
-            <Row justify="space-between" align="center">
-              <Stack flex={1} gap={4}>
-                <Text style={{ color: colors.text[theme].secondary }}>
-                  Apply to {organizationName}
-                </Text>
-                <Text style={{ color: colors.text[theme].secondary }}>{jobTitle}</Text>
-              </Stack>
-              <Dialog.Close asChild>
-                <Button size="sm" iconStart={X} chromeless />
-              </Dialog.Close>
-            </Row>
-          </Stack>
+    <Modal visible={open} onClose={handleClose} width="90%">
+      <ModalHeader
+        title={`Apply to ${organizationName}`}
+        description={jobTitle}
+        onClose={handleClose}
+      />
+      <ModalContent>
+        <Stack gap={16}>
 
           {/* Success State */}
           {showSuccess ? (
@@ -292,44 +291,43 @@ export function QuickApplyModal({
               <Stack
                 width={80}
                 height={80}
-                borderRadius="$12"
+                borderRadius={16}
                 style={{
                   backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
                   borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+                  borderWidth: 2,
                 }}
-                borderWidth={2}
                 align="center"
                 justify="center"
               >
-                <CheckCircle2 size={48} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+                <CheckCircle2 size={48} color={theme === "light" ? colors.green[700] : colors.green[300]} />
               </Stack>
               <Stack gap={8} align="center">
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Application Submitted!
                 </Text>
-                <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
               </Stack>
             </Stack>
           ) : (
             /* Form Content */
-            <ScrollView showsVerticalScrollIndicator={false} flex={1}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
               <Stack gap={16} padding="md">
                 {/* Current Location */}
                 <Stack gap={8}>
                   <Label htmlFor="current_location">
                     You current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
-                  {mapboxToken ? (
+                  {mapboxProvider ? (
                     <AddressAutocomplete
                       value={formData.current_location || ''}
                       onChange={handleLocationChange}
                       onAddressSelect={handleLocationSelect}
                       placeholder="Search locations"
-                      provider="mapbox"
-                      apiKey={mapboxToken}
-                      zoomLevel="city"
+                      provider={mapboxProvider}
+                      searchOptions={{ zoomLevel: 'city' }}
                       error={errors.current_location}
                       disabled={isSubmitting}
                     />
@@ -358,26 +356,26 @@ export function QuickApplyModal({
                   </Label>
                   <Row gap={12}>
                     <Button
-                      flex={1}
                       size="md"
-                      theme={formData.willing_to_relocate ? 'info' : undefined}
-                      variant={formData.willing_to_relocate ? undefined : 'outlined'}
+                      color={formData.willing_to_relocate ? 'primary' : undefined}
+                      variant={formData.willing_to_relocate ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, willing_to_relocate: true }))
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       Yes
                     </Button>
                     <Button
-                      flex={1}
                       size="md"
-                      theme={!formData.willing_to_relocate ? 'info' : undefined}
-                      variant={!formData.willing_to_relocate ? undefined : 'outlined'}
+                      color={!formData.willing_to_relocate ? 'primary' : undefined}
+                      variant={!formData.willing_to_relocate ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, willing_to_relocate: false }))
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       No
                     </Button>
@@ -398,14 +396,7 @@ export function QuickApplyModal({
                       value: option.value,
                       label: option.label,
                     }))}
-                    triggerProps={{
-                      id: 'years_experience',
-                      style: {
-                        borderColor: errors.years_experience
-                          ? theme === "light" ? colors.error[300] : colors.error[700]
-                          : colors.border[theme].default,
-                      },
-                    }}
+                    testID="years_experience"
                   />
                 </Stack>
 
@@ -415,12 +406,12 @@ export function QuickApplyModal({
                     <Label>Required skills</Label>
                     <Stack
                       padding="sm"
+                      borderRadius={12}
                       style={{
                         backgroundColor: colors.bg[theme].muted,
                         borderColor: colors.border[theme].default,
+                        borderWidth: 1,
                       }}
-                      borderRadius={12}
-                      borderWidth={1}
                     >
                       <Text style={{ color: colors.text[theme].secondary }}>
                         {requiredSkills.join(', ')}
@@ -435,12 +426,12 @@ export function QuickApplyModal({
                     <Label>Optional skills</Label>
                     <Stack
                       padding="sm"
+                      borderRadius={12}
                       style={{
                         backgroundColor: colors.bg[theme].muted,
                         borderColor: colors.border[theme].default,
+                        borderWidth: 1,
                       }}
-                      borderRadius={12}
-                      borderWidth={1}
                     >
                       <Text style={{ color: colors.text[theme].secondary }}>
                         {optionalSkills.join(', ')}
@@ -457,28 +448,28 @@ export function QuickApplyModal({
                   </Label>
                   <Row gap={12}>
                     <Button
-                      flex={1}
                       size="md"
-                      theme={formData.is_authorized_to_work ? 'info' : undefined}
-                      variant={formData.is_authorized_to_work ? undefined : 'outlined'}
+                      color={formData.is_authorized_to_work ? 'primary' : undefined}
+                      variant={formData.is_authorized_to_work ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, is_authorized_to_work: true }))
                         validateField('is_authorized_to_work', true)
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       Yes
                     </Button>
                     <Button
-                      flex={1}
                       size="md"
-                      theme={!formData.is_authorized_to_work ? 'info' : undefined}
-                      variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
+                      color={!formData.is_authorized_to_work ? 'primary' : undefined}
+                      variant={!formData.is_authorized_to_work ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, is_authorized_to_work: false }))
                         validateField('is_authorized_to_work', false)
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       No
                     </Button>
@@ -504,14 +495,7 @@ export function QuickApplyModal({
                       value: option.value,
                       label: option.label,
                     }))}
-                    triggerProps={{
-                      id: 'earliest_start_date',
-                      style: {
-                        borderColor: errors.earliest_start_date
-                          ? theme === "light" ? colors.error[300] : colors.error[700]
-                          : colors.border[theme].default,
-                      },
-                    }}
+                    testID="earliest_start_date"
                   />
                 </Stack>
               </Stack>
@@ -523,16 +507,18 @@ export function QuickApplyModal({
             <Row
               gap={12}
               justify="flex-end"
-              paddingTop={16}
-              borderTopWidth={1}
-              style={{ borderTopColor: colors.border[theme].default }}
+              style={{
+                paddingTop: 16,
+                borderTopWidth: 1,
+                borderTopColor: colors.border[theme].default,
+              }}
             >
               <Button size="md" variant="outline" onPress={handleClose} disabled={isSubmitting}>
                 Cancel
               </Button>
               <Button
                 size="md"
-                theme="info"
+                color="primary"
                 onPress={handleSubmit}
                 disabled={
                   isSubmitting || Object.values(errors).some((error) => error !== undefined)
@@ -542,8 +528,8 @@ export function QuickApplyModal({
               </Button>
             </Row>
           )}
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+        </Stack>
+      </ModalContent>
+    </Modal>
   )
 }

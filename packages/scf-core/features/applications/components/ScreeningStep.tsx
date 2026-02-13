@@ -1,7 +1,8 @@
 import type { ScreeningAnswers } from '@scf/schemas'
 import type { AddressResult } from '@scaffald/ui'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import { AddressAutocomplete, ResponsiveSelect, useThemeContext } from '@scaffald/ui'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -73,6 +74,10 @@ export function ScreeningStep({
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})
   const { theme } = useThemeContext()
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
+  const mapboxProvider = useMemo(
+    () => (mapboxToken ? createMapboxGeocodingProvider(mapboxToken) : null),
+    [mapboxToken]
+  )
 
   /**
    * Validate all fields before continuing
@@ -127,7 +132,7 @@ export function ScreeningStep({
         <Label htmlFor="current_location">
           Your current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
-        {mapboxToken ? (
+        {mapboxProvider ? (
           <AddressAutocomplete
             value={answers.current_location || ''}
             onChange={(text) => {
@@ -143,9 +148,8 @@ export function ScreeningStep({
               }
             }}
             placeholder="Search locations"
-            provider="mapbox"
-            apiKey={mapboxToken}
-            zoomLevel="city"
+            provider={mapboxProvider}
+            searchOptions={{ zoomLevel: 'city' }}
             error={errors.current_location}
             disabled={isSubmitting}
           />
@@ -180,10 +184,10 @@ export function ScreeningStep({
         </Label>
         <Row gap={12}>
           <Button
-            flex={1}
             size="md"
-            theme={answers.willing_to_relocate ? 'info' : undefined}
-            variant={answers.willing_to_relocate ? undefined : 'outlined'}
+            color={answers.willing_to_relocate ? 'primary' : undefined}
+            variant={answers.willing_to_relocate ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, willing_to_relocate: true })
             }}
@@ -192,10 +196,10 @@ export function ScreeningStep({
             Yes
           </Button>
           <Button
-            flex={1}
             size="md"
-            theme={!answers.willing_to_relocate ? 'info' : undefined}
-            variant={!answers.willing_to_relocate ? undefined : 'outlined'}
+            color={!answers.willing_to_relocate ? 'primary' : undefined}
+            variant={!answers.willing_to_relocate ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, willing_to_relocate: false })
             }}
@@ -220,14 +224,7 @@ export function ScreeningStep({
             value: option.value,
             label: option.label,
           }))}
-          triggerProps={{
-            id: 'years_experience',
-            style: {
-              borderColor: errors.years_experience
-                ? theme === "light" ? colors.error[300] : colors.error[700]
-                : colors.border[theme].default,
-            },
-          }}
+          testID="years_experience"
         />
         {errors.years_experience && (
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.years_experience}</Text>
@@ -243,12 +240,12 @@ export function ScreeningStep({
           <Label>Required skills</Label>
           <Stack
             padding="sm"
+            borderRadius={12}
             style={{
               backgroundColor: colors.bg[theme].muted,
               borderColor: colors.border[theme].default,
+              borderWidth: 1,
             }}
-            borderRadius={12}
-            borderWidth={1}
           >
             <Text style={{ color: colors.text[theme].secondary }}>{requiredSkills.join(', ')}</Text>
           </Stack>
@@ -261,12 +258,12 @@ export function ScreeningStep({
           <Label>Optional skills</Label>
           <Stack
             padding="sm"
+            borderRadius={12}
             style={{
               backgroundColor: colors.bg[theme].muted,
               borderColor: colors.border[theme].default,
+              borderWidth: 1,
             }}
-            borderRadius={12}
-            borderWidth={1}
           >
             <Text style={{ color: colors.text[theme].secondary }}>{optionalSkills.join(', ')}</Text>
           </Stack>
@@ -281,10 +278,10 @@ export function ScreeningStep({
         </Label>
         <Row gap={12}>
           <Button
-            flex={1}
             size="md"
-            theme={answers.is_authorized_to_work ? 'info' : undefined}
-            variant={answers.is_authorized_to_work ? undefined : 'outlined'}
+            color={answers.is_authorized_to_work ? 'primary' : undefined}
+            variant={answers.is_authorized_to_work ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, is_authorized_to_work: true })
               if (errors.is_authorized_to_work) {
@@ -296,10 +293,10 @@ export function ScreeningStep({
             Yes
           </Button>
           <Button
-            flex={1}
             size="md"
-            theme={!answers.is_authorized_to_work ? 'info' : undefined}
-            variant={!answers.is_authorized_to_work ? undefined : 'outlined'}
+            color={!answers.is_authorized_to_work ? 'primary' : undefined}
+            variant={!answers.is_authorized_to_work ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, is_authorized_to_work: false })
               if (errors.is_authorized_to_work) {
@@ -341,10 +338,10 @@ export function ScreeningStep({
       {/* Continue Button */}
       <Button
         size="lg"
-        theme="info"
+        color="primary"
         onPress={validateAndContinue}
         disabled={isSubmitting}
-        marginTop={16}
+        style={{ marginTop: 16 }}
       >
         {isSubmitting ? 'Saving...' : 'Continue'}
       </Button>

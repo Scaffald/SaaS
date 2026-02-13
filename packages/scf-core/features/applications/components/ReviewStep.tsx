@@ -84,17 +84,17 @@ export function ReviewStep({
       {/* Screening Information Section */}
       <Stack
         gap={16}
+        padding="xl"
+        borderRadius={16}
         style={{
           backgroundColor: colors.bg[theme].default,
           borderColor: colors.border[theme].default,
+          borderWidth: 1,
+          shadowColor: colors.bg[theme].muted,
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
         }}
-        padding="xl"
-        borderRadius={16}
-        borderWidth={1}
-        shadowColor={colors.bg[theme].muted}
-        shadowOffset={{ width: 0, height: 1 }}
-        shadowOpacity={0.1}
-        shadowRadius={3}
       >
         <Row justify="space-between" align="center">
           <Text style={{ color: colors.text[theme].secondary }}>Screening Questions</Text>
@@ -104,7 +104,6 @@ export function ReviewStep({
             iconStart={Edit3}
             onPress={() => onEdit('screening')}
             disabled={isSubmitting}
-            chromeless
           >
             <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
           </Button>
@@ -148,17 +147,17 @@ export function ReviewStep({
       {customQuestionAnswers.length > 0 && (
         <Stack
           gap={16}
+          padding="xl"
+          borderRadius={16}
           style={{
             backgroundColor: colors.bg[theme].default,
             borderColor: colors.border[theme].default,
+            borderWidth: 1,
+            shadowColor: colors.bg[theme].muted,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
           }}
-          padding="xl"
-          borderRadius={16}
-          borderWidth={1}
-          shadowColor={colors.bg[theme].muted}
-          shadowOffset={{ width: 0, height: 1 }}
-          shadowOpacity={0.1}
-          shadowRadius={3}
         >
           <Row justify="space-between" align="center">
             <Text style={{ color: colors.text[theme].secondary }}>Additional Questions</Text>
@@ -168,7 +167,6 @@ export function ReviewStep({
               iconStart={Edit3}
               onPress={() => onEdit('questions')}
               disabled={isSubmitting}
-              chromeless
             >
               <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
             </Button>
@@ -191,17 +189,17 @@ export function ReviewStep({
       {/* Attachments Section */}
       <Stack
         gap={16}
+        padding="xl"
+        borderRadius={16}
         style={{
           backgroundColor: colors.bg[theme].default,
           borderColor: colors.border[theme].default,
+          borderWidth: 1,
+          shadowColor: colors.bg[theme].muted,
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
         }}
-        padding="xl"
-        borderRadius={16}
-        borderWidth={1}
-        shadowColor={colors.bg[theme].muted}
-        shadowOffset={{ width: 0, height: 1 }}
-        shadowOpacity={0.1}
-        shadowRadius={3}
       >
         <Row justify="space-between" align="center">
           <Text style={{ color: colors.text[theme].secondary }}>Documents</Text>
@@ -211,7 +209,6 @@ export function ReviewStep({
             iconStart={Edit3}
             onPress={() => onEdit('attachments')}
             disabled={isSubmitting}
-            chromeless
           >
             <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
           </Button>
@@ -242,12 +239,12 @@ export function ReviewStep({
       <Stack
         gap={12}
         padding="md"
+        borderRadius={16}
         style={{
           backgroundColor: colors.bg[theme].default,
           borderColor: colors.border[theme].default,
+          borderWidth: 1,
         }}
-        borderRadius={16}
-        borderWidth={1}
       >
         <Row gap={12} align="flex-start">
           <Checkbox
@@ -271,11 +268,11 @@ export function ReviewStep({
       {/* Submit Button */}
       <Button
         size="lg"
-        theme="info"
+        color="primary"
         onPress={onSubmit}
         disabled={isSubmitting || !hasConsent}
         iconStart={isSubmitting ? undefined : Check}
-        opacity={!hasConsent ? 0.5 : 1}
+        style={{ opacity: !hasConsent ? 0.5 : 1 }}
       >
         {isSubmitting
           ? isEditMode
@@ -326,7 +323,7 @@ function DocumentRow({
 
   return (
     <Row gap={12} align="center">
-      <FileText size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+      <FileText size={24} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
       <Stack gap={4} flex={1}>
         <Row gap={8} align="center">
           <Text style={{ color: colors.text[theme].secondary }}>{type}</Text>
