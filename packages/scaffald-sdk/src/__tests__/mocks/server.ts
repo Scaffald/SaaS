@@ -1298,7 +1298,7 @@ export const handlers = [
   }),
 
   // POST /v1/profiles/portfolio/upload-image - Upload portfolio image
-  http.post(`${BASE_URL}/v1/profiles/portfolio/upload-image`, async ({ request }) => {
+  http.post(`${BASE_URL}/v1/profiles/portfolio/upload-image`, async () => {
     return HttpResponse.json({
       image_url: 'https://example.com/uploaded-image.jpg',
     })
@@ -5480,7 +5480,7 @@ export const handlers = [
           type: type || 'application_status',
           title: 'Application Updated',
           message: 'Your application status changed',
-          read: read === 'false' ? false : true,
+          read: read !== 'false',
           read_at: read === 'false' ? null : '2024-01-15T11:00:00Z',
           created_at: '2024-01-15T10:00:00Z',
         },
@@ -5622,7 +5622,7 @@ export const handlers = [
   // GET /v1/onet/search - Search occupations
   http.get(`${BASE_URL}/v1/onet/search`, ({ request }) => {
     const url = new URL(request.url)
-    const keyword = url.searchParams.get('keyword')
+    const _keyword = url.searchParams.get('keyword')
 
     return HttpResponse.json({
       data: [
@@ -5659,7 +5659,7 @@ export const handlers = [
   }),
 
   // GET /v1/onet/occupations/:onetCode/skills - Get occupation skills
-  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode/skills`, ({ request, params }) => {
+  http.get(`${BASE_URL}/v1/onet/occupations/:onetCode/skills`, () => {
     return HttpResponse.json({
       data: [
         {
@@ -5721,7 +5721,7 @@ export const handlers = [
   }),
 
   // GET /v1/onet/autocomplete - Autocomplete occupation titles
-  http.get(`${BASE_URL}/v1/onet/autocomplete`, ({ request }) => {
+  http.get(`${BASE_URL}/v1/onet/autocomplete`, () => {
     return HttpResponse.json({
       data: [
         { onet_code: '15-1252.00', title: 'Software Developers' },
@@ -5765,7 +5765,7 @@ export const handlers = [
   }),
 
   // GET /v1/prerequisites/validate - Validate prerequisites (BEFORE :id)
-  http.get(`${BASE_URL}/v1/prerequisites/validate`, ({ request }) => {
+  http.get(`${BASE_URL}/v1/prerequisites/validate`, () => {
     return HttpResponse.json({
       data: {
         valid: true,
@@ -6047,7 +6047,7 @@ export const handlers = [
   // GET /v1/inquiries - List inquiries
   http.get(`${BASE_URL}/v1/inquiries`, ({ request }) => {
     const url = new URL(request.url)
-    const direction = url.searchParams.get('direction')
+    const _direction = url.searchParams.get('direction')
     const status = url.searchParams.get('status')
 
     return HttpResponse.json({
@@ -6077,7 +6077,7 @@ export const handlers = [
   // GET /v1/inquiries/templates - Get inquiry templates (MUST be before :id)
   http.get(`${BASE_URL}/v1/inquiries/templates`, ({ request }) => {
     const url = new URL(request.url)
-    const inquiryType = url.searchParams.get('inquiry_type')
+    const _inquiryType = url.searchParams.get('inquiry_type')
 
     return HttpResponse.json({
       data: [
@@ -6546,6 +6546,12 @@ export const handlers = [
   // GET /v1/employers/:id
   http.get(`${BASE_URL}/v1/employers/:id`, ({ params }) => {
     const { id } = params
+    if (id === 'invalid_id' || id === 'emp_error') {
+      return HttpResponse.json(
+        { error: 'Employer not found' },
+        { status: 404 }
+      )
+    }
     return HttpResponse.json({
       id,
       name: 'ACME Corporation',
@@ -6615,6 +6621,389 @@ export const handlers = [
   // DELETE /v1/employers/follow/:organizationId
   http.delete(`${BASE_URL}/v1/employers/follow/:organizationId`, () => {
     return HttpResponse.json({ success: true })
+  }),
+
+  // GET /v1/employers/search - Search employers
+  http.get(`${BASE_URL}/v1/employers/search`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'emp_1',
+          organization_name: 'Acme Corporation',
+          industry: 'Technology',
+          size: '100-500',
+          verified: true,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+        },
+      ],
+      pagination: {
+        total: 1,
+        page: 1,
+        limit: 20,
+        total_pages: 1,
+      },
+    })
+  }),
+
+  // GET /v1/employers/:id/verification-status - Get verification status (BEFORE :id)
+  http.get(`${BASE_URL}/v1/employers/:id/verification-status`, ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({
+      data: {
+        employer_id: id,
+        verified: id === 'emp_123',
+        verification_date: id === 'emp_123' ? '2024-01-15T10:00:00Z' : null,
+        verification_method: id === 'emp_123' ? 'email_domain' : null,
+      },
+    })
+  }),
+
+  // GET /v1/profile/completion - Get profile completion status
+  http.get(`${BASE_URL}/v1/profile/completion`, () => {
+    return HttpResponse.json({
+      data: {
+        user_id: 'user_123',
+        overall_completion: 75,
+        sections: [
+          {
+            section_name: 'basic_info',
+            display_name: 'Basic Information',
+            completed: true,
+            completion_percentage: 100,
+            weight: 20,
+          },
+          {
+            section_name: 'work_experience',
+            display_name: 'Work Experience',
+            completed: false,
+            completion_percentage: 60,
+            weight: 30,
+          },
+          {
+            section_name: 'education',
+            display_name: 'Education',
+            completed: true,
+            completion_percentage: 100,
+            weight: 20,
+          },
+          {
+            section_name: 'skills',
+            display_name: 'Skills',
+            completed: false,
+            completion_percentage: 40,
+            weight: 15,
+          },
+          {
+            section_name: 'certifications',
+            display_name: 'Certifications',
+            completed: false,
+            completion_percentage: 0,
+            weight: 15,
+          },
+        ],
+        last_updated: '2024-01-15T10:00:00Z',
+      },
+    })
+  }),
+
+  // GET /v1/profile/completion/sections/:section - Get specific section
+  http.get(`${BASE_URL}/v1/profile/completion/sections/:section`, ({ params }) => {
+    const { section } = params
+    if (section === 'invalid_section' || section === 'invalid') {
+      return HttpResponse.json(
+        { error: 'Section not found' },
+        { status: 404 }
+      )
+    }
+    return HttpResponse.json({
+      data: {
+        section_name: section,
+        display_name: 'Work Experience',
+        completed: false,
+        completion_percentage: 60,
+        weight: 30,
+        required_fields: [
+          { name: 'job_title', completed: true },
+          { name: 'company_name', completed: true },
+          { name: 'start_date', completed: true },
+          { name: 'end_date', completed: false },
+          { name: 'description', completed: false },
+        ],
+        optional_fields: [
+          { name: 'achievements', completed: false },
+          { name: 'technologies', completed: true },
+        ],
+      },
+    })
+  }),
+
+  // GET /v1/profile/completion/missing-sections - Get missing sections
+  http.get(`${BASE_URL}/v1/profile/completion/missing-sections`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          section_name: 'work_experience',
+          display_name: 'Work Experience',
+          completed: false,
+          completion_percentage: 60,
+          weight: 30,
+        },
+        {
+          section_name: 'skills',
+          display_name: 'Skills',
+          completed: false,
+          completion_percentage: 40,
+          weight: 15,
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/profile/completion/suggestions - Get completion suggestions
+  http.get(`${BASE_URL}/v1/profile/completion/suggestions`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          section_name: 'work_experience',
+          priority: 'high',
+          impact_score: 30,
+          suggestion: 'Add end dates to your work experiences',
+          action_url: '/profile/experience',
+          estimated_time_minutes: 5,
+        },
+        {
+          section_name: 'skills',
+          priority: 'medium',
+          impact_score: 15,
+          suggestion: 'Add at least 5 more skills to reach 100% completion',
+          action_url: '/profile/skills',
+          estimated_time_minutes: 10,
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/profile/completion/weighting - Get section weighting
+  http.get(`${BASE_URL}/v1/profile/completion/weighting`, () => {
+    return HttpResponse.json({
+      data: {
+        basic_info: 20,
+        work_experience: 30,
+        education: 20,
+        skills: 15,
+        certifications: 15,
+      },
+    })
+  }),
+
+  // POST /v1/profile/completion/recalculate - Recalculate completion
+  http.post(`${BASE_URL}/v1/profile/completion/recalculate`, () => {
+    return HttpResponse.json({
+      data: {
+        user_id: 'user_123',
+        overall_completion: 80,
+        sections: [],
+        last_updated: new Date().toISOString(),
+      },
+    })
+  }),
+
+  // GET /v1/profile/completion/history - Get completion history
+  http.get(`${BASE_URL}/v1/profile/completion/history`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          date: '2024-01-01',
+          overall_completion: 50,
+        },
+        {
+          date: '2024-01-08',
+          overall_completion: 65,
+        },
+        {
+          date: '2024-01-15',
+          overall_completion: 75,
+        },
+      ],
+    })
+  }),
+
+  // POST /v1/profile/import/linkedin - Import from LinkedIn
+  http.post(`${BASE_URL}/v1/profile/import/linkedin`, async ({ request }) => {
+    const body = await request.json() as { linkedin_url: string }
+    if (body.linkedin_url === 'invalid-url') {
+      return HttpResponse.json(
+        { error: 'Invalid LinkedIn URL' },
+        { status: 400 }
+      )
+    }
+    return HttpResponse.json({
+      data: {
+        import_id: 'import_123',
+        status: 'completed',
+        source: 'linkedin',
+        imported_sections: ['basic_info', 'work_experience', 'education', 'skills'],
+        created_count: 15,
+        updated_count: 2,
+        skipped_count: 0,
+        errors: [],
+        started_at: '2024-01-15T10:00:00Z',
+        completed_at: '2024-01-15T10:02:00Z',
+      },
+    })
+  }),
+
+  // POST /v1/profile/import/resume - Import from resume
+  http.post(`${BASE_URL}/v1/profile/import/resume`, async ({ request }) => {
+    const body = await request.json() as { file_url?: string }
+    if (body.file_url === 'https://example.com/resume.txt') {
+      return HttpResponse.json(
+        { error: 'Unsupported file format' },
+        { status: 400 }
+      )
+    }
+    return HttpResponse.json({
+      data: {
+        import_id: 'import_125',
+        status: 'completed',
+        source: 'resume',
+        imported_sections: ['work_experience', 'education', 'skills'],
+        created_count: 8,
+        updated_count: 0,
+        skipped_count: 2,
+        errors: [],
+        started_at: '2024-01-15T10:00:00Z',
+        completed_at: '2024-01-15T10:03:00Z',
+      },
+    })
+  }),
+
+  // POST /v1/profile/import/preview - Preview import
+  http.post(`${BASE_URL}/v1/profile/import/preview`, () => {
+    return HttpResponse.json({
+      data: {
+        source: 'linkedin',
+        sections: [
+          {
+            section_name: 'basic_info',
+            action: 'update',
+            current_data: {
+              first_name: 'John',
+              last_name: 'Doe',
+            },
+            imported_data: {
+              first_name: 'John',
+              last_name: 'Doe',
+              headline: 'Software Engineer',
+            },
+            conflicts: [],
+          },
+        ],
+        total_creates: 5,
+        total_updates: 2,
+        total_skips: 0,
+        potential_conflicts: 0,
+      },
+    })
+  }),
+
+  // POST /v1/profile/import/validate - Validate import
+  http.post(`${BASE_URL}/v1/profile/import/validate`, () => {
+    return HttpResponse.json({
+      data: {
+        valid: true,
+        errors: [],
+        warnings: [
+          {
+            field: 'work_experience.description',
+            message: 'Description is very short',
+            severity: 'warning',
+          },
+        ],
+        suggestions: [
+          {
+            field: 'skills',
+            message: 'Consider adding more technical skills',
+          },
+        ],
+      },
+    })
+  }),
+
+  // GET /v1/profile/import/:id - Get import status
+  http.get(`${BASE_URL}/v1/profile/import/:id`, ({ params }) => {
+    const { id } = params
+    if (id === 'invalid_id') {
+      return HttpResponse.json(
+        { error: 'Import not found' },
+        { status: 404 }
+      )
+    }
+    if (id === 'import_124') {
+      return HttpResponse.json({
+        data: {
+          import_id: id,
+          status: 'failed',
+          source: 'resume',
+          imported_sections: [],
+          created_count: 0,
+          updated_count: 0,
+          skipped_count: 0,
+          errors: [
+            {
+              section: 'work_experience',
+              message: 'Failed to parse dates',
+            },
+          ],
+          started_at: '2024-01-15T10:00:00Z',
+          completed_at: '2024-01-15T10:01:00Z',
+        },
+      })
+    }
+    return HttpResponse.json({
+      data: {
+        import_id: id,
+        status: 'processing',
+        source: 'linkedin',
+        imported_sections: [],
+        created_count: 0,
+        updated_count: 0,
+        skipped_count: 0,
+        errors: [],
+        started_at: '2024-01-15T10:00:00Z',
+        completed_at: null,
+        progress_percentage: 45,
+      },
+    })
+  }),
+
+  // GET /v1/profile/import - List imports
+  http.get(`${BASE_URL}/v1/profile/import`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          import_id: 'import_123',
+          status: 'completed',
+          source: 'linkedin',
+          started_at: '2024-01-15T10:00:00Z',
+          completed_at: '2024-01-15T10:02:00Z',
+        },
+        {
+          import_id: 'import_122',
+          status: 'completed',
+          source: 'resume',
+          started_at: '2024-01-14T10:00:00Z',
+          completed_at: '2024-01-14T10:03:00Z',
+        },
+      ],
+      pagination: {
+        total: 2,
+        page: 1,
+        limit: 20,
+        total_pages: 1,
+      },
+    })
   }),
 ]
 
