@@ -67,10 +67,10 @@ export interface UseBreadcrumbsReturn {
  * const { breadcrumbs } = useBreadcrumbs({
  *   customItems: [
  *     { label: 'Dashboard', href: '/dashboard' },
- *     { label: 'Custom Page', isActive: true }
+ *     { label: 'Custom Page' }
  *   ]
  * })
- * <Breadcrumb items={breadcrumbs} />
+ * <Breadcrumb items={breadcrumbs} currentIndex={breadcrumbs.length - 1} />
  * ```
  *
  * @example
@@ -202,7 +202,6 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
         siblings.push({
           label: translateRoute(route),
           href: route.path,
-          isActive: false,
         })
       }
 
@@ -241,7 +240,6 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             {
               label: translateRoute(dashboardRoute),
               href: dashboardRoute.path,
-              isActive: true,
             },
           ]
         }
@@ -249,7 +247,6 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
           {
             label: t(ROUTES.DASHBOARD.titleKey),
             href: '/dashboard',
-            isActive: true,
           },
         ]
       }

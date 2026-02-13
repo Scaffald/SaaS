@@ -28,7 +28,7 @@ export function IPIPAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.sm} align="center" paddingVertical={40}>
           <Spinner size="lg" color="$blue7" />
           <Text color="$gray11">Loading...</Text>
         </Stack>

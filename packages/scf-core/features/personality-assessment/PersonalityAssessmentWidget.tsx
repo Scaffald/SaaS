@@ -25,7 +25,7 @@ export function PersonalityAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.sm} align="center" paddingVertical={40}>
           <Spinner size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
