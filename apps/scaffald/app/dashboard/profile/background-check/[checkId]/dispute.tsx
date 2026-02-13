@@ -46,7 +46,7 @@ export default function BackgroundCheckDisputeScreen() {
         <ScrollView style={{ flex: 1 }}>
           <Stack gap={16} padding={16}>
             {checksQuery.isLoading && (
-              <Stack gap={12} align="center" paddingVertical={24}>
+              <Stack gap={12} align="center">
                 <Spinner size="lg" color="$color11" />
                 <Text size="sm" color="$color11">
                   Loading background checks…

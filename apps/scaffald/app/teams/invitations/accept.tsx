@@ -86,7 +86,7 @@ export default function AcceptTeamInvitationScreen() {
 
     if (authLoading) {
       return (
-        <Stack gap={12} align="center" paddingVertical={24}>
+        <Stack gap={12} align="center">
           <Spinner size="lg" />
           <Text color="$color11">Preparing secure invitation…</Text>
         </Stack>
@@ -116,7 +116,7 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'success') {
       return (
-        <Stack gap={16} align="center" paddingVertical={16}>
+        <Stack gap={16} align="center">
           <CheckCircle size={48} color="$green9" />
           <Stack gap={8} align="center">
             <Text>
@@ -135,7 +135,7 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'declined') {
       return (
-        <Stack gap={16} align="center" paddingVertical={16}>
+        <Stack gap={16} align="center">
           <XCircle size={48} color="$red9" />
           <Stack gap={8} align="center">
             <Text>
@@ -220,7 +220,7 @@ export default function AcceptTeamInvitationScreen() {
 
 function ErrorState({ title, message }: { title: string; message: string }) {
   return (
-    <Stack gap={12} align="center" paddingVertical={16}>
+    <Stack gap={12} align="center">
       <AlertTriangle size={48} color="$yellow9" />
       <Stack gap={8} align="center">
         <Text>

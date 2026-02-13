@@ -177,7 +177,7 @@ interface EventTypeBadgeProps {
 
 function EventTypeBadge({ label, category }: EventTypeBadgeProps) {
   return (
-    <Stack padding={8} paddingHorizontal={12} gap={4}>
+    <Stack padding={8} gap={4}>
       <Text fontFamily="monospace" color="$gray12">{label}</Text>
       <Text color="$gray10">{category}</Text>
     </Stack>

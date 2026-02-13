@@ -293,7 +293,7 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <Stack align="center" justify="center" gap={12} paddingHorizontal={16}>
+    <Stack align="center" justify="center" gap={12}>
       <Card
         padding={16}
        

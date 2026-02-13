@@ -54,7 +54,7 @@ export default function Screen() {
       />
       <Row>
         <Stack justify="center">
-          <Stack paddingHorizontal={spacing[16]}>
+          <Stack>
             <LoginScreen />
           </Stack>
         </Stack>

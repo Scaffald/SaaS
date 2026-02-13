@@ -49,7 +49,7 @@ function ResumeImportContent() {
       </Stack>
 
       {isLoading ? (
-        <Stack gap={8} align="center" paddingVertical={24}>
+        <Stack gap={8} align="center">
           <Spinner size="lg" />
           <Text color="$color11">Checking for existing uploads...</Text>
         </Stack>

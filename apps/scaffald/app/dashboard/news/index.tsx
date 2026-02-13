@@ -181,7 +181,7 @@ export default function NewsPage() {
   }
 
   const content = (
-    <Stack gap={16} paddingHorizontal={spacing.lg} paddingVertical={spacing.lg}>
+    <Stack gap={16}>
       <Stack gap={8}>
         <Text color="$color12">
           Industry News
@@ -210,7 +210,7 @@ export default function NewsPage() {
       </Row>
 
       {isLoading && newsItems.length === 0 ? (
-        <Stack align="center" gap={12} paddingVertical={32}>
+        <Stack align="center" gap={12}>
           <Spinner size="lg" color="$blue7" />
           <Text color="$color11">
             Loading latest news…
@@ -219,7 +219,7 @@ export default function NewsPage() {
       ) : null}
 
       {isError ? (
-        <Stack align="center" gap={12} paddingVertical={32}>
+        <Stack align="center" gap={12}>
           <AlertCircle size={32} color="$red10" />
           <Text color="$red11" style={{ textAlign: 'center' }}>
             Unable to load news at the moment.
@@ -241,7 +241,7 @@ export default function NewsPage() {
       ) : null}
 
       {!isLoading && !isError && newsItems.length === 0 ? (
-        <Stack align="center" gap={12} paddingVertical={32}>
+        <Stack align="center" gap={12}>
           <Text color="$color11">
             No articles found
           </Text>

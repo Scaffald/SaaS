@@ -170,7 +170,7 @@ export default function DashboardTeamDetailPage() {
   )
 
   const mainContent = isLoading ? (
-    <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+    <Stack align="center" justify="center" gap={8}>
       <Spinner size="lg" />
       <Text color="$color11">Loading team details…</Text>
     </Stack>

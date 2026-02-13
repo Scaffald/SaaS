@@ -91,6 +91,8 @@ export function OrganizationBackgroundCheckRequestForm() {
     [workersQuery.data?.workers]
   )
 
+  // NOTE: Keep in tRPC - office.listJobs supports organization_id filtering (admin operation)
+  // Public SDK Jobs resource doesn't support organization_id filter yet
   const jobsQuery = api.office.listJobs.useQuery(
     {
       organization_id: organizationId ?? undefined,

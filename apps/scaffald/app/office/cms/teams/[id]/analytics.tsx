@@ -160,7 +160,7 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <Stack align="center" justify="center" paddingHorizontal={16}>
+    <Stack align="center" justify="center">
       <Card
        
        

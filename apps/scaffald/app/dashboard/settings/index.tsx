@@ -285,7 +285,7 @@ export default function NotificationsCenterScreen() {
   }
 
   return (
-    <ScrollView paddingHorizontal={24} paddingVertical={24}>
+    <ScrollView>
       <Stack gap={24}>
         <Stack gap={8}>
           <Text>

@@ -149,7 +149,7 @@ export default function OnboardingPage() {
         justify="center"
         align="center"
         padding={16}
-        paddingVertical={32}
+       
         minHeight="100vh"
       >
         <Stack
@@ -172,7 +172,7 @@ export default function OnboardingPage() {
           </Stack>
 
           {isCheckingStatus ? (
-            <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+            <Stack gap={spacing.sm} align="center">
               <Spinner size="lg" color="$blue7" />
               <Text color="$color11">Loading...</Text>
             </Stack>

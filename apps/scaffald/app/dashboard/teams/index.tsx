@@ -38,7 +38,7 @@ export default function DashboardTeamsIndexPage() {
       </Row>
 
       {isLoading || isRefetching ? (
-        <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Stack align="center" justify="center" gap={8}>
           <Spinner size="lg" />
           <Text color="$color11">Loading your teams…</Text>
         </Stack>
