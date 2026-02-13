@@ -96,8 +96,8 @@ export default function CreateTeamPage() {
       ) : (
         <Stack
           padding={24}
-          backgroundColor="$color3"
-          borderRadius={24}
+         
+         
           align="center"
           gap={8}
         >

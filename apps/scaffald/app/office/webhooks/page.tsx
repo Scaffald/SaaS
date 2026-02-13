@@ -116,9 +116,9 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
   return (
     <Card
       padding={16}
-      borderWidth={2}
+     
       borderColor={isSelected ? '$blue8' : '$borderColor'}
-      backgroundColor={isSelected ? '$blue2' : '$background'}
+     
       pressStyle={{ scale: 0.98 }}
       onPress={onPress}
       cursor="pointer"
@@ -177,7 +177,7 @@ interface EventTypeBadgeProps {
 
 function EventTypeBadge({ label, category }: EventTypeBadgeProps) {
   return (
-    <Stack padding={8} paddingHorizontal={12} backgroundColor="$gray3" borderRadius={12} gap={4}>
+    <Stack padding={8} paddingHorizontal={12} gap={4}>
       <Text fontFamily="monospace" color="$gray12">{label}</Text>
       <Text color="$gray10">{category}</Text>
     </Stack>

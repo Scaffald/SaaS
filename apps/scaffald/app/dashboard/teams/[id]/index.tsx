@@ -159,7 +159,7 @@ export default function DashboardTeamDetailPage() {
       </Button>
       <Button
         size={8}
-        backgroundColor="$color9"
+       
         color="$color1"
         icon={UserPlus}
         onPress={() => setIsInviteModalOpen(true)}
@@ -187,9 +187,9 @@ export default function DashboardTeamDetailPage() {
 
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
+       
+       
+       
         gap={16}
       >
         <TeamAnalyticsSummary teamId={teamId} />
@@ -197,9 +197,9 @@ export default function DashboardTeamDetailPage() {
 
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
+       
+       
+       
         gap={16}
       >
         <TeamAutomationSettings
@@ -215,9 +215,9 @@ export default function DashboardTeamDetailPage() {
 
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
+       
+       
+       
         gap={16}
       >
         <TeamActivityFeed
@@ -229,9 +229,9 @@ export default function DashboardTeamDetailPage() {
 
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
+       
+       
+       
         gap={16}
       >
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
@@ -239,9 +239,9 @@ export default function DashboardTeamDetailPage() {
 
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
+       
+       
+       
         gap={16}
       >
         <TeamInvitationsList
@@ -250,7 +250,7 @@ export default function DashboardTeamDetailPage() {
           headerAction={
             <Button
               size={8}
-              backgroundColor="$color9"
+             
               color="$color1"
               icon={UserPlus}
               onPress={() => setIsInviteModalOpen(true)}
@@ -309,10 +309,10 @@ function ErrorCard({
   return (
     <Card
       padding={16}
-      borderWidth={1}
-      borderColor="$borderColor"
+     
+     
       gap={12}
-      backgroundColor="$color2"
+     
     >
       <Row gap={8} align="center">
         <AlertTriangle size={20} color="$yellow10" />

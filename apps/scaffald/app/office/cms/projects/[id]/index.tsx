@@ -194,7 +194,7 @@ export default function ProjectDetailPage() {
                   <Stack gap={8}>
                     <Text>Site Boundaries</Text>
                     {sites.map((ps: (typeof sites)[0]) => (
-                      <Card key={ps.id} padding={8} backgroundColor="$gray2">
+                      <Card key={ps.id} padding={8}>
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
@@ -212,7 +212,7 @@ export default function ProjectDetailPage() {
                   <Stack gap={8}>
                     <Text>Property Addresses</Text>
                     {addresses.map((pa: (typeof addresses)[0]) => (
-                      <Card key={pa.id} padding={8} backgroundColor="$gray2">
+                      <Card key={pa.id} padding={8}>
                         <Text>
                           {pa.address?.address?.street || ''}
                           {pa.address?.address?.city && `, ${pa.address.address.city}`}
@@ -259,7 +259,7 @@ export default function ProjectDetailPage() {
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
-                    <Card key={worker.id} padding={12} backgroundColor="$gray2">
+                    <Card key={worker.id} padding={12}>
                       <Row justify="space-between" align="center">
                         <Stack gap={4}>
                           <Row gap={8} align="center">
@@ -291,7 +291,7 @@ export default function ProjectDetailPage() {
                           <Row gap={8}>
                             <Button
                               size={8}
-                              backgroundColor="$green9"
+                             
                               color="$green12"
                               onPress={async () => {
                                 // TODO: Implement approve
@@ -300,7 +300,7 @@ export default function ProjectDetailPage() {
                             >Approve</Button>
                             <Button
                               size={8}
-                              backgroundColor="$red9"
+                             
                               color="$red12"
                               onPress={async () => {
                                 // TODO: Implement reject

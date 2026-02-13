@@ -126,7 +126,7 @@ export default function EditTeamPage() {
         refreshKey={inviteRefreshKey}
         headerAction={
           <Button
-            backgroundColor="$color9"
+           
             color="$color1"
             size={12}
             onPress={() => setIsInviteModalOpen(true)}

@@ -162,9 +162,9 @@ function FallbackCard({
   return (
     <Stack align="center" justify="center" paddingHorizontal={16}>
       <Card
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
+       
+       
+       
         padding={16}
         gap={12}
       >

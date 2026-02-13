@@ -253,9 +253,9 @@ export default function OfficeTeamDetailPage() {
           {isInvitationsLoading && (
             <Stack
               gap={8}
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius={16}
+             
+             
+             
               padding={12}
             >
               <Spinner size="sm" />
@@ -296,9 +296,9 @@ function CenteredMessageCard({
     <Stack align="center" justify="center" gap={12} paddingHorizontal={16}>
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
+       
+       
+       
         gap={12}
       >
         <Text>
@@ -324,9 +324,9 @@ function InfoBanner({
 }) {
   return (
     <Card
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$color2"
+     
+     
+     
       padding={16}
       gap={12}
     >

@@ -298,11 +298,11 @@ export default function NotificationsCenterScreen() {
 
         <Stack
           gap={16}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={16}
+         
+         
+         
           padding={16}
-          backgroundColor="$color1"
+         
         >
           <Row justify="space-between" align="center">
             <Stack gap={4}>
@@ -323,7 +323,7 @@ export default function NotificationsCenterScreen() {
             </Button>
           </Row>
 
-          <Separator backgroundColor="$color3" />
+          <Separator />
 
           <Stack gap={12}>
             <Row align="center" justify="space-between">
@@ -386,7 +386,7 @@ export default function NotificationsCenterScreen() {
               ))}
             </Stack>
 
-            <Separator backgroundColor="$color3" />
+            <Separator />
 
             <Stack gap={8}>
               <Text color="$color12">
@@ -428,7 +428,7 @@ export default function NotificationsCenterScreen() {
               </Row>
             </Stack>
 
-            <Separator backgroundColor="$color3" />
+            <Separator />
 
             <Stack gap={8}>
               <Text color="$color12">
@@ -477,7 +477,7 @@ export default function NotificationsCenterScreen() {
             )}
           </Stack>
 
-          <Separator backgroundColor="$color3" />
+          <Separator />
 
           <Stack gap={8}>
             <Text color="$color12">
@@ -496,12 +496,12 @@ export default function NotificationsCenterScreen() {
               </Text>
             ) : (
               <Stack
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius={12}
+               
+               
+               
                
               >
-                <Row backgroundColor="$color2" padding={8}>
+                <Row padding={8}>
                   <Text>
                     Token
                   </Text>
@@ -516,7 +516,7 @@ export default function NotificationsCenterScreen() {
                   <Row
                     key={device.id}
                     padding={8}
-                    backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
+                   
                     gap={8}
                   >
                     <Text color="$color11" numberOfLines={1}>
@@ -589,10 +589,10 @@ export default function NotificationsCenterScreen() {
               return (
                 <Stack
                   key={notification.id}
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius={16}
-                  backgroundColor="$color1"
+                 
+                 
+                 
+                 
                 >
                   <Row padding={16} gap={12} align="flex-start">
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
@@ -625,7 +625,7 @@ export default function NotificationsCenterScreen() {
                     </Stack>
                   </Row>
 
-                  <Separator backgroundColor="$color3" />
+                  <Separator />
 
                   {/* Render site overlap notification with actions if type matches */}
                   {notification.metadata?.notification_type === 'site_overlap' &&

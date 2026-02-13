@@ -45,11 +45,11 @@ export default function DashboardTeamsIndexPage() {
       ) : error ? (
         <Stack
           gap={12}
-          borderWidth={1}
-          borderColor="$red8"
-          borderRadius={16}
+         
+         
+         
           padding={16}
-          backgroundColor="$red2"
+         
         >
           <Text color="$red11">
             Unable to load teams
@@ -64,11 +64,11 @@ export default function DashboardTeamsIndexPage() {
       ) : teams.length === 0 ? (
         <Stack
           gap={12}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={16}
+         
+         
+         
           padding={16}
-          backgroundColor="$color2"
+         
         >
           <Text>No teams yet</Text>
           <Text color="$color11">
@@ -91,7 +91,7 @@ export default function DashboardTeamsIndexPage() {
               : 'General'
 
             return (
-              <Card key={team.id} padding={16} borderWidth={1} borderColor="$borderColor" gap={12}>
+              <Card key={team.id} padding={16} gap={12}>
                 <Row gap={12} align="center">
                   <Users size={20} />
                   <Text>

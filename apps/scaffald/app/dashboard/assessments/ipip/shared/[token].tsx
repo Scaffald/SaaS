@@ -114,10 +114,10 @@ export default function SharedIPIPResultsRoute() {
 
         <Tabs.Content value="narrative" padding={16}>
           <Stack
-            backgroundColor="$color1"
-            borderRadius={16}
-            borderWidth={1}
-            borderColor="$borderColor"
+           
+           
+           
+           
             padding={16}
           >
             {processedResults ? (
@@ -140,10 +140,10 @@ export default function SharedIPIPResultsRoute() {
 
         <Tabs.Content value="chart" padding={16}>
           <Stack
-            backgroundColor="$color1"
-            borderRadius={16}
-            borderWidth={1}
-            borderColor="$borderColor"
+           
+           
+           
+           
             padding={16}
           >
             {processedResults ? (

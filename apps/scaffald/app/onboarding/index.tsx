@@ -156,11 +156,11 @@ export default function OnboardingPage() {
           maxWidth={600}
           width="100%"
           gap={spacing.md}
-          backgroundColor="$background"
+         
           padding={24}
-          borderRadius={16}
-          borderWidth={1}
-          borderColor="$borderColor"
+         
+         
+         
         >
           <Stack gap={spacing.xs}>
             <Text color="$color12">

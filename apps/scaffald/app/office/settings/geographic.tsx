@@ -136,7 +136,7 @@ export default function GeographicSettingsPage() {
               </Text>
             </Stack>
 
-            <Card padding={12} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+            <Card padding={12}>
               <Stack gap={8}>
                 <Text>
                   Current Setting
@@ -172,7 +172,7 @@ export default function GeographicSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Card padding={16}>
           <Stack gap={8}>
             <Text>
               About Site Overlaps

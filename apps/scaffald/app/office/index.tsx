@@ -9,7 +9,7 @@ export default function OfficeIndex() {
       leftContent={
         <Stack gap={32}>
           <OfficeNotificationsConsole />
-          <Separator backgroundColor="$color4" />
+          <Separator />
           <OfficeStorageDashboard />
         </Stack>
       }

@@ -54,7 +54,7 @@ function ResumeImportContent() {
           <Text color="$color11">Checking for existing uploads...</Text>
         </Stack>
       ) : hasUploaded ? (
-        <Stack gap={12} backgroundColor="#d1fae5" padding={16} borderRadius={8}>
+        <Stack gap={12} padding={16}>
           <Text weight="bold" color="#065f46">
             You've already uploaded a resume.
           </Text>

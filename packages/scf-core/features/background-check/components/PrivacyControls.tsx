@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useUpdateBackgroundCheckPrivacyMutation } from '@scf/core/utils/background-checks-sdk-hooks'
 import { Share2 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Alert } from 'react-native'
@@ -56,7 +56,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
     initialSettings.shared_with_organization_ids
   )
 
-  const updatePrivacyMutation = api.backgroundChecks.updatePrivacy.useMutation()
+  const updatePrivacyMutation = useUpdateBackgroundCheckPrivacyMutation()
 
   const applyUpdate = (nextSharePublicly: boolean, nextOrganizationIds: string[]) => {
     const previousShare = sharePublicly

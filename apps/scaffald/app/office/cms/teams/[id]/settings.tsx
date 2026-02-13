@@ -81,9 +81,9 @@ export default function OfficeTeamSettingsPage() {
 
         {team.isArchived ? (
           <Card
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$color2"
+           
+           
+           
             padding={12}
             gap={8}
           >
@@ -121,9 +121,9 @@ function CenteredMessage({
     <Stack align="center" justify="center" gap={12} paddingHorizontal={16}>
       <Card
         padding={16}
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
+       
+       
+       
         gap={12}
       >
         <Text>

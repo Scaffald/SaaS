@@ -58,8 +58,8 @@ export default function BackgroundCheckDisputeScreen() {
               <Stack
                 gap={12}
                 padding={16}
-                backgroundColor="#f3f4f6"
-                borderRadius={8}
+               
+               
                 style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
                 <Text size="sm" color="$color11">
@@ -83,8 +83,8 @@ export default function BackgroundCheckDisputeScreen() {
               <Stack
                 gap={12}
                 padding={16}
-                backgroundColor="#f3f4f6"
-                borderRadius={8}
+               
+               
                 style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
                 <Text size="sm" color="$color11">

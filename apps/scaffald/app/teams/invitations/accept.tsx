@@ -200,7 +200,7 @@ export default function AcceptTeamInvitationScreen() {
     <Stack
      
       padding={16}
-      backgroundColor="$color2"
+     
       justify="center"
       align="center"
     >
@@ -209,8 +209,8 @@ export default function AcceptTeamInvitationScreen() {
         maxWidth={480}
         padding={20}
         gap={20}
-        borderWidth={1}
-        borderColor="$borderColor"
+       
+       
       >
         {renderContent()}
       </Card>

@@ -101,7 +101,7 @@ export default function CreateWebhookPage() {
         ]}
       >
         <ScrollView padding={16}>
-          <Card padding={32} gap={20} align="center" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+          <Card padding={32} gap={20} align="center">
             <Text>
               ⚠️ Save Your Webhook Secret
             </Text>
@@ -109,7 +109,7 @@ export default function CreateWebhookPage() {
               This is the only time you will see this secret. Store it securely.
             </Text>
 
-            <Stack width="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius={16} padding={16}>
+            <Stack width="100%" padding={16}>
               <Text fontFamily="monospace" selectable>
                 {secret}
               </Text>
@@ -198,10 +198,10 @@ export default function CreateWebhookPage() {
                       gap={12}
                       align="center"
                       padding={12}
-                      backgroundColor="$gray2"
-                      borderRadius={16}
-                      borderWidth={1}
-                      borderColor="$gray4"
+                     
+                     
+                     
+                     
                       pressStyle={{ backgroundColor: '$gray3' }}
                       onPress={() => handleToggleEvent(event.value as WebhookEventType)}
                       cursor="pointer"
@@ -227,7 +227,7 @@ export default function CreateWebhookPage() {
         </Card>
 
         {/* Configuration Info */}
-        <Card padding={20} backgroundColor="$gray2">
+        <Card padding={20}>
           <Text>
             Configuration Details
           </Text>
