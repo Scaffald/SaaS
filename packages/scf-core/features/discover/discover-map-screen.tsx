@@ -870,11 +870,11 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
       shadowOpacity={0.15}
       shadowRadius={12}
       style={{ zIndex: 60 }}
+      gap={8}
     >
       <Tabs value={activeView} onValueChange={onViewChange} activationMode="manual" flex={1}>
-        <Tabs.List flex={1} gap={8} backgroundColor="transparent">
-          <Tabs.Tab
-            value="map"
+        <Tabs.Item value="map">
+          <Tabs.Trigger
             flex={1}
             backgroundColor={activeView === 'map' ? '$background' : 'transparent'}
             borderRadius={20}
@@ -885,9 +885,10 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
               <MapIcon size="md" />
               <Text>Map</Text>
             </Row>
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="list"
+          </Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="list">
+          <Tabs.Trigger
             flex={1}
             backgroundColor={activeView === 'list' ? '$background' : 'transparent'}
             borderRadius={20}
@@ -898,8 +899,8 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
               <ListIcon size="md" />
               <Text>List</Text>
             </Row>
-          </Tabs.Tab>
-        </Tabs.List>
+          </Tabs.Trigger>
+        </Tabs.Item>
       </Tabs>
     </Row>
   )

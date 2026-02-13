@@ -267,40 +267,40 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             value={activeColumn}
             onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}
           >
-            <Tabs.List
-              separator={<Stack width={4} />}
-              disablePassBorderRadius="bottom"
-              aria-label="Kanban column navigation"
-            >
-              {STATUSES.map((status) => (
-                <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
-                  <Text>{STATUS_LABELS[status]}</Text>
-                  <Stack
-                    style={{ backgroundColor: colors.bg[theme].inactive }}
-                    paddingHorizontal={8}
-                    paddingVertical={4}
-                    borderRadius={8}
-                    marginTop={4}
-                  >
-                    <Text style={{ color: colors.text[theme].secondary }}>
-                      {groupedApplications[status].length}
-                    </Text>
+            {STATUSES.map((status) => (
+              <Tabs.Item key={status} value={status}>
+                <Tabs.Trigger flex={1} minWidth={100}>
+                  <Stack align="center">
+                    <Text>{STATUS_LABELS[status]}</Text>
+                    <Stack
+                      style={{ backgroundColor: colors.bg[theme].inactive }}
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
+                      marginTop={4}
+                    >
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {groupedApplications[status].length}
+                      </Text>
+                    </Stack>
                   </Stack>
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
+                </Tabs.Trigger>
+              </Tabs.Item>
+            ))}
 
             {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status} padding="sm">
-                <StatusColumn
-                  status={status}
-                  label={STATUS_LABELS[status]}
-                  color={STATUS_COLORS[status]}
-                  applications={groupedApplications[status]}
-                  selectedApplicationIds={selectedApplicationIds}
-                  onSelectApplication={setSelectedApplication}
-                  onToggleSelection={toggleApplicationSelection}
-                />
+              <Tabs.Content key={status} value={status}>
+                <Stack padding="sm">
+                  <StatusColumn
+                    status={status}
+                    label={STATUS_LABELS[status]}
+                    color={STATUS_COLORS[status]}
+                    applications={groupedApplications[status]}
+                    selectedApplicationIds={selectedApplicationIds}
+                    onSelectApplication={setSelectedApplication}
+                    onToggleSelection={toggleApplicationSelection}
+                  />
+                </Stack>
               </Tabs.Content>
             ))}
           </Tabs>

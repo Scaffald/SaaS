@@ -132,9 +132,9 @@ export function SuccessStep({
         <Text style={{ color: colors.text[theme].secondary }}>What happens next:</Text>
 
         <Stack gap={12} marginTop={8}>
-          <NextStepItem text="Our team will review your application within 3-5 business days" />
-          <NextStepItem text="You'll receive an email update on your application status" />
-          <NextStepItem text="If selected, we'll contact you to schedule an interview" />
+          <NextStepItem text="Our team will review your application within 3-5 business days" theme={theme} />
+          <NextStepItem text="You'll receive an email update on your application status" theme={theme} />
+          <NextStepItem text="If selected, we'll contact you to schedule an interview" theme={theme} />
         </Stack>
       </Stack>
 
@@ -177,7 +177,7 @@ export function SuccessStep({
 /**
  * Helper component for next step items (bullet list format)
  */
-function NextStepItem({ text }: { text: string }) {
+function NextStepItem({ text, theme }: { text: string; theme: 'light' | 'dark' }) {
   return (
     <Row gap={12} align="flex-start">
       <Text style={{ color: colors.text[theme].secondary }} marginTop={4}>

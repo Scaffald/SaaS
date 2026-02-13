@@ -292,116 +292,125 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       </Row>
 
       {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as typeof activeTab)}
-        orientation="horizontal"
-        flexDirection="column"
-        flex={1}
+      <Stack
+        gap={8}
+        style={{ backgroundColor: colors.bg[theme].subtle }}
+        padding={4}
+        borderRadius={12}
       >
-        <Tabs.List
-          gap={8}
-          style={{ backgroundColor: colors.bg[theme].subtle }}
-          padding={4}
-          borderRadius={12}
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as typeof activeTab)}
         >
-          <Tabs.Tab value="profile" flex={1}>
-            <Text>Profile</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="application" flex={1}>
-            <Text>Application</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="notes" flex={1}>
-            <Text>Notes ({application.notes.length})</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="messages" flex={1}>
-            <Text>Messages</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="inquiry" flex={1}>
-            <Text>Inquiry</Text>
-          </Tabs.Tab>
-        </Tabs.List>
+          <Tabs.Item value="profile">
+            <Tabs.Trigger flex={1}>Profile</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="application">
+            <Tabs.Trigger flex={1}>Application</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="notes">
+            <Tabs.Trigger flex={1}>Notes ({application.notes.length})</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="messages">
+            <Tabs.Trigger flex={1}>Messages</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="inquiry">
+            <Tabs.Trigger flex={1}>Inquiry</Tabs.Trigger>
+          </Tabs.Item>
+        </Tabs>
+      </Stack>
 
-        <Tabs.Content value="profile" paddingTop={16}>
-          <CandidateProfileTab
-            candidate={application.candidate}
-            contactInfo={contactInfoQuery.data ?? undefined}
-            isContactLocked={!contactUnlocked}
-            lockReason={contactLockReason}
-          />
-        </Tabs.Content>
-
-        <Tabs.Content value="application" paddingTop={16}>
-          <ApplicationDetailsTab application={application} />
-        </Tabs.Content>
-
-        <Tabs.Content value="notes" paddingTop={16}>
-          <NotesTab
-            applicationId={application.id}
-            teamId={teamId}
-            mentionOptions={mentionOptions}
-          />
-        </Tabs.Content>
-
-        <Tabs.Content value="messages" paddingTop={16}>
-          <MessagesTab applicationId={application.id} />
-        </Tabs.Content>
-
-        <Tabs.Content value="inquiry" paddingTop={16}>
-          {inquiryMode === 'view' && isInquiryLoading && (
-            <Stack padding="md" align="center" gap={16}>
-              <Spinner size="lg" />
-              <Text>Loading inquiry...</Text>
-            </Stack>
-          )}
-
-          {inquiryMode === 'view' && hasInquiry && inquiryData && (
-            <InquiryTab
-              applicationId={application.id}
-              candidateName={application.candidate.name}
-              jobTitle={application.job.title}
-              data={inquiryData}
-              onEditInquiry={() => setInquiryMode('edit')}
-              editLabel={inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
+        <Tabs.Content value="profile">
+          <Stack paddingTop={16}>
+            <CandidateProfileTab
+              candidate={application.candidate}
+              contactInfo={contactInfoQuery.data ?? undefined}
+              isContactLocked={!contactUnlocked}
+              lockReason={contactLockReason}
             />
-          )}
+          </Stack>
+        </Tabs.Content>
 
-          {inquiryMode === 'create' && (
-            <InquiryCreateForm
+        <Tabs.Content value="application">
+          <Stack paddingTop={16}>
+            <ApplicationDetailsTab application={application} />
+          </Stack>
+        </Tabs.Content>
+
+        <Tabs.Content value="notes">
+          <Stack paddingTop={16}>
+            <NotesTab
               applicationId={application.id}
-              onSuccess={handleInquirySuccess}
-              onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+              teamId={teamId}
+              mentionOptions={mentionOptions}
             />
-          )}
+          </Stack>
+        </Tabs.Content>
 
-          {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
-            <InquiryCreateForm
-              applicationId={application.id}
-              inquiryId={inquiryData.inquiry.id}
-              mode="edit"
-              initialData={inquiryFormValues}
-              onSuccess={handleInquirySuccess}
-              onCancel={() => setInquiryMode('view')}
-            />
-          ) : null}
+        <Tabs.Content value="messages">
+          <Stack paddingTop={16}>
+            <MessagesTab applicationId={application.id} />
+          </Stack>
+        </Tabs.Content>
 
-          {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-            <Stack padding="md" gap={12}>
-              <Text style={{ color: colors.text[theme].secondary }}>
-                No inquiry has been created for this candidate yet.
-              </Text>
-              <Button color="primary" onPress={() => setInquiryMode('create')}>
-                Start Inquiry
-              </Button>
-            </Stack>
-          )}
+        <Tabs.Content value="inquiry">
+          <Stack paddingTop={16}>
+            {inquiryMode === 'view' && isInquiryLoading && (
+              <Stack padding="md" align="center" gap={16}>
+                <Spinner size="lg" />
+                <Text>Loading inquiry...</Text>
+              </Stack>
+            )}
 
-          {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-            <Stack padding="md" align="center" gap={16}>
-              <Spinner size="lg" />
-              <Text>Preparing inquiry for editing...</Text>
-            </Stack>
-          )}
+            {inquiryMode === 'view' && hasInquiry && inquiryData && (
+              <InquiryTab
+                applicationId={application.id}
+                candidateName={application.candidate.name}
+                jobTitle={application.job.title}
+                data={inquiryData}
+                onEditInquiry={() => setInquiryMode('edit')}
+                editLabel={inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'}
+              />
+            )}
+
+            {inquiryMode === 'create' && (
+              <InquiryCreateForm
+                applicationId={application.id}
+                onSuccess={handleInquirySuccess}
+                onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+              />
+            )}
+
+            {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
+              <InquiryCreateForm
+                applicationId={application.id}
+                inquiryId={inquiryData.inquiry.id}
+                mode="edit"
+                initialData={inquiryFormValues}
+                onSuccess={handleInquirySuccess}
+                onCancel={() => setInquiryMode('view')}
+              />
+            ) : null}
+
+            {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
+              <Stack padding="md" gap={12}>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  No inquiry has been created for this candidate yet.
+                </Text>
+                <Button color="primary" onPress={() => setInquiryMode('create')}>
+                  Start Inquiry
+                </Button>
+              </Stack>
+            )}
+
+            {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
+              <Stack padding="md" align="center" gap={16}>
+                <Spinner size="lg" />
+                <Text>Preparing inquiry for editing...</Text>
+              </Stack>
+            )}
+          </Stack>
         </Tabs.Content>
       </Tabs>
     </ResponsiveModal>

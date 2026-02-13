@@ -124,8 +124,8 @@ export const LoginScreen = () => {
 
   return (
     <FormProvider {...form}>
-      <Stack gap={spacing[5]} padding={spacing[5]}>
-        <Stack gap={spacing[5]} marginBottom={spacing[3]} align="center">
+      <Stack gap={20} padding={20}>
+        <Stack gap={20} marginBottom={12} align="center">
           <ScaffaldLogo width={200} height={33} />
           <Stack gap={spacing[2]} align="center">
             <Paragraph size="sm" style={{ textAlign: 'center', color: textSecondary }}>
@@ -134,8 +134,8 @@ export const LoginScreen = () => {
           </Stack>
         </Stack>
 
-        <Form onSubmit={handleSubmit} gap={spacing[5]}>
-          <Stack gap={spacing[5]}>
+        <Form onSubmit={handleSubmit} gap={20}>
+          <Stack gap={20}>
             <Input
               placeholder={t('auth.login.emailPlaceholder')}
               value={form.watch('email')}

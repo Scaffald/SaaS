@@ -262,24 +262,24 @@ export function IdVerificationAdminPage({
 
         <Stack gap={8}>
           <Text color="$gray11">Badge status filter</Text>
-          <Tabs
-            value={statusFilter}
-            onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+          <Row
+            backgroundColor="$color2"
+            borderRadius={16}
+            borderWidth={1}
+            borderColor="$borderColor"
+            overflow="hidden"
           >
-            <Tabs.List
-              backgroundColor="$color2"
-              borderRadius={16}
-              borderWidth={1}
-              borderColor="$borderColor"
-              overflow="hidden"
+            <Tabs
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value as StatusFilter)}
             >
               {STATUS_TABS.map((tab) => (
-                <Tabs.Tab key={tab.value} flex={1} value={tab.value}>
-                  <Text>{tab.label}</Text>
-                </Tabs.Tab>
+                <Tabs.Item key={tab.value} value={tab.value}>
+                  <Tabs.Trigger flex={1}>{tab.label}</Tabs.Trigger>
+                </Tabs.Item>
               ))}
-            </Tabs.List>
-          </Tabs>
+            </Tabs>
+          </Row>
         </Stack>
 
         <Stack gap={8}>

@@ -167,8 +167,8 @@ export default function ProjectDetailPage() {
                 {sites.length > 0 && (
                   <Stack gap={8}>
                     <Text>Site Boundaries</Text>
-                    {sites.map((ps: (typeof sites)[0]) => (
-                      <Card key={ps.id} padding={8}>
+                    {sites.map((ps: (typeof sites)[0], idx: number) => (
+                      <Card key={ps.site?.id || idx} padding="sm">
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
@@ -185,14 +185,9 @@ export default function ProjectDetailPage() {
                 {addresses.length > 0 && (
                   <Stack gap={8}>
                     <Text>Property Addresses</Text>
-                    {addresses.map((pa: (typeof addresses)[0]) => (
-                      <Card key={pa.id} padding={8}>
-                        <Text>
-                          {pa.address?.address?.street || ''}
-                          {pa.address?.address?.city && `, ${pa.address.address.city}`}
-                          {pa.address?.address?.state && `, ${pa.address.address.state}`}
-                          {pa.address?.address?.zip && ` ${pa.address.address.zip}`}
-                        </Text>
+                    {addresses.map((pa: (typeof addresses)[0], idx: number) => (
+                      <Card key={pa.address?.id || idx} padding="sm">
+                        <Text>{pa.address?.address || 'No address'}</Text>
                         {pa.address?.property_type && (
                           <Text color="$gray10">Type: {pa.address.property_type}</Text>
                         )}
@@ -229,7 +224,7 @@ export default function ProjectDetailPage() {
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
-                    <Card key={worker.id} padding={12}>
+                    <Card key={worker.id} padding="md">
                       <Row justify="space-between" align="center">
                         <Stack gap={4}>
                           <Row gap={8} align="center">
@@ -255,7 +250,7 @@ export default function ProjectDetailPage() {
                           <Row gap={8}>
                             <Button
                               size="md"
-                              color="$green12"
+                              color="success"
                               onPress={async () => {
                                 // TODO: Implement approve
                                 console.log('Approve worker', worker.id)
@@ -265,7 +260,7 @@ export default function ProjectDetailPage() {
                             </Button>
                             <Button
                               size="md"
-                              color="$red12"
+                              color="error"
                               onPress={async () => {
                                 // TODO: Implement reject
                                 console.log('Reject worker', worker.id)
@@ -284,7 +279,7 @@ export default function ProjectDetailPage() {
 
             {/* Claim Work Button for current user */}
             <Button
-              theme="blue"
+              color="primary"
               onPress={async () => {
                 // TODO: Implement claim work
                 console.log('Claim work on project', project.id)

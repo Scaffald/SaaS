@@ -379,67 +379,70 @@ export function AdminBackgroundChecksPage() {
           </Card>
         </Row>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as AdminTab)}
-          activationMode="manual"
+        <Row
+          gap={12}
+          paddingHorizontal={8}
+          borderBottomWidth={1}
+          borderBottomColor="$borderColor"
+          backgroundColor="$background"
         >
-          <Tabs.List
-            orientation="horizontal"
-            borderBottomWidth={1}
-            borderBottomColor="$borderColor"
-            backgroundColor="$background"
-            scrollable
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as AdminTab)}
+            activationMode="manual"
           >
-            <Row gap={12} paddingHorizontal={8}>
-              <Tabs.Tab
-                value="checks"
+            <Tabs.Item value="checks">
+              <Tabs.Trigger
                 borderBottomWidth={activeTab === 'checks' ? 2 : 0}
                 borderBottomColor="$blue10"
                 paddingHorizontal={12}
                 paddingVertical={8}
               >
                 Checks
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="disputes"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="disputes">
+              <Tabs.Trigger
                 borderBottomWidth={activeTab === 'disputes' ? 2 : 0}
                 borderBottomColor="$blue10"
                 paddingHorizontal={12}
                 paddingVertical={8}
               >
                 Disputes
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="metrics"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="metrics">
+              <Tabs.Trigger
                 borderBottomWidth={activeTab === 'metrics' ? 2 : 0}
                 borderBottomColor="$blue10"
                 paddingHorizontal={12}
                 paddingVertical={8}
               >
                 Metrics
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="catalog"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="catalog">
+              <Tabs.Trigger
                 borderBottomWidth={activeTab === 'catalog' ? 2 : 0}
                 borderBottomColor="$blue10"
                 paddingHorizontal={12}
                 paddingVertical={8}
               >
                 Catalog
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="audit"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="audit">
+              <Tabs.Trigger
                 borderBottomWidth={activeTab === 'audit' ? 2 : 0}
                 borderBottomColor="$blue10"
                 paddingHorizontal={12}
                 paddingVertical={8}
               >
                 Audit Log
-              </Tabs.Tab>
-            </Row>
-          </Tabs.List>
-        </Tabs>
+              </Tabs.Trigger>
+            </Tabs.Item>
+          </Tabs>
+        </Row>
 
         {activeTab === 'checks' ? (
           <Row gap={12} flexWrap="wrap" justify="space-between" align="center">

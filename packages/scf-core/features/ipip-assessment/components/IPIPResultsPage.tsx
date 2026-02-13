@@ -102,64 +102,58 @@ export function IPIPResultsPage() {
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
-        orientation="horizontal"
-        flexDirection="column"
       >
-        <Tabs.List
-          separator={<Stack width={4} />}
-          disablePassBorderRadius="bottom"
-          aria-label="Manage your personality results view"
-        >
-          <Tabs.Tab flex={1} value="narrative">
-            <Text>Narrative View</Text>
-          </Tabs.Tab>
-          <Tabs.Tab flex={1} value="chart">
-            <Text>Chart View</Text>
-          </Tabs.Tab>
-        </Tabs.List>
+        <Tabs.Item value="narrative">
+          <Tabs.Trigger flex={1}>Narrative View</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="chart">
+          <Tabs.Trigger flex={1}>Chart View</Tabs.Trigger>
+        </Tabs.Item>
 
-        <Tabs.Content
-          value="narrative"
-          padding="md"
-          backgroundColor="$color1"
-          borderBottomLeftRadius={16}
-          borderBottomRightRadius={16}
-          borderWidth={1}
-          borderColor="$borderColor"
-        >
-          <NarrativeView
-            scores={results.scores}
-            normalizedScores={results.normalizedScores}
-            narratives={results.narratives}
-            isComplete={results.isComplete}
-            completedDomains={results.completedDomains}
-          />
+        <Tabs.Content value="narrative">
+          <Stack
+            padding="md"
+            backgroundColor="$color1"
+            borderBottomLeftRadius={16}
+            borderBottomRightRadius={16}
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
+            <NarrativeView
+              scores={results.scores}
+              normalizedScores={results.normalizedScores}
+              narratives={results.narratives}
+              isComplete={results.isComplete}
+              completedDomains={results.completedDomains}
+            />
+          </Stack>
         </Tabs.Content>
 
-        <Tabs.Content
-          value="chart"
-          padding="md"
-          backgroundColor="$color1"
-          borderBottomLeftRadius={16}
-          borderBottomRightRadius={16}
-          borderWidth={1}
-          borderColor="$borderColor"
-        >
-          <ChartView
-            scores={results.scores}
-            normalizedScores={results.normalizedScores}
-            archetype={
-              results.archetype
-                ? {
-                    archetype: results.archetype.name,
-                    name: results.archetype.name,
-                    confidence: results.archetype.confidence,
-                  }
-                : null
-            }
-            isComplete={results.isComplete}
-            completedDomains={results.completedDomains}
-          />
+        <Tabs.Content value="chart">
+          <Stack
+            padding="md"
+            backgroundColor="$color1"
+            borderBottomLeftRadius={16}
+            borderBottomRightRadius={16}
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
+            <ChartView
+              scores={results.scores}
+              normalizedScores={results.normalizedScores}
+              archetype={
+                results.archetype
+                  ? {
+                      archetype: results.archetype.name,
+                      name: results.archetype.name,
+                      confidence: results.archetype.confidence,
+                    }
+                  : null
+              }
+              isComplete={results.isComplete}
+              completedDomains={results.completedDomains}
+            />
+          </Stack>
         </Tabs.Content>
       </Tabs>
 
