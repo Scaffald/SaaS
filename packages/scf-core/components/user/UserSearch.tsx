@@ -198,7 +198,7 @@ export function UserSearch({
               return (
                 <Row
                   key={user.id}
-                  padding={12}
+                  padding="sm"
                   gap={8}
                   hoverStyle={{
                     backgroundColor: '$backgroundHover',
@@ -239,7 +239,7 @@ export function UserSearch({
           borderColor="$borderColor"
           borderRadius={12}
           backgroundColor="$background"
-          padding={12}
+          padding="sm"
           zIndex={1000}
         >
           <Text color="gray">No users found for "{debouncedSearch}"</Text>

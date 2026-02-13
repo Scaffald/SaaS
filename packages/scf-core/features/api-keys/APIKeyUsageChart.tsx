@@ -487,7 +487,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                           borderRadius={8}
                         >
                           <Paragraph
-                            size={4}
+                            size="xs"
                             color={
                               endpoint.method === 'GET'
                                 ? '$blue11'

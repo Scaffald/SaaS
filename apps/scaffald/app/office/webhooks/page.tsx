@@ -8,7 +8,7 @@ import { Link, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 import { api } from '@scf/core/utils/api'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { Button, Card, Badge, Row, Stack, Text } from '@scaffald/ui'
+import { Button, Card, Row, Stack, Text } from '@scaffald/ui'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import type { WebhookConfig } from '@scf/schemas'
 
@@ -128,10 +128,18 @@ function WebhookCard({
         <Stack gap={8}>
           <Row gap={12} align="center" justify="space-between">
             <Text>{webhook.url}</Text>
-            <Badge
-              variant={webhook.is_active ? 'success' : 'neutral'}
-              label={webhook.is_active ? 'Active' : 'Inactive'}
-            />
+            <Text
+              size="sm"
+              style={{
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                backgroundColor: webhook.is_active ? '#10b981' : '#6b7280',
+                color: '#ffffff',
+              }}
+            >
+              {webhook.is_active ? 'Active' : 'Inactive'}
+            </Text>
           </Row>
           {webhook.description && <Text color="$gray11">{webhook.description}</Text>}
         </Stack>

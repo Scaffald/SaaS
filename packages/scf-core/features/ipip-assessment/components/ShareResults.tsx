@@ -142,7 +142,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
         aria-live="polite"
       >
         <Row align="center" gap={8}>
-          <Lock size={4} color="$gray11" />
+          <Lock size="xs" color="$gray11" />
           <Text color="$gray11">Complete Assessment to Share</Text>
         </Row>
         <Text color="$gray11">
@@ -163,7 +163,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     >
       <Stack gap={8}>
         <Row align="center" gap={8}>
-          <Share2 size={4} color="$gray11" />
+          <Share2 size="xs" color="$gray11" />
           <Text color="$gray11">Share Your Results</Text>
         </Row>
         <Text color="$gray11">
@@ -325,7 +325,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
             aria-live="polite"
           >
             <Row align="center" gap={8}>
-              <Calendar size={4} color="$yellow11" />
+              <Calendar size="xs" color="$yellow11" />
               <Text color="$yellow11">Retake Available Soon</Text>
             </Row>
             <Text color="$yellow10">

@@ -111,7 +111,7 @@ export function AuthorizedAppsList() {
                       <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
                           <Row key={scope} gap={8} align="center">
-                            <SizableText size={4} color="$gray11">
+                            <SizableText size="xs" color="$gray11">
                               •
                             </SizableText>
                             <SizableText size="xs" color="$gray11">

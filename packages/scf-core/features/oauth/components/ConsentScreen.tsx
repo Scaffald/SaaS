@@ -168,7 +168,7 @@ export function ConsentScreen({
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
           <Stack gap={4}>
-            <SizableText size={4} color="$gray11" textAlign="center">
+            <SizableText size="xs" color="$gray11" textAlign="center">
               <a
                 href={app.privacy_policy_url}
                 target="_blank"
@@ -213,7 +213,7 @@ function ScopePermissionItem({ scope }: { scope: string }) {
       <SizableText size="sm">•</SizableText>
       <Stack flex={1}>
         <SizableText size="sm">{description}</SizableText>
-        <SizableText size={4} color="$gray11">
+        <SizableText size="xs" color="$gray11">
           {scope}
         </SizableText>
       </Stack>

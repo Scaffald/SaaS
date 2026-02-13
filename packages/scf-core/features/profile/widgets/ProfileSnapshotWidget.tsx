@@ -237,7 +237,7 @@ export function ProfileSnapshotWidget() {
             <Row justify="space-between" align="center">
               <Text>Top Skills</Text>
               <Button
-                size={4}
+                size="xs"
                 chromeless
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >

@@ -168,7 +168,7 @@ export function IPIPResultsPage() {
           borderColor="$yellow7"
         >
           <Row align="center" gap={8}>
-            <AlertCircle size={4} color="$yellow11" />
+            <AlertCircle size="xs" color="$yellow11" />
             <Text color="$yellow11">Partial Data Available</Text>
           </Row>
           <Text color="$yellow10">

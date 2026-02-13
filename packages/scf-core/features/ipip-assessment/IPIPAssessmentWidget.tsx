@@ -59,7 +59,7 @@ export function IPIPAssessmentWidget() {
           <Row justify="space-between" align="center">
             <Stack gap={spacing.xs} flex={1}>
               <Row align="center" gap={8}>
-                <CheckCircle2 size={4} color="$green10" />
+                <CheckCircle2 size="xs" color="$green10" />
                 <Text color="$gray11">Personality Assessment</Text>
               </Row>
               <Text color="$gray11">Your Big Five personality profile is complete</Text>
@@ -102,7 +102,7 @@ export function IPIPAssessmentWidget() {
                       <Text color="$gray11" flex={1}>
                         {domainName}
                       </Text>
-                      <Progress value={percentage} max={100} size={4} width={100}>
+                      <Progress value={percentage} max={100} size="xs" width={100}>
                         <Progress.Indicator animation="bouncy" />
                       </Progress>
                       <Text color="$gray11" style={{ minWidth: 45 }}>
@@ -125,7 +125,7 @@ export function IPIPAssessmentWidget() {
 
           <Button variant="filled" color="primary" onPress={handleViewResults} size="lg">
             <Button.Text>View Full Results</Button.Text>
-            <ArrowRight size={4} />
+            <ArrowRight size="xs" />
           </Button>
         </Stack>
       </DashboardWidget>

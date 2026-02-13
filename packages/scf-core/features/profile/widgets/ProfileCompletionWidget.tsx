@@ -85,7 +85,7 @@ export function ProfileCompletionWidget({
             value={completionData.completionPercentage}
             max={100}
             backgroundColor="$color4"
-            size={4}
+            size="xs"
           >
             <Progress.Indicator
               animation="bouncy"

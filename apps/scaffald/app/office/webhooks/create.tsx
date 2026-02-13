@@ -206,7 +206,7 @@ export default function CreateWebhookPage() {
                       key={event.value}
                       gap={12}
                       align="center"
-                      padding={12}
+                      padding="sm"
                       pressStyle={{ backgroundColor: '$gray3' }}
                       onPress={() => handleToggleEvent(event.value as WebhookEventType)}
                     >

@@ -299,7 +299,7 @@ export function APIKeyScopesManager({
                                     paddingVertical={4}
                                     borderRadius={8}
                                   >
-                                    <Paragraph size={4} color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="xs" color="$gray11" fontFamily="$mono">
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -370,7 +370,7 @@ export function APIKeyScopesManager({
                                     paddingVertical={4}
                                     borderRadius={8}
                                   >
-                                    <Paragraph size={4} color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="xs" color="$gray11" fontFamily="$mono">
                                       {req}
                                     </Paragraph>
                                   </Card>

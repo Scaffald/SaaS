@@ -564,7 +564,7 @@ export default function NotificationsCenterScreen() {
                   {notification.metadata?.notification_type === 'site_overlap' &&
                   notification.metadata?.site_id &&
                   notification.metadata?.overlapping_site_id ? (
-                    <Row padding={12}>
+                    <Row padding="sm">
                       <SiteOverlapNotification
                         notificationId={notification.id}
                         siteId={notification.metadata.site_id}
@@ -577,7 +577,7 @@ export default function NotificationsCenterScreen() {
                       />
                     </Row>
                   ) : (
-                    <Row padding={12} gap={12} justify="flex-end">
+                    <Row padding="sm" gap={12} justify="flex-end">
                       {!notification.read ? (
                         <Button
                           size="md"

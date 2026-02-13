@@ -318,7 +318,7 @@ export const SoftSkillsRatingForm: FC = () => {
                             </Slider.Track>
                             <Slider.Thumb
                               index={0}
-                              size={4}
+                              size="xs"
                               backgroundColor="$blue9"
                               borderWidth={2}
                               borderColor="$blue11"

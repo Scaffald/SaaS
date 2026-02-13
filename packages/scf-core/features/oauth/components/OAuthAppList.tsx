@@ -53,7 +53,7 @@ export function OAuthAppList() {
                 <SizableText size="xs" color="$gray11" data-testid="oauth-app-description">
                   {app.description}
                 </SizableText>
-                <SizableText size={4} color="$gray11" data-testid="oauth-app-metadata">
+                <SizableText size="xs" color="$gray11" data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </SizableText>
               </Stack>

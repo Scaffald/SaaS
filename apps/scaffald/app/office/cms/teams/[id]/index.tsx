@@ -263,7 +263,7 @@ export default function OfficeTeamDetailPage() {
           )}
 
           {isInvitationsLoading && (
-            <Stack gap={8} padding={12}>
+            <Stack gap={8} padding="sm">
               <Spinner size="sm" />
               <Text color="gray">Updating invitation statistics…</Text>
             </Stack>

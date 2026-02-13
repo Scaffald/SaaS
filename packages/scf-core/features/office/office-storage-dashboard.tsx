@@ -161,7 +161,7 @@ export function OfficeStorageDashboard() {
                 value={clamped}
                 max={100}
                 style={{ backgroundColor: colors.bg[theme].muted }}
-                size={4}
+                size="xs"
               >
                 <Progress.Indicator
                   animation="bouncy"
@@ -311,7 +311,7 @@ export function OfficeStorageDashboard() {
                       value={entry.percent}
                       max={100}
                       style={{ backgroundColor: colors.bg[theme].muted }}
-                      size={4}
+                      size="xs"
                     >
                       <Progress.Indicator
                         animation="bouncy"
