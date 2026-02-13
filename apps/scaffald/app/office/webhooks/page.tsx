@@ -6,18 +6,18 @@
 import { useState } from 'react'
 import { Link, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
-import { api } from '@scf/core/utils/api'
+import { useWebhooks } from '@scf/core/utils/webhooks-sdk-hooks'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
 import { Button, Card, Row, Stack, Text } from '@scaffald/ui'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import type { WebhookConfig } from '@scf/schemas'
+import type { Webhook } from '@scaffald/sdk/types/webhooks-management'
 
 export default function WebhooksPage() {
   const router = useRouter()
   const [selectedWebhook, setSelectedWebhook] = useState<string | null>(null)
 
   // Fetch webhooks
-  const { data: webhooksData, isLoading } = api.webhooks.list.useQuery()
+  const { data: webhooksData, isLoading } = useWebhooks()
 
   const webhooks = webhooksData?.data ?? []
 
@@ -71,7 +71,7 @@ export default function WebhooksPage() {
           </Card>
         ) : (
           <Stack gap={12}>
-            {webhooks.map((webhook: WebhookConfig) => (
+            {webhooks.map((webhook: Webhook) => (
               <WebhookCard
                 key={webhook.id}
                 webhook={webhook}
@@ -109,7 +109,11 @@ export default function WebhooksPage() {
 }
 
 interface WebhookCardProps {
-  webhook: WebhookConfig
+  webhook: Webhook & {
+    total_deliveries?: number
+    successful_deliveries?: number
+    last_delivery_at?: string
+  }
   isSelected: boolean
   onPress: () => void
   onViewDetails: () => void

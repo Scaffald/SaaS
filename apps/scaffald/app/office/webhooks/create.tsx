@@ -8,7 +8,11 @@ import { Alert } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
-import { api } from '@scf/core/utils/api'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  useWebhookEventTypes,
+  useCreateWebhookMutation,
+} from '@scf/core/utils/webhooks-sdk-hooks'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
 import { Button, Card, Checkbox, Row, Stack, Text, Input } from '@scaffald/ui'
 import { ROUTES } from '@scf/core/constants/routes'
@@ -16,18 +20,20 @@ import type { WebhookEventType } from '@scf/schemas'
 
 export default function CreateWebhookPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [url, setUrl] = useState('')
   const [description, setDescription] = useState('')
   const [selectedEvents, setSelectedEvents] = useState<Set<WebhookEventType>>(new Set())
   const [secret, setSecret] = useState('')
 
   // Fetch available event types
-  const { data: eventTypesData } = api.webhooks.eventTypes.useQuery()
+  const { data: eventTypesData } = useWebhookEventTypes()
   const eventTypes = eventTypesData?.data ?? []
 
   // Create webhook mutation
-  const createWebhook = api.webhooks.create.useMutation({
+  const createWebhook = useCreateWebhookMutation({
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks', 'list'] })
       // Show secret once
       setSecret(data.data.secret)
       Alert.alert(
@@ -193,7 +199,7 @@ export default function CreateWebhookPage() {
           <Stack gap={20}>
             <Text>Event Subscriptions *</Text>
             <Text color="$gray11">
-              ResponsiveSelect the events you want to receive notifications for
+              Select the events you want to receive notifications for
             </Text>
 
             <Stack gap={24}>

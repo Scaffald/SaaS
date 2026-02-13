@@ -61,7 +61,7 @@
 | **OPERATIONS (4)** |
 | work-logs | work-logs | ✅ Migrated | Medium | Operations | Work log metadata (non-file operations) |
 | profile/widgets | profile-widgets | ✅ Migrated | Low | Operations | Profile widget configurations |
-| webhooks | webhooks-management | ✅ Migrated | Low | Operations | Webhook subscriptions |
+| webhooks | webhooks-management | ✅ Migrated | Low | Operations | Webhook subscriptions. tRPC router removed Phase 22. |
 | background-checks | background-checks | ✅ Migrated | Medium | Operations | Background check metadata (non-file) |
 | **DISCOVERY & ASSESSMENTS (2)** |
 | workers | workers | ✅ Migrated | 2 | Discovery | Worker search and discovery |

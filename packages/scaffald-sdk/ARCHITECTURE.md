@@ -279,6 +279,13 @@ Migrate all social features to SDK
 - ✅ API coverage matrix
 - ✅ Updated README
 
+### Phase 22: Webhooks tRPC Removal (Complete)
+
+**Result**: Webhooks fully migrated to SDK
+- ✅ scaffald app office webhooks (create, list) now use SDK hooks
+- ✅ Removed tRPC webhooks router
+- ✅ useWebhooks, useWebhookEventTypes, useCreateWebhookMutation from webhooks-sdk-hooks
+
 ## Guidelines for Future Development
 
 ### Adding New Endpoints
