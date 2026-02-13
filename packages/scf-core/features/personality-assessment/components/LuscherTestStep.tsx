@@ -91,7 +91,7 @@ export function LuscherTestStep({
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
       <Stack gap={12} width="100%">
         {/* Mobile: 2 columns, 4 rows */}
-        <Row gap={12} flexWrap="wrap" justify="center" display="flex">
+        <Row gap={12} wrap justify="center" display="flex">
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 
@@ -130,7 +130,7 @@ export function LuscherTestStep({
         </Row>
 
         {/* Desktop: 4 columns, 2 rows */}
-        <Row gap={12} flexWrap="wrap" justify="center" display="none">
+        <Row gap={12} wrap justify="center" display="none">
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 

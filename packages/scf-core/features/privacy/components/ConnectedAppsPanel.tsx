@@ -157,7 +157,7 @@ function AppCard({
       </Row>
 
       {/* Connection info */}
-      <Row gap={16} flexWrap="wrap">
+      <Row gap={16} wrap>
         <Stack gap={4}>
           <Text color="$gray11">Connected</Text>
           <Text>{formatDate(app.connected_at)}</Text>
@@ -173,7 +173,7 @@ function AppCard({
       {/* Permissions */}
       <Stack gap={8}>
         <Text color="$gray11">Permissions</Text>
-        <Row gap={4} flexWrap="wrap">
+        <Row gap={4} wrap>
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
           ))}

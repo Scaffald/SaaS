@@ -346,7 +346,7 @@ export function UserProfileHeaderEnhanced({
       {/* Content Section */}
       <Stack gap={16} padding="lg" paddingTop={isMobile ? 80 : 96}>
         {/* Header Row - Name, Headline, and Actions */}
-        <Row gap={16} align="flex-start" justify="space-between" flexWrap="wrap">
+        <Row gap={16} align="flex-start" justify="space-between" wrap>
           <Stack flex={1} gap={8} minWidth={200}>
             {/* Name */}
             <Text color="$gray11">{profile.name || 'User'}</Text>
@@ -355,7 +355,7 @@ export function UserProfileHeaderEnhanced({
             {profile.headline && <Text color="$gray11">{profile.headline}</Text>}
 
             {/* Industry and Location */}
-            <Row gap={12} flexWrap="wrap" align="center">
+            <Row gap={12} wrap align="center">
               {profile.industry_name && (
                 <Row gap={8} align="center">
                   <Briefcase size="md" color="$gray11" />
@@ -372,7 +372,7 @@ export function UserProfileHeaderEnhanced({
           </Stack>
 
           {/* Action Buttons */}
-          <Row gap={8} flexWrap="wrap" align="center">
+          <Row gap={8} wrap align="center">
             {isOwnProfile && onEdit && (
               <Button size={isMobile ? '$3' : '$4'} theme="info" iconStart={Edit3} onPress={onEdit}>
                 Edit Profile
@@ -489,7 +489,7 @@ export function UserProfileHeaderEnhanced({
         {/* Stats Row */}
         <Row
           gap={12}
-          flexWrap="wrap"
+          wrap
           paddingTop={8}
           borderTopWidth={1}
           borderTopColor="$borderColor"

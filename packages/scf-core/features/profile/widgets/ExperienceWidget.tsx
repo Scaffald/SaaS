@@ -138,7 +138,7 @@ export function ExperienceWidget({
 
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
-                    <Row gap={8} flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {exp.location && <Text color="$gray11">📍 {exp.location}</Text>}
                       {exp.employment_type && <Text color="$gray11">• {exp.employment_type}</Text>}
                       {exp.is_remote && <Text color="$gray11">• Remote</Text>}

@@ -149,7 +149,7 @@ export function UserProfilePanel({
               <Text color="$gray11" textTransform="uppercase">
                 Top Skills
               </Text>
-              <Row gap={8} flexWrap="wrap">
+              <Row gap={8} wrap>
                 {topSkills.slice(0, 3).map((skill) => (
                   <Stack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}

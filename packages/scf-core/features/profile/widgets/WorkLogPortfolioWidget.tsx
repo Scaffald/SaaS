@@ -130,7 +130,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                   </Row>
 
                   {photos.length > 0 ? (
-                    <Row gap={8} flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {photos.map((photo) => (
                         <Card
                           key={`${group.id}-${photo.id}`}

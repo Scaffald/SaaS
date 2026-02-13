@@ -195,7 +195,7 @@ function RequestRow({
       borderColor={request.is_overdue ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default}
       align="center"
       gap={12}
-      flexWrap="wrap"
+      wrap
     >
       {/* Request ID */}
       <Stack minWidth={100}>
@@ -291,7 +291,7 @@ function FilterBar({
 }) {
   const { theme } = useThemeContext()
   return (
-    <Row gap={12} flexWrap="wrap" align="center">
+    <Row gap={12} wrap align="center">
       <Stack gap={4}>
         <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <Row gap={8}>
@@ -431,7 +431,7 @@ export function CCPAAdminDashboard() {
               <Spinner size="lg" />
             </Row>
           ) : (
-            <Row gap={12} flexWrap="wrap">
+            <Row gap={12} wrap>
               <MetricCard
                 label="Total Requests"
                 value={metrics?.total_requests || 0}
@@ -558,7 +558,7 @@ export function CCPAAdminDashboard() {
         {/* Quick Actions */}
         <Stack gap={12}>
           <Text>Quick Actions</Text>
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             <Button size="md">Generate Compliance Report</Button>
             <Button size="md" variant="outline">
               Export All Requests

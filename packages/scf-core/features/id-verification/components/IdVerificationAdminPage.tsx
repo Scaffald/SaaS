@@ -223,7 +223,7 @@ export function IdVerificationAdminPage({
   return (
     <Stack flex={1} gap={16}>
       <Stack paddingHorizontal={16} gap={12}>
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           {[
             {
               label: 'Active badges',

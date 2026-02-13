@@ -49,8 +49,8 @@ export function UserProfileHeader({
     <Card elevate bordered>
       <Stack gap={16} padding="lg">
         {/* Header Row */}
-        <Row gap={16} align="center" flexWrap="wrap" justify="space-between">
-          <Row gap={16} align="center" flexWrap="wrap" flex={1}>
+        <Row gap={16} align="center" wrap justify="space-between">
+          <Row gap={16} align="center" wrap flex={1}>
             {/* Avatar */}
             {profile.avatar_url ? (
               <Stack
@@ -121,7 +121,7 @@ export function UserProfileHeader({
         </Row>
 
         {/* Stats Row */}
-        <Row gap={16} flexWrap="wrap">
+        <Row gap={16} wrap>
           {profile.location && (
             <Row
               gap={8}

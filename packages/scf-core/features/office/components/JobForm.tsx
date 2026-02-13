@@ -648,7 +648,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           disabled={disabled}
         />
         {selectedSkillIds.length > 0 && (
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             {selectedSkills.map((skill) => (
               <Row
                 key={skill.id}
@@ -809,7 +809,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           disabled={disabled}
         />
         {selectedCertificationIds.length > 0 && (
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             {selectedCerts.map((cert) => (
               <Row
                 key={cert.id}

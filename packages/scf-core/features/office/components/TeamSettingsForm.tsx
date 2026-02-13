@@ -318,7 +318,7 @@ export function TeamSettingsForm({
 
       <Separator />
 
-      <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+      <Row justify="space-between" align="center" wrap gap={12}>
         <Row gap={8} align="center">
           {updateMutation.isPending ? <Spinner size="sm" /> : null}
           <Text color={statusColor}>{statusLabel}</Text>

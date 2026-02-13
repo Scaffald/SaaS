@@ -177,7 +177,7 @@ export function APIKeysList({
                 </Row>
 
                 {/* Key Metadata */}
-                <Row gap={16} flexWrap="wrap">
+                <Row gap={16} wrap>
                   {/* Rate Limit Tier */}
                   <Stack gap={4}>
                     <Paragraph size="sm" color="$gray11">
@@ -201,7 +201,7 @@ export function APIKeysList({
                     <Paragraph size="sm" color="$gray11">
                       Scopes
                     </Paragraph>
-                    <Row gap={8} flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {key.scopes.map((scope) => (
                         <Card
                           key={scope}

@@ -320,7 +320,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 {/* Expiration */}
                 <Stack gap={8}>
                   <Label>Expiration</Label>
-                  <Row gap={8} flexWrap="wrap">
+                  <Row gap={8} wrap>
                     {EXPIRATION_OPTIONS.map((option) => (
                       <Button
                         key={option.label}
@@ -430,7 +430,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 <Paragraph size="sm" color="$gray11">
                   Permissions
                 </Paragraph>
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {createdKey?.scopes.map((scope) => (
                     <Card
                       key={scope}

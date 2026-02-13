@@ -120,7 +120,7 @@ export function TeamCommentThread({
         />
 
         {mentionOptions.length > 0 ? (
-          <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
+          <Row gap={8} wrap flexDirection="column" align="stretch">
             {mentionOptions.map((option) => (
               <Button
                 key={option.id}

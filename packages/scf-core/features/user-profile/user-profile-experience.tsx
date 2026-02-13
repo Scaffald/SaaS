@@ -42,7 +42,7 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                   {exp.company_name && <Text color="$gray11">{exp.company_name}</Text>}
                 </Stack>
 
-                <Row gap={12} flexWrap="wrap">
+                <Row gap={12} wrap>
                   {(exp.start_date || exp.end_date) && (
                     <Row gap={8} align="center">
                       <Calendar size="md" color="$gray11" />

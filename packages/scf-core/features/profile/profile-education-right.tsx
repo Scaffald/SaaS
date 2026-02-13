@@ -122,7 +122,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
               >
                 {/* Institution Name with Verification Badge */}
                 <Stack gap={4}>
-                  <Row gap={8} align="center" flexWrap="wrap">
+                  <Row gap={8} align="center" wrap>
                     <Text color="$gray11">{edu.institution_name}</Text>
                     {!edu.is_verified && (
                       <Row gap={4} align="center">
@@ -180,7 +180,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                 {/* Details */}
                 <Stack gap={8}>
-                  <Row align="center" flexWrap="wrap" gap={12}>
+                  <Row align="center" wrap gap={12}>
                     {(edu.start_date || edu.end_date || edu.is_current) && (
                       <Row gap={8} align="center">
                         <Calendar size="md" color="$gray11" />

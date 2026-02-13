@@ -342,7 +342,7 @@ export function AdminCheckReviewDialog({
           style={{ width: '96%', maxWidth: 780, maxHeight: '85%' }}
         >
           <Stack gap={16}>
-            <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+            <Row justify="space-between" align="center" wrap gap={12}>
               <Dialog.Title>Review background check</Dialog.Title>
               <Dialog.Close asChild>
                 <Button size="sm" variant="outline" disabled={isSubmitting}>
@@ -401,7 +401,7 @@ export function AdminCheckReviewDialog({
                       <Text color="$gray11">Organization: {organizationName}</Text>
                     ) : null}
                   </Stack>
-                  <Row gap={12} flexWrap="wrap">
+                  <Row gap={12} wrap>
                     <Text color="$gray11">
                       Package: <Text color="$gray11">{packageLabel}</Text>
                     </Text>

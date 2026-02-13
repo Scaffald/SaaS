@@ -68,7 +68,7 @@ export const ResultCard = memo(
             {profile.title}
           </Paragraph>
 
-          <Row flexWrap="wrap" gap={8}>
+          <Row wrap gap={8}>
             <Row align="center" gap={4}>
               <Clock3 size="md" color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>
@@ -87,7 +87,7 @@ export const ResultCard = memo(
             </Row>
           </Row>
 
-          <Row gap={4} flexWrap="wrap">
+          <Row gap={4} wrap>
             {profile.badges.slice(0, 3).map((badge) => (
               <Row
                 key={badge.id}
@@ -129,7 +129,7 @@ export const ResultCard = memo(
             )}
           </Row>
 
-          <Row gap={4} flexWrap="wrap">
+          <Row gap={4} wrap>
             {profile.certifications.slice(0, 2).map((certification) => (
               <Button key={certification} size="sm" borderRadius={32}>
                 {certification}

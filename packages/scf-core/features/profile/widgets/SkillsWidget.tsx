@@ -265,7 +265,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   </Text>
 
                   {/* Skills in this taxonomy */}
-                  <Row gap={8} flexWrap="wrap">
+                  <Row gap={8} wrap>
                     {groupedSkills[taxonomy]
                       .slice(0, showCompact ? 5 : undefined)
                       .map((skill: EnrichedUserSkill) => (
@@ -388,7 +388,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
               {/* Action Buttons */}
               {showEdit && (
-                <Row justify="flex-end" gap={8} paddingTop={8} flexWrap="wrap">
+                <Row justify="flex-end" gap={8} paddingTop={8} wrap>
                   <Button variant="outline" size="sm" onPress={() => setShowHistoryModal(true)}>
                     View History
                   </Button>

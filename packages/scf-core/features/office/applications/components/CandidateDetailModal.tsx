@@ -271,7 +271,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       ) : null}
 
       {/* Application Meta */}
-      <Row gap={16} flexWrap="wrap">
+      <Row gap={16} wrap>
         <Stack flex={1} width={150}>
           <Text opacity={0.6}>Applied</Text>
           <Text>

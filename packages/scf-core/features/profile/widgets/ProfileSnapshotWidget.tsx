@@ -189,7 +189,7 @@ export function ProfileSnapshotWidget() {
           </Stack>
 
           {/* Stats Row */}
-          <Row gap={spacing.sm} flexWrap="wrap">
+          <Row gap={spacing.sm} wrap>
             <Stack
               gap={4}
               flex={1}
@@ -244,7 +244,7 @@ export function ProfileSnapshotWidget() {
                 View All
               </Button>
             </Row>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               {topSkills.map((skill: Record<string, unknown>) => {
                 const displayCode = typeof skill.displayCode === 'string' ? skill.displayCode : null
                 const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'

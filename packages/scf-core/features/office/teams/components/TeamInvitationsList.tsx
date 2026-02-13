@@ -132,7 +132,7 @@ export function TeamInvitationsList({
       <Row
         justify="space-between"
         align="flex-start"
-        flexWrap="wrap"
+        wrap
         gap={12}
         flexDirection="column"
         width="100%"
@@ -290,7 +290,7 @@ export function TeamInvitationsList({
                 <Row
                   gap={8}
                   justify="flex-start"
-                  flexWrap="wrap"
+                  wrap
                   flexDirection="column"
                   align="stretch"
                 >

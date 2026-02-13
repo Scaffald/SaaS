@@ -325,7 +325,7 @@ export const SoftSkillsRatingForm: FC = () => {
                             />
                           </Slider>
 
-                          <Row justify="space-between" gap={8} flexWrap="wrap">
+                          <Row justify="space-between" gap={8} wrap>
                             {SOFT_SKILL_LEVELS.map((level) => (
                               <Stack
                                 key={level.value}

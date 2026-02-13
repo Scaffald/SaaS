@@ -343,7 +343,7 @@ export function AdminBackgroundChecksPage() {
           </Text>
         </Stack>
 
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           <Card
             padding="sm"
             backgroundColor="$color2"
@@ -445,7 +445,7 @@ export function AdminBackgroundChecksPage() {
         </Row>
 
         {activeTab === 'checks' ? (
-          <Row gap={12} flexWrap="wrap" justify="space-between" align="center">
+          <Row gap={12} wrap justify="space-between" align="center">
             <Row gap={8} align="center">
               <ResponsiveSelect
                 value={statusFilter}

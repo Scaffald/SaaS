@@ -125,7 +125,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       </Row>
 
       {/* Meta Info */}
-      <Row gap={16} flexWrap="wrap">
+      <Row gap={16} wrap>
         {job.job_location && (
           <Row gap={8} align="center">
             <MapPin size="md" color="$gray11" />
@@ -158,7 +158,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       )}
 
       {/* Tags */}
-      <Row gap={8} flexWrap="wrap">
+      <Row gap={8} wrap>
         {primaryIndustry && (
           <Stack
             paddingHorizontal={8}

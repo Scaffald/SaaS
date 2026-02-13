@@ -140,7 +140,7 @@ export function AssessmentProgress({
       )}
 
       {/* Step Indicators */}
-      <Row gap={8} flexWrap="wrap" justify="center">
+      <Row gap={8} wrap justify="center">
         {sortedSteps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id)
           const isCurrent = step.id === currentStep

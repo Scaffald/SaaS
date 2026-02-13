@@ -162,7 +162,7 @@ export function ProfileExperienceRight() {
                   <Text color="$gray11">{exp.job_title}</Text>
 
                   {/* Company Name */}
-                  <Row gap={8} align="center" flexWrap="wrap">
+                  <Row gap={8} align="center" wrap>
                     <Text color="$gray11">{exp.company_name}</Text>
                     {exp.employment_type && (
                       <>

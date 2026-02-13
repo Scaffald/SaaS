@@ -103,7 +103,7 @@ export function CheckStatusDashboard() {
                 </Text>
               </Stack>
             </Row>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               {FILTER_DEFINITIONS.map((filter) => {
                 const isActive = activeFilter === filter.value
                 return (

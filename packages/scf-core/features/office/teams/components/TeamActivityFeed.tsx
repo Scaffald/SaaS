@@ -273,7 +273,7 @@ export function TeamActivityFeed({
         gap={8}
         align="flex-start"
         justify="space-between"
-        flexWrap="wrap"
+        wrap
         flexDirection="column"
       >
         <Row gap={8} align="center">
@@ -311,7 +311,7 @@ export function TeamActivityFeed({
             <Text style={{ color: colors.text[theme].secondary }}>
               Mention a teammate (optional)
             </Text>
-            <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
+            <Row gap={8} wrap flexDirection="column" align="stretch">
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}

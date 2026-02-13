@@ -302,14 +302,14 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
 
         <Stack gap={12}>
           <Text>Milestones</Text>
-          <Row flexWrap="wrap" gap={8}>
+          <Row wrap gap={8}>
             {completionStatus.milestoneBadges.map((milestone) => (
               <MilestoneBadge key={milestone.id} milestone={milestone} />
             ))}
           </Row>
         </Stack>
 
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           <Button size="md" flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
             Complete Profile
           </Button>

@@ -34,7 +34,7 @@ export function ReviewStep2SkillsTags({
       {/* Strengths Section */}
       <Stack gap={12}>
         <Text color="$green11">✓ Strengths</Text>
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = strengths.includes(skill.id)
             return (
@@ -68,7 +68,7 @@ export function ReviewStep2SkillsTags({
       {/* Areas to Improve Section */}
       <Stack gap={12}>
         <Text color="$red11">→ Areas to Improve</Text>
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = improvements.includes(skill.id)
             return (

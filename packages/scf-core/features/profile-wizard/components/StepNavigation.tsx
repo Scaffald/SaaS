@@ -34,7 +34,7 @@ export function StepNavigation({
 }: StepNavigationProps) {
   return (
     <Stack gap={12}>
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         <Button size="md" flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
           {isLastStep ? 'Finish' : nextLabel}
         </Button>
@@ -49,7 +49,7 @@ export function StepNavigation({
         </Button>
       </Row>
 
-      <Row justify="space-between" flexWrap="wrap" gap={8}>
+      <Row justify="space-between" wrap gap={8}>
         {onSkip && (
           <Button size="sm" variant="outline" chromeless onPress={onSkip} disabled={isSaving}>
             {skipLabel}

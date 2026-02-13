@@ -225,13 +225,13 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           justify="space-between"
           borderBottomWidth={1}
           borderBottomColor={colors.border[theme].default}
-          flexWrap="wrap"
+          wrap
         >
           <Text>
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
             selected
           </Text>
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             <Button size="sm" variant="outline" onPress={clearSelection}>
               Clear
             </Button>

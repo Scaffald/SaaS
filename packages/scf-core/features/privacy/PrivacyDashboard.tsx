@@ -90,7 +90,7 @@ export function PrivacyDashboard() {
           borderColor="$borderColor"
         >
           <Text>Quick Actions</Text>
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             <Button onPress={() => setShowRequestForm(true)} iconStart={undefined} size="md">
               Request My Data
             </Button>

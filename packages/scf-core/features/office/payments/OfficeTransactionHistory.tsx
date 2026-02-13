@@ -222,7 +222,7 @@ export function OfficeTransactionHistory() {
         style={{ backgroundColor: colors.bg[theme].subtle }}
         padding="sm"
       >
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           <Stack gap={4} width={200}>
             <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
             <ResponsiveSelect

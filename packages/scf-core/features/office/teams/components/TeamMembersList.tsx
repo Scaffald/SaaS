@@ -262,7 +262,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                   </Row>
                   <Row
                     gap={12}
-                    flexWrap="wrap"
+                    wrap
                     width="100%"
                     flexDirection="column"
                     justify="flex-start"
@@ -321,7 +321,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                   Status: {memberStatusLabel}
                 </Text>
                 {workload ? (
-                  <Row gap={12} flexWrap="wrap">
+                  <Row gap={12} wrap>
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Active: {workload.activeAssignments}
                     </Text>

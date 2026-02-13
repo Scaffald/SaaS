@@ -280,7 +280,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
         <Stack gap={12}>
           <SizableText size="lg">Allowed Scopes</SizableText>
           {app.allowed_scopes.length > 0 ? (
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               {app.allowed_scopes.map((scope) => (
                 <Badge
                   key={scope}

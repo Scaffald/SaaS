@@ -16,7 +16,7 @@ export function ProgressIndicator({
   onStepChange,
 }: ProgressIndicatorProps) {
   return (
-    <Row flexWrap="wrap" gap={12}>
+    <Row wrap gap={12}>
       {steps.map((step, index) => {
         const isActive = index === currentIndex
         const isCompleted = completedSteps.includes(index) || index < currentIndex

@@ -118,7 +118,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
 
       <Card bordered backgroundColor="$color2">
         <Card.Header padded gap={12}>
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             <Row gap={8} align="center">
               <Clock size={18} color="$blue10" />
               <Text color="$gray11">{estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes</Text>

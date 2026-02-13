@@ -150,7 +150,7 @@ export function SoftSkillsRequirementsSection({
             <Text style={{ color: colors.text[theme].secondary }}>
               {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
             </Text>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               {skills.map((skill) => {
                 const isSelected = selectedSkills.has(skill.id)
                 const importance = selectedSkills.get(skill.id) ?? 3

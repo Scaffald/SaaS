@@ -36,7 +36,7 @@ export function ReviewStepCategoryTags({
       {/* Strengths Section */}
       <Stack gap={12}>
         <Text color="$green11">✓ Strengths</Text>
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           {skills.map((skill) => {
             const isSelected = strengths.includes(skill.id)
             return (
@@ -70,7 +70,7 @@ export function ReviewStepCategoryTags({
       {/* Areas to Improve Section */}
       <Stack gap={12}>
         <Text color="$red11">→ Areas to Improve</Text>
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           {skills.map((skill) => {
             const isSelected = improvements.includes(skill.id)
             return (

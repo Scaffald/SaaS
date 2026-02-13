@@ -242,7 +242,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const getItemName = (job: Job) => job.title
 
   const filtersAccessory = (
-    <Row gap={12} align="center" flexWrap="wrap">
+    <Row gap={12} align="center" wrap>
       <Row gap={8} align="center">
         <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <ResponsiveSelect
@@ -353,7 +353,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                     </Button>
                   </Row>
                 </Row>
-                <Row gap={8} align="center" flexWrap="wrap">
+                <Row gap={8} align="center" wrap>
                   {filtersAccessory}
                 </Row>
               </Stack>

@@ -77,7 +77,7 @@ export function TeamInvitationList({
                   </Text>
                 </Row>
               </Stack>
-              <Row gap={8} marginLeft={16} flexShrink={0} flexWrap="wrap" justify="flex-end">
+              <Row gap={8} marginLeft={16} flexShrink={0} wrap justify="flex-end">
                 <Button
                   size="sm"
                   iconStart={XCircle}

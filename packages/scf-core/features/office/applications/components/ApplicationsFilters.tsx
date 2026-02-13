@@ -34,7 +34,7 @@ export const ApplicationsFilters = ({
       style={{ backgroundColor: colors.bg[theme].subtle }}
       borderRadius={16}
       marginBottom={16}
-      flexWrap="wrap"
+      wrap
     >
       {/* Job Filter */}
       <Stack width={200}>

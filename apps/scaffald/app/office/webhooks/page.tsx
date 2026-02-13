@@ -60,7 +60,7 @@ export default function WebhooksPage() {
         ) : webhooks.length === 0 ? (
           <Card padding={32} align="center" gap={16}>
             <Text>No webhooks configured</Text>
-            <Text color="$gray11" maxWidth={400}>
+            <Text color="$gray11" style={{ maxWidth: 400 }}>
               Create your first webhook endpoint to start receiving real-time event notifications.
             </Text>
             <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
@@ -184,7 +184,7 @@ interface EventTypeBadgeProps {
 function EventTypeBadge({ label, category }: EventTypeBadgeProps) {
   return (
     <Stack padding={8} gap={4}>
-      <Text fontFamily="monospace" color="$gray12">
+      <Text style={{ fontFamily: 'monospace' }} color="$gray12">
         {label}
       </Text>
       <Text color="$gray10">{category}</Text>

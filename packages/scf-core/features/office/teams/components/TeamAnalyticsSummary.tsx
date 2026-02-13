@@ -112,9 +112,9 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
 
   return (
     <Stack gap={12}>
-      <Row gap={8} align="center" justify="space-between" flexWrap="wrap">
+      <Row gap={8} align="center" justify="space-between" wrap>
         <Text>Analytics summary</Text>
-        <Row gap={8} align="center" flexWrap="wrap">
+        <Row gap={8} align="center" wrap>
           <ResponsiveSelect
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
@@ -151,7 +151,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
         </Stack>
       ) : (
         <Stack gap={12}>
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             <StatTile label="Active members (avg)">{formatNumber(membersActiveAvg)}</StatTile>
             <StatTile label="Active jobs (latest)">{formatNumber(jobsActiveLatest)}</StatTile>
             <StatTile label="Applications reviewed">

@@ -587,7 +587,7 @@ export function ProfileCertificationsLeft({
         {certTree?.depth0 && certTree.depth0.length > 0 && (
           <Stack gap={12}>
             <Text>Selected Categories</Text>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               {(certTree.depth0 as unknown as UserCertification[]).map(
                 (item: UserCertification) => (
                   <CertificationChip
@@ -662,7 +662,7 @@ export function ProfileCertificationsLeft({
                   )}
                 </Stack>
 
-                <Row gap={12} flexWrap="wrap">
+                <Row gap={12} wrap>
                   <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
                     <Text>Issue Date</Text>
                     <MonthYearPicker
@@ -685,7 +685,7 @@ export function ProfileCertificationsLeft({
                   </Stack>
                 </Row>
 
-                <Row gap={12} flexWrap="wrap">
+                <Row gap={12} wrap>
                   <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
                     <Text>Credential ID</Text>
                     <Input
@@ -730,7 +730,7 @@ export function ProfileCertificationsLeft({
 
                 <Stack gap={8}>
                   <Text>Proof (optional)</Text>
-                  <Row gap={8} flexWrap="wrap" align="center">
+                  <Row gap={8} wrap align="center">
                     <Button
                       size="sm"
                       iconStart={UploadCloud}

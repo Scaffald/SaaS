@@ -102,12 +102,12 @@ export default function CreateWebhookPage() {
         <ScrollView contentContainerStyle={{ padding: 16 }}>
           <Card padding="lg" gap={20} align="center">
             <Text>⚠️ Save Your Webhook Secret</Text>
-            <Text color="$gray11" maxWidth={400}>
+            <Text color="$gray11" style={{ maxWidth: 400 }}>
               This is the only time you will see this secret. Store it securely.
             </Text>
 
             <Stack width="100%" padding={16}>
-              <Text fontFamily="monospace" selectable>
+              <Text style={{ fontFamily: 'monospace' }} selectable>
                 {secret}
               </Text>
             </Stack>
@@ -156,10 +156,11 @@ export default function CreateWebhookPage() {
     >
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {/* Endpoint Configuration */}
-        <Card padding="lg" gap={20}>
-          <Text>Endpoint Configuration</Text>
+        <Card padding="lg">
+          <Stack gap={20}>
+            <Text>Endpoint Configuration</Text>
 
-          <Stack gap={8}>
+            <Stack gap={8}>
             <Text>Endpoint URL *</Text>
             <Input
               value={url}
@@ -183,19 +184,21 @@ export default function CreateWebhookPage() {
               numberOfLines={3}
             />
           </Stack>
+          </Stack>
         </Card>
 
         {/* Event Selection */}
-        <Card padding="lg" gap={20}>
-          <Text>Event Subscriptions *</Text>
-          <Text color="$gray11">
-            ResponsiveSelect the events you want to receive notifications for
-          </Text>
+        <Card padding="lg">
+          <Stack gap={20}>
+            <Text>Event Subscriptions *</Text>
+            <Text color="$gray11">
+              ResponsiveSelect the events you want to receive notifications for
+            </Text>
 
-          <Stack gap={24}>
+            <Stack gap={24}>
             {Object.entries(eventsByCategory).map(([category, events]) => (
               <Stack key={category} gap={12}>
-                <Text color="$gray11" letterSpacing={0.5}>
+                <Text color="$gray11" style={{ letterSpacing: 0.5 }}>
                   {category}
                 </Text>
                 <Stack gap={8}>
@@ -213,7 +216,7 @@ export default function CreateWebhookPage() {
                         onChange={() => handleToggleEvent(event.value as WebhookEventType)}
                       />
                       <Stack gap={4}>
-                        <Text fontFamily="monospace">{event.value}</Text>
+                        <Text style={{ fontFamily: 'monospace' }}>{event.value}</Text>
                         <Text color="$gray11">{event.label}</Text>
                       </Stack>
                     </Row>
@@ -223,9 +226,10 @@ export default function CreateWebhookPage() {
             ))}
           </Stack>
 
-          <Text color="$gray10">
-            {selectedEvents.size} event{selectedEvents.size !== 1 ? 's' : ''} selected
-          </Text>
+            <Text color="$gray10">
+              {selectedEvents.size} event{selectedEvents.size !== 1 ? 's' : ''} selected
+            </Text>
+          </Stack>
         </Card>
 
         {/* Configuration Info */}

@@ -506,13 +506,13 @@ export function NewsWidget({
                     </Text>
                     <ExternalLink size="md" color="$gray11" />
                   </Row>
-                  <Row gap={8} align="center" flexWrap="wrap">
+                  <Row gap={8} align="center" wrap>
                     <Text color="$gray11">{formatTimeAgo(item.pubDate)}</Text>
                     {item.category && <Text color="$gray11">• {capitalise(item.category)}</Text>}
                     <Text color="$gray11">• {relevanceLabel(item.relevanceScore)}</Text>
                   </Row>
                   {item.reasons.length > 0 && (
-                    <Row gap={8} flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {item.reasons.slice(0, 2).map((reason: string, index: number) => (
                         <Stack
                           key={`${item.id}-reason-${index}`}

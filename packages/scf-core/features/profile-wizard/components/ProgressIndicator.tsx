@@ -32,7 +32,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
       </Progress>
 
       {showStepLabels && (
-        <Row gap={12} align="flex-start" marginTop={8} flexWrap="wrap">
+        <Row gap={12} align="flex-start" marginTop={8} wrap>
           {orderedSteps.map((stepId, index) => {
             const meta = PROFILE_WIZARD_STEP_META[stepId]
             const isCompleted = completedSteps.includes(stepId)

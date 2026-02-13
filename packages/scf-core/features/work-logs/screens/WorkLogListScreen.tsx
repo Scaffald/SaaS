@@ -152,7 +152,7 @@ export function WorkLogListScreen() {
                     </Text>
                   </Row>
 
-                  <Row gap={8} flexWrap="wrap">
+                  <Row gap={8} wrap>
                     <Stack
                       paddingHorizontal={8}
                       paddingVertical={4}
@@ -175,7 +175,7 @@ export function WorkLogListScreen() {
                     )}
                   </Row>
 
-                  <Row gap={16} flexWrap="wrap">
+                  <Row gap={16} wrap>
                     <MetricPill
                       iconStart={Activity}
                       label="Hours"
@@ -252,7 +252,7 @@ function AnalyticsBanner({
           </Row>
         ) : (
           <Stack gap={12}>
-            <Row gap={16} flexWrap="wrap">
+            <Row gap={16} wrap>
               <SummaryTile label="Total Logs" value={String(totalLogs)} />
               <SummaryTile label="Total Hours" value={`${totalHours.toFixed(2)}h`} />
               <SummaryTile

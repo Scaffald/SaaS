@@ -191,7 +191,7 @@ export function DisputeStatusTracker({
                 paddingVertical={8}
                 gap={4}
               >
-                <Row gap={8} align="center" flexWrap="wrap">
+                <Row gap={8} align="center" wrap>
                   <Text color="$gray11">{meta.label}</Text>
                   <Text color={colors.text}>
                     {formatDate(dispute.created_at)}

@@ -147,7 +147,7 @@ export default function GeographicSettingsPage() {
                 Reset to Default
               </Button>
               <Button
-                theme="blue"
+                color="primary"
                 onPress={handleSave}
                 disabled={
                   isSaving ||

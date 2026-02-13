@@ -148,7 +148,7 @@ export function CertificationsWidget({
                       </Stack>
 
                       {/* Dates */}
-                      <Row gap={16} flexWrap="wrap">
+                      <Row gap={16} wrap>
                         {cert.issue_date && (
                           <Stack gap={4}>
                             <Text color="$gray11">Issued</Text>
@@ -171,7 +171,7 @@ export function CertificationsWidget({
 
                       {/* Credential Details */}
                       {!showCompact && (cert.credential_id || cert.credential_url) && (
-                        <Row gap={16} flexWrap="wrap">
+                        <Row gap={16} wrap>
                           {cert.credential_id && (
                             <Stack gap={4}>
                               <Text color="$gray11">Credential ID</Text>

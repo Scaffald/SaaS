@@ -56,7 +56,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       )}
 
       {/* Employment Type and Level */}
-      <Row gap={8} flexWrap="wrap">
+      <Row gap={8} wrap>
         {job.employment_type && (
           <Text
             color="$gray11"

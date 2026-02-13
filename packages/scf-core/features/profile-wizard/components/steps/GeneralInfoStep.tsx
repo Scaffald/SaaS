@@ -98,7 +98,7 @@ export function GeneralInfoStep({
         </Paragraph>
       </Stack>
 
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         <Stack flex={1} minWidth={150} gap={8}>
           <Text>First Name *</Text>
           <Controller

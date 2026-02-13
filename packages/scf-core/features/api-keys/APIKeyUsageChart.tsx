@@ -299,7 +299,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
       </Row>
 
       {/* Key Metrics */}
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         {/* Total Requests */}
         <Card f={1} minWidth={200} padded bordered>
           <Stack gap={12}>
@@ -527,7 +527,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
         <Stack gap={16}>
           <H4>Status Codes</H4>
 
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             {Object.entries(data.statusCodeBreakdown).map(([code, count]) => {
               const isSuccess = code.startsWith('2')
               const isClientError = code.startsWith('4')

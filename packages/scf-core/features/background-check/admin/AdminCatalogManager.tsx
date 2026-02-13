@@ -472,7 +472,7 @@ export function AdminCatalogManager() {
           borderWidth={1}
           borderRadius={20}
         >
-          <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+          <Row justify="space-between" align="center" wrap gap={12}>
             <Stack gap={4}>
               <Row gap={8} align="center">
                 <PackagePlus size={18} color="$gray11" />
@@ -482,7 +482,7 @@ export function AdminCatalogManager() {
                 Manage bundles of screening components that organizations can request.
               </Text>
             </Stack>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               <Button
                 size="sm"
                 variant="outline"
@@ -538,7 +538,7 @@ export function AdminCatalogManager() {
                       <Text color="$gray11">{pkg.slug}</Text>
                       {pkg.description ? <Text color="$gray11">{pkg.description}</Text> : null}
                     </Stack>
-                    <Row gap={8} flexWrap="wrap">
+                    <Row gap={8} wrap>
                       <Button
                         size="sm"
                         variant="outline"
@@ -560,7 +560,7 @@ export function AdminCatalogManager() {
                     </Row>
                   </Row>
 
-                  <Row gap={12} flexWrap="wrap">
+                  <Row gap={12} wrap>
                     <InfoChip
                       label="Platform cost"
                       value={formatCurrency(pkg.platform_cost_cents)}
@@ -594,7 +594,7 @@ export function AdminCatalogManager() {
                         >
                           <Stack gap={4} flex={1}>
                             <Text color="$gray11">{component.display_name}</Text>
-                            <Row gap={8} flexWrap="wrap">
+                            <Row gap={8} wrap>
                               <InfoText label="Category" value={component.category ?? 'General'} />
                               <InfoText
                                 label="Completion"
@@ -624,7 +624,7 @@ export function AdminCatalogManager() {
           borderWidth={1}
           borderRadius={20}
         >
-          <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+          <Row justify="space-between" align="center" wrap gap={12}>
             <Stack gap={4}>
               <Row gap={8} align="center">
                 <Shield size={18} color="$gray11" />
@@ -634,7 +634,7 @@ export function AdminCatalogManager() {
                 Maintain granular screening components synchronized with NationSearch.
               </Text>
             </Stack>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               <Button size="sm" iconStart={Plus} onPress={() => openCheckTypeDialog('create')}>
                 New check type
               </Button>
@@ -671,7 +671,7 @@ export function AdminCatalogManager() {
                       <Text color="$gray11">{type.slug}</Text>
                       {type.description ? <Text color="$gray11">{type.description}</Text> : null}
                     </Stack>
-                    <Row gap={8} flexWrap="wrap">
+                    <Row gap={8} wrap>
                       <Button
                         size="sm"
                         variant="outline"
@@ -693,7 +693,7 @@ export function AdminCatalogManager() {
                     </Row>
                   </Row>
 
-                  <Row gap={12} flexWrap="wrap">
+                  <Row gap={12} wrap>
                     <InfoChip label="Category" value={type.category ?? 'General'} />
                     <InfoChip
                       label="Platform cost"
@@ -713,7 +713,7 @@ export function AdminCatalogManager() {
 
                   <Separator />
 
-                  <Row flexWrap="wrap" gap={8}>
+                  <Row wrap gap={8}>
                     <InfoText
                       label="Required documents"
                       value={formatDocuments(type.required_documents)}
@@ -767,7 +767,7 @@ export function AdminCatalogManager() {
                   rows={3}
                 />
 
-                <Row gap={12} flexWrap="wrap">
+                <Row gap={12} wrap>
                   <Stack flex={1}>
                     <Text color="$gray11" marginBottom={4}>
                       Platform cost (USD cents)
@@ -960,7 +960,7 @@ export function AdminCatalogManager() {
                   autoCapitalize="none"
                 />
 
-                <Row gap={12} flexWrap="wrap">
+                <Row gap={12} wrap>
                   <Stack flex={1}>
                     <Text color="$gray11" marginBottom={4}>
                       Platform cost (USD cents)

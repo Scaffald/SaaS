@@ -268,7 +268,7 @@ export function OfficeStorageDashboard() {
         </Stack>
       ) : (
         <>
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             {summaryCards.map((card) => (
               <Card
                 key={card.label}

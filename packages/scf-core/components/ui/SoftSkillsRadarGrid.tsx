@@ -56,7 +56,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   if (isLoading) {
     return (
       <Stack gap={16} padding={16}>
-        <Row flexWrap="wrap" gap={12}>
+        <Row wrap gap={12}>
           {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
               key={key}
@@ -87,7 +87,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
 
   return (
     <Stack gap={16} padding={16}>
-      <Row flexWrap="wrap" gap={12}>
+      <Row wrap gap={12}>
         {filteredSkills.map((skill) => (
           <View key={skill.id} width="100%">
             <IndividualSkillRadarChart

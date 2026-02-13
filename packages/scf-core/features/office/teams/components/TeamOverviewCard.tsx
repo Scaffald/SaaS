@@ -58,9 +58,9 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
       gap={16}
       style={{ backgroundColor: colors.bg[theme].subtle }}
     >
-      <Row gap={16} justify="space-between" flexWrap="wrap">
+      <Row gap={16} justify="space-between" wrap>
         <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
-          <Row gap={8} align="center" flexWrap="wrap">
+          <Row gap={8} align="center" wrap>
             <Text>{team.name || 'Untitled team'}</Text>
             {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
           </Row>
@@ -70,19 +70,19 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
           </Text>
         </Stack>
         {actions ? (
-          <Row gap={8} align="flex-start" flexShrink={0} flexWrap="wrap">
+          <Row gap={8} align="flex-start" flexShrink={0} wrap>
             {actions}
           </Row>
         ) : null}
       </Row>
 
-      <Row gap={8} flexWrap="wrap">
+      <Row gap={8} wrap>
         <Chip>{purposeLabel}</Chip>
         <Chip>{visibilityLabel}</Chip>
         <Chip>{invitationPolicyLabel}</Chip>
       </Row>
 
-      <Row gap={16} flexWrap="wrap">
+      <Row gap={16} wrap>
         <StatItem
           iconStart={<Users size="md" />}
           label="Members"

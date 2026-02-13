@@ -34,7 +34,7 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
   return (
     <Stack gap={12}>
       <Text color="$gray11">{title}</Text>
-      <Row gap={8} flexWrap="wrap">
+      <Row gap={8} wrap>
         {displayTags.map((tag) => {
           const relativeSize = getRelativeSize(tag.count)
           const _fontSize = relativeSize <= 1.5 ? '$2' : relativeSize <= 2.5 ? '$3' : '$4'

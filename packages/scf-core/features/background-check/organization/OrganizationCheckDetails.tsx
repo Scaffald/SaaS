@@ -221,7 +221,7 @@ interface InfoRowProps {
 
 function InfoRow({ label, value }: InfoRowProps) {
   return (
-    <Row gap={8} justify="space-between" flexWrap="wrap">
+    <Row gap={8} justify="space-between" wrap>
       <Text color="$gray11">{label}</Text>
       <Text color="$gray11">{value}</Text>
     </Row>

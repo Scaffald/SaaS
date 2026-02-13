@@ -226,7 +226,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     borderWidth={2}
                     borderColor={isSelected ? '$blue9' : isCurrent ? '$green9' : '$borderColor'}
                   >
-                    <Row align="center" justify="space-between" flexWrap="wrap" gap={8}>
+                    <Row align="center" justify="space-between" wrap gap={8}>
                       <Row gap={12} align="center">
                         <Stack
                           width={40}
@@ -264,7 +264,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     </Row>
 
                     {/* Category Averages */}
-                    <Row gap={12} flexWrap="wrap">
+                    <Row gap={12} wrap>
                       {Object.entries(version.categoryAverages).map(([category, average]) => (
                         <Stack key={category} gap={4} style={{ minWidth: 120 }}>
                           <Text color="$gray11" textTransform="capitalize">
@@ -316,7 +316,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                             {currentVersion})
                           </Text>
 
-                          <Row gap={16} flexWrap="wrap" justify="center">
+                          <Row gap={16} wrap justify="center">
                             <Stack flex={1} style={{ minWidth: 250 }}>
                               <SkillsChart
                                 datasets={[

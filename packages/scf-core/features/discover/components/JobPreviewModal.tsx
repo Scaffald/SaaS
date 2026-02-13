@@ -133,7 +133,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
             {/* Job Type Badge */}
             {(job.employment_type || job.position_level) && (
-              <Row gap={8} flexWrap="wrap" justify="center">
+              <Row gap={8} wrap justify="center">
                 {job.employment_type && (
                   <Row
                     backgroundColor="$blue2"

@@ -110,7 +110,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             data.preferred_work_locations.length > 0 && (
               <Stack gap={8}>
                 <Text>Preferred Locations</Text>
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {data.preferred_work_locations.map((location: string) => (
                     <Row
                       key={location}
@@ -175,7 +175,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             data.drivers_license_classes.length > 0 && (
               <Stack gap={8}>
                 <Text>Driver's Licenses</Text>
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {data.drivers_license_classes.map((license: string) => (
                     <Row
                       key={license}

@@ -93,7 +93,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Header: Title and Status */}
       <Row justify="space-between" align="flex-start" gap={12}>
         <Stack gap={8} flex={1}>
-          <Row align="center" gap={8} flexWrap="wrap">
+          <Row align="center" gap={8} wrap>
             <Briefcase
               size={18}
               color={isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].tertiary}
@@ -129,7 +129,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       </Row>
 
       {/* Metrics Row */}
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         {applicationCount !== undefined && (
           <MetricItem
             iconStart={<Users size="md" />}
@@ -153,7 +153,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       </Row>
 
       {/* Details Row */}
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         {job.location && (
           <Row align="center" gap={6}>
             <MapPin size="md" style={{ color: colors.text[theme].secondary }} />

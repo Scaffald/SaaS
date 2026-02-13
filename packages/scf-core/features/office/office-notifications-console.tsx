@@ -103,7 +103,7 @@ export function OfficeNotificationsConsole() {
           </Button>
         </Row>
 
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           {DELIVERY_STATUSES.map((value) => {
             const isActive = status === value
 

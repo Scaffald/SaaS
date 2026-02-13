@@ -39,7 +39,7 @@ export function TeamJobsList({
       <Row
         justify="space-between"
         align="flex-start"
-        flexWrap="wrap"
+        wrap
         gap={12}
         flexDirection="column"
       >
@@ -120,7 +120,7 @@ export function TeamJobsList({
                 justify="space-between"
                 align="flex-start"
                 gap={12}
-                flexWrap="wrap"
+                wrap
                 flexDirection="column"
               >
                 <Stack gap={4} flex={1} width="100%">
@@ -132,7 +132,7 @@ export function TeamJobsList({
                 <StatusChip status={job.status ?? 'draft'} />
               </Row>
               {job.teamAssignments && job.teamAssignments.length > 0 ? (
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {job.teamAssignments.map((assignment: TeamAssignment) => (
                     <TeamBadge
                       key={`${job.id}-${assignment.teamId}`}

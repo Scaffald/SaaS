@@ -347,7 +347,7 @@ function SettingsToggle({
 }) {
   const { theme } = useThemeContext()
   return (
-    <Row justify="space-between" gap={12} align="center" flexWrap="wrap">
+    <Row justify="space-between" gap={12} align="center" wrap>
       <Stack gap={4} flex={1} style={{ minWidth: 200 }}>
         <Text>{label}</Text>
         <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>

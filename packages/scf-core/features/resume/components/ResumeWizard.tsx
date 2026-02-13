@@ -581,7 +581,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
       <Separator />
 
-      <Row gap={12} justify="space-between" flexWrap="wrap">
+      <Row gap={12} justify="space-between" wrap>
         <Row gap={8}>
           <Button
             size="md"
@@ -647,7 +647,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         <Paragraph color="$gray11">
           Update your basic profile details. We only update the fields you confirm.
         </Paragraph>
-        <Row gap={16} flexWrap="wrap">
+        <Row gap={16} wrap>
           <Stack gap={8} flex={1}>
             <Text>First Name</Text>
             <Input
@@ -838,7 +838,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             }))
           }
         />
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           <Stack gap={8} flex={1}>
             <Text>Hourly rate (USD)</Text>
             <Input

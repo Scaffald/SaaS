@@ -258,7 +258,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           </Row>
 
           {/* Job metadata */}
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             {job.location && (
               <Row gap={6} align="center">
                 <MapPin size="md" color="$gray11" />
@@ -288,7 +288,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         {descriptionText && <Text color="$gray11">{descriptionText}</Text>}
 
         {/* Pay range and certifications */}
-        <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>
+        <Row justify="space-between" align="center" wrap gap={8}>
           <Row gap={12} align="center">
             {payRange && (
               <Row gap={6} align="center">
@@ -309,7 +309,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         {/* Certifications and Skills */}
         {(job.certifications && job.certifications.length > 0) ||
         (job.skills && job.skills.length > 0) ? (
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             {job.certifications?.slice(0, 3).map((cert) => (
               <Chip
                 key={cert.id}

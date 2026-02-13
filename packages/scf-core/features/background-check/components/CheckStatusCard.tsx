@@ -54,7 +54,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
   return (
     <DashboardWidget>
       <Stack gap={16}>
-        <Row justify="space-between" align="flex-start" gap={16} flexWrap="wrap">
+        <Row justify="space-between" align="flex-start" gap={16} wrap>
           <Stack gap={4} flex={1}>
             <Text color="$gray11">{packageLabel}</Text>
             <Text color="$gray11">Started {formatDate(check.created_at)}</Text>
@@ -104,7 +104,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
           <Text color="$gray11">{statusMeta.description}</Text>
         </Stack>
 
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           <Button
             size="sm"
             iconStart={Eye}

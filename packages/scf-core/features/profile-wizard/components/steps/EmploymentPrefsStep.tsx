@@ -171,7 +171,7 @@ export function EmploymentPrefsStep({
         />
       </Stack>
 
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         <Stack flex={1} gap={8} minWidth={160}>
           <Text>Availability</Text>
           <Controller

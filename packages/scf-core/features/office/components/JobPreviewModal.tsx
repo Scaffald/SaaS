@@ -147,7 +147,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               </Stack>
 
               {/* Job Type Badge */}
-              <Row gap={8} flexWrap="wrap" justify="center">
+              <Row gap={8} wrap justify="center">
                 {formatEmploymentType(job.employment_type ?? null) && (
                   <Row
                     style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
@@ -241,7 +241,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   <Users size="md" style={{ color: colors.text[theme].secondary }} />
                   <Text style={{ color: colors.text[theme].secondary }}>Required Skills</Text>
                 </Row>
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {(job.job_skills || []).map((jobSkill, idx: number) => {
                     const skillName =
                       jobSkill?.csi_skill?.name ||

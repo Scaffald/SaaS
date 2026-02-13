@@ -169,7 +169,7 @@ export function ProfileHoverCard({
 
           {/* Top Skills */}
           {workerPreview.topSkills && workerPreview.topSkills.length > 0 && (
-            <Row gap={4} flexWrap="wrap">
+            <Row gap={4} wrap>
               {workerPreview.topSkills
                 .slice(0, 3)
                 .map((skill: (typeof workerPreview.topSkills)[0]) => {
@@ -245,7 +245,7 @@ export function ProfileHoverCard({
             )}
 
           {/* Key Metrics */}
-          <Row gap={12} flexWrap="wrap">
+          <Row gap={12} wrap>
             {jobsCount > 0 && (
               <Row gap={4} align="center">
                 <Briefcase size="md" color="$green10" />

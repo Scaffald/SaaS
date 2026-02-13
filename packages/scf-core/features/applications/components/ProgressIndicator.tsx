@@ -51,7 +51,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
     <Row
       gap={8}
       align="center"
-      flexWrap="wrap"
+      wrap
       padding="md"
       role="progressbar"
       aria-label="Application progress"

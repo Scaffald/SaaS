@@ -61,7 +61,7 @@ export function SiteOverlapNotification({
             <Text color="$gray11">
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
-            <Row gap={8} flexWrap="wrap">
+            <Row gap={8} wrap>
               <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
                 <Row gap={8} align="center">
                   <MapPin size="md" />
@@ -78,7 +78,7 @@ export function SiteOverlapNotification({
           </Stack>
         </Row>
 
-        <Row gap={8} flexWrap="wrap" justify="flex-end">
+        <Row gap={8} wrap justify="flex-end">
           <Button
             size="sm"
             variant="outline"

@@ -287,7 +287,7 @@ export function APIKeyScopesManager({
                               {scope.description}
                             </Paragraph>
                             {scope.requires && scope.requires.length > 0 && (
-                              <Row ai="center" gap={8} flexWrap="wrap">
+                              <Row ai="center" gap={8} wrap>
                                 <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
@@ -358,7 +358,7 @@ export function APIKeyScopesManager({
                               </Card>
                             )}
                             {scope.requires && scope.requires.length > 0 && (
-                              <Row ai="center" gap={8} flexWrap="wrap">
+                              <Row ai="center" gap={8} wrap>
                                 <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
@@ -392,7 +392,7 @@ export function APIKeyScopesManager({
                 <Paragraph size="sm" color="$gray11">
                   Selected Permissions
                 </Paragraph>
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {selectedScopes.length === 0 ? (
                     <Paragraph size="sm" color="$gray11">
                       No permissions selected

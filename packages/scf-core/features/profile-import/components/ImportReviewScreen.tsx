@@ -295,7 +295,7 @@ export function ImportReviewScreen() {
     <Stack gap={16} padding="md">
       <Card bordered backgroundColor="$color2">
         <Card.Header padded gap={12}>
-          <Row gap={12} align="flex-start" flexWrap="wrap">
+          <Row gap={12} align="flex-start" wrap>
             <Info size="lg" color="$blue10" />
             <Stack flex={1} gap={8}>
               <Row gap={8} align="center">
@@ -305,7 +305,7 @@ export function ImportReviewScreen() {
                 Review and confirm the details we extracted. You can import everything, bring over a
                 subset, or clear the import and start again.
               </Paragraph>
-              <Row gap={12} flexWrap="wrap">
+              <Row gap={12} wrap>
                 <Row gap={8} align="center">
                   <Clock
                     size="md"
@@ -434,8 +434,8 @@ export function ImportReviewScreen() {
 
       <Separator />
 
-      <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
-        <Row gap={8} flexWrap="wrap">
+      <Row justify="space-between" align="center" wrap gap={12}>
+        <Row gap={8} wrap>
           <Button
             size="sm"
             variant="outline"
@@ -454,7 +454,7 @@ export function ImportReviewScreen() {
             Select all
           </Button>
         </Row>
-        <Row gap={12} align="center" flexWrap="wrap">
+        <Row gap={12} align="center" wrap>
           <Text color="$gray11" aria-live="polite">
             Selected {selectedCount} of {totalItems}
           </Text>

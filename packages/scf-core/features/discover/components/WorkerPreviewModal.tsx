@@ -629,7 +629,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {/* Connect and Follow Buttons (only for other users' profiles) */}
           {!isOwnProfile && userId && (
             <>
-              <Row gap={8} flexWrap="wrap" justify="center">
+              <Row gap={8} wrap justify="center">
                 {/* Connect Button */}
                 {connectionButtonState && (
                   <>

@@ -45,7 +45,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
   return (
     <Stack gap={16}>
-      <Row gap={12} flexWrap="wrap">
+      <Row gap={12} wrap>
         <MetricCard
           title="Checks in system"
           value={metrics.totals.checks}
@@ -70,7 +70,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
       <Separator />
 
-      <Row flexWrap="wrap" gap={12}>
+      <Row wrap gap={12}>
         <Card
           flexGrow={1}
           padding="md"
@@ -114,7 +114,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         borderWidth={1}
         borderRadius={16}
       >
-        <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>
+        <Row justify="space-between" align="center" wrap gap={8}>
           <Text color="$gray11">Package distribution</Text>
           <Button variant="outline" size="sm" iconStart={RefreshCcw} onPress={onRefresh}>
             Refresh

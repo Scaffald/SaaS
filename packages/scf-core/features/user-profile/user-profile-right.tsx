@@ -189,7 +189,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 </Stack>
 
                 {/* Stats Row */}
-                <Row gap={12} flexWrap="wrap">
+                <Row gap={12} wrap>
                   <Stack
                     gap={4}
                     flex={1}
@@ -235,7 +235,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
               {topSkills.length > 0 && (
                 <Stack gap={8}>
                   <Text>Top Skills</Text>
-                  <Row gap={8} flexWrap="wrap">
+                  <Row gap={8} wrap>
                     {topSkills.map((skill: Record<string, unknown>) => {
                       const displayCode =
                         typeof skill.displayCode === 'string' ? skill.displayCode : null

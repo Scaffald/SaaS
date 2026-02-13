@@ -108,7 +108,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
             <SkeletonBlock height={96} width={96} radius={48} />
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
-            <Row gap={8} flexWrap="wrap" justify="center">
+            <Row gap={8} wrap justify="center">
               {headlineWidths.map((width) => (
                 <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
@@ -157,7 +157,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
       {wrapWidget(
         <Stack gap={12}>
           <SkeletonBlock height={20} width="45%" />
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             {['skill-1', 'skill-2', 'skill-3', 'skill-4', 'skill-5', 'skill-6'].map((skillId) => (
               <SkeletonBlock key={skillId} height={28} width={100} radius={14} />
             ))}

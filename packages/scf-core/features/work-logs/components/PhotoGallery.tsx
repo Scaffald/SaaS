@@ -41,7 +41,7 @@ export function PhotoGallery({
     <Stack gap={12}>
       <Text>Photo Gallery</Text>
       <ScrollView horizontal={false} showsVerticalScrollIndicator>
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           {photos.map((photo) => (
             <Stack key={photo.id} width="100%">
               <PhotoCard

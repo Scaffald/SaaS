@@ -267,7 +267,7 @@ export function ChartView({
                 roundedBottom={true}
               />
               {/* Facet Labels */}
-              <Row flexWrap="wrap" gap={8} marginTop={8}>
+              <Row wrap gap={8} marginTop={8}>
                 {facetKeys.map((facetKey) => {
                   const facet = domainScore.facet[facetKey as keyof typeof domainScore.facet]
                   if (!facet) return null

@@ -328,7 +328,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               <Stack gap={8}>
                 <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{slugStatus.message}</Text>
                 {slugStatus.suggestions?.length ? (
-                  <Row gap={8} flexWrap="wrap">
+                  <Row gap={8} wrap>
                     {slugStatus.suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}

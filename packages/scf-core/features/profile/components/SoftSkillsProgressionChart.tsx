@@ -191,7 +191,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
         </Stack>
 
         {/* Summary Stats */}
-        <Row gap={12} flexWrap="wrap">
+        <Row gap={12} wrap>
           <Stack
             gap={4}
             padding="sm"
@@ -248,7 +248,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Row align="center" justify="space-between" flexWrap="wrap" gap={8}>
+                    <Row align="center" justify="space-between" wrap gap={8}>
                       <Stack gap={4} flex={1}>
                         <Text color="$gray11">{skill.skillName}</Text>
                         <Row gap={12} align="center">

@@ -245,7 +245,7 @@ export function ConnectionFollowButtonsInline({
   }
 
   return (
-    <Row gap={8} flexWrap="wrap">
+    <Row gap={8} wrap>
       {/* Connection Button */}
       {connectionButtonState.type === 'connected' && (
         <>

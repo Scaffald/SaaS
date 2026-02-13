@@ -101,13 +101,13 @@ export function DiscoverWorkersRight({
         </Row>
       )}
       {selectedSkills.length > 0 && (
-        <Row gap={8} align="center" flexWrap="wrap">
+        <Row gap={8} align="center" wrap>
           <Text color="$gray11">Skills:</Text>
           <Text color="$blue10">{selectedSkills.length}</Text>
         </Row>
       )}
       {selectedCertifications.length > 0 && (
-        <Row gap={8} align="center" flexWrap="wrap">
+        <Row gap={8} align="center" wrap>
           <Text color="$gray11">Certs:</Text>
           <Text color="$green10">{selectedCertifications.length}</Text>
         </Row>
@@ -182,7 +182,7 @@ export function DiscoverWorkersRight({
             </Row>
 
             {selectedSkills.length > 0 && (
-              <Row gap={8} flexWrap="wrap">
+              <Row gap={8} wrap>
                 {selectedSkills.map((skill) => (
                   <Row
                     key={skill}
@@ -231,7 +231,7 @@ export function DiscoverWorkersRight({
             </Row>
 
             {selectedCertifications.length > 0 && (
-              <Row gap={8} flexWrap="wrap">
+              <Row gap={8} wrap>
                 {selectedCertifications.map((cert) => (
                   <Row
                     key={cert}

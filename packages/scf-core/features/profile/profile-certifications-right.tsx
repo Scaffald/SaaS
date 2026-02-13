@@ -351,7 +351,7 @@ export function ProfileCertificationsRight() {
                         )}
 
                         <Stack flex={1} gap={4}>
-                          <Row gap={8} align="center" flexWrap="wrap">
+                          <Row gap={8} align="center" wrap>
                             <Text>{cert.catalog.title}</Text>
                             <Text
                               color="$purple9"

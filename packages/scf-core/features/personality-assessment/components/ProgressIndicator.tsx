@@ -59,7 +59,7 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
       </Stack>
 
       {/* Step Indicators */}
-      <Row gap={8} align="center" flexWrap="wrap">
+      <Row gap={8} align="center" wrap>
         {steps.map((step, index) => {
           const status = getStepStatus(step)
           const isLast = index === steps.length - 1

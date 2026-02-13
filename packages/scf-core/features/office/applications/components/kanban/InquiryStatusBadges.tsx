@@ -50,7 +50,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
   }
 
   return (
-    <Row gap={4} flexWrap="wrap" marginTop={8}>
+    <Row gap={4} wrap marginTop={8}>
       {/* Unread comments badge */}
       {unreadComments > 0 && (
         <Row

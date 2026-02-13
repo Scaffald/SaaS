@@ -550,7 +550,7 @@ export function InquiryCreateForm({
                       </Row>
                     </Row>
                     {smartDefaultsFieldLabels.length > 0 && (
-                      <Row gap={8} flexWrap="wrap">
+                      <Row gap={8} wrap>
                         {smartDefaultsFieldLabels.map((label) => (
                           <Stack
                             key={label}
@@ -752,7 +752,7 @@ export function InquiryCreateForm({
                       control={control}
                       name="workdays"
                       render={({ field }) => (
-                        <Row gap={8} flexWrap="wrap">
+                        <Row gap={8} wrap>
                           {WORKDAYS.map((day) => {
                             const isSelected = field.value?.includes(day.value)
                             return (

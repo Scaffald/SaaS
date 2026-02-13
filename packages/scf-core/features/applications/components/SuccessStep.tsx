@@ -139,7 +139,7 @@ export function SuccessStep({
       </Stack>
 
       {/* Action Buttons */}
-      <Row gap={12} width="100%" marginTop={32} flexWrap="wrap" justify="center">
+      <Row gap={12} width="100%" marginTop={32} wrap justify="center">
         {onViewApplication && (
           <Button
             size="lg"

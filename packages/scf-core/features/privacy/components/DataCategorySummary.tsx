@@ -149,7 +149,7 @@ export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
       </Row>
 
       {/* Category cards grid */}
-      <Row flexWrap="wrap" gap={12}>
+      <Row wrap gap={12}>
         {categoryInfos.map((info) => (
           <CategoryCard key={info.name} info={info} />
         ))}

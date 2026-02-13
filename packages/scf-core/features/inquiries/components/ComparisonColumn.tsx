@@ -159,13 +159,13 @@ export function ComparisonColumn({
           )}
         </Row>
 
-        <Row flexWrap="wrap" gap={8}>
+        <Row wrap gap={8}>
           <StatusBadge label={inquiryStatus} />
           <SubtleBadge label={`Updated ${inquiryUpdatedAt}`} />
         </Row>
 
         {/* Section Status Badges */}
-        <Row gap={8} flexWrap="wrap">
+        <Row gap={8} wrap>
           {['employment', 'compensation', 'capabilities', 'other'].map((sectionName) => {
             const status = getSectionStatus(sectionName)
             const commentCount = getCommentCount(sectionName)

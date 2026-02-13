@@ -421,7 +421,7 @@ export function WorkLogDetailScreen() {
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding="sm">
             <Text>Summary</Text>
-            <Row gap={16} flexWrap="wrap">
+            <Row gap={16} wrap>
               <SummaryMetric
                 iconStart={Activity}
                 label="Total hours"
@@ -576,7 +576,7 @@ export function WorkLogDetailScreen() {
             {skillNames.length === 0 ? (
               <Paragraph color="$gray11">No skills associated with this log.</Paragraph>
             ) : (
-              <Row gap={8} flexWrap="wrap">
+              <Row gap={8} wrap>
                 {skillNames.map((skill) => (
                   <Text
                     key={skill}
@@ -746,7 +746,7 @@ export function WorkLogDetailScreen() {
               Generate a shareable export for reporting or offline records. Links expire after ten
               minutes.
             </Paragraph>
-            <Row gap={12} flexWrap="wrap">
+            <Row gap={12} wrap>
               <Button
                 size="md"
                 iconStart={DownloadCloud}

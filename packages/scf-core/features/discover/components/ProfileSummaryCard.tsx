@@ -29,14 +29,14 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
     >
       <Text color="$gray11">{profile.name}</Text>
 
-      <Row gap={8} align="center" flexWrap="wrap">
+      <Row gap={8} align="center" wrap>
         <Paragraph color="$gray11">{profile.experienceYears} years</Paragraph>
         <Text color="$gray11">•</Text>
         <Paragraph color="$gray11">${profile.hourlyRate}/hr</Paragraph>
       </Row>
 
       {profile.skills && profile.skills.length > 0 && (
-        <Row gap={4} flexWrap="wrap">
+        <Row gap={4} wrap>
           {profile.skills.slice(0, 3).map((skill) => (
             <Text
               key={skill}

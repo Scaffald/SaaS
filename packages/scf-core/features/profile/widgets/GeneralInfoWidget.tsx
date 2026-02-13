@@ -118,7 +118,7 @@ export function GeneralInfoWidget({
           {/* Header with Action Buttons */}
           {showButtons && (
             <Row justify="flex-end" align="center" marginBottom={8}>
-              <Row gap={8} flexWrap="wrap" justify="flex-end">
+              <Row gap={8} wrap justify="flex-end">
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ''}
                   isOwnProfile={isOwnProfile}
@@ -223,7 +223,7 @@ export function GeneralInfoWidget({
             <Stack gap={12}>
               <Text>Professional Details</Text>
 
-              <Row gap={16} flexWrap="wrap">
+              <Row gap={16} wrap>
                 {(() => {
                   const yearsValue =
                     typeof data.calculatedYearsOfExperience === 'number'

@@ -116,7 +116,7 @@ function RequestRow({
       borderColor="$borderColor"
       align="center"
       gap={16}
-      flexWrap="wrap"
+      wrap
     >
       {/* Type */}
       <Stack flex={1} minWidth={120}>

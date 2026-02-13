@@ -135,8 +135,8 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
             </Stack>
           )}
           <Stack gap={16}>
-            <Row gap={16} align="center" justify="space-between" flexWrap="wrap">
-              <Row gap={16} align="center" flexWrap="wrap">
+            <Row gap={16} align="center" justify="space-between" wrap>
+              <Row gap={16} align="center" wrap>
                 {organizationsData && (
                   <Row width={200}>
                     <ResponsiveSelect

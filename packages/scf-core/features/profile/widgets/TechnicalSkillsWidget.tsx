@@ -140,7 +140,7 @@ export function TechnicalSkillsWidget({
                 </Text>
 
                 {/* Skills in this taxonomy */}
-                <Row gap={8} flexWrap="wrap">
+                <Row gap={8} wrap>
                   {groupedSkills[taxonomy]
                     .slice(0, showCompact ? 5 : undefined)
                     .map((skill: EnrichedUserSkill) => (

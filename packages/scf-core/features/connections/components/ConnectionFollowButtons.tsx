@@ -252,7 +252,7 @@ export function ConnectionFollowButtons({
       <Stack gap={12} paddingVertical={12}>
         {/* Connection Button */}
         {connectionButtonState.type === 'connected' && (
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             <Button
               size="md"
               iconStart={UserCheck}
@@ -289,7 +289,7 @@ export function ConnectionFollowButtons({
         )}
 
         {connectionButtonState.type === 'pending_received' && (
-          <Row gap={8} flexWrap="wrap">
+          <Row gap={8} wrap>
             <Button
               size="md"
               iconStart={CheckCircle2}

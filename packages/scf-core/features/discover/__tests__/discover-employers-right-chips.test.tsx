@@ -53,7 +53,7 @@ function renderChipsSection({
   return (
     <MockYStack gap={8}>
       <span>Industries:</span>
-      <MockXStack gap={8} flexWrap="wrap">
+      <MockXStack gap={8} wrap>
         {selectedIndustries.map((industry) => {
           const count = industryCounts[industry] ?? 0
           const isInteractive = count > 0
