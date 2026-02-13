@@ -62,8 +62,8 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
           style={{
             maxWidth: 600,
             width: '100%',
-            backgroundColor: colors.bg[theme].errorSubtle,
-            borderColor: colors.border[theme].error,
+            backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
+            borderColor: theme === 'light' ? colors.error[200] : colors.error[700],
             borderWidth: 1,
             borderRadius: 12,
             padding: spacing[4],
@@ -75,7 +75,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
               weight="semibold"
               style={{
                 fontFamily: 'monospace',
-                color: colors.text[theme].error,
+                color: theme === 'light' ? colors.error[800] : colors.error[200],
               }}
             >
               Error Details (Development Only):
@@ -85,7 +85,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
               style={{
                 fontFamily: 'monospace',
                 lineHeight: 20,
-                color: colors.text[theme].error,
+                color: theme === 'light' ? colors.error[700] : colors.error[300],
               }}
             >
               {error.message}

@@ -159,7 +159,7 @@ export default function DashboardTeamDetailPage() {
       </Button>
       <Button
         size="md"
-        color="$color1"
+        color="primary"
         iconStart={UserPlus}
         onPress={() => setIsInviteModalOpen(true)}
       >
@@ -184,11 +184,11 @@ export default function DashboardTeamDetailPage() {
     <Stack gap={16}>
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <TeamAutomationSettings
           teamId={teamId}
           allowSelfJoin={team.allowSelfJoin ?? false}
@@ -200,7 +200,7 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <TeamActivityFeed
           teamId={teamId}
           mentionOptions={mentionOptions}
@@ -208,18 +208,18 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
       </Card>
 
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <TeamInvitationsList
           teamId={teamId}
           refreshKey={invitationRefreshKey}
           headerAction={
             <Button
               size="md"
-              color="$color1"
+              color="primary"
               iconStart={UserPlus}
               onPress={() => setIsInviteModalOpen(true)}
             >

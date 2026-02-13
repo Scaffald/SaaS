@@ -125,7 +125,7 @@ export default function EditTeamPage() {
         teamId={team.id}
         refreshKey={inviteRefreshKey}
         headerAction={
-          <Button color="$color1" size="md" onPress={() => setIsInviteModalOpen(true)}>
+          <Button color="primary" size="md" onPress={() => setIsInviteModalOpen(true)}>
             Invite member
           </Button>
         }
