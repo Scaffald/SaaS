@@ -14,7 +14,7 @@ describe('Phase 20 API Integration Tests', () => {
     // Initialize SDK client with test credentials
     client = new Scaffald({
       apiKey: process.env.TEST_API_KEY || 'test_key',
-      baseUrl: process.env.API_BASE_URL || 'http://localhost:54321/functions/v1/api',
+      baseUrl: 'https://api.scaffald.com',
     })
   })
 
@@ -285,7 +285,8 @@ describe('Phase 20 API Integration Tests', () => {
   describe('Authentication', () => {
     it('should reject requests without authentication', async () => {
       const unauthClient = new Scaffald({
-        baseUrl: process.env.API_BASE_URL || 'http://localhost:54321/functions/v1/api',
+        baseUrl: 'https://api.scaffald.com',
+        apiKey: 'invalid_key', // Provide invalid key to test auth rejection
       })
 
       await expect(

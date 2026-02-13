@@ -204,7 +204,7 @@ export default function CreateWebhookPage() {
                      
                       pressStyle={{ backgroundColor: '$gray3' }}
                       onPress={() => handleToggleEvent(event.value as WebhookEventType)}
-                      cursor="pointer"
+                     
                     >
                       <Checkbox
                         checked={selectedEvents.has(event.value as WebhookEventType)}

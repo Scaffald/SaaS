@@ -7099,6 +7099,297 @@ export const handlers = [
     })
   }),
 
+  // ============================================================================
+  // PHASE 20: User Profiles, Workers, Personality Assessment APIs
+  // ============================================================================
+
+  // GET /v1/user-profiles/:userId/preview - Lightweight user profile preview
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/preview`, ({ params }) => {
+    const { userId } = params
+
+    if (!userId || userId === 'non-existent-user') {
+      return HttpResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      id: userId,
+      displayName: 'Test User',
+      avatarUrl: 'https://example.com/avatar.jpg',
+      avatarPath: '/avatars/test.jpg',
+      headline: 'Software Engineer',
+      location: 'San Francisco, CA',
+      topSkills: [
+        { proficiency: 5, taxonomy: 'JavaScript', csiSkillId: 'skill_1', onetOccupationId: 'onet_1' },
+        { proficiency: 4, taxonomy: 'React', csiSkillId: 'skill_2', onetOccupationId: 'onet_2' },
+      ],
+    })
+  }),
+
+  // GET /v1/user-profiles/:userId - Comprehensive user profile
+  http.get(`${BASE_URL}/v1/user-profiles/:userId`, ({ params }) => {
+    const { userId } = params
+
+    if (!userId || userId === 'non-existent-user') {
+      return HttpResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      id: userId,
+      name: 'Test User',
+      avatar_url: 'https://example.com/avatar.jpg',
+      headline: 'Software Engineer',
+      bio: 'Experienced developer',
+      industry_name: 'Technology',
+      years_of_experience: 5,
+      gamified_score: 850,
+      location: 'San Francisco, CA',
+      availability: 'Available now',
+      certifications: [],
+      hourly_rate_cents: 15000,
+      open_to_travel: true,
+      travel_mileage: 50,
+      open_to_work: true,
+      education_level: 'Bachelor',
+    })
+  }),
+
+  // GET /v1/user-profiles/:userId/skills - User skills
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/skills`, ({ params }) => {
+    const { userId } = params
+
+    return HttpResponse.json([
+      {
+        id: 'skill_1',
+        skill_taxonomy: 'JavaScript',
+        csi_skill_id: 'csi_1',
+        onet_occupation_id: 'onet_1',
+        proficiency_level: 5,
+        years_experience: 5,
+        verified: true,
+        notes: 'Expert level',
+        created_at: '2024-01-01T00:00:00Z',
+        skill_details: {
+          name: 'JavaScript',
+          display_code: 'JS',
+          hierarchy_level: 1,
+          code: 'js_001',
+        },
+      },
+    ])
+  }),
+
+  // GET /v1/user-profiles/:userId/certifications - User certifications
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/certifications`, ({ params }) => {
+    return HttpResponse.json([
+      {
+        id: 'cert_1',
+        certification_id: 'cert_aws',
+        user_id: params.userId,
+        issue_date: '2023-01-01',
+        expiration_date: '2026-01-01',
+        credential_id: 'AWS-123',
+        credential_url: 'https://aws.amazon.com/cert/123',
+        created_at: '2023-01-01T00:00:00Z',
+        certification: {
+          id: 'cert_aws',
+          name: 'AWS Certified Developer',
+          issuing_organization: 'Amazon Web Services',
+          depth: 1,
+          parent_id: null,
+        },
+      },
+    ])
+  }),
+
+  // GET /v1/user-profiles/:userId/experience - User work experience
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/experience`, ({ params }) => {
+    return HttpResponse.json([
+      {
+        id: 'exp_1',
+        user_id: params.userId,
+        job_title: 'Senior Developer',
+        company_name: 'Tech Corp',
+        location: 'San Francisco, CA',
+        start_date: '2020-01-01',
+        end_date: null,
+        is_current: true,
+        description: 'Building great software',
+        created_at: '2020-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      },
+    ])
+  }),
+
+  // GET /v1/user-profiles/:userId/education - User education
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/education`, ({ params }) => {
+    return HttpResponse.json([
+      {
+        id: 'edu_1',
+        user_id: params.userId,
+        school_name: 'University of California',
+        degree: 'Bachelor of Science',
+        field_of_study: 'Computer Science',
+        start_date: '2015-09-01',
+        end_date: '2019-06-01',
+        is_current: false,
+        gpa: 3.8,
+        description: 'Focused on software engineering',
+        created_at: '2019-06-01T00:00:00Z',
+        updated_at: '2019-06-01T00:00:00Z',
+      },
+    ])
+  }),
+
+  // GET /v1/workers - List workers
+  http.get(`${BASE_URL}/v1/workers`, ({ request }) => {
+    const url = new URL(request.url)
+    const limit = parseInt(url.searchParams.get('limit') || '20')
+
+    if (limit < 0) {
+      return HttpResponse.json({ error: 'Invalid limit parameter' }, { status: 400 })
+    }
+
+    return HttpResponse.json({
+      workers: [
+        {
+          id: 'worker_1',
+          display_name: 'John Doe',
+          username: 'johndoe',
+          slug: 'john-doe',
+          about: 'Experienced worker',
+          avatar_path: '/avatars/john.jpg',
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+        },
+      ],
+      total: 1,
+    })
+  }),
+
+  // GET /v1/workers/:id - Get worker by ID
+  http.get(`${BASE_URL}/v1/workers/:id`, ({ params }) => {
+    const { id } = params
+
+    if (!id || id === 'non-existent-worker') {
+      return HttpResponse.json({ error: 'Worker not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      id,
+      name: 'John Doe',
+      first_name: 'John',
+      last_name: 'Doe',
+      about: 'Experienced worker',
+      avatar_path: '/avatars/john.jpg',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+    })
+  }),
+
+  // GET /v1/personality-assessment/status - Get or create assessment
+  http.get(`${BASE_URL}/v1/personality-assessment/status`, ({ request }) => {
+    // Check for authentication
+    const authHeader = request.headers.get('Authorization')
+    const apiKeyHeader = request.headers.get('X-API-Key')
+
+    if (apiKeyHeader === 'invalid_key') {
+      return HttpResponse.json({ error: 'Invalid API key' }, { status: 401 })
+    }
+
+    return HttpResponse.json({
+      id: 'assessment_1',
+      user_id: 'test-user-123',
+      current_step: 'luscher1',
+      completion_score: 25,
+      started_at: '2024-01-01T00:00:00Z',
+      last_updated_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+      completed_at: null,
+      luscher1_choices: null,
+      luscher1_completed_at: null,
+      luscher2_choices: null,
+      luscher2_completed_at: null,
+      luscher2_results: null,
+      ipip_answers: null,
+      ipip_current_index: null,
+      ipip_language: 'en',
+      ipip_completed_at: null,
+      ai_report: null,
+      ai_report_generated_at: null,
+      cooldown_end_time: null,
+      next_available_at: null,
+      next_luscher_test_available_at: null,
+      diary_response: null,
+      completed: false,
+      total_questions: 100,
+      answered_questions: 25,
+    })
+  }),
+
+  // GET /v1/personality-assessment/ipip/status - IPIP status
+  http.get(`${BASE_URL}/v1/personality-assessment/ipip/status`, () => {
+    return HttpResponse.json({
+      isCompleted: false,
+      completedAt: null,
+      progress: 0.25,
+    })
+  }),
+
+  // GET /v1/personality-assessment/luscher-1/status - Luscher Test 1 status
+  http.get(`${BASE_URL}/v1/personality-assessment/luscher-1/status`, () => {
+    return HttpResponse.json({
+      isCompleted: false,
+      completedAt: null,
+    })
+  }),
+
+  // GET /v1/personality-assessment/luscher-2/status - Luscher Test 2 status
+  http.get(`${BASE_URL}/v1/personality-assessment/luscher-2/status`, () => {
+    return HttpResponse.json({
+      isCompleted: false,
+      completedAt: null,
+    })
+  }),
+
+  // GET /v1/personality-assessment/luscher/availability - Luscher test availability
+  http.get(`${BASE_URL}/v1/personality-assessment/luscher/availability`, () => {
+    return HttpResponse.json({
+      available: true,
+      isCompleted: false,
+      isOnCooldown: false,
+      nextAvailableAt: null,
+    })
+  }),
+
+  // POST /v1/personality-assessment/luscher-1 - Save Luscher Test 1
+  http.post(`${BASE_URL}/v1/personality-assessment/luscher-1`, async ({ request }) => {
+    const body = (await request.json()) as any
+
+    return HttpResponse.json({
+      success: true,
+      isComplete: false,
+    })
+  }),
+
+  // POST /v1/personality-assessment/ipip - Save IPIP progress
+  http.post(`${BASE_URL}/v1/personality-assessment/ipip`, async ({ request }) => {
+    const body = (await request.json()) as any
+
+    return HttpResponse.json({
+      success: true,
+      isComplete: false,
+    })
+  }),
+
+  // PUT /v1/personality-assessment/step - Update current step
+  http.put(`${BASE_URL}/v1/personality-assessment/step`, async ({ request }) => {
+    const body = (await request.json()) as any
+
+    return HttpResponse.json({
+      success: true,
+    })
+  }),
+
   // Profile Views handlers (imported from dedicated file)
   ...profileViewsHandlers,
 ]

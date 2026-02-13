@@ -45,7 +45,7 @@ export default function WebhooksPage() {
               organization. Configure endpoints to receive POST requests when jobs are created,
               applications are submitted, and more.
             </Text>
-            <Row pressStyle={{ opacity: 0.7 }} cursor="pointer">
+            <Row pressStyle={{ opacity: 0.7 }}>
               <Text color="$blue10">View Documentation →</Text>
             </Row>
           </Stack>
@@ -95,7 +95,7 @@ export default function WebhooksPage() {
               <EventTypeBadge label="inquiry.created" category="Inquiries" />
               <EventTypeBadge label="background_check.completed" category="Background Checks" />
             </Row>
-            <Row pressStyle={{ opacity: 0.7 }} cursor="pointer">
+            <Row pressStyle={{ opacity: 0.7 }}>
               <Text color="$blue10">View All Event Types →</Text>
             </Row>
           </Card>
@@ -121,7 +121,7 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
      
       pressStyle={{ scale: 0.98 }}
       onPress={onPress}
-      cursor="pointer"
+     
     >
       <Stack gap={16}>
         <Stack gap={8}>
