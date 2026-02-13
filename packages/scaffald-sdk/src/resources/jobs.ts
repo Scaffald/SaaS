@@ -5,7 +5,7 @@ export interface Job {
   title: string
   description: string
   status: 'draft' | 'published' | 'closed' | 'archived'
-  location?: {
+  location?: string | {
     city?: string
     state?: string
     zip_code?: string
@@ -18,6 +18,28 @@ export interface Job {
   updated_at: string
   published_at?: string
   organization_id: string
+  // Pay range fields
+  pay_range_min_cents?: number
+  pay_range_max_cents?: number
+  pay_range_type?: 'hourly' | 'salary' | 'contract' | 'project'
+  // Work arrangement
+  remote_option?: 'on_site' | 'hybrid' | 'remote'
+  // Benefits
+  benefits_summary?: string
+  // Requirements
+  minimum_education_level?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
+  minimum_years_experience?: number
+  require_background_check?: boolean
+  require_drug_test?: boolean
+  require_drivers_license?: boolean
+  security_clearance_required?: boolean
+  travel_percentage?: number
+  // Organization relation (populated in queries)
+  organization?: {
+    id: string
+    name: string
+    logo?: string
+  }
 }
 
 export interface JobListParams {
@@ -71,6 +93,7 @@ export interface ExternalJob {
   company_name?: string | null
   company_logo?: string | null
   job_location?: string | null
+  location?: string | null
   job_type?: string | null
   job_category?: string | null
   description?: string | null
@@ -80,8 +103,32 @@ export interface ExternalJob {
   posted_date?: string | null
   application_url?: string | null
   external_url?: string | null
+  url?: string | null
   featured?: boolean | null
   industries?: Array<{ industry_name: string; confidence_score: number }>
+  // Pay range fields (align with Job interface)
+  pay_range_min_cents?: number | null
+  pay_range_max_cents?: number | null
+  pay_range_type?: 'hourly' | 'salary' | 'contract' | 'project' | null
+  // Work arrangement
+  employment_type?: 'full_time' | 'part_time' | 'contract' | 'temporary' | null
+  remote_option?: 'on_site' | 'hybrid' | 'remote' | null
+  // Benefits
+  benefits_summary?: string | null
+  // Requirements
+  minimum_education_level?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd' | null
+  minimum_years_experience?: number | null
+  require_background_check?: boolean | null
+  require_drug_test?: boolean | null
+  require_drivers_license?: boolean | null
+  security_clearance_required?: boolean | null
+  travel_percentage?: number | null
+  // Organization relation (for consistency with Job)
+  organization?: {
+    id?: string
+    name?: string
+    logo?: string
+  } | null
 }
 
 export interface ExternalJobFilterOptions {
