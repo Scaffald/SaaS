@@ -254,14 +254,24 @@ export default function TasksInbox({
             return (
               <Card
                 key={task.id}
-                pressable
                 padding="md"
-                onPress={() => onTaskClick?.(task)}
                 style={{
                   border: '1px solid var(--color-border)',
                   cursor: 'pointer',
                 }}
               >
+                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
+                <div
+                  onClick={() => onTaskClick?.(task)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onTaskClick?.(task);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
                 <Row alignItems="flex-start" justifyContent="space-between">
                   <Stack style={{ flex: 1 }}>
                     <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
@@ -317,7 +327,7 @@ export default function TasksInbox({
                     </Row>
 
                     {task.document_link && (
-                      <Stack style={{ marginTop: 8 }}>
+                      <div onClick={(e) => e.stopPropagation()} style={{ marginTop: 8 }}>
                         <Button
                           variant="text"
                           size="sm"
@@ -329,7 +339,7 @@ export default function TasksInbox({
                         >
                           View Document
                         </Button>
-                      </Stack>
+                      </div>
                     )}
                   </Stack>
 
@@ -341,7 +351,7 @@ export default function TasksInbox({
                       size="sm"
                     />
 
-                    <Stack style={{ position: 'relative' }}>
+                    <div onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
                       <SearchSelect
                         options={statusOptions}
                         value={task.status}
@@ -353,9 +363,10 @@ export default function TasksInbox({
                         placeholder="Status"
                         style={{ minWidth: 120 }}
                       />
-                    </Stack>
+                    </div>
                   </Stack>
                 </Row>
+                </div>
               </Card>
             );
           })}
