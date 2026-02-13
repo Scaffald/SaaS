@@ -151,7 +151,7 @@ export default function DashboardTeamDetailPage() {
       <Button
         size="md"
         variant="outline"
-        icon={RefreshCw}
+        iconStart={RefreshCw}
         onPress={handleRefresh}
         disabled={isLoading}
       >
@@ -161,7 +161,7 @@ export default function DashboardTeamDetailPage() {
         size="md"
        
         color="$color1"
-        icon={UserPlus}
+        iconStart={UserPlus}
         onPress={() => setIsInviteModalOpen(true)}
       >
         Invite member
@@ -252,7 +252,7 @@ export default function DashboardTeamDetailPage() {
               size="md"
              
               color="$color1"
-              icon={UserPlus}
+              iconStart={UserPlus}
               onPress={() => setIsInviteModalOpen(true)}
             >
               Invite
