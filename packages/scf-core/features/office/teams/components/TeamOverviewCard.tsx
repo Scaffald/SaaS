@@ -149,9 +149,9 @@ function Chip({
   tone?: 'surface' | 'warning'
 }) {
   const { theme } = useThemeContext()
-  const background = tone === 'warning' ? colors.bg[theme].warningSubtle : colors.bg[theme].muted
-  const border = tone === 'warning' ? colors.border[theme].warning : colors.border[theme].default
-  const textColor = tone === 'warning' ? colors.text[theme].warning : colors.text[theme].secondary
+  const background = tone === 'warning' ? theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle : colors.bg[theme].muted
+  const border = tone === 'warning' ? theme === "light" ? colors.yellow[300] : colors.yellow[700] : colors.border[theme].default
+  const textColor = tone === 'warning' ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].secondary
   return (
     <Row
       gap={8}

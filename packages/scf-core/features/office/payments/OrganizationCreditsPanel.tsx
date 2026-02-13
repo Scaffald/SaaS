@@ -119,10 +119,10 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
         borderWidth={1}
       >
         <Row gap={12} align="center">
-          <DollarSign size={32} style={{ color: colors.text[theme].success }} />
+          <DollarSign size={32} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
           <Stack flex={1}>
             <Text style={{ color: colors.text[theme].secondary }}>Current Balance</Text>
-            <Text style={{ color: colors.text[theme].success }}>
+            <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
               {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
             </Text>
           </Stack>
@@ -217,8 +217,8 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                           style={{
                             color:
                               entry.direction === 'credit'
-                                ? colors.text[theme].success
-                                : colors.text[theme].error,
+                                ? theme === "light" ? colors.green[700] : colors.green[300]
+                                : theme === "light" ? colors.error[700] : colors.error[300],
                           }}
                         >
                           {entry.direction === 'credit' ? '+' : '-'}

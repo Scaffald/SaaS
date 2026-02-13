@@ -59,12 +59,12 @@ interface AdminCCPARequest {
 const getStatusColors = (
   theme: 'light' | 'dark'
 ): Record<AdminRequestStatus, { bg: string; text: string }> => ({
-  pending: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
-  processing: { bg: colors.bg[theme].info, text: colors.text[theme].info },
-  completed: { bg: colors.bg[theme].successSubtle, text: colors.text[theme].success },
-  failed: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
+  pending: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  processing: { bg: theme === "light" ? colors.blue[50] : colors.blue[900], text: theme === "light" ? colors.blue[700] : colors.blue[300] },
+  completed: { bg: theme === "light" ? colors.green[50] : colors.green[900]Subtle, text: theme === "light" ? colors.green[700] : colors.green[300] },
+  failed: { bg: theme === "light" ? colors.error[50] : colors.error[900]Subtle, text: theme === "light" ? colors.error[700] : colors.error[300] },
   cancelled: { bg: '$color4', text: colors.text[theme].secondary },
-  appealed: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
+  appealed: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
 })
 
 /**
@@ -72,9 +72,9 @@ const getStatusColors = (
  */
 const getPriorityColors = (theme: 'light' | 'dark'): Record<string, { bg: string; text: string }> => ({
   low: { bg: '$color4', text: colors.text[theme].secondary },
-  medium: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
-  high: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
-  urgent: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
+  medium: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  high: { bg: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle, text: theme === "light" ? colors.yellow[700] : colors.yellow[300] },
+  urgent: { bg: theme === "light" ? colors.error[50] : colors.error[900]Subtle, text: theme === "light" ? colors.error[700] : colors.error[300] },
 })
 
 /**
@@ -140,9 +140,9 @@ function MetricCard({
   const defaultColor = color || colors.text[theme].primary
   const trendColor =
     trend === 'up'
-      ? colors.text[theme].success
+      ? theme === "light" ? colors.green[700] : colors.green[300]
       : trend === 'down'
-        ? colors.text[theme].error
+        ? theme === "light" ? colors.error[700] : colors.error[300]
         : colors.text[theme].secondary
 
   return (
@@ -187,12 +187,12 @@ function RequestRow({
       padding="sm"
       style={{
         backgroundColor: request.is_overdue
-          ? colors.bg[theme].errorSubtle
+          ? theme === "light" ? colors.error[50] : colors.error[900]Subtle
           : colors.bg[theme].subtle,
       }}
       borderRadius={8}
       borderWidth={1}
-      borderColor={request.is_overdue ? colors.border[theme].error : colors.border[theme].default}
+      borderColor={request.is_overdue ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default}
       align="center"
       gap={12}
       flexWrap="wrap"
@@ -234,9 +234,9 @@ function RequestRow({
         <Text
           color={
             request.is_overdue
-              ? colors.text[theme].error
+              ? theme === "light" ? colors.error[700] : colors.error[300]
               : request.days_elapsed > 30
-                ? colors.text[theme].warning
+                ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
                 : colors.text[theme].primary
           }
         >
@@ -388,7 +388,7 @@ export function CCPAAdminDashboard() {
   if (hasError) {
     return (
       <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
-        <Text style={{ color: colors.text[theme].error }}>Error Loading CCPA Dashboard</Text>
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error Loading CCPA Dashboard</Text>
         <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
           {metricsError?.message || requestsError?.message}
         </Text>
@@ -442,19 +442,19 @@ export function CCPAAdminDashboard() {
                 value={metrics?.pending_requests || 0}
                 style={{
                   color: metrics?.pending_requests
-                    ? colors.text[theme].warning
+                    ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
                     : colors.text[theme].primary,
                 }}
               />
               <MetricCard
                 label="Processing"
                 value={metrics?.processing_requests || 0}
-                style={{ color: colors.text[theme].info }}
+                style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}
               />
               <MetricCard
                 label="Completed"
                 value={metrics?.completed_requests || 0}
-                style={{ color: colors.text[theme].success }}
+                style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}
                 trend="up"
               />
               <MetricCard
@@ -463,8 +463,8 @@ export function CCPAAdminDashboard() {
                 style={{
                   color:
                     (metrics?.average_processing_days || 0) > 30
-                      ? colors.text[theme].warning
-                      : colors.text[theme].success,
+                      ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
+                      : theme === "light" ? colors.green[700] : colors.green[300],
                 }}
               />
               <MetricCard
@@ -472,10 +472,10 @@ export function CCPAAdminDashboard() {
                 value={`${((metrics?.compliance_rate || 0) * 100).toFixed(1)}%`}
                 color={
                   (metrics?.compliance_rate || 0) >= 0.95
-                    ? colors.text[theme].success
+                    ? theme === "light" ? colors.green[700] : colors.green[300]
                     : (metrics?.compliance_rate || 0) >= 0.8
-                      ? colors.text[theme].warning
-                      : colors.text[theme].error
+                      ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
+                      : theme === "light" ? colors.error[700] : colors.error[300]
                 }
               />
               <MetricCard
@@ -483,8 +483,8 @@ export function CCPAAdminDashboard() {
                 value={metrics?.overdue_count || 0}
                 style={{
                   color: metrics?.overdue_count
-                    ? colors.text[theme].error
-                    : colors.text[theme].success,
+                    ? theme === "light" ? colors.error[700] : colors.error[300]
+                    : theme === "light" ? colors.green[700] : colors.green[300],
                 }}
               />
             </Row>
@@ -495,14 +495,14 @@ export function CCPAAdminDashboard() {
         {(metrics?.overdue_count || 0) > 0 && (
           <Row
             padding="md"
-            style={{ backgroundColor: colors.bg[theme].errorSubtle }}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
             borderRadius={12}
             borderWidth={1}
-            borderColor={colors.border[theme].error}
+            borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
             gap={8}
             align="center"
           >
-            <Text style={{ color: colors.text[theme].error }}>
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
               ATTENTION: {metrics?.overdue_count} request(s) have exceeded the 45-day CCPA deadline.
               Immediate action required.
             </Text>
@@ -588,7 +588,7 @@ export function CCPAAdminDashboard() {
                 width={8}
                 height={8}
                 borderRadius={4}
-                style={{ backgroundColor: colors.text[theme].info }}
+                style={{ backgroundColor: theme === "light" ? colors.blue[700] : colors.blue[300] }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>10 days</Text> - Acknowledge receipt of request
@@ -599,7 +599,7 @@ export function CCPAAdminDashboard() {
                 width={8}
                 height={8}
                 borderRadius={4}
-                style={{ backgroundColor: colors.text[theme].warning }}
+                style={{ backgroundColor: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>45 days</Text> - Complete request (with possible 45-day extension)
@@ -610,7 +610,7 @@ export function CCPAAdminDashboard() {
                 width={8}
                 height={8}
                 borderRadius={4}
-                style={{ backgroundColor: colors.text[theme].success }}
+                style={{ backgroundColor: theme === "light" ? colors.green[700] : colors.green[300] }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>12 months</Text> - Retain request records
@@ -621,7 +621,7 @@ export function CCPAAdminDashboard() {
                 width={8}
                 height={8}
                 borderRadius={4}
-                style={{ backgroundColor: colors.text[theme].error }}
+                style={{ backgroundColor: theme === "light" ? colors.error[700] : colors.error[300] }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>72 hours</Text> - Notify users of data breaches

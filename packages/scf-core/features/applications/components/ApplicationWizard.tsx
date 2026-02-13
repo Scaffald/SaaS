@@ -218,14 +218,14 @@ export function ApplicationWizard({
         <Stack
           padding="md"
           style={{
-            backgroundColor: colors.bg[theme].error,
-            borderBottomColor: colors.border[theme].error,
+            backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
+            borderBottomColor: theme === "light" ? colors.error[300] : colors.error[700],
           }}
           borderBottomWidth={1}
         >
           <Row gap={8} align="center">
-            <AlertCircle size="lg" style={{ color: colors.text[theme].error }} />
-            <Text style={{ color: colors.text[theme].error }} flex={1}>
+            <AlertCircle size="lg" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} flex={1}>
               {submitError.message || 'An error occurred'}
             </Text>
           </Row>

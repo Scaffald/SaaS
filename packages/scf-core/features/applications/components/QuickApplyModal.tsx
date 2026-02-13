@@ -294,14 +294,14 @@ export function QuickApplyModal({
                 height={80}
                 borderRadius="$12"
                 style={{
-                  backgroundColor: colors.bg[theme].success,
-                  borderColor: colors.border[theme].success,
+                  backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+                  borderColor: theme === "light" ? colors.green[300] : colors.green[700],
                 }}
                 borderWidth={2}
                 align="center"
                 justify="center"
               >
-                <CheckCircle2 size={48} style={{ color: colors.text[theme].success }} />
+                <CheckCircle2 size={48} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
               </Stack>
               <Stack gap={8} align="center">
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
@@ -319,7 +319,7 @@ export function QuickApplyModal({
                 {/* Current Location */}
                 <Stack gap={8}>
                   <Label htmlFor="current_location">
-                    You current location <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    You current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   {mapboxToken ? (
                     <AddressAutocomplete
@@ -335,7 +335,7 @@ export function QuickApplyModal({
                     />
                   ) : (
                     <Stack gap={8}>
-                      <Text style={{ color: colors.text[theme].error }}>
+                      <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                         Location search is unavailable. Please enter your location manually.
                       </Text>
                       <Text style={{ color: colors.text[theme].secondary }}>
@@ -344,7 +344,7 @@ export function QuickApplyModal({
                     </Stack>
                   )}
                   {errors.current_location && (
-                    <Text style={{ color: colors.text[theme].error }}>
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                       {errors.current_location}
                     </Text>
                   )}
@@ -354,7 +354,7 @@ export function QuickApplyModal({
                 <Stack gap={8}>
                   <Label>
                     Are you willing to relocate?{' '}
-                    <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   <Row gap={12}>
                     <Button
@@ -387,7 +387,7 @@ export function QuickApplyModal({
                 {/* Years of Experience */}
                 <Stack gap={8}>
                   <Label htmlFor="years_experience">
-                    Years of experience <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    Years of experience <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   <ResponsiveSelect
                     value={getYearsExperienceValue()}
@@ -402,7 +402,7 @@ export function QuickApplyModal({
                       id: 'years_experience',
                       style: {
                         borderColor: errors.years_experience
-                          ? colors.border[theme].error
+                          ? theme === "light" ? colors.error[300] : colors.error[700]
                           : colors.border[theme].default,
                       },
                     }}
@@ -453,7 +453,7 @@ export function QuickApplyModal({
                 <Stack gap={8}>
                   <Label>
                     Are you authorized to work legally in the US?{' '}
-                    <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   <Row gap={12}>
                     <Button
@@ -484,7 +484,7 @@ export function QuickApplyModal({
                     </Button>
                   </Row>
                   {errors.is_authorized_to_work && (
-                    <Text style={{ color: colors.text[theme].error }}>
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                       {errors.is_authorized_to_work}
                     </Text>
                   )}
@@ -493,7 +493,7 @@ export function QuickApplyModal({
                 {/* Earliest Start Date */}
                 <Stack gap={8}>
                   <Label htmlFor="earliest_start_date">
-                    Earliest start date <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    Earliest start date <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   <ResponsiveSelect
                     value={formData.earliest_start_date || ''}
@@ -508,7 +508,7 @@ export function QuickApplyModal({
                       id: 'earliest_start_date',
                       style: {
                         borderColor: errors.earliest_start_date
-                          ? colors.border[theme].error
+                          ? theme === "light" ? colors.error[300] : colors.error[700]
                           : colors.border[theme].default,
                       },
                     }}

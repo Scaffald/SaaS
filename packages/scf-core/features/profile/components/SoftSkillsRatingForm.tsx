@@ -221,7 +221,7 @@ export const SoftSkillsRatingForm: FC = () => {
   if (error) {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
-        <Text style={{ color: colors.text[theme].error }}>Failed to load assessment</Text>
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Failed to load assessment</Text>
         <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         <Button variant="filled" color="primary" size="xs" onPress={() => void refetch()}>
           Retry

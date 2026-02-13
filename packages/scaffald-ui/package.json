@@ -47,7 +47,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly --declaration",
+    "build": "tsup",
     "build-storybook": "storybook build",
     "check:type": "tsc --noEmit",
     "docs:build": "cd docs-site && pnpm build",

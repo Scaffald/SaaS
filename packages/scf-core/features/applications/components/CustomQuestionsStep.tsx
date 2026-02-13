@@ -236,20 +236,20 @@ export function CustomQuestionsStep({
           padding="md"
           borderRadius={16}
           style={{
-            backgroundColor: colors.bg[theme].error,
-            borderColor: colors.border[theme].error,
+            backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
+            borderColor: theme === "light" ? colors.error[300] : colors.error[700],
           }}
           borderWidth={1}
           gap={8}
         >
-          <Text style={{ color: colors.text[theme].error }}>Please complete the following:</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Please complete the following:</Text>
           <Stack gap={4}>
             {Object.entries(errors)
               .filter(([, error]) => error !== undefined)
               .map(([questionId, error]) => {
                 const question = questions.find((q) => q.id === questionId)
                 return (
-                  <Text key={questionId} style={{ color: colors.text[theme].error }}>
+                  <Text key={questionId} style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     • {question?.question || 'Question'}: {error}
                   </Text>
                 )
@@ -265,7 +265,7 @@ export function CustomQuestionsStep({
             <Label>
               {index + 1}. {question.question}
               {question.required && (
-                <Text style={{ color: colors.text[theme].error }} marginLeft={4}>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} marginLeft={4}>
                   *
                 </Text>
               )}
@@ -288,7 +288,7 @@ export function CustomQuestionsStep({
                   placeholder="Type your answer here..."
                   style={{
                     borderColor: errors[question.id]
-                      ? colors.border[theme].error
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
                       : colors.border[theme].default,
                   }}
                   disabled={isSubmitting}
@@ -299,7 +299,7 @@ export function CustomQuestionsStep({
                     style={{
                       color:
                         getCharacterCount(question.id) > getMaxLength(question)
-                          ? colors.text[theme].error
+                          ? theme === "light" ? colors.error[700] : colors.error[300]
                           : colors.text[theme].secondary,
                     }}
                   >
@@ -327,7 +327,7 @@ export function CustomQuestionsStep({
                   style={{
                     minHeight: 120,
                     borderColor: errors[question.id]
-                      ? colors.border[theme].error
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
                       : colors.border[theme].default,
                   }}
                   disabled={isSubmitting}
@@ -338,7 +338,7 @@ export function CustomQuestionsStep({
                     style={{
                       color:
                         getCharacterCount(question.id) > getMaxLength(question)
-                          ? colors.text[theme].error
+                          ? theme === "light" ? colors.error[700] : colors.error[300]
                           : colors.text[theme].secondary,
                     }}
                   >
@@ -362,13 +362,13 @@ export function CustomQuestionsStep({
                     style={{
                       borderColor:
                         getAnswer(question.id) === option
-                          ? colors.border[theme].info
+                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
                           : errors[question.id]
-                            ? colors.border[theme].error
+                            ? theme === "light" ? colors.error[300] : colors.error[700]
                             : colors.border[theme].default,
                       backgroundColor:
                         getAnswer(question.id) === option
-                          ? colors.bg[theme].info
+                          ? theme === "light" ? colors.blue[50] : colors.blue[900]
                           : colors.bg[theme].default,
                     }}
                     pressStyle={{ scale: 0.98 }}
@@ -386,7 +386,7 @@ export function CustomQuestionsStep({
                       style={{
                         borderColor:
                           getAnswer(question.id) === option
-                            ? colors.border[theme].info
+                            ? theme === "light" ? colors.blue[300] : colors.blue[700]
                             : colors.border[theme].default,
                         backgroundColor: colors.bg[theme].default,
                       }}
@@ -427,12 +427,12 @@ export function CustomQuestionsStep({
                       borderWidth={1}
                       style={{
                         borderColor: isSelected
-                          ? colors.border[theme].info
+                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
                           : errors[question.id]
-                            ? colors.border[theme].error
+                            ? theme === "light" ? colors.error[300] : colors.error[700]
                             : colors.border[theme].default,
                         backgroundColor: isSelected
-                          ? colors.bg[theme].info
+                          ? theme === "light" ? colors.blue[50] : colors.blue[900]
                           : colors.bg[theme].default,
                       }}
                       pressStyle={{ scale: 0.98 }}
@@ -452,7 +452,7 @@ export function CustomQuestionsStep({
                         borderWidth={2}
                         style={{
                           borderColor: isSelected
-                            ? colors.border[theme].info
+                            ? theme === "light" ? colors.blue[300] : colors.blue[700]
                             : colors.border[theme].default,
                           backgroundColor: isSelected
                             ? colors.bg[theme].primary
@@ -491,7 +491,7 @@ export function CustomQuestionsStep({
 
             {/* Error Message */}
             {errors[question.id] && (
-              <Text style={{ color: colors.text[theme].error }}>{errors[question.id]}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors[question.id]}</Text>
             )}
           </Stack>
         ))}

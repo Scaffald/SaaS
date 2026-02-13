@@ -1826,7 +1826,6 @@ export const backgroundChecksRouter = t.router({
         data = result.data
         error = result.error
       } else {
-        // @ts-expect-error - Complex Supabase query builder types cause "excessively deep" TypeScript error
         const result = await query
           .insert(payload)
           .select(

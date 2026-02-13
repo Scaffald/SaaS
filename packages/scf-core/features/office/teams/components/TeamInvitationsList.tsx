@@ -33,9 +33,9 @@ const STATUS_LABELS: Record<InvitationStatus, string> = {
 }
 
 const getStatusColors = (theme: 'light' | 'dark'): Record<InvitationStatus, GetThemeValueForKey<'color'>> => ({
-  pending: colors.text[theme].warning,
-  accepted: colors.text[theme].success,
-  declined: colors.text[theme].error,
+  pending: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+  accepted: theme === "light" ? colors.green[700] : colors.green[300],
+  declined: theme === "light" ? colors.error[700] : colors.error[300],
   expired: colors.text[theme].secondary,
   revoked: colors.text[theme].secondary,
 })
@@ -275,7 +275,7 @@ export function TeamInvitationsList({
                       </Text>
                     ) : null}
                     {lastDeliveryError ? (
-                      <Text style={{ color: colors.text[theme].error }}>
+                      <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                         Last error: {lastDeliveryError}
                       </Text>
                     ) : null}
@@ -308,7 +308,7 @@ export function TeamInvitationsList({
                   <Button
                     size="xs"
                     variant="outline"
-                    style={{ color: colors.text[theme].error }}
+                    style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
                     iconStart={XCircle}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}

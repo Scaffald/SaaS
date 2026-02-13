@@ -115,7 +115,8 @@ export const ProfileCard = memo(
       const profileBadgeConfigs: BadgeConfig[] = badges.slice(0, 3).map((badge) => ({
         key: badge.id,
         label: badge.label,
-        bg: badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
+        backgroundColor:
+          badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
         color:
           badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
         icon:
@@ -131,7 +132,7 @@ export const ProfileCard = memo(
         profileBadgeConfigs.push({
           key: 'overflow',
           label: `+${badges.length - 3} more`,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: isSelected ? '$color1' : '$color10',
         })
       }
@@ -141,13 +142,13 @@ export const ProfileCard = memo(
         ...certifications.slice(0, 2).map((cert, idx) => ({
           key: `cert-${idx}`,
           label: cert,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: '$color1',
         })),
         ...skills.slice(0, 3).map((skill, idx) => ({
           key: `skill-${idx}`,
           label: skill,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: '$color1',
         })),
       ]
@@ -158,7 +159,7 @@ export const ProfileCard = memo(
         skillBadges.push({
           key: 'skills-overflow',
           label: `+${totalSkillsAndCerts - displayedSkillsAndCerts} more`,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: '$color11',
         })
       }
@@ -178,7 +179,7 @@ export const ProfileCard = memo(
         >
           {/* Header with score badge */}
           <Row justify="space-between" align="center">
-            <CardHeader title={name} isSelected={isSelected} iconStart={avatar} />
+            <CardHeader title={name} action={avatar} />
             {score && (
               <Row
                 align="center"
@@ -210,7 +211,7 @@ export const ProfileCard = memo(
 
           {/* Profile badges (certifications, achievements, etc.) */}
           {profileBadgeConfigs.length > 0 && (
-            <Row gap={4} flexWrap="wrap">
+            <Row gap={4} wrap>
               {profileBadgeConfigs.map((badgeConfig) => (
                 <Row
                   key={badgeConfig.key}
@@ -219,11 +220,7 @@ export const ProfileCard = memo(
                   paddingHorizontal={4}
                   paddingVertical={2}
                   borderRadius={32}
-                  backgroundColor={
-                    badgeConfig.bg as typeof badgeConfig.bg extends string
-                      ? typeof badgeConfig.bg
-                      : never
-                  }
+                  backgroundColor={badgeConfig.backgroundColor}
                 >
                   {badgeConfig.icon}
                   <Text
@@ -241,7 +238,7 @@ export const ProfileCard = memo(
           )}
 
           {/* Skills and certifications */}
-          {skillBadges.length > 0 && <CardBadges badges={skillBadges} isSelected={isSelected} />}
+          {skillBadges.length > 0 && <CardBadges badges={skillBadges} />}
         </SelectableCard>
       )
     }

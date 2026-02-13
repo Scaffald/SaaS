@@ -32,7 +32,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log to console in development
     if (__DEV__) {
-      logger.error('ErrorBoundary caught error', error, errorInfo)
+      logger.error('ErrorBoundary caught error', error, {
+        componentStack: errorInfo.componentStack,
+        digest: errorInfo.digest,
+      })
     }
 
     // Set error context for Sentry
@@ -41,10 +44,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     // Capture exception in Sentry with component stack
-    captureException(error, {
+    const context: Record<string, unknown> = {
       componentStack: errorInfo.componentStack,
       ...this.props.context,
-    })
+    }
+    captureException(error, context)
 
     // Call custom error handler if provided
     this.props.onError?.(error, errorInfo)

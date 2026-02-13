@@ -32,24 +32,24 @@ const getStatusColors = (status: string, theme: 'light' | 'dark') => {
       border: colors.border[theme].subtle,
     },
     open: {
-      backgroundColor: colors.bg[theme].successSubtle,
-      text: colors.text[theme].success,
-      border: colors.border[theme].success,
+      backgroundColor: theme === "light" ? colors.green[50] : colors.green[900]Subtle,
+      text: theme === "light" ? colors.green[700] : colors.green[300],
+      border: theme === "light" ? colors.green[300] : colors.green[700],
     },
     paused: {
-      backgroundColor: colors.bg[theme].warningSubtle,
-      text: colors.text[theme].warning,
-      border: colors.border[theme].warning,
+      backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle,
+      text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+      border: theme === "light" ? colors.yellow[300] : colors.yellow[700],
     },
     closed: {
-      backgroundColor: colors.bg[theme].errorSubtle,
-      text: colors.text[theme].error,
-      border: colors.border[theme].error,
+      backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle,
+      text: theme === "light" ? colors.error[700] : colors.error[300],
+      border: theme === "light" ? colors.error[300] : colors.error[700],
     },
     reviewing: {
-      backgroundColor: colors.bg[theme].info,
-      text: colors.text[theme].info,
-      border: colors.border[theme].info,
+      backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+      text: theme === "light" ? colors.blue[700] : colors.blue[300],
+      border: theme === "light" ? colors.blue[300] : colors.blue[700],
     },
   }
   return STATUS_COLORS[status] || STATUS_COLORS.draft
@@ -96,11 +96,11 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           <Row align="center" gap={8} flexWrap="wrap">
             <Briefcase
               size={18}
-              color={isSelected ? colors.text[theme].warning : colors.text[theme].tertiary}
+              color={isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].tertiary}
             />
             <Text
               style={{
-                color: isSelected ? colors.text[theme].warning : colors.text[theme].primary,
+                color: isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].primary,
               }}
               flex={1}
             >
@@ -185,8 +185,8 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Pay Range */}
       {payRange && (
         <Row align="center" gap={6}>
-          <DollarSign size="md" style={{ color: colors.text[theme].success }} />
-          <Text style={{ color: colors.text[theme].success }}>{payRange}</Text>
+          <DollarSign size="md" style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+          <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{payRange}</Text>
         </Row>
       )}
 

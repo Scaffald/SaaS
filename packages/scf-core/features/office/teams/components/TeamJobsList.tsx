@@ -91,7 +91,7 @@ export function TeamJobsList({
           gap={12}
         >
           <Row gap={8} align="center">
-            <AlertTriangle size={18} style={{ color: colors.text[theme].warning }} />
+            <AlertTriangle size={18} style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }} />
             <Text>Unable to load jobs</Text>
           </Row>
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -205,9 +205,9 @@ function StatusChip({ status }: { status: string }) {
   const { theme } = useThemeContext()
   const normalized = status.replace(/_/g, ' ')
   const isOpen = status === 'open'
-  const background = isOpen ? colors.bg[theme].successSubtle : colors.bg[theme].muted
-  const border = isOpen ? colors.border[theme].success : colors.border[theme].default
-  const textColor = isOpen ? colors.text[theme].success : colors.text[theme].secondary
+  const background = isOpen ? theme === "light" ? colors.green[50] : colors.green[900]Subtle : colors.bg[theme].muted
+  const border = isOpen ? theme === "light" ? colors.green[300] : colors.green[700] : colors.border[theme].default
+  const textColor = isOpen ? theme === "light" ? colors.green[700] : colors.green[300] : colors.text[theme].secondary
 
   return (
     <Row
@@ -228,8 +228,8 @@ function StatusChip({ status }: { status: string }) {
 
 function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
   const { theme } = useThemeContext()
-  const background = isPrimary ? colors.bg[theme].info : colors.bg[theme].muted
-  const border = isPrimary ? colors.border[theme].info : colors.border[theme].default
+  const background = isPrimary ? theme === "light" ? colors.blue[50] : colors.blue[900] : colors.bg[theme].muted
+  const border = isPrimary ? theme === "light" ? colors.blue[300] : colors.blue[700] : colors.border[theme].default
   const textColor = isPrimary ? '$blue11' : colors.text[theme].secondary
 
   return (

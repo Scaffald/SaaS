@@ -404,11 +404,11 @@ export function OrganizationBackgroundCheckRequestForm() {
 
           {requestError && (
             <Stack
-              style={{ backgroundColor: colors.bg[theme].error }}
+              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
               padding="sm"
               borderRadius={16}
             >
-              <Text style={{ color: colors.text[theme].error }}>{requestError}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{requestError}</Text>
             </Stack>
           )}
 

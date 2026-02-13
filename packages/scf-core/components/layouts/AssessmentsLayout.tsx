@@ -23,7 +23,11 @@ export const AssessmentsLayout = ({
   return (
     <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
       <Stack gap={12} paddingTop="sm" paddingBottom="lg">
-        {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop={12} />}
+        {showTabs && (
+          <Stack marginHorizontal="$7" marginTop={12}>
+            <AssessmentsTabs />
+          </Stack>
+        )}
 
         <Row gap={12} paddingHorizontal="sm" paddingTop="sm">
           {hasLeftContent && <Stack width="100%">{leftContent}</Stack>}

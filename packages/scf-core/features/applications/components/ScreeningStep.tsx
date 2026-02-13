@@ -125,7 +125,7 @@ export function ScreeningStep({
       {/* Current Location */}
       <Stack gap={8}>
         <Label htmlFor="current_location">
-          Your current location <Text style={{ color: colors.text[theme].error }}>*</Text>
+          Your current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         {mapboxToken ? (
           <AddressAutocomplete
@@ -162,21 +162,21 @@ export function ScreeningStep({
             }}
             style={{
               borderColor: errors.current_location
-                ? colors.border[theme].error
+                ? theme === "light" ? colors.error[300] : colors.error[700]
                 : colors.border[theme].default,
             }}
             disabled={isSubmitting}
           />
         )}
         {errors.current_location && (
-          <Text style={{ color: colors.text[theme].error }}>{errors.current_location}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.current_location}</Text>
         )}
       </Stack>
 
       {/* Willing to Relocate */}
       <Stack gap={8}>
         <Label>
-          Are you willing to relocate? <Text style={{ color: colors.text[theme].error }}>*</Text>
+          Are you willing to relocate? <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <Row gap={12}>
           <Button
@@ -209,7 +209,7 @@ export function ScreeningStep({
       {/* Years of Experience */}
       <Stack gap={8}>
         <Label htmlFor="years_experience">
-          Years of experience <Text style={{ color: colors.text[theme].error }}>*</Text>
+          Years of experience <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <ResponsiveSelect
           value={getYearsExperienceValue()}
@@ -224,13 +224,13 @@ export function ScreeningStep({
             id: 'years_experience',
             style: {
               borderColor: errors.years_experience
-                ? colors.border[theme].error
+                ? theme === "light" ? colors.error[300] : colors.error[700]
                 : colors.border[theme].default,
             },
           }}
         />
         {errors.years_experience && (
-          <Text style={{ color: colors.text[theme].error }}>{errors.years_experience}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.years_experience}</Text>
         )}
         <Text style={{ color: colors.text[theme].secondary }}>
           Include all relevant work experience, including internships and part-time roles
@@ -277,7 +277,7 @@ export function ScreeningStep({
       <Stack gap={8}>
         <Label>
           Are you authorized to work legally in the US?{' '}
-          <Text style={{ color: colors.text[theme].error }}>*</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <Row gap={12}>
           <Button
@@ -312,14 +312,14 @@ export function ScreeningStep({
           </Button>
         </Row>
         {errors.is_authorized_to_work && (
-          <Text style={{ color: colors.text[theme].error }}>{errors.is_authorized_to_work}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.is_authorized_to_work}</Text>
         )}
       </Stack>
 
       {/* Earliest Start Date */}
       <Stack gap={8}>
         <Label htmlFor="earliest_start_date">
-          Earliest start date <Text style={{ color: colors.text[theme].error }}>*</Text>
+          Earliest start date <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <ResponsiveSelect
           value={answers.earliest_start_date || ''}

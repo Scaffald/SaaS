@@ -298,7 +298,7 @@ export function OfficeOrganizationsList() {
                 autoFocus
               />
               {rejectError ? (
-                <Text style={{ color: colors.text[theme].error }}>{rejectError}</Text>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{rejectError}</Text>
               ) : null}
             </Stack>
             <Row gap={12} justify="flex-end">
@@ -361,13 +361,13 @@ export function OfficeOrganizationsList() {
                 </Stack>
                 <Stack gap={4}>
                   <Text style={{ color: colors.text[theme].secondary }}>Approved</Text>
-                  <Text style={{ color: colors.text[theme].success }}>
+                  <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                     {moderationCounts.approved}
                   </Text>
                 </Stack>
                 <Stack gap={4}>
                   <Text style={{ color: colors.text[theme].secondary }}>Rejected</Text>
-                  <Text style={{ color: colors.text[theme].error }}>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     {moderationCounts.rejected}
                   </Text>
                 </Stack>
@@ -394,7 +394,7 @@ export function OfficeOrganizationsList() {
                           Vanity URL: {request.slug}
                         </Text>
                         {request.website ? (
-                          <Text style={{ color: colors.text[theme].info }}>{request.website}</Text>
+                          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{request.website}</Text>
                         ) : null}
                         <Text style={{ color: colors.text[theme].secondary }}>
                           Submitted {new Date(request.created_at).toLocaleString()}

@@ -44,17 +44,17 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
       </Stack>
 
       <Stack gap={8} padding="sm">
-        <Text style={{ color: colors.text[theme].info }}>Score Guidelines</Text>
-        <Text style={{ color: colors.text[theme].info }}>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Score Guidelines</Text>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
           • <Text>0-25:</Text> Entry level, minimal requirements
         </Text>
-        <Text style={{ color: colors.text[theme].info }}>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
           • <Text>26-50:</Text> Some experience required
         </Text>
-        <Text style={{ color: colors.text[theme].info }}>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
           • <Text>51-75:</Text> Experienced candidates preferred
         </Text>
-        <Text style={{ color: colors.text[theme].info }}>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
           • <Text>76-100:</Text> Highly qualified candidates only
         </Text>
       </Stack>

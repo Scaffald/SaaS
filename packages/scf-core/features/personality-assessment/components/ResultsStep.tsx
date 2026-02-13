@@ -111,14 +111,14 @@ export function ResultsStep({
           gap={16}
           padding="xl"
           style={{
-            backgroundColor: colors.bg[theme].info,
+            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
             borderRadius: 16,
             borderWidth: 1,
-            borderColor: colors.border[theme].info,
+            borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
           }}
         >
-          <Text style={{ color: colors.text[theme].info }}>Generate Your Personality Report</Text>
-          <Text style={{ color: colors.text[theme].info }}>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Generate Your Personality Report</Text>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             Based on your color test results, we'll generate a personalized personality report.
           </Text>
           <Button
@@ -167,9 +167,9 @@ export function ResultsStep({
                         style={{
                           color:
                             score.result === 'high'
-                              ? colors.text[theme].success
+                              ? theme === "light" ? colors.green[700] : colors.green[300]
                               : score.result === 'low'
-                                ? colors.text[theme].error
+                                ? theme === "light" ? colors.error[700] : colors.error[300]
                                 : colors.text[theme].tertiary,
                         }}
                       >

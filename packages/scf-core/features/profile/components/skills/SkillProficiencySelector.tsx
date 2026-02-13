@@ -76,10 +76,10 @@ export function SkillProficiencySelector({
           <Card.Header>
             <Row justify="space-between" align="center">
               <Stack>
-                <Text style={{ color: colors.text[theme].success }}>{currentLevel?.label}</Text>
+                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{currentLevel?.label}</Text>
                 <Text style={{ color: colors.text[theme].secondary }}>{currentLevel?.description}</Text>
               </Stack>
-              <Text style={{ color: colors.text[theme].success }}>{proficiency}</Text>
+              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{proficiency}</Text>
             </Row>
           </Card.Header>
         </Card>

@@ -2,6 +2,8 @@ import {
   Button,
   H2,
   Input,
+  Spinner,
+  Table,
   TableActionBar,
   type TableActionBarProps,
   TableAddRecordModal,
@@ -12,8 +14,7 @@ import {
   Stack,
   type BreadcrumbItemData,
 } from '@scaffald/ui'
-// TODO: DataTable is deprecated - migrate to @scaffald/ui Table API
-// import { DataTable } from '@scf/core/components/ui/DataTable'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import { Plus } from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
@@ -79,20 +80,20 @@ export function OfficePageLayout<TData>({
   onSearchChange,
   createButtonLabel,
   onCreateClick,
-  columns: _columns,
-  data: _data,
-  isLoading: _isLoading = false,
-  onRowView: _onRowView,
-  onRowEdit: _onRowEdit,
+  columns,
+  data,
+  isLoading = false,
+  onRowView,
+  onRowEdit,
   onRowDelete: _onRowDelete,
   onRowDuplicate: _onRowDuplicate,
   getItemName: _getItemName,
   itemType: _itemType = 'item',
-  pageSize: _pageSize = 50,
-  emptyMessage: _emptyMessage = 'No data found',
+  pageSize = 50,
+  emptyMessage = 'No data found',
   hideCreateButton = false,
   actionBarConfig,
-  columnVisibility: _columnVisibility,
+  columnVisibility,
   onColumnVisibilityChange: _onColumnVisibilityChange,
   hideHeader = false,
   wrapWithOfficeLayout = false,
@@ -134,23 +135,30 @@ export function OfficePageLayout<TData>({
 
       {children}
 
-      {/* TODO: DataTable is deprecated - migrate to @scaffald/ui Table API
-      <DataTable
-        columns={columns}
-        data={data}
-        isLoading={isLoading}
-        onRowView={onRowView}
-        onRowEdit={onRowEdit}
-        onRowDelete={onRowDelete}
-        onRowDuplicate={onRowDuplicate}
-        getItemName={getItemName}
-        itemType={itemType}
+      <Table
+        columns={columnsFromTanStack(columns)}
+        data={data as Array<Record<string, unknown> & { id?: string }>}
+        loading={isLoading}
+        renderLoading={() => (
+          <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+            <Spinner size="lg" />
+            <Stack>Loading…</Stack>
+          </Stack>
+        )}
         pageSize={pageSize}
         emptyMessage={emptyMessage}
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={onColumnVisibilityChange}
+        columnVisibility={
+          columnVisibility as Record<string, boolean> | undefined
+        }
+        onRowPress={
+          onRowView || onRowEdit || onRowDelete || onRowDuplicate
+            ? (row) => {
+                // Row click: for now just call onRowView if present; RowActionOverlay integration is app-specific
+                onRowView?.(row as TData)
+              }
+            : undefined
+        }
       />
-      */}
 
       {afterContent}
     </Stack>

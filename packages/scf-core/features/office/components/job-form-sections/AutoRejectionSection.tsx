@@ -118,8 +118,8 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           </Row>
 
           <Stack gap={8} padding="sm">
-            <Text style={{ color: colors.text[theme].warning }}>⚠️ Important</Text>
-            <Text style={{ color: colors.text[theme].warning }}>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>⚠️ Important</Text>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This
               action cannot be undone automatically. Review your criteria carefully.
             </Text>

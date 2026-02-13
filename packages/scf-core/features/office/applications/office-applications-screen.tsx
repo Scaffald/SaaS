@@ -189,7 +189,7 @@ export const OfficeApplicationsScreen = () => {
   if (isError) {
     return (
       <Stack flex={1} align="center" justify="center" padding="md">
-        <Text style={{ color: colors.text[theme].error }}>Error Loading Applications</Text>
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error Loading Applications</Text>
         <Stack align="center">
           <Text style={{ color: colors.text[theme].secondary }} marginTop={8}>
             {error?.message || 'Failed to load applications. Please try again.'}

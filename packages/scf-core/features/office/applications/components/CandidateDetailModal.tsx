@@ -168,16 +168,16 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
   const scoreColor =
     application.score >= 80
-      ? colors.text[theme].success
+      ? theme === "light" ? colors.green[700] : colors.green[300]
       : application.score >= 60
-        ? colors.text[theme].info
-        : colors.text[theme].error
+        ? theme === "light" ? colors.blue[700] : colors.blue[300]
+        : theme === "light" ? colors.error[700] : colors.error[300]
   const scoreBg =
     application.score >= 80
-      ? colors.bg[theme].successSubtle
+      ? theme === "light" ? colors.green[50] : colors.green[900]Subtle
       : application.score >= 60
-        ? colors.bg[theme].info
-        : colors.bg[theme].errorSubtle
+        ? theme === "light" ? colors.blue[50] : colors.blue[900]
+        : theme === "light" ? colors.error[50] : colors.error[900]Subtle
 
   const inquiryFormValues = useMemo(() => {
     if (!inquiryData?.inquiry) {

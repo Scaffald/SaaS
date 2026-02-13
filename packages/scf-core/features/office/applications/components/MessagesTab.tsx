@@ -83,9 +83,9 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   if (error) {
     return (
       <Stack gap={12} padding="md">
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].errorSubtle }}>
-          <Text style={{ color: colors.text[theme].error }}>Error loading messages</Text>
-          <Text style={{ color: colors.text[theme].error }} marginTop={8}>
+        <Card padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading messages</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} marginTop={8}>
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
@@ -110,7 +110,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
               padding="md"
               style={{
                 backgroundColor:
-                  message.sender === 'recruiter' ? colors.bg[theme].info : colors.bg[theme].subtle,
+                  message.sender === 'recruiter' ? theme === "light" ? colors.blue[50] : colors.blue[900] : colors.bg[theme].subtle,
               }}
               alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
@@ -131,7 +131,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
               {!message.isRead && message.sender === 'candidate' && (
                 <Stack marginTop={8}>
-                  <Text style={{ color: colors.text[theme].error }}>Unread</Text>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Unread</Text>
                 </Stack>
               )}
             </Card>

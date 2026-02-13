@@ -44,12 +44,12 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
 
 const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> => ({
   new: colors.bg[theme].primary,
-  screen: colors.bg[theme].warning,
+  screen: theme === "light" ? colors.yellow[50] : colors.yellow[900],
   inquired: '$purple9',
-  interview: colors.bg[theme].error,
-  offer: colors.bg[theme].success,
-  hired: colors.text[theme].success,
-  rejected: colors.bg[theme].error,
+  interview: theme === "light" ? colors.error[50] : colors.error[900],
+  offer: theme === "light" ? colors.green[50] : colors.green[900],
+  hired: theme === "light" ? colors.green[700] : colors.green[300],
+  rejected: theme === "light" ? colors.error[50] : colors.error[900],
 })
 
 interface ApplicationsKanbanBoardProps {
@@ -220,7 +220,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         <Row
           gap={12}
           padding="sm"
-          style={{ backgroundColor: colors.bg[theme].info }}
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
           align="center"
           justify="space-between"
           borderBottomWidth={1}

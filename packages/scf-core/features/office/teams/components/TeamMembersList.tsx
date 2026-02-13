@@ -205,7 +205,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       ) : hasMembers ? (
         <Stack gap={12}>
           {workloadErrorMessage ? (
-            <Text style={{ color: colors.text[theme].error }}>
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
               Unable to load workload snapshots: {workloadErrorMessage}
             </Text>
           ) : null}
@@ -295,7 +295,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     ) : null}
                     <Button
                       variant="outline"
-                      style={{ color: colors.text[theme].error }}
+                      style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
                       iconStart={UserMinus}
                       onPress={() =>
                         setMemberToRemove({
@@ -329,7 +329,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       Pending: {workload.pendingAssignments}
                     </Text>
                     {workload.overdueAssignments > 0 ? (
-                      <Text style={{ color: colors.text[theme].error }}>
+                      <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                         Overdue: {workload.overdueAssignments}
                       </Text>
                     ) : null}
@@ -366,7 +366,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       {viewerMembership ? (
         <Button
           variant="outline"
-          style={{ color: colors.text[theme].error }}
+          style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
           iconStart={LogOut}
           size="sm"
           disabled={selfRemoveMutation.isPending}
@@ -440,7 +440,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               <AlertDialog.Action asChild>
                 <Button
                   style={{
-                    backgroundColor: colors.bg[theme].error,
+                    backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
                     color: colors.text[theme].secondary,
                   }}
                   iconStart={LogOut}

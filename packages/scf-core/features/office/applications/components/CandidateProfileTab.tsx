@@ -41,7 +41,7 @@ export const CandidateProfileTab = ({
         <Text marginBottom={12}>Contact Information</Text>
         {isContactLocked ? (
           <Stack gap={8}>
-            <Text style={{ color: colors.text[theme].warning }}>Contact details locked</Text>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Contact details locked</Text>
             <Text style={{ color: colors.text[theme].secondary }}>{lockedMessage}</Text>
           </Stack>
         ) : (
@@ -73,11 +73,11 @@ export const CandidateProfileTab = ({
                 style={{
                   backgroundColor:
                     skill.proficiency === 'expert'
-                      ? colors.bg[theme].successSubtle
+                      ? theme === "light" ? colors.green[50] : colors.green[900]Subtle
                       : skill.proficiency === 'advanced'
-                        ? colors.bg[theme].info
+                        ? theme === "light" ? colors.blue[50] : colors.blue[900]
                         : skill.proficiency === 'intermediate'
-                          ? colors.bg[theme].warningSubtle
+                          ? theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle
                           : colors.bg[theme].muted,
                 }}
                 paddingHorizontal={12}
@@ -88,11 +88,11 @@ export const CandidateProfileTab = ({
                   style={{
                     color:
                       skill.proficiency === 'expert'
-                        ? colors.text[theme].success
+                        ? theme === "light" ? colors.green[700] : colors.green[300]
                         : skill.proficiency === 'advanced'
-                          ? colors.text[theme].info
+                          ? theme === "light" ? colors.blue[700] : colors.blue[300]
                           : skill.proficiency === 'intermediate'
-                            ? colors.text[theme].warning
+                            ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
                             : colors.text[theme].tertiary,
                   }}
                   textTransform="capitalize"

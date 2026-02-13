@@ -337,4 +337,32 @@ export interface TableProps {
    * Custom footer style
    */
   footerStyle?: ViewStyle
+
+  /**
+   * Callback when a row is pressed
+   */
+  onRowPress?: (row: TableRowData, rowIndex: number) => void
+
+  /**
+   * Show pressable cursor/hover on rows when onRowPress is provided
+   * @default true when onRowPress is set
+   */
+  rowPressable?: boolean
+
+  /**
+   * Column visibility - hide columns by id
+   * Keys are column ids, values are visibility (true = visible)
+   */
+  columnVisibility?: Record<string, boolean>
+
+  /**
+   * Client-side pagination: number of rows per page
+   * When set, table slices data and shows built-in pagination
+   */
+  pageSize?: number
+
+  /**
+   * Get unique row ID (default: row.id ?? String(index))
+   */
+  getRowId?: (row: TableRowData, index: number) => string
 }

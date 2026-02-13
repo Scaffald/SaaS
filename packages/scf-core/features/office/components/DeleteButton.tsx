@@ -97,7 +97,7 @@ export function DeleteButton({
             </Dialog.Description>
 
             <Stack gap={8}>
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 This action cannot be undone. This will permanently delete the {itemType} and all
                 associated data.
               </Text>

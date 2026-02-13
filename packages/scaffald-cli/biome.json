@@ -1,12 +1,11 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
+  "files": { "ignore": ["dist/**", "node_modules/**"] },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-      "suspicious": {
-        "noExplicitAny": "warn"
-      }
+      "suspicious": { "noExplicitAny": "warn" }
     }
   }
 }

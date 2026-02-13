@@ -191,9 +191,9 @@ export function OrganizationLocationsInput({
                   borderColor={colors.border[theme].default}
                 >
                   <Button.Icon>
-                    <X size="md" style={{ color: colors.text[theme].error }} />
+                    <X size="md" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
                   </Button.Icon>
-                  <Button.Text style={{ color: colors.text[theme].error }}>
+                  <Button.Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     Remove Location
                   </Button.Text>
                 </Button>
@@ -244,7 +244,7 @@ export function OrganizationLocationsInput({
       )}
 
       {/* Error Message */}
-      {errors && <Text style={{ color: colors.text[theme].error }}>{errors}</Text>}
+      {errors && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors}</Text>}
     </Stack>
   )
 }

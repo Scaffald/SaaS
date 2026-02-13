@@ -105,7 +105,7 @@ export function OfficeCMSList() {
                       <Row gap={8} align="center">
                         <Text>{slide.title}</Text>
                         {!slide.is_active && (
-                          <Text style={{ color: colors.text[theme].error }}>(Inactive)</Text>
+                          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Inactive)</Text>
                         )}
                       </Row>
                       <Text opacity={0.7}>{slide.description}</Text>

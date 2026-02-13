@@ -170,7 +170,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               )}
             />
             {errors.logDate?.message && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.logDate.message}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.logDate.message}</Text>
             )}
           </Stack>
 
@@ -196,7 +196,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             <Row gap={8} align="center">
               <Text>Total Hours: {totalHours.toFixed(2)}</Text>
               {overlapDetected && (
-                <Text style={{ color: colors.text[theme].error }}>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                   Overlapping time entries detected.
                 </Text>
               )}
@@ -218,7 +218,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               )}
             />
             {errors.workDescription?.message && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.workDescription.message}
               </Text>
             )}
@@ -276,7 +276,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             )}
 
             {skillsQuery.error && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 Unable to load skills at this time.
               </Text>
             )}
@@ -315,7 +315,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 {location.isLoading ? 'Capturing…' : 'Capture Location'}
               </Button>
               {location.error && (
-                <Text style={{ color: colors.text[theme].error }}>{location.error}</Text>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{location.error}</Text>
               )}
             </Row>
 
@@ -352,7 +352,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               <Text style={{ color: colors.text[theme].secondary }}>Saving draft…</Text>
             )}
             {autoSaveStatus.state === 'saved' && (
-              <Text style={{ color: colors.text[theme].success }}>
+              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                 {autoSaveStatus.message ?? 'Draft saved'}{' '}
                 {autoSaveStatus.savedAt
                   ? new Date(autoSaveStatus.savedAt).toLocaleTimeString()
@@ -360,18 +360,18 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               </Text>
             )}
             {autoSaveStatus.state === 'error' && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {autoSaveStatus.message ?? 'Auto-save encountered an error.'}
               </Text>
             )}
             {autoSaveStatus.state === 'invalid' && (
-              <Text style={{ color: colors.text[theme].warning }}>
+              <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
                 {autoSaveStatus.message ??
                   'Form is incomplete. Fill in required fields to auto-save.'}
               </Text>
             )}
             {pendingOfflineDraft && (
-              <Text style={{ color: colors.text[theme].warning }}>
+              <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
                 Offline draft queued. It will sync automatically when you are online.
               </Text>
             )}

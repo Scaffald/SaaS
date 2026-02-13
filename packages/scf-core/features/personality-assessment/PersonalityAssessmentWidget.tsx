@@ -79,7 +79,7 @@ export function PersonalityAssessmentWidget() {
               <Text style={{ color: colors.text[theme].secondary }}>
                 {getStepLabel(currentStep)}
               </Text>
-              <Text style={{ color: colors.text[theme].info }}>{completionScore}%</Text>
+              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{completionScore}%</Text>
             </Row>
             <Progress value={completionScore} max={100}>
               <Progress.Indicator animation="bouncy" />

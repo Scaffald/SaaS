@@ -50,7 +50,11 @@ export const ProfileLayout = ({
         )}
 
         {/* Tab Navigation - positioned at top */}
-        {showTabs && <ProfileTabs marginHorizontal="$7" marginTop={12} />}
+        {showTabs && (
+          <Stack marginHorizontal="$7" marginTop={12}>
+            <ProfileTabs />
+          </Stack>
+        )}
 
         {/* Content Area - Responsive two-column layout */}
         <Row gap={12} paddingHorizontal="sm" paddingTop="sm">

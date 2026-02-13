@@ -95,7 +95,7 @@ export const DrawerLink = ({
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}
-            style={{ backgroundColor: colors.bg[theme].error }}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             minWidth={20}
             align="center"
           >

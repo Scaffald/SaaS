@@ -1,12 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Card, Spinner, Table, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type ViolationReportsOutput =
@@ -32,15 +32,15 @@ const formatStatus = (status: string): string => {
 const getStatusColor = (status: string, theme: 'light' | 'dark') => {
   switch (status) {
     case 'pending':
-      return colors.text[theme].warning
+      return theme === "light" ? colors.yellow[700] : colors.yellow[300]
     case 'under_review':
-      return colors.text[theme].info
+      return theme === "light" ? colors.blue[700] : colors.blue[300]
     case 'confirmed':
-      return colors.text[theme].error as const
+      return theme === "light" ? colors.error[700] : colors.error[300] as const
     case 'dismissed':
       return colors.text[theme].secondary as const
     case 'resolved':
-      return colors.text[theme].success as const
+      return theme === "light" ? colors.green[700] : colors.green[300] as const
     default:
       return colors.text[theme].secondary
   }
@@ -58,7 +58,7 @@ export function OfficeViolationReports() {
     },
   })
 
-  const reportsColumns = useMemo(() => {
+  const reportsColumnDefs = useMemo(() => {
     const defs = [
       columnHelper.accessor('createdAt', {
         header: 'Date',
@@ -122,6 +122,11 @@ export function OfficeViolationReports() {
     return defs as ColumnDef<ViolationReport, unknown>[]
   }, [updateMutation, theme])
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<ViolationReport>(reportsColumnDefs),
+    [reportsColumnDefs]
+  )
+
   return (
     <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
@@ -154,10 +159,16 @@ export function OfficeViolationReports() {
           style={{ backgroundColor: colors.bg[theme].subtle }}
           padding="md"
         >
-          <DataTable
-            columns={reportsColumns}
+          <Table
+            columns={tableColumns}
             data={reportsQuery.data?.items ?? []}
-            isLoading={reportsQuery.isRefetching}
+            loading={reportsQuery.isRefetching}
+            renderLoading={() => (
+              <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+                <Spinner size="lg" />
+                <Text style={{ color: colors.text[theme].secondary }}>Loading…</Text>
+              </Stack>
+            )}
             pageSize={25}
             emptyMessage="No violation reports found."
           />

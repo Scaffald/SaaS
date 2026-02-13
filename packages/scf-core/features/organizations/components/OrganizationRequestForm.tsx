@@ -109,7 +109,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.name ? (
-          <Text style={{ color: colors.text[theme].error }}>{formState.errors.name.message}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{formState.errors.name.message}</Text>
         ) : null}
       </Stack>
 
@@ -132,7 +132,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.slug ? (
-          <Text style={{ color: colors.text[theme].error }}>{formState.errors.slug.message}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{formState.errors.slug.message}</Text>
         ) : null}
       </Stack>
 
@@ -158,7 +158,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.website ? (
-          <Text style={{ color: colors.text[theme].error }}>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
             {formState.errors.website.message}
           </Text>
         ) : null}
@@ -182,7 +182,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.notes ? (
-          <Text style={{ color: colors.text[theme].error }}>{formState.errors.notes.message}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{formState.errors.notes.message}</Text>
         ) : null}
       </Stack>
 
@@ -199,8 +199,8 @@ export function OrganizationRequestForm({
       {submissionSucceeded ? (
         <Card bordered theme="success" padding="md" gap={12}>
           <Row gap={12} align="center">
-            <CheckCircle2 size="lg" style={{ color: colors.text[theme].success }} />
-            <Text style={{ color: colors.text[theme].success }}>
+            <CheckCircle2 size="lg" style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+            <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
               Request submitted successfully
             </Text>
           </Row>

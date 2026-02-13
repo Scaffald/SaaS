@@ -67,8 +67,8 @@ export function PersonalityAssessmentWizard() {
   if (error) {
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
-        <AlertCircle size={48} color={colors.text[theme].error} />
-        <Text style={{ color: colors.text[theme].error }}>Error loading assessment</Text>
+        <AlertCircle size={48} color={theme === "light" ? colors.error[700] : colors.error[300]} />
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading assessment</Text>
         <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           {error.message || 'An unexpected error occurred'}
         </Text>
@@ -232,7 +232,7 @@ export function PersonalityAssessmentWizard() {
 
           {currentStep === 'completed' && (
             <Stack gap={16} align="center" padding={32}>
-              <Text style={{ color: colors.text[theme].success }}>✓ Assessment Complete!</Text>
+              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>✓ Assessment Complete!</Text>
               <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                 Your personality assessment has been completed. You can view your results below.
               </Text>

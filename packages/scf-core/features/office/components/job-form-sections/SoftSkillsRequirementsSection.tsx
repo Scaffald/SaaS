@@ -90,7 +90,7 @@ export function SoftSkillsRequirementsSection({
       >
         <Text>Soft Skills Requirements</Text>
         <Stack align="center" padding="md">
-          <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+          <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
           <Text marginTop={8} style={{ color: colors.text[theme].secondary }}>
             Loading soft skills catalog...
           </Text>
@@ -135,7 +135,7 @@ export function SoftSkillsRequirementsSection({
           Candidates will see how well their soft skills match your requirements.
         </Text>
         {selectedCount > 0 && (
-          <Text style={{ color: colors.text[theme].info }}>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             {selectedCount} {selectedCount === 1 ? 'skill' : 'skills'} selected
           </Text>
         )}
@@ -199,12 +199,12 @@ export function SoftSkillsRequirementsSection({
         <Stack
           gap={8}
           padding="sm"
-          style={{ backgroundColor: colors.bg[theme].info }}
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
           borderRadius={12}
           borderWidth={1}
-          borderColor={colors.border[theme].info}
+          borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
         >
-          <Text style={{ color: colors.text[theme].info }}>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             Preview: How candidates will see this
           </Text>
           <Stack gap={4}>
@@ -223,7 +223,7 @@ export function SoftSkillsRequirementsSection({
               const importanceLabel =
                 IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
-                <Text key={skillId} style={{ color: colors.text[theme].info }}>
+                <Text key={skillId} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
                   • {skill.name} ({importanceLabel} - {importance}/5)
                 </Text>
               )

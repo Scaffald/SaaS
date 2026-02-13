@@ -286,10 +286,10 @@ export function TeamForm({
               value={field.value}
               onChangeText={handleNameChange}
               placeholder="Field Ops Team"
-              borderColor={errors.name ? colors.border[theme].error : colors.border[theme].default}
+              borderColor={errors.name ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default}
             />
             {errors.name && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.name.message}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.name.message}</Text>
             )}
           </Stack>
         )}
@@ -307,13 +307,13 @@ export function TeamForm({
               value={field.value ?? ''}
               onChangeText={handleSlugChange}
               placeholder="field-ops-team"
-              borderColor={errors.slug ? colors.border[theme].error : colors.border[theme].default}
+              borderColor={errors.slug ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default}
             />
             <Text style={{ color: colors.text[theme].secondary }}>
               Lowercase, URL-friendly username for the team
             </Text>
             {errors.slug && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.slug.message}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.slug.message}</Text>
             )}
           </Stack>
         )}
@@ -333,7 +333,7 @@ export function TeamForm({
               placeholder="e.g. Hiring for Southeast operations"
             />
             {errors.purpose && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.purpose.message}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.purpose.message}</Text>
             )}
           </Stack>
         )}
@@ -357,7 +357,7 @@ export function TeamForm({
               }))}
             />
             {errors.visibility && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.visibility.message}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.visibility.message}</Text>
             )}
           </Stack>
         )}
@@ -381,7 +381,7 @@ export function TeamForm({
               }))}
             />
             {errors.invitationPolicy && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.invitationPolicy.message}
               </Text>
             )}
@@ -404,7 +404,7 @@ export function TeamForm({
               rows={4}
             />
             {errors.description && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.description.message as string}
               </Text>
             )}
@@ -436,7 +436,7 @@ export function TeamForm({
               }))}
             />
             {errors.defaultRoleId && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.defaultRoleId.message as string}
               </Text>
             )}

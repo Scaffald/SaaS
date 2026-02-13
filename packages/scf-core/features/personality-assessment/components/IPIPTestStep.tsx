@@ -147,7 +147,7 @@ export function IPIPTestStep({
         width="100%"
         align="center"
         padding={32}
-        style={{ maxWidth: 800, alignSelf: 'center', color: colors.text[theme].success }}
+        style={{ maxWidth: 800, alignSelf: 'center', color: theme === "light" ? colors.green[700] : colors.green[300] }}
       >
         <Text>✓ All Questions Complete!</Text>
         <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
@@ -173,21 +173,21 @@ export function IPIPTestStep({
           gap={8}
           padding="md"
           style={{
-            backgroundColor: colors.bg[theme].info,
+            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
             borderRadius: 16,
             borderWidth: 1,
-            borderColor: colors.border[theme].info,
+            borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
           }}
           justify="space-between"
           align="center"
         >
           <Stack gap={4}>
-            <Text style={{ color: colors.text[theme].info }}>{DOMAIN_NAMES[currentDomain]}</Text>
-            <Text style={{ color: colors.text[theme].info }}>
+            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{DOMAIN_NAMES[currentDomain]}</Text>
+            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
           </Stack>
-          <Text style={{ color: colors.text[theme].info }}>{domainProgress}%</Text>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{domainProgress}%</Text>
         </Row>
       )}
 
@@ -234,8 +234,8 @@ export function IPIPTestStep({
               borderColor: colors.border[theme].default,
             }}
             hoverStyle={{
-              borderColor: colors.border[theme].info,
-              backgroundColor: colors.bg[theme].info,
+              borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+              backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
             }}
           >
             <Text style={{ color: colors.text[theme].secondary }}>{choice.text}</Text>

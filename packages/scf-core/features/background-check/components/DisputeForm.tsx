@@ -85,8 +85,8 @@ export function DisputeForm({
         {hasActiveDispute ? (
           <Card
             style={{
-              backgroundColor: colors.bg[theme].warning,
-              borderColor: colors.border[theme].warning,
+              backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+              borderColor: theme === "light" ? colors.yellow[300] : colors.yellow[700],
             }}
             borderWidth={1}
             paddingHorizontal={12}
@@ -94,8 +94,8 @@ export function DisputeForm({
             gap={8}
             borderRadius={16}
           >
-            <Text style={{ color: colors.text[theme].warning }}>Dispute already in review</Text>
-            <Text style={{ color: colors.text[theme].warning }}>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Dispute already in review</Text>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
               You have a dispute awaiting review. We’ll notify you when the team has an update.
             </Text>
           </Card>
@@ -137,12 +137,12 @@ export function DisputeForm({
                     placeholder="Share a short summary…"
                     style={{
                       borderColor: error
-                        ? colors.border[theme].error
+                        ? theme === "light" ? colors.error[300] : colors.error[700]
                         : colors.border[theme].default,
                     }}
                   />
                   {error ? (
-                    <Text style={{ color: colors.text[theme].error }}>{error.message}</Text>
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{error.message}</Text>
                   ) : null}
                 </Stack>
               )}
@@ -162,14 +162,14 @@ export function DisputeForm({
                   onChangeText={onChange}
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
                   style={{
-                    borderColor: error ? colors.border[theme].error : colors.border[theme].default,
+                    borderColor: error ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default,
                   }}
                 />
                 <Text style={{ color: colors.text[theme].secondary }}>
                   Minimum 20 characters. Max 2000 characters.
                 </Text>
                 {error ? (
-                  <Text style={{ color: colors.text[theme].error }}>{error.message}</Text>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{error.message}</Text>
                 ) : null}
               </Stack>
             )}
@@ -206,18 +206,18 @@ export function DisputeForm({
                 justify="center"
                 style={{
                   borderColor: isDragActive
-                    ? colors.border[theme].info
+                    ? theme === "light" ? colors.blue[300] : colors.blue[700]
                     : colors.border[theme].default,
                   backgroundColor: colors.bg[theme].subtle,
                 }}
               >
                 <input {...getInputProps()} />
-                <Upload size={24} style={{ color: colors.text[theme].info }} />
+                <Upload size={24} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {isProcessing ? 'Processing…' : 'Drag a file here'}
                 </Text>
                 <Text style={{ color: colors.text[theme].secondary }}>
-                  or <Text style={{ color: colors.text[theme].info }}>browse your device</Text>
+                  or <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>browse your device</Text>
                 </Text>
                 <Button size="xs" variant="outline" onPress={open} iconStart={Upload}>
                   Choose file
@@ -235,11 +235,11 @@ export function DisputeForm({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              style={{ backgroundColor: colors.bg[theme].error }}
+              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
               borderRadius={12}
             >
-              <AlertCircle size="md" style={{ color: colors.text[theme].error }} />
-              <Text style={{ color: colors.text[theme].error }}>{attachmentError}</Text>
+              <AlertCircle size="md" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{attachmentError}</Text>
             </Row>
           ) : null}
 
@@ -287,11 +287,11 @@ export function DisputeForm({
             align="center"
             paddingHorizontal={12}
             paddingVertical={8}
-            style={{ backgroundColor: colors.bg[theme].error }}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             borderRadius={12}
           >
-            <AlertCircle size="md" style={{ color: colors.text[theme].error }} />
-            <Text style={{ color: colors.text[theme].error }}>{submissionError}</Text>
+            <AlertCircle size="md" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{submissionError}</Text>
           </Row>
         ) : null}
 

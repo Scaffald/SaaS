@@ -29,9 +29,9 @@ const STATUS_LABELS: Record<JobStatus, string> = {
 
 const getStatusColors = (theme: 'light' | 'dark'): Record<JobStatus, string> => ({
   draft: colors.bg[theme].muted,
-  open: colors.bg[theme].success,
-  paused: colors.bg[theme].warning,
-  closed: colors.bg[theme].error,
+  open: theme === "light" ? colors.green[50] : colors.green[900],
+  paused: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+  closed: theme === "light" ? colors.error[50] : colors.error[900],
 })
 
 interface JobsKanbanBoardProps {

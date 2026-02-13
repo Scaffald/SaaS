@@ -92,7 +92,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                   placeholder="teammate@example.com"
                 />
                 {fieldState.error ? (
-                  <Text style={{ color: colors.text[theme].error }}>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     {fieldState.error?.message}
                   </Text>
                 ) : null}

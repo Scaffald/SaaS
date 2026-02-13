@@ -87,7 +87,7 @@ export function AppRegistrationForm() {
             <Stack
               gap={8}
               padding="md"
-              style={{ backgroundColor: colors.bg[theme].info }}
+              style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
               borderRadius={8}
             >
               <Stack gap={4}>
@@ -100,14 +100,14 @@ export function AppRegistrationForm() {
                 <SizableText size="xs">Client Secret</SizableText>
                 <SizableText
                   size="sm"
-                  style={{ fontFamily: 'monospace', color: colors.text[theme].error }}
+                  style={{ fontFamily: 'monospace', color: theme === "light" ? colors.error[700] : colors.error[300] }}
                 >
                   {credentials.client_secret}
                 </SizableText>
               </Stack>
             </Stack>
 
-            <Paragraph size="xs" style={{ color: colors.text[theme].warning }}>
+            <Paragraph size="xs" style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 

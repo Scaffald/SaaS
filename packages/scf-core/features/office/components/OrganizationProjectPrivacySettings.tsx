@@ -90,8 +90,8 @@ export function OrganizationProjectPrivacySettings({
   return (
     <Card
       padding="md"
-      style={{ backgroundColor: colors.bg[theme].info }}
-      borderColor={colors.border[theme].info}
+      style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+      borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
       borderWidth={1}
     >
       <Stack gap={16}>
@@ -116,8 +116,8 @@ export function OrganizationProjectPrivacySettings({
 
         <Card
           padding="sm"
-          style={{ backgroundColor: colors.bg[theme].warningSubtle }}
-          borderColor={colors.border[theme].warning}
+          style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
+          borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
           borderWidth={1}
         >
           <Stack gap={8}>

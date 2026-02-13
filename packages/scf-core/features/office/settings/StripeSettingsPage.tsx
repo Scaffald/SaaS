@@ -234,7 +234,7 @@ export function StripeSettingsPage() {
               <Row gap={8} justify="flex-end">
                 <Button
                   style={{
-                    backgroundColor: colors.bg[theme].success,
+                    backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
                     color: colors.text[theme].secondary,
                   }}
                   disabled={updateApiKey.isPending || apiSecret.length < 20}
@@ -247,9 +247,9 @@ export function StripeSettingsPage() {
                 </Button>
               </Row>
               {data?.hasApiKey ? (
-                <Text style={{ color: colors.text[theme].success }}>✓ Secret stored in Vault</Text>
+                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>✓ Secret stored in Vault</Text>
               ) : (
-                <Text style={{ color: colors.text[theme].error }}>API secret not configured</Text>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>API secret not configured</Text>
               )}
             </Stack>
 
@@ -266,7 +266,7 @@ export function StripeSettingsPage() {
               <Row gap={8} justify="flex-end">
                 <Button
                   style={{
-                    backgroundColor: colors.bg[theme].success,
+                    backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
                     color: colors.text[theme].secondary,
                   }}
                   disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
@@ -279,9 +279,9 @@ export function StripeSettingsPage() {
                 </Button>
               </Row>
               {data?.hasWebhookSecret ? (
-                <Text style={{ color: colors.text[theme].success }}>✓ Webhook secret stored</Text>
+                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>✓ Webhook secret stored</Text>
               ) : (
-                <Text style={{ color: colors.text[theme].error }}>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                   Webhook secret not configured
                 </Text>
               )}
@@ -342,7 +342,7 @@ export function StripeSettingsPage() {
               Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
             </Text>
             {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
-              <Paragraph size="sm" style={{ color: colors.text[theme].error }}>
+              <Paragraph size="sm" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {data.lastTestedError}
               </Paragraph>
             ) : null}

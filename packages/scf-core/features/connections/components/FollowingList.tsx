@@ -1,10 +1,10 @@
 import { useFollowing, useUnfollowUserMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { UserMinus } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 interface Following {
@@ -67,7 +67,7 @@ export function FollowingList() {
     [unfollowMutation]
   )
 
-  const columns = useMemo<ColumnDef<Following>[]>(
+  const columnDefs = useMemo<ColumnDef<Following>[]>(
     () => [
       {
         accessorKey: 'followee',
@@ -124,6 +124,11 @@ export function FollowingList() {
     [unfollowMutation.isPending, handleUnfollow]
   )
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<Following>(columnDefs),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
@@ -162,8 +167,8 @@ export function FollowingList() {
           </Text>
         </Stack>
       ) : (
-        <DataTable
-          columns={columns}
+        <Table
+          columns={tableColumns}
           data={filteredFollowing}
           pageSize={20}
           emptyMessage="No users found"

@@ -147,7 +147,7 @@ export function PrerequisiteWidget() {
 
         {isCheckingStatus ? (
           <Stack gap={spacing.sm} align="center" paddingVertical={spacing.xl}>
-            <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+            <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
             <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
           </Stack>
         ) : (
@@ -339,7 +339,7 @@ export function PrerequisiteWidget() {
                         <Text nativeID="checkbox-legal-privacy-policy-label">
                           I accept the{' '}
                           <Text
-                            style={{ color: colors.text[theme].info, textDecorationLine: 'underline' }}
+                            style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300], textDecorationLine: 'underline' }}
                             onPress={(event) => {
                               event.stopPropagation?.()
                               if (typeof window !== 'undefined') {
@@ -384,7 +384,7 @@ export function PrerequisiteWidget() {
                         <Text nativeID="checkbox-legal-terms-of-service-label">
                           I accept the{' '}
                           <Text
-                            style={{ color: colors.text[theme].info, textDecorationLine: 'underline' }}
+                            style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300], textDecorationLine: 'underline' }}
                             onPress={(event) => {
                               event.stopPropagation?.()
                               if (typeof window !== 'undefined') {

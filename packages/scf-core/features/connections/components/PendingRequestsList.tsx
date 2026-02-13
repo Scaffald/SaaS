@@ -4,12 +4,12 @@ import {
   useDeclineConnectionMutation,
   useCancelConnectionMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { CheckCircle2, X } from 'lucide-react-native'
 import { useCallback, useMemo } from 'react'
-import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Separator, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 interface PendingRequestBase {
@@ -127,7 +127,7 @@ export function PendingRequestsList() {
     [cancelMutation]
   )
 
-  const columns = useMemo<ColumnDef<RequestRow>[]>(
+  const columnDefs = useMemo<ColumnDef<RequestRow>[]>(
     () => [
       {
         accessorKey: 'requester',
@@ -218,6 +218,11 @@ export function PendingRequestsList() {
     ]
   )
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<RequestRow>(columnDefs),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
@@ -257,8 +262,8 @@ export function PendingRequestsList() {
       {receivedRequests.length > 0 && (
         <Stack gap={8}>
           <Text>Received ({receivedRequests.length})</Text>
-          <DataTable
-            columns={columns}
+          <Table
+            columns={tableColumns}
             data={combinedRequests.filter((r) => r.type === 'received')}
             pageSize={10}
             emptyMessage="No received requests"
@@ -270,8 +275,8 @@ export function PendingRequestsList() {
         <Stack gap={8}>
           {receivedRequests.length > 0 && <Separator />}
           <Text>Sent ({sentRequests.length})</Text>
-          <DataTable
-            columns={columns}
+          <Table
+            columns={tableColumns}
             data={combinedRequests.filter((r) => r.type === 'sent')}
             pageSize={10}
             emptyMessage="No sent requests"

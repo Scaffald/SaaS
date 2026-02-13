@@ -239,8 +239,8 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
 
           <Card
             padding="md"
-            style={{ backgroundColor: colors.bg[theme].warningSubtle }}
-            borderColor={colors.border[theme].warning}
+            style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
+            borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
             borderWidth={1}
           >
             <Stack gap={16}>
@@ -260,10 +260,10 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 <Stack
                   gap={8}
                   padding="xs"
-                  style={{ backgroundColor: colors.bg[theme].warningSubtle }}
+                  style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900]Subtle }}
                   borderRadius={8}
                 >
-                  <Text style={{ color: colors.text[theme].warning }}>
+                  <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
                     ⚠️ This overrides your organization's global setting
                   </Text>
                 </Stack>

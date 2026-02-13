@@ -30,7 +30,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Pressable, Platform } from 'react-native'
 import type { TableProps, TableSortConfig, TableSelectionConfig, TableExpansionConfig } from './Table.types'
 import { getTableStyles } from './Table.styles'
 import { useThemeContext } from '../../theme'
@@ -74,6 +74,11 @@ export function Table({
   headerStyle,
   bodyStyle,
   footerStyle,
+  onRowPress,
+  rowPressable = true,
+  columnVisibility,
+  pageSize,
+  getRowId: getRowIdProp,
 }: TableProps) {
   const { theme } = useThemeContext()
   const styles = getTableStyles(theme)
@@ -94,6 +99,7 @@ export function Table({
     expandedIds: new Set<string>(),
     allowMultiple: false,
   })
+  const [internalPage, setInternalPage] = useState(1)
 
   // Use controlled or uncontrolled values
   const searchValue = controlledSearchValue !== undefined ? controlledSearchValue : internalSearchValue
@@ -179,25 +185,31 @@ export function Table({
     onRowExpand?.(rowId, expanded)
   }
 
+  // Filter columns by visibility
+  const visibleColumns = useMemo(() => {
+    if (!columnVisibility) return columns
+    return columns.filter((col) => columnVisibility[col.id] !== false)
+  }, [columns, columnVisibility])
+
   // Filter data based on search
   const filteredData = useMemo(() => {
     if (!searchValue.trim()) return data
 
     const searchLower = searchValue.toLowerCase()
     return data.filter((row) => {
-      return columns.some((col) => {
+      return visibleColumns.some((col) => {
         const value = row[col.id]
         if (value === null || value === undefined) return false
         return String(value).toLowerCase().includes(searchLower)
       })
     })
-  }, [data, columns, searchValue])
+  }, [data, visibleColumns, searchValue])
 
   // Sort data
   const sortedData = useMemo(() => {
     if (!sortConfig.columnId || !sortConfig.direction) return filteredData
 
-    const column = columns.find((col) => col.id === sortConfig.columnId)
+    const column = visibleColumns.find((col) => col.id === sortConfig.columnId)
     if (!column) return filteredData
 
     return [...filteredData].sort((a, b) => {
@@ -225,17 +237,40 @@ export function Table({
       const bStr = String(bValue)
       return sortConfig.direction === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr)
     })
-  }, [filteredData, sortConfig, columns])
+  }, [filteredData, sortConfig, visibleColumns])
+
+  // Client-side pagination
+  const paginatedData = useMemo(() => {
+    if (!pageSize || pageSize <= 0) return sortedData
+    const currentPage = pagination?.currentPage ?? internalPage
+    const start = (currentPage - 1) * pageSize
+    return sortedData.slice(start, start + pageSize)
+  }, [sortedData, pageSize, pagination?.currentPage, internalPage])
+
+  const totalPages = useMemo(() => {
+    if (!pageSize || pageSize <= 0) return 1
+    return Math.max(1, Math.ceil(sortedData.length / pageSize))
+  }, [sortedData.length, pageSize])
+
+  const displayData = pageSize ? paginatedData : sortedData
+
+  // Handle page change for client-side pagination
+  const handlePageChange = (page: number) => {
+    if (pagination?.currentPage === undefined) {
+      setInternalPage(page)
+    }
+    pagination?.onPageChange?.(page)
+  }
 
   // Calculate total column width for proper horizontal scrolling
   const totalColumnWidth = useMemo(() => {
-    return columns.reduce((sum, col) => {
+    return visibleColumns.reduce((sum, col) => {
       if (typeof col.width === 'number') {
         return sum + col.width
       }
       return sum + 150 // Default width for columns without explicit width
     }, 0)
-  }, [columns])
+  }, [visibleColumns])
 
   // Render loading state
   if (loading && renderLoading) {
@@ -247,7 +282,7 @@ export function Table({
   }
 
   // Render empty state
-  if (sortedData.length === 0) {
+  if (displayData.length === 0 && sortedData.length === 0) {
     if (renderEmpty) {
       return (
         <View style={[styles.container, style]}>
@@ -371,10 +406,10 @@ export function Table({
         <View style={{ width: totalColumnWidth || '100%', minWidth: totalColumnWidth }}>
           {/* Column Headers */}
           <View style={{ flexDirection: 'row' }}>
-            {columns.map((column, _colIndex) => {
+            {visibleColumns.map((column, _colIndex) => {
               // Check if this column should show select all checkbox
               // Look for the first column with showCheckbox set
-              const selectColumn = columns.find((col) => col.showCheckbox)
+              const selectColumn = visibleColumns.find((col) => col.showCheckbox)
               const showSelectAllCheckbox =
                 selectableRows && column.showCheckbox && column.id === selectColumn?.id
 
@@ -399,16 +434,16 @@ export function Table({
           </View>
 
           {/* Rows */}
-          {sortedData.map((row, rowIndex) => {
-            const rowId = row.id || String(rowIndex)
+          {displayData.map((row, rowIndex) => {
+            const getRowId = getRowIdProp ?? ((r, i) => r.id ?? String(i))
+            const rowId = getRowId(row, rowIndex)
             const isExpanded = expansionConfig.expandedIds.has(rowId)
             const isSelected = selectionConfig.selectedIds.has(rowId)
+            const isPressable = onRowPress && rowPressable
 
-            return (
-              <View key={rowId}>
-                {/* Regular row */}
-                <View style={{ flexDirection: 'row' }}>
-                  {columns.map((column) => {
+            const rowContent = (
+              <View style={{ flexDirection: 'row' }}>
+                  {visibleColumns.map((column) => {
                     const cellValue = row[column.id]
                     const cellType = column.cellType || 'text-default'
 
@@ -479,6 +514,24 @@ export function Table({
                     )
                   })}
                 </View>
+            )
+
+            return (
+              <View key={rowId}>
+                {/* Regular row */}
+                {isPressable ? (
+                  <Pressable
+                    onPress={() => onRowPress?.(row, rowIndex)}
+                    style={({ pressed }) => [
+                      { opacity: pressed ? 0.8 : 1 },
+                      Platform.OS === 'web' && { cursor: 'pointer' as const },
+                    ]}
+                  >
+                    {rowContent}
+                  </Pressable>
+                ) : (
+                  rowContent
+                )}
 
                 {/* Expanded row */}
                 {isExpanded && (
@@ -507,9 +560,14 @@ export function Table({
       </ScrollView>
 
       {/* Footer with Pagination */}
-      {pagination && (
+      {(pagination || (pageSize && totalPages > 1)) && (
         <View style={[styles.footer, footerStyle]}>
-          <Pagination {...pagination} />
+          <Pagination
+            {...pagination}
+            totalPages={pageSize ? totalPages : (pagination?.totalPages ?? 1)}
+            currentPage={pageSize ? internalPage : pagination?.currentPage}
+            onPageChange={pageSize ? handlePageChange : pagination?.onPageChange}
+          />
         </View>
       )}
     </View>

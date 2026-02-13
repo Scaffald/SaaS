@@ -1,8 +1,8 @@
 import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 
 interface Follower {
   id: string
@@ -35,7 +35,7 @@ export function FollowersList() {
     })
   }, [followers, searchTerm])
 
-  const columns = useMemo<ColumnDef<Follower>[]>(
+  const columnDefs = useMemo<ColumnDef<Follower>[]>(
     () => [
       {
         accessorKey: 'follower',
@@ -72,6 +72,11 @@ export function FollowersList() {
       },
     ],
     []
+  )
+
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<Follower>(columnDefs),
+    [columnDefs]
   )
 
   if (isLoading) {
@@ -112,8 +117,8 @@ export function FollowersList() {
           </Text>
         </Stack>
       ) : (
-        <DataTable
-          columns={columns}
+        <Table
+          columns={tableColumns}
           data={filteredFollowers}
           pageSize={20}
           emptyMessage="No followers found"

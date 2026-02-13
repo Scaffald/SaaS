@@ -1,12 +1,12 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Card, Spinner, Table, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type PaymentAnalytics = inferRouterOutputs<AppRouter>['payments']['adminGetAnalytics']
@@ -42,7 +42,7 @@ export function OfficePaymentAnalytics() {
   const breakdowns = analytics?.breakdowns
   const failedQueue = analytics?.failedQueue ?? []
 
-  const columns = useMemo(() => {
+  const columnDefs = useMemo(() => {
     const defs = [
       columnHelper.accessor('transactionType', {
         header: 'Type',
@@ -55,7 +55,7 @@ export function OfficePaymentAnalytics() {
       columnHelper.accessor('failureReason', {
         header: 'Failure Reason',
         cell: (info) => (
-          <Text style={{ color: colors.text[theme].error }}>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
             {info.getValue() ?? 'Unknown error'}
           </Text>
         ),
@@ -73,6 +73,11 @@ export function OfficePaymentAnalytics() {
     ]
     return defs as ColumnDef<FailedTransactionRow, unknown>[]
   }, [theme])
+
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<FailedTransactionRow>(columnDefs),
+    [columnDefs]
+  )
 
   const summaryCards = useMemo(() => {
     if (!kpis) {
@@ -201,23 +206,23 @@ export function OfficePaymentAnalytics() {
           {failedQueue.length > 0 && (
             <Card
               borderWidth={1}
-              borderColor={colors.border[theme].error}
-              style={{ backgroundColor: colors.bg[theme].errorSubtle }}
+              borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
+              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
               padding="md"
             >
               <Stack gap={12}>
                 <Row justify="space-between" align="center">
-                  <Text style={{ color: colors.text[theme].error }}>Failed Transactions Queue</Text>
-                  <Text style={{ color: colors.text[theme].error }}>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Failed Transactions Queue</Text>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     {failedQueue.length} failed
                   </Text>
                 </Row>
-                <DataTable
-                  columns={columns}
+                <Table
+                  columns={tableColumns}
                   data={failedQueue}
-                  isLoading={false}
                   pageSize={10}
                   emptyMessage="No failed transactions"
+                  getRowId={(row, i) => (row as { id?: string }).id ?? String(i)}
                 />
               </Stack>
             </Card>

@@ -217,26 +217,26 @@ export const JobCard = memo(
           <Row justify="space-between" align="center">
             <CardHeader
               title={title}
-              subtitle={
-                organization ? (
-                  <Row gap={8} align="center">
-                    <Building2 size="lg" color={isSelected ? '$color1' : '$color11'} />
-                    <Text color={isSelected ? '$color1' : '$color11'}>{organization.name}</Text>
-                  </Row>
-                ) : undefined
-              }
-              isSelected={isSelected}
-              badge={
-                hasApplied ? (
-                  <Row
-                    backgroundColor="$green9"
-                    paddingHorizontal={8}
-                    paddingVertical={4}
-                    borderRadius={8}
-                  >
-                    <Text color="$green1">Applied</Text>
-                  </Row>
-                ) : undefined
+              subtitle={organization?.name}
+              action={
+                <>
+                  {hasApplied && (
+                    <Row
+                      backgroundColor="$green9"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
+                    >
+                      <Text color="$green1">Applied</Text>
+                    </Row>
+                  )}
+                  {organization && (
+                    <Row gap={8} align="center">
+                      <Building2 size="lg" color={isSelected ? '$color1' : '$color11'} />
+                      <Text color={isSelected ? '$color1' : '$color11'}>{organization.name}</Text>
+                    </Row>
+                  )}
+                </>
               }
             />
           </Row>
@@ -282,21 +282,20 @@ export const JobCard = memo(
           )}
 
           {/* Certifications and Skills */}
-          {badges.length > 0 && (
-            <CardBadges badges={badges} isSelected={isSelected} maxBadges={5} />
-          )}
+          {badges.length > 0 && <CardBadges badges={badges} maxBadges={5} />}
 
           {/* Actions - Only show when card is used for selection, not navigation */}
           {onSelect && (
             <CardActions
               actions={[
                 {
+                  key: 'view',
                   label: hasApplied ? 'View Application' : 'View Details',
                   onPress: onViewDetails,
-                  variant: 'primary',
+                  color: 'primary',
+                  variant: 'filled',
                 },
               ]}
-              isSelected={isSelected}
             />
           )}
         </SelectableCard>

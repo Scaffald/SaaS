@@ -22,14 +22,14 @@ export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
     <Card
       padding="md"
       style={{
-        backgroundColor: colors.bg[theme].warning,
-        borderColor: colors.border[theme].warning,
+        backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+        borderColor: theme === "light" ? colors.yellow[300] : colors.yellow[700],
       }}
       borderWidth={1}
     >
       <Stack gap={8}>
         <Text style={{ color: colors.text[theme].primary }}>Web payment required</Text>
-        <Text style={{ color: colors.text[theme].warning }}>
+        <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
           Payments must currently be completed in the web experience. Please switch to the browser
           to pay {amount}.
         </Text>

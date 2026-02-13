@@ -96,8 +96,7 @@ export const OrganizationCard = memo(
           {/* Header with building icon */}
           <CardHeader
             title={name}
-            isSelected={isSelected}
-            iconStart={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
+            action={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
           />
 
           {/* Industry badge */}
@@ -126,12 +125,13 @@ export const OrganizationCard = memo(
             <CardActions
               actions={[
                 {
+                  key: 'view',
                   label: 'View Organization',
                   onPress: onViewDetails,
-                  variant: 'primary',
+                  color: 'primary',
+                  variant: 'filled',
                 },
               ]}
-              isSelected={isSelected}
             />
           )}
         </SelectableCard>

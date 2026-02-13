@@ -124,7 +124,7 @@ export function OrganizationPaymentMethodsPanel({
                   {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                 </Text>
                 {paymentMethod.isDefault && (
-                  <Text style={{ color: colors.text[theme].info }}>Default</Text>
+                  <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Default</Text>
                 )}
               </Row>
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -138,8 +138,8 @@ export function OrganizationPaymentMethodsPanel({
               iconStart={Trash2}
               onPress={handleDelete}
               disabled={deleteMutation.isPending}
-              borderColor={colors.border[theme].error}
-              style={{ color: colors.text[theme].error }}
+              borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
+              style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
             >
               Remove
             </Button>

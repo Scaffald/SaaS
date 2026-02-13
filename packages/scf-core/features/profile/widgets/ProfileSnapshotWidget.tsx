@@ -56,7 +56,7 @@ export function ProfileSnapshotWidget() {
     return (
       <DashboardWidget>
         <Stack gap={spacing.md} align="center" paddingVertical={spacing.xl}>
-          <Spinner size="lg" style={{ color: colors.text[theme].info }} />
+          <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
           <Text style={{ color: colors.text[theme].secondary }}>Loading profile...</Text>
         </Stack>
       </DashboardWidget>
@@ -122,7 +122,7 @@ export function ProfileSnapshotWidget() {
           <Button
             size="xs"
             chromeless
-            style={{ color: colors.text[theme].info }}
+            style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
           >
             View Full Profile
@@ -184,7 +184,7 @@ export function ProfileSnapshotWidget() {
               <Text>{completion}%</Text>
             </Row>
             <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.bg[theme].info }} />
+              <Progress.Indicator animation="bouncy" style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }} />
             </Progress>
           </Stack>
 
@@ -199,7 +199,7 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text style={{ color: colors.text[theme].info }}>{skills?.length || 0}</Text>
+              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{skills?.length || 0}</Text>
               <Text style={{ color: colors.text[theme].secondary }}>Skills</Text>
             </Stack>
 
@@ -212,7 +212,7 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text style={{ color: colors.text[theme].success }}>{certifications?.length || 0}</Text>
+              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{certifications?.length || 0}</Text>
               <Text style={{ color: colors.text[theme].secondary }}>Certs</Text>
             </Stack>
 
@@ -225,7 +225,7 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text style={{ color: colors.text[theme].info }}>{formattedYearsOfExperience}</Text>
+              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formattedYearsOfExperience}</Text>
               <Text style={{ color: colors.text[theme].secondary }}>Years</Text>
             </Stack>
           </Row>

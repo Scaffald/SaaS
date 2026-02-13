@@ -114,7 +114,7 @@ export function RemoveMemberModal({
 
         <Stack gap={12}>
           <Button
-            style={{ backgroundColor: colors.bg[theme].error, color: colors.text[theme].secondary }}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900], color: colors.text[theme].secondary }}
             onPress={handleRemove}
             disabled={removeMemberMutation.isPending}
           >

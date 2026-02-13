@@ -84,15 +84,15 @@ export function SuccessStep({
         height={80}
         borderRadius="$12"
         style={{
-          backgroundColor: colors.bg[theme].success,
-          borderColor: colors.border[theme].success,
+          backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+          borderColor: theme === "light" ? colors.green[300] : colors.green[700],
         }}
         borderWidth={2}
         align="center"
         justify="center"
         aria-hidden={true}
       >
-        <Check size={48} style={{ color: colors.text[theme].success }} />
+        <Check size={48} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
       </Stack>
 
       {/* Success Message */}
@@ -110,7 +110,7 @@ export function SuccessStep({
 
       {/* Application ID */}
       <Stack gap={8} align="center" marginTop={16}>
-        <Text style={{ color: colors.text[theme].info }}>Application ID: {formattedId}</Text>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Application ID: {formattedId}</Text>
         <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
           You will receive an email confirmation shortly
         </Text>

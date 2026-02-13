@@ -118,7 +118,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         {codeEntered && (
           <Box style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
             {verified && (
-              <Paragraph style={{ color: colors.text[theme].success }}>
+              <Paragraph style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                 {t('auth.verify.successBanner')}
               </Paragraph>
             )}
@@ -150,7 +150,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
             {error && (
               <Paragraph
-                style={{ color: colors.text[theme].error, textAlign: 'center', fontSize: 14 }}
+                style={{ color: theme === "light" ? colors.error[700] : colors.error[300], textAlign: 'center', fontSize: 14 }}
               >
                 {error}
               </Paragraph>

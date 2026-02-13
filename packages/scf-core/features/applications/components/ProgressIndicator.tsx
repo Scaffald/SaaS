@@ -85,7 +85,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   borderRadius="$10"
                   style={{
                     backgroundColor: colors.bg[theme].primary,
-                    borderColor: colors.border[theme].info,
+                    borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
                     shadowColor: colors.bg[theme].primary,
                   }}
                   align="center"
@@ -107,7 +107,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                       status === 'current' ? colors.bg[theme].primary : colors.bg[theme].muted,
                     borderColor:
                       status === 'current'
-                        ? colors.border[theme].info
+                        ? theme === "light" ? colors.blue[300] : colors.blue[700]
                         : colors.border[theme].subtle,
                     shadowColor: status === 'current' ? colors.bg[theme].primary : undefined,
                   }}
@@ -136,7 +136,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 style={{
                   color:
                     status === 'current'
-                      ? colors.text[theme].info
+                      ? theme === "light" ? colors.blue[700] : colors.blue[300]
                       : status === 'completed'
                         ? colors.text[theme].secondary
                         : colors.text[theme].tertiary,

@@ -1,10 +1,10 @@
 import { useConnections, useRemoveConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 interface ConnectionData {
@@ -129,7 +129,7 @@ export function ConnectionsList() {
     }
   }
 
-  const columns = useMemo<ColumnDef<Connection>[]>(
+  const columnDefs = useMemo<ColumnDef<Connection>[]>(
     () => [
       {
         accessorKey: 'user',
@@ -189,6 +189,11 @@ export function ConnectionsList() {
     [removeConnectionMutation.isPending, handleRemove]
   )
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<Connection>(columnDefs),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
@@ -235,8 +240,8 @@ export function ConnectionsList() {
           </Text>
         </Stack>
       ) : (
-        <DataTable
-          columns={columns}
+        <Table
+          columns={tableColumns}
           data={filteredConnections}
           pageSize={20}
           emptyMessage="No connections found"

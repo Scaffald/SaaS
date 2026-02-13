@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DataTable } from '@scf/core/components/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
@@ -14,6 +14,7 @@ import {
   Paragraph,
   Progress,
   Spinner,
+  Table,
   Text,
   Row,
   Stack,
@@ -111,7 +112,7 @@ export function OfficeStorageDashboard() {
     })
   }, [tableRows, search])
 
-  const columns = useMemo(() => {
+  const columnDefs = useMemo(() => {
     const defs = [
       columnHelper.accessor('displayName', {
         header: 'User',
@@ -166,7 +167,7 @@ export function OfficeStorageDashboard() {
                   animation="bouncy"
                   style={{
                     backgroundColor:
-                      percent > 100 ? colors.text[theme].error : colors.text[theme].success,
+                      percent > 100 ? theme === "light" ? colors.error[700] : colors.error[300] : theme === "light" ? colors.green[700] : colors.green[300],
                   }}
                 />
               </Progress>
@@ -190,6 +191,11 @@ export function OfficeStorageDashboard() {
     ]
     return defs as ColumnDef<StorageTableRow, unknown>[]
   }, [theme])
+
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<StorageTableRow>(columnDefs),
+    [columnDefs]
+  )
 
   const totals = analytics?.totals
   const breakdown = (analytics?.breakdown ?? []) as StorageAnalytics['breakdown']
@@ -309,7 +315,7 @@ export function OfficeStorageDashboard() {
                     >
                       <Progress.Indicator
                         animation="bouncy"
-                        style={{ backgroundColor: colors.text[theme].info }}
+                        style={{ backgroundColor: theme === "light" ? colors.blue[700] : colors.blue[300] }}
                       />
                     </Progress>
                   </Stack>
@@ -341,12 +347,19 @@ export function OfficeStorageDashboard() {
                 value={search}
                 onChangeText={setSearch}
               />
-              <DataTable
-                columns={columns}
+              <Table
+                columns={tableColumns}
                 data={filteredRows}
-                isLoading={analyticsQuery.isRefetching}
+                loading={analyticsQuery.isRefetching}
+                renderLoading={() => (
+                  <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+                    <Spinner size="lg" />
+                    <Text style={{ color: colors.text[theme].secondary }}>Loading…</Text>
+                  </Stack>
+                )}
                 pageSize={25}
                 emptyMessage="No storage usage records found"
+                getRowId={(row) => row.userId}
               />
             </Stack>
           </Card>

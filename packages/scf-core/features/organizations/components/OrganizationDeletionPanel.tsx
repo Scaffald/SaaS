@@ -63,15 +63,15 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
     <Card
       borderWidth={1}
       style={{
-        borderColor: colors.border[theme].error,
-        backgroundColor: colors.bg[theme].error,
+        borderColor: theme === "light" ? colors.error[300] : colors.error[700],
+        backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
       }}
       padding="md"
     >
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color={colors.text[theme].error} size="lg" />
-          <Text style={{ color: colors.text[theme].error }}>Delete Organization</Text>
+          <AlertTriangle color={theme === "light" ? colors.error[700] : colors.error[300]} size="lg" />
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Delete Organization</Text>
         </Row>
 
         <Text style={{ color: colors.text[theme].secondary }}>
@@ -86,7 +86,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
 
         <Button
           variant="outline"
-          style={{ borderColor: colors.border[theme].error }}
+          style={{ borderColor: theme === "light" ? colors.error[300] : colors.error[700] }}
           color="error"
           iconStart={Trash2}
           onPress={() => setIsOpen(true)}
@@ -100,7 +100,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
             <AlertDialog.Content style={{ maxWidth: 500 }}>
               <Stack gap={16} padding="md">
                 <Stack gap={8}>
-                  <Text style={{ color: colors.text[theme].error }}>Delete This Organization?</Text>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Delete This Organization?</Text>
                   <Text style={{ color: colors.text[theme].secondary }}>
                     This action cannot be undone. All organization data will be permanently deleted
                     or anonymized.
@@ -126,8 +126,8 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                     style={{
                       borderColor:
                         confirmText === 'DELETE'
-                          ? colors.border[theme].success
-                          : colors.border[theme].error,
+                          ? theme === "light" ? colors.green[300] : colors.green[700]
+                          : theme === "light" ? colors.error[300] : colors.error[700],
                     }}
                   />
                 </Stack>
@@ -145,7 +145,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                     Cancel
                   </Button>
                   <Button
-                    style={{ backgroundColor: colors.bg[theme].error }}
+                    style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
                     color="white"
                     iconStart={Trash2}
                     onPress={handleDelete}

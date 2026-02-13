@@ -190,7 +190,7 @@ export function ProfileCertificationsRight() {
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
               <Stack gap={8}>
-                <Text style={{ color: colors.text[theme].info }}>Top-Level Categories</Text>
+                <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Top-Level Categories</Text>
                 {depth0.map((cert) => {
                   const changeStatus = recentlyChangedCerts[cert.certification_id]
                   return (
@@ -202,15 +202,15 @@ export function ProfileCertificationsRight() {
                       style={{
                         backgroundColor:
                           changeStatus === 'added'
-                            ? colors.bg[theme].success
+                            ? theme === "light" ? colors.green[50] : colors.green[900]
                             : changeStatus === 'removed'
-                              ? colors.bg[theme].error
+                              ? theme === "light" ? colors.error[50] : colors.error[900]
                               : colors.bg[theme].default,
                         borderColor:
                           changeStatus === 'added'
-                            ? colors.border[theme].success
+                            ? theme === "light" ? colors.green[300] : colors.green[700]
                             : changeStatus === 'removed'
-                              ? colors.border[theme].error
+                              ? theme === "light" ? colors.error[300] : colors.error[700]
                               : colors.border[theme].default,
                       }}
                     >
@@ -220,8 +220,8 @@ export function ProfileCertificationsRight() {
                             <Text>{cert.catalog.title}</Text>
                             <Text
                               style={{
-                                color: colors.text[theme].info,
-                                backgroundColor: colors.bg[theme].info,
+                                color: theme === "light" ? colors.blue[700] : colors.blue[300],
+                                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
                               }}
                               paddingHorizontal={8}
                               paddingVertical={2}
@@ -238,7 +238,7 @@ export function ProfileCertificationsRight() {
                         </Stack>
                       </Row>
                       {changeStatus === 'added' && (
-                        <Text marginTop={8} style={{ color: colors.text[theme].success }}>
+                        <Text marginTop={8} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                           ✓ Added to profile
                         </Text>
                       )}

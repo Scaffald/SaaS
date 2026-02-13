@@ -200,7 +200,7 @@ export function TeamInviteModal({
               disabled={inviteMutation.isPending}
             />
             {formErrorSource === 'email' && formError ? (
-              <Text style={{ color: colors.text[theme].error }}>{formError}</Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{formError}</Text>
             ) : null}
           </Stack>
         ) : (
@@ -283,7 +283,7 @@ export function TeamInviteModal({
         </Stack>
 
         {formErrorSource === 'general' && formError ? (
-          <Text style={{ color: colors.text[theme].error }}>{formError}</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{formError}</Text>
         ) : null}
 
         <Row gap={12} justify="flex-end">

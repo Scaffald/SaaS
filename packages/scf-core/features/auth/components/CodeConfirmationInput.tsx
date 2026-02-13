@@ -83,7 +83,7 @@ export function CodeConfirmationInput({
             width: 50,
             aspectRatio: 1,
             backgroundColor: invalid
-              ? colors.bg[theme].error
+              ? theme === "light" ? colors.error[50] : colors.error[900]
               : value
                 ? colors.bg[theme].subtle
                 : colors.bg[theme].muted,

@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DataTable } from '@scf/core/components/ui'
-import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import { ResponsiveSelect, Table, useThemeContext } from '@scaffald/ui'
 import { Download, FileText, RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
@@ -37,13 +37,13 @@ const formatStatus = (status: string): string => {
 const getStatusColor = (status: string, theme: 'light' | 'dark') => {
   switch (status) {
     case 'succeeded':
-      return colors.text[theme].success
+      return theme === "light" ? colors.green[700] : colors.green[300]
     case 'failed':
-      return colors.text[theme].error
+      return theme === "light" ? colors.error[700] : colors.error[300]
     case 'pending':
-      return colors.text[theme].warning
+      return theme === "light" ? colors.yellow[700] : colors.yellow[300]
     case 'refunded':
-      return colors.text[theme].info
+      return theme === "light" ? colors.blue[700] : colors.blue[300]
     case 'cancelled':
       return colors.text[theme].secondary
     default:
@@ -56,7 +56,7 @@ export function OfficeTransactionHistory() {
   const [selectedOrganizationId, _setSelectedOrganizationId] = useState<string | undefined>()
   const [statusFilter, setStatusFilter] = useState<string | undefined>()
   const [transactionTypeFilter, setTransactionTypeFilter] = useState<string | undefined>()
-  const [_selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null)
+  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null)
 
   const transactionsQuery = api.payments.adminListTransactions.useQuery(
     {
@@ -124,8 +124,7 @@ export function OfficeTransactionHistory() {
     }
   }
 
-  const transactionsColumns = useMemo(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const transactionsColumnDefs = useMemo(() => {
     const defs = [
       columnHelper.accessor('createdAt', {
         header: 'Date',
@@ -179,6 +178,11 @@ export function OfficeTransactionHistory() {
     ]
     return defs as ColumnDef<Transaction, unknown>[]
   }, [theme])
+
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<Transaction>(transactionsColumnDefs),
+    [transactionsColumnDefs]
+  )
 
   return (
     <Stack flex={1} padding="md" gap={16}>
@@ -270,10 +274,16 @@ export function OfficeTransactionHistory() {
           style={{ backgroundColor: colors.bg[theme].subtle }}
           padding="md"
         >
-          <DataTable
-            columns={transactionsColumns}
+          <Table
+            columns={tableColumns}
             data={transactionsQuery.data?.items ?? []}
-            isLoading={transactionsQuery.isRefetching}
+            loading={transactionsQuery.isRefetching}
+            renderLoading={() => (
+              <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+                <Spinner size="lg" />
+                <Text style={{ color: colors.text[theme].secondary }}>Loading…</Text>
+              </Stack>
+            )}
             pageSize={25}
             emptyMessage="No transactions found."
           />
@@ -286,10 +296,10 @@ export function OfficeTransactionHistory() {
         </Card>
       )}
 
-      {_selectedTransactionId && (
+      {selectedTransactionId && (
         <TransactionReceiptModal
-          transactionId={_selectedTransactionId}
-          open={Boolean(_selectedTransactionId)}
+          transactionId={selectedTransactionId}
+          open={Boolean(selectedTransactionId)}
           onOpenChange={(open) => {
             if (!open) setSelectedTransactionId(null)
           }}

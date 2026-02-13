@@ -54,22 +54,22 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Unread comments badge */}
       {unreadComments > 0 && (
         <Row
-          style={{ backgroundColor: colors.bg[theme].info }}
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={8}
           align="center"
           gap={4}
         >
-          <MessageSquare size="sm" style={{ color: colors.text[theme].info }} />
-          <Text style={{ color: colors.text[theme].info }}>{unreadComments}</Text>
+          <MessageSquare size="sm" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{unreadComments}</Text>
         </Row>
       )}
 
       {/* All accepted badge */}
       {allAccepted && (
         <Row
-          style={{ backgroundColor: colors.bg[theme].success }}
+          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={8}
@@ -96,12 +96,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
         <Stack
-          style={{ backgroundColor: colors.bg[theme].successSubtle }}
+          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900]Subtle }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={8}
         >
-          <Text style={{ color: colors.text[theme].success }}>{acceptedSections} Completed</Text>
+          <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{acceptedSections} Completed</Text>
         </Stack>
       )}
 
@@ -120,12 +120,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Progress indicator */}
       {!allAccepted && (
         <Stack
-          style={{ backgroundColor: colors.bg[theme].info }}
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={8}
         >
-          <Text style={{ color: colors.text[theme].info }}>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             {acceptedSections}/{totalSections}
           </Text>
         </Stack>

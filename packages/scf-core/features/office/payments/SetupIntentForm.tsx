@@ -80,11 +80,11 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
     return (
       <Card
         padding="sm"
-        style={{ backgroundColor: colors.bg[theme].errorSubtle }}
-        borderColor={colors.border[theme].error}
+        style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
+        borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
         borderWidth={1}
       >
-        <Text style={{ color: colors.text[theme].error }}>
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
       </Card>
@@ -99,7 +99,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
           Click the button below to securely add a payment method for this organization.
         </Text>
         {config.testMode && (
-          <Text style={{ color: colors.text[theme].warning }}>
+          <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
@@ -193,7 +193,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
       <Stack gap={4}>
         <Text>Add Payment Method</Text>
         {testMode && (
-          <Text style={{ color: colors.text[theme].warning }}>
+          <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
@@ -204,12 +204,12 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
       {errorMessage ? (
         <Card
           padding="sm"
-          style={{ backgroundColor: colors.bg[theme].errorSubtle }}
-          borderColor={colors.border[theme].error}
+          style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900]Subtle }}
+          borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
           borderWidth={1}
         >
           <Row gap={8} align="center">
-            <Text style={{ color: colors.text[theme].error }} flex={1}>
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} flex={1}>
               {errorMessage}
             </Text>
           </Row>

@@ -249,7 +249,7 @@ export function ApplicationProcessSection({
                           </Text>
                         )}
                         {question.required && (
-                          <Text style={{ color: colors.text[theme].info }}>Required</Text>
+                          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Required</Text>
                         )}
                       </Row>
                     </Stack>

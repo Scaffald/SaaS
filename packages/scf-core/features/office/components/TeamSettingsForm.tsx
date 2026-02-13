@@ -212,9 +212,9 @@ export function TeamSettingsForm({
 
   const statusColor =
     status === 'error'
-      ? colors.text[theme].error
+      ? theme === "light" ? colors.error[700] : colors.error[300]
       : status === 'saved'
-        ? colors.text[theme].success
+        ? theme === "light" ? colors.green[700] : colors.green[300]
         : colors.text[theme].secondary
 
   return (

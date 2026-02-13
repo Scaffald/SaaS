@@ -89,7 +89,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>, theme: 'light' | '
         <Row gap={8} align="center">
           <Icon size="md" />
           <Text>{label}</Text>
-          {hasOverride && <Text style={{ color: colors.text[theme].warning }}>(Override)</Text>}
+          {hasOverride && <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>(Override)</Text>}
         </Row>
       )
     },

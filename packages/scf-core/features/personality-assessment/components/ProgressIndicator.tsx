@@ -37,7 +37,7 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
       <Stack gap={4}>
         <Row justify="space-between" align="center">
           <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
-          <Text style={{ color: colors.text[theme].info }}>{completionScore}%</Text>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{completionScore}%</Text>
         </Row>
         <Stack
           style={{
@@ -74,16 +74,16 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                   style={{
                     backgroundColor:
                       status === 'completed'
-                        ? colors.bg[theme].success
+                        ? theme === "light" ? colors.green[50] : colors.green[900]
                         : status === 'current'
                           ? colors.bg[theme].primary
                           : colors.bg[theme].inactive,
                     borderWidth: 2,
                     borderColor:
                       status === 'completed'
-                        ? colors.border[theme].success
+                        ? theme === "light" ? colors.green[300] : colors.green[700]
                         : status === 'current'
-                          ? colors.border[theme].info
+                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
                           : colors.border[theme].subtle,
                   }}
                   justify="center"
@@ -127,7 +127,7 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                     width: 40,
                     height: 2,
                     backgroundColor:
-                      status === 'completed' ? colors.bg[theme].success : colors.bg[theme].inactive,
+                      status === 'completed' ? theme === "light" ? colors.green[50] : colors.green[900] : colors.bg[theme].inactive,
                     marginBottom: 24,
                   }}
                 />

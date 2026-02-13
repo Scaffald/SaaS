@@ -106,7 +106,7 @@ export function ReviewStep({
             disabled={isSubmitting}
             chromeless
           >
-            <Text style={{ color: colors.text[theme].info }}>Edit</Text>
+            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
           </Button>
         </Row>
 
@@ -170,7 +170,7 @@ export function ReviewStep({
               disabled={isSubmitting}
               chromeless
             >
-              <Text style={{ color: colors.text[theme].info }}>Edit</Text>
+              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
             </Button>
           </Row>
 
@@ -213,7 +213,7 @@ export function ReviewStep({
             disabled={isSubmitting}
             chromeless
           >
-            <Text style={{ color: colors.text[theme].info }}>Edit</Text>
+            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
           </Button>
         </Row>
 
@@ -326,11 +326,11 @@ function DocumentRow({
 
   return (
     <Row gap={12} align="center">
-      <FileText size="lg" style={{ color: colors.text[theme].info }} />
+      <FileText size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
       <Stack gap={4} flex={1}>
         <Row gap={8} align="center">
           <Text style={{ color: colors.text[theme].secondary }}>{type}</Text>
-          {required && <Text style={{ color: colors.text[theme].error }}>(Required)</Text>}
+          {required && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Required)</Text>}
         </Row>
         <Text style={{ color: colors.text[theme].secondary }}>{metadata.filename}</Text>
         <Row gap={8} align="center">

@@ -90,11 +90,11 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           ) : receiptQuery.error ? (
             <Card
               padding="md"
-              style={{ backgroundColor: colors.bg[theme].error }}
-              borderColor={colors.border[theme].error}
+              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
+              borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
               borderWidth={1}
             >
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 Failed to load receipt: {receiptQuery.error.message}
               </Text>
             </Card>
@@ -109,7 +109,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                 <Stack gap={12}>
                   <Row justify="space-between" align="center">
                     <Text>{receiptQuery.data.receiptNumber}</Text>
-                    <Text style={{ color: colors.text[theme].success }}>
+                    <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                       {receiptQuery.data.amount}
                     </Text>
                   </Row>

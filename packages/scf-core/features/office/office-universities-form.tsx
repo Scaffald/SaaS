@@ -202,7 +202,7 @@ export function OfficeUniversitiesForm({
           {/* Name */}
           <Stack gap={8}>
             <Text>
-              Name <Text style={{ color: colors.text[theme].error }}>*</Text>
+              Name <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
             </Text>
             <Controller
               name="name"
@@ -214,13 +214,13 @@ export function OfficeUniversitiesForm({
                   value={field.value}
                   onChangeText={(text) => handleNameChange(text, field.onChange)}
                   borderColor={
-                    errors.name ? colors.border[theme].error : colors.border[theme].default
+                    errors.name ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default
                   }
                 />
               )}
             />
             {errors.name && (
-              <Text data-testid="name-error" style={{ color: colors.text[theme].error }}>
+              <Text data-testid="name-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.name.message}
               </Text>
             )}
@@ -229,7 +229,7 @@ export function OfficeUniversitiesForm({
           {/* Vanity URL */}
           <Stack gap={8}>
             <Text>
-              Vanity URL <Text style={{ color: colors.text[theme].error }}>*</Text>
+              Vanity URL <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
             </Text>
             <Text style={{ color: colors.text[theme].secondary }}>
               URL-friendly username (auto-generated from name)
@@ -244,13 +244,13 @@ export function OfficeUniversitiesForm({
                   value={field.value}
                   onChangeText={field.onChange}
                   borderColor={
-                    errors.slug ? colors.border[theme].error : colors.border[theme].default
+                    errors.slug ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default
                   }
                 />
               )}
             />
             {errors.slug && (
-              <Text data-testid="slug-error" style={{ color: colors.text[theme].error }}>
+              <Text data-testid="slug-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.slug.message}
               </Text>
             )}
@@ -259,7 +259,7 @@ export function OfficeUniversitiesForm({
           {/* Country */}
           <Stack gap={8}>
             <Text>
-              Country <Text style={{ color: colors.text[theme].error }}>*</Text>
+              Country <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
             </Text>
             <Controller
               name="country"
@@ -271,13 +271,13 @@ export function OfficeUniversitiesForm({
                   value={field.value}
                   onChangeText={field.onChange}
                   borderColor={
-                    errors.country ? colors.border[theme].error : colors.border[theme].default
+                    errors.country ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default
                   }
                 />
               )}
             />
             {errors.country && (
-              <Text data-testid="country-error" style={{ color: colors.text[theme].error }}>
+              <Text data-testid="country-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.country.message}
               </Text>
             )}
@@ -286,7 +286,7 @@ export function OfficeUniversitiesForm({
           {/* Alpha Two Code */}
           <Stack gap={8}>
             <Text>
-              Country Code <Text style={{ color: colors.text[theme].error }}>*</Text>
+              Country Code <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
             </Text>
             <Text style={{ color: colors.text[theme].secondary }}>
               2-letter ISO country code (e.g. US, CA, GB)
@@ -302,7 +302,7 @@ export function OfficeUniversitiesForm({
                   onChangeText={(text) => field.onChange(text.toUpperCase())}
                   borderColor={
                     errors.alpha_two_code
-                      ? colors.border[theme].error
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
                       : colors.border[theme].default
                   }
                   maxLength={2}
@@ -310,7 +310,7 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.alpha_two_code && (
-              <Text data-testid="country-code-error" style={{ color: colors.text[theme].error }}>
+              <Text data-testid="country-code-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.alpha_two_code.message}
               </Text>
             )}

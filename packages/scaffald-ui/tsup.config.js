@@ -6,7 +6,7 @@ module.exports = defineConfig({
     'tokens/index': 'src/tokens/index.ts',
   },
   format: ['esm', 'cjs'],
-  dts: false, // Using tsc for declaration generation instead
+  dts: true,
   splitting: false,
   sourcemap: true,
   clean: true,
