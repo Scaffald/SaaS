@@ -95,15 +95,8 @@ function formatRelativeTime(dateString: string): string {
 function PermissionBadge({ permission }: { permission: string }) {
   const colors = getPermissionColor(permission)
   return (
-    <Row
-      backgroundColor={colors.bg}
-      paddingHorizontal={8}
-      paddingVertical={4}
-      borderRadius={8}
-    >
-      <Text color={colors.text}>
-        {permission}
-      </Text>
+    <Row backgroundColor={colors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+      <Text color={colors.text}>{permission}</Text>
     </Row>
   )
 }
@@ -128,9 +121,7 @@ function AppIconPlaceholder({ name }: { name: string }) {
       align="center"
       justify="center"
     >
-      <Text color="gray">
-        {initials}
-      </Text>
+      <Text color="gray">{initials}</Text>
     </Stack>
   )
 }
@@ -160,9 +151,7 @@ function AppCard({
       <Row gap={12} align="flex-start">
         <AppIconPlaceholder name={app.app_name} />
         <Stack flex={1} gap={4}>
-          <Text>
-            {app.app_name}
-          </Text>
+          <Text>{app.app_name}</Text>
           {app.description && (
             <Text color="gray" numberOfLines={2}>
               {app.description}
@@ -174,30 +163,20 @@ function AppCard({
       {/* Connection info */}
       <Row gap={16} flexWrap="wrap">
         <Stack gap={4}>
-          <Text color="gray">
-            Connected
-          </Text>
-          <Text>
-            {formatDate(app.connected_at)}
-          </Text>
+          <Text color="gray">Connected</Text>
+          <Text>{formatDate(app.connected_at)}</Text>
         </Stack>
         {app.last_accessed_at && (
           <Stack gap={4}>
-            <Text color="gray">
-              Last Access
-            </Text>
-            <Text>
-              {formatRelativeTime(app.last_accessed_at)}
-            </Text>
+            <Text color="gray">Last Access</Text>
+            <Text>{formatRelativeTime(app.last_accessed_at)}</Text>
           </Stack>
         )}
       </Row>
 
       {/* Permissions */}
       <Stack gap={8}>
-        <Text color="gray">
-          Permissions
-        </Text>
+        <Text color="gray">Permissions</Text>
         <Row gap={4} flexWrap="wrap">
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
@@ -209,9 +188,7 @@ function AppCard({
               paddingVertical={4}
               borderRadius={8}
             >
-              <Text color="gray">
-                +{app.permissions.length - 5} more
-              </Text>
+              <Text color="gray">+{app.permissions.length - 5} more</Text>
             </Row>
           )}
         </Row>
@@ -219,29 +196,17 @@ function AppCard({
 
       {/* Data categories */}
       <Stack gap={8}>
-        <Text color="gray">
-          Data Categories Accessed
-        </Text>
-        <Text color="gray">
-          {app.data_categories.join(' • ')}
-        </Text>
+        <Text color="gray">Data Categories Accessed</Text>
+        <Text color="gray">{app.data_categories.join(' • ')}</Text>
       </Stack>
 
       {/* Actions */}
       <Row gap={8} justify="flex-end" marginTop={4}>
-        <Button
-          size={12}
-          variant="outline"
-          onPress={() => onViewDetails?.(app.id)}
-        >
+        <Button size={12} variant="outline" onPress={() => onViewDetails?.(app.id)}>
           View Details
         </Button>
         {app.can_revoke && (
-          <Button
-            size={12}
-            theme="red"
-            onPress={() => onRevoke?.(app.id)}
-          >
+          <Button size={12} theme="red" onPress={() => onRevoke?.(app.id)}>
             Revoke Access
           </Button>
         )}
@@ -264,12 +229,10 @@ function EmptyState() {
       align="center"
       gap={8}
     >
-      <Text color="gray">
-        No Connected Applications
-      </Text>
+      <Text color="gray">No Connected Applications</Text>
       <Text color="gray" textAlign="center">
-        When you connect third-party applications to your account,
-        they will appear here so you can manage their access to your data.
+        When you connect third-party applications to your account, they will appear here so you can
+        manage their access to your data.
       </Text>
     </Stack>
   )
@@ -280,11 +243,7 @@ function EmptyState() {
  *
  * Displays all third-party applications with access to user data
  */
-export function ConnectedAppsPanel({
-  apps,
-  onRevoke,
-  onViewDetails,
-}: ConnectedAppsPanelProps) {
+export function ConnectedAppsPanel({ apps, onRevoke, onViewDetails }: ConnectedAppsPanelProps) {
   if (!apps || apps.length === 0) {
     return <EmptyState />
   }
@@ -292,33 +251,22 @@ export function ConnectedAppsPanel({
   return (
     <Stack gap={12}>
       {/* Summary */}
-      <Row
-        padding={12}
-        backgroundColor="$orange2"
-        borderRadius={12}
-        gap={8}
-        align="center"
-      >
+      <Row padding={12} backgroundColor="$orange2" borderRadius={12} gap={8} align="center">
         <Text color="$orange11">
-          {apps.length} application{apps.length === 1 ? '' : 's'} currently have access to your data.
-          You can revoke access at any time.
+          {apps.length} application{apps.length === 1 ? '' : 's'} currently have access to your
+          data. You can revoke access at any time.
         </Text>
       </Row>
 
       {/* App cards */}
       {apps.map((app) => (
-        <AppCard
-          key={app.id}
-          app={app}
-          onRevoke={onRevoke}
-          onViewDetails={onViewDetails}
-        />
+        <AppCard key={app.id} app={app} onRevoke={onRevoke} onViewDetails={onViewDetails} />
       ))}
 
       {/* Info text */}
       <Text color="gray" marginTop={8}>
-        Revoking access will immediately prevent the application from accessing your data.
-        Some applications may require you to re-authorize access to restore functionality.
+        Revoking access will immediately prevent the application from accessing your data. Some
+        applications may require you to re-authorize access to restore functionality.
       </Text>
     </Stack>
   )

@@ -1,6 +1,9 @@
 import { useTeams } from '@scaffald/sdk/react'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
-import { useSearchParentSkillsMutation, usePrimaryIndustry } from '@scf/core/utils/profile-skills-sdk-hooks'
+import {
+  useSearchParentSkillsMutation,
+  usePrimaryIndustry,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import type { AddressResult } from '@unicornlove/beyond-ui'
 import {
   AddressForm,
@@ -369,36 +372,36 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const createJob = api.office.createJob.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Job created successfully',
-          variant: 'success',
-        })
+        title: 'Job created successfully',
+        variant: 'success',
+      })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: `Error: ${message}`,
-          variant: 'error',
-        })
+        title: `Error: ${message}`,
+        variant: 'error',
+      })
     },
   })
 
   const updateJob = api.office.updateJob.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Job updated successfully',
-          variant: 'success',
-        })
+        title: 'Job updated successfully',
+        variant: 'success',
+      })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: `Error: ${message}`,
-          variant: 'error',
-        })
+        title: `Error: ${message}`,
+        variant: 'error',
+      })
     },
   })
 
@@ -889,9 +892,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>
-            Details
-          </Text>
+          <Text>Details</Text>
 
           {/* Title */}
           <Stack gap={8}>
@@ -970,17 +971,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           <Stack gap={8}>
             <Text>Elevate Teams</Text>
             {!formData.organization_id ? (
-              <Text color="gray">
-                Select an organization to load available teams.
-              </Text>
+              <Text color="gray">Select an organization to load available teams.</Text>
             ) : teamsLoading ? (
-              <Text color="gray">
-                Loading teams…
-              </Text>
+              <Text color="gray">Loading teams…</Text>
             ) : teams.length === 0 ? (
-              <Text color="gray">
-                No teams available for this organization.
-              </Text>
+              <Text color="gray">No teams available for this organization.</Text>
             ) : (
               <ResponsiveSelect
                 value={primaryTeamId || ''}
@@ -998,9 +993,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 }))}
               />
             )}
-            <Text color="gray">
-              Not visible on job posting
-            </Text>
+            <Text color="gray">Not visible on job posting</Text>
           </Stack>
         </Stack>
 
@@ -1013,9 +1006,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>
-            Application
-          </Text>
+          <Text>Application</Text>
 
           {/* Application Screening Section */}
           <ApplicationScreeningSection
@@ -1176,12 +1167,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         >
           <Row gap={12} align="center" justify="space-between">
             <Stack flex={1} gap={4}>
-              <Text color="gray">
-                Schedule Publish
-              </Text>
-              <Text color="gray">
-                Set a date and time to automatically publish this job
-              </Text>
+              <Text color="gray">Schedule Publish</Text>
+              <Text color="gray">Set a date and time to automatically publish this job</Text>
             </Stack>
             <Switch
               checked={!!formData.scheduled_publish_at}
@@ -1208,9 +1195,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Row>
           {formData.scheduled_publish_at && (
             <Stack gap={8}>
-              <Text color="gray">
-                Publish Date & Time
-              </Text>
+              <Text color="gray">Publish Date & Time</Text>
               <Input
                 value={
                   formData.scheduled_publish_at
@@ -1251,10 +1236,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         </Stack>
 
         {/* Actions */}
-        <Row
-          gap={12}
-          paddingTop={16}
-        >
+        <Row gap={12} paddingTop={16}>
           <Button
             data-testid="job-cancel-button"
             flex={1}

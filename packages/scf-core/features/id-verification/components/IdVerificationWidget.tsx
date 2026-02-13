@@ -20,20 +20,14 @@ export function IdVerificationWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Text color="gray">
-          Identity verification
-        </Text>
+        <Text color="gray">Identity verification</Text>
         <IdVerificationBadge
           status={status.badgeStatus}
           badgeExpiresAt={status.badgeExpiresAt}
           muted={status.muted}
           size="md"
         />
-        {status.caption && (
-          <Text color="gray">
-            {status.caption}
-          </Text>
-        )}
+        {status.caption && <Text color="gray">{status.caption}</Text>}
 
         <Button
           size={12}

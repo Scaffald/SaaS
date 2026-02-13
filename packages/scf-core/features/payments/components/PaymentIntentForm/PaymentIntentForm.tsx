@@ -44,9 +44,7 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
   if (config.isLoading || !options || !stripePromise) {
     return (
       <Card padding={12} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text color="gray">
-          Preparing secure payment form…
-        </Text>
+        <Text color="gray">Preparing secure payment form…</Text>
       </Card>
     )
   }
@@ -128,22 +126,12 @@ function PaymentIntentFormInner({
     <Card padding={16} borderColor="$borderColor" borderWidth={1} gap={12}>
       <Stack gap={4}>
         <Row justify="space-between" align="center">
-          <Text>
-            Charge amount
-          </Text>
-          <Text>
-            {amountLabel}
-          </Text>
+          <Text>Charge amount</Text>
+          <Text>{amountLabel}</Text>
         </Row>
-        {description ? (
-          <Text color="gray">
-            {description}
-          </Text>
-        ) : null}
+        {description ? <Text color="gray">{description}</Text> : null}
         {testMode && (
-          <Text color="$orange11">
-            Stripe test mode is active. Use test card numbers only.
-          </Text>
+          <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
         )}
       </Stack>
 

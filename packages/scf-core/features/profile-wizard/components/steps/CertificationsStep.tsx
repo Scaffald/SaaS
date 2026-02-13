@@ -97,9 +97,7 @@ export function CertificationsStep({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Add certifications & licenses
-        </Text>
+        <Text>Add certifications & licenses</Text>
         <Paragraph id={guidanceId} color="gray" aria-live="polite">
           {helperCopy}
         </Paragraph>
@@ -112,21 +110,13 @@ export function CertificationsStep({
               <Row justify="space-between" align="center">
                 <Stack gap={4}>
                   <Text>{cert.name}</Text>
-                  {cert.issuer && (
-                    <Text color="gray">
-                      {cert.issuer}
-                    </Text>
-                  )}
+                  {cert.issuer && <Text color="gray">{cert.issuer}</Text>}
                   <Row gap={8}>
                     {cert.issuedOn && (
-                      <Text color="gray">
-                        Issued {formatDisplayDate(cert.issuedOn)}
-                      </Text>
+                      <Text color="gray">Issued {formatDisplayDate(cert.issuedOn)}</Text>
                     )}
                     {cert.expiresOn && (
-                      <Text color="gray">
-                        • Expires {formatDisplayDate(cert.expiresOn)}
-                      </Text>
+                      <Text color="gray">• Expires {formatDisplayDate(cert.expiresOn)}</Text>
                     )}
                   </Row>
                 </Stack>
@@ -146,9 +136,7 @@ export function CertificationsStep({
 
       <Stack gap={12}>
         <Stack gap={8}>
-          <Label htmlFor={certNameId}>
-            Certification name
-          </Label>
+          <Label htmlFor={certNameId}>Certification name</Label>
           <Input
             id={certNameId}
             placeholder="OSHA 30-Hour Construction Safety"
@@ -157,9 +145,7 @@ export function CertificationsStep({
           />
         </Stack>
         <Stack gap={8}>
-          <Label htmlFor={issuerId}>
-            Issuing organization
-          </Label>
+          <Label htmlFor={issuerId}>Issuing organization</Label>
           <Input
             id={issuerId}
             placeholder="Occupational Safety and Health Administration"

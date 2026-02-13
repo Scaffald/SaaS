@@ -33,9 +33,7 @@ export function AssessmentProgress({
       <Stack gap={20} width="100%">
         {completionScore !== undefined && (
           <Stack gap={8}>
-            <Text color="gray">
-              Progress
-            </Text>
+            <Text color="gray">Progress</Text>
             <Stack gap={4}>
               <Row
                 height={8}
@@ -91,9 +89,7 @@ export function AssessmentProgress({
                     {isCompleted ? (
                       <Check size={18} color="white" />
                     ) : (
-                      <Text color={isCurrent ? 'white' : '$color11'}>
-                        {index + 1}
-                      </Text>
+                      <Text color={isCurrent ? 'white' : '$color11'}>{index + 1}</Text>
                     )}
                   </Circle>
                   {!isLast && (
@@ -106,14 +102,8 @@ export function AssessmentProgress({
                 </Stack>
 
                 <Stack gap={4} flex={1}>
-                  <Text
-                    color={isCurrent ? '$color12' : '$color11'}
-                  >
-                    {step.label}
-                  </Text>
-                  <Text color={statusColor}>
-                    {statusLabel}
-                  </Text>
+                  <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
+                  <Text color={statusColor}>{statusLabel}</Text>
                 </Stack>
               </Row>
             )
@@ -129,12 +119,8 @@ export function AssessmentProgress({
       {completionScore !== undefined && (
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="gray">
-              Progress
-            </Text>
-            <Text color="$blue10">
-              {completionScore}%
-            </Text>
+            <Text color="gray">Progress</Text>
+            <Text color="$blue10">{completionScore}%</Text>
           </Row>
           <Row
             height={8}
@@ -179,16 +165,10 @@ export function AssessmentProgress({
                 {isCompleted ? (
                   <Check size={16} color="white" />
                 ) : (
-                  <Text color={isCurrent ? 'white' : '$color11'}>
-                    {index + 1}
-                  </Text>
+                  <Text color={isCurrent ? 'white' : '$color11'}>{index + 1}</Text>
                 )}
               </Circle>
-              <Text
-                color={isCurrent ? '$color12' : '$color11'}
-              >
-                {step.label}
-              </Text>
+              <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
             </Row>
           )
         })}

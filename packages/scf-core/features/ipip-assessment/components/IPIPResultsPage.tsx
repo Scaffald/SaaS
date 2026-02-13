@@ -39,9 +39,7 @@ export function IPIPResultsPage() {
   if (results.isLoading) {
     return (
       <Stack gap={16} padding={32} align="center" aria-live="polite">
-        <Text color="gray">
-          Loading your results...
-        </Text>
+        <Text color="gray">Loading your results...</Text>
       </Stack>
     )
   }
@@ -56,9 +54,7 @@ export function IPIPResultsPage() {
     return (
       <Stack gap={16} padding={32} align="center" aria-live="assertive">
         <AlertCircle size={12} color="$red10" />
-        <Text color="$red10">
-          Error Loading Results
-        </Text>
+        <Text color="$red10">Error Loading Results</Text>
         <Text color="gray" textAlign="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
@@ -78,9 +74,7 @@ export function IPIPResultsPage() {
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
       <Stack gap={16} padding={32} align="center">
-        <Text color="gray">
-          No Results Yet
-        </Text>
+        <Text color="gray">No Results Yet</Text>
         <Text color="gray" textAlign="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
@@ -98,9 +92,7 @@ export function IPIPResultsPage() {
     <Stack gap={24} width="100%" padding={16} style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">
-          Your Personality Results
-        </Text>
+        <Text color="gray">Your Personality Results</Text>
         <Text color="gray">
           Discover your Big Five personality traits and how they shape your work style.
         </Text>
@@ -119,14 +111,10 @@ export function IPIPResultsPage() {
           aria-label="Manage your personality results view"
         >
           <Tabs.Tab flex={1} value="narrative">
-            <Text>
-              Narrative View
-            </Text>
+            <Text>Narrative View</Text>
           </Tabs.Tab>
           <Tabs.Tab flex={1} value="chart">
-            <Text>
-              Chart View
-            </Text>
+            <Text>Chart View</Text>
           </Tabs.Tab>
         </Tabs.List>
 
@@ -187,9 +175,7 @@ export function IPIPResultsPage() {
         >
           <Row align="center" gap={8}>
             <AlertCircle size={4} color="$yellow11" />
-            <Text color="$yellow11">
-              Partial Data Available
-            </Text>
+            <Text color="$yellow11">Partial Data Available</Text>
           </Row>
           <Text color="$yellow10">
             Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
@@ -197,13 +183,7 @@ export function IPIPResultsPage() {
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
-          <Button
-            size={12}
-            variant="outline"
-            icon={RefreshCcw}
-            onPress={handleRetry}
-            marginTop={8}
-          >
+          <Button size={12} variant="outline" icon={RefreshCcw} onPress={handleRetry} marginTop={8}>
             Refresh Data
           </Button>
         </Stack>

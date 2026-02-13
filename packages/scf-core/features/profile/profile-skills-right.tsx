@@ -1,4 +1,7 @@
-import { useUserSkillsMultiTaxonomy, useRemoveSkillMultiTaxonomyMutation } from '@scf/core/utils/profile-skills-sdk-hooks'
+import {
+  useUserSkillsMultiTaxonomy,
+  useRemoveSkillMultiTaxonomyMutation,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { ConfirmationDialog, DashboardWidget } from '@unicornlove/beyond-ui'
 import { Award } from 'lucide-react-native'
@@ -49,9 +52,9 @@ export function ProfileSkillsRight() {
       // Clear removing state after cache invalidation
       setRemovingSkillId(null)
       toast.show({
-          title: 'Skill Removed',
-          message: 'Skill removed from your profile',
-        })
+        title: 'Skill Removed',
+        message: 'Skill removed from your profile',
+      })
     },
     onError: (error: unknown) => {
       // Fade skill back in by clearing removing state
@@ -97,10 +100,10 @@ export function ProfileSkillsRight() {
       }
 
       toast.show({
-          title: 'Error',
-          message: errorMessage,
-          variant: 'error',
-        })
+        title: 'Error',
+        message: errorMessage,
+        variant: 'error',
+      })
     },
   })
 
@@ -116,9 +119,9 @@ export function ProfileSkillsRight() {
     // Prevent concurrent removals
     if (removingSkillId !== null) {
       toast.show({
-          title: 'Please Wait',
-          message: 'Please wait for the current removal to complete',
-        })
+        title: 'Please Wait',
+        message: 'Please wait for the current removal to complete',
+      })
       setConfirmRemoveSkillId(null)
       return
     }
@@ -264,21 +267,15 @@ export function ProfileSkillsRight() {
                 >
                   {/* Skill Name and Code */}
                   <Stack gap={8}>
-                    <Text>
-                      {skill.skill_details?.name || 'Unknown Skill'}
-                    </Text>
+                    <Text>{skill.skill_details?.name || 'Unknown Skill'}</Text>
                     {skill.skill_details?.display_code && (
-                      <Text color="gray">
-                        Code: {skill.skill_details.display_code}
-                      </Text>
+                      <Text color="gray">Code: {skill.skill_details.display_code}</Text>
                     )}
 
                     {/* Proficiency Level */}
                     <Row justify="space-between" align="center" paddingTop={8}>
                       <Stack gap={4}>
-                        <Text color="gray">
-                          Proficiency
-                        </Text>
+                        <Text color="gray">Proficiency</Text>
                         <Text>
                           {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)

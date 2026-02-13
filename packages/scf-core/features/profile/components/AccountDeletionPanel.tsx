@@ -2,7 +2,16 @@ import { api } from '@scf/core/utils/api'
 import { useToast } from '@unicornlove/beyond-ui'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
-import { AlertDialog, Button, Card, Input, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import {
+  AlertDialog,
+  Button,
+  Card,
+  Input,
+  Text,
+  TextArea,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 export function AccountDeletionPanel() {
   const [isOpen, setIsOpen] = useState(false)
@@ -49,9 +58,7 @@ export function AccountDeletionPanel() {
       <Stack gap={12}>
         <Row align="center" gap={8}>
           <AlertTriangle color="$red11" size={20} />
-          <Text color="$red11">
-            Delete Account
-          </Text>
+          <Text color="$red11">Delete Account</Text>
         </Row>
 
         <Text color="gray">
@@ -79,9 +86,7 @@ export function AccountDeletionPanel() {
             <AlertDialog.Content style={{ maxWidth: 500 }}>
               <Stack gap={16} padding={16}>
                 <Stack gap={8}>
-                  <Text color="$red11">
-                    Delete Your Account?
-                  </Text>
+                  <Text color="$red11">Delete Your Account?</Text>
                   <Text color="gray">
                     This action cannot be undone. All your data will be permanently deleted or
                     anonymized.
@@ -89,9 +94,7 @@ export function AccountDeletionPanel() {
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text>
-                    Reason (optional)
-                  </Text>
+                  <Text>Reason (optional)</Text>
                   <TextArea
                     value={reason}
                     onChangeText={setReason}
@@ -101,9 +104,7 @@ export function AccountDeletionPanel() {
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text>
-                    Type "DELETE" to confirm
-                  </Text>
+                  <Text>Type "DELETE" to confirm</Text>
                   <Input
                     value={confirmText}
                     onChangeText={setConfirmText}

@@ -11,11 +11,9 @@ import type {
   UpdateApplicationParams,
   WithdrawApplicationParams,
   ListApplicationsParams,
-  ListApplicationsResponse,
   GetUploadUrlParams,
   GetUploadUrlResponse,
   ConfirmUploadParams,
-  GetMessagesResponse,
   SendMessageParams,
   ApplicationMessage,
 } from '@scaffald/sdk/resources/applications'
@@ -33,7 +31,7 @@ export function useApplication(id: string | undefined, options?: { enabled?: boo
       if (!client || !id) throw new Error('Missing client or id')
       return client.applications.retrieve(id)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -47,16 +45,13 @@ export function useMyApplicationForJob(jobId: string | undefined, options?: { en
       if (!client || !jobId) throw new Error('Missing client or jobId')
       return client.applications.getMyForJob(jobId)
     },
-    enabled: !!client && !!jobId && (options?.enabled !== false),
+    enabled: !!client && !!jobId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
 
 /** List current user's applications */
-export function useApplications(
-  params?: ListApplicationsParams,
-  options?: { enabled?: boolean }
-) {
+export function useApplications(params?: ListApplicationsParams, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
   return useQuery({
     queryKey: ['applications', 'list', params],
@@ -64,7 +59,7 @@ export function useApplications(
       if (!client) throw new Error('Missing client')
       return client.applications.list(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -81,7 +76,7 @@ export function useApplicationMessages(
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
       return client.applications.getMessages(applicationId)
     },
-    enabled: !!client && !!applicationId && (options?.enabled !== false),
+    enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - messages are more real-time
   })
 }

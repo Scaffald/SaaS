@@ -178,9 +178,7 @@ export function TeamAutomationSettings({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Automation & workload
-        </Text>
+        <Text>Automation & workload</Text>
         <Text color="gray">
           Configure how the team auto-assigns work and balances workloads across members.
         </Text>
@@ -204,9 +202,7 @@ export function TeamAutomationSettings({
         />
 
         <Stack gap={8}>
-          <Text>
-            Invitation expiration (days)
-          </Text>
+          <Text>Invitation expiration (days)</Text>
           <Input
             keyboardType="numeric"
             value={String(formState.invitationExpirationDays)}
@@ -223,15 +219,11 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text color="gray">
-            Invitations expire automatically after this number of days.
-          </Text>
+          <Text color="gray">Invitations expire automatically after this number of days.</Text>
         </Stack>
 
         <Stack gap={8}>
-          <Text>
-            Workload strategy
-          </Text>
+          <Text>Workload strategy</Text>
           <ResponsiveSelect
             value={formState.workloadStrategy}
             onValueChange={(value: string) =>
@@ -253,9 +245,7 @@ export function TeamAutomationSettings({
           <Stack gap={12} paddingLeft={8} borderLeftWidth={2} borderColor="$borderColor">
             <Text>Load balance settings</Text>
             <Stack gap={8}>
-              <Text color="gray">
-                Maximum active assignments
-              </Text>
+              <Text color="gray">Maximum active assignments</Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxActiveAssignments ?? 10)}
@@ -270,9 +260,7 @@ export function TeamAutomationSettings({
               />
             </Stack>
             <Stack gap={8}>
-              <Text color="gray">
-                Maximum pending assignments
-              </Text>
+              <Text color="gray">Maximum pending assignments</Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxPendingAssignments ?? 15)}
@@ -293,9 +281,7 @@ export function TeamAutomationSettings({
         ) : null}
 
         <Stack gap={8}>
-          <Text>
-            Analytics refresh interval (minutes)
-          </Text>
+          <Text>Analytics refresh interval (minutes)</Text>
           <Input
             keyboardType="numeric"
             value={String(formState.analyticsRefreshIntervalMinutes)}
@@ -319,9 +305,7 @@ export function TeamAutomationSettings({
       </Stack>
 
       <Row justify="space-between" align="center">
-        <Text color="gray">
-          {statusLabel}
-        </Text>
+        <Text color="gray">{statusLabel}</Text>
         <Button
           size={8}
           variant="outline"
@@ -352,9 +336,7 @@ function SettingsToggle({
     <Row justify="space-between" gap={12} align="center" flexWrap="wrap">
       <Stack gap={4} flex={1} style={{ minWidth: 200 }}>
         <Text>{label}</Text>
-        <Text color="gray">
-          {description}
-        </Text>
+        <Text color="gray">{description}</Text>
       </Stack>
       <Switch
         size={8}

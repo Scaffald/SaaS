@@ -1,4 +1,7 @@
-import { useRegisterDeviceMutation, useRemoveDeviceMutation } from '@scf/core/utils/notifications-sdk-hooks'
+import {
+  useRegisterDeviceMutation,
+  useRemoveDeviceMutation,
+} from '@scf/core/utils/notifications-sdk-hooks'
 import Constants from 'expo-constants'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'

@@ -1,13 +1,6 @@
 import { useRemoveTeamMember } from '@scaffald/sdk/react'
 import { useEffect, useState } from 'react'
-import {
-  ResponsiveModal,
-  useToast,
-  Button,
-  Text,
-  TextArea,
-  Stack,
-} from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useToast, Button, Text, TextArea, Stack } from '@unicornlove/beyond-ui'
 
 interface RemoveMemberModalProps {
   open: boolean
@@ -72,14 +65,12 @@ export function RemoveMemberModal({
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Remove team member">
       <Stack gap={16}>
         <Text>
-          Are you sure you want to remove{' '}
-          <Text>{member?.displayName ?? 'this member'}</Text> from the team?
+          Are you sure you want to remove <Text>{member?.displayName ?? 'this member'}</Text> from
+          the team?
         </Text>
 
         <Stack gap={8}>
-          <Text color="gray">
-            Removal reason (optional)
-          </Text>
+          <Text color="gray">Removal reason (optional)</Text>
           <TextArea
             value={reason}
             onChangeText={setReason}
@@ -95,15 +86,9 @@ export function RemoveMemberModal({
 
         <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
           <Text>What happens next?</Text>
-          <Text color="gray">
-            • The member loses access to the team immediately.
-          </Text>
-          <Text color="gray">
-            • Their review history is preserved for auditing.
-          </Text>
-          <Text color="gray">
-            • You can re-add them later if needed.
-          </Text>
+          <Text color="gray">• The member loses access to the team immediately.</Text>
+          <Text color="gray">• Their review history is preserved for auditing.</Text>
+          <Text color="gray">• You can re-add them later if needed.</Text>
         </Stack>
 
         <Stack gap={12}>

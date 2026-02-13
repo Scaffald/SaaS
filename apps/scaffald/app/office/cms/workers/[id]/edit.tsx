@@ -14,7 +14,7 @@ export default function EditUserPage() {
 
   if (!id) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} align="center" justify="center">
         <Text>Invalid user ID</Text>
       </Stack>
     )
@@ -25,11 +25,11 @@ export default function EditUserPage() {
       <Stack padding="$4" gap="$4">
         {/* Header */}
         <Stack gap="$3">
-          <Row alignItems="center" justifyContent="space-between">
+          <Row align="center" justify="space-between">
             <H2>Edit User Profile</H2>
-            <Button onPress={() => router.back()} variant="outlined">Back to Users</Button>
+            <Button onPress={() => router.back()} variant="outline">Back to Users</Button>
           </Row>
-          <Text color="$color11" fontSize="$3">
+          <Text color="$color11">
             Comprehensive user profile management with all profile sections.
           </Text>
           <Separator />
@@ -37,7 +37,7 @@ export default function EditUserPage() {
 
         {/* General Profile Section */}
         <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
+          <Text>
             General Information
           </Text>
           <GeneralProfileSection userId={id} mode="admin" />
@@ -45,7 +45,7 @@ export default function EditUserPage() {
 
         {/* Employment Section */}
         <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
+          <Text>
             Employment Preferences
           </Text>
           <EmploymentSection userId={id} mode="admin" />
@@ -53,11 +53,11 @@ export default function EditUserPage() {
 
         {/* Skills Section - Note: Currently operates on current admin user */}
         <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
+          <Text>
             Skills & Expertise
           </Text>
           <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+            <Text color="$yellow11">
               ⚠️ Note: Skills section currently shows/edits the logged-in admin's skills. Full
               multi-user support coming soon.
             </Text>
@@ -69,11 +69,11 @@ export default function EditUserPage() {
 
         {/* Experience Section - Note: Currently operates on current admin user */}
         <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
+          <Text>
             Work Experience
           </Text>
           <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+            <Text color="$yellow11">
               ⚠️ Note: Experience section currently shows/edits the logged-in admin's experience.
               Full multi-user support coming soon.
             </Text>
@@ -83,11 +83,11 @@ export default function EditUserPage() {
 
         {/* Education Section - Note: Currently operates on current admin user */}
         <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
+          <Text>
             Education
           </Text>
           <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+            <Text color="$yellow11">
               ⚠️ Note: Education section currently shows/edits the logged-in admin's education. Full
               multi-user support coming soon.
             </Text>
@@ -97,11 +97,11 @@ export default function EditUserPage() {
 
         {/* Certifications Section - Note: Currently operates on current admin user */}
         <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
+          <Text>
             Certifications
           </Text>
           <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+            <Text color="$yellow11">
               ⚠️ Note: Certifications section currently shows/edits the logged-in admin's
               certifications. Full multi-user support coming soon.
             </Text>

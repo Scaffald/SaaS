@@ -389,9 +389,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 <Row ai="flex-start" gap={12}>
                   <AlertCircle size={20} color="$orange11" mt={2} />
                   <Stack f={1} gap={8}>
-                    <Paragraph color="$orange11">
-                      Save Your API Key Now
-                    </Paragraph>
+                    <Paragraph color="$orange11">Save Your API Key Now</Paragraph>
                     <Paragraph size={12} color="$orange11">
                       This is the only time you'll see the full key. Make sure to copy it and store
                       it securely. If you lose it, you'll need to create a new one.
@@ -405,11 +403,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 <Label>API Key</Label>
                 <Card backgroundColor="$gray3" padding={16} borderRadius={16}>
                   <Stack gap={12}>
-                    <Paragraph
-                      fontFamily="$mono"
-                      color="$gray12"
-                      wordWrap="break-word"
-                    >
+                    <Paragraph fontFamily="$mono" color="$gray12" wordWrap="break-word">
                       {createdKey?.key}
                     </Paragraph>
                     <Button
@@ -467,9 +461,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
               {/* Documentation Link */}
               <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} padding={16}>
                 <Stack gap={8}>
-                  <Paragraph color="$blue11">
-                    Next Steps
-                  </Paragraph>
+                  <Paragraph color="$blue11">Next Steps</Paragraph>
                   <Paragraph size={12} color="$blue11">
                     Check out our SDK documentation to learn how to use your API key:
                   </Paragraph>

@@ -298,9 +298,7 @@ export function AttachmentsStep({
     <Stack gap={24} width="100%" maxWidth={800} padding={16}>
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">
-          Upload Documents
-        </Text>
+        <Text color="gray">Upload Documents</Text>
         <Text color="gray">
           Upload your resume and any additional documents to support your application.
         </Text>
@@ -309,14 +307,8 @@ export function AttachmentsStep({
       {/* Resume Upload */}
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <Text color="gray">
-            Resume
-          </Text>
-          {requireResume && (
-            <Text color="$red10">
-              Required
-            </Text>
-          )}
+          <Text color="gray">Resume</Text>
+          {requireResume && <Text color="$red10">Required</Text>}
         </Row>
 
         {getAttachment('resume') ? (
@@ -333,12 +325,8 @@ export function AttachmentsStep({
             <Row gap={12} align="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <Stack flex={1}>
-                <Text color="gray">
-                  {getAttachment('resume')?.filename}
-                </Text>
-                <Text color="gray">
-                  {formatFileSize(getAttachment('resume')?.size ?? 0)}
-                </Text>
+                <Text color="gray">{getAttachment('resume')?.filename}</Text>
+                <Text color="gray">{formatFileSize(getAttachment('resume')?.size ?? 0)}</Text>
               </Stack>
             </Row>
             <Button
@@ -402,9 +390,7 @@ export function AttachmentsStep({
                 >
                   <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
                   <Stack gap={4} align="center">
-                    <Text color="gray">
-                      Choose a file or drag it here
-                    </Text>
+                    <Text color="gray">Choose a file or drag it here</Text>
                     <Text color="gray" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
@@ -426,11 +412,7 @@ export function AttachmentsStep({
               }}
               disabled={isSubmitting || uploading.resume}
             />
-            {errors.resume && (
-              <Text color="$red10">
-                {errors.resume}
-              </Text>
-            )}
+            {errors.resume && <Text color="$red10">{errors.resume}</Text>}
           </Stack>
         )}
       </Stack>
@@ -438,12 +420,8 @@ export function AttachmentsStep({
       {/* Cover Letter Upload (Optional) */}
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <Text color="gray">
-            Cover Letter
-          </Text>
-          <Text color="gray">
-            Optional
-          </Text>
+          <Text color="gray">Cover Letter</Text>
+          <Text color="gray">Optional</Text>
         </Row>
 
         {getAttachment('cover_letter') ? (
@@ -460,12 +438,8 @@ export function AttachmentsStep({
             <Row gap={12} align="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <Stack flex={1}>
-                <Text color="gray">
-                  {getAttachment('cover_letter')?.filename}
-                </Text>
-                <Text color="gray">
-                  {formatFileSize(getAttachment('cover_letter')?.size ?? 0)}
-                </Text>
+                <Text color="gray">{getAttachment('cover_letter')?.filename}</Text>
+                <Text color="gray">{formatFileSize(getAttachment('cover_letter')?.size ?? 0)}</Text>
               </Stack>
             </Row>
             <Button
@@ -537,9 +511,7 @@ export function AttachmentsStep({
                 >
                   <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
                   <Stack gap={4} align="center">
-                    <Text color="gray">
-                      Choose a file or drag it here
-                    </Text>
+                    <Text color="gray">Choose a file or drag it here</Text>
                     <Text color="gray" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
@@ -561,11 +533,7 @@ export function AttachmentsStep({
               }}
               disabled={isSubmitting || uploading.cover_letter}
             />
-            {errors.cover_letter && (
-              <Text color="$red10">
-                {errors.cover_letter}
-              </Text>
-            )}
+            {errors.cover_letter && <Text color="$red10">{errors.cover_letter}</Text>}
           </Stack>
         )}
       </Stack>
@@ -573,12 +541,8 @@ export function AttachmentsStep({
       {/* Portfolio Upload (Optional) */}
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <Text color="gray">
-            Portfolio / Work Samples
-          </Text>
-          <Text color="gray">
-            Optional
-          </Text>
+          <Text color="gray">Portfolio / Work Samples</Text>
+          <Text color="gray">Optional</Text>
         </Row>
 
         {getAttachment('portfolio') ? (
@@ -595,12 +559,8 @@ export function AttachmentsStep({
             <Row gap={12} align="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <Stack flex={1}>
-                <Text color="gray">
-                  {getAttachment('portfolio')?.filename}
-                </Text>
-                <Text color="gray">
-                  {formatFileSize(getAttachment('portfolio')?.size ?? 0)}
-                </Text>
+                <Text color="gray">{getAttachment('portfolio')?.filename}</Text>
+                <Text color="gray">{formatFileSize(getAttachment('portfolio')?.size ?? 0)}</Text>
               </Stack>
             </Row>
             <Button
@@ -668,9 +628,7 @@ export function AttachmentsStep({
                 >
                   <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
                   <Stack gap={4} align="center">
-                    <Text color="gray">
-                      Choose a file or drag it here
-                    </Text>
+                    <Text color="gray">Choose a file or drag it here</Text>
                     <Text color="gray" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
@@ -692,11 +650,7 @@ export function AttachmentsStep({
               }}
               disabled={isSubmitting || uploading.portfolio}
             />
-            {errors.portfolio && (
-              <Text color="$red10">
-                {errors.portfolio}
-              </Text>
-            )}
+            {errors.portfolio && <Text color="$red10">{errors.portfolio}</Text>}
           </Stack>
         )}
       </Stack>

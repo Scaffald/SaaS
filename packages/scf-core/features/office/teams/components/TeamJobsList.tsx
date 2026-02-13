@@ -41,15 +41,8 @@ export function TeamJobsList({
         gap={12}
         flexDirection="column"
       >
-        <Text accessibilityRole="header">
-          Team jobs
-        </Text>
-        <Row
-          gap={8}
-          align="flex-start"
-          flexDirection="column"
-          width="100%"
-        >
+        <Text accessibilityRole="header">Team jobs</Text>
+        <Row gap={8} align="flex-start" flexDirection="column" width="100%">
           <Button
             size={8}
             variant="outline"
@@ -97,9 +90,7 @@ export function TeamJobsList({
         >
           <Row gap={8} align="center">
             <AlertTriangle size={18} color="$yellow10" />
-            <Text>
-              Unable to load jobs
-            </Text>
+            <Text>Unable to load jobs</Text>
           </Row>
           <Text color="gray">
             {error.message || 'Something went wrong while fetching jobs for this team.'}
@@ -131,9 +122,7 @@ export function TeamJobsList({
                 flexDirection="column"
               >
                 <Stack gap={4} flex={1} width="100%">
-                  <Text>
-                    {job.title}
-                  </Text>
+                  <Text>{job.title}</Text>
                   <Text color="gray">{job.organization?.name ?? 'No organization'}</Text>
                 </Stack>
                 <StatusChip status={job.status ?? 'draft'} />
@@ -149,11 +138,7 @@ export function TeamJobsList({
                   ))}
                 </Row>
               ) : null}
-              <Row
-                gap={8}
-                flexDirection="column"
-                align="stretch"
-              >
+              <Row gap={8} flexDirection="column" align="stretch">
                 <Text color="gray">
                   Updated{' '}
                   {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
@@ -231,9 +216,7 @@ function StatusChip({ status }: { status: string }) {
       accessibilityRole="text"
       accessibilityLabel={`Job status ${normalized}`}
     >
-      <Text color={textColor}>
-        {normalized}
-      </Text>
+      <Text color={textColor}>{normalized}</Text>
     </Row>
   )
 }

@@ -86,28 +86,28 @@ export function IdVerificationRequestPanel({
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Unable to create payment'
       toast.show({
-          title: 'Unable to create payment',
-          variant: 'error',
-        })
+        title: 'Unable to create payment',
+        variant: 'error',
+      })
     },
   })
 
   const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation({
     onSuccess: async () => {
       toast.show({
-          title: 'Verification requested',
-          message: 'Worker receives a Persona link immediately.',
-          variant: 'success',
-        })
+        title: 'Verification requested',
+        message: 'Worker receives a Persona link immediately.',
+        variant: 'success',
+      })
       await queryClient.invalidateQueries({ queryKey: [['idVerification', 'listVerifications']] })
       resetForm()
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Payment confirmation failed'
       toast.show({
-          title: 'Payment confirmation failed',
-          variant: 'error',
-        })
+        title: 'Payment confirmation failed',
+        variant: 'error',
+      })
     },
   })
 
@@ -123,19 +123,19 @@ export function IdVerificationRequestPanel({
   const createPaymentSession = async () => {
     if (!organizationId) {
       toast.show({
-          title: 'Select an organization',
-          message: 'Choose which organization should be billed.',
-          variant: 'error',
-        })
+        title: 'Select an organization',
+        message: 'Choose which organization should be billed.',
+        variant: 'error',
+      })
       return
     }
 
     if (!selectedWorkerId || !selectedPricingId) {
       toast.show({
-          title: 'Missing details',
-          message: 'Select a worker and pricing plan to continue.',
-          variant: 'error',
-        })
+        title: 'Missing details',
+        message: 'Select a worker and pricing plan to continue.',
+        variant: 'error',
+      })
       return
     }
 
@@ -170,9 +170,7 @@ export function IdVerificationRequestPanel({
   return (
     <Stack gap={16} padding={16} borderWidth={1} borderColor="$borderColor" borderRadius={16}>
       <Stack gap={4}>
-        <Text color="gray">
-          Trigger Verification
-        </Text>
+        <Text color="gray">Trigger Verification</Text>
         <Text color="gray">
           Collect payment and generate a Persona inquiry on behalf of an organization.
         </Text>
@@ -261,11 +259,7 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      {paymentError ? (
-        <Text color="$red11">
-          {paymentError}
-        </Text>
-      ) : null}
+      {paymentError ? <Text color="$red11">{paymentError}</Text> : null}
 
       {paymentSession?.clientSecret ? (
         <PaymentIntentForm
@@ -297,9 +291,7 @@ export function IdVerificationRequestPanel({
       <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
         <Row gap={8} align="center">
           <ShieldCheck size={16} color="gray" />
-          <Text color="gray">
-            What happens next?
-          </Text>
+          <Text color="gray">What happens next?</Text>
         </Row>
         <Text color="gray">
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s

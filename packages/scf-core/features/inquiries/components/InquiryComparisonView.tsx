@@ -115,16 +115,12 @@ export function InquiryComparisonView({
       {/* Header */}
       <Row justify="space-between" align="center">
         <Stack gap={4}>
-          <Text>
-            Compare Inquiries
-          </Text>
+          <Text>Compare Inquiries</Text>
           <Text color="gray">
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
           {summary && summary.uniqueStatuses.size > 1 && (
-            <Text color="gray">
-              Highlighted rows indicate differing terms between candidates.
-            </Text>
+            <Text color="gray">Highlighted rows indicate differing terms between candidates.</Text>
           )}
         </Stack>
         {onClose && (

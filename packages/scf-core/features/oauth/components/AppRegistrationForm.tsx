@@ -17,7 +17,10 @@ export function AppRegistrationForm() {
   const [termsUrl, setTermsUrl] = useState('')
   const [developerEmail, setDeveloperEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [credentials, setCredentials] = useState<{ client_id: string; client_secret: string } | null>(null)
+  const [credentials, setCredentials] = useState<{
+    client_id: string
+    client_secret: string
+  } | null>(null)
 
   const registerApp = api.oauth.registerApp.useMutation()
 
@@ -65,26 +68,20 @@ export function AppRegistrationForm() {
       <Stack flex={1} padding={16} maxWidth={800} alignSelf="center" gap={16}>
         <Card padding={16} gap={16}>
           <Stack gap={12}>
-            <SizableText size={24}>
-              App Registration Successful!
-            </SizableText>
+            <SizableText size={24}>App Registration Successful!</SizableText>
             <Paragraph size={12}>
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
 
             <Stack gap={8} padding={16} backgroundColor="$blue2" borderRadius={8}>
               <Stack gap={4}>
-                <SizableText size={8}>
-                  Client ID
-                </SizableText>
+                <SizableText size={8}>Client ID</SizableText>
                 <SizableText size={12} fontFamily="$mono">
                   {credentials.client_id}
                 </SizableText>
               </Stack>
               <Stack gap={4}>
-                <SizableText size={8}>
-                  Client Secret
-                </SizableText>
+                <SizableText size={8}>Client Secret</SizableText>
                 <SizableText size={12} fontFamily="$mono" color="$red10">
                   {credentials.client_secret}
                 </SizableText>
@@ -96,18 +93,14 @@ export function AppRegistrationForm() {
             </Paragraph>
 
             <Stack gap={8}>
-              <SizableText size={16}>
-                Next Steps
-              </SizableText>
+              <SizableText size={16}>Next Steps</SizableText>
               <Paragraph size={8}>
                 1. Test your app with the limited scopes (openid, profile, email)
               </Paragraph>
               <Paragraph size={8}>
                 2. Request additional scopes via the developer dashboard
               </Paragraph>
-              <Paragraph size={8}>
-                3. Wait for admin approval for elevated permissions
-              </Paragraph>
+              <Paragraph size={8}>3. Wait for admin approval for elevated permissions</Paragraph>
             </Stack>
           </Stack>
         </Card>
@@ -120,9 +113,7 @@ export function AppRegistrationForm() {
       <Card padding={16} gap={16}>
         <Stack gap={16}>
           <Stack gap={8}>
-            <SizableText size={24}>
-              Register OAuth Application
-            </SizableText>
+            <SizableText size={24}>Register OAuth Application</SizableText>
             <Paragraph size={8} color="gray">
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
@@ -241,4 +232,3 @@ export function AppRegistrationForm() {
     </Stack>
   )
 }
-

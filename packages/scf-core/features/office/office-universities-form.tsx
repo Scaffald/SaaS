@@ -71,39 +71,39 @@ export function OfficeUniversitiesForm({
   const createMutation = api.office.universities.createUniversity.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Success',
-          message: 'University created successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'University created successfully',
+        variant: 'success',
+      })
       reset()
       onUniversitySaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create university'
       toast.show({
-          title: 'Error',
-          message: errorMessage,
-          variant: 'error',
-        })
+        title: 'Error',
+        message: errorMessage,
+        variant: 'error',
+      })
     },
   })
 
   const updateMutation = api.office.universities.updateUniversity.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Success',
-          message: 'University updated successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'University updated successfully',
+        variant: 'success',
+      })
       onUniversitySaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update university'
       toast.show({
-          title: 'Error',
-          message: errorMessage,
-          variant: 'error',
-        })
+        title: 'Error',
+        message: errorMessage,
+        variant: 'error',
+      })
     },
   })
 
@@ -227,9 +227,7 @@ export function OfficeUniversitiesForm({
             <Text>
               Vanity URL <Text color="$red10">*</Text>
             </Text>
-            <Text color="gray">
-              URL-friendly username (auto-generated from name)
-            </Text>
+            <Text color="gray">URL-friendly username (auto-generated from name)</Text>
             <Controller
               name="slug"
               control={control}
@@ -280,9 +278,7 @@ export function OfficeUniversitiesForm({
             <Text>
               Country Code <Text color="$red10">*</Text>
             </Text>
-            <Text color="gray">
-              2-letter ISO country code (e.g. US, CA, GB)
-            </Text>
+            <Text color="gray">2-letter ISO country code (e.g. US, CA, GB)</Text>
             <Controller
               name="alpha_two_code"
               control={control}
@@ -307,9 +303,7 @@ export function OfficeUniversitiesForm({
           {/* State/Province */}
           <Stack gap={8}>
             <Text>State/Province</Text>
-            <Text color="gray">
-              Optional state or province (e.g. Massachusetts, Ontario)
-            </Text>
+            <Text color="gray">Optional state or province (e.g. Massachusetts, Ontario)</Text>
             <Controller
               name="state_province"
               control={control}
@@ -327,9 +321,7 @@ export function OfficeUniversitiesForm({
           {/* Domains */}
           <Stack gap={8}>
             <Text>Domains</Text>
-            <Text color="gray">
-              Email domains (comma-separated, e.g. harvard.edu, hbs.edu)
-            </Text>
+            <Text color="gray">Email domains (comma-separated, e.g. harvard.edu, hbs.edu)</Text>
             <Controller
               name="domains"
               control={control}
@@ -348,9 +340,7 @@ export function OfficeUniversitiesForm({
           {/* Web Pages */}
           <Stack gap={8}>
             <Text>Web Pages</Text>
-            <Text color="gray">
-              Official websites (comma-separated URLs)
-            </Text>
+            <Text color="gray">Official websites (comma-separated URLs)</Text>
             <Controller
               name="web_pages"
               control={control}
@@ -367,11 +357,7 @@ export function OfficeUniversitiesForm({
           </Stack>
 
           {/* Submit Button */}
-          <Row
-            justify="flex-end"
-            paddingTop={16}
-            gap={8}
-          >
+          <Row justify="flex-end" paddingTop={16} gap={8}>
             {isEditing && (
               <Button
                 variant="outline"

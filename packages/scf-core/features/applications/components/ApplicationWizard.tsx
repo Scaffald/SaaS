@@ -191,9 +191,7 @@ export function ApplicationWizard({
             <Text color="gray">
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
             </Text>
-            <Text color="gray">
-              {organizationName}
-            </Text>
+            <Text color="gray">{organizationName}</Text>
           </Stack>
           {/* Save Status Indicator */}
           <SaveStatusIndicator
@@ -213,12 +211,7 @@ export function ApplicationWizard({
 
       {/* Error Display */}
       {submitError && (
-        <Stack
-          padding={16}
-          backgroundColor="$red2"
-          borderBottomWidth={1}
-          borderBottomColor="$red7"
-        >
+        <Stack padding={16} backgroundColor="$red2" borderBottomWidth={1} borderBottomColor="$red7">
           <Row gap={8} align="center">
             <AlertCircle size={20} color="$red10" />
             <Text color="$red11" flex={1}>
@@ -331,9 +324,7 @@ export function ApplicationWizard({
             borderColor="$borderColor"
           >
             <Stack gap={8}>
-              <Text color="gray">
-                Cancel Application?
-              </Text>
+              <Text color="gray">Cancel Application?</Text>
               <Text color="gray">
                 Your progress has been auto-saved. You can return to complete your application
                 later.

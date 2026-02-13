@@ -5,10 +5,7 @@
 
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
-import type {
-  Connection,
-  SendConnectionRequestParams,
-} from '@scaffald/sdk/resources/connections'
+import type { Connection, SendConnectionRequestParams } from '@scaffald/sdk/resources/connections'
 
 // ============================================================================
 // QUERY HOOKS
@@ -23,7 +20,7 @@ export function useConnections(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.connections.list()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -37,7 +34,7 @@ export function usePendingConnections(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.connections.getPending()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - more frequent since these are real-time
   })
 }
@@ -51,7 +48,7 @@ export function useConnectionStatus(userId: string | undefined, options?: { enab
       if (!client || !userId) throw new Error('Missing client or userId')
       return client.connections.getStatus(userId)
     },
-    enabled: !!client && !!userId && (options?.enabled !== false),
+    enabled: !!client && !!userId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }

@@ -37,10 +37,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       <Stack gap={4}>
         <Row align="center" gap={8}>
           <Briefcase size={16} color={isSelected ? '$yellow10' : '$color10'} />
-          <Text
-            color={isSelected ? '$yellow11' : '$color12'}
-            numberOfLines={2}
-          >
+          <Text color={isSelected ? '$yellow11' : '$color12'} numberOfLines={2}>
             {job.title}
           </Text>
         </Row>
@@ -105,9 +102,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {salaryRange && (
         <Row align="center" gap={6}>
           <DollarSign size={14} color={isSelected ? '$yellow10' : '$green10'} />
-          <Text color="$green10">
-            {salaryRange}
-          </Text>
+          <Text color="$green10">{salaryRange}</Text>
         </Row>
       )}
 

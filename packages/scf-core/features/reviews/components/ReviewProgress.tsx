@@ -34,17 +34,11 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
                 {isCompleted ? (
                   <Check size={16} color="white" />
                 ) : (
-                  <Text color={isCurrent ? 'white' : '$color11'}>
-                    {stepNumber}
-                  </Text>
+                  <Text color={isCurrent ? 'white' : '$color11'}>{stepNumber}</Text>
                 )}
               </Circle>
               {index < totalSteps - 1 && (
-                <Row
-                  width={24}
-                  height={2}
-                  backgroundColor={isCompleted ? '$green10' : '$color5'}
-                />
+                <Row width={24} height={2} backgroundColor={isCompleted ? '$green10' : '$color5'} />
               )}
             </Row>
           )

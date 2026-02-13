@@ -13,12 +13,8 @@ export function ReviewStep8Recommendation({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          Final Recommendation
-        </Text>
-        <Text color="gray">
-          Would you recommend working with this person?
-        </Text>
+        <Text color="gray">Final Recommendation</Text>
+        <Text color="gray">Would you recommend working with this person?</Text>
       </Stack>
 
       {/* Recommendation Buttons */}
@@ -60,16 +56,12 @@ export function ReviewStep8Recommendation({
             {recommendation ? (
               <>
                 <ThumbsUp size={24} color="$green11" />
-                <Text color="$green11">
-                  You recommend this person
-                </Text>
+                <Text color="$green11">You recommend this person</Text>
               </>
             ) : (
               <>
                 <ThumbsDown size={24} color="$red11" />
-                <Text color="$red11">
-                  You don't recommend this person
-                </Text>
+                <Text color="$red11">You don't recommend this person</Text>
               </>
             )}
           </Row>

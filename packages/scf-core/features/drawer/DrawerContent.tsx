@@ -326,16 +326,12 @@ const DrawerProfileCard = ({
           borderColor="$borderColor"
           style={{ borderRadius: avatarSize / 2 }}
         >
-          <Text color="gray">
-            {fallbackInitial}
-          </Text>
+          <Text color="gray">{fallbackInitial}</Text>
         </Stack>
       )}
 
       <Stack flex={1} gap={8}>
-        <Text color="gray">
-          {displayName}
-        </Text>
+        <Text color="gray">{displayName}</Text>
         <Row gap={16}>
           <Text
             color="$blue10"

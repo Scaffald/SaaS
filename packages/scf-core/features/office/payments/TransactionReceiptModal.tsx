@@ -99,12 +99,8 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
               >
                 <Stack gap={12}>
                   <Row justify="space-between" align="center">
-                    <Text>
-                      {receiptQuery.data.receiptNumber}
-                    </Text>
-                    <Text color="$green11">
-                      {receiptQuery.data.amount}
-                    </Text>
+                    <Text>{receiptQuery.data.receiptNumber}</Text>
+                    <Text color="$green11">{receiptQuery.data.amount}</Text>
                   </Row>
                   <Stack gap={8}>
                     <Row justify="space-between">
@@ -134,12 +130,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
               </Card>
 
               <Row gap={8} justify="flex-end">
-                <Button
-                  size={16}
-                  variant="outline"
-                  icon={Download}
-                  onPress={handleDownloadReceipt}
-                >
+                <Button size={16} variant="outline" icon={Download} onPress={handleDownloadReceipt}>
                   Download Receipt
                 </Button>
                 <Button size={16} variant="outline" icon={X} onPress={() => onOpenChange(false)}>

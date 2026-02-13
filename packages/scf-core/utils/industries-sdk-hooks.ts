@@ -5,7 +5,6 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
-import type { Industry, IndustryListResponse } from '@scaffald/sdk/resources/industries'
 
 // ============================================================================
 // QUERY HOOKS
@@ -20,7 +19,7 @@ export function useIndustries(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.industries.list()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 60 * 60 * 1000, // 1 hour - industries rarely change
   })
 }
@@ -34,7 +33,7 @@ export function useIndustry(slug: string | undefined, options?: { enabled?: bool
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.industries.retrieve(slug)
     },
-    enabled: !!client && !!slug && (options?.enabled !== false),
+    enabled: !!client && !!slug && options?.enabled !== false,
     staleTime: 60 * 60 * 1000, // 1 hour - industries rarely change
   })
 }

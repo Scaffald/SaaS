@@ -38,9 +38,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
             borderColor="$borderColor"
           >
             <Row justify="space-between" align="center">
-              <Text color="gray">
-                {facetNarrative.title || facetKey}
-              </Text>
+              <Text color="gray">{facetNarrative.title || facetKey}</Text>
               <Text
                 color={
                   facetScore.result === 'high'
@@ -53,11 +51,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
                 {facetScore.result.toUpperCase()}
               </Text>
             </Row>
-            {facetNarrative.text && (
-              <Text color="gray">
-                {facetNarrative.text}
-              </Text>
-            )}
+            {facetNarrative.text && <Text color="gray">{facetNarrative.text}</Text>}
           </Stack>
         )
       })}

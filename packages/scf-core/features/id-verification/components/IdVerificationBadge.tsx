@@ -87,14 +87,8 @@ export function IdVerificationBadge({
       borderColor={muted ? mutedBorder : copy.border}
     >
       <Icon size={size === 'sm' ? 14 : 16} color={muted ? mutedColor : copy.color} />
-      <Text color={muted ? mutedColor : copy.color}>
-        {copy.label}
-      </Text>
-      {expiresText && (
-        <Text color={muted ? mutedSubtext : copy.color}>
-          · exp {expiresText}
-        </Text>
-      )}
+      <Text color={muted ? mutedColor : copy.color}>{copy.label}</Text>
+      {expiresText && <Text color={muted ? mutedSubtext : copy.color}>· exp {expiresText}</Text>}
     </Row>
   )
 }

@@ -135,9 +135,7 @@ export function useReviewsBySubject(
 /**
  * Get user's own reviews
  */
-export function useMyReviews(
-  options?: Omit<UseQueryOptions<Review[]>, 'queryKey' | 'queryFn'>
-) {
+export function useMyReviews(options?: Omit<UseQueryOptions<Review[]>, 'queryKey' | 'queryFn'>) {
   const client = useScaffaldJobsClient()
 
   return useQuery({

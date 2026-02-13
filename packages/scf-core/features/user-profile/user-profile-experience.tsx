@@ -30,9 +30,7 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
       <Stack gap={16} padding={20}>
         <Row gap={8} align="center">
           <Briefcase size={24} color="$blue10" />
-          <Text color="gray">
-            Work Experience
-          </Text>
+          <Text color="gray">Work Experience</Text>
         </Row>
 
         <Stack gap={12}>
@@ -40,14 +38,8 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
             <Card key={exp.id} bordered backgroundColor="$color2">
               <Stack gap={12} padding={16}>
                 <Stack gap={4}>
-                  <Text color="gray">
-                    {exp.job_title}
-                  </Text>
-                  {exp.company_name && (
-                    <Text color="gray">
-                      {exp.company_name}
-                    </Text>
-                  )}
+                  <Text color="gray">{exp.job_title}</Text>
+                  {exp.company_name && <Text color="gray">{exp.company_name}</Text>}
                 </Stack>
 
                 <Row gap={12} flexWrap="wrap">
@@ -63,9 +55,7 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                   {exp.location && (
                     <Row gap={8} align="center">
                       <MapPin size={16} color="gray" />
-                      <Text color="gray">
-                        {exp.location}
-                      </Text>
+                      <Text color="gray">{exp.location}</Text>
                     </Row>
                   )}
                 </Row>

@@ -9,14 +9,7 @@ import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useUser } from '@scf/core/utils/useUser'
 import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
-import {
-  Button,
-  Form,
-  Input,
-  Paragraph,
-  Stack,
-  useThemeContext,
-} from '@unicornlove/beyond-ui'
+import { Button, Form, Input, Paragraph, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
 import type { AuthChangeEvent } from '@supabase/auth-js'
 import { TRPCClientError } from '@trpc/client'

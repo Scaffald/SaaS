@@ -44,12 +44,8 @@ export function SkillCompletionProgress({
 
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text color="$blue11">
-            Skill section completeness
-          </Text>
-          <Text color="$blue11">
-            {completionPercent}%
-          </Text>
+          <Text color="$blue11">Skill section completeness</Text>
+          <Text color="$blue11">{completionPercent}%</Text>
         </Row>
         <Progress value={completionPercent} max={100} backgroundColor="$blue3" size={8}>
           <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />

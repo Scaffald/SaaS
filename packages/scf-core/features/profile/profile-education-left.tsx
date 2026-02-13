@@ -1,4 +1,8 @@
-import { useEducation, useEducationLevel, useSaveEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
+import {
+  useEducation,
+  useEducationLevel,
+  useSaveEducationMutation,
+} from '@scf/core/utils/profile-education-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
@@ -129,8 +133,15 @@ export function ProfileEducationLeft({
         queryClient.cancelQueries({ queryKey: ['profiles', 'education', 'level'] }),
       ])
 
-      const previousEducation = queryClient.getQueryData<EducationApiResponse>(['profiles', 'education'])
-      const previousLevel = queryClient.getQueryData<EducationLevelApiResponse>(['profiles', 'education', 'level'])
+      const previousEducation = queryClient.getQueryData<EducationApiResponse>([
+        'profiles',
+        'education',
+      ])
+      const previousLevel = queryClient.getQueryData<EducationLevelApiResponse>([
+        'profiles',
+        'education',
+        'level',
+      ])
 
       // Type assertion needed because form data has required booleans but API allows null
       // Form data is compatible but has slightly different optionality
@@ -157,19 +168,20 @@ export function ProfileEducationLeft({
       }
       failProfileSync()
       toast.show({
-          title: 'Save Failed',
-          message: error instanceof Error
+        title: 'Save Failed',
+        message:
+          error instanceof Error
             ? error.message
             : 'Failed to save education entry. Please try again.',
-          variant: 'error',
-        })
+        variant: 'error',
+      })
     },
     onSuccess: () => {
       toast.show({
-          title: 'Education Saved',
-          message: 'Your education history has been updated successfully!',
-          variant: 'success',
-        })
+        title: 'Education Saved',
+        message: 'Your education history has been updated successfully!',
+        variant: 'success',
+      })
     },
     onSettled: (_data: SaveEducationOutput | undefined, error: unknown) => {
       if (!error) {
@@ -497,9 +509,7 @@ export function ProfileEducationLeft({
           backgroundColor="$red3"
           borderRadius={16}
         >
-          <Text color="$red11">
-            Please resolve the following issues:
-          </Text>
+          <Text color="$red11">Please resolve the following issues:</Text>
           <Stack gap={4}>
             {errorSummary.map((message) => (
               <Text key={message} color="$red11">
@@ -580,9 +590,7 @@ export function ProfileEducationLeft({
                 borderRadius={16}
               >
                 <Row justify="space-between" align="center">
-                  <Text>
-                    {entryData?.id ? 'Edit Education' : `Education ${index + 1}`}
-                  </Text>
+                  <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
                   <Button size={8} variant="outline" onPress={() => remove(index)} icon={X}>
                     Remove
                   </Button>
@@ -1175,11 +1183,7 @@ function SmartSelect({
           </ScrollView>
         </Popover.Content>
       </Popover>
-      {error && (
-        <Text color="$red10">
-          {error}
-        </Text>
-      )}
+      {error && <Text color="$red10">{error}</Text>}
     </Stack>
   )
 }

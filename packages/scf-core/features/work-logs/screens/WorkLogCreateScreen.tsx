@@ -14,9 +14,7 @@ export function WorkLogCreateScreen() {
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <Stack padding={16} gap={16}>
         <Stack gap={4}>
-          <Text>
-            Record work log
-          </Text>
+          <Text>Record work log</Text>
           <Text color="gray">
             Document the work performed today, capture time entries, tasks, and skills used.
           </Text>
@@ -28,10 +26,10 @@ export function WorkLogCreateScreen() {
           submitLabel="Save Work Log"
           onSubmitSuccess={(workLogId) => {
             toast.show({
-          title: 'Work log saved',
-          message: 'You can review or edit this entry at any time.',
-          variant: 'success',
-        })
+              title: 'Work log saved',
+              message: 'You can review or edit this entry at any time.',
+              variant: 'success',
+            })
             router.replace(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId }))
           }}
         />

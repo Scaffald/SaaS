@@ -42,16 +42,10 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
           <Stack flex={1} gap={8}>
             <Row align="center" gap={8}>
               <Building2 size={20} color="$blue10" />
-              <Text color="gray">
-                {employer.name}
-              </Text>
+              <Text color="gray">{employer.name}</Text>
             </Row>
 
-            {employer.industries && (
-              <Text color="$blue10">
-                {employer.industries.name}
-              </Text>
-            )}
+            {employer.industries && <Text color="$blue10">{employer.industries.name}</Text>}
           </Stack>
         </Row>
 
@@ -69,18 +63,14 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
           {location && (
             <Row align="center" gap={8}>
               <MapPin size={16} color="gray" />
-              <Text color="gray">
-                {location}
-              </Text>
+              <Text color="gray">{location}</Text>
             </Row>
           )}
 
           {employer.employee_count_range && (
             <Row align="center" gap={8}>
               <Users size={16} color="gray" />
-              <Text color="gray">
-                {employer.employee_count_range} employees
-              </Text>
+              <Text color="gray">{employer.employee_count_range} employees</Text>
             </Row>
           )}
 

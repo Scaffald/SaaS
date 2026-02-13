@@ -1,8 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-export async function invalidateProfileQueries(
-  queryClient: QueryClient
-): Promise<void> {
+export async function invalidateProfileQueries(queryClient: QueryClient): Promise<void> {
   const tasks: Array<Promise<unknown>> = [
     // General profile
     queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'general'] }),
@@ -24,7 +22,9 @@ export async function invalidateProfileQueries(
 
     // Certifications
     queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'certifications'] }),
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'certifications', 'top-level'] }),
+    queryClient.invalidateQueries({
+      queryKey: ['scaffald', 'profiles', 'certifications', 'top-level'],
+    }),
 
     // User profile (comprehensive view)
     queryClient.invalidateQueries({ queryKey: ['scaffald', 'user-profiles'] }),

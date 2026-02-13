@@ -39,9 +39,9 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
   const depositMutation = api.payments.depositCredits.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Credits deposited',
-          message: 'Your account credits have been updated successfully.',
-        })
+        title: 'Credits deposited',
+        message: 'Your account credits have been updated successfully.',
+      })
       creditsQuery.refetch()
       ledgerQuery.refetch()
       setShowDepositForm(false)
@@ -50,9 +50,9 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Failed to deposit credits',
-          variant: 'error',
-        })
+        title: 'Failed to deposit credits',
+        variant: 'error',
+      })
     },
   })
 
@@ -60,10 +60,10 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
     const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
     if (Number.isNaN(amountCents) || amountCents <= 0) {
       toast.show({
-          title: 'Invalid amount',
-          message: 'Please enter a valid amount greater than zero.',
-          variant: 'error',
-        })
+        title: 'Invalid amount',
+        message: 'Please enter a valid amount greater than zero.',
+        variant: 'error',
+      })
       return
     }
 
@@ -92,12 +92,8 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
     <Card bordered padding={16} gap={12}>
       <Row justify="space-between" align="center">
         <Stack>
-          <Text>
-            Account Credits
-          </Text>
-          <Text color="gray">
-            Pre-funded balance for automatic payments
-          </Text>
+          <Text>Account Credits</Text>
+          <Text color="gray">Pre-funded balance for automatic payments</Text>
         </Stack>
         {!showDepositForm && (
           <Button size={12} theme="blue" icon={Plus} onPress={() => setShowDepositForm(true)}>
@@ -111,9 +107,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
         <Row gap={12} align="center">
           <DollarSign size={32} color="$green11" />
           <Stack flex={1}>
-            <Text color="gray">
-              Current Balance
-            </Text>
+            <Text color="gray">Current Balance</Text>
             <Text color="$green11">
               {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
             </Text>
@@ -124,9 +118,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       {showDepositForm ? (
         <Stack gap={12}>
           <Stack gap={8}>
-            <Text>
-              Deposit Amount
-            </Text>
+            <Text>Deposit Amount</Text>
             <Input
               placeholder="0.00"
               value={depositAmount}
@@ -134,9 +126,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               keyboardType="decimal-pad"
               size={16}
             />
-            <Text color="gray">
-              Enter the amount you want to add to your account credits.
-            </Text>
+            <Text color="gray">Enter the amount you want to add to your account credits.</Text>
           </Stack>
           <Row gap={8}>
             <Button
@@ -157,10 +147,10 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                 const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
                 if (Number.isNaN(amountCents) || amountCents <= 0) {
                   toast.show({
-          title: 'Invalid amount',
-          message: 'Please enter a valid amount greater than zero.',
-          variant: 'error',
-        })
+                    title: 'Invalid amount',
+                    message: 'Please enter a valid amount greater than zero.',
+                    variant: 'error',
+                  })
                   return
                 }
                 depositMutation.mutate({
@@ -179,9 +169,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
           {/* Recent Transactions */}
           {ledgerQuery.data && ledgerQuery.data.items.length > 0 && (
             <Stack gap={8}>
-              <Text>
-                Recent Transactions
-              </Text>
+              <Text>Recent Transactions</Text>
               <Stack gap={4}>
                 {ledgerQuery.data.items
                   .slice(0, 5)
@@ -204,16 +192,10 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                         borderRadius={8}
                       >
                         <Stack flex={1}>
-                          <Text>
-                            {entry.description ?? entry.transactionType}
-                          </Text>
-                          <Text color="gray">
-                            {new Date(entry.createdAt).toLocaleDateString()}
-                          </Text>
+                          <Text>{entry.description ?? entry.transactionType}</Text>
+                          <Text color="gray">{new Date(entry.createdAt).toLocaleDateString()}</Text>
                         </Stack>
-                        <Text
-                          color={entry.direction === 'credit' ? '$green11' : '$red11'}
-                        >
+                        <Text color={entry.direction === 'credit' ? '$green11' : '$red11'}>
                           {entry.direction === 'credit' ? '+' : '-'}
                           {formatCurrency(entry.amountCents, entry.currency)}
                         </Text>

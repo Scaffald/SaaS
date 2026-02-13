@@ -61,12 +61,8 @@ export const AssessmentsLandingLeft = () => {
           <DashboardWidget key={key} gap={spacing.md}>
             <Stack gap={spacing.sm}>
               <Stack gap={spacing.xs}>
-                <Text color="gray">
-                  {title}
-                </Text>
-                <Text color="gray">
-                  {description}
-                </Text>
+                <Text color="gray">{title}</Text>
+                <Text color="gray">{description}</Text>
               </Stack>
 
               <Button
@@ -80,11 +76,7 @@ export const AssessmentsLandingLeft = () => {
                 <Button.Text>{ctaLabel}</Button.Text>
               </Button>
 
-              {estimatedTime ? (
-                <Text color="gray">
-                  {estimatedTime}
-                </Text>
-              ) : null}
+              {estimatedTime ? <Text color="gray">{estimatedTime}</Text> : null}
             </Stack>
           </DashboardWidget>
         )

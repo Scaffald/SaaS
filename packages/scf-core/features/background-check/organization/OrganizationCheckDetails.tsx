@@ -5,16 +5,16 @@ import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyon
 import { getStatusMetadata } from '../components/status.utils'
 
 type OrganizationCheckSummary = {
-  id: string;
-  status: string;
-  [key: string]: unknown;
-};
+  id: string
+  status: string
+  [key: string]: unknown
+}
 type OrganizationCheckDetail = {
-  id: string;
-  status: string;
-  component_statuses?: Array<Record<string, unknown>>;
-  [key: string]: unknown;
-};
+  id: string
+  status: string
+  component_statuses?: Array<Record<string, unknown>>
+  [key: string]: unknown
+}
 
 interface OrganizationCheckDetailsProps {
   checkId: string
@@ -56,9 +56,7 @@ export function OrganizationCheckDetails({
       backgroundColor="$color2"
     >
       <Row justify="space-between" align="center">
-        <Text color="gray">
-          Background Check Details
-        </Text>
+        <Text color="gray">Background Check Details</Text>
         <Row gap={8}>
           <Button
             size={8}
@@ -78,17 +76,13 @@ export function OrganizationCheckDetails({
       {checkQuery.isLoading ? (
         <Stack gap={8} align="center" paddingVertical={16}>
           <Spinner size="lg" />
-          <Text color="gray">
-            Loading background check details…
-          </Text>
+          <Text color="gray">Loading background check details…</Text>
         </Stack>
       ) : null}
 
       {checkQuery.isError ? (
         <Stack gap={8} padding={12} backgroundColor="$color3" borderRadius={16}>
-          <Text color="gray">
-            We couldn’t load the background check details. Please try again.
-          </Text>
+          <Text color="gray">We couldn’t load the background check details. Please try again.</Text>
           <Button
             size={12}
             variant="outline"
@@ -104,9 +98,7 @@ export function OrganizationCheckDetails({
       {!checkQuery.isLoading && !checkQuery.isError && (detail || summary) ? (
         <Stack gap={12}>
           <Stack gap={4}>
-            <Text color="gray">
-              Overview
-            </Text>
+            <Text color="gray">Overview</Text>
             <Separator />
           </Stack>
 
@@ -151,20 +143,14 @@ export function OrganizationCheckDetails({
 
           {detail?.summary ? (
             <Stack gap={8}>
-              <Text color="gray">
-                Summary
-              </Text>
-              <Text color="gray">
-                {detail.summary}
-              </Text>
+              <Text color="gray">Summary</Text>
+              <Text color="gray">{detail.summary}</Text>
             </Stack>
           ) : null}
 
           {detail?.findings ? (
             <Stack gap={8}>
-              <Text color="gray">
-                Findings
-              </Text>
+              <Text color="gray">Findings</Text>
               <Text color="gray">
                 {typeof detail.findings === 'string'
                   ? detail.findings
@@ -175,9 +161,7 @@ export function OrganizationCheckDetails({
 
           {componentStatuses.length > 0 ? (
             <Stack gap={8}>
-              <Text color="gray">
-                Component Statuses
-              </Text>
+              <Text color="gray">Component Statuses</Text>
               <Stack gap={8}>
                 {componentStatuses.map((component, index) => (
                   <Stack
@@ -216,13 +200,8 @@ export function OrganizationCheckDetails({
 
           {detail?.metadata ? (
             <Stack gap={8}>
-              <Text color="gray">
-                Metadata
-              </Text>
-              <Text
-                color="gray"
-                style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
-              >
+              <Text color="gray">Metadata</Text>
+              <Text color="gray" style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
                 {JSON.stringify(detail.metadata, null, 2)}
               </Text>
             </Stack>
@@ -241,12 +220,8 @@ interface InfoRowProps {
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <Row gap={8} justify="space-between" flexWrap="wrap">
-      <Text color="gray">
-        {label}
-      </Text>
-      <Text color="gray">
-        {value}
-      </Text>
+      <Text color="gray">{label}</Text>
+      <Text color="gray">{value}</Text>
     </Row>
   )
 }

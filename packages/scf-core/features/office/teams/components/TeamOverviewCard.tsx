@@ -59,9 +59,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
       <Row gap={16} justify="space-between" flexWrap="wrap">
         <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
           <Row gap={8} align="center" flexWrap="wrap">
-            <Text>
-              {team.name || 'Untitled team'}
-            </Text>
+            <Text>{team.name || 'Untitled team'}</Text>
             {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
           </Row>
           <Text color="gray">
@@ -111,9 +109,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
         <Text color="gray" textTransform="uppercase">
           Team slug
         </Text>
-        <Text color="gray">
-          {team.slug || 'Not configured'}
-        </Text>
+        <Text color="gray">{team.slug || 'Not configured'}</Text>
       </Stack>
     </Card>
   )
@@ -162,9 +158,7 @@ function Chip({
       backgroundColor={background}
       borderRadius={16}
     >
-      <Text color={textColor}>
-        {children}
-      </Text>
+      <Text color={textColor}>{children}</Text>
     </Row>
   )
 }

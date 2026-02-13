@@ -103,7 +103,14 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
 
     initializeDraft()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subjectId, myReviews, isLoadingReviews, createDraftMutation.mutateAsync, reviewId, createDraftMutation]) // Run when subjectId, myReviews, or loading state changes
+  }, [
+    subjectId,
+    myReviews,
+    isLoadingReviews,
+    createDraftMutation.mutateAsync,
+    reviewId,
+    createDraftMutation,
+  ]) // Run when subjectId, myReviews, or loading state changes
 
   // Setup auto-save - only enabled when we have a reviewId
   useReviewAutoSave({
@@ -194,9 +201,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
     return (
       <Card elevate bordered>
         <Stack gap={16} padding={20} minHeight={600} justify="center" align="center">
-          <Text color="gray">
-            Preparing review form...
-          </Text>
+          <Text color="gray">Preparing review form...</Text>
         </Stack>
       </Card>
     )
@@ -206,9 +211,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
     <Stack gap={16} padding={20}>
       {/* Progress Indicator */}
       <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
-      <Text color="gray">
-        Reviewing {subjectName}
-      </Text>
+      <Text color="gray">Reviewing {subjectName}</Text>
 
       {/* Step Content */}
       <Card backgroundColor="$color2" bordered>

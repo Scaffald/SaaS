@@ -131,13 +131,9 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Worker',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Stack>
-              <Text color="gray">
-                {row.original.workerName}
-              </Text>
+              <Text color="gray">{row.original.workerName}</Text>
               {row.original.workerEmail ? (
-                <Text color="gray">
-                  {row.original.workerEmail}
-                </Text>
+                <Text color="gray">{row.original.workerEmail}</Text>
               ) : null}
             </Stack>
           ),
@@ -198,9 +194,7 @@ export function OrganizationBackgroundChecksPage() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">
-          Loading organizations…
-        </Text>
+        <Text color="gray">Loading organizations…</Text>
       </Stack>
     )
   }
@@ -208,9 +202,7 @@ export function OrganizationBackgroundChecksPage() {
   if (!organizations.length) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="gray">
-          No organizations available
-        </Text>
+        <Text color="gray">No organizations available</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           Create an organization before managing background checks.
         </Text>
@@ -286,9 +278,7 @@ export function OrganizationBackgroundChecksPage() {
         />
       ) : (
         <Stack flex={1} padding={16} gap={12} align="center" justify="center">
-          <Text color="gray">
-            Select an organization to view background checks
-          </Text>
+          <Text color="gray">Select an organization to view background checks</Text>
           <Text color="gray">
             Choose an organization above to manage screening requests and results.
           </Text>

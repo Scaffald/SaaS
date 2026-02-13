@@ -2,10 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { ApplicationWizard, QuickApplyModal } from '@scf/core/features/applications/components'
 import { getApplicationFlow } from '@scf/core/features/applications/utils/getApplicationFlow'
 import { captureEvent } from '@scf/core/utils/analytics/client'
-import {
-  useExternalJobs,
-  useJobDetails,
-} from '@scf/core/utils/jobs-sdk-hooks'
+import { useExternalJobs, useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -135,9 +132,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   if (!job) {
     return (
       <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
-        <Text color="gray">
-          Job not found
-        </Text>
+        <Text color="gray">Job not found</Text>
       </Stack>
     )
   }
@@ -149,9 +144,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
       return (
         <Stack flex={1} padding={16} gap={16}>
           <Stack gap={12}>
-            <Text color="gray">
-              Apply to {job.title}
-            </Text>
+            <Text color="gray">Apply to {job.title}</Text>
             <Text color="gray" lineHeight={20}>
               This is a quick application. You'll answer a few screening questions and submit your
               application.
@@ -273,9 +266,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     return (
       <Stack flex={1} padding={16} gap={16}>
         <Stack gap={12}>
-          <Text color="gray">
-            Apply to this Position
-          </Text>
+          <Text color="gray">Apply to this Position</Text>
           <Text color="gray" lineHeight={20}>
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.

@@ -122,18 +122,14 @@ export function CertificationSearch({
         borderWidth={1}
         borderColor={bgColor}
       >
-        <Text color="$background">
-          {labels[depth] || `Depth ${depth}`}
-        </Text>
+        <Text color="$background">{labels[depth] || `Depth ${depth}`}</Text>
       </Row>
     )
   }
 
   return (
     <Stack gap={8} position="relative">
-      <Text>
-        Search Certifications
-      </Text>
+      <Text>Search Certifications</Text>
       <Input
         placeholder="Search certifications (e.g., OSHA, First Aid, Welding)"
         value={searchQuery}
@@ -202,9 +198,7 @@ export function CertificationSearch({
                       testID="cert-search-section-depth0"
                     >
                       <Award size={16} color="gray" />
-                      <Text color="gray">
-                        Top Level Categories
-                      </Text>
+                      <Text color="gray">Top Level Categories</Text>
                     </Row>
                     {groupedResults.depth0.map((cert) => (
                       <Card
@@ -221,9 +215,7 @@ export function CertificationSearch({
                       >
                         <Stack gap={8}>
                           <Row gap={8} align="center" flexWrap="wrap">
-                            <Text flex={1}>
-                              {cert.title}
-                            </Text>
+                            <Text flex={1}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
                           {cert.description && (
@@ -271,9 +263,7 @@ export function CertificationSearch({
                       >
                         <Stack gap={8}>
                           <Row gap={8} align="center" flexWrap="wrap">
-                            <Text flex={1}>
-                              {cert.title}
-                            </Text>
+                            <Text flex={1}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
                           {cert.description && (
@@ -329,11 +319,7 @@ export function CertificationSearch({
                             <Row gap={8} align="center" flexWrap="wrap">
                               <Stack flex={1} gap={4}>
                                 <Text>{cert.title}</Text>
-                                {cert.parent_title && (
-                                  <Text color="gray">
-                                    {hierarchyPath}
-                                  </Text>
-                                )}
+                                {cert.parent_title && <Text color="gray">{hierarchyPath}</Text>}
                               </Stack>
                               <DepthBadge depth={cert.depth} />
                             </Row>

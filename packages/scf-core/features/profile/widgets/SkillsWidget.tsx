@@ -1,8 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import {
-  useSoftSkills,
-  useSkillsLegacy,
-} from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useSoftSkills, useSkillsLegacy } from '@scf/core/utils/profile-skills-sdk-hooks'
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
@@ -60,7 +57,13 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   const [historyView, setHistoryView] = useState<'timeline' | 'progression'>('timeline')
 
   // Fetch technical skills
-  const { data, isPending: isLoading, error, refetch, isFetching } = useSkillsLegacy({
+  const {
+    data,
+    isPending: isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useSkillsLegacy({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
@@ -140,9 +143,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load skills</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
           <Button
             variant="primary"
             size={8}
@@ -223,9 +224,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           ) : error ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text color="$red10">Failed to load skills</Text>
-              <Text color="gray">
-                {(error as unknown as Record<string, unknown>).message}
-              </Text>
+              <Text color="gray">{(error as unknown as Record<string, unknown>).message}</Text>
               <Button
                 variant="primary"
                 size={8}
@@ -279,9 +278,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                         >
                           {skill.verified && <CheckCircle size={14} color="$blue11" />}
                           <Stack gap={2}>
-                            <Text color="$blue11">
-                              {skill.name}
-                            </Text>
+                            <Text color="$blue11">{skill.name}</Text>
                             {!showCompact && (
                               <Row gap={8}>
                                 {skill.proficiency > 0 && (
@@ -290,9 +287,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                                   </Text>
                                 )}
                                 {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                  <Text color="$blue10">
-                                    • {skill.yearsExperience}y
-                                  </Text>
+                                  <Text color="$blue10">• {skill.yearsExperience}y</Text>
                                 )}
                               </Row>
                             )}
@@ -325,9 +320,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text color="$red10">Failed to load soft skills</Text>
-              <Text color="gray">
-                {softSkillsError.message}
-              </Text>
+              <Text color="gray">{softSkillsError.message}</Text>
               <Button
                 variant="primary"
                 size={8}
@@ -366,9 +359,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Skills Chart for Active Category */}
               {categoryChartData && categoryChartData.length > 0 && (
                 <Stack gap={8} align="center">
-                  <Text color="gray">
-                    {categoryLabels[activeCategory]} Skills
-                  </Text>
+                  <Text color="gray">{categoryLabels[activeCategory]} Skills</Text>
                   <SkillsChart
                     datasets={categoryChartData}
                     height={variant === 'compact' ? 200 : 300}

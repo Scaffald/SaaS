@@ -30,13 +30,13 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
         <Text size="lg" weight="bold">
           Resume not found
         </Text>
-        <Text color="secondary">
+        <Text color="$color11">
           We couldn't locate a resume session. Upload a resume to begin the review process.
         </Text>
         <Button
           size="md"
           variant="filled"
-          color="blue"
+          color="primary"
           onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.RESUME.path)}
         >
           Upload Resume

@@ -32,9 +32,7 @@ export function RiasecQuickAssessment({
   return (
     <Stack gap={16} width="100%">
       <Stack gap={8}>
-        <Text color="gray">
-          Rate Your Interests
-        </Text>
+        <Text color="gray">Rate Your Interests</Text>
         <Text color="gray">
           Move the sliders to indicate how much you agree with each statement (1 = Disagree, 5 =
           Strongly Agree)
@@ -45,12 +43,8 @@ export function RiasecQuickAssessment({
         <Stack key={dimension.key} gap={12}>
           <Row gap={12} align="center">
             <Stack flex={1} gap={4}>
-              <Text>
-                {dimension.label}
-              </Text>
-              <Text color="gray">
-                {dimension.description}
-              </Text>
+              <Text>{dimension.label}</Text>
+              <Text color="gray">{dimension.description}</Text>
             </Stack>
             <Row
               width={60}
@@ -60,9 +54,7 @@ export function RiasecQuickAssessment({
               borderColor="$borderColor"
               paddingHorizontal={8}
             >
-              <Text>
-                {value[dimension.key]}
-              </Text>
+              <Text>{value[dimension.key]}</Text>
             </Row>
           </Row>
 
@@ -93,9 +85,7 @@ export function RiasecQuickAssessment({
       ))}
 
       <Stack gap={8} padding={12} borderWidth={1} borderColor="$blue6">
-        <Text color="$blue11">
-          💡 What is RIASEC?
-        </Text>
+        <Text color="$blue11">💡 What is RIASEC?</Text>
         <Text color="$blue11">
           RIASEC (Holland Codes) is a career interest model that helps match your personality to
           compatible occupations. Your scores help us recommend careers that align with your natural

@@ -35,9 +35,7 @@ export function OccupationAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">
-            Occupation Preferences
-          </Text>
+          <Text color="gray">Occupation Preferences</Text>
           <Text color="gray">
             Tell us about your current occupation and target occupations to help us recommend
             relevant opportunities.
@@ -48,9 +46,7 @@ export function OccupationAssessmentWidget() {
           <Button.Text>Add Occupations</Button.Text>
         </Button>
 
-        <Text color="gray">
-          Takes about 1-2 minutes (optional)
-        </Text>
+        <Text color="gray">Takes about 1-2 minutes (optional)</Text>
       </Stack>
     </DashboardWidget>
   )

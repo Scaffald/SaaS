@@ -129,9 +129,7 @@ export function ProfileExperienceRight() {
             Career Level: <Text>{experienceSummaryQuery.data.career_level}</Text>
           </Text>
         ) : (
-          <Text color="gray">
-            Add a career level to highlight your experience level
-          </Text>
+          <Text color="gray">Add a career level to highlight your experience level</Text>
         )}
       </Stack>
 
@@ -161,23 +159,15 @@ export function ProfileExperienceRight() {
               >
                 {/* Job Title */}
                 <Stack gap={4}>
-                  <Text color="gray">
-                    {exp.job_title}
-                  </Text>
+                  <Text color="gray">{exp.job_title}</Text>
 
                   {/* Company Name */}
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text color="gray">
-                      {exp.company_name}
-                    </Text>
+                    <Text color="gray">{exp.company_name}</Text>
                     {exp.employment_type && (
                       <>
-                        <Text color="gray">
-                          •
-                        </Text>
-                        <Text color="gray">
-                          {exp.employment_type}
-                        </Text>
+                        <Text color="gray">•</Text>
+                        <Text color="gray">{exp.employment_type}</Text>
                       </>
                     )}
                   </Row>
@@ -185,9 +175,7 @@ export function ProfileExperienceRight() {
                   {/* Current Position Badge */}
                   {exp.is_current && (
                     <Row gap={4} align="center">
-                      <Text color="$blue10">
-                        Current Position
-                      </Text>
+                      <Text color="$blue10">Current Position</Text>
                     </Row>
                   )}
                 </Stack>
@@ -208,18 +196,14 @@ export function ProfileExperienceRight() {
                   {locationDisplay && (
                     <Row gap={8} align="center">
                       <MapPin size={16} color="gray" />
-                      <Text color="gray">
-                        {locationDisplay}
-                      </Text>
+                      <Text color="gray">{locationDisplay}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && (
                     <Stack gap={4}>
-                      <Text color="gray">
-                        Description:
-                      </Text>
+                      <Text color="gray">Description:</Text>
                       <Text color="gray">
                         {exp.description.length > 200
                           ? `${exp.description.substring(0, 200)}...`

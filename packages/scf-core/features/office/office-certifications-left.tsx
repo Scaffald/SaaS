@@ -99,39 +99,39 @@ export function OfficeCertificationsLeft({
   const createMutation = api.office.createCertification.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Success',
-          message: 'Certification created successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Certification created successfully',
+        variant: 'success',
+      })
       reset()
       onCertificationSaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create certification'
       toast.show({
-          title: 'Error',
-          message: errorMessage,
-          variant: 'error',
-        })
+        title: 'Error',
+        message: errorMessage,
+        variant: 'error',
+      })
     },
   })
 
   const updateMutation = api.office.updateCertification.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Success',
-          message: 'Certification updated successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Certification updated successfully',
+        variant: 'success',
+      })
       onCertificationSaved()
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update certification'
       toast.show({
-          title: 'Error',
-          message: errorMessage,
-          variant: 'error',
-        })
+        title: 'Error',
+        message: errorMessage,
+        variant: 'error',
+      })
     },
   })
 
@@ -212,11 +212,7 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-            {errors.name && (
-              <Text color="$red10">
-                {errors.name.message}
-              </Text>
-            )}
+            {errors.name && <Text color="$red10">{errors.name.message}</Text>}
           </Stack>
 
           {/* Vanity URL */}
@@ -224,9 +220,7 @@ export function OfficeCertificationsLeft({
             <Text>
               Vanity URL <Text color="$red10">*</Text>
             </Text>
-            <Text color="gray">
-              URL-friendly username (auto-generated from name)
-            </Text>
+            <Text color="gray">URL-friendly username (auto-generated from name)</Text>
             <Controller
               name="slug"
               control={control}
@@ -239,11 +233,7 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-            {errors.slug && (
-              <Text color="$red10">
-                {errors.slug.message}
-              </Text>
-            )}
+            {errors.slug && <Text color="$red10">{errors.slug.message}</Text>}
           </Stack>
 
           {/* Category */}
@@ -351,9 +341,7 @@ export function OfficeCertificationsLeft({
           {requiresRenewal && (
             <Stack gap={8}>
               <Text>Renewal Period (months)</Text>
-              <Text color="gray">
-                How often this certification must be renewed
-              </Text>
+              <Text color="gray">How often this certification must be renewed</Text>
               <Controller
                 name="renewal_period_months"
                 control={control}

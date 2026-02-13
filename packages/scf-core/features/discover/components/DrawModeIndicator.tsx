@@ -19,9 +19,7 @@ export function DrawModeIndicator({ isActive }: DrawModeIndicatorProps) {
       borderRadius={16}
       align="center"
     >
-      <Text color="white">
-        🖊️ Draw Mode Active - Draw on the map to select an area
-      </Text>
+      <Text color="white">🖊️ Draw Mode Active - Draw on the map to select an area</Text>
     </Stack>
   )
 }

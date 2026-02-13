@@ -152,9 +152,7 @@ export function OrganizationLocationsInput({
             >
               {/* Location Name */}
               <Stack gap={8}>
-                <Text>
-                  Location Name
-                </Text>
+                <Text>Location Name</Text>
                 <Input
                   value={location.name}
                   onChangeText={(text) => handleLocationChange(index, 'name', text)}
@@ -165,9 +163,7 @@ export function OrganizationLocationsInput({
 
               {/* Location Address */}
               <Stack gap={8}>
-                <Text>
-                  Address
-                </Text>
+                <Text>Address</Text>
                 <AddressAutocomplete
                   key={`address-${locationIds[index]}`}
                   value={getAddressString(location.address ?? {})}
@@ -240,11 +236,7 @@ export function OrganizationLocationsInput({
       )}
 
       {/* Error Message */}
-      {errors && (
-        <Text color="$red10">
-          {errors}
-        </Text>
-      )}
+      {errors && <Text color="$red10">{errors}</Text>}
     </Stack>
   )
 }

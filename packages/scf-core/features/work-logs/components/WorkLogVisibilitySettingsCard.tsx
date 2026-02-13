@@ -1,6 +1,9 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { useWorkLogs, useUpdateWorkLogProfileVisibilityMutation } from '@scf/core/utils/work-logs-sdk-hooks'
+import {
+  useWorkLogs,
+  useUpdateWorkLogProfileVisibilityMutation,
+} from '@scf/core/utils/work-logs-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 
 import { DashboardWidget, ToggleSwitch } from '@unicornlove/beyond-ui'
@@ -32,10 +35,10 @@ export function WorkLogVisibilitySettingsCard() {
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : undefined
       toast.show({
-          title: 'Unable to update visibility',
-          message: message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to update visibility',
+        message: message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -44,9 +47,7 @@ export function WorkLogVisibilitySettingsCard() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Text>
-          Work log profile visibility
-        </Text>
+        <Text>Work log profile visibility</Text>
         <Paragraph color="gray">
           Choose which verified work logs appear on your public profile. Manage individual entries
           and jump directly to the detailed view for more options.
@@ -84,9 +85,7 @@ export function WorkLogVisibilitySettingsCard() {
                         {item.logDate ? formatDate(item.logDate) : 'Date not recorded'}
                       </Text>
                     </Stack>
-                    <Text color={statusColor as never}>
-                      {getStatusLabel(item.status)}
-                    </Text>
+                    <Text color={statusColor as never}>{getStatusLabel(item.status)}</Text>
                   </Row>
 
                   <Row justify="space-between" align="center" gap={16}>
@@ -102,9 +101,10 @@ export function WorkLogVisibilitySettingsCard() {
                       onCheckedChange={(checked) => {
                         if (!isVerified && checked) {
                           toast.show({
-          title: 'Pending verification',
-          message: 'Work logs must be verified before they can appear on your profile.',
-        })
+                            title: 'Pending verification',
+                            message:
+                              'Work logs must be verified before they can appear on your profile.',
+                          })
                           return
                         }
                         updateProfileVisibilityMutation.mutate({

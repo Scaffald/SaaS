@@ -3,7 +3,12 @@
  * Provides query and mutation hooks for team management
  */
 
-import { useMutation, useQuery, useQueryClient, type UseMutationOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationOptions,
+} from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ListTeamsParams,
@@ -15,16 +20,11 @@ import type {
   InviteTeamMemberParams,
   RespondToInvitationParams,
   CreateJobAssignmentParams,
-  TeamsListResponse,
   TeamResponse,
-  TeamMembersListResponse,
   TeamMemberResponse,
-  TeamInvitationsListResponse,
   TeamInvitationResponse,
-  TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
-  RolesListResponse,
 } from '@scaffald/sdk'
 
 // ============================================================================
@@ -42,7 +42,7 @@ export function useTeams(params?: ListTeamsParams, options?: { enabled?: boolean
       if (!client) throw new Error('Missing client')
       return client.teams.list(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -58,7 +58,7 @@ export function useTeam(id: string | undefined, options?: { enabled?: boolean })
       if (!client || !id) throw new Error('Missing client or id')
       return client.teams.retrieve(id)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -74,7 +74,7 @@ export function useTeamMembers(teamId: string | undefined, options?: { enabled?:
       if (!client || !teamId) throw new Error('Missing client or teamId')
       return client.teams.listMembers(teamId)
     },
-    enabled: !!client && !!teamId && (options?.enabled !== false),
+    enabled: !!client && !!teamId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute
   })
 }
@@ -90,7 +90,7 @@ export function useTeamInvitations(teamId: string | undefined, options?: { enabl
       if (!client || !teamId) throw new Error('Missing client or teamId')
       return client.teams.listInvitations(teamId)
     },
-    enabled: !!client && !!teamId && (options?.enabled !== false),
+    enabled: !!client && !!teamId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -106,7 +106,7 @@ export function useMyTeamInvitations(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.teams.listMyInvitations()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -122,7 +122,7 @@ export function useTeamRoles(organizationId: string | undefined, options?: { ena
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.teams.listRoles(organizationId)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes (roles change infrequently)
   })
 }
@@ -138,7 +138,7 @@ export function useTeamJobAssignments(teamId: string | undefined, options?: { en
       if (!client || !teamId) throw new Error('Missing client or teamId')
       return client.teams.listJobAssignments(teamId)
     },
-    enabled: !!client && !!teamId && (options?.enabled !== false),
+    enabled: !!client && !!teamId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -150,7 +150,9 @@ export function useTeamJobAssignments(teamId: string | undefined, options?: { en
 /**
  * Create a team
  */
-export function useCreateTeamMutation(options?: UseMutationOptions<TeamResponse, Error, CreateTeamParams>) {
+export function useCreateTeamMutation(
+  options?: UseMutationOptions<TeamResponse, Error, CreateTeamParams>
+) {
   const client = useScaffaldJobsClient()
   const queryClient = useQueryClient()
 
@@ -159,7 +161,7 @@ export function useCreateTeamMutation(options?: UseMutationOptions<TeamResponse,
       if (!client) throw new Error('Missing client')
       return client.teams.create(params)
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, _variables) => {
       // Invalidate teams list
       queryClient.invalidateQueries({ queryKey: ['teams', 'list'] })
     },
@@ -181,7 +183,7 @@ export function useUpdateTeamMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.update(id, params)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team detail and list
       queryClient.invalidateQueries({ queryKey: ['teams', 'detail', id] })
       queryClient.invalidateQueries({ queryKey: ['teams', 'list'] })
@@ -204,7 +206,7 @@ export function useArchiveTeamMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.archive(id, params)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team detail and list
       queryClient.invalidateQueries({ queryKey: ['teams', 'detail', id] })
       queryClient.invalidateQueries({ queryKey: ['teams', 'list'] })
@@ -217,7 +219,11 @@ export function useArchiveTeamMutation(
  * Add a team member
  */
 export function useAddTeamMemberMutation(
-  options?: UseMutationOptions<TeamMemberResponse, Error, { id: string; params: AddTeamMemberParams }>
+  options?: UseMutationOptions<
+    TeamMemberResponse,
+    Error,
+    { id: string; params: AddTeamMemberParams }
+  >
 ) {
   const client = useScaffaldJobsClient()
   const queryClient = useQueryClient()
@@ -227,7 +233,7 @@ export function useAddTeamMemberMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.addMember(id, params)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team members list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'members'] })
     },
@@ -249,11 +255,19 @@ export function useUpdateTeamMemberMutation(
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, userId, params }: { id: string; userId: string; params: UpdateTeamMemberParams }) => {
+    mutationFn: async ({
+      id,
+      userId,
+      params,
+    }: {
+      id: string
+      userId: string
+      params: UpdateTeamMemberParams
+    }) => {
       if (!client) throw new Error('Missing client')
       return client.teams.updateMember(id, userId, params)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team members list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'members'] })
     },
@@ -275,7 +289,7 @@ export function useRemoveTeamMemberMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.removeMember(id, userId)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team members list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'members'] })
     },
@@ -287,7 +301,11 @@ export function useRemoveTeamMemberMutation(
  * Invite a team member
  */
 export function useInviteTeamMemberMutation(
-  options?: UseMutationOptions<TeamInvitationResponse, Error, { id: string; params: InviteTeamMemberParams }>
+  options?: UseMutationOptions<
+    TeamInvitationResponse,
+    Error,
+    { id: string; params: InviteTeamMemberParams }
+  >
 ) {
   const client = useScaffaldJobsClient()
   const queryClient = useQueryClient()
@@ -297,7 +315,7 @@ export function useInviteTeamMemberMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.inviteMember(id, params)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team invitations list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'invitations'] })
     },
@@ -319,7 +337,7 @@ export function useCancelTeamInvitationMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.cancelInvitation(id, invitationId)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate team invitations list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'invitations'] })
     },
@@ -348,13 +366,23 @@ export function useResendTeamInvitationMutation(
  * Respond to a team invitation
  */
 export function useRespondToTeamInvitationMutation(
-  options?: UseMutationOptions<TeamMemberResponse, Error, { invitationId: string; params: RespondToInvitationParams }>
+  options?: UseMutationOptions<
+    TeamMemberResponse,
+    Error,
+    { invitationId: string; params: RespondToInvitationParams }
+  >
 ) {
   const client = useScaffaldJobsClient()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ invitationId, params }: { invitationId: string; params: RespondToInvitationParams }) => {
+    mutationFn: async ({
+      invitationId,
+      params,
+    }: {
+      invitationId: string
+      params: RespondToInvitationParams
+    }) => {
       if (!client) throw new Error('Missing client')
       return client.teams.respondToInvitation(invitationId, params)
     },
@@ -371,7 +399,11 @@ export function useRespondToTeamInvitationMutation(
  * Create a job assignment
  */
 export function useCreateTeamJobAssignmentMutation(
-  options?: UseMutationOptions<TeamJobAssignmentResponse, Error, { id: string; params: CreateJobAssignmentParams }>
+  options?: UseMutationOptions<
+    TeamJobAssignmentResponse,
+    Error,
+    { id: string; params: CreateJobAssignmentParams }
+  >
 ) {
   const client = useScaffaldJobsClient()
   const queryClient = useQueryClient()
@@ -381,7 +413,7 @@ export function useCreateTeamJobAssignmentMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.createJobAssignment(id, params)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate job assignments list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'job-assignments'] })
     },
@@ -403,7 +435,7 @@ export function useDeleteTeamJobAssignmentMutation(
       if (!client) throw new Error('Missing client')
       return client.teams.deleteJobAssignment(id, assignmentId)
     },
-    onSuccess: (data, { id }) => {
+    onSuccess: (_data, { id }) => {
       // Invalidate job assignments list
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'job-assignments'] })
     },

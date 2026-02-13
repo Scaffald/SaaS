@@ -84,9 +84,7 @@ export function ExperienceStep({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Add your latest experience
-        </Text>
+        <Text>Add your latest experience</Text>
         <Paragraph color="gray">
           Showcase your most recent role. You can add more later in your full profile.
         </Paragraph>
@@ -101,11 +99,7 @@ export function ExperienceStep({
             <Input {...field} placeholder="Lead Carpenter" onChangeText={field.onChange} />
           )}
         />
-        {errors.jobTitle && (
-          <Text color="$red10">
-            {errors.jobTitle.message}
-          </Text>
-        )}
+        {errors.jobTitle && <Text color="$red10">{errors.jobTitle.message}</Text>}
       </Stack>
 
       <Stack gap={8}>
@@ -117,11 +111,7 @@ export function ExperienceStep({
             <Input {...field} placeholder="Summit Builders" onChangeText={field.onChange} />
           )}
         />
-        {errors.companyName && (
-          <Text color="$red10">
-            {errors.companyName.message}
-          </Text>
-        )}
+        {errors.companyName && <Text color="$red10">{errors.companyName.message}</Text>}
       </Stack>
 
       <Row gap={12}>

@@ -165,19 +165,13 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     <DashboardWidget>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="gray">
-            Profile Progress
-          </Text>
-          <Text>
-            {headline}
-          </Text>
+          <Text color="gray">Profile Progress</Text>
+          <Text>{headline}</Text>
         </Stack>
 
         <Stack gap={12}>
           <Row justify="space-between" align="center">
-            <Text>
-              {completionStatus.completionPercentage}%
-            </Text>
+            <Text>{completionStatus.completionPercentage}%</Text>
             <Text color="gray">
               {completionStatus.incompleteSections.length} sections remaining
             </Text>
@@ -200,9 +194,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
             <Row justify="space-between" align="center">
               <Row gap={8} align="center">
                 <Sparkles size={20} color="$blue10" />
-                <Text>
-                  Profile Suggestion
-                </Text>
+                <Text>Profile Suggestion</Text>
               </Row>
 
               {showCarouselControls && (
@@ -246,18 +238,12 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                 <AnimatePresence initial={false}>
                   {isBenefitLoading ? (
                     <AnimatedSuggestion key="loading" onLayout={handleSuggestionLayout}>
-                      <Text color="gray">
-                        Gathering personalized suggestions…
-                      </Text>
+                      <Text color="gray">Gathering personalized suggestions…</Text>
                     </AnimatedSuggestion>
                   ) : currentBenefit ? (
                     <AnimatedSuggestion key={currentBenefit.id} onLayout={handleSuggestionLayout}>
-                      <Text color="gray">
-                        {currentBenefit.title}
-                      </Text>
-                      <Text color="gray">
-                        {currentBenefit.description}
-                      </Text>
+                      <Text color="gray">{currentBenefit.title}</Text>
+                      <Text color="gray">{currentBenefit.description}</Text>
                       <Text color="gray">
                         Suggested section: {(() => {
                           try {
@@ -318,9 +304,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         </Card>
 
         <Stack gap={12}>
-          <Text>
-            Milestones
-          </Text>
+          <Text>Milestones</Text>
           <Row flexWrap="wrap" gap={8}>
             {completionStatus.milestoneBadges.map((milestone) => (
               <MilestoneBadge key={milestone.id} milestone={milestone} />

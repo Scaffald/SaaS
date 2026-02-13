@@ -49,22 +49,9 @@ export const ProfileLayout = ({
         {showTabs && <ProfileTabs marginHorizontal="$7" marginTop={12} />}
 
         {/* Content Area - Responsive two-column layout */}
-        <Row
-          gap={12}
-          paddingHorizontal={12}
-          paddingTop={12}
-          flexDirection="column"
-        >
-          <Stack
-            width="100%"
-          >
-            {leftContent}
-          </Stack>
-          <Stack
-            width="100%"
-          >
-            {rightContent}
-          </Stack>
+        <Row gap={12} paddingHorizontal={12} paddingTop={12} flexDirection="column">
+          <Stack width="100%">{leftContent}</Stack>
+          <Stack width="100%">{rightContent}</Stack>
         </Row>
       </Stack>
     </ScrollView>

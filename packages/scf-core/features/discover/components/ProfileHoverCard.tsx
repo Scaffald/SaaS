@@ -112,9 +112,7 @@ export function ProfileHoverCard({
       {isLoading ? (
         <Stack align="center" paddingVertical={16} gap={8}>
           <Spinner size="sm" color="$blue10" />
-          <Text color="gray">
-            Loading...
-          </Text>
+          <Text color="gray">Loading...</Text>
         </Stack>
       ) : pinType === 'worker' && workerPreview ? (
         <Stack gap={8}>
@@ -197,16 +195,12 @@ export function ProfileHoverCard({
                       paddingVertical={4}
                       borderRadius={8}
                     >
-                      <Text color="$blue11">
-                        {skill.taxonomy || 'Skill'}
-                      </Text>
+                      <Text color="$blue11">{skill.taxonomy || 'Skill'}</Text>
                     </View>
                   )
                 })}
               {workerPreview.topSkills.length > 3 && (
-                <Text color="gray">
-                  +{workerPreview.topSkills.length - 3} more
-                </Text>
+                <Text color="gray">+{workerPreview.topSkills.length - 3} more</Text>
               )}
             </Row>
           )}
@@ -276,9 +270,7 @@ export function ProfileHoverCard({
             )}
             {organization.employee_count_range && (
               <Row gap={4} align="center">
-                <Text color="gray">
-                  {organization.employee_count_range}
-                </Text>
+                <Text color="gray">{organization.employee_count_range}</Text>
               </Row>
             )}
           </Row>

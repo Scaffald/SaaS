@@ -65,9 +65,9 @@ export function AdminDisputeResolutionDialog({
   const mutation = api.backgroundChecks.adminResolveDispute.useMutation({
     onSuccess: async () => {
       toast.show({
-          title: 'Dispute resolved',
-          message: 'The worker and requester will receive notifications shortly.',
-        })
+        title: 'Dispute resolved',
+        message: 'The worker and requester will receive notifications shortly.',
+      })
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListDisputes']] }),
         queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListChecks']] }),
@@ -76,10 +76,10 @@ export function AdminDisputeResolutionDialog({
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Unable to resolve dispute',
-          message: error instanceof Error ? error.message : 'Please try again shortly.',
-          variant: 'error',
-        })
+        title: 'Unable to resolve dispute',
+        message: error instanceof Error ? error.message : 'Please try again shortly.',
+        variant: 'error',
+      })
     },
     onSettled: () => {
       setIsSubmitting(false)
@@ -125,9 +125,7 @@ export function AdminDisputeResolutionDialog({
         >
           <Stack gap={16}>
             <Row justify="space-between" align="center">
-              <Dialog.Title>
-                Resolve dispute
-              </Dialog.Title>
+              <Dialog.Title>Resolve dispute</Dialog.Title>
               <Dialog.Close asChild>
                 <Button size={8} variant="outline" disabled={isSubmitting}>
                   Close
@@ -147,22 +145,14 @@ export function AdminDisputeResolutionDialog({
                 >
                   <Row gap={8} align="center">
                     <AlertTriangle size={18} color="$yellow10" />
-                    <Text color="gray">
-                      {workerName}
-                    </Text>
+                    <Text color="gray">{workerName}</Text>
                   </Row>
-                  <Text color="gray">
-                    Submitted {formatDateTime(dispute.created_at)}
-                  </Text>
-                  <Text color="gray">
-                    Current status: {dispute.status}
-                  </Text>
+                  <Text color="gray">Submitted {formatDateTime(dispute.created_at)}</Text>
+                  <Text color="gray">Current status: {dispute.status}</Text>
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text color="gray">
-                    Dispute reason
-                  </Text>
+                  <Text color="gray">Dispute reason</Text>
                   <TextArea
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
@@ -172,9 +162,7 @@ export function AdminDisputeResolutionDialog({
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text color="gray">
-                    Dispute details
-                  </Text>
+                  <Text color="gray">Dispute details</Text>
                   <TextArea
                     value={dispute.dispute_details ?? ''}
                     editable={false}
@@ -217,9 +205,7 @@ export function AdminDisputeResolutionDialog({
             ) : (
               <Stack gap={12} align="center" justify="center" paddingVertical={24}>
                 <Spinner size="lg" />
-                <Text color="gray">
-                  Loading dispute…
-                </Text>
+                <Text color="gray">Loading dispute…</Text>
               </Stack>
             )}
 

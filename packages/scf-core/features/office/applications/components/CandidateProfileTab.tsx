@@ -36,14 +36,10 @@ export const CandidateProfileTab = ({
     <Stack gap={16}>
       {/* Contact Info */}
       <Card padding={16} backgroundColor="$color2">
-        <Text marginBottom={12}>
-          Contact Information
-        </Text>
+        <Text marginBottom={12}>Contact Information</Text>
         {isContactLocked ? (
           <Stack gap={8}>
-            <Text color="$orange11">
-              Contact details locked
-            </Text>
+            <Text color="$orange11">Contact details locked</Text>
             <Text color="gray">{lockedMessage}</Text>
           </Stack>
         ) : (
@@ -66,16 +62,10 @@ export const CandidateProfileTab = ({
 
       {/* Skills */}
       <Card padding={16} backgroundColor="$color2">
-        <Text marginBottom={12}>
-          Skills
-        </Text>
+        <Text marginBottom={12}>Skills</Text>
         <Stack gap={12}>
           {candidate.skills.map((skill, index) => (
-            <Row
-              key={`skill-${skill.name}-${index}`}
-              justify="space-between"
-              align="center"
-            >
+            <Row key={`skill-${skill.name}-${index}`} justify="space-between" align="center">
               <Text>{skill.name}</Text>
               <Stack
                 backgroundColor={
@@ -113,23 +103,15 @@ export const CandidateProfileTab = ({
 
       {/* Certifications */}
       <Card padding={16} backgroundColor="$color2">
-        <Text marginBottom={12}>
-          Certifications
-        </Text>
+        <Text marginBottom={12}>Certifications</Text>
         <Stack gap={12}>
           {candidate.certifications.map((cert, index) => (
             <Stack key={`cert-${cert.name}-${index}`} gap={4}>
               <Text>{cert.name}</Text>
               <Row gap={8}>
-                {cert.state && (
-                  <Text opacity={0.7}>
-                    State: {cert.state}
-                  </Text>
-                )}
+                {cert.state && <Text opacity={0.7}>State: {cert.state}</Text>}
                 {cert.issueDate && (
-                  <Text opacity={0.7}>
-                    Issued: {new Date(cert.issueDate).toLocaleDateString()}
-                  </Text>
+                  <Text opacity={0.7}>Issued: {new Date(cert.issueDate).toLocaleDateString()}</Text>
                 )}
               </Row>
             </Stack>
@@ -139,24 +121,14 @@ export const CandidateProfileTab = ({
 
       {/* Experience */}
       <Card padding={16} backgroundColor="$color2">
-        <Text marginBottom={12}>
-          Work Experience
-        </Text>
+        <Text marginBottom={12}>Work Experience</Text>
         <Stack gap={16}>
           {candidate.experience.map((exp, index) => (
             <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap={8}>
-              <Text>
-                {exp.title}
-              </Text>
-              <Text opacity={0.8}>
-                {exp.company}
-              </Text>
-              <Text opacity={0.6}>
-                {exp.duration}
-              </Text>
-              <Text marginTop={4}>
-                {exp.description}
-              </Text>
+              <Text>{exp.title}</Text>
+              <Text opacity={0.8}>{exp.company}</Text>
+              <Text opacity={0.6}>{exp.duration}</Text>
+              <Text marginTop={4}>{exp.description}</Text>
               {index < candidate.experience.length - 1 && (
                 <Stack height={1} backgroundColor="$color5" marginTop={8} />
               )}

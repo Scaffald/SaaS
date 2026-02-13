@@ -106,9 +106,7 @@ export function SuccessStep({
 
       {/* Application ID */}
       <Stack gap={8} align="center" marginTop={16}>
-        <Text color="$blue10">
-          Application ID: {formattedId}
-        </Text>
+        <Text color="$blue10">Application ID: {formattedId}</Text>
         <Text color="$gray11" textAlign="center">
           You will receive an email confirmation shortly
         </Text>
@@ -125,9 +123,7 @@ export function SuccessStep({
         width="100%"
         marginTop={32}
       >
-        <Text color="gray">
-          What happens next:
-        </Text>
+        <Text color="gray">What happens next:</Text>
 
         <Stack gap={12} marginTop={8}>
           <NextStepItem text="Our team will review your application within 3-5 business days" />
@@ -137,13 +133,7 @@ export function SuccessStep({
       </Stack>
 
       {/* Action Buttons */}
-      <Row
-        gap={12}
-        width="100%"
-        marginTop={32}
-        flexWrap="wrap"
-        justify="center"
-      >
+      <Row gap={12} width="100%" marginTop={32} flexWrap="wrap" justify="center">
         {onViewApplication && (
           <Button
             size={20}
@@ -158,13 +148,7 @@ export function SuccessStep({
         )}
 
         {onReturnToJobs && (
-          <Button
-            size={20}
-            variant="outline"
-            onPress={onReturnToJobs}
-            flex={1}
-            minWidth={200}
-          >
+          <Button size={20} variant="outline" onPress={onReturnToJobs} flex={1} minWidth={200}>
             Browse More Jobs
           </Button>
         )}

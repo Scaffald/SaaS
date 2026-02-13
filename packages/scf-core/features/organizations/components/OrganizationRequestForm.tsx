@@ -108,11 +108,7 @@ export function OrganizationRequestForm({
             />
           )}
         />
-        {formState.errors.name ? (
-          <Text color="$red10">
-            {formState.errors.name.message}
-          </Text>
-        ) : null}
+        {formState.errors.name ? <Text color="$red10">{formState.errors.name.message}</Text> : null}
       </Stack>
 
       <Stack gap={8}>
@@ -133,18 +129,11 @@ export function OrganizationRequestForm({
             />
           )}
         />
-        {formState.errors.slug ? (
-          <Text color="$red10">
-            {formState.errors.slug.message}
-          </Text>
-        ) : null}
+        {formState.errors.slug ? <Text color="$red10">{formState.errors.slug.message}</Text> : null}
       </Stack>
 
       <Stack gap={8}>
-        <Label
-          htmlFor="organization-request-website"
-          color="gray"
-        >
+        <Label htmlFor="organization-request-website" color="gray">
           Website (optional)
         </Label>
         <Controller
@@ -162,9 +151,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.website ? (
-          <Text color="$red10">
-            {formState.errors.website.message}
-          </Text>
+          <Text color="$red10">{formState.errors.website.message}</Text>
         ) : null}
       </Stack>
 
@@ -186,9 +173,7 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.notes ? (
-          <Text color="$red10">
-            {formState.errors.notes.message}
-          </Text>
+          <Text color="$red10">{formState.errors.notes.message}</Text>
         ) : null}
       </Stack>
 
@@ -206,9 +191,7 @@ export function OrganizationRequestForm({
         <Card bordered theme="success" padding={16} gap={12}>
           <Row gap={12} align="center">
             <CheckCircle2 size={20} color="$green10" />
-            <Text color="$green10">
-              Request submitted successfully
-            </Text>
+            <Text color="$green10">Request submitted successfully</Text>
           </Row>
           <Text color="gray">
             We&apos;ve logged your request. Our team will review it and follow up if we need

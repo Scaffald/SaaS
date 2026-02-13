@@ -3,7 +3,16 @@
  * User can view and revoke authorized OAuth apps
  */
 
-import { Button, Card, Paragraph, SizableText, Row, Stack, AlertDialog, Separator } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Card,
+  Paragraph,
+  SizableText,
+  Row,
+  Stack,
+  AlertDialog,
+  Separator,
+} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
 import type { OAuthApp } from '@scf/schemas/oauth'
@@ -34,9 +43,7 @@ export function AuthorizedAppsList() {
     <Stack flex={1} gap={16} data-testid="authorized-apps-list">
       {/* Header */}
       <Stack gap={8}>
-        <SizableText size={24}>
-          Authorized Applications
-        </SizableText>
+        <SizableText size={24}>Authorized Applications</SizableText>
         <Paragraph size={12} color="gray">
           These apps have access to your Scaffald account. You can revoke access at any time.
         </Paragraph>
@@ -92,9 +99,7 @@ export function AuthorizedAppsList() {
 
                     {/* Scopes */}
                     <Stack gap={8}>
-                      <SizableText size={12}>
-                        Permissions
-                      </SizableText>
+                      <SizableText size={12}>Permissions</SizableText>
                       <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
                           <Row key={scope} gap={8} align="center">
@@ -138,9 +143,7 @@ export function AuthorizedAppsList() {
       ) : (
         <Card padding={24} data-testid="no-authorized-apps">
           <Stack gap={12} align="center">
-            <SizableText size={20}>
-              No Authorized Apps
-            </SizableText>
+            <SizableText size={20}>No Authorized Apps</SizableText>
             <Paragraph size={12} color="gray" textAlign="center">
               You haven't authorized any third-party applications to access your account yet.
             </Paragraph>
@@ -158,7 +161,8 @@ export function AuthorizedAppsList() {
                 <AlertDialog.Title>Revoke App Access</AlertDialog.Title>
                 <AlertDialog.Description>
                   Are you sure you want to revoke access for{' '}
-                  <strong>{(appToRevoke?.oauth_app as OAuthApp | undefined)?.display_name}</strong>? This will:
+                  <strong>{(appToRevoke?.oauth_app as OAuthApp | undefined)?.display_name}</strong>?
+                  This will:
                 </AlertDialog.Description>
               </Stack>
 

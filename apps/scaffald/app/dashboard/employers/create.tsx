@@ -27,7 +27,7 @@ export default function DashboardOrganizationCreatePage() {
             What happens next
           </Text>
         </Row>
-        <Text size="sm" color="secondary">
+        <Text size="sm" color="$color11">
           Share a few details that help our moderators validate your organization. We&apos;ll
           confirm there are no duplicates and publish it once approved.
         </Text>
@@ -58,7 +58,7 @@ export default function DashboardOrganizationCreatePage() {
       <Button
         size="sm"
         variant="outline"
-        color="blue"
+        color="primary"
         onPress={() => router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)}
       >
         Back to Discover

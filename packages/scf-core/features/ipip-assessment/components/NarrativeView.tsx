@@ -49,9 +49,7 @@ export function NarrativeView({
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Text color="$blue11">
-            Your Personality Profile
-          </Text>
+          <Text color="$blue11">Your Personality Profile</Text>
           <Text color="$blue10" lineHeight={20}>
             {overallSummary}
           </Text>
@@ -69,9 +67,7 @@ export function NarrativeView({
           borderColor="$blue7"
           aria-live="polite"
         >
-          <Text color="$blue11">
-            Partial Results
-          </Text>
+          <Text color="$blue11">Partial Results</Text>
           <Text color="$blue10">
             Complete more domains to see your full personality profile summary.
           </Text>
@@ -110,9 +106,7 @@ export function NarrativeView({
           borderWidth={1}
           borderColor="$yellow7"
         >
-          <Text color="$yellow11">
-            Complete Your Assessment
-          </Text>
+          <Text color="$yellow11">Complete Your Assessment</Text>
           <Text color="$yellow10">
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype.

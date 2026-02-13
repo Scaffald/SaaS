@@ -46,9 +46,7 @@ export function ResumeStepsSidebar() {
   return (
     <Stack gap={20} padding={8}>
       <Stack gap={4}>
-        <Text>
-          Resume Steps
-        </Text>
+        <Text>Resume Steps</Text>
         <Text color="gray">
           Keep track of each resume section as you merge data into your profile.
         </Text>

@@ -49,9 +49,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
     >
       <Row gap={12} align="center">
         <Stack flex={1} gap={4}>
-          <Text>
-            Start Time
-          </Text>
+          <Text>Start Time</Text>
           <Controller
             control={control}
             name={`timeEntries.${index}.start`}
@@ -65,17 +63,11 @@ export const TimeEntryInput = memo(function TimeEntryInput({
               />
             )}
           />
-          {rowError?.start?.message && (
-            <Text color="$red10">
-              {rowError.start.message}
-            </Text>
-          )}
+          {rowError?.start?.message && <Text color="$red10">{rowError.start.message}</Text>}
         </Stack>
 
         <Stack flex={1} gap={4}>
-          <Text>
-            End Time
-          </Text>
+          <Text>End Time</Text>
           <Controller
             control={control}
             name={`timeEntries.${index}.end`}
@@ -89,11 +81,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
               />
             )}
           />
-          {rowError?.end?.message && (
-            <Text color="$red10">
-              {rowError.end.message}
-            </Text>
-          )}
+          {rowError?.end?.message && <Text color="$red10">{rowError.end.message}</Text>}
         </Stack>
 
         <Button
@@ -107,11 +95,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
         />
       </Row>
 
-      {typeof rowError?.message === 'string' && (
-        <Text color="$red10">
-          {rowError.message}
-        </Text>
-      )}
+      {typeof rowError?.message === 'string' && <Text color="$red10">{rowError.message}</Text>}
     </Stack>
   )
 })

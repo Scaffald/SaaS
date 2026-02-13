@@ -11,9 +11,11 @@ type ApplicationRecord = NonNullable<
 
 export function InquiryOverviewWidget() {
   const router = useRouter()
-  const { data: response, isLoading } = useUserApplications(
-    { status: 'inquired', limit: 5, offset: 0 }
-  )
+  const { data: response, isLoading } = useUserApplications({
+    status: 'inquired',
+    limit: 5,
+    offset: 0,
+  })
 
   if (isLoading) {
     return <SkeletonCard variant="profile" />
@@ -28,9 +30,7 @@ export function InquiryOverviewWidget() {
 
   return (
     <Stack padding={16} backgroundColor="$color2" borderRadius={16} gap={12}>
-      <Text>
-        Negotiations
-      </Text>
+      <Text>Negotiations</Text>
       <Text color="gray">
         {data.length === 1
           ? 'You have 1 active inquiry.'
@@ -46,12 +46,8 @@ export function InquiryOverviewWidget() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>
-            {application.job?.title ?? 'Role'}
-          </Text>
-          <Text color="gray">
-            {application.job?.location ?? 'Location TBD'}
-          </Text>
+          <Text>{application.job?.title ?? 'Role'}</Text>
+          <Text color="gray">{application.job?.location ?? 'Location TBD'}</Text>
           <Button
             size={12}
             onPress={() =>
@@ -65,9 +61,7 @@ export function InquiryOverviewWidget() {
         </Stack>
       ))}
       {data.length > entries.length && (
-        <Text color="gray">
-          {data.length - entries.length} more in progress
-        </Text>
+        <Text color="gray">{data.length - entries.length} more in progress</Text>
       )}
     </Stack>
   )

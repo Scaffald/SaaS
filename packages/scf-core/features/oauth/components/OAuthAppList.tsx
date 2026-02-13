@@ -21,25 +21,25 @@ export function OAuthAppList() {
   return (
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
-        <SizableText size={24}>
-          OAuth Applications
-        </SizableText>
+        <SizableText size={24}>OAuth Applications</SizableText>
         <SizableText size={8} color="gray">
           Manage and approve OAuth applications
         </SizableText>
       </Stack>
 
       <Row gap={8}>
-        {(['all', 'pending', 'active', 'trusted', 'suspended', 'revoked'] as AppStatus[]).map((status) => (
-          <Button
-            key={status}
-            variant={statusFilter === status ? 'default' : 'outlined'}
-            onPress={() => setStatusFilter(status)}
-            size={8}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </Button>
-        ))}
+        {(['all', 'pending', 'active', 'trusted', 'suspended', 'revoked'] as AppStatus[]).map(
+          (status) => (
+            <Button
+              key={status}
+              variant={statusFilter === status ? 'default' : 'outlined'}
+              onPress={() => setStatusFilter(status)}
+              size={8}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </Button>
+          )
+        )}
       </Row>
 
       <Stack gap={8}>
@@ -57,7 +57,11 @@ export function OAuthAppList() {
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </SizableText>
               </Stack>
-              <Button href={`/office/oauth-apps/${app.id}`} size={8} data-testid="oauth-app-view-button">
+              <Button
+                href={`/office/oauth-apps/${app.id}`}
+                size={8}
+                data-testid="oauth-app-view-button"
+              >
                 View
               </Button>
             </Row>
@@ -67,4 +71,3 @@ export function OAuthAppList() {
     </Stack>
   )
 }
-

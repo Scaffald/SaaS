@@ -12,7 +12,7 @@ export default function ProjectDetailPage() {
   if (!id) {
     return (
       <Stack flex={1} padding="$4" gap="$4">
-        <Text fontSize="$8" fontWeight="600">
+        <Text>
           Project Not Found
         </Text>
         <Text>Project ID is required</Text>
@@ -22,8 +22,8 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
-        <Text fontSize="$8" fontWeight="600">
+      <Stack flex={1} padding="$4" gap="$4" align="center" justify="center">
+        <Text>
           Loading Project...
         </Text>
         <Spinner />
@@ -34,7 +34,7 @@ export default function ProjectDetailPage() {
   if (!data) {
     return (
       <Stack flex={1} padding="$4" gap="$4">
-        <Text fontSize="$8" fontWeight="600">
+        <Text>
           Project Not Found
         </Text>
         <Text>Project not found</Text>
@@ -101,11 +101,11 @@ export default function ProjectDetailPage() {
   return (
     <Stack flex={1} padding="$4" gap="$4">
       <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="600">
+        <Text>
           {project.name}
         </Text>
         {project.description && (
-          <Text fontSize="$4" color="$gray11">
+          <Text color="$gray11">
             {project.description}
           </Text>
         )}
@@ -114,8 +114,8 @@ export default function ProjectDetailPage() {
         {/* Project Info */}
         <Card padding="$4">
           <Stack gap="$4">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$8" fontWeight="600">
+            <Row justify="space-between" align="center">
+              <Text>
                 {project.name}
               </Text>
               <Button
@@ -130,41 +130,41 @@ export default function ProjectDetailPage() {
 
             <Row gap="$4" flexWrap="wrap">
               <Stack gap="$1">
-                <Text fontSize="$2" color="$gray10">
+                <Text color="$gray10">
                   Status
                 </Text>
-                <Text fontWeight="600">
+                <Text>
                   {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                 </Text>
               </Stack>
 
               {project.start_date && (
                 <Stack gap="$1">
-                  <Text fontSize="$2" color="$gray10">
+                  <Text color="$gray10">
                     Start Date
                   </Text>
-                  <Text fontWeight="600">{project.start_date}</Text>
+                  <Text>{project.start_date}</Text>
                 </Stack>
               )}
 
               {project.end_date && (
                 <Stack gap="$1">
-                  <Text fontSize="$2" color="$gray10">
+                  <Text color="$gray10">
                     End Date
                   </Text>
-                  <Text fontWeight="600">{project.end_date}</Text>
+                  <Text>{project.end_date}</Text>
                 </Stack>
               )}
 
               <Stack gap="$1">
-                <Text fontSize="$2" color="$gray10">
+                <Text color="$gray10">
                   Location Visibility
                 </Text>
-                <Row gap="$2" alignItems="center">
+                <Row gap="$2" align="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
-                  <Text fontWeight="600">{getVisibilityLabel(project.location_visibility)}</Text>
+                  <Text>{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
-                    <Text fontSize="$1" color="$yellow10">
+                    <Text color="$yellow10">
                       (Override)
                     </Text>
                   )}
@@ -177,8 +177,8 @@ export default function ProjectDetailPage() {
         {/* Location Section */}
         <Card padding="$4">
           <Stack gap="$4">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$6" fontWeight="600">
+            <Row justify="space-between" align="center">
+              <Text>
                 Location
               </Text>
               <Button size="$2" icon={Plus}>
@@ -192,14 +192,14 @@ export default function ProjectDetailPage() {
               <Stack gap="$4">
                 {sites.length > 0 && (
                   <Stack gap="$2">
-                    <Text fontWeight="600">Site Boundaries</Text>
+                    <Text>Site Boundaries</Text>
                     {sites.map((ps: (typeof sites)[0]) => (
                       <Card key={ps.id} padding="$2" backgroundColor="$gray2">
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
                         {ps.site?.area_sqft && (
-                          <Text fontSize="$2" color="$gray10">
+                          <Text color="$gray10">
                             Area: {ps.site.area_sqft.toLocaleString()} sq ft
                           </Text>
                         )}
@@ -210,7 +210,7 @@ export default function ProjectDetailPage() {
 
                 {addresses.length > 0 && (
                   <Stack gap="$2">
-                    <Text fontWeight="600">Property Addresses</Text>
+                    <Text>Property Addresses</Text>
                     {addresses.map((pa: (typeof addresses)[0]) => (
                       <Card key={pa.id} padding="$2" backgroundColor="$gray2">
                         <Text>
@@ -220,7 +220,7 @@ export default function ProjectDetailPage() {
                           {pa.address?.address?.zip && ` ${pa.address.address.zip}`}
                         </Text>
                         {pa.address?.property_type && (
-                          <Text fontSize="$2" color="$gray10">
+                          <Text color="$gray10">
                             Type: {pa.address.property_type}
                           </Text>
                         )}
@@ -230,7 +230,7 @@ export default function ProjectDetailPage() {
                 )}
 
                 {/* TODO: Add Mapbox map display here */}
-                <Text fontSize="$2" color="$gray10" fontStyle="italic">
+                <Text color="$gray10" fontStyle="italic">
                   Map display coming soon - will show site boundaries and address pins
                 </Text>
               </Stack>
@@ -241,8 +241,8 @@ export default function ProjectDetailPage() {
         {/* Workers Section */}
         <Card padding="$4">
           <Stack gap="$4">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$6" fontWeight="600">
+            <Row justify="space-between" align="center">
+              <Text>
                 Workers
               </Text>
               <Button size="$2" icon={Plus}>
@@ -260,29 +260,29 @@ export default function ProjectDetailPage() {
 
                   return (
                     <Card key={worker.id} padding="$3" backgroundColor="$gray2">
-                      <Row justifyContent="space-between" alignItems="center">
+                      <Row justify="space-between" align="center">
                         <Stack gap="$1" flex={1}>
-                          <Row gap="$2" alignItems="center">
+                          <Row gap="$2" align="center">
                             <StatusIcon size={16} color={statusColor} />
-                            <Text fontWeight="600">Worker {worker.user_id?.slice(0, 8)}</Text>
+                            <Text>Worker {worker.user_id?.slice(0, 8)}</Text>
                           </Row>
                           {worker.role_on_project && (
-                            <Text fontSize="$2" color="$gray10">
+                            <Text color="$gray10">
                               Role: {worker.role_on_project}
                             </Text>
                           )}
                           {worker.start_date && worker.end_date && (
-                            <Text fontSize="$2" color="$gray10">
+                            <Text color="$gray10">
                               {worker.start_date} - {worker.end_date}
                             </Text>
                           )}
                           {worker.claimed_by_worker && (
-                            <Text fontSize="$2" color="$blue10">
+                            <Text color="$blue10">
                               Claimed by worker
                             </Text>
                           )}
                           {worker.assigned_by_manager && (
-                            <Text fontSize="$2" color="$green10">
+                            <Text color="$green10">
                               Assigned by manager
                             </Text>
                           )}

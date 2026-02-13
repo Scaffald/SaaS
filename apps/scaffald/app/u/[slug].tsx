@@ -101,9 +101,9 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
-            <Spinner size="large" />
-            <Text marginTop="$4" color="$color10">
+          <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+            <Spinner size="lg" />
+            <Text color="$color10">
               Loading profile...
             </Text>
           </Stack>
@@ -119,8 +119,8 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
-            <Text fontSize="$6" fontWeight="bold" color="$color11">
+          <Stack align="center" justify="center" style={{ minHeight: 400 }} gap="$4">
+            <Text color="$color11">
               Profile Not Found
             </Text>
             <Text color="$color10" style={{ textAlign: 'center' }}>

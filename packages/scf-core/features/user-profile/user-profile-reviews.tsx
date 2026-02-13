@@ -73,7 +73,15 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
       console.warn('Failed to track review view:', error)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, currentUserId, isLoading, reviewsData, reviews.length, trackEventMutation.mutate, trackEventMutation])
+  }, [
+    userId,
+    currentUserId,
+    isLoading,
+    reviewsData,
+    reviews.length,
+    trackEventMutation.mutate,
+    trackEventMutation,
+  ])
 
   if (isLoading) {
     return (
@@ -93,9 +101,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
           <Row justify="space-between" align="center">
             <Row gap={8} align="center">
               <Star size={24} color="$blue10" fill="$blue10" />
-              <Text color="gray">
-                Reviews & Ratings
-              </Text>
+              <Text color="gray">Reviews & Ratings</Text>
             </Row>
             {onLeaveReview && (
               <Button size={12} theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
@@ -104,13 +110,9 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             )}
           </Row>
           <Stack align="center" justify="center" minHeight={200} gap={12}>
-            <Text color="gray">
-              No reviews yet
-            </Text>
+            <Text color="gray">No reviews yet</Text>
             <Stack align="center">
-              <Text color="gray">
-                Be the first to leave a review for this user
-              </Text>
+              <Text color="gray">Be the first to leave a review for this user</Text>
             </Stack>
           </Stack>
         </Stack>
@@ -150,9 +152,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
         <Row justify="space-between" align="center">
           <Row gap={8} align="center">
             <Star size={24} color="$blue10" fill="$blue10" />
-            <Text color="gray">
-              Reviews & Ratings
-            </Text>
+            <Text color="gray">Reviews & Ratings</Text>
           </Row>
           {onLeaveReview && (
             <Button size={12} theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
@@ -166,9 +166,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
           <Stack gap={12} padding={16}>
             <Row gap={16} align="center">
               <Stack align="center">
-                <Text color="gray">
-                  {overallRating.toFixed(1)}
-                </Text>
+                <Text color="gray">{overallRating.toFixed(1)}</Text>
                 <Row gap={4}>
                   {[...Array(5)].map((_, i) => (
                     <Star
@@ -223,9 +221,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                 borderRadius={12}
               >
                 <ThumbsUp size={16} color="$green11" />
-                <Text color="$green11">
-                  {recommendCount} Recommend
-                </Text>
+                <Text color="$green11">{recommendCount} Recommend</Text>
               </Row>
               <Row
                 gap={8}
@@ -236,9 +232,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                 borderRadius={12}
               >
                 <ThumbsDown size={16} color="$red11" />
-                <Text color="$red11">
-                  {notRecommendCount} Don't Recommend
-                </Text>
+                <Text color="$red11">{notRecommendCount} Don't Recommend</Text>
               </Row>
             </Row>
           </Stack>
@@ -246,18 +240,14 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
         {/* Reviews List */}
         <Stack gap={12}>
-          <Text color="gray">
-            Reviews ({totalReviews})
-          </Text>
+          <Text color="gray">Reviews ({totalReviews})</Text>
           {reviews.map((review: Review) => (
             <Card key={review.id} bordered backgroundColor="$color2">
               <Stack gap={12} padding={16}>
                 <Row justify="space-between" align="flex-start">
                   <Stack gap={4}>
                     <Row gap={8} align="center">
-                      <Text color="gray">
-                        Anonymous Reviewer
-                      </Text>
+                      <Text color="gray">Anonymous Reviewer</Text>
                       <Row
                         gap={4}
                         align="center"
@@ -267,15 +257,11 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                         borderRadius={8}
                       >
                         <Shield size={12} color="$blue11" />
-                        <Text color="$blue11">
-                          VERIFIED
-                        </Text>
+                        <Text color="$blue11">VERIFIED</Text>
                       </Row>
                     </Row>
                   </Stack>
-                  <Text color="gray">
-                    {new Date(review.created_at).toLocaleDateString()}
-                  </Text>
+                  <Text color="gray">{new Date(review.created_at).toLocaleDateString()}</Text>
                 </Row>
 
                 {/* Overall Rating */}
@@ -300,11 +286,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                 )}
 
                 {/* Comment */}
-                {review.comment && (
-                  <Text color="gray">
-                    {review.comment}
-                  </Text>
-                )}
+                {review.comment && <Text color="gray">{review.comment}</Text>}
 
                 {/* Recommendation */}
                 {review.reaction !== null && (
@@ -312,16 +294,12 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                     {review.reaction === 1 ? (
                       <>
                         <ThumbsUp size={16} color="$green11" />
-                        <Text color="$green11">
-                          Recommends this person
-                        </Text>
+                        <Text color="$green11">Recommends this person</Text>
                       </>
                     ) : (
                       <>
                         <ThumbsDown size={16} color="$red11" />
-                        <Text color="$red11">
-                          Does not recommend
-                        </Text>
+                        <Text color="$red11">Does not recommend</Text>
                       </>
                     )}
                   </Row>

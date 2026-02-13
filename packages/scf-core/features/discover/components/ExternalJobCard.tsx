@@ -108,14 +108,8 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
         )}
 
         <Stack flex={1} gap={4}>
-          <Text color="gray">
-            {job.title}
-          </Text>
-          {job.company_name && (
-            <Text color="gray">
-              {job.company_name}
-            </Text>
-          )}
+          <Text color="gray">{job.title}</Text>
+          {job.company_name && <Text color="gray">{job.company_name}</Text>}
         </Stack>
 
         {job.featured && (
@@ -125,9 +119,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
             borderRadius={8}
             backgroundColor="$blue5"
           >
-            <Text color="$blue11">
-              FEATURED
-            </Text>
+            <Text color="$blue11">FEATURED</Text>
           </Stack>
         )}
       </Row>
@@ -137,35 +129,25 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
         {job.job_location && (
           <Row gap={8} align="center">
             <MapPin size={16} color="gray" />
-            <Text color="gray">
-              {job.job_location}
-            </Text>
+            <Text color="gray">{job.job_location}</Text>
           </Row>
         )}
 
         {job.job_type && (
           <Row gap={8} align="center">
             <Clock size={16} color="gray" />
-            <Text color="gray">
-              {job.job_type}
-            </Text>
+            <Text color="gray">{job.job_type}</Text>
           </Row>
         )}
 
         {compensation && (
           <Row gap={8} align="center">
             <DollarSign size={16} color="gray" />
-            <Text color="gray">
-              {compensation}
-            </Text>
+            <Text color="gray">{compensation}</Text>
           </Row>
         )}
 
-        {postedDate && (
-          <Text color="gray">
-            {postedDate}
-          </Text>
-        )}
+        {postedDate && <Text color="gray">{postedDate}</Text>}
       </Row>
 
       {/* Description */}
@@ -184,9 +166,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
             borderRadius={8}
             backgroundColor="$blue3"
           >
-            <Text color="$blue11">
-              {primaryIndustry}
-            </Text>
+            <Text color="$blue11">{primaryIndustry}</Text>
           </Stack>
         )}
         {job.job_category && (
@@ -196,9 +176,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
             borderRadius={8}
             backgroundColor="$color3"
           >
-            <Text color="gray">
-              {job.job_category}
-            </Text>
+            <Text color="gray">{job.job_category}</Text>
           </Stack>
         )}
       </Row>

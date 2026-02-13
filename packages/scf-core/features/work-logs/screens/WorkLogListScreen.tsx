@@ -5,7 +5,16 @@ import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from 'lucide-
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { RefreshControl, ScrollView } from 'react-native'
-import { Button, Card, Paragraph, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Card,
+  Paragraph,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
 import { useWorkLogSync } from '../hooks/useWorkLogSync'
@@ -59,9 +68,7 @@ export function WorkLogListScreen() {
       <Stack gap={16} padding={16} flex={1}>
         <Row justify="space-between" align="center">
           <Stack gap={4}>
-            <Text>
-              Work Logs
-            </Text>
+            <Text>Work Logs</Text>
             <Paragraph color="gray">
               Track and review your daily work history, collaborate with teammates, and manage
               verification.
@@ -82,9 +89,7 @@ export function WorkLogListScreen() {
               <Row gap={12} align="center">
                 <CloudOff color="#b45309" />
                 <Stack gap={4} flex={1}>
-                  <Text color="$yellow11">
-                    Offline drafts ready to sync
-                  </Text>
+                  <Text color="$yellow11">Offline drafts ready to sync</Text>
                   <Paragraph color="$yellow11">
                     {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? '' : 's'} will
                     sync once you are back online.
@@ -137,9 +142,7 @@ export function WorkLogListScreen() {
                 <Stack gap={12} padding={12}>
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
-                      <Text>
-                        {item.project?.name ?? 'Unknown Project'}
-                      </Text>
+                      <Text>{item.project?.name ?? 'Unknown Project'}</Text>
                       <Text color="gray">
                         {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
                       </Text>
@@ -156,9 +159,7 @@ export function WorkLogListScreen() {
                       borderRadius={12}
                       backgroundColor={item.visibility === 'public' ? '$green4' : '$gray4'}
                     >
-                      <Text
-                        color={item.visibility === 'public' ? '$green11' : '$gray11'}
-                      >
+                      <Text color={item.visibility === 'public' ? '$green11' : '$gray11'}>
                         {item.visibility === 'public' ? 'Public' : 'Private'}
                       </Text>
                     </Stack>
@@ -169,9 +170,7 @@ export function WorkLogListScreen() {
                         borderRadius={12}
                         backgroundColor="$blue4"
                       >
-                        <Text color="$blue11">
-                          On profile
-                        </Text>
+                        <Text color="$blue11">On profile</Text>
                       </Stack>
                     )}
                   </Row>
@@ -247,9 +246,7 @@ function AnalyticsBanner({
   return (
     <Card borderColor="$color6" borderWidth={1}>
       <Stack gap={12} padding={12}>
-        <Text>
-          Quick summary
-        </Text>
+        <Text>Quick summary</Text>
         {isLoading && !statusSummary ? (
           <Row gap={12} align="center">
             <Spinner size="sm" />
@@ -303,17 +300,9 @@ function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTile
       gap={4}
       flexShrink={0}
     >
-      <Text color="gray">
-        {label}
-      </Text>
-      <Text color={color as never}>
-        {value}
-      </Text>
-      {subtitle && (
-        <Text color="gray">
-          {subtitle}
-        </Text>
-      )}
+      <Text color="gray">{label}</Text>
+      <Text color={color as never}>{value}</Text>
+      {subtitle && <Text color="gray">{subtitle}</Text>}
     </Stack>
   )
 }
@@ -336,9 +325,7 @@ function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
     >
       <IconComponent size={16} color="gray" />
       <Text>{value}</Text>
-      <Text color="gray">
-        {label}
-      </Text>
+      <Text color="gray">{label}</Text>
     </Row>
   )
 }
@@ -351,9 +338,7 @@ function EmptyState({ onCreate }: EmptyStateProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
       <Stack gap={12} align="center" paddingVertical={32} paddingHorizontal={16}>
-        <Text>
-          No work logs yet
-        </Text>
+        <Text>No work logs yet</Text>
         <Paragraph color="gray" paddingHorizontal={24} style={{ textAlign: 'center' }}>
           Create your first work log to start tracking hours, documenting tasks, and collaborating
           with your team.

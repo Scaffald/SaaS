@@ -80,4 +80,3 @@ export function useConnectionStatus(targetUserId: string | null) {
 
   return status
 }
-

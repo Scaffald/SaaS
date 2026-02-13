@@ -68,9 +68,7 @@ export function DisputeForm({
     <FormProvider {...form}>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="gray">
-            Submit a dispute
-          </Text>
+          <Text color="gray">Submit a dispute</Text>
           <Text color="gray">
             Share what needs review and, if helpful, include supporting documents so our compliance
             team can investigate quickly.
@@ -87,9 +85,7 @@ export function DisputeForm({
             gap={8}
             borderRadius={16}
           >
-            <Text color="$yellow11">
-              Dispute already in review
-            </Text>
+            <Text color="$yellow11">Dispute already in review</Text>
             <Text color="$yellow11">
               You have a dispute awaiting review. We’ll notify you when the team has an update.
             </Text>
@@ -132,11 +128,7 @@ export function DisputeForm({
                     placeholder="Share a short summary…"
                     borderColor={error ? '$red8' : '$borderColor'}
                   />
-                  {error ? (
-                    <Text color="$red10">
-                      {error.message}
-                    </Text>
-                  ) : null}
+                  {error ? <Text color="$red10">{error.message}</Text> : null}
                 </Stack>
               )}
             />
@@ -156,23 +148,15 @@ export function DisputeForm({
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
                   borderColor={error ? '$red8' : '$borderColor'}
                 />
-                <Text color="gray">
-                  Minimum 20 characters. Max 2000 characters.
-                </Text>
-                {error ? (
-                  <Text color="$red10">
-                    {error.message}
-                  </Text>
-                ) : null}
+                <Text color="gray">Minimum 20 characters. Max 2000 characters.</Text>
+                {error ? <Text color="$red10">{error.message}</Text> : null}
               </Stack>
             )}
           />
         </Fieldset>
 
         <Stack gap={8}>
-          <Text color="gray">
-            Supporting documents (optional)
-          </Text>
+          <Text color="gray">Supporting documents (optional)</Text>
           <Text color="gray">
             Upload up to five files (PDF, JPG, or PNG, 10MB each) to help us verify your dispute.
           </Text>
@@ -202,21 +186,14 @@ export function DisputeForm({
               >
                 <input {...getInputProps()} />
                 <Upload size={24} color="$blue10" />
+                <Text color="gray">{isProcessing ? 'Processing…' : 'Drag a file here'}</Text>
                 <Text color="gray">
-                  {isProcessing ? 'Processing…' : 'Drag a file here'}
-                </Text>
-                <Text color="gray">
-                  or{' '}
-                  <Text color="$blue11">
-                    browse your device
-                  </Text>
+                  or <Text color="$blue11">browse your device</Text>
                 </Text>
                 <Button size={8} variant="outline" onPress={open} icon={Upload}>
                   Choose file
                 </Button>
-                <Text color="gray">
-                  Accepted: PDF, PNG, JPG • Max 10MB each
-                </Text>
+                <Text color="gray">Accepted: PDF, PNG, JPG • Max 10MB each</Text>
               </Stack>
             )}
           </UploadSurface>
@@ -231,9 +208,7 @@ export function DisputeForm({
               borderRadius={12}
             >
               <AlertCircle size={16} color="$red10" />
-              <Text color="$red10">
-                {attachmentError}
-              </Text>
+              <Text color="$red10">{attachmentError}</Text>
             </Row>
           ) : null}
 
@@ -285,9 +260,7 @@ export function DisputeForm({
             borderRadius={12}
           >
             <AlertCircle size={16} color="$red10" />
-            <Text color="$red10">
-              {submissionError}
-            </Text>
+            <Text color="$red10">{submissionError}</Text>
           </Row>
         ) : null}
 

@@ -44,7 +44,7 @@ export default function DashboardTeamInvitationsScreen() {
   const content = (
     <Stack flex={1} padding="$4" gap="$5">
       <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700">
+        <Text>
           Team invitations
         </Text>
         <Text color="$color11">
@@ -53,9 +53,9 @@ export default function DashboardTeamInvitationsScreen() {
         </Text>
       </Stack>
 
-      <Row gap="$2" justifyContent="flex-end">
+      <Row gap="$2" justify="flex-end">
         <Button
-          variant="outlined"
+          variant="outline"
           size="$2"
           icon={RefreshCw}
           onPress={() => invitationsQuery.refetch()}
@@ -66,8 +66,8 @@ export default function DashboardTeamInvitationsScreen() {
       </Row>
 
       {invitationsQuery.isLoading ? (
-        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$10">
-          <Spinner size="large" />
+        <Stack align="center" justify="center" gap="$2" paddingVertical="$10">
+          <Spinner size="lg" />
           <Text color="$color11">Loading invitations…</Text>
         </Stack>
       ) : (

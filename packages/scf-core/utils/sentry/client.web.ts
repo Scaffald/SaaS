@@ -138,4 +138,3 @@ export function setContext(name: string, context: Record<string, unknown>) {
 
 // Export Sentry for advanced usage
 export { Sentry }
-

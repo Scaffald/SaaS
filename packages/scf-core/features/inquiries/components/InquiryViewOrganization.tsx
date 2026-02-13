@@ -41,9 +41,7 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
       gap={8}
     >
       <Check size={14} color="white" />
-      <Text color="white">
-        Accepted on {formatDate(acceptedAt)}
-      </Text>
+      <Text color="white">Accepted on {formatDate(acceptedAt)}</Text>
     </Row>
   )
 }
@@ -128,9 +126,7 @@ export function InquiryViewOrganization({
 
   const NonNegotiableBadge = () => (
     <Row backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text color="$gray11">
-        Non-negotiable
-      </Text>
+      <Text color="$gray11">Non-negotiable</Text>
     </Row>
   )
 
@@ -144,9 +140,7 @@ export function InquiryViewOrganization({
     negotiable: boolean
   }) => (
     <Row justify="space-between" align="center">
-      <Text color="gray">
-        {label}
-      </Text>
+      <Text color="gray">{label}</Text>
       <Row align="center" gap={8}>
         <Text>{value || 'Not specified'}</Text>
         {!negotiable && <NonNegotiableBadge />}
@@ -172,9 +166,7 @@ export function InquiryViewOrganization({
       <Card padding={16} gap={12}>
         {/* Section Header */}
         <Row justify="space-between" align="center">
-          <Text>
-            {title}
-          </Text>
+          <Text>{title}</Text>
           {section && (
             <AcceptanceBadge acceptedBy={section.accepted_by} acceptedAt={section.accepted_at} />
           )}
@@ -201,9 +193,7 @@ export function InquiryViewOrganization({
       <Stack gap={16} padding={16}>
         {/* Header with Edit button */}
         <Row justify="space-between" align="center">
-          <Text>
-            Inquiry
-          </Text>
+          <Text>Inquiry</Text>
         </Row>
         <Text color="gray">
           {candidateName} - {jobTitle}
@@ -310,12 +300,8 @@ export function InquiryViewOrganization({
           )}
           {inquiry.additional_notes && (
             <Stack gap={8}>
-              <Text color="gray">
-                Additional notes
-              </Text>
-              <Text color="gray">
-                {inquiry.additional_notes}
-              </Text>
+              <Text color="gray">Additional notes</Text>
+              <Text color="gray">{inquiry.additional_notes}</Text>
             </Stack>
           )}
         </InquirySection>

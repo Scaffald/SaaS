@@ -31,7 +31,7 @@ export const DashboardLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
-  const hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
+  const _hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
@@ -44,24 +44,9 @@ export const DashboardLayout = ({
         )}
 
         {/* Content Area - Responsive two-column or single-column layout */}
-        <Row
-          gap={12}
-          flexDirection="column"
-        >
-          {leftContent && (
-            <Stack
-              width="100%"
-            >
-              {leftContent}
-            </Stack>
-          )}
-          {rightContent && (
-            <Stack
-              width="100%"
-            >
-              {rightContent}
-            </Stack>
-          )}
+        <Row gap={12} flexDirection="column">
+          {leftContent && <Stack width="100%">{leftContent}</Stack>}
+          {rightContent && <Stack width="100%">{rightContent}</Stack>}
         </Row>
       </Stack>
     </ScrollView>

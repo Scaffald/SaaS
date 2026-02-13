@@ -82,7 +82,8 @@ export function AddOrganizationWidget() {
         setSubmittedRequest(request)
         toast.show({
           title: 'Request submitted',
-          message: 'Thanks for the submission! Our team will review your organization and follow up shortly.',
+          message:
+            'Thanks for the submission! Our team will review your organization and follow up shortly.',
           variant: 'success',
         })
       },
@@ -112,9 +113,7 @@ export function AddOrganizationWidget() {
       <Stack gap={8}>
         <Row gap={8} align="center">
           <Building2 size={20} color="$blue10" />
-          <Text color="gray">
-            Add an Organization
-          </Text>
+          <Text color="gray">Add an Organization</Text>
         </Row>
         <Text color="gray">
           Enter the organization name to check if we already have it. You can continue to the
@@ -153,9 +152,7 @@ export function AddOrganizationWidget() {
       ) : isFetching || isLoading ? (
         <Row gap={8} align="center">
           <Loader2 size={16} color="$blue10" />
-          <Text color="gray">
-            Checking for existing organizations...
-          </Text>
+          <Text color="gray">Checking for existing organizations...</Text>
         </Row>
       ) : (
         <StatusSummary
@@ -176,9 +173,7 @@ export function AddOrganizationWidget() {
         {isSubmitting ? (
           <Row gap={8} align="center">
             <Loader2 size={16} color="gray" />
-            <Text color="gray">
-              Submitting...
-            </Text>
+            <Text color="gray">Submitting...</Text>
           </Row>
         ) : submittedRequest ? (
           'Request Submitted'
@@ -216,18 +211,14 @@ function StatusSummary({
       <Stack gap={12}>
         <Row gap={8} align="center">
           <AlertTriangle size={16} color="$yellow10" />
-          <Text color="$yellow10">
-            We found existing organizations that match your search.
-          </Text>
+          <Text color="$yellow10">We found existing organizations that match your search.</Text>
         </Row>
         <Stack gap={8}>
           {matchingEmployers.map((employer) => (
             <DuplicateLink key={employer.id} id={employer.id} name={employer.name || 'Unknown'} />
           ))}
         </Stack>
-        <Text color="gray">
-          Review the existing organization before creating a new one.
-        </Text>
+        <Text color="gray">Review the existing organization before creating a new one.</Text>
       </Stack>
     )
   }
@@ -236,13 +227,10 @@ function StatusSummary({
     <Stack gap={8}>
       <Row gap={8} align="center">
         <CheckCircle2 size={16} color="$green10" />
-        <Text color="$green10">
-          This name looks available.
-        </Text>
+        <Text color="$green10">This name looks available.</Text>
       </Row>
       <Text color="gray">
-        We&apos;ll use the slug <Text>{candidateSlug}</Text> when you create the
-        organization.
+        We&apos;ll use the slug <Text>{candidateSlug}</Text> when you create the organization.
       </Text>
     </Stack>
   )
@@ -288,13 +276,11 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
     <Stack gap={8}>
       <Row gap={8} align="center">
         <CheckCircle2 size={16} color="$green10" />
-        <Text color="$green10">
-          Request submitted for {request.name}
-        </Text>
+        <Text color="$green10">Request submitted for {request.name}</Text>
       </Row>
       <Text color="gray">
-        We&apos;ll review <Text>{request.slug}</Text> and notify you once it&apos;s
-        approved. You can keep browsing employers while we take a look.
+        We&apos;ll review <Text>{request.slug}</Text> and notify you once it&apos;s approved. You
+        can keep browsing employers while we take a look.
       </Text>
       {onAddDetails ? (
         <Button

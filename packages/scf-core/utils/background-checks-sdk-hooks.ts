@@ -33,7 +33,7 @@ export function useBackgroundCheckPackages(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.backgroundChecks.listPackages()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes - packages don't change often
   })
 }
@@ -79,7 +79,7 @@ export function useBackgroundChecks(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.backgroundChecks.listChecks()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute
   })
 }
@@ -93,7 +93,7 @@ export function useBackgroundCheck(checkId: string | undefined, options?: { enab
       if (!client || !checkId) throw new Error('Missing client or checkId')
       return client.backgroundChecks.getCheck(checkId)
     },
-    enabled: !!client && !!checkId && (options?.enabled !== false),
+    enabled: !!client && !!checkId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -167,7 +167,10 @@ export function useSubmitBackgroundCheckDisputeMutation(
 }
 
 /** List disputes for a specific background check */
-export function useBackgroundCheckDisputes(checkId: string | undefined, options?: { enabled?: boolean }) {
+export function useBackgroundCheckDisputes(
+  checkId: string | undefined,
+  options?: { enabled?: boolean }
+) {
   const client = useScaffaldJobsClient()
   return useQuery({
     queryKey: ['backgroundChecks', 'disputes', checkId],
@@ -175,7 +178,7 @@ export function useBackgroundCheckDisputes(checkId: string | undefined, options?
       if (!client || !checkId) throw new Error('Missing client or checkId')
       return client.backgroundChecks.listDisputesForCheck(checkId)
     },
-    enabled: !!client && !!checkId && (options?.enabled !== false),
+    enabled: !!client && !!checkId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -196,7 +199,7 @@ export function useOrganizationBackgroundChecks(
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.backgroundChecks.organizationListChecks(organizationId)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -216,7 +219,7 @@ export function useOrganizationBackgroundCheck(
       }
       return client.backgroundChecks.organizationGet(organizationId, checkId)
     },
-    enabled: !!client && !!organizationId && !!checkId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && !!checkId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }

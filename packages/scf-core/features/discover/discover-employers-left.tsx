@@ -33,12 +33,8 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
   if (employers.length === 0) {
     return (
       <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
-        <Text color="gray">
-          No employers found
-        </Text>
-        <Text color="gray">
-          Try adjusting your filters or search query
-        </Text>
+        <Text color="gray">No employers found</Text>
+        <Text color="gray">Try adjusting your filters or search query</Text>
       </Stack>
     )
   }

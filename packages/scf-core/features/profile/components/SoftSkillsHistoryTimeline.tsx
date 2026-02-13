@@ -1,7 +1,4 @@
-import {
-  useSoftSkillsHistory,
-  useSoftSkills,
-} from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { SkillsChart } from '@unicornlove/beyond-ui'
 import { Calendar, TrendingUp } from 'lucide-react-native'
 import { Button } from '@unicornlove/beyond-ui'
@@ -33,13 +30,10 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   })
 
   // Fetch current version for comparison
-  const { data: currentData } = useSoftSkills(
-    userId ? { userId } : undefined,
-    {
-      enabled: !!userId || !userId, // Always fetch current user's data
-      staleTime: 5 * 60 * 1000,
-    }
-  )
+  const { data: currentData } = useSoftSkills(userId ? { userId } : undefined, {
+    enabled: !!userId || !userId, // Always fetch current user's data
+    staleTime: 5 * 60 * 1000,
+  })
 
   const versions = historyData?.versions || []
   const currentVersion = currentData?.version ?? null
@@ -134,12 +128,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (error) {
     return (
       <Stack gap={8} padding={16}>
-        <Text color="$red11">
-          Error loading history
-        </Text>
-        <Text color="gray">
-          {error.message || 'Failed to load version history'}
-        </Text>
+        <Text color="$red11">Error loading history</Text>
+        <Text color="gray">{error.message || 'Failed to load version history'}</Text>
       </Stack>
     )
   }
@@ -147,9 +137,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (versions.length === 0) {
     return (
       <Stack gap={8} padding={16} align="center">
-        <Text color="gray">
-          No History Yet
-        </Text>
+        <Text color="gray">No History Yet</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           Complete your first soft skills assessment to start tracking your progress over time.
         </Text>
@@ -160,9 +148,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (versions.length === 1) {
     return (
       <Stack gap={12} padding={16}>
-        <Text color="gray">
-          Assessment History
-        </Text>
+        <Text color="gray">Assessment History</Text>
         <Text color="gray">
           This is your first assessment. Complete another assessment to see progression tracking.
         </Text>
@@ -176,13 +162,9 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
         >
           <Row gap={8} align="center">
             <Calendar size={16} color="$blue10" />
-            <Text color="$blue11">
-              Version {versions[0].version}
-            </Text>
+            <Text color="$blue11">Version {versions[0].version}</Text>
             {versions[0].selfAssessedAt && (
-              <Text color="$blue10">
-                • {formatDate(versions[0].selfAssessedAt)}
-              </Text>
+              <Text color="$blue10">• {formatDate(versions[0].selfAssessedAt)}</Text>
             )}
           </Row>
           {currentVersionData && (
@@ -216,9 +198,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding={16}>
-        <Text color="gray">
-          Assessment History
-        </Text>
+        <Text color="gray">Assessment History</Text>
         <Text color="gray">
           View your soft skills assessments over time and track your progress.
         </Text>
@@ -246,12 +226,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     borderWidth={2}
                     borderColor={isSelected ? '$blue9' : isCurrent ? '$green9' : '$borderColor'}
                   >
-                    <Row
-                      align="center"
-                      justify="space-between"
-                      flexWrap="wrap"
-                      gap={8}
-                    >
+                    <Row align="center" justify="space-between" flexWrap="wrap" gap={8}>
                       <Row gap={12} align="center">
                         <Stack
                           width={40}
@@ -261,9 +236,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           align="center"
                           justify="center"
                         >
-                          <Text color="gray">
-                            V{version.version}
-                          </Text>
+                          <Text color="gray">V{version.version}</Text>
                         </Stack>
                         <Stack gap={4}>
                           <Row gap={8} align="center">
@@ -297,9 +270,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           <Text color="gray" textTransform="capitalize">
                             {category}
                           </Text>
-                          <Text color="gray">
-                            {average.toFixed(1)}/5
-                          </Text>
+                          <Text color="gray">{average.toFixed(1)}/5</Text>
                         </Stack>
                       ))}
                     </Row>
@@ -309,9 +280,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                       <>
                         <Separator />
                         <Stack gap={8} align="center">
-                          <Text color="$blue11">
-                            Version {version.version} Radar Chart
-                          </Text>
+                          <Text color="$blue11">Version {version.version} Radar Chart</Text>
                           <SkillsChart
                             datasets={[
                               {
@@ -378,23 +347,14 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           </Row>
 
                           {/* Legend */}
-                          <Row
-                            gap={16}
-                            align="center"
-                            justify="center"
-                            paddingVertical={8}
-                          >
+                          <Row gap={16} align="center" justify="center" paddingVertical={8}>
                             <Row gap={8} align="center">
                               <Stack width={20} height={3} backgroundColor="$blue9" />
-                              <Text color="gray">
-                                Version {version.version}
-                              </Text>
+                              <Text color="gray">Version {version.version}</Text>
                             </Row>
                             <Row gap={8} align="center">
                               <Stack width={20} height={3} backgroundColor="$green9" />
-                              <Text color="gray">
-                                Current
-                              </Text>
+                              <Text color="gray">Current</Text>
                             </Row>
                           </Row>
                         </Stack>

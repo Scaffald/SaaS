@@ -21,16 +21,10 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
     <Stack gap={16} padding={16}>
       <Stack gap={8}>
         <Row gap={8}>
-          <Label flex={1}>
-            Minimum Score
-          </Label>
-          <Text>
-            {currentScore}
-          </Text>
+          <Label flex={1}>Minimum Score</Label>
+          <Text>{currentScore}</Text>
         </Row>
-        <Text>
-          Set the minimum score threshold for auto-screening applicants (0-100 scale)
-        </Text>
+        <Text>Set the minimum score threshold for auto-screening applicants (0-100 scale)</Text>
       </Stack>
 
       <Stack gap={12}>
@@ -42,17 +36,13 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
         </Slider>
 
         <Row gap={8}>
-          <Text flex={1}>
-            0 (Low)
-          </Text>
+          <Text flex={1}>0 (Low)</Text>
           <Text>100 (High)</Text>
         </Row>
       </Stack>
 
       <Stack gap={8} padding={12}>
-        <Text color="$blue11">
-          Score Guidelines
-        </Text>
+        <Text color="$blue11">Score Guidelines</Text>
         <Text color="$blue11">
           • <Text>0-25:</Text> Entry level, minimal requirements
         </Text>

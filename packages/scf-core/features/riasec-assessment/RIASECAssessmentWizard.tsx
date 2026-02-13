@@ -35,18 +35,18 @@ export function RIASECAssessmentWizard() {
       // Invalidate status queries to update drawer checkmarks
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'onet', 'riasec', 'status'] })
       toast.show({
-          title: 'Assessment Complete',
-          message: 'Your career interests have been saved!',
-          variant: 'success',
-        })
+        title: 'Assessment Complete',
+        message: 'Your career interests have been saved!',
+        variant: 'success',
+      })
       router.push(ROUTES.DASHBOARD.path)
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to save assessment. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to save assessment. Please try again.',
+        variant: 'error',
+      })
     },
   })
 

@@ -37,9 +37,7 @@ export const ConsentStep = memo(function ConsentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="gray">
-          Consent & Disclosures
-        </Text>
+        <Text color="gray">Consent & Disclosures</Text>
         <Text color="gray">
           Please review the disclosure and confirm your consent to continue with the background
           check.
@@ -49,21 +47,13 @@ export const ConsentStep = memo(function ConsentStep({
       <ScrollView flex={1}>
         <Stack gap={16} paddingBottom={24}>
           <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
-            <Text color="gray">
-              FCRA Disclosure
-            </Text>
-            <Text color="gray">
-              {FCRA_DISCLOSURE.trim()}
-            </Text>
+            <Text color="gray">FCRA Disclosure</Text>
+            <Text color="gray">{FCRA_DISCLOSURE.trim()}</Text>
           </Stack>
 
           <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
-            <Text color="gray">
-              Summary of Rights
-            </Text>
-            <Text color="gray">
-              {SUMMARY_OF_RIGHTS.trim()}
-            </Text>
+            <Text color="gray">Summary of Rights</Text>
+            <Text color="gray">{SUMMARY_OF_RIGHTS.trim()}</Text>
           </Stack>
 
           <Stack gap={12}>
@@ -79,15 +69,11 @@ export const ConsentStep = memo(function ConsentStep({
               >
                 <Switch.Thumb />
               </Switch>
-              <Text color="gray">
-                I have read and authorize the background check.
-              </Text>
+              <Text color="gray">I have read and authorize the background check.</Text>
             </Row>
 
             <Stack gap={8}>
-              <Text color="gray">
-                Electronic Signature
-              </Text>
+              <Text color="gray">Electronic Signature</Text>
               <TextArea
                 size={16}
                 value={consent.signature}

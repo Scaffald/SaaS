@@ -25,14 +25,8 @@ export const ConfidenceBadge = memo(function ConfidenceBadge({
     <Row gap={8} align="center">
       <Icon size={16} color={config.colorToken} />
       <Stack>
-        <Text color={config.colorToken}>
-          {config.label}
-        </Text>
-        {showDescription && (
-          <Text color="gray">
-            {config.description}
-          </Text>
-        )}
+        <Text color={config.colorToken}>{config.label}</Text>
+        {showDescription && <Text color="gray">{config.description}</Text>}
       </Stack>
     </Row>
   )

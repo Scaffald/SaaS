@@ -239,9 +239,7 @@ export function ConnectionFollowButtonsInline({
     return (
       <Row gap={8} align="center">
         <Loader2 size={16} color="gray" />
-        <Text color="gray">
-          Loading...
-        </Text>
+        <Text color="gray">Loading...</Text>
       </Row>
     )
   }

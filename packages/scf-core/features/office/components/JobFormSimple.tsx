@@ -45,36 +45,36 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
   const createJob = api.office.createJob.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Job created successfully',
-          variant: 'success',
-        })
+        title: 'Job created successfully',
+        variant: 'success',
+      })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: `Error: ${message}`,
-          variant: 'error',
-        })
+        title: `Error: ${message}`,
+        variant: 'error',
+      })
     },
   })
 
   const updateJob = api.office.updateJob.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Job updated successfully',
-          variant: 'success',
-        })
+        title: 'Job updated successfully',
+        variant: 'success',
+      })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: `Error: ${message}`,
-          variant: 'error',
-        })
+        title: `Error: ${message}`,
+        variant: 'error',
+      })
     },
   })
 

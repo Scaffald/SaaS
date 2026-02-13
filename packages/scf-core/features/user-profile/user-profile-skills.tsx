@@ -22,9 +22,7 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
       <Stack gap={16} padding={20}>
         <Row gap={8} align="center">
           <Award size={24} color="$blue10" />
-          <Text color="gray">
-            Skills & Proficiency
-          </Text>
+          <Text color="gray">Skills & Proficiency</Text>
         </Row>
 
         <Stack gap={12}>
@@ -40,14 +38,10 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
                         : skill.name}
                   </Text>
                   {typeof skill.yearsExperience === 'number' && (
-                    <Text color="gray">
-                      {skill.yearsExperience} years experience
-                    </Text>
+                    <Text color="gray">{skill.yearsExperience} years experience</Text>
                   )}
                 </Stack>
-                <Text color="$blue11">
-                  {skill.proficiency}%
-                </Text>
+                <Text color="$blue11">{skill.proficiency}%</Text>
               </Row>
               <Row height={8} backgroundColor="$color3" borderRadius={8} overflow="hidden">
                 <Row width={`${skill.proficiency}%`} backgroundColor="$blue10" />

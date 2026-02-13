@@ -436,9 +436,7 @@ export function NewsWidget({
   return (
     <Stack gap={spacing.md}>
       <Row justify="space-between" align="center" paddingTop={spacing.sm}>
-        <Text color="gray">
-          News
-        </Text>
+        <Text color="gray">News</Text>
 
         <Row gap={spacing.xs} align="center">
           {/* TODO: Implement and refine filter button functionality later */}
@@ -463,9 +461,7 @@ export function NewsWidget({
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
         <Stack align="center" gap={spacing.sm}>
           <Spinner size="lg" color="$blue7" />
-          <Text color="gray">
-            Loading personalised news...
-          </Text>
+          <Text color="gray">Loading personalised news...</Text>
         </Stack>
       ) : null}
 
@@ -505,27 +501,15 @@ export function NewsWidget({
                   style={{ borderRadius: 12 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text
-                      color="gray"
-                      flex={1}
-                      numberOfLines={2}
-                    >
+                    <Text color="gray" flex={1} numberOfLines={2}>
                       {item.title}
                     </Text>
                     <ExternalLink size={16} color="gray" />
                   </Row>
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text color="gray">
-                      {formatTimeAgo(item.pubDate)}
-                    </Text>
-                    {item.category && (
-                      <Text color="gray">
-                        • {capitalise(item.category)}
-                      </Text>
-                    )}
-                    <Text color="gray">
-                      • {relevanceLabel(item.relevanceScore)}
-                    </Text>
+                    <Text color="gray">{formatTimeAgo(item.pubDate)}</Text>
+                    {item.category && <Text color="gray">• {capitalise(item.category)}</Text>}
+                    <Text color="gray">• {relevanceLabel(item.relevanceScore)}</Text>
                   </Row>
                   {item.reasons.length > 0 && (
                     <Row gap={8} flexWrap="wrap">
@@ -537,9 +521,7 @@ export function NewsWidget({
                           backgroundColor="$blue3"
                           style={{ borderRadius: 8 }}
                         >
-                          <Text color="$blue11">
-                            {reason}
-                          </Text>
+                          <Text color="$blue11">{reason}</Text>
                         </Stack>
                       ))}
                     </Row>
@@ -570,9 +552,7 @@ export function NewsWidget({
         <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
         <Sheet.Frame padding={16} gap={12}>
           <Sheet.Handle />
-          <Text>
-            Customise Recommendations
-          </Text>
+          <Text>Customise Recommendations</Text>
           <Paragraph color="gray" size={12}>
             Tailor the news feed using your profile information.
           </Paragraph>

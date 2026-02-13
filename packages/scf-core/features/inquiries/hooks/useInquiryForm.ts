@@ -67,32 +67,32 @@ export function useInquiryForm({
   const createMutation = useCreateInquiryMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Inquiry created',
-          message: 'Your inquiry has been saved as a draft.',
-        })
+        title: 'Inquiry created',
+        message: 'Your inquiry has been saved as a draft.',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to create inquiry',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to create inquiry',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
   const sendMutation = useSendInquiryMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Inquiry sent',
-          message: 'The inquiry has been sent to the candidate.',
-        })
+        title: 'Inquiry sent',
+        message: 'The inquiry has been sent to the candidate.',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to send inquiry',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to send inquiry',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 

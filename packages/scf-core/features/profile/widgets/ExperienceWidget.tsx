@@ -51,9 +51,7 @@ export function ExperienceWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load experience</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
           <Button
             variant="primary"
             size={8}
@@ -113,22 +111,14 @@ export function ExperienceWidget({
                 <Stack key={exp.id} gap={8}>
                   {/* Job Title & Company */}
                   <Stack gap={4}>
-                    <Text>
-                      {exp.job_title}
-                    </Text>
-                    <Text color="gray">
-                      {exp.company_name}
-                    </Text>
+                    <Text>{exp.job_title}</Text>
+                    <Text color="gray">{exp.company_name}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="gray">
-                      {formatDate(exp.start_date)}
-                    </Text>
-                    <Text color="gray">
-                      -
-                    </Text>
+                    <Text color="gray">{formatDate(exp.start_date)}</Text>
+                    <Text color="gray">-</Text>
                     <Text color="gray">
                       {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                     </Text>
@@ -141,9 +131,7 @@ export function ExperienceWidget({
                         borderWidth={1}
                         borderColor="$blue7"
                       >
-                        <Text color="$blue11">
-                          Current
-                        </Text>
+                        <Text color="$blue11">Current</Text>
                       </Row>
                     )}
                   </Row>
@@ -151,21 +139,9 @@ export function ExperienceWidget({
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
                     <Row gap={8} flexWrap="wrap">
-                      {exp.location && (
-                        <Text color="gray">
-                          📍 {exp.location}
-                        </Text>
-                      )}
-                      {exp.employment_type && (
-                        <Text color="gray">
-                          • {exp.employment_type}
-                        </Text>
-                      )}
-                      {exp.is_remote && (
-                        <Text color="gray">
-                          • Remote
-                        </Text>
-                      )}
+                      {exp.location && <Text color="gray">📍 {exp.location}</Text>}
+                      {exp.employment_type && <Text color="gray">• {exp.employment_type}</Text>}
+                      {exp.is_remote && <Text color="gray">• Remote</Text>}
                     </Row>
                   )}
 

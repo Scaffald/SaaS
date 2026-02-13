@@ -1,4 +1,8 @@
-import { useTeamInvitations, useResendTeamInvitation, useCancelTeamInvitation } from '@scaffald/sdk/react'
+import {
+  useTeamInvitations,
+  useResendTeamInvitation,
+  useCancelTeamInvitation,
+} from '@scaffald/sdk/react'
 import type { TeamInvitation } from '@scaffald/sdk'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
 import { Clock, RefreshCw, XCircle } from 'lucide-react-native'
@@ -130,15 +134,8 @@ export function TeamInvitationsList({
         flexDirection="column"
         width="100%"
       >
-        <Text accessibilityRole="header">
-          Invitations
-        </Text>
-        <Row
-          gap={8}
-          align="flex-start"
-          flexDirection="column"
-          width="100%"
-        >
+        <Text accessibilityRole="header">Invitations</Text>
+        <Row gap={8} align="flex-start" flexDirection="column" width="100%">
           {headerAction}
           <Stack width="100%">
             <ResponsiveSelect
@@ -251,57 +248,32 @@ export function TeamInvitationsList({
                       </Text>
                     </Row>
                   </Stack>
-                  <Text color={statusColor}>
-                    {statusLabel}
-                  </Text>
+                  <Text color={statusColor}>{statusLabel}</Text>
                 </Row>
 
-                <Row
-                  gap={8}
-                  flexDirection="column"
-                  align="stretch"
-                >
-                  <Text color="gray">
-                    Role:
-                  </Text>
-                  <Text>
-                    {invitation.role?.name ?? 'Member'}
-                  </Text>
+                <Row gap={8} flexDirection="column" align="stretch">
+                  <Text color="gray">Role:</Text>
+                  <Text>{invitation.role?.name ?? 'Member'}</Text>
                 </Row>
 
                 {lastDeliveryStatus ? (
                   <Stack gap={4}>
                     <Text color="gray">
-                      Delivery status:{' '}
-                      <Text color="gray">
-                        {lastDeliveryStatus}
-                      </Text>
+                      Delivery status: <Text color="gray">{lastDeliveryStatus}</Text>
                       {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
                     </Text>
                     {deliveryChannels && deliveryChannels.length > 0 ? (
-                      <Text color="gray">
-                        Channels: {deliveryChannels.join(', ')}
-                      </Text>
+                      <Text color="gray">Channels: {deliveryChannels.join(', ')}</Text>
                     ) : null}
                     {lastDeliveryError ? (
-                      <Text color="$red10">
-                        Last error: {lastDeliveryError}
-                      </Text>
+                      <Text color="$red10">Last error: {lastDeliveryError}</Text>
                     ) : null}
                   </Stack>
                 ) : null}
 
-                <Row
-                  gap={8}
-                  flexDirection="column"
-                  align="stretch"
-                >
-                  <Text color="gray">
-                    Type:
-                  </Text>
-                  <Text>
-                    {invitation.email ? 'Email invitation' : 'Existing member'}
-                  </Text>
+                <Row gap={8} flexDirection="column" align="stretch">
+                  <Text color="gray">Type:</Text>
+                  <Text>{invitation.email ? 'Email invitation' : 'Existing member'}</Text>
                 </Row>
 
                 <Row

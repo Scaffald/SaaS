@@ -150,7 +150,7 @@ export default function DashboardTeamDetailPage() {
     <Row gap="$2" flexWrap="wrap">
       <Button
         size="$2"
-        variant="outlined"
+        variant="outline"
         icon={RefreshCw}
         onPress={handleRefresh}
         disabled={isLoading}
@@ -170,8 +170,8 @@ export default function DashboardTeamDetailPage() {
   )
 
   const mainContent = isLoading ? (
-    <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-      <Spinner size="large" />
+    <Stack align="center" justify="center" paddingVertical="$6" gap="$2">
+      <Spinner size="lg" />
       <Text color="$color11">Loading team details…</Text>
     </Stack>
   ) : hasError ? (
@@ -314,9 +314,9 @@ function ErrorCard({
       gap="$3"
       backgroundColor="$color2"
     >
-      <Row gap="$2" alignItems="center">
+      <Row gap="$2" align="center">
         <AlertTriangle size={20} color="$yellow10" />
-        <Text fontSize="$6" fontWeight="700">
+        <Text>
           {title}
         </Text>
       </Row>

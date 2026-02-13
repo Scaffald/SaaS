@@ -1,4 +1,9 @@
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import type {
   AcceptSectionParams,
   AcceptSectionResponse,
@@ -39,7 +44,7 @@ export function useInquiryTemplates(
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
       return client.inquiries.getTemplates(applicationId)
     },
-    enabled: !!client && !!applicationId && (options?.enabled !== false),
+    enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -128,7 +133,7 @@ export function useInquirySmartDefaults(
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
       return client.inquiries.getSmartDefaults(applicationId)
     },
-    enabled: !!client && !!applicationId && (options?.enabled !== false),
+    enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 10 * 60 * 1000, // 10 minutes
     ...options,
   })
@@ -183,7 +188,7 @@ export function useInquiryByApplication(
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
       return client.inquiries.getByApplication(applicationId)
     },
-    enabled: !!client && !!applicationId && (options?.enabled !== false),
+    enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
     ...options,
   })
@@ -206,7 +211,7 @@ export function useMultipleInquiries(
       }
       return client.inquiries.getMultiple(inquiryIds)
     },
-    enabled: !!client && !!inquiryIds && inquiryIds.length > 0 && (options?.enabled !== false),
+    enabled: !!client && !!inquiryIds && inquiryIds.length > 0 && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
     ...options,
   })
@@ -227,7 +232,7 @@ export function useInquiryHistory(
       if (!client || !inquiryId) throw new Error('Missing client or inquiryId')
       return client.inquiries.getHistory(inquiryId)
     },
-    enabled: !!client && !!inquiryId && (options?.enabled !== false),
+    enabled: !!client && !!inquiryId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })

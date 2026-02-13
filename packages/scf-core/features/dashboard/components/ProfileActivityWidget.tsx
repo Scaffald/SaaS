@@ -81,9 +81,7 @@ export function ProfileActivityWidget() {
 
   return (
     <Card>
-      <Text color="gray">
-        Profile Activity
-      </Text>
+      <Text color="gray">Profile Activity</Text>
       {isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
@@ -103,14 +101,10 @@ export function ProfileActivityWidget() {
             >
               <Row align="center" gap={8}>
                 <Eye size={18} color="$blue10" />
-                <Text color="$blue11">
-                  Profile Views (30 days)
-                </Text>
+                <Text color="$blue11">Profile Views (30 days)</Text>
               </Row>
               <Row align="baseline" gap={8}>
-                <Text color="$blue11">
-                  {viewAnalytics.views30d}
-                </Text>
+                <Text color="$blue11">{viewAnalytics.views30d}</Text>
                 {viewAnalytics.trend !== 0 && (
                   <Row align="center" gap={4}>
                     {viewAnalytics.trend > 0 ? (
@@ -118,18 +112,14 @@ export function ProfileActivityWidget() {
                     ) : (
                       <ArrowDown size={16} color="$red10" />
                     )}
-                    <Text
-                      color={viewAnalytics.trend > 0 ? '$green11' : '$red11'}
-                    >
+                    <Text color={viewAnalytics.trend > 0 ? '$green11' : '$red11'}>
                       {Math.abs(viewAnalytics.trend).toFixed(1)}%
                     </Text>
                   </Row>
                 )}
               </Row>
               {viewAnalytics.viewsTotal > 0 && (
-                <Text color="$blue10">
-                  {viewAnalytics.viewsTotal} total views
-                </Text>
+                <Text color="$blue10">{viewAnalytics.viewsTotal} total views</Text>
               )}
             </Stack>
           )}
@@ -139,9 +129,7 @@ export function ProfileActivityWidget() {
             <Row justify="space-between" align="center">
               <Row align="center" gap={8}>
                 <Eye size={18} color="gray" />
-                <Text color="gray">
-                  Recent Views
-                </Text>
+                <Text color="gray">Recent Views</Text>
               </Row>
               {profileViews && profileViews.total > 0 && (
                 <Button size={8} variant="outline" onPress={handleViewAllProfileViews}>
@@ -207,9 +195,7 @@ export function ProfileActivityWidget() {
             <Row justify="space-between" align="center">
               <Row align="center" gap={8}>
                 <UserPlus size={18} color="gray" />
-                <Text color="gray">
-                  New Followers
-                </Text>
+                <Text color="gray">New Followers</Text>
               </Row>
             </Row>
 
@@ -270,9 +256,7 @@ export function ProfileActivityWidget() {
             <Row justify="space-between" align="center">
               <Row align="center" gap={8}>
                 <Users size={18} color="gray" />
-                <Text color="gray">
-                  Pending Requests
-                </Text>
+                <Text color="gray">Pending Requests</Text>
                 {pendingRequests && pendingRequests.received.length > 0 && (
                   <Row
                     backgroundColor="$orange3"
@@ -282,9 +266,7 @@ export function ProfileActivityWidget() {
                     align="center"
                     justify="center"
                   >
-                    <Text color="$orange11">
-                      {pendingRequests.received.length}
-                    </Text>
+                    <Text color="$orange11">{pendingRequests.received.length}</Text>
                   </Row>
                 )}
               </Row>
@@ -309,12 +291,7 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <Row
-                      key={request.id}
-                      align="center"
-                      gap={8}
-                      justify="space-between"
-                    >
+                    <Row key={request.id} align="center" gap={8} justify="space-between">
                       <Row align="center" gap={8} flex={1}>
                         <Avatar circular size={32}>
                           {request.user?.avatar_url ? (

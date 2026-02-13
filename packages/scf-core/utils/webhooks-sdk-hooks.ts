@@ -9,13 +9,10 @@ import type {
   CreateWebhookParams,
   UpdateWebhookParams,
   ListDeliveriesParams,
-  WebhooksListResponse,
   WebhookResponse,
   WebhookCreatedResponse,
-  DeliveriesListResponse,
   RetryDeliveryResponse,
   DeleteWebhookResponse,
-  EventTypesResponse,
 } from '@scaffald/sdk/types/webhooks-management'
 
 // ============================================================================
@@ -31,7 +28,7 @@ export function useWebhooks(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.webhooksManagement.list()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -45,7 +42,7 @@ export function useWebhook(id: string | undefined, options?: { enabled?: boolean
       if (!client || !id) throw new Error('Missing client or id')
       return client.webhooksManagement.retrieve(id)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -63,7 +60,7 @@ export function useWebhookDeliveries(
       if (!client || !webhookId) throw new Error('Missing client or webhookId')
       return client.webhooksManagement.listDeliveries(webhookId, params)
     },
-    enabled: !!client && !!webhookId && (options?.enabled !== false),
+    enabled: !!client && !!webhookId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - delivery status changes frequently
   })
 }
@@ -77,7 +74,7 @@ export function useWebhookEventTypes(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.webhooksManagement.eventTypes()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 60 * 60 * 1000, // 1 hour - event types rarely change
   })
 }

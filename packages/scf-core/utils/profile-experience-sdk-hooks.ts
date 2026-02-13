@@ -1,4 +1,9 @@
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import type {
   ExperienceEntry,
   ExperienceSummary,
@@ -23,7 +28,7 @@ export function useExperience(
       if (!client) throw new Error('Missing client')
       return client.experience.getExperience()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })
@@ -43,7 +48,7 @@ export function useExperienceSummary(
       if (!client) throw new Error('Missing client')
       return client.experience.getExperienceSummary()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })

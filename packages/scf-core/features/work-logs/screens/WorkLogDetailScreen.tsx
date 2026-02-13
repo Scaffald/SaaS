@@ -106,10 +106,10 @@ export function WorkLogDetailScreen() {
     },
     onError: (error) => {
       toast.show({
-          title: 'Unable to add comment',
-          message: error?.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to add comment',
+        message: error?.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -129,10 +129,10 @@ export function WorkLogDetailScreen() {
     },
     onError: (error) => {
       toast.show({
-          title: 'Export failed',
-          message: error?.message ?? 'Unable to export work log.',
-          variant: 'error',
-        })
+        title: 'Export failed',
+        message: error?.message ?? 'Unable to export work log.',
+        variant: 'error',
+      })
     },
   })
 
@@ -141,16 +141,16 @@ export function WorkLogDetailScreen() {
       setCollaboratorIdInput('')
       void collaboratorsQuery.refetch()
       toast.show({
-          title: 'Collaborator added',
-          message: 'They now have access to this work log.',
-        })
+        title: 'Collaborator added',
+        message: 'They now have access to this work log.',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Unable to add collaborator',
-          message: error?.message ?? 'Check the user ID and try again.',
-          variant: 'error',
-        })
+        title: 'Unable to add collaborator',
+        message: error?.message ?? 'Check the user ID and try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -160,10 +160,10 @@ export function WorkLogDetailScreen() {
     },
     onError: (error) => {
       toast.show({
-          title: 'Unable to update collaborator',
-          message: error?.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to update collaborator',
+        message: error?.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -171,16 +171,16 @@ export function WorkLogDetailScreen() {
     onSuccess: () => {
       void collaboratorsQuery.refetch()
       toast.show({
-          title: 'Collaborator removed',
-          message: 'They no longer have access to this work log.',
-        })
+        title: 'Collaborator removed',
+        message: 'They no longer have access to this work log.',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Unable to remove collaborator',
-          message: error?.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to remove collaborator',
+        message: error?.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -189,15 +189,15 @@ export function WorkLogDetailScreen() {
       toast.show({ title: 'Profile visibility updated' })
       await Promise.all([
         workLogQuery.refetch(),
-        queryClient.invalidateQueries({ queryKey: ['workLogs', 'list'] })
+        queryClient.invalidateQueries({ queryKey: ['workLogs', 'list'] }),
       ])
     },
     onError: (error) => {
       toast.show({
-          title: 'Unable to update visibility',
-          message: error?.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to update visibility',
+        message: error?.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -208,10 +208,10 @@ export function WorkLogDetailScreen() {
     },
     onError: (error) => {
       toast.show({
-          title: 'Unable to update photo',
-          message: error?.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to update photo',
+        message: error?.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -224,9 +224,7 @@ export function WorkLogDetailScreen() {
   const project = useMemo(() => {
     if (!workLog?.project_id) return null
     return (
-      projectOptionsQuery.data?.find(
-        (candidate) => candidate.id === workLog.project_id
-      ) ?? null
+      projectOptionsQuery.data?.find((candidate) => candidate.id === workLog.project_id) ?? null
     )
   }, [projectOptionsQuery.data, workLog?.project_id])
 
@@ -293,9 +291,7 @@ export function WorkLogDetailScreen() {
   if (!workLog) {
     return (
       <Stack flex={1} justify="center" align="center" gap={12} padding={16}>
-        <Text>
-          Work log not found
-        </Text>
+        <Text>Work log not found</Text>
         <Paragraph color="gray" style={{ textAlign: 'center' }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
@@ -319,9 +315,9 @@ export function WorkLogDetailScreen() {
   const handleAddCollaborator = () => {
     if (!collaboratorIdInput.trim()) {
       toast.show({
-          title: 'Enter a collaborator ID',
-          message: 'Provide a valid user ID to grant access.',
-        })
+        title: 'Enter a collaborator ID',
+        message: 'Provide a valid user ID to grant access.',
+      })
       return
     }
 
@@ -369,9 +365,9 @@ export function WorkLogDetailScreen() {
     if (!workLogId) return
     if (next && !isVerified) {
       toast.show({
-          title: 'Pending verification',
-          message: 'Work logs must be verified before they can appear on your profile.',
-        })
+        title: 'Pending verification',
+        message: 'Work logs must be verified before they can appear on your profile.',
+      })
       return
     }
     updateProfileVisibilityMutation.mutate({
@@ -389,7 +385,10 @@ export function WorkLogDetailScreen() {
     })
   }
 
-  const handlePhotoVisibilityToggle = (photoId: string, visibility: 'private' | 'organization' | 'public') => {
+  const handlePhotoVisibilityToggle = (
+    photoId: string,
+    visibility: 'private' | 'organization' | 'public'
+  ) => {
     updatePhotoVisibilityMutation.mutate({
       photoId,
       visibility,
@@ -402,9 +401,7 @@ export function WorkLogDetailScreen() {
         <Stack gap={8}>
           <Row justify="space-between" align="center">
             <Stack gap={4} flex={1}>
-              <Text>
-                {project?.name ?? 'Work Log'}
-              </Text>
+              <Text>{project?.name ?? 'Work Log'}</Text>
               <Text color="gray">
                 Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
@@ -413,16 +410,12 @@ export function WorkLogDetailScreen() {
               Refresh
             </Button>
           </Row>
-          <Text color={getStatusColor(workLog.status)}>
-            {getStatusLabel(workLog.status)}
-          </Text>
+          <Text color={getStatusColor(workLog.status)}>{getStatusLabel(workLog.status)}</Text>
         </Stack>
 
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
-            <Text>
-              Summary
-            </Text>
+            <Text>Summary</Text>
             <Row gap={16} flexWrap="wrap">
               <SummaryMetric
                 icon={Activity}
@@ -452,9 +445,7 @@ export function WorkLogDetailScreen() {
 
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
-            <Text>
-              Profile visibility
-            </Text>
+            <Text>Profile visibility</Text>
             <Paragraph color="gray">
               Control how this work log appears on your public profile.
             </Paragraph>
@@ -530,9 +521,7 @@ export function WorkLogDetailScreen() {
 
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
-            <Text>
-              Time entries
-            </Text>
+            <Text>Time entries</Text>
             <Stack gap={8}>
               {timeEntryItems.length === 0 ? (
                 <Paragraph color="gray">No time entries recorded.</Paragraph>
@@ -559,9 +548,7 @@ export function WorkLogDetailScreen() {
 
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
-            <Text>
-              Tasks completed
-            </Text>
+            <Text>Tasks completed</Text>
             {taskItems.length === 0 ? (
               <Paragraph color="gray">No tasks recorded for this entry.</Paragraph>
             ) : (
@@ -580,9 +567,7 @@ export function WorkLogDetailScreen() {
               </Stack>
             )}
             <Separator />
-            <Text>
-              Skills used
-            </Text>
+            <Text>Skills used</Text>
             {skillNames.length === 0 ? (
               <Paragraph color="gray">No skills associated with this log.</Paragraph>
             ) : (
@@ -606,9 +591,7 @@ export function WorkLogDetailScreen() {
         {photos.length > 0 && (
           <Card borderColor="$color6" borderWidth={1}>
             <Stack gap={12} padding={12}>
-              <Text>
-                Photos
-              </Text>
+              <Text>Photos</Text>
               <PhotoGallery
                 disabled={photoVisibilityMutationPending}
                 onToggleVisibility={handlePhotoVisibilityToggle}
@@ -638,9 +621,7 @@ export function WorkLogDetailScreen() {
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
             <Row justify="space-between" align="center">
-              <Text>
-                Collaborators
-              </Text>
+              <Text>Collaborators</Text>
               <Button
                 size={12}
                 icon={Users}
@@ -711,9 +692,7 @@ export function WorkLogDetailScreen() {
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
             <Row justify="space-between" align="center">
-              <Text>
-                Conversation
-              </Text>
+              <Text>Conversation</Text>
               <Button
                 size={12}
                 icon={MessageSquare}
@@ -758,9 +737,7 @@ export function WorkLogDetailScreen() {
 
         <Card borderColor="$color6" borderWidth={1}>
           <Stack gap={12} padding={12}>
-            <Text>
-              Exports
-            </Text>
+            <Text>Exports</Text>
             <Paragraph color="gray">
               Generate a shareable export for reporting or offline records. Links expire after ten
               minutes.
@@ -820,9 +797,7 @@ function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps
       <IconComponent size={16} color="currentColor" />
       <Stack gap={4}>
         <Text>{value}</Text>
-        <Text color="gray">
-          {label}
-        </Text>
+        <Text color="gray">{label}</Text>
       </Stack>
     </Row>
   )

@@ -126,9 +126,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
       <ScrollView>
         <Stack gap={20} padding={16} paddingBottom={32}>
           <Stack gap={8}>
-            <Text>
-              Work Log Details
-            </Text>
+            <Text>Work Log Details</Text>
             <Text color="gray">
               Provide information about the work performed, including project, schedule, and skills.
             </Text>
@@ -160,9 +158,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           </Stack>
 
           <Stack gap={12}>
-            <Text>
-              Log Date
-            </Text>
+            <Text>Log Date</Text>
             <Controller
               control={control}
               name="logDate"
@@ -170,18 +166,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 <Input {...field} {...getDateInputProps()} placeholder="YYYY-MM-DD" />
               )}
             />
-            {errors.logDate?.message && (
-              <Text color="$red10">
-                {errors.logDate.message}
-              </Text>
-            )}
+            {errors.logDate?.message && <Text color="$red10">{errors.logDate.message}</Text>}
           </Stack>
 
           <Stack gap={12}>
             <Row justify="space-between" align="center">
-              <Text>
-                Time Entries
-              </Text>
+              <Text>Time Entries</Text>
               <Button size={12} icon={Plus} onPress={addTimeEntry} variant="outline">
                 Add Entry
               </Button>
@@ -199,21 +189,13 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             </Stack>
 
             <Row gap={8} align="center">
-              <Text>
-                Total Hours: {totalHours.toFixed(2)}
-              </Text>
-              {overlapDetected && (
-                <Text color="$red10">
-                  Overlapping time entries detected.
-                </Text>
-              )}
+              <Text>Total Hours: {totalHours.toFixed(2)}</Text>
+              {overlapDetected && <Text color="$red10">Overlapping time entries detected.</Text>}
             </Row>
           </Stack>
 
           <Stack gap={12}>
-            <Text>
-              Work Description
-            </Text>
+            <Text>Work Description</Text>
             <Controller
               control={control}
               name="workDescription"
@@ -228,16 +210,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               )}
             />
             {errors.workDescription?.message && (
-              <Text color="$red10">
-                {errors.workDescription.message}
-              </Text>
+              <Text color="$red10">{errors.workDescription.message}</Text>
             )}
           </Stack>
 
           <Stack gap={12}>
-            <Text>
-              Tasks Completed
-            </Text>
+            <Text>Tasks Completed</Text>
             <Row gap={8} align="center">
               <Input
                 value={taskDraft}
@@ -251,11 +229,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             </Row>
 
             <Stack gap={8}>
-              {tasksWithKeys.length === 0 && (
-                <Text color="gray">
-                  No tasks added yet.
-                </Text>
-              )}
+              {tasksWithKeys.length === 0 && <Text color="gray">No tasks added yet.</Text>}
 
               {tasksWithKeys.map(({ task, key, index }) => (
                 <Row
@@ -269,9 +243,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   paddingVertical={8}
                   gap={12}
                 >
-                  <Text flex={1}>
-                    {task}
-                  </Text>
+                  <Text flex={1}>{task}</Text>
                   <Button size={8} variant="outline" onPress={() => removeTask(index)}>
                     Remove
                   </Button>
@@ -283,9 +255,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           <Separator />
 
           <Stack gap={12}>
-            <Text>
-              Skills Used
-            </Text>
+            <Text>Skills Used</Text>
             {skillsQuery.isLoading && (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
@@ -293,16 +263,10 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               </Row>
             )}
 
-            {skillsQuery.error && (
-              <Text color="$red10">
-                Unable to load skills at this time.
-              </Text>
-            )}
+            {skillsQuery.error && <Text color="$red10">Unable to load skills at this time.</Text>}
 
             {skillOptions.length === 0 && !skillsQuery.isLoading && (
-              <Text color="gray">
-                You do not have any skills associated with your profile yet.
-              </Text>
+              <Text color="gray">You do not have any skills associated with your profile yet.</Text>
             )}
 
             <Stack gap={8}>
@@ -321,9 +285,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           <Separator />
 
           <Stack gap={12}>
-            <Text>
-              Location Capture
-            </Text>
+            <Text>Location Capture</Text>
             <Row gap={8} align="center">
               <Button
                 icon={MapPin}
@@ -334,11 +296,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               >
                 {location.isLoading ? 'Capturing…' : 'Capture Location'}
               </Button>
-              {location.error && (
-                <Text color="$red10">
-                  {location.error}
-                </Text>
-              )}
+              {location.error && <Text color="$red10">{location.error}</Text>}
             </Row>
 
             {form.watch('gpsCapture') && (
@@ -350,17 +308,13 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 paddingVertical={8}
                 gap={4}
               >
-                <Text>
-                  Captured Location
-                </Text>
+                <Text>Captured Location</Text>
                 <Text>
                   Latitude: {form.watch('gpsCapture')?.latitude}, Longitude:{' '}
                   {form.watch('gpsCapture')?.longitude}
                 </Text>
                 {form.watch('gpsCapture')?.accuracyMeters && (
-                  <Text>
-                    Accuracy: {form.watch('gpsCapture')?.accuracyMeters} meters
-                  </Text>
+                  <Text>Accuracy: {form.watch('gpsCapture')?.accuracyMeters} meters</Text>
                 )}
               </Stack>
             )}
@@ -373,14 +327,8 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           <Separator />
 
           <Stack gap={8}>
-            <Text>
-              Draft Status
-            </Text>
-            {autoSaveStatus.state === 'saving' && (
-              <Text color="gray">
-                Saving draft…
-              </Text>
-            )}
+            <Text>Draft Status</Text>
+            {autoSaveStatus.state === 'saving' && <Text color="gray">Saving draft…</Text>}
             {autoSaveStatus.state === 'saved' && (
               <Text color="$green10">
                 {autoSaveStatus.message ?? 'Draft saved'}{' '}

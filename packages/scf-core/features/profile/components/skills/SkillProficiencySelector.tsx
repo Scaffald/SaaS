@@ -33,17 +33,13 @@ export function SkillProficiencySelector({
 
   return (
     <Stack gap={16}>
-      <Text>
-        Set Proficiency Level
-      </Text>
+      <Text>Set Proficiency Level</Text>
 
       {/* Selected Skill */}
       <Card bordered backgroundColor="$color3">
         <Card.Header>
           <Stack gap={4}>
-            <Text>
-              {skill.name}
-            </Text>
+            <Text>{skill.name}</Text>
             {skill.code && (
               <Text color="gray">
                 {skill.code} ({taxonomy.toUpperCase()})
@@ -78,16 +74,10 @@ export function SkillProficiencySelector({
           <Card.Header>
             <Row justify="space-between" align="center">
               <Stack>
-                <Text color="$green9">
-                  {currentLevel?.label}
-                </Text>
-                <Text color="gray">
-                  {currentLevel?.description}
-                </Text>
+                <Text color="$green9">{currentLevel?.label}</Text>
+                <Text color="gray">{currentLevel?.description}</Text>
               </Stack>
-              <Text color="$green9">
-                {proficiency}
-              </Text>
+              <Text color="$green9">{proficiency}</Text>
             </Row>
           </Card.Header>
         </Card>
@@ -101,9 +91,7 @@ export function SkillProficiencySelector({
               align="center"
               opacity={proficiency === level.value ? 1 : 0.5}
             >
-              <Text minWidth={30}>
-                {level.value}
-              </Text>
+              <Text minWidth={30}>{level.value}</Text>
               <Text flex={1}>
                 {level.label} - {level.description}
               </Text>

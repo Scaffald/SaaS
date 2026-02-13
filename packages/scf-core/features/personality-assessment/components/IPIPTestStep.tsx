@@ -147,9 +147,7 @@ export function IPIPTestStep({
         padding={32}
         style={{ maxWidth: 800, alignSelf: 'center' }}
       >
-        <Text color="$green10">
-          ✓ All Questions Complete!
-        </Text>
+        <Text color="$green10">✓ All Questions Complete!</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
@@ -160,9 +158,7 @@ export function IPIPTestStep({
   if (!currentQuestion) {
     return (
       <Stack gap={16} align="center" padding={32}>
-        <Text color="gray">
-          Loading question...
-        </Text>
+        <Text color="gray">Loading question...</Text>
       </Stack>
     )
   }
@@ -182,28 +178,20 @@ export function IPIPTestStep({
           align="center"
         >
           <Stack gap={4}>
-            <Text color="$blue11">
-              {DOMAIN_NAMES[currentDomain]}
-            </Text>
+            <Text color="$blue11">{DOMAIN_NAMES[currentDomain]}</Text>
             <Text color="$blue10">
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
           </Stack>
-          <Text color="$blue11">
-            {domainProgress}%
-          </Text>
+          <Text color="$blue11">{domainProgress}%</Text>
         </Row>
       )}
 
       {/* Progress Bar */}
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Question {currentIndex + 1} of 120
-          </Text>
-          <Text color="gray">
-            {overallProgress}%
-          </Text>
+          <Text color="gray">Question {currentIndex + 1} of 120</Text>
+          <Text color="gray">{overallProgress}%</Text>
         </Row>
         <Progress value={overallProgress} max={100}>
           <Progress.Indicator animation="bouncy" />
@@ -219,11 +207,7 @@ export function IPIPTestStep({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text
-          color="gray"
-          style={{ textAlign: 'center' }}
-          lineHeight={24}
-        >
+        <Text color="gray" style={{ textAlign: 'center' }} lineHeight={24}>
           I {currentQuestion.text.toLowerCase()}
         </Text>
       </Stack>
@@ -241,9 +225,7 @@ export function IPIPTestStep({
             borderColor="$borderColor"
             hoverStyle={{ borderColor: '$blue8', backgroundColor: '$blue2' }}
           >
-            <Text color="gray">
-              {choice.text}
-            </Text>
+            <Text color="gray">{choice.text}</Text>
           </Button>
         ))}
       </Stack>

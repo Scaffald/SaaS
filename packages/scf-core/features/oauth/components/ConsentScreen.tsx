@@ -5,7 +5,17 @@
 
 import { api } from '@scf/core/utils/api'
 import { useUser } from '@scf/core/utils/useUser'
-import { Button, Card, Checkbox, Image, Paragraph, Separator, SizableText, Row, Stack } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Card,
+  Checkbox,
+  Image,
+  Paragraph,
+  Separator,
+  SizableText,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 
 interface ConsentScreenProps {
@@ -103,9 +113,7 @@ export function ConsentScreen({
               />
             )}
             <Stack flex={1} gap={4}>
-              <SizableText size={24}>
-                {app.name} wants to access your Scaffald account
-              </SizableText>
+              <SizableText size={24}>{app.name} wants to access your Scaffald account</SizableText>
               {app.description && (
                 <Paragraph size={8} color="gray">
                   {app.description}
@@ -126,9 +134,7 @@ export function ConsentScreen({
         <Separator />
 
         <Stack gap={8}>
-          <SizableText size={16}>
-            Permissions Requested
-          </SizableText>
+          <SizableText size={16}>Permissions Requested</SizableText>
           <Stack gap={8}>
             {requestedScopes.map((scope) => (
               <ScopePermissionItem key={scope} scope={scope} />
@@ -214,4 +220,3 @@ function ScopePermissionItem({ scope }: { scope: string }) {
     </Row>
   )
 }
-

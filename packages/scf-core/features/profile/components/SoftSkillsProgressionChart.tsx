@@ -1,7 +1,4 @@
-import {
-  useSoftSkillsHistory,
-  useSoftSkills,
-} from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react-native'
 import { useMemo, type FC } from 'react'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -39,13 +36,10 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   })
 
   // Fetch current version for comparison
-  const { data: currentData } = useSoftSkills(
-    userId ? { userId } : undefined,
-    {
-      enabled: !!userId || !userId,
-      staleTime: 5 * 60 * 1000,
-    }
-  )
+  const { data: currentData } = useSoftSkills(userId ? { userId } : undefined, {
+    enabled: !!userId || !userId,
+    staleTime: 5 * 60 * 1000,
+  })
 
   const versions = historyData?.versions || []
   const currentSkills = currentData?.skills || []
@@ -125,12 +119,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (error) {
     return (
       <Stack gap={8} padding={16}>
-        <Text color="$red11">
-          Error loading progression
-        </Text>
-        <Text color="gray">
-          {error.message || 'Failed to load progression data'}
-        </Text>
+        <Text color="$red11">Error loading progression</Text>
+        <Text color="gray">{error.message || 'Failed to load progression data'}</Text>
       </Stack>
     )
   }
@@ -138,9 +128,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (versions.length < 2) {
     return (
       <Stack gap={8} padding={16} align="center">
-        <Text color="gray">
-          Progression Tracking
-        </Text>
+        <Text color="gray">Progression Tracking</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           Complete at least two assessments to see skill progression trends.
         </Text>
@@ -198,12 +186,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding={16}>
         <Stack gap={8}>
-          <Text color="gray">
-            Skill Progression
-          </Text>
-          <Text color="gray">
-            Track how your soft skills have changed over time.
-          </Text>
+          <Text color="gray">Skill Progression</Text>
+          <Text color="gray">Track how your soft skills have changed over time.</Text>
         </Stack>
 
         {/* Summary Stats */}
@@ -217,12 +201,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
             borderColor="$green7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text color="$green10">
-              Improved
-            </Text>
-            <Text color="$green11">
-              {improvedSkills}
-            </Text>
+            <Text color="$green10">Improved</Text>
+            <Text color="$green11">{improvedSkills}</Text>
           </Stack>
           <Stack
             gap={4}
@@ -233,12 +213,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
             borderColor="$red7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text color="$red10">
-              Declined
-            </Text>
-            <Text color="$red11">
-              {declinedSkills}
-            </Text>
+            <Text color="$red10">Declined</Text>
+            <Text color="$red11">{declinedSkills}</Text>
           </Stack>
           <Stack
             gap={4}
@@ -249,12 +225,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
             borderColor="$borderColor"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text color="gray">
-              Stable
-            </Text>
-            <Text color="gray">
-              {stableSkills}
-            </Text>
+            <Text color="gray">Stable</Text>
+            <Text color="gray">{stableSkills}</Text>
           </Stack>
         </Row>
 
@@ -264,9 +236,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
           return (
             <Stack key={category} gap={12}>
-              <Text color="gray">
-                {categoryLabels[category as SoftSkillCategory]}
-              </Text>
+              <Text color="gray">{categoryLabels[category as SoftSkillCategory]}</Text>
               <Stack gap={8}>
                 {skills.map((skill) => (
                   <Stack
@@ -278,26 +248,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Row
-                      align="center"
-                      justify="space-between"
-                      flexWrap="wrap"
-                      gap={8}
-                    >
+                    <Row align="center" justify="space-between" flexWrap="wrap" gap={8}>
                       <Stack gap={4} flex={1}>
-                        <Text color="gray">
-                          {skill.skillName}
-                        </Text>
+                        <Text color="gray">{skill.skillName}</Text>
                         <Row gap={12} align="center">
                           {skill.previousRating !== null && (
-                            <Text color="gray">
-                              Previous: {skill.previousRating.toFixed(1)}/5
-                            </Text>
+                            <Text color="gray">Previous: {skill.previousRating.toFixed(1)}/5</Text>
                           )}
                           {skill.currentRating !== null && (
-                            <Text color="gray">
-                              Current: {skill.currentRating.toFixed(1)}/5
-                            </Text>
+                            <Text color="gray">Current: {skill.currentRating.toFixed(1)}/5</Text>
                           )}
                         </Row>
                       </Stack>

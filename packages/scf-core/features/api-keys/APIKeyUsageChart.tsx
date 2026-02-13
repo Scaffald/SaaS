@@ -107,10 +107,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
     : null
 
   // Helper function to calculate requests in a time period
-  function calculateRequestsInPeriod(
-    usage: Array<{ timestamp: string }>,
-    days: number
-  ): number {
+  function calculateRequestsInPeriod(usage: Array<{ timestamp: string }>, days: number): number {
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - days)
     return usage.filter((u) => new Date(u.timestamp) >= cutoff).length
@@ -125,10 +122,8 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
     }>,
     days: number
   ): Array<{ date: string; requests: number; errors: number; avgResponseTime: number }> {
-    const series: Record<
-      string,
-      { requests: number; errors: number; totalResponseTime: number }
-    > = {}
+    const series: Record<string, { requests: number; errors: number; totalResponseTime: number }> =
+      {}
 
     // Group by date
     usage.forEach((u) => {

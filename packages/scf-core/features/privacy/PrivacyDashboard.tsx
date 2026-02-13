@@ -49,10 +49,7 @@ export function PrivacyDashboard() {
   } = api.ccpa.getConnectedApps.useQuery()
 
   // Fetch opt-out status
-  const {
-    data: optOutStatus,
-    isLoading: isLoadingOptOut,
-  } = api.ccpa.getMyOptOuts.useQuery()
+  const { data: optOutStatus, isLoading: isLoadingOptOut } = api.ccpa.getMyOptOuts.useQuery()
 
   const isLoading = isLoadingData || isLoadingHistory || isLoadingApps || isLoadingOptOut
   const hasError = dataError || historyError || appsError
@@ -60,16 +57,11 @@ export function PrivacyDashboard() {
   if (hasError) {
     return (
       <Stack padding={16} gap={16} align="center" justify="center" flex={1}>
-        <Text color="$red10">
-          Error Loading Privacy Dashboard
-        </Text>
+        <Text color="$red10">Error Loading Privacy Dashboard</Text>
         <Text color="gray" textAlign="center">
           {dataError?.message || historyError?.message || appsError?.message}
         </Text>
-        <Button
-          onPress={() => window.location.reload()}
-          variant="outline"
-        >
+        <Button onPress={() => window.location.reload()} variant="outline">
           Retry
         </Button>
       </Stack>
@@ -81,12 +73,10 @@ export function PrivacyDashboard() {
       <Stack padding={16} gap={24} maxWidth={1200} marginHorizontal="auto">
         {/* Page Header */}
         <Stack gap={8}>
-          <Text>
-            Privacy & Data
-          </Text>
+          <Text>Privacy & Data</Text>
           <Text color="gray">
-            Manage your privacy settings, view your data, and exercise your California
-            Consumer Privacy Act (CCPA) rights.
+            Manage your privacy settings, view your data, and exercise your California Consumer
+            Privacy Act (CCPA) rights.
           </Text>
         </Stack>
 
@@ -99,43 +89,23 @@ export function PrivacyDashboard() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>
-            Quick Actions
-          </Text>
+          <Text>Quick Actions</Text>
           <Row gap={12} flexWrap="wrap">
-            <Button
-              onPress={() => setShowRequestForm(true)}
-              icon={undefined}
-              size={16}
-            >
+            <Button onPress={() => setShowRequestForm(true)} icon={undefined} size={16}>
               Request My Data
             </Button>
-            <Button
-              onPress={() => setShowRequestForm(true)}
-              variant="outline"
-              size={16}
-            >
+            <Button onPress={() => setShowRequestForm(true)} variant="outline" size={16}>
               Delete My Data
             </Button>
-            <Button
-              onPress={() => setShowOptOutManager(true)}
-              variant="outline"
-              size={16}
-            >
+            <Button onPress={() => setShowOptOutManager(true)} variant="outline" size={16}>
               Manage Opt-Outs
             </Button>
           </Row>
           {optOutStatus?.hasGPCOptOut && (
-            <Row
-              gap={8}
-              padding={12}
-              backgroundColor="$blue2"
-              borderRadius={8}
-              align="center"
-            >
+            <Row gap={8} padding={12} backgroundColor="$blue2" borderRadius={8} align="center">
               <Text color="$blue11">
-                Your browser&apos;s Global Privacy Control signal has been detected and honored.
-                You have been automatically opted out of the sale and sharing of your personal
+                Your browser&apos;s Global Privacy Control signal has been detected and honored. You
+                have been automatically opted out of the sale and sharing of your personal
                 information.
               </Text>
             </Row>
@@ -144,12 +114,8 @@ export function PrivacyDashboard() {
 
         {/* Data Categories Summary */}
         <Stack gap={12}>
-          <Text>
-            Your Data Categories
-          </Text>
-          <Text color="gray">
-            Categories of personal information we collect about you
-          </Text>
+          <Text>Your Data Categories</Text>
+          <Text color="gray">Categories of personal information we collect about you</Text>
           {isLoading ? (
             <Row padding={24} justify="center">
               <Spinner size="lg" />
@@ -161,9 +127,7 @@ export function PrivacyDashboard() {
 
         {/* CCPA Rights */}
         <Stack gap={12}>
-          <Text>
-            Your Privacy Rights
-          </Text>
+          <Text>Your Privacy Rights</Text>
           <Text color="gray">
             Under the California Consumer Privacy Act (CCPA), you have the following rights
           </Text>
@@ -172,12 +136,8 @@ export function PrivacyDashboard() {
 
         {/* Request History */}
         <Stack gap={12}>
-          <Text>
-            Request History
-          </Text>
-          <Text color="gray">
-            Your privacy request history and their status
-          </Text>
+          <Text>Request History</Text>
+          <Text color="gray">Your privacy request history and their status</Text>
           {isLoading ? (
             <Row padding={24} justify="center">
               <Spinner size="lg" />
@@ -189,12 +149,8 @@ export function PrivacyDashboard() {
 
         {/* Connected Apps */}
         <Stack gap={12}>
-          <Text>
-            Connected Applications
-          </Text>
-          <Text color="gray">
-            Third-party applications that have access to your data
-          </Text>
+          <Text>Connected Applications</Text>
+          <Text color="gray">Third-party applications that have access to your data</Text>
           {isLoading ? (
             <Row padding={24} justify="center">
               <Spinner size="lg" />
@@ -213,9 +169,7 @@ export function PrivacyDashboard() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>
-            Additional Resources
-          </Text>
+          <Text>Additional Resources</Text>
           <Stack gap={8}>
             <Text
               color="$blue10"

@@ -79,27 +79,17 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   if (filteredSkills.length === 0) {
     return (
       <Stack gap={16} padding={16} align="center" justify="center" minHeight={300}>
-        <Text color="gray">
-          No skills in this category
-        </Text>
-        <Text color="gray">
-          Skills will appear here once they're added to this category.
-        </Text>
+        <Text color="gray">No skills in this category</Text>
+        <Text color="gray">Skills will appear here once they're added to this category.</Text>
       </Stack>
     )
   }
 
   return (
     <Stack gap={16} padding={16}>
-      <Row
-        flexWrap="wrap"
-        gap={12}
-      >
+      <Row flexWrap="wrap" gap={12}>
         {filteredSkills.map((skill) => (
-          <View
-            key={skill.id}
-            width="100%"
-          >
+          <View key={skill.id} width="100%">
             <IndividualSkillRadarChart
               skillName={skill.name}
               selfRating={skill.selfRating}

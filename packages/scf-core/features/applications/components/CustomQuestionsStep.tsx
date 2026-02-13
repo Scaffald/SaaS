@@ -222,12 +222,8 @@ export function CustomQuestionsStep({
     <Stack gap={24} width="100%" maxWidth={800} padding={16}>
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">
-          Additional Questions
-        </Text>
-        <Text color="gray">
-          The employer has requested additional information
-        </Text>
+        <Text color="gray">Additional Questions</Text>
+        <Text color="gray">The employer has requested additional information</Text>
       </Stack>
 
       {/* Validation Summary */}
@@ -240,9 +236,7 @@ export function CustomQuestionsStep({
           borderColor="$red7"
           gap={8}
         >
-          <Text color="$red11">
-            Please complete the following:
-          </Text>
+          <Text color="$red11">Please complete the following:</Text>
           <Stack gap={4}>
             {Object.entries(errors)
               .filter(([, error]) => error !== undefined)
@@ -371,12 +365,7 @@ export function CustomQuestionsStep({
                       backgroundColor="$background"
                     >
                       {getAnswer(question.id) === option && (
-                        <Stack
-                          width={12}
-                          height={12}
-                          borderRadius="$12"
-                          backgroundColor="$blue9"
-                        />
+                        <Stack width={12} height={12} borderRadius="$12" backgroundColor="$blue9" />
                       )}
                     </Stack>
                     <Text color="gray" flex={1}>
@@ -426,11 +415,7 @@ export function CustomQuestionsStep({
                         align="center"
                         backgroundColor={isSelected ? '$blue9' : '$background'}
                       >
-                        {isSelected && (
-                          <Text color="white">
-                            ✓
-                          </Text>
-                        )}
+                        {isSelected && <Text color="white">✓</Text>}
                       </Stack>
                       <Text color="gray" flex={1}>
                         {option}
@@ -452,18 +437,12 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   aria-label={`${question.question} toggle`}
                 />
-                <Text color="gray">
-                  {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
-                </Text>
+                <Text color="gray">{(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}</Text>
               </Row>
             )}
 
             {/* Error Message */}
-            {errors[question.id] && (
-              <Text color="$red10">
-                {errors[question.id]}
-              </Text>
-            )}
+            {errors[question.id] && <Text color="$red10">{errors[question.id]}</Text>}
           </Stack>
         ))}
       </Stack>

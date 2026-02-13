@@ -36,17 +36,17 @@ export function StripeSettingsPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
-          title: 'Success',
-          message: 'Publishable key updated',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Publishable key updated',
+        variant: 'success',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to update publishable key'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -54,17 +54,17 @@ export function StripeSettingsPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
-          title: 'Success',
-          message: 'Secret key stored securely',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Secret key stored securely',
+        variant: 'success',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to store API secret'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -72,17 +72,17 @@ export function StripeSettingsPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
-          title: 'Success',
-          message: 'Webhook secret stored securely',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Webhook secret stored securely',
+        variant: 'success',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to store webhook secret'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -93,9 +93,9 @@ export function StripeSettingsPage() {
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to update mode'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -103,17 +103,17 @@ export function StripeSettingsPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
       toast.show({
-          title: 'Success',
-          message: 'Stripe connection verified',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Stripe connection verified',
+        variant: 'success',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Stripe connection test failed'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -135,25 +135,25 @@ export function StripeSettingsPage() {
 
     if (!canCopy) {
       toast.show({
-          title: 'Error',
-          message: 'Clipboard access is not available on this device.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'Clipboard access is not available on this device.',
+        variant: 'error',
+      })
       return
     }
 
     try {
       await navigator.clipboard.writeText(webhookUrl)
       toast.show({
-          title: 'Copied',
-          message: 'Webhook endpoint copied to clipboard',
-        })
+        title: 'Copied',
+        message: 'Webhook endpoint copied to clipboard',
+      })
     } catch {
       toast.show({
-          title: 'Error',
-          message: 'Unable to copy to clipboard',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'Unable to copy to clipboard',
+        variant: 'error',
+      })
     }
   }
 
@@ -169,9 +169,7 @@ export function StripeSettingsPage() {
   return (
     <Stack flex={1} padding={16} gap={16}>
       <Stack gap={8}>
-        <Text>
-          Stripe Payments
-        </Text>
+        <Text>Stripe Payments</Text>
         <Paragraph size={16} color="gray">
           Manage API keys, webhook secrets, and connection diagnostics for the Stripe integration.
         </Paragraph>
@@ -180,9 +178,7 @@ export function StripeSettingsPage() {
       <Stack gap={16} style={{ maxWidth: 720, width: '100%' }}>
         <Card padding={16} gap={16}>
           <Stack gap={8}>
-            <Text>
-              Publishable Key
-            </Text>
+            <Text>Publishable Key</Text>
             <Paragraph size={12} color="gray">
               Used on the client to initialize Stripe.js. Updating this key does not affect existing
               payment intents.
@@ -213,9 +209,7 @@ export function StripeSettingsPage() {
 
         <Card padding={16} gap={16}>
           <Stack gap={8}>
-            <Text>
-              Secret Keys
-            </Text>
+            <Text>Secret Keys</Text>
             <Paragraph size={12} color="gray">
               Secrets are encrypted with Supabase Vault. They are never returned by the API after
               storage.
@@ -247,13 +241,9 @@ export function StripeSettingsPage() {
                 </Button>
               </Row>
               {data?.hasApiKey ? (
-                <Text color="$green10">
-                  ✓ Secret stored in Vault
-                </Text>
+                <Text color="$green10">✓ Secret stored in Vault</Text>
               ) : (
-                <Text color="$red10">
-                  API secret not configured
-                </Text>
+                <Text color="$red10">API secret not configured</Text>
               )}
             </Stack>
 
@@ -281,13 +271,9 @@ export function StripeSettingsPage() {
                 </Button>
               </Row>
               {data?.hasWebhookSecret ? (
-                <Text color="$green10">
-                  ✓ Webhook secret stored
-                </Text>
+                <Text color="$green10">✓ Webhook secret stored</Text>
               ) : (
-                <Text color="$red10">
-                  Webhook secret not configured
-                </Text>
+                <Text color="$red10">Webhook secret not configured</Text>
               )}
             </Stack>
           </Stack>
@@ -295,9 +281,7 @@ export function StripeSettingsPage() {
 
         <Card padding={16} gap={16}>
           <Stack gap={8}>
-            <Text>
-              Webhook Endpoint
-            </Text>
+            <Text>Webhook Endpoint</Text>
             <Paragraph size={12} color="gray">
               Configure this URL inside the Stripe Dashboard and supply the signing secret above.
             </Paragraph>
@@ -312,9 +296,7 @@ export function StripeSettingsPage() {
 
         <Card padding={16} gap={16}>
           <Stack gap={8}>
-            <Text>
-              Test Mode
-            </Text>
+            <Text>Test Mode</Text>
             <Paragraph size={12} color="gray">
               Toggle between live and test credentials without redeploying the backend.
             </Paragraph>
@@ -338,9 +320,7 @@ export function StripeSettingsPage() {
 
         <Card padding={16} gap={16}>
           <Stack gap={8}>
-            <Text>
-              Connection Diagnostics
-            </Text>
+            <Text>Connection Diagnostics</Text>
             <Paragraph size={12} color="gray">
               Validates the current secret by calling Stripe. Fails if the API key lacks required
               permissions.
@@ -348,9 +328,7 @@ export function StripeSettingsPage() {
           </Stack>
 
           <Stack gap={8}>
-            <Text color="gray">
-              Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
-            </Text>
+            <Text color="gray">Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}</Text>
             {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
               <Paragraph size={12} color="$red10">
                 {data.lastTestedError}

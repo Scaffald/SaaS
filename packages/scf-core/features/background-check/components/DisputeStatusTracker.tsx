@@ -100,9 +100,7 @@ export function DisputeStatusTracker({
     return (
       <Stack gap={8} align="center" paddingVertical={16}>
         <Spinner size="sm" color="gray" />
-        <Text color="gray">
-          Loading dispute history…
-        </Text>
+        <Text color="gray">Loading dispute history…</Text>
       </Stack>
     )
   }
@@ -117,9 +115,7 @@ export function DisputeStatusTracker({
         padding={12}
         gap={8}
       >
-        <Text color="gray">
-          No disputes filed yet
-        </Text>
+        <Text color="gray">No disputes filed yet</Text>
         <Text color="gray">
           If you notice any inaccuracies in your results, you can submit a dispute for review.
         </Text>
@@ -133,9 +129,7 @@ export function DisputeStatusTracker({
   return (
     <Stack gap={12}>
       <Row justify="space-between" align="center">
-        <Text color="gray">
-          Dispute status
-        </Text>
+        <Text color="gray">Dispute status</Text>
         <Button
           size={8}
           variant="outline"
@@ -155,19 +149,13 @@ export function DisputeStatusTracker({
         borderWidth={1}
         borderRadius={16}
       >
-        <Text color={toneColors.text}>
-          {statusMeta.label}
-        </Text>
-        <Text color={toneColors.text}>
-          {statusMeta.description}
-        </Text>
+        <Text color={toneColors.text}>{statusMeta.label}</Text>
+        <Text color={toneColors.text}>{statusMeta.description}</Text>
         <Text color={toneColors.text}>
           Filed {formatDate(latestDispute.created_at)}
           {latestDispute.resolved_at ? ` • Resolved ${formatDate(latestDispute.resolved_at)}` : ''}
         </Text>
-        <Text color={toneColors.text}>
-          Reason: {latestDispute.dispute_reason}
-        </Text>
+        <Text color={toneColors.text}>Reason: {latestDispute.dispute_reason}</Text>
       </Stack>
 
       <Card
@@ -178,9 +166,7 @@ export function DisputeStatusTracker({
         padding={12}
         gap={12}
       >
-        <Text color="gray">
-          Dispute history
-        </Text>
+        <Text color="gray">Dispute history</Text>
 
         {pendingCount > 0 ? (
           <Text color="gray">
@@ -206,20 +192,14 @@ export function DisputeStatusTracker({
                 gap={4}
               >
                 <Row gap={8} align="center" flexWrap="wrap">
-                  <Text color="gray">
-                    {meta.label}
-                  </Text>
+                  <Text color="gray">{meta.label}</Text>
                   <Text color={colors.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>
                 </Row>
-                <Text color="gray">
-                  Reason: {dispute.dispute_reason}
-                </Text>
-                <Text color="gray">
-                  {dispute.dispute_details}
-                </Text>
+                <Text color="gray">Reason: {dispute.dispute_reason}</Text>
+                <Text color="gray">{dispute.dispute_details}</Text>
                 {dispute.resolution ? (
                   <Text color="gray">
                     Resolution: {dispute.resolution}

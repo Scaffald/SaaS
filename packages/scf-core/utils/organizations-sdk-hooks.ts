@@ -24,7 +24,10 @@ import type {
 // ============================================================================
 
 /** Get organization by ID */
-export function useOrganization(organizationId: string | undefined, options?: { enabled?: boolean }) {
+export function useOrganization(
+  organizationId: string | undefined,
+  options?: { enabled?: boolean }
+) {
   const client = useScaffaldJobsClient()
   return useQuery({
     queryKey: ['organizations', 'detail', organizationId],
@@ -32,7 +35,7 @@ export function useOrganization(organizationId: string | undefined, options?: { 
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.organizations.retrieve(organizationId)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
@@ -49,7 +52,7 @@ export function useOrganizationOpenJobsCount(
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.organizations.getOpenJobsCount(organizationId)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -71,7 +74,7 @@ export function useOrganizationMembers(
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.organizations.listMembers(organizationId, params)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -86,7 +89,13 @@ export function useInviteOrganizationMemberMutation(
 ) {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async ({ organizationId, params }: { organizationId: string; params: InviteMemberParams }) => {
+    mutationFn: async ({
+      organizationId,
+      params,
+    }: {
+      organizationId: string
+      params: InviteMemberParams
+    }) => {
       if (!client) throw new Error('Missing client')
       return client.organizations.inviteMember(organizationId, params)
     },
@@ -137,7 +146,7 @@ export function useOrganizationDocuments(
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.organizations.listDocuments(organizationId, params)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -157,7 +166,7 @@ export function useOrganizationDocument(
       }
       return client.organizations.getDocument(organizationId, documentId)
     },
-    enabled: !!client && !!organizationId && !!documentId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && !!documentId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -228,7 +237,7 @@ export function useOrganizationSettings(
       if (!client || !organizationId) throw new Error('Missing client or organizationId')
       return client.organizations.getSettings(organizationId)
     },
-    enabled: !!client && !!organizationId && (options?.enabled !== false),
+    enabled: !!client && !!organizationId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }

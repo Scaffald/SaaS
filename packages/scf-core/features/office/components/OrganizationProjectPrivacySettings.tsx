@@ -61,16 +61,16 @@ export function OrganizationProjectPrivacySettings({
         default_project_location_visibility: selectedVisibility as ProjectLocationVisibility,
       })
       toast.show({
-          title: 'Success',
-          message: 'Location visibility setting updated',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Location visibility setting updated',
+        variant: 'success',
+      })
     } catch (error) {
       const _message = error instanceof Error ? error.message : 'Failed to update setting'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     }
   }
 
@@ -88,9 +88,7 @@ export function OrganizationProjectPrivacySettings({
   return (
     <Card padding={16} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
       <Stack gap={16}>
-        <Text>
-          Project Location Privacy
-        </Text>
+        <Text>Project Location Privacy</Text>
         <Text color="$gray11">
           Set the default visibility level for project locations. Individual projects can override
           this setting.
@@ -111,9 +109,7 @@ export function OrganizationProjectPrivacySettings({
 
         <Card padding={12} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <Stack gap={8}>
-            <Text>
-              Project Override Statistics
-            </Text>
+            <Text>Project Override Statistics</Text>
             <Text color="$gray11">
               {overrideCount} project{overrideCount !== 1 ? 's' : ''} override this default setting
             </Text>

@@ -93,7 +93,10 @@ export function PendingRequestsList() {
   })
 
   const combinedRequests: RequestRow[] = useMemo(() => {
-    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req) => ({ ...req, type: 'sent' as const }))
+    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req) => ({
+      ...req,
+      type: 'sent' as const,
+    }))
     const received: ReceivedRequest[] = (pendingRequests.received || []).map((req) => ({
       ...req,
       type: 'received' as const,
@@ -142,19 +145,13 @@ export function PendingRequestsList() {
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$orange4">
-                    <Text color="$orange10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text color="$orange10">{name.charAt(0).toUpperCase()}</Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
               <Stack gap={4}>
-                <Text>
-                  {name}
-                </Text>
-                <Text color="gray">
-                  {request.type === 'sent' ? 'Sent' : 'Received'}
-                </Text>
+                <Text>{name}</Text>
+                <Text color="gray">{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
               </Stack>
             </Row>
           )
@@ -165,11 +162,7 @@ export function PendingRequestsList() {
         header: 'Date',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text color="gray">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -265,9 +258,7 @@ export function PendingRequestsList() {
     <Stack gap={16}>
       {receivedRequests.length > 0 && (
         <Stack gap={8}>
-          <Text>
-            Received ({receivedRequests.length})
-          </Text>
+          <Text>Received ({receivedRequests.length})</Text>
           <DataTable
             columns={columns}
             data={combinedRequests.filter((r) => r.type === 'received')}
@@ -280,9 +271,7 @@ export function PendingRequestsList() {
       {sentRequests.length > 0 && (
         <Stack gap={8}>
           {receivedRequests.length > 0 && <Separator />}
-          <Text>
-            Sent ({sentRequests.length})
-          </Text>
+          <Text>Sent ({sentRequests.length})</Text>
           <DataTable
             columns={columns}
             data={combinedRequests.filter((r) => r.type === 'sent')}

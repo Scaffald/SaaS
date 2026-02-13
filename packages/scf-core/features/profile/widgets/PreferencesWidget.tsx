@@ -30,9 +30,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load preferences</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -81,9 +79,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {/* Availability */}
           {data.availability && typeof data.availability === 'string' && (
             <Stack gap={8}>
-              <Text>
-                Availability
-              </Text>
+              <Text>Availability</Text>
               <Text color="gray" textTransform="capitalize">
                 {data.availability.replace('_', ' ')}
               </Text>
@@ -93,9 +89,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {/* Career Level */}
           {data.career_level && typeof data.career_level === 'string' && (
             <Stack gap={8}>
-              <Text>
-                Career Level
-              </Text>
+              <Text>Career Level</Text>
               <Text color="gray" textTransform="capitalize">
                 {data.career_level.replace('_', ' ')}
               </Text>
@@ -105,12 +99,8 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {/* Compensation */}
           {data.hourly_rate_cents && (
             <Stack gap={8}>
-              <Text>
-                Hourly Rate
-              </Text>
-              <Text color="gray">
-                {formatCurrency(data.hourly_rate_cents)}
-              </Text>
+              <Text>Hourly Rate</Text>
+              <Text color="gray">{formatCurrency(data.hourly_rate_cents)}</Text>
             </Stack>
           )}
 
@@ -119,9 +109,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             Array.isArray(data.preferred_work_locations) &&
             data.preferred_work_locations.length > 0 && (
               <Stack gap={8}>
-                <Text>
-                  Preferred Locations
-                </Text>
+                <Text>Preferred Locations</Text>
                 <Row gap={8} flexWrap="wrap">
                   {data.preferred_work_locations.map((location: string) => (
                     <Row
@@ -133,9 +121,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                       borderWidth={1}
                       borderColor="$blue7"
                     >
-                      <Text color="$blue11">
-                        {location}
-                      </Text>
+                      <Text color="$blue11">{location}</Text>
                     </Row>
                   ))}
                 </Row>
@@ -145,17 +131,13 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {/* Travel Preferences */}
           {(data.open_to_travel || data.travel_distance_miles) && (
             <Stack gap={8}>
-              <Text>
-                Travel
-              </Text>
+              <Text>Travel</Text>
               <Row gap={8} align="center">
                 <Text color="gray">
                   {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
                 </Text>
                 {data.travel_distance_miles && (
-                  <Text color="gray">
-                    • Up to {data.travel_distance_miles} miles
-                  </Text>
+                  <Text color="gray">• Up to {data.travel_distance_miles} miles</Text>
                 )}
               </Row>
             </Stack>
@@ -168,26 +150,18 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               Array.isArray(data.authorized_countries) &&
               data.authorized_countries.length > 0)) && (
             <Stack gap={8}>
-              <Text>
-                Work Authorization
-              </Text>
+              <Text>Work Authorization</Text>
               <Stack gap={4}>
                 {data.us_resident !== null && (
-                  <Text color="gray">
-                    {data.us_resident ? '✓' : '✗'} US Resident
-                  </Text>
+                  <Text color="gray">{data.us_resident ? '✓' : '✗'} US Resident</Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text color="gray">
-                    {data.us_passport ? '✓' : '✗'} US Passport
-                  </Text>
+                  <Text color="gray">{data.us_passport ? '✓' : '✗'} US Passport</Text>
                 )}
                 {data.authorized_countries &&
                   Array.isArray(data.authorized_countries) &&
                   data.authorized_countries.length > 0 && (
-                    <Text color="gray">
-                      Authorized: {formatArray(data.authorized_countries)}
-                    </Text>
+                    <Text color="gray">Authorized: {formatArray(data.authorized_countries)}</Text>
                   )}
               </Stack>
             </Stack>
@@ -198,9 +172,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             Array.isArray(data.drivers_license_classes) &&
             data.drivers_license_classes.length > 0 && (
               <Stack gap={8}>
-                <Text>
-                  Driver's Licenses
-                </Text>
+                <Text>Driver's Licenses</Text>
                 <Row gap={8} flexWrap="wrap">
                   {data.drivers_license_classes.map((license: string) => (
                     <Row
@@ -212,9 +184,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                       borderWidth={1}
                       borderColor="$blue7"
                     >
-                      <Text color="$blue11">
-                        Class {license}
-                      </Text>
+                      <Text color="$blue11">Class {license}</Text>
                     </Row>
                   ))}
                 </Row>
@@ -224,14 +194,10 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {/* Veteran Status */}
           {(data.veteran !== null || data.military_status) && (
             <Stack gap={8}>
-              <Text>
-                Military Service
-              </Text>
+              <Text>Military Service</Text>
               <Stack gap={4}>
                 {data.veteran !== null && (
-                  <Text color="gray">
-                    {data.veteran ? 'Veteran' : 'Not a veteran'}
-                  </Text>
+                  <Text color="gray">{data.veteran ? 'Veteran' : 'Not a veteran'}</Text>
                 )}
                 {data.military_status && typeof data.military_status === 'string' && (
                   <Text color="gray" textTransform="capitalize">

@@ -23,7 +23,7 @@ export function useConnections(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.connections.list()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -37,7 +37,7 @@ export function usePendingConnections(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.connections.getPending()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - more frequent since these are real-time
   })
 }
@@ -51,7 +51,7 @@ export function useConnectionStatus(userId: string | undefined, options?: { enab
       if (!client || !userId) throw new Error('Missing client or userId')
       return client.connections.getStatus(userId)
     },
-    enabled: !!client && !!userId && (options?.enabled !== false),
+    enabled: !!client && !!userId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -71,7 +71,9 @@ export function useSendConnectionMutation(
 }
 
 /** Accept a connection request */
-export function useAcceptConnectionMutation(options?: UseMutationOptions<Connection, Error, string>) {
+export function useAcceptConnectionMutation(
+  options?: UseMutationOptions<Connection, Error, string>
+) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
@@ -134,7 +136,7 @@ export function useFollowing(
       if (!client) throw new Error('Missing client')
       return client.follows.getFollowing(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -151,7 +153,7 @@ export function useFollowers(
       if (!client) throw new Error('Missing client')
       return client.follows.getFollowers(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -165,13 +167,15 @@ export function useFollowStatus(userId: string | undefined, options?: { enabled?
       if (!client || !userId) throw new Error('Missing client or userId')
       return client.follows.getStatus(userId)
     },
-    enabled: !!client && !!userId && (options?.enabled !== false),
+    enabled: !!client && !!userId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
 
 /** Follow a user */
-export function useFollowUserMutation(options?: UseMutationOptions<Follow, Error, FollowUserParams>) {
+export function useFollowUserMutation(
+  options?: UseMutationOptions<Follow, Error, FollowUserParams>
+) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (params: FollowUserParams) => {
@@ -199,7 +203,9 @@ export function useUnfollowUserMutation(options?: UseMutationOptions<void, Error
 // ============================================================================
 
 /** Track an engagement event */
-export function useTrackEngagementMutation(options?: UseMutationOptions<EngagementEvent, Error, TrackEventParams>) {
+export function useTrackEngagementMutation(
+  options?: UseMutationOptions<EngagementEvent, Error, TrackEventParams>
+) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (params: TrackEventParams) => {
@@ -222,7 +228,7 @@ export function useRecentActivity(
       if (!client) throw new Error('Missing client')
       return client.engagement.getRecentActivity(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -236,7 +242,7 @@ export function useEngagementMetrics(params?: { days?: number }, options?: { ena
       if (!client) throw new Error('Missing client')
       return client.engagement.getMetrics(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }

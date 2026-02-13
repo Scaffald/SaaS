@@ -60,9 +60,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           gap={4}
         >
           <MessageSquare size={12} color="$blue10" />
-          <Text color="$blue10">
-            {unreadComments}
-          </Text>
+          <Text color="$blue10">{unreadComments}</Text>
         </Row>
       )}
 
@@ -77,62 +75,34 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           gap={4}
         >
           <Check size={12} color="white" />
-          <Text color="white">
-            Check completed
-          </Text>
+          <Text color="white">Check completed</Text>
         </Row>
       )}
 
       {/* Pending sections badge */}
       {pendingSections > 0 && !allAccepted && (
-        <Stack
-          backgroundColor="$gray3"
-          paddingHorizontal={8}
-          paddingVertical={4}
-          borderRadius={8}
-        >
-          <Text color="$gray11">
-            {pendingSections} Pending
-          </Text>
+        <Stack backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+          <Text color="$gray11">{pendingSections} Pending</Text>
         </Stack>
       )}
 
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
-        <Stack
-          backgroundColor="$green3"
-          paddingHorizontal={8}
-          paddingVertical={4}
-          borderRadius={8}
-        >
-          <Text color="$green10">
-            {acceptedSections} Completed
-          </Text>
+        <Stack backgroundColor="$green3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+          <Text color="$green10">{acceptedSections} Completed</Text>
         </Stack>
       )}
 
       {/* Pending checks badge */}
       {hasPendingChecks && (
-        <Stack
-          backgroundColor="$gray3"
-          paddingHorizontal={8}
-          paddingVertical={4}
-          borderRadius={8}
-        >
-          <Text color="$gray11">
-            Pending checks
-          </Text>
+        <Stack backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+          <Text color="$gray11">Pending checks</Text>
         </Stack>
       )}
 
       {/* Progress indicator */}
       {!allAccepted && (
-        <Stack
-          backgroundColor="$blue2"
-          paddingHorizontal={8}
-          paddingVertical={4}
-          borderRadius={8}
-        >
+        <Stack backgroundColor="$blue2" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
           <Text color="$blue11">
             {acceptedSections}/{totalSections}
           </Text>

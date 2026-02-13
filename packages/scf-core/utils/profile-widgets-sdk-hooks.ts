@@ -69,7 +69,7 @@ export function useGeneralInfoWidget(
       if (!client) throw new Error('Missing client')
       return client.profileWidgets.getGeneralInfo(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -115,7 +115,7 @@ export function useExperienceWidget(
       if (!client) throw new Error('Missing client')
       return client.profileWidgets.getExperience(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -160,7 +160,7 @@ export function useEducationWidget(
       if (!client) throw new Error('Missing client')
       return client.profileWidgets.getEducation(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -202,7 +202,7 @@ export function useSkillsWidget(
       if (!client) throw new Error('Missing client')
       return client.profileWidgets.getSkills(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -246,7 +246,7 @@ export function useCertificationsWidget(
       if (!client) throw new Error('Missing client')
       return client.profileWidgets.getCertifications(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -286,7 +286,7 @@ export function usePreferencesWidget(
       if (!client) throw new Error('Missing client')
       return client.profileWidgets.getPreferences()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })

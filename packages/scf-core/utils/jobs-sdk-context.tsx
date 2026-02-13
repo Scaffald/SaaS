@@ -20,7 +20,8 @@ function getSupabaseApiBaseUrl(): string {
 }
 
 function getSupabaseAnonKey(): string {
-  const supabaseExtra = (Constants?.expoConfig?.extra as { supabase?: { anonKey?: string } })?.supabase
+  const supabaseExtra = (Constants?.expoConfig?.extra as { supabase?: { anonKey?: string } })
+    ?.supabase
   return process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey ?? ''
 }
 
@@ -37,9 +38,7 @@ export interface ScaffaldJobsSdkProviderProps {
  */
 export function ScaffaldJobsSdkProvider({ client, children }: ScaffaldJobsSdkProviderProps) {
   return (
-    <ScaffaldJobsSdkContext.Provider value={client}>
-      {children}
-    </ScaffaldJobsSdkContext.Provider>
+    <ScaffaldJobsSdkContext.Provider value={client}>{children}</ScaffaldJobsSdkContext.Provider>
   )
 }
 

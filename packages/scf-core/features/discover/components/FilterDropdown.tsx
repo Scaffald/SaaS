@@ -83,16 +83,12 @@ export const FilterDropdown = ({
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       >
         <Stack gap={12}>
-          <Text marginBottom={4}>
-            Display on Map
-          </Text>
+          <Text marginBottom={4}>Display on Map</Text>
 
           {/* Workers Toggle */}
           <Stack gap={4}>
             <Row justify="space-between" align="center">
-              <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>
-                Workers
-              </Label>
+              <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
               <ToggleSwitch
                 checked={showWorkers}
                 onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
@@ -126,9 +122,7 @@ export const FilterDropdown = ({
           {/* Jobs Toggle */}
           <Stack gap={4}>
             <Row justify="space-between" align="center">
-              <Label onPress={() => onShowJobsChange?.(!showJobs)}>
-                Jobs
-              </Label>
+              <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
               <ToggleSwitch
                 checked={showJobs}
                 onCheckedChange={(checked) => onShowJobsChange?.(checked)}

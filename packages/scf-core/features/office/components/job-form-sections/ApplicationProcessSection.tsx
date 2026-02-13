@@ -125,20 +125,14 @@ export function ApplicationProcessSection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text>
-        Application Process
-      </Text>
-      <Text color="gray">
-        Configure the application process and requirements
-      </Text>
+      <Text>Application Process</Text>
+      <Text color="gray">Configure the application process and requirements</Text>
 
       {/* Requires Assessment */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Requires assessment</Label>
-          <Text color="gray">
-            Skills or aptitude test required
-          </Text>
+          <Text color="gray">Skills or aptitude test required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.requires_assessment || false}
@@ -162,9 +156,7 @@ export function ApplicationProcessSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Requires video interview</Label>
-          <Text color="gray">
-            Pre-recorded video interview required
-          </Text>
+          <Text color="gray">Pre-recorded video interview required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.requires_video_interview || false}
@@ -185,9 +177,7 @@ export function ApplicationProcessSection({
             handleChange('estimated_application_time_minutes', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text color="gray">
-          How long it takes to complete the application
-        </Text>
+        <Text color="gray">How long it takes to complete the application</Text>
       </Stack>
 
       {/* Application Expiry */}
@@ -202,9 +192,7 @@ export function ApplicationProcessSection({
             handleChange('application_expiry_days', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text color="gray">
-          Days after which started applications expire
-        </Text>
+        <Text color="gray">Days after which started applications expire</Text>
       </Stack>
 
       {/* Inquiry Capability Questions */}
@@ -216,9 +204,7 @@ export function ApplicationProcessSection({
         borderTopColor="$borderColor"
       >
         <Stack gap={4}>
-          <Text>
-            Inquiry Capability Questions
-          </Text>
+          <Text>Inquiry Capability Questions</Text>
           <Text color="gray">
             Define capability questions that will be asked during the inquiry phase
           </Text>
@@ -232,23 +218,11 @@ export function ApplicationProcessSection({
                 <Card key={question.name} padding={12} gap={8} backgroundColor="$color2">
                   <Row justify="space-between" align="center">
                     <Stack flex={1} gap={4}>
-                      <Text>
-                        {question.label}
-                      </Text>
+                      <Text>{question.label}</Text>
                       <Row gap={8}>
-                        <Text color="gray">
-                          Type: {question.type}
-                        </Text>
-                        {question.unit && (
-                          <Text color="gray">
-                            Unit: {question.unit}
-                          </Text>
-                        )}
-                        {question.required && (
-                          <Text color="$blue10">
-                            Required
-                          </Text>
-                        )}
+                        <Text color="gray">Type: {question.type}</Text>
+                        {question.unit && <Text color="gray">Unit: {question.unit}</Text>}
+                        {question.required && <Text color="$blue10">Required</Text>}
                       </Row>
                     </Stack>
                     <Button
@@ -282,9 +256,7 @@ export function ApplicationProcessSection({
         >
           <Sheet.Frame padding={16} gap={16}>
             <Stack gap={12}>
-              <Text>
-                Add Capability Question
-              </Text>
+              <Text>Add Capability Question</Text>
 
               {/* Question Label */}
               <Stack gap={8}>

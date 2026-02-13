@@ -80,21 +80,13 @@ export function OfficeViolationReports() {
       }),
       columnHelper.accessor('description', {
         header: 'Description',
-        cell: (info) => (
-          <Text numberOfLines={2}>
-            {info.getValue()}
-          </Text>
-        ),
+        cell: (info) => <Text numberOfLines={2}>{info.getValue()}</Text>,
       }),
       columnHelper.accessor('status', {
         header: 'Status',
         cell: (info) => {
           const status = info.getValue()
-          return (
-            <Text color={getStatusColor(status)}>
-              {formatStatus(status)}
-            </Text>
-          )
+          return <Text color={getStatusColor(status)}>{formatStatus(status)}</Text>
         },
       }),
       columnHelper.accessor('id', {
@@ -132,9 +124,7 @@ export function OfficeViolationReports() {
     <Stack flex={1} padding={16} gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
-          <Text>
-            Anti-Circumvention Violation Reports
-          </Text>
+          <Text>Anti-Circumvention Violation Reports</Text>
           <Text color="gray">
             Review and manage reports of off-platform hires and fee avoidance.
           </Text>

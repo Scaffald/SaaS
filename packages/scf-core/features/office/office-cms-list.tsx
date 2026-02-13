@@ -102,20 +102,12 @@ export function OfficeCMSList() {
                     <Stack flex={1} gap={8}>
                       <Row gap={8} align="center">
                         <Text>{slide.title}</Text>
-                        {!slide.is_active && (
-                          <Text color="$red10">
-                            (Inactive)
-                          </Text>
-                        )}
+                        {!slide.is_active && <Text color="$red10">(Inactive)</Text>}
                       </Row>
                       <Text opacity={0.7}>{slide.description}</Text>
                       <Row gap={8}>
-                        <Text opacity={0.5}>
-                          Icon: {slide.icon_name}
-                        </Text>
-                        <Text opacity={0.5}>
-                          • Order: {slide.display_order}
-                        </Text>
+                        <Text opacity={0.5}>Icon: {slide.icon_name}</Text>
+                        <Text opacity={0.5}>• Order: {slide.display_order}</Text>
                       </Row>
                     </Stack>
 
@@ -158,9 +150,7 @@ export function OfficeCMSList() {
       }
       rightContent={
         <Stack gap={16}>
-          <Text>
-            About Welcome Slides
-          </Text>
+          <Text>About Welcome Slides</Text>
           <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>
           <Text>Slides are displayed in order based on the &quot;display_order&quot; value.</Text>
           <Text>Only active slides are shown to users.</Text>

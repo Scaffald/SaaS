@@ -147,9 +147,9 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const assignMutation = api.teams.applications.assign.useMutation({
     onSuccess: async () => {
       toast.show({
-          title: 'Application assigned',
-          message: 'You are now responsible for follow-up.',
-        })
+        title: 'Application assigned',
+        message: 'You are now responsible for follow-up.',
+      })
       if (teamId) {
         await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
         await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'comments']] })
@@ -158,9 +158,9 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Unable to assign application'
       toast.show({
-          title: 'Unable to assign application',
-          variant: 'error',
-        })
+        title: 'Unable to assign application',
+        variant: 'error',
+      })
     },
   })
 
@@ -194,16 +194,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         <Avatar circular size={24}>
           <Avatar.Image src={application.candidate.photo} />
           <Avatar.Fallback backgroundColor="$blue9">
-            <Text color="white">
-              {application.candidate.name.charAt(0)}
-            </Text>
+            <Text color="white">{application.candidate.name.charAt(0)}</Text>
           </Avatar.Fallback>
         </Avatar>
 
         <Stack flex={1}>
-          <Text opacity={0.7}>
-            {application.candidate.title}
-          </Text>
+          <Text opacity={0.7}>{application.candidate.title}</Text>
           <Text opacity={0.6} marginTop={4}>
             {application.candidate.location}
           </Text>
@@ -218,12 +214,8 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         borderRadius={16}
         align="center"
       >
-        <Text color={scoreColor}>
-          {application.score}
-        </Text>
-        <Text opacity={0.8}>
-          Application Score
-        </Text>
+        <Text color={scoreColor}>{application.score}</Text>
+        <Text opacity={0.8}>Application Score</Text>
       </Stack>
 
       {/* Quick Actions */}
@@ -257,9 +249,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       ) : null}
       {teamId ? (
         <Stack gap={4}>
-          <Text opacity={0.6}>
-            Current assignee
-          </Text>
+          <Text opacity={0.6}>Current assignee</Text>
           <Text>
             {application.team?.assignedUserId
               ? (mentionOptions.find((option) => option.id === application.team?.assignedUserId)
@@ -272,9 +262,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       {/* Application Meta */}
       <Row gap={16} flexWrap="wrap">
         <Stack flex={1} width={150}>
-          <Text opacity={0.6}>
-            Applied
-          </Text>
+          <Text opacity={0.6}>Applied</Text>
           <Text>
             {new Date(application.appliedAt).toLocaleDateString('en-US', {
               month: 'long',
@@ -284,20 +272,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Text>
         </Stack>
         <Stack flex={1} width={150}>
-          <Text opacity={0.6}>
-            Job
-          </Text>
-          <Text>
-            {application.job.title}
-          </Text>
+          <Text opacity={0.6}>Job</Text>
+          <Text>{application.job.title}</Text>
         </Stack>
         <Stack flex={1} width={150}>
-          <Text opacity={0.6}>
-            Experience
-          </Text>
-          <Text>
-            {application.candidate.yearsExperience} years
-          </Text>
+          <Text opacity={0.6}>Experience</Text>
+          <Text>{application.candidate.yearsExperience} years</Text>
         </Stack>
       </Row>
 
@@ -311,29 +291,19 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       >
         <Tabs.List gap={8} backgroundColor="$color2" padding={4} borderRadius={12}>
           <Tabs.Tab value="profile" flex={1}>
-            <Text>
-              Profile
-            </Text>
+            <Text>Profile</Text>
           </Tabs.Tab>
           <Tabs.Tab value="application" flex={1}>
-            <Text>
-              Application
-            </Text>
+            <Text>Application</Text>
           </Tabs.Tab>
           <Tabs.Tab value="notes" flex={1}>
-            <Text>
-              Notes ({application.notes.length})
-            </Text>
+            <Text>Notes ({application.notes.length})</Text>
           </Tabs.Tab>
           <Tabs.Tab value="messages" flex={1}>
-            <Text>
-              Messages
-            </Text>
+            <Text>Messages</Text>
           </Tabs.Tab>
           <Tabs.Tab value="inquiry" flex={1}>
-            <Text>
-              Inquiry
-            </Text>
+            <Text>Inquiry</Text>
           </Tabs.Tab>
         </Tabs.List>
 

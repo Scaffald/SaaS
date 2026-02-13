@@ -14,7 +14,7 @@ export function useJobDetails(jobId: string | undefined, options?: { enabled?: b
       if (!client || !jobId) throw new Error('Missing client or jobId')
       return client.jobs.retrieve(jobId)
     },
-    enabled: !!client && !!jobId && (options?.enabled !== false),
+    enabled: !!client && !!jobId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -27,7 +27,7 @@ export function useExternalJobs(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.jobs.listExternal()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -43,7 +43,7 @@ export function usePublishedJobs(
       if (!client) throw new Error('Missing client')
       return client.jobs.list({ status: 'open', ...params })
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -78,7 +78,7 @@ export function useJobsWithSoftSkillsMatch(
       if (!client) throw new Error('Missing client')
       return client.jobs.getJobsWithSoftSkillsMatch(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -94,7 +94,7 @@ export function useCalculateSoftSkillsMatch(
       if (!client || !jobId) throw new Error('Missing client or jobId')
       return client.jobs.calculateSoftSkillsMatch(jobId, options?.userId)
     },
-    enabled: !!client && !!jobId && (options?.enabled !== false),
+    enabled: !!client && !!jobId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -107,7 +107,7 @@ export function useMyApplicationForJob(jobId: string | undefined, options?: { en
       if (!client || !jobId) throw new Error('Missing client or jobId')
       return client.applications.getMyForJob(jobId)
     },
-    enabled: !!client && !!jobId && (options?.enabled !== false),
+    enabled: !!client && !!jobId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -160,7 +160,7 @@ export function useUserApplications(
       if (!client) throw new Error('Missing client')
       return client.applications.list(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -173,7 +173,7 @@ export function useApplicationById(id: string | undefined, options?: { enabled?:
       if (!client || !id) throw new Error('Missing client or id')
       return client.applications.retrieve(id)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -208,7 +208,10 @@ export function useConfirmUploadMutation() {
   })
 }
 
-export function useApplicationMessages(applicationId: string | undefined, options?: { enabled?: boolean }) {
+export function useApplicationMessages(
+  applicationId: string | undefined,
+  options?: { enabled?: boolean }
+) {
   const client = useScaffaldJobsClient()
   return useQuery({
     queryKey: ['application', applicationId, 'messages'],
@@ -216,7 +219,7 @@ export function useApplicationMessages(applicationId: string | undefined, option
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
       return client.applications.getMessages(applicationId)
     },
-    enabled: !!client && !!applicationId && (options?.enabled !== false),
+    enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 30 * 1000, // 30 seconds for messages
   })
 }

@@ -76,9 +76,9 @@ export function GeneralProfileSection({
           api.office.updateUserGeneral.useMutation({
             onSuccess: () => {
               toast.show({
-          title: 'Profile Updated',
-          message: 'Profile has been saved successfully!',
-        })
+                title: 'Profile Updated',
+                message: 'Profile has been saved successfully!',
+              })
               refetch()
             },
             onError: (error: unknown) => {
@@ -86,18 +86,18 @@ export function GeneralProfileSection({
               const _message =
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
               toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+                title: 'Error',
+                variant: 'error',
+              })
             },
           })
       : () =>
           useUpdateGeneralInfoMutation({
             onSuccess: () => {
               toast.show({
-          title: 'Profile Updated',
-          message: 'Your profile has been saved successfully!',
-        })
+                title: 'Profile Updated',
+                message: 'Your profile has been saved successfully!',
+              })
               refetch()
             },
             onError: (error: unknown) => {
@@ -105,9 +105,9 @@ export function GeneralProfileSection({
               const _message =
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
               toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+                title: 'Error',
+                variant: 'error',
+              })
             },
           })
 
@@ -118,9 +118,9 @@ export function GeneralProfileSection({
   const uploadAvatarMutation = useUploadAvatarMutation({
     onSuccess: (data: { avatarPath: string }) => {
       toast.show({
-          title: 'Avatar Uploaded',
-          message: 'Avatar has been uploaded successfully!',
-        })
+        title: 'Avatar Uploaded',
+        message: 'Avatar has been uploaded successfully!',
+      })
       setValue('avatar_path', data.avatarPath)
       refetch()
     },
@@ -129,9 +129,9 @@ export function GeneralProfileSection({
       const _message =
         error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.'
       toast.show({
-          title: 'Upload Error',
-          variant: 'error',
-        })
+        title: 'Upload Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -217,10 +217,10 @@ export function GeneralProfileSection({
                 } catch (error) {
                   console.error('Error processing image:', error)
                   toast.show({
-          title: 'Error',
-          message: 'Failed to process image. Please try again.',
-          variant: 'error',
-        })
+                    title: 'Error',
+                    message: 'Failed to process image. Please try again.',
+                    variant: 'error',
+                  })
                 }
               } else {
                 setValue('avatar_path', '')
@@ -230,11 +230,7 @@ export function GeneralProfileSection({
             disabled={readOnly || uploadAvatarMutation.isPending}
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && (
-            <Text color="gray">
-              Uploading avatar...
-            </Text>
-          )}
+          {uploadAvatarMutation.isPending && <Text color="gray">Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -350,9 +346,7 @@ export function GeneralProfileSection({
             )}
           />
           {mode === 'user' && (
-            <Text color="gray">
-              Email changes must be made through account settings
-            </Text>
+            <Text color="gray">Email changes must be made through account settings</Text>
           )}
         </Stack>
 

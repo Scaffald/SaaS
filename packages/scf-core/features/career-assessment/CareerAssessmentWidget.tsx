@@ -41,19 +41,19 @@ export function CareerAssessmentWidget() {
   const saveMutation = useSaveCareerAssessmentMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Career Assessment Complete',
-          message: 'Your career interests have been saved successfully!',
-          variant: 'success',
-        })
+        title: 'Career Assessment Complete',
+        message: 'Your career interests have been saved successfully!',
+        variant: 'success',
+      })
       refetchStatus()
     },
     onError: (error: { message?: string }) => {
       console.error('Error saving career assessment:', error)
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to save assessment. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to save assessment. Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -101,9 +101,7 @@ export function CareerAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">
-            Career Assessment
-          </Text>
+          <Text color="gray">Career Assessment</Text>
           <Text color="gray">
             Take a quick assessment to help us recommend jobs that match your interests and skills
           </Text>
@@ -130,9 +128,7 @@ export function CareerAssessmentWidget() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Current Occupation (Optional)</Text>
-            <Text color="gray">
-              What is your current or most recent job?
-            </Text>
+            <Text color="gray">What is your current or most recent job?</Text>
           </Stack>
           <Controller
             name="current_occupation_code"
@@ -147,9 +143,7 @@ export function CareerAssessmentWidget() {
             )}
           />
           {errors.current_occupation_code && (
-            <Text color="$red10">
-              {errors.current_occupation_code.message}
-            </Text>
+            <Text color="$red10">{errors.current_occupation_code.message}</Text>
           )}
         </Stack>
 

@@ -124,20 +124,12 @@ export function ChartView({
           borderColor="$blue9"
           align="center"
         >
-          <Text color="$blue11">
-            Your Archetype
-          </Text>
-          <Text color="$blue12">
-            {archetype.name}
-          </Text>
+          <Text color="$blue11">Your Archetype</Text>
+          <Text color="$blue12">{archetype.name}</Text>
           {archetype.confidence !== undefined && (
             <Row gap={8} align="center">
-              <Text color="$blue10">
-                Confidence:
-              </Text>
-              <Text color="$blue11">
-                {archetype.confidence}%
-              </Text>
+              <Text color="$blue10">Confidence:</Text>
+              <Text color="$blue11">{archetype.confidence}%</Text>
             </Row>
           )}
         </Stack>
@@ -152,12 +144,8 @@ export function ChartView({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text color="gray">
-          Big Five Personality Traits
-        </Text>
-        <Text color="gray">
-          Your scores across the five major personality domains (0-100%)
-        </Text>
+        <Text color="gray">Big Five Personality Traits</Text>
+        <Text color="gray">Your scores across the five major personality domains (0-100%)</Text>
         <Stack align="center" padding={16}>
           <SkillsChart
             datasets={[
@@ -200,16 +188,10 @@ export function ChartView({
                 backgroundColor="$color1"
                 borderRadius={8}
               >
-                <Text color="gray">
-                  {trait.domainName}
-                </Text>
+                <Text color="gray">{trait.domainName}</Text>
                 <Row gap={12} align="center">
-                  <Text color="gray">
-                    {trait.value}%
-                  </Text>
-                  <Text color={resultColor}>
-                    {trait.result.toUpperCase()}
-                  </Text>
+                  <Text color="gray">{trait.value}%</Text>
+                  <Text color={resultColor}>{trait.result.toUpperCase()}</Text>
                 </Row>
               </Row>
             )
@@ -238,12 +220,8 @@ export function ChartView({
                 opacity={0.6}
                 aria-live="polite"
               >
-                <Text color="$gray10">
-                  {domainName} Facets
-                </Text>
-                <Text color="$gray9">
-                  Complete {domainName} questions to see facet details.
-                </Text>
+                <Text color="$gray10">{domainName} Facets</Text>
+                <Text color="$gray9">Complete {domainName} questions to see facet details.</Text>
               </Stack>
             )
           }
@@ -274,12 +252,8 @@ export function ChartView({
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">
-                {domainName} Facets
-              </Text>
-              <Text color="gray">
-                Six sub-traits within {domainName} (0-100%)
-              </Text>
+              <Text color="gray">{domainName} Facets</Text>
+              <Text color="gray">Six sub-traits within {domainName} (0-100%)</Text>
               <BarChart
                 data={facetData}
                 height={200}
@@ -315,12 +289,8 @@ export function ChartView({
                       justify="center"
                       style={{ minWidth: 80 }}
                     >
-                      <Text color="gray">
-                        F{facetKey}
-                      </Text>
-                      <Text color={resultColor}>
-                        {percentage}%
-                      </Text>
+                      <Text color="gray">F{facetKey}</Text>
+                      <Text color={resultColor}>{percentage}%</Text>
                     </Row>
                   )
                 })}
@@ -341,9 +311,7 @@ export function ChartView({
           borderColor="$yellow7"
           aria-live="polite"
         >
-          <Text color="$yellow11">
-            Complete Your Assessment
-          </Text>
+          <Text color="$yellow11">Complete Your Assessment</Text>
           <Text color="$yellow10">
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype visualization.

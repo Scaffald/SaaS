@@ -29,19 +29,13 @@ export function ReviewStepCategoryTags({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          {title}
-        </Text>
-        <Text color="gray">
-          {description}
-        </Text>
+        <Text color="gray">{title}</Text>
+        <Text color="gray">{description}</Text>
       </Stack>
 
       {/* Strengths Section */}
       <Stack gap={12}>
-        <Text color="$green11">
-          ✓ Strengths
-        </Text>
+        <Text color="$green11">✓ Strengths</Text>
         <Row gap={8} flexWrap="wrap">
           {skills.map((skill) => {
             const isSelected = strengths.includes(skill.id)
@@ -66,11 +60,7 @@ export function ReviewStepCategoryTags({
                 ) : (
                   <Circle size={16} color="gray" />
                 )}
-                <Text
-                  color={isSelected ? '$green11' : '$color11'}
-                >
-                  {skill.name}
-                </Text>
+                <Text color={isSelected ? '$green11' : '$color11'}>{skill.name}</Text>
               </Row>
             )
           })}
@@ -79,9 +69,7 @@ export function ReviewStepCategoryTags({
 
       {/* Areas to Improve Section */}
       <Stack gap={12}>
-        <Text color="$red11">
-          → Areas to Improve
-        </Text>
+        <Text color="$red11">→ Areas to Improve</Text>
         <Row gap={8} flexWrap="wrap">
           {skills.map((skill) => {
             const isSelected = improvements.includes(skill.id)
@@ -106,11 +94,7 @@ export function ReviewStepCategoryTags({
                 ) : (
                   <Circle size={16} color="gray" />
                 )}
-                <Text
-                  color={isSelected ? '$red11' : '$color11'}
-                >
-                  {skill.name}
-                </Text>
+                <Text color={isSelected ? '$red11' : '$color11'}>{skill.name}</Text>
               </Row>
             )
           })}

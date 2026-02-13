@@ -86,12 +86,7 @@ function formatDate(dateString: string): string {
 function StatusBadge({ status }: { status: AdminRequestStatus }) {
   const colors = STATUS_COLORS[status]
   return (
-    <Row
-      backgroundColor={colors.bg}
-      paddingHorizontal={8}
-      paddingVertical={4}
-      borderRadius={8}
-    >
+    <Row backgroundColor={colors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
       <Text color={colors.text} textTransform="capitalize">
         {status}
       </Text>
@@ -105,12 +100,7 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
 function PriorityBadge({ priority }: { priority: string }) {
   const colors = PRIORITY_COLORS[priority] || PRIORITY_COLORS.low
   return (
-    <Row
-      backgroundColor={colors.bg}
-      paddingHorizontal={8}
-      paddingVertical={4}
-      borderRadius={8}
-    >
+    <Row backgroundColor={colors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
       <Text color={colors.text} textTransform="capitalize">
         {priority}
       </Text>
@@ -145,12 +135,8 @@ function MetricCard({
       minWidth={150}
       gap={4}
     >
-      <Text color="gray">
-        {label}
-      </Text>
-      <Text color={color}>
-        {value}
-      </Text>
+      <Text color="gray">{label}</Text>
+      <Text color={color}>{value}</Text>
       {trend && (
         <Text color={trendColor}>
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} vs last month
@@ -187,60 +173,42 @@ function RequestRow({
     >
       {/* Request ID */}
       <Stack minWidth={100}>
-        <Text color="gray">
-          Request ID
-        </Text>
-        <Text>
-          {request.id.slice(0, 8)}...
-        </Text>
+        <Text color="gray">Request ID</Text>
+        <Text>{request.id.slice(0, 8)}...</Text>
       </Stack>
 
       {/* User */}
       <Stack flex={1} minWidth={140}>
-        <Text color="gray">
-          User
-        </Text>
-        <Text>
-          {request.user_name}
-        </Text>
-        <Text color="gray">
-          {request.user_email}
-        </Text>
+        <Text color="gray">User</Text>
+        <Text>{request.user_name}</Text>
+        <Text color="gray">{request.user_email}</Text>
       </Stack>
 
       {/* Type */}
       <Stack minWidth={100}>
-        <Text color="gray">
-          Type
-        </Text>
-        <Text textTransform="capitalize">
-          {request.type.replace('_', ' ')}
-        </Text>
+        <Text color="gray">Type</Text>
+        <Text textTransform="capitalize">{request.type.replace('_', ' ')}</Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text color="gray">
-          Status
-        </Text>
+        <Text color="gray">Status</Text>
         <StatusBadge status={request.status} />
       </Stack>
 
       {/* Priority */}
       <Stack minWidth={80}>
-        <Text color="gray">
-          Priority
-        </Text>
+        <Text color="gray">Priority</Text>
         <PriorityBadge priority={request.priority} />
       </Stack>
 
       {/* Days Elapsed */}
       <Stack minWidth={80}>
-        <Text color="gray">
-          Days
-        </Text>
+        <Text color="gray">Days</Text>
         <Text
-          color={request.is_overdue ? '$red10' : request.days_elapsed > 30 ? '$orange10' : '$color12'}
+          color={
+            request.is_overdue ? '$red10' : request.days_elapsed > 30 ? '$orange10' : '$color12'
+          }
         >
           {request.days_elapsed}
           {request.is_overdue && ' (OVERDUE)'}
@@ -249,12 +217,8 @@ function RequestRow({
 
       {/* Submitted */}
       <Stack flex={1} minWidth={120}>
-        <Text color="gray">
-          Submitted
-        </Text>
-        <Text>
-          {formatDate(request.created_at)}
-        </Text>
+        <Text color="gray">Submitted</Text>
+        <Text>{formatDate(request.created_at)}</Text>
       </Stack>
 
       {/* Actions */}
@@ -298,9 +262,7 @@ function FilterBar({
   return (
     <Row gap={12} flexWrap="wrap" align="center">
       <Stack gap={4}>
-        <Text color="gray">
-          Status
-        </Text>
+        <Text color="gray">Status</Text>
         <Row gap={8}>
           {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <Button
@@ -316,9 +278,7 @@ function FilterBar({
       </Stack>
 
       <Stack gap={4}>
-        <Text color="gray">
-          Type
-        </Text>
+        <Text color="gray">Type</Text>
         <Row gap={8}>
           {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
             <Button
@@ -327,16 +287,16 @@ function FilterBar({
               variant={typeFilter === type ? undefined : 'outlined'}
               onPress={() => onTypeChange(type)}
             >
-              {type === 'all' ? 'All' : type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
+              {type === 'all'
+                ? 'All'
+                : type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
             </Button>
           ))}
         </Row>
       </Stack>
 
       <Stack gap={4}>
-        <Text color="gray">
-          Priority
-        </Text>
+        <Text color="gray">Priority</Text>
         <Row gap={8}>
           {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
@@ -396,9 +356,7 @@ export function CCPAAdminDashboard() {
   if (hasError) {
     return (
       <Stack padding={16} gap={16} align="center" justify="center" flex={1}>
-        <Text color="$red10">
-          Error Loading CCPA Dashboard
-        </Text>
+        <Text color="$red10">Error Loading CCPA Dashboard</Text>
         <Text color="gray" textAlign="center">
           {metricsError?.message || requestsError?.message}
         </Text>
@@ -427,9 +385,7 @@ export function CCPAAdminDashboard() {
       <Stack padding={16} gap={24} maxWidth={1400} marginHorizontal="auto">
         {/* Page Header */}
         <Stack gap={8}>
-          <Text>
-            CCPA Compliance Dashboard
-          </Text>
+          <Text>CCPA Compliance Dashboard</Text>
           <Text color="gray">
             Manage CCPA requests, monitor compliance metrics, and ensure regulatory compliance.
           </Text>
@@ -437,9 +393,7 @@ export function CCPAAdminDashboard() {
 
         {/* Compliance Metrics */}
         <Stack gap={12}>
-          <Text>
-            Compliance Metrics
-          </Text>
+          <Text>Compliance Metrics</Text>
           {isLoading ? (
             <Row padding={24} justify="center">
               <Spinner size="lg" />
@@ -470,11 +424,7 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Avg Processing Days"
                 value={`${metrics?.average_processing_days?.toFixed(1) || 0}`}
-                color={
-                  (metrics?.average_processing_days || 0) > 30
-                    ? '$orange10'
-                    : '$green10'
-                }
+                color={(metrics?.average_processing_days || 0) > 30 ? '$orange10' : '$green10'}
               />
               <MetricCard
                 label="Compliance Rate"
@@ -483,8 +433,8 @@ export function CCPAAdminDashboard() {
                   (metrics?.compliance_rate || 0) >= 0.95
                     ? '$green10'
                     : (metrics?.compliance_rate || 0) >= 0.8
-                    ? '$orange10'
-                    : '$red10'
+                      ? '$orange10'
+                      : '$red10'
                 }
               />
               <MetricCard
@@ -516,9 +466,7 @@ export function CCPAAdminDashboard() {
 
         {/* Request Filters */}
         <Stack gap={12}>
-          <Text>
-            Request Management
-          </Text>
+          <Text>Request Management</Text>
           <FilterBar
             statusFilter={statusFilter}
             typeFilter={typeFilter}
@@ -545,9 +493,7 @@ export function CCPAAdminDashboard() {
               align="center"
               gap={8}
             >
-              <Text color="gray">
-                No requests match the current filters
-              </Text>
+              <Text color="gray">No requests match the current filters</Text>
             </Stack>
           ) : (
             requests?.requests?.map((request: AdminCCPARequest) => (
@@ -564,13 +510,9 @@ export function CCPAAdminDashboard() {
 
         {/* Quick Actions */}
         <Stack gap={12}>
-          <Text>
-            Quick Actions
-          </Text>
+          <Text>Quick Actions</Text>
           <Row gap={12} flexWrap="wrap">
-            <Button size={16}>
-              Generate Compliance Report
-            </Button>
+            <Button size={16}>Generate Compliance Report</Button>
             <Button size={16} variant="outline">
               Export All Requests
             </Button>
@@ -592,9 +534,7 @@ export function CCPAAdminDashboard() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>
-            CCPA Timeline Requirements
-          </Text>
+          <Text>CCPA Timeline Requirements</Text>
           <Stack gap={8}>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />

@@ -35,14 +35,10 @@ export function ProgressIndicator({
                 size={18}
                 backgroundColor={isCompleted ? '$green4' : isActive ? '$blue4' : '$color4'}
               >
-                <Text color="gray">
-                  {index + 1}
-                </Text>
+                <Text color="gray">{index + 1}</Text>
               </Circle>
               <Stack>
-                <Text>
-                  {step.label}
-                </Text>
+                <Text>{step.label}</Text>
                 <Text color="gray">
                   {isCompleted ? 'Completed' : isActive ? 'In Progress' : 'Pending'}
                 </Text>

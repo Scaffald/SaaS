@@ -3,7 +3,12 @@
  * Provides hooks for soft skills, hard skills, and multi-taxonomy skills
  */
 
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   GetSoftSkillsParams,
@@ -49,7 +54,7 @@ export function useSoftSkills(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getSoftSkills(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -64,7 +69,7 @@ export function useSoftSkillsHistory(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getSoftSkillsHistory()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -79,7 +84,7 @@ export function useSoftSkillsComparison(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getSoftSkillsComparison()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -115,7 +120,7 @@ export function useIndustries(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getIndustries()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -131,7 +136,7 @@ export function useSkillChildren(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getSkillChildren(params)
     },
-    enabled: !!client && !!params.parentId && (options?.enabled !== false),
+    enabled: !!client && !!params.parentId && options?.enabled !== false,
     ...options,
   })
 }
@@ -147,7 +152,7 @@ export function useSkillDetails(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getSkillDetails(params)
     },
-    enabled: !!client && !!params.skillId && (options?.enabled !== false),
+    enabled: !!client && !!params.skillId && options?.enabled !== false,
     ...options,
   })
 }
@@ -162,7 +167,7 @@ export function useUserSkills(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getUserSkills()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -237,7 +242,7 @@ export function useUserSkillsMultiTaxonomy(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getUserSkillsMultiTaxonomy()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -252,7 +257,7 @@ export function usePrimaryIndustry(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getPrimaryIndustry()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -327,7 +332,7 @@ export function useSkillsLegacy(
       if (!client) throw new Error('Scaffald client not available')
       return client.skills.getSkillsLegacy()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }

@@ -56,9 +56,7 @@ export function GeneralInfoWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load profile information</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
           <Button
             variant="primary"
             size={8}
@@ -150,21 +148,13 @@ export function GeneralInfoWidget({
             </Avatar>
 
             <Stack gap={4} align="center">
-              <Text>
-                {displayName}
-              </Text>
+              <Text>{displayName}</Text>
               {data.headline && (
                 <Stack align="center" maxWidth="100%">
-                  <Text color="gray">
-                    {data.headline}
-                  </Text>
+                  <Text color="gray">{data.headline}</Text>
                 </Stack>
               )}
-              {data.username && (
-                <Text color="gray">
-                  @{data.username}
-                </Text>
-              )}
+              {data.username && <Text color="gray">@{data.username}</Text>}
               {badge && (
                 <IdVerificationBadge
                   status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
@@ -185,9 +175,7 @@ export function GeneralInfoWidget({
                 borderWidth={1}
                 borderColor="$blue7"
               >
-                <Text color="$blue11">
-                  Open to Work
-                </Text>
+                <Text color="$blue11">Open to Work</Text>
               </Row>
             )}
           </Stack>
@@ -195,9 +183,7 @@ export function GeneralInfoWidget({
           {/* About Section */}
           {data.about && variant === 'full' && (
             <Stack gap={8}>
-              <Text>
-                About
-              </Text>
+              <Text>About</Text>
               <Text color="gray" lineHeight={12}>
                 {data.about}
               </Text>
@@ -207,33 +193,25 @@ export function GeneralInfoWidget({
           {/* Contact Information (Private - only for own profile) */}
           {showPrivateInfo && data.privateData && variant === 'full' && (
             <Stack gap={12}>
-              <Text>
-                Contact Information
-              </Text>
+              <Text>Contact Information</Text>
 
               {data.privateData.email && (
                 <Stack gap={4}>
-                  <Text color="gray">
-                    Email
-                  </Text>
+                  <Text color="gray">Email</Text>
                   <Text>{data.privateData.email}</Text>
                 </Stack>
               )}
 
               {data.privateData.phone && (
                 <Stack gap={4}>
-                  <Text color="gray">
-                    Phone
-                  </Text>
+                  <Text color="gray">Phone</Text>
                   <Text>{data.privateData.phone}</Text>
                 </Stack>
               )}
 
               {data.privateData.location && (
                 <Stack gap={4}>
-                  <Text color="gray">
-                    Location
-                  </Text>
+                  <Text color="gray">Location</Text>
                   <Text>{data.privateData.location}</Text>
                 </Stack>
               )}
@@ -243,9 +221,7 @@ export function GeneralInfoWidget({
           {/* Professional Details */}
           {variant === 'full' && (
             <Stack gap={12}>
-              <Text>
-                Professional Details
-              </Text>
+              <Text>Professional Details</Text>
 
               <Row gap={16} flexWrap="wrap">
                 {(() => {
@@ -262,9 +238,7 @@ export function GeneralInfoWidget({
                   if (formattedYears === null) return null
                   return (
                     <Stack gap={4} flex={1} minWidth={120}>
-                      <Text color="gray">
-                        Experience
-                      </Text>
+                      <Text color="gray">Experience</Text>
                       <Text>
                         {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
@@ -274,9 +248,7 @@ export function GeneralInfoWidget({
 
                 {data.industries && (
                   <Stack gap={4} flex={1} minWidth={120}>
-                    <Text color="gray">
-                      Industry
-                    </Text>
+                    <Text color="gray">Industry</Text>
                     <Text>{data.industries.name}</Text>
                   </Stack>
                 )}

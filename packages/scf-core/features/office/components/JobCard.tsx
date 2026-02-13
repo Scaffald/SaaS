@@ -70,11 +70,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         <Stack gap={8} flex={1}>
           <Row align="center" gap={8} flexWrap="wrap">
             <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
-            <Text
-              color={isSelected ? '$yellow11' : '$color12'}
-              numberOfLines={2}
-              flex={1}
-            >
+            <Text color={isSelected ? '$yellow11' : '$color12'} numberOfLines={2} flex={1}>
               {job.title}
             </Text>
           </Row>
@@ -95,9 +91,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           borderWidth={1}
           borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
         >
-          <Text
-            color={statusColors.text as GetThemeValueForKey<'color'>}
-          >
+          <Text color={statusColors.text as GetThemeValueForKey<'color'>}>
             {getStatusLabel(job.status)}
           </Text>
         </Row>
@@ -163,9 +157,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {payRange && (
         <Row align="center" gap={6}>
           <DollarSign size={14} color="$green10" />
-          <Text color="$green10">
-            {payRange}
-          </Text>
+          <Text color="$green10">{payRange}</Text>
         </Row>
       )}
 
@@ -173,9 +165,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {!postedDate && createdDate && (
         <Row align="center" gap={6}>
           <Calendar size={12} color="gray" />
-          <Text color="gray">
-            Created {createdDate}
-          </Text>
+          <Text color="gray">Created {createdDate}</Text>
         </Row>
       )}
     </DiscoverCard>
@@ -199,9 +189,7 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
         <Text color="gray" textTransform="uppercase">
           {label}
         </Text>
-        <Text color="gray">
-          {value}
-        </Text>
+        <Text color="gray">{value}</Text>
       </Stack>
     </Row>
   )

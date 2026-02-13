@@ -9,12 +9,8 @@ export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProp
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          Summary (Optional)
-        </Text>
-        <Text color="gray">
-          Add any additional comments about working with this person
-        </Text>
+        <Text color="gray">Summary (Optional)</Text>
+        <Text color="gray">Add any additional comments about working with this person</Text>
       </Stack>
 
       {/* Text Area */}

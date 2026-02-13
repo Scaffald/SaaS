@@ -72,9 +72,7 @@ export function TeamMemberRoleSelect({
 
   return (
     <Stack gap={8}>
-      <Text color="gray">
-        Role
-      </Text>
+      <Text color="gray">Role</Text>
       <ResponsiveSelect
         value={selectedRoleId}
         onValueChange={handleRoleChange}

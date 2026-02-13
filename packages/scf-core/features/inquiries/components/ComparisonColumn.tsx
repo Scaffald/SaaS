@@ -139,20 +139,12 @@ export function ComparisonColumn({
           <Avatar circular size={16}>
             <Avatar.Image src={candidateAvatar || undefined} />
             <Avatar.Fallback backgroundColor="$blue9">
-              <Text color="white">
-                {candidateName.charAt(0).toUpperCase()}
-              </Text>
+              <Text color="white">{candidateName.charAt(0).toUpperCase()}</Text>
             </Avatar.Fallback>
           </Avatar>
           <Stack flex={1}>
-            <Text>
-              {candidateName}
-            </Text>
-            {jobTitle && (
-              <Text color="gray">
-                {jobTitle}
-              </Text>
-            )}
+            <Text>{candidateName}</Text>
+            {jobTitle && <Text color="gray">{jobTitle}</Text>}
           </Stack>
           {canRemove && onRemove && (
             <Button
@@ -190,21 +182,13 @@ export function ComparisonColumn({
                 {status.accepted ? (
                   <Check size={12} color="$green11" />
                 ) : (
-                  <Text color="$gray11">
-                    ○
-                  </Text>
+                  <Text color="$gray11">○</Text>
                 )}
-                <Text
-                  color={status.accepted ? '$green11' : '$gray11'}
-                >
-                  {sectionName}
-                </Text>
+                <Text color={status.accepted ? '$green11' : '$gray11'}>{sectionName}</Text>
                 {commentCount > 0 && (
                   <Row align="center" gap={4}>
                     <MessageSquare size={10} color="$blue11" />
-                    <Text color="$blue11">
-                      {commentCount}
-                    </Text>
+                    <Text color="$blue11">{commentCount}</Text>
                   </Row>
                 )}
               </Row>
@@ -217,9 +201,7 @@ export function ComparisonColumn({
 
       {/* Employment Section */}
       <Card padding={12} gap={8}>
-        <Text>
-          Employment
-        </Text>
+        <Text>Employment</Text>
         <ComparisonField
           label="Type"
           value={formatEmploymentType()}
@@ -270,9 +252,7 @@ export function ComparisonColumn({
         {getSectionStatus('employment').accepted && (
           <Row align="center" gap={4} marginTop={4}>
             <Check size={14} color="$green11" />
-            <Text color="$green11">
-              Accepted
-            </Text>
+            <Text color="$green11">Accepted</Text>
           </Row>
         )}
         {getCommentCount('employment') > 0 && (
@@ -288,9 +268,7 @@ export function ComparisonColumn({
 
       {/* Compensation Section */}
       <Card padding={12} gap={8}>
-        <Text>
-          Compensation
-        </Text>
+        <Text>Compensation</Text>
         <ComparisonField
           label="Rate"
           value={formatRate()}
@@ -304,9 +282,7 @@ export function ComparisonColumn({
         {getSectionStatus('compensation').accepted && (
           <Row align="center" gap={4} marginTop={4}>
             <Check size={14} color="$green11" />
-            <Text color="$green11">
-              Accepted
-            </Text>
+            <Text color="$green11">Accepted</Text>
           </Row>
         )}
         {getCommentCount('compensation') > 0 && (
@@ -323,9 +299,7 @@ export function ComparisonColumn({
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
         <Card padding={12} gap={8}>
-          <Text>
-            Capabilities
-          </Text>
+          <Text>Capabilities</Text>
           {capabilityResponses.map((response: CapabilityResponseRecord) => (
             <ComparisonField
               key={response.capability_name}
@@ -341,9 +315,7 @@ export function ComparisonColumn({
           {getSectionStatus('capabilities').accepted && (
             <Row align="center" gap={4} marginTop={4}>
               <Check size={14} color="$green11" />
-              <Text color="$green11">
-                Accepted
-              </Text>
+              <Text color="$green11">Accepted</Text>
             </Row>
           )}
           {getCommentCount('capabilities') > 0 && (
@@ -359,9 +331,7 @@ export function ComparisonColumn({
       )}
 
       <Card padding={12} gap={8}>
-        <Text>
-          Other Terms
-        </Text>
+        <Text>Other Terms</Text>
         <ComparisonField
           label="Travel"
           value={
@@ -442,9 +412,7 @@ function StatusBadge({ label }: { label: string }) {
       align="center"
       gap={4}
     >
-      <Text color={statusColors[label] ?? '$color11'}>
-        {label.replace(/_/g, ' ')}
-      </Text>
+      <Text color={statusColors[label] ?? '$color11'}>{label.replace(/_/g, ' ')}</Text>
     </Row>
   )
 }
@@ -452,9 +420,7 @@ function StatusBadge({ label }: { label: string }) {
 function SubtleBadge({ label }: { label: string }) {
   return (
     <Row paddingHorizontal={8} paddingVertical={4} backgroundColor="$color2" borderRadius={12}>
-      <Text color="gray">
-        {label}
-      </Text>
+      <Text color="gray">{label}</Text>
     </Row>
   )
 }

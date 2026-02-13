@@ -126,9 +126,7 @@ export function EmploymentPrefsStep({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Share your work preferences
-        </Text>
+        <Text>Share your work preferences</Text>
         <Paragraph color="gray">
           Help employers match you with the right opportunities by adding where, how, and when you
           prefer to work.

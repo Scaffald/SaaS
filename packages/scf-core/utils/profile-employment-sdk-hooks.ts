@@ -1,4 +1,9 @@
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import type {
   EmploymentPreferences,
   UpdateEmploymentParams,
@@ -20,7 +25,7 @@ export function useEmployment(
       if (!client) throw new Error('Missing client')
       return client.employment.getEmployment()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })

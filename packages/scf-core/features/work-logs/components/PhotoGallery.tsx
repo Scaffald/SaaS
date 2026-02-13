@@ -31,9 +31,7 @@ export function PhotoGallery({
         backgroundColor="$color2"
         gap={8}
       >
-        <Text>
-          Photo Gallery
-        </Text>
+        <Text>Photo Gallery</Text>
         <Text color="gray">No photos have been uploaded yet.</Text>
       </Stack>
     )
@@ -41,9 +39,7 @@ export function PhotoGallery({
 
   return (
     <Stack gap={12}>
-      <Text>
-        Photo Gallery
-      </Text>
+      <Text>Photo Gallery</Text>
       <ScrollView horizontal={false} showsVerticalScrollIndicator>
         <Row gap={12} flexWrap="wrap">
           {photos.map((photo) => (

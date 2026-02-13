@@ -15,14 +15,7 @@ import type {
 } from '@scaffald/sdk'
 import { useOrganizationOpenJobsCount } from '@scf/core/utils/organizations-sdk-hooks'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
-import {
-  BellPlus,
-  Briefcase,
-  CheckCircle2,
-  Loader2,
-  Network,
-  UserPlus,
-} from 'lucide-react-native'
+import { BellPlus, Briefcase, CheckCircle2, Loader2, Network, UserPlus } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -106,10 +99,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
-          title: 'Unable to follow',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to follow',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
     onSuccess: (data: FollowOrganizationResponse, variables: OrganizationIdentifier) => {
       const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
@@ -149,10 +142,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
-          title: 'Unable to unfollow',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to unfollow',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
     onSuccess: (_data: UnfollowOrganizationResponse, variables: OrganizationIdentifier) => {
       const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
@@ -162,9 +155,9 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       })
 
       toast.show({
-          title: 'Unfollowed',
-          message: 'We removed this organization from your followed list.',
-        })
+        title: 'Unfollowed',
+        message: 'We removed this organization from your followed list.',
+      })
     },
   })
 
@@ -207,10 +200,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
-          title: 'Unable to link employment',
-          message: error.message ?? 'Please try again shortly.',
-          variant: 'error',
-        })
+        title: 'Unable to link employment',
+        message: error.message ?? 'Please try again shortly.',
+        variant: 'error',
+      })
     },
     onSuccess: (data: ClaimEmploymentResponse, variables: OrganizationIdentifier) => {
       const experience = data.experience ?? null
@@ -269,10 +262,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
-          title: 'Unable to remove link',
-          message: error.message ?? 'Please try again shortly.',
-          variant: 'error',
-        })
+        title: 'Unable to remove link',
+        message: error.message ?? 'Please try again shortly.',
+        variant: 'error',
+      })
     },
     onSuccess: (_data: RemoveEmploymentResponse, variables: OrganizationIdentifier) => {
       const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
@@ -286,9 +279,9 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       })
 
       toast.show({
-          title: 'Employment link removed',
-          message: 'You are no longer connected to this organization.',
-        })
+        title: 'Employment link removed',
+        message: 'You are no longer connected to this organization.',
+      })
     },
     onSettled: async (
       _data: RemoveEmploymentResponse | undefined,
@@ -344,9 +337,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Stack gap={8}>
         <Row gap={8} align="center">
           <Network size={18} color="$blue10" />
-          <Text color="gray">
-            Stay Connected
-          </Text>
+          <Text color="gray">Stay Connected</Text>
         </Row>
         <Text color="gray">
           Follow {organizationName} to get updates or claim your role to link your profile to the
@@ -359,9 +350,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       {isLoading ? (
         <Row gap={8} align="center">
           <Loader2 size={16} color="$blue10" />
-          <Text color="gray">
-            Loading organization context...
-          </Text>
+          <Text color="gray">Loading organization context...</Text>
         </Row>
       ) : (
         <OrganizationSnapshot
@@ -399,9 +388,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Stack gap={8}>
         <Row gap={8} align="center">
           <BellPlus size={16} color="gray" />
-          <Text color="gray">
-            What happens next?
-          </Text>
+          <Text color="gray">What happens next?</Text>
         </Row>
         <Text color="gray">
           Following keeps you updated as teams post new opportunities or updates. Linking your
@@ -430,15 +417,9 @@ function OrganizationSnapshot({
     <Stack gap={8}>
       <Row gap={8} align="center">
         <CheckCircle2 size={16} color="$green10" />
-        <Text color="$green10">
-          {name}
-        </Text>
+        <Text color="$green10">{name}</Text>
       </Row>
-      {createdAt && (
-        <Text color="gray">
-          Onboarded {createdAt}
-        </Text>
-      )}
+      {createdAt && <Text color="gray">Onboarded {createdAt}</Text>}
       <Text color="gray">
         {jobsLoading
           ? 'Checking open roles...'

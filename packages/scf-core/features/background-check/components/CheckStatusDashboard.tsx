@@ -97,9 +97,7 @@ export function CheckStatusDashboard() {
             <Row gap={12} align="center">
               <ShieldCheck size={28} color="$blue10" />
               <Stack gap={4}>
-                <Text color="gray">
-                  Background check dashboard
-                </Text>
+                <Text color="gray">Background check dashboard</Text>
                 <Text color="gray">
                   Track your screenings, monitor progress, and manage who can see your results.
                 </Text>
@@ -130,9 +128,7 @@ export function CheckStatusDashboard() {
           {checksQuery.isLoading && (
             <Stack gap={8} align="center" paddingVertical={24}>
               <Spinner size="lg" color="gray" />
-              <Text color="gray">
-                Loading your background checks…
-              </Text>
+              <Text color="gray">Loading your background checks…</Text>
             </Stack>
           )}
 
@@ -145,9 +141,7 @@ export function CheckStatusDashboard() {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">
-                We couldn’t load your background checks. Please try again.
-              </Text>
+              <Text color="gray">We couldn’t load your background checks. Please try again.</Text>
               <Button
                 size={12}
                 variant="outline"
@@ -168,9 +162,7 @@ export function CheckStatusDashboard() {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">
-                No background checks found for this filter.
-              </Text>
+              <Text color="gray">No background checks found for this filter.</Text>
               <Button size={12} theme="blue" onPress={handleStartNewCheck}>
                 Start a background check
               </Button>
@@ -201,9 +193,7 @@ export function CheckStatusDashboard() {
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text color="gray">
-              Need a new screening?
-            </Text>
+            <Text color="gray">Need a new screening?</Text>
             <Text color="gray">
               Start a new background check whenever you need to refresh your credentials.
             </Text>

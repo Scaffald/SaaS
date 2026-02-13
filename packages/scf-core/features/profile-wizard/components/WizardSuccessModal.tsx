@@ -36,16 +36,12 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
 
       <Card bordered backgroundColor="$color2" style={{ maxWidth: 440, width: '100%' }}>
         <Card.Header padded gap={12}>
-          <Text color="gray">
-            Benefits Unlocked
-          </Text>
+          <Text color="gray">Benefits Unlocked</Text>
           <Stack gap={8}>
             {benefitsToShow.map((benefit) => (
               <Row key={benefit} gap={8} align="center">
                 <Star size={18} color="$green9" />
-                <Text color="gray">
-                  {benefit}
-                </Text>
+                <Text color="gray">{benefit}</Text>
               </Row>
             ))}
           </Stack>

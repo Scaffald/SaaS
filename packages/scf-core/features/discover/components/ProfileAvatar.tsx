@@ -76,9 +76,7 @@ export const ProfileAvatar = ({
       {isOrganization ? (
         <Building size={Math.round(size * 0.5)} color="white" />
       ) : (
-        <Text color="white">
-          {initials}
-        </Text>
+        <Text color="white">{initials}</Text>
       )}
     </Stack>
   )

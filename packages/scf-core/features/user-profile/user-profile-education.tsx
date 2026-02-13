@@ -29,9 +29,7 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
       <Stack gap={16} padding={20}>
         <Row gap={8} align="center">
           <GraduationCap size={24} color="$blue10" />
-          <Text color="gray">
-            Education
-          </Text>
+          <Text color="gray">Education</Text>
         </Row>
 
         <Stack gap={12}>
@@ -42,11 +40,7 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
                   {edu.degree_type}
                   {edu.field_of_study && ` in ${edu.field_of_study}`}
                 </Text>
-                {edu.institution_name && (
-                  <Text color="gray">
-                    {edu.institution_name}
-                  </Text>
-                )}
+                {edu.institution_name && <Text color="gray">{edu.institution_name}</Text>}
                 {(edu.start_date || edu.end_date) && (
                   <Row gap={8} align="center">
                     <Calendar size={16} color="gray" />

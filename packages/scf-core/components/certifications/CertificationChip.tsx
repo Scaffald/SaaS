@@ -32,9 +32,7 @@ export function CertificationChip({
         alignItems: 'center',
       }}
     >
-      <Text color="$blue11">
-        {certification.title}
-      </Text>
+      <Text color="$blue11">{certification.title}</Text>
       <Button
         size={8}
         circular

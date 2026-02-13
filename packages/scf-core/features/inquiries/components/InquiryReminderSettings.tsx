@@ -27,17 +27,17 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
   const updateMutation = api.organizations.updateReminderSettings.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Settings saved',
-          message: 'Inquiry reminder settings updated successfully',
-          variant: 'success',
-        })
+        title: 'Settings saved',
+        message: 'Inquiry reminder settings updated successfully',
+        variant: 'success',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Failed to save settings'
       toast.show({
-          title: 'Failed to save settings',
-          variant: 'error',
-        })
+        title: 'Failed to save settings',
+        variant: 'error',
+      })
     },
   })
 
@@ -71,9 +71,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
         <Stack gap={16}>
           <Row align="center" justify="space-between" gap={12}>
             <Stack flex={1} gap={4}>
-              <Text>
-                Send automatic reminders
-              </Text>
+              <Text>Send automatic reminders</Text>
               <Text color="gray">
                 Automatically remind candidates to respond to pending inquiries
               </Text>
@@ -87,9 +85,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
 
           {reminderEnabled && (
             <Stack gap={8}>
-              <Text>
-                Remind after (days)
-              </Text>
+              <Text>Remind after (days)</Text>
               <Input
                 keyboardType="numeric"
                 value={String(reminderDays)}

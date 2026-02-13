@@ -5,10 +5,7 @@
 
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
-import type {
-  DismissNudgeParams,
-  DismissNudgeResponse,
-} from '@scaffald/sdk'
+import type { DismissNudgeParams, DismissNudgeResponse } from '@scaffald/sdk'
 
 // ============================================================================
 // Query Hooks

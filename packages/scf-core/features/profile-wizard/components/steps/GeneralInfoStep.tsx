@@ -91,9 +91,7 @@ export function GeneralInfoStep({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Tell us about yourself
-        </Text>
+        <Text>Tell us about yourself</Text>
         <Paragraph color="gray">
           Add a friendly introduction. This helps employers quickly understand who you are and what
           you bring to the table.
@@ -116,11 +114,7 @@ export function GeneralInfoStep({
               />
             )}
           />
-          {errors.firstName && (
-            <Text color="$red10">
-              {errors.firstName.message}
-            </Text>
-          )}
+          {errors.firstName && <Text color="$red10">{errors.firstName.message}</Text>}
         </Stack>
 
         <Stack flex={1} minWidth={150} gap={8}>
@@ -138,11 +132,7 @@ export function GeneralInfoStep({
               />
             )}
           />
-          {errors.lastName && (
-            <Text color="$red10">
-              {errors.lastName.message}
-            </Text>
-          )}
+          {errors.lastName && <Text color="$red10">{errors.lastName.message}</Text>}
         </Stack>
       </Row>
 
@@ -160,11 +150,7 @@ export function GeneralInfoStep({
             />
           )}
         />
-        {errors.headline && (
-          <Text color="$red10">
-            {errors.headline.message}
-          </Text>
-        )}
+        {errors.headline && <Text color="$red10">{errors.headline.message}</Text>}
       </Stack>
 
       <Stack gap={8}>
@@ -183,9 +169,7 @@ export function GeneralInfoStep({
             />
           )}
         />
-        <Text color="gray">
-          Keep it short and friendly—1-2 sentences is perfect.
-        </Text>
+        <Text color="gray">Keep it short and friendly—1-2 sentences is perfect.</Text>
       </Stack>
 
       <StepNavigation

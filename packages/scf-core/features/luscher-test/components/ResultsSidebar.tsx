@@ -94,13 +94,9 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
         >
           <Row gap={12} align="center">
             <Award size={24} color="$green10" />
-            <Text color="$green11">
-              +{xpAwarded} Frequency XP
-            </Text>
+            <Text color="$green11">+{xpAwarded} Frequency XP</Text>
           </Row>
-          <Text color="$green10">
-            You earned Frequency XP for completing this assessment.
-          </Text>
+          <Text color="$green10">You earned Frequency XP for completing this assessment.</Text>
         </Stack>
       )}
 
@@ -114,22 +110,16 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
       >
         <Row gap={12} align="center">
           <Clock size={24} color="$blue10" />
-          <Text color="gray">
-            Test Availability
-          </Text>
+          <Text color="gray">Test Availability</Text>
         </Row>
         <Stack gap={8}>
-          <Text color="gray">
-            This test can be taken once every 7 days.
-          </Text>
+          <Text color="gray">This test can be taken once every 7 days.</Text>
           {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
             <>
               <Text color="gray" marginTop={8}>
                 You can take the test again on:
               </Text>
-              <Text color="$blue11">
-                {formatDate(nextAvailableAt)}
-              </Text>
+              <Text color="$blue11">{formatDate(nextAvailableAt)}</Text>
               <Text color="$blue10" marginTop={8}>
                 Available in {formatCountdown(timeUntilAvailable)}
               </Text>

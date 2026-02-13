@@ -89,11 +89,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                   onChangeText={(value) => field.onChange(value)}
                   placeholder="teammate@example.com"
                 />
-                {fieldState.error ? (
-                  <Text color="$red10">
-                    {fieldState.error?.message}
-                  </Text>
-                ) : null}
+                {fieldState.error ? <Text color="$red10">{fieldState.error?.message}</Text> : null}
               </Stack>
             )}
           />
@@ -129,11 +125,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       <Card bordered padding={16} gap={12}>
         <Row justify="space-between" align="center">
           <H4>Members</H4>
-          {membersLoading ? (
-            <Spinner />
-          ) : (
-            <Text color="gray">{activeMembers.length} total</Text>
-          )}
+          {membersLoading ? <Spinner /> : <Text color="gray">{activeMembers.length} total</Text>}
         </Row>
         <Separator />
         {membersLoading ? (
@@ -188,11 +180,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       <Card bordered padding={16} gap={12}>
         <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
-          {invitesLoading ? (
-            <Spinner />
-          ) : (
-            <Text color="gray">{pendingInvites.length} pending</Text>
-          )}
+          {invitesLoading ? <Spinner /> : <Text color="gray">{pendingInvites.length} pending</Text>}
         </Row>
         <Separator />
         {invitesLoading ? (

@@ -101,16 +101,16 @@ export default function CreateWebhookPage() {
         ]}
       >
         <ScrollView flex={1} padding="$4">
-          <Card padding="$8" gap="$5" alignItems="center" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
-            <Text fontSize="$6" fontWeight="600" textAlign="center">
+          <Card padding="$8" gap="$5" align="center" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+            <Text textAlign="center">
               ⚠️ Save Your Webhook Secret
             </Text>
-            <Text fontSize="$4" color="$gray11" textAlign="center" maxWidth={400}>
+            <Text color="$gray11" textAlign="center" maxWidth={400}>
               This is the only time you will see this secret. Store it securely.
             </Text>
 
             <Stack width="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-              <Text fontFamily="monospace" fontSize="$4" textAlign="center" selectable>
+              <Text fontFamily="monospace" textAlign="center" selectable>
                 {secret}
               </Text>
             </Stack>
@@ -151,10 +151,10 @@ export default function CreateWebhookPage() {
       <ScrollView flex={1} padding="$4">
         {/* Endpoint Configuration */}
         <Card padding="$5" gap="$5" marginBottom="$4">
-          <Text fontSize="$5" fontWeight="500">Endpoint Configuration</Text>
+          <Text>Endpoint Configuration</Text>
 
           <Stack gap="$2">
-            <Text fontSize="$3" fontWeight="500">Endpoint URL *</Text>
+            <Text>Endpoint URL *</Text>
             <Input
               value={url}
               onChangeText={setUrl}
@@ -162,13 +162,13 @@ export default function CreateWebhookPage() {
               autoCapitalize="none"
               autoCorrect={false}
             />
-            <Text fontSize="$2" color="$gray10">
+            <Text color="$gray10">
               Must be a valid HTTPS URL. Your endpoint will receive POST requests.
             </Text>
           </Stack>
 
           <Stack gap="$2">
-            <Text fontSize="$3" fontWeight="500">Description (Optional)</Text>
+            <Text>Description (Optional)</Text>
             <TextArea
               value={description}
               onChangeText={setDescription}
@@ -180,15 +180,15 @@ export default function CreateWebhookPage() {
 
         {/* Event Selection */}
         <Card padding="$5" gap="$5" marginBottom="$4">
-          <Text fontSize="$5" fontWeight="500">Event Subscriptions *</Text>
-          <Text fontSize="$3" color="$gray11">
+          <Text>Event Subscriptions *</Text>
+          <Text color="$gray11">
             Select the events you want to receive notifications for
           </Text>
 
-          <Stack gap="$6" marginTop="$3">
+          <Stack gap="$6">
             {Object.entries(eventsByCategory).map(([category, events]) => (
               <Stack key={category} gap="$3">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                <Text color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
                   {category}
                 </Text>
                 <Stack gap="$2">
@@ -196,7 +196,7 @@ export default function CreateWebhookPage() {
                     <Row
                       key={event.value}
                       gap="$3"
-                      alignItems="center"
+                      align="center"
                       padding="$3"
                       backgroundColor="$gray2"
                       borderRadius="$4"
@@ -211,8 +211,8 @@ export default function CreateWebhookPage() {
                         onChange={() => handleToggleEvent(event.value as WebhookEventType)}
                       />
                       <Stack flex={1} gap="$1">
-                        <Text fontFamily="monospace" fontSize="$3">{event.value}</Text>
-                        <Text fontSize="$2" color="$gray11">{event.label}</Text>
+                        <Text fontFamily="monospace">{event.value}</Text>
+                        <Text color="$gray11">{event.label}</Text>
                       </Stack>
                     </Row>
                   ))}
@@ -221,32 +221,32 @@ export default function CreateWebhookPage() {
             ))}
           </Stack>
 
-          <Text fontSize="$3" fontWeight="500" color="$gray10" marginTop="$2">
+          <Text color="$gray10">
             {selectedEvents.size} event{selectedEvents.size !== 1 ? 's' : ''} selected
           </Text>
         </Card>
 
         {/* Configuration Info */}
         <Card padding="$5" backgroundColor="$gray2">
-          <Text fontSize="$3" fontWeight="500" marginBottom="$3">
+          <Text marginBottom="$3">
             Configuration Details
           </Text>
           <Stack gap="$2">
-            <Row justifyContent="space-between">
-              <Text fontSize="$3" color="$gray11">Max Retries:</Text>
-              <Text fontSize="$3" fontWeight="500">3 attempts</Text>
+            <Row justify="space-between">
+              <Text color="$gray11">Max Retries:</Text>
+              <Text>3 attempts</Text>
             </Row>
-            <Row justifyContent="space-between">
-              <Text fontSize="$3" color="$gray11">Retry Backoff:</Text>
-              <Text fontSize="$3" fontWeight="500">1min, 5min, 15min</Text>
+            <Row justify="space-between">
+              <Text color="$gray11">Retry Backoff:</Text>
+              <Text>1min, 5min, 15min</Text>
             </Row>
-            <Row justifyContent="space-between">
-              <Text fontSize="$3" color="$gray11">Timeout:</Text>
-              <Text fontSize="$3" fontWeight="500">10 seconds</Text>
+            <Row justify="space-between">
+              <Text color="$gray11">Timeout:</Text>
+              <Text>10 seconds</Text>
             </Row>
-            <Row justifyContent="space-between">
-              <Text fontSize="$3" color="$gray11">Signature:</Text>
-              <Text fontSize="$3" fontWeight="500">HMAC-SHA256</Text>
+            <Row justify="space-between">
+              <Text color="$gray11">Signature:</Text>
+              <Text>HMAC-SHA256</Text>
             </Row>
           </Stack>
         </Card>

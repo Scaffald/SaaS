@@ -52,9 +52,7 @@ export function CertificationsWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load certifications</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
           <Button
             variant="primary"
             size={8}
@@ -129,9 +127,7 @@ export function CertificationsWidget({
                       {/* Certification Name & Organization */}
                       <Stack gap={4}>
                         <Row gap={8} align="center">
-                          <Text>
-                            {cert.name}
-                          </Text>
+                          <Text>{cert.name}</Text>
                           <Row
                             backgroundColor="$blue2"
                             paddingHorizontal={8}
@@ -147,9 +143,7 @@ export function CertificationsWidget({
                           </Row>
                         </Row>
                         {cert.issuing_organization && (
-                          <Text color="gray">
-                            {cert.issuing_organization}
-                          </Text>
+                          <Text color="gray">{cert.issuing_organization}</Text>
                         )}
                       </Stack>
 
@@ -157,25 +151,19 @@ export function CertificationsWidget({
                       <Row gap={16} flexWrap="wrap">
                         {cert.issue_date && (
                           <Stack gap={4}>
-                            <Text color="gray">
-                              Issued
-                            </Text>
+                            <Text color="gray">Issued</Text>
                             <Text>{formatDate(cert.issue_date)}</Text>
                           </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
                           <Stack gap={4}>
-                            <Text color="gray">
-                              Expires
-                            </Text>
+                            <Text color="gray">Expires</Text>
                             <Text>{formatDate(cert.expiration_date)}</Text>
                           </Stack>
                         )}
                         {cert.does_not_expire && (
                           <Stack gap={4}>
-                            <Text color="gray">
-                              Validity
-                            </Text>
+                            <Text color="gray">Validity</Text>
                             <Text>No Expiration</Text>
                           </Stack>
                         )}
@@ -186,17 +174,13 @@ export function CertificationsWidget({
                         <Row gap={16} flexWrap="wrap">
                           {cert.credential_id && (
                             <Stack gap={4}>
-                              <Text color="gray">
-                                Credential ID
-                              </Text>
+                              <Text color="gray">Credential ID</Text>
                               <Text>{cert.credential_id}</Text>
                             </Stack>
                           )}
                           {cert.credential_url && (
                             <Stack gap={4}>
-                              <Text color="gray">
-                                Verification
-                              </Text>
+                              <Text color="gray">Verification</Text>
                               <Text
                                 color="$blue7"
                                 textDecorationLine="underline"
@@ -221,15 +205,11 @@ export function CertificationsWidget({
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
               <Stack gap={12}>
-                <Text color="gray">
-                  Expired ({expiredCerts.length})
-                </Text>
+                <Text color="gray">Expired ({expiredCerts.length})</Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
                   <Stack key={cert.id} gap={4} opacity={0.6}>
                     <Row gap={8} align="center">
-                      <Text>
-                        {cert.name}
-                      </Text>
+                      <Text>{cert.name}</Text>
                       <Row
                         backgroundColor="$color3"
                         paddingHorizontal={8}
@@ -238,15 +218,11 @@ export function CertificationsWidget({
                         borderWidth={1}
                         borderColor="$color6"
                       >
-                        <Text color="gray">
-                          Expired
-                        </Text>
+                        <Text color="gray">Expired</Text>
                       </Row>
                     </Row>
                     {cert.issuing_organization && (
-                      <Text color="gray">
-                        {cert.issuing_organization}
-                      </Text>
+                      <Text color="gray">{cert.issuing_organization}</Text>
                     )}
                   </Stack>
                 ))}

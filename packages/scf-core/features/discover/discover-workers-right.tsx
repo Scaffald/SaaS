@@ -1,6 +1,15 @@
 import { Award, BadgeCheck, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Input,
+  ScrollView,
+  Separator,
+  Slider,
+  Text,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {
@@ -81,42 +90,26 @@ export function DiscoverWorkersRight({
     <Stack gap={8}>
       {searchQuery && (
         <Row gap={8} align="center">
-          <Text color="gray">
-            Search:
-          </Text>
-          <Text color="$blue10">
-            {searchQuery}
-          </Text>
+          <Text color="gray">Search:</Text>
+          <Text color="$blue10">{searchQuery}</Text>
         </Row>
       )}
       {minScore > 0 && (
         <Row gap={8} align="center">
-          <Text color="gray">
-            Min Score:
-          </Text>
-          <Text color="$blue10">
-            {minScore}
-          </Text>
+          <Text color="gray">Min Score:</Text>
+          <Text color="$blue10">{minScore}</Text>
         </Row>
       )}
       {selectedSkills.length > 0 && (
         <Row gap={8} align="center" flexWrap="wrap">
-          <Text color="gray">
-            Skills:
-          </Text>
-          <Text color="$blue10">
-            {selectedSkills.length}
-          </Text>
+          <Text color="gray">Skills:</Text>
+          <Text color="$blue10">{selectedSkills.length}</Text>
         </Row>
       )}
       {selectedCertifications.length > 0 && (
         <Row gap={8} align="center" flexWrap="wrap">
-          <Text color="gray">
-            Certs:
-          </Text>
-          <Text color="$green10">
-            {selectedCertifications.length}
-          </Text>
+          <Text color="gray">Certs:</Text>
+          <Text color="$green10">{selectedCertifications.length}</Text>
         </Row>
       )}
     </Stack>
@@ -147,12 +140,8 @@ export function DiscoverWorkersRight({
           {/* Scaffald Score Filter */}
           <Stack gap={12}>
             <Row justify="space-between" align="center">
-              <Text color="gray">
-                Scaffald Score
-              </Text>
-              <Text color="$blue10">
-                {minScore}
-              </Text>
+              <Text color="gray">Scaffald Score</Text>
+              <Text color="$blue10">{minScore}</Text>
             </Row>
             <Slider
               value={[minScore]}
@@ -175,9 +164,7 @@ export function DiscoverWorkersRight({
           <Stack gap={12}>
             <Row align="center" gap={8}>
               <Award size={16} color="gray" />
-              <Text color="gray">
-                Skills
-              </Text>
+              <Text color="gray">Skills</Text>
             </Row>
 
             <Row gap={8}>
@@ -206,9 +193,7 @@ export function DiscoverWorkersRight({
                     gap={4}
                     align="center"
                   >
-                    <Text color="$blue11">
-                      {skill}
-                    </Text>
+                    <Text color="$blue11">{skill}</Text>
                     <Button size={4} circular unstyled onPress={() => handleRemoveSkill(skill)}>
                       <X size={12} color="$blue11" />
                     </Button>
@@ -224,9 +209,7 @@ export function DiscoverWorkersRight({
           <Stack gap={12}>
             <Row align="center" gap={8}>
               <BadgeCheck size={16} color="gray" />
-              <Text color="gray">
-                Certifications
-              </Text>
+              <Text color="gray">Certifications</Text>
             </Row>
 
             <Row gap={8}>
@@ -259,9 +242,7 @@ export function DiscoverWorkersRight({
                     gap={4}
                     align="center"
                   >
-                    <Text color="$green11">
-                      {cert}
-                    </Text>
+                    <Text color="$green11">{cert}</Text>
                     <Button
                       size={4}
                       circular

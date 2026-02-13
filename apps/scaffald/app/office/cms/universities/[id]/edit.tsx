@@ -10,7 +10,7 @@ export default function EditUniversityPage() {
 
   if (!id) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} align="center" justify="center">
         <Stack>Invalid university ID</Stack>
       </Stack>
     )
@@ -23,15 +23,15 @@ export default function EditUniversityPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center">
+        <Spinner size="lg" />
       </Stack>
     )
   }
 
   if (!data?.university) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} align="center" justify="center">
         <Stack>University not found</Stack>
       </Stack>
     )

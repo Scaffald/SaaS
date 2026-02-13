@@ -100,9 +100,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          Privacy controls
-        </Text>
+        <Text color="gray">Privacy controls</Text>
         <Text color="gray">
           Manage who can see your background check results. These settings apply across the
           platform.
@@ -119,9 +117,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
       >
         <Row justify="space-between" align="center">
           <Stack flex={1} gap={4} paddingRight={12}>
-            <Text color="gray">
-              Show verified badge
-            </Text>
+            <Text color="gray">Show verified badge</Text>
             <Text color="gray">
               Allow organizations to see a verified badge that your background check is current.
             </Text>
@@ -139,9 +135,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Shared with organizations
-          </Text>
+          <Text color="gray">Shared with organizations</Text>
           <Button
             size={12}
             variant="outline"
@@ -168,9 +162,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">
-                No organizations currently have access to view your results.
-              </Text>
+              <Text color="gray">No organizations currently have access to view your results.</Text>
             </Stack>
           )}
 
@@ -185,9 +177,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">
-                {organizationId}
-              </Text>
+              <Text color="gray">{organizationId}</Text>
               <Button
                 size={8}
                 variant="outline"

@@ -23,7 +23,7 @@ export function useFollowing(
       if (!client) throw new Error('Missing client')
       return client.follows.getFollowing(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -40,7 +40,7 @@ export function useFollowers(
       if (!client) throw new Error('Missing client')
       return client.follows.getFollowers(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -54,7 +54,7 @@ export function useFollowStatus(userId: string | undefined, options?: { enabled?
       if (!client || !userId) throw new Error('Missing client or userId')
       return client.follows.getStatus(userId)
     },
-    enabled: !!client && !!userId && (options?.enabled !== false),
+    enabled: !!client && !!userId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -64,7 +64,9 @@ export function useFollowStatus(userId: string | undefined, options?: { enabled?
 // ============================================================================
 
 /** Follow a user */
-export function useFollowUserMutation(options?: UseMutationOptions<Follow, Error, FollowUserParams>) {
+export function useFollowUserMutation(
+  options?: UseMutationOptions<Follow, Error, FollowUserParams>
+) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (params: FollowUserParams) => {

@@ -54,11 +54,11 @@ export function IPIPAssessmentWizard() {
         error.message ||
         'Failed to save progress. Your answers are saved locally and will be synced when connection is restored.'
       toast.show({
-          title: 'Save Error',
-          message: errorMessage,
-          variant: 'error',
-          duration: 5000,
-        })
+        title: 'Save Error',
+        message: errorMessage,
+        variant: 'error',
+        duration: 5000,
+      })
       // Note: Answers are still in local state, user can retry by continuing
     },
   })
@@ -117,9 +117,7 @@ export function IPIPAssessmentWizard() {
           style={{ maxWidth: 800, alignSelf: 'center' }}
         >
           <Stack gap={16} align="center">
-            <Text color="$green10">
-              ✓ {DOMAIN_NAMES[completedDomain]} Complete!
-            </Text>
+            <Text color="$green10">✓ {DOMAIN_NAMES[completedDomain]} Complete!</Text>
             <Text color="gray" textAlign="center">
               You've completed {completedDomains} of 5 domains
             </Text>

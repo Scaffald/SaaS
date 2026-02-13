@@ -91,9 +91,7 @@ export function SiteBoundaryDrawer({
       <Card padding={16}>
         <Stack gap={16}>
           <Row justify="space-between" align="center">
-            <Text>
-              Site Boundary
-            </Text>
+            <Text>Site Boundary</Text>
             <Button size={8} icon={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
@@ -142,9 +140,7 @@ export function SiteBoundaryDrawer({
                   >
                     <Row gap={8} align="center" justify="space-between">
                       <Row gap={8} flex={1}>
-                        <Text color="$gray10">
-                          Point {index + 1}:
-                        </Text>
+                        <Text color="$gray10">Point {index + 1}:</Text>
                         {editingIndex === index ? (
                           <Row gap={8} flex={1}>
                             <Input

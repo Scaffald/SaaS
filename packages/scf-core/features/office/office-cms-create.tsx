@@ -25,9 +25,7 @@ export function OfficeCMSCreate() {
       }
       rightContent={
         <Stack gap={16}>
-          <Text>
-            Create New Slide
-          </Text>
+          <Text>Create New Slide</Text>
           <Text>Add a new welcome slide to be shown during user onboarding.</Text>
           <Text>
             Make sure to set the display order appropriately to control when this slide appears.

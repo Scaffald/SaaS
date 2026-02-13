@@ -53,9 +53,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       >
         <Row gap={8} align="center">
           <Spinner size="sm" color="gray" />
-          <Text color="gray">
-            Loading background check details…
-          </Text>
+          <Text color="gray">Loading background check details…</Text>
         </Row>
       </Stack>
     )
@@ -73,9 +71,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       >
         <Row gap={8} align="center">
           <AlertTriangle size={18} color="$red10" />
-          <Text color="$red11">
-            We couldn’t load your background check details. Try again.
-          </Text>
+          <Text color="$red11">We couldn’t load your background check details. Try again.</Text>
         </Row>
         <Button size={12} variant="outline" onPress={() => getCheckQuery.refetch()}>
           Retry
@@ -115,9 +111,7 @@ export const ResultsViewer = memo(function ResultsViewer({
     >
       <Row justify="space-between" align="center">
         <Stack gap={4}>
-          <Text color="gray">
-            {summary?.package?.display_name ?? 'Background check results'}
-          </Text>
+          <Text color="gray">{summary?.package?.display_name ?? 'Background check results'}</Text>
           <Row gap={8} align="center">
             <Stack
               paddingHorizontal={12}
@@ -127,13 +121,9 @@ export const ResultsViewer = memo(function ResultsViewer({
               borderColor={statusColors.border}
               borderRadius={12}
             >
-              <Text color={statusColors.text}>
-                {statusMeta.label}
-              </Text>
+              <Text color={statusColors.text}>{statusMeta.label}</Text>
             </Stack>
-            <Text color="gray">
-              Last updated {formatDate(detail.updated_at)}
-            </Text>
+            <Text color="gray">Last updated {formatDate(detail.updated_at)}</Text>
           </Row>
         </Stack>
         <Button size={12} variant="outline" icon={CloseIcon} onPress={onClose}>
@@ -166,9 +156,7 @@ export const ResultsViewer = memo(function ResultsViewer({
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text color="gray">
-            Notice something inaccurate?
-          </Text>
+          <Text color="gray">Notice something inaccurate?</Text>
           <Text color="gray">
             Submit a dispute so our compliance team can review and correct any issues.
           </Text>
@@ -189,31 +177,21 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       {detail.summary && (
         <Stack gap={8}>
-          <Text color="gray">
-            Summary
-          </Text>
-          <Text color="gray">
-            {detail.summary}
-          </Text>
+          <Text color="gray">Summary</Text>
+          <Text color="gray">{detail.summary}</Text>
         </Stack>
       )}
 
       {detail.findings && (
         <Stack gap={8}>
-          <Text color="gray">
-            Findings
-          </Text>
-          <Text color="gray">
-            {JSON.stringify(detail.findings, null, 2)}
-          </Text>
+          <Text color="gray">Findings</Text>
+          <Text color="gray">{JSON.stringify(detail.findings, null, 2)}</Text>
         </Stack>
       )}
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Documents
-          </Text>
+          <Text color="gray">Documents</Text>
           <Button
             size={12}
             variant="outline"
@@ -230,9 +208,7 @@ export const ResultsViewer = memo(function ResultsViewer({
           </Button>
         </Row>
         {documents.length === 0 ? (
-          <Text color="gray">
-            No documents uploaded yet.
-          </Text>
+          <Text color="gray">No documents uploaded yet.</Text>
         ) : (
           <Stack gap={8}>
             {documents.map((document: BackgroundCheckDocument) => (
@@ -247,12 +223,8 @@ export const ResultsViewer = memo(function ResultsViewer({
                 borderColor="$borderColor"
               >
                 <Stack gap={4}>
-                  <Text color="gray">
-                    {document.file_name}
-                  </Text>
-                  <Text color="gray">
-                    Uploaded {formatDate(document.uploaded_at)}
-                  </Text>
+                  <Text color="gray">{document.file_name}</Text>
+                  <Text color="gray">Uploaded {formatDate(document.uploaded_at)}</Text>
                 </Stack>
                 <Button size={8} variant="outline" disabled>
                   View

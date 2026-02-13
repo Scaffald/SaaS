@@ -198,9 +198,7 @@ export function TeamInviteModal({
               disabled={inviteMutation.isPending}
             />
             {formErrorSource === 'email' && formError ? (
-              <Text color="$red10">
-                {formError}
-              </Text>
+              <Text color="$red10">{formError}</Text>
             ) : null}
           </Stack>
         ) : (
@@ -281,9 +279,7 @@ export function TeamInviteModal({
         </Stack>
 
         {formErrorSource === 'general' && formError ? (
-          <Text color="$red10">
-            {formError}
-          </Text>
+          <Text color="$red10">{formError}</Text>
         ) : null}
 
         <Row gap={12} justify="flex-end">
@@ -301,11 +297,7 @@ export function TeamInviteModal({
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >
-            {inviteMutation.isPending ? (
-              <Spinner size="sm" color="gray" />
-            ) : (
-              'Send Invitation'
-            )}
+            {inviteMutation.isPending ? <Spinner size="sm" color="gray" /> : 'Send Invitation'}
           </Button>
         </Row>
       </Stack>

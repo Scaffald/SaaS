@@ -58,15 +58,11 @@ export const ProjectSelector = memo(function ProjectSelector({
 
   return (
     <Stack gap={8}>
-      <Text>
-        Project
-      </Text>
+      <Text>Project</Text>
 
       {hasMultipleOrganizations && (
         <Stack gap={4}>
-          <Text color="gray">
-            Organization
-          </Text>
+          <Text color="gray">Organization</Text>
           <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(nextValue) => {
@@ -90,9 +86,7 @@ export const ProjectSelector = memo(function ProjectSelector({
       )}
 
       <Stack gap={4}>
-        <Text color="gray">
-          Select a project to associate with this work log.
-        </Text>
+        <Text color="gray">Select a project to associate with this work log.</Text>
         <ResponsiveSelect
           value={value}
           onValueChange={onChange}
@@ -140,16 +134,10 @@ export const ProjectSelector = memo(function ProjectSelector({
         </Row>
       )}
 
-      {helperText && (
-        <Text color="gray">
-          {helperText}
-        </Text>
-      )}
+      {helperText && <Text color="gray">{helperText}</Text>}
 
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <Text color="gray">
-          No projects available for the selected organization.
-        </Text>
+        <Text color="gray">No projects available for the selected organization.</Text>
       )}
     </Stack>
   )

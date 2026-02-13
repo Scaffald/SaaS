@@ -132,9 +132,9 @@ export function ProfileCertificationsLeft({
   const handleCustomFileSelect = useCallback(() => {
     if (typeof document === 'undefined') {
       toast.show({
-          title: 'Upload Unsupported',
-          message: 'File uploads are only available on web right now.',
-        })
+        title: 'Upload Unsupported',
+        message: 'File uploads are only available on web right now.',
+      })
       return
     }
 
@@ -160,15 +160,14 @@ export function ProfileCertificationsLeft({
   } = useUserCertificationTree()
   const queryClient = useQueryClient()
 
-  const { data: topLevelResults, isPending: isLoadingSearch } =
-    useTopLevelCertifications(
-      { search: searchQuery },
-      {
-        enabled: searchQuery.length > 0,
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-        gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (formerly cacheTime)
-      }
-    )
+  const { data: topLevelResults, isPending: isLoadingSearch } = useTopLevelCertifications(
+    { search: searchQuery },
+    {
+      enabled: searchQuery.length > 0,
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+      gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (formerly cacheTime)
+    }
+  )
 
   // Mutations
   // Unified mutation for adding certifications at any depth level
@@ -277,10 +276,11 @@ export function ProfileCertificationsLeft({
     } catch (error) {
       console.error('Error saving custom certification:', error)
       toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Unable to save that certification right now.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message:
+          error instanceof Error ? error.message : 'Unable to save that certification right now.',
+        variant: 'error',
+      })
       failProfileSync()
     }
   }, [
@@ -334,9 +334,9 @@ export function ProfileCertificationsLeft({
 
     if (allUserCertIds.has(cert.id)) {
       toast.show({
-          title: 'Already Added',
-          message: 'You already have this certification',
-        })
+        title: 'Already Added',
+        message: 'You already have this certification',
+      })
       return
     }
 
@@ -373,7 +373,8 @@ export function ProfileCertificationsLeft({
       } else {
         toast.show({
           title: 'Error',
-          message: error instanceof Error ? error.message : 'Unable to add this certification right now.',
+          message:
+            error instanceof Error ? error.message : 'Unable to add this certification right now.',
           variant: 'error',
         })
       }
@@ -403,9 +404,9 @@ export function ProfileCertificationsLeft({
             confirmed: true,
           })
           toast.show({
-          title: 'Category Removed',
-          message: 'Certification category removed from your profile.',
-        })
+            title: 'Category Removed',
+            message: 'Certification category removed from your profile.',
+          })
           await invalidateProfileQueries(queryClient)
           completeProfileSync()
         } else {
@@ -422,10 +423,11 @@ export function ProfileCertificationsLeft({
     } catch (error) {
       console.error('Error removing top-level certification:', error)
       toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Unable to remove that certification right now.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message:
+          error instanceof Error ? error.message : 'Unable to remove that certification right now.',
+        variant: 'error',
+      })
       failProfileSync()
     }
   }
@@ -463,10 +465,11 @@ export function ProfileCertificationsLeft({
         } catch (error) {
           console.error('Error adding category:', error)
           toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Unable to add that category right now.',
-          variant: 'error',
-        })
+            title: 'Error',
+            message:
+              error instanceof Error ? error.message : 'Unable to add that category right now.',
+            variant: 'error',
+          })
           failProfileSync()
           return
         }
@@ -519,10 +522,11 @@ export function ProfileCertificationsLeft({
     } catch (error) {
       console.error('Error toggling certification:', error)
       toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Unable to update that certification right now.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message:
+          error instanceof Error ? error.message : 'Unable to update that certification right now.',
+        variant: 'error',
+      })
       failProfileSync()
     }
   }
@@ -582,9 +586,7 @@ export function ProfileCertificationsLeft({
         {/* Selected top-level certifications as chips */}
         {certTree?.depth0 && certTree.depth0.length > 0 && (
           <Stack gap={12}>
-            <Text>
-              Selected Categories
-            </Text>
+            <Text>Selected Categories</Text>
             <Row gap={8} flexWrap="wrap">
               {(certTree.depth0 as unknown as UserCertification[]).map(
                 (item: UserCertification) => (
@@ -607,9 +609,7 @@ export function ProfileCertificationsLeft({
 
         <Stack gap={12}>
           <Row justify="space-between" align="center">
-            <Text>
-              Custom Certifications
-            </Text>
+            <Text>Custom Certifications</Text>
             <Button
               size={12}
               icon={PlusCircle}
@@ -644,11 +644,7 @@ export function ProfileCertificationsLeft({
                     onChangeText={(text) => setCustomForm((prev) => ({ ...prev, name: text }))}
                     disabled={isSavingCustom}
                   />
-                  {customErrors.name && (
-                    <Text color="$red10">
-                      {customErrors.name}
-                    </Text>
-                  )}
+                  {customErrors.name && <Text color="$red10">{customErrors.name}</Text>}
                 </Stack>
 
                 <Stack gap={8}>
@@ -662,9 +658,7 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
-                    <Text color="$red10">
-                      {customErrors.organization}
-                    </Text>
+                    <Text color="$red10">{customErrors.organization}</Text>
                   )}
                 </Stack>
 
@@ -716,9 +710,7 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                     {customErrors.credentialUrl && (
-                      <Text color="$red10">
-                        {customErrors.credentialUrl}
-                      </Text>
+                      <Text color="$red10">{customErrors.credentialUrl}</Text>
                     )}
                   </Stack>
                 </Row>
@@ -805,9 +797,7 @@ export function ProfileCertificationsLeft({
               (topLevel: UserCertification) => {
                 return (
                   <Stack key={topLevel.id} gap={8}>
-                    <Text color="$blue11">
-                      {topLevel.catalog.title}
-                    </Text>
+                    <Text color="$blue11">{topLevel.catalog.title}</Text>
 
                     {/* Fetch and display depth 1 categories */}
                     <Depth1Categories
@@ -871,11 +861,7 @@ function Depth1Categories({
   const typedTree = certTree as unknown as CertificationTree
 
   if (depth1Categories.length === 0) {
-    return (
-      <Text color="gray">
-        No sub-categories available
-      </Text>
-    )
+    return <Text color="gray">No sub-categories available</Text>
   }
 
   return (
@@ -943,11 +929,7 @@ function Depth2Certifications({
   const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
 
   if (depth2Certs.length === 0) {
-    return (
-      <Text color="gray">
-        No specific certifications available
-      </Text>
-    )
+    return <Text color="gray">No specific certifications available</Text>
   }
 
   // Create a map of saved certifications

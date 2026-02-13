@@ -1,5 +1,9 @@
 import { ControlledAddressForm } from '@scf/core/forms'
-import { useExperience, useExperienceSummary, useSaveExperienceMutation } from '@scf/core/utils/profile-experience-sdk-hooks'
+import {
+  useExperience,
+  useExperienceSummary,
+  useSaveExperienceMutation,
+} from '@scf/core/utils/profile-experience-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
@@ -97,8 +101,15 @@ export function ProfileExperienceLeft() {
         queryClient.cancelQueries({ queryKey: ['profiles', 'experience', 'summary'] }),
       ])
 
-      const previousExperience = queryClient.getQueryData<ExperienceApiResponse>(['profiles', 'experience'])
-      const previousSummary = queryClient.getQueryData<ExperienceSummaryApiResponse>(['profiles', 'experience', 'summary'])
+      const previousExperience = queryClient.getQueryData<ExperienceApiResponse>([
+        'profiles',
+        'experience',
+      ])
+      const previousSummary = queryClient.getQueryData<ExperienceSummaryApiResponse>([
+        'profiles',
+        'experience',
+        'summary',
+      ])
 
       // Type assertions needed because form data types don't exactly match API response types
       // Form data is compatible but has slightly different optionality
@@ -125,17 +136,18 @@ export function ProfileExperienceLeft() {
       }
       failProfileSync()
       toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Failed to save experience. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message:
+          error instanceof Error ? error.message : 'Failed to save experience. Please try again.',
+        variant: 'error',
+      })
     },
     onSuccess: () => {
       toast.show({
-          title: 'Experience Saved',
-          message: 'Your work experience has been updated successfully!',
-          variant: 'success',
-        })
+        title: 'Experience Saved',
+        message: 'Your work experience has been updated successfully!',
+        variant: 'success',
+      })
     },
     onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
@@ -492,9 +504,7 @@ export function ProfileExperienceLeft() {
                     error={errors.experience_entries?.[index]?.location?.message}
                   />
                   {watch(`experience_entries.${index}.is_remote`) && (
-                    <Text color="gray">
-                      Enter company headquarters location
-                    </Text>
+                    <Text color="gray">Enter company headquarters location</Text>
                   )}
                   {errors.experience_entries?.[index]?.location && (
                     <Text color="$red10">

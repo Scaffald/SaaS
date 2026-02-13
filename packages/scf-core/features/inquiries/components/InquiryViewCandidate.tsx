@@ -71,33 +71,33 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const acceptSectionMutation = useAcceptInquirySectionMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Section accepted',
-          message: 'You have accepted this section of the inquiry.',
-        })
+        title: 'Section accepted',
+        message: 'You have accepted this section of the inquiry.',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to accept section',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to accept section',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
   const submitCapabilityResponseMutation = useSubmitCapabilityResponseMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Response saved',
-          message: 'Your capability response has been saved.',
-          variant: 'success',
-        })
+        title: 'Response saved',
+        message: 'Your capability response has been saved.',
+        variant: 'success',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to save response',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to save response',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -336,9 +336,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const DetailRow = ({ label, value }: { label: string; value?: string | null }) => (
     <Row justify="space-between" align="center">
       <Text>{label}</Text>
-      <Text color="gray">
-        {value && value.length > 0 ? value : 'Not specified'}
-      </Text>
+      <Text color="gray">{value && value.length > 0 ? value : 'Not specified'}</Text>
     </Row>
   )
 
@@ -370,9 +368,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           ) : (
             <ChevronDown size={16} color="gray" />
           )}
-          <Text>
-            {title}
-          </Text>
+          <Text>{title}</Text>
           {isAccepted && (
             <Row
               backgroundColor="$green3"
@@ -383,17 +379,13 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               gap={4}
             >
               <Check size={12} color="$green11" />
-              <Text color="$green11">
-                Accepted
-              </Text>
+              <Text color="$green11">Accepted</Text>
             </Row>
           )}
           {commentCount > 0 && (
             <Row align="center" gap={4}>
               <MessageSquare size={14} color="gray" />
-              <Text color="gray">
-                {commentCount}
-              </Text>
+              <Text color="gray">{commentCount}</Text>
             </Row>
           )}
         </Row>
@@ -403,9 +395,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   const NonNegotiableBadge = () => (
     <Row backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text color="$gray11">
-        Non-negotiable
-      </Text>
+      <Text color="$gray11">Non-negotiable</Text>
     </Row>
   )
 
@@ -415,9 +405,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
         {/* Progress Indicator */}
         <Stack gap={8} padding={16} backgroundColor="$blue2" borderRadius={16}>
           <Row justify="space-between" align="center">
-            <Text>
-              Inquiry Progress
-            </Text>
+            <Text>Inquiry Progress</Text>
             <Text color="$blue11">
               {acceptedSections}/{totalSections}
             </Text>
@@ -492,9 +480,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <DetailRow label="Stage changed" value={stageChangedDisplay} />
                 </Stack>
               ) : (
-                <Text color="gray">
-                  Application metadata is unavailable.
-                </Text>
+                <Text color="gray">Application metadata is unavailable.</Text>
               )}
             </Stack>
           )}
@@ -566,9 +552,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <Row justify="space-between" align="center">
                     <Text>Workdays</Text>
                     <Row align="center" gap={8}>
-                      <Text>
-                        {formatWorkdays()}
-                      </Text>
+                      <Text>{formatWorkdays()}</Text>
                       {!inquiry.workdays_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
@@ -577,9 +561,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <Row justify="space-between" align="center">
                     <Text>Start date</Text>
                     <Row align="center" gap={8}>
-                      <Text>
-                        {formatDate(inquiry.employment_start_date)}
-                      </Text>
+                      <Text>{formatDate(inquiry.employment_start_date)}</Text>
                       {!inquiry.employment_dates_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
@@ -588,9 +570,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <Row justify="space-between" align="center">
                     <Text>End date</Text>
                     <Row align="center" gap={8}>
-                      <Text>
-                        {formatDate(inquiry.employment_end_date)}
-                      </Text>
+                      <Text>{formatDate(inquiry.employment_end_date)}</Text>
                       {!inquiry.employment_dates_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
@@ -729,9 +709,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {/* Endurance Requirement */}
               {inquiry.endurance_required && (
                 <Stack gap={8}>
-                  <Text>
-                    Endurance Required
-                  </Text>
+                  <Text>Endurance Required</Text>
                   <CapabilityQuestionInput
                     question="Can you meet the endurance requirements for this role?"
                     value={capabilityResponseState.endurance?.responseValue}
@@ -868,27 +846,19 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 {inquiry.willing_to_work_overtime !== null && (
                   <Row justify="space-between" align="center">
                     <Text>Willing to work overtime</Text>
-                    <Text>
-                      {inquiry.willing_to_work_overtime ? 'Yes' : 'No'}
-                    </Text>
+                    <Text>{inquiry.willing_to_work_overtime ? 'Yes' : 'No'}</Text>
                   </Row>
                 )}
                 {inquiry.has_drivers_license !== null && (
                   <Row justify="space-between" align="center">
                     <Text>Has driver's license</Text>
-                    <Text>
-                      {inquiry.has_drivers_license ? 'Yes' : 'No'}
-                    </Text>
+                    <Text>{inquiry.has_drivers_license ? 'Yes' : 'No'}</Text>
                   </Row>
                 )}
                 {inquiry.additional_notes && (
                   <Stack gap={8}>
-                    <Text>
-                      Additional notes
-                    </Text>
-                    <Text color="gray">
-                      {inquiry.additional_notes}
-                    </Text>
+                    <Text>Additional notes</Text>
+                    <Text color="gray">{inquiry.additional_notes}</Text>
                   </Stack>
                 )}
               </Stack>

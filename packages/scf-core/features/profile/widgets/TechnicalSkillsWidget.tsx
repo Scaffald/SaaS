@@ -53,9 +53,7 @@ export function TechnicalSkillsWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load skills</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
           <Button
             variant="primary"
             size={8}
@@ -159,9 +157,7 @@ export function TechnicalSkillsWidget({
                       >
                         {skill.verified && <CheckCircle size={14} color="$blue11" />}
                         <Stack gap={2}>
-                          <Text color="$blue11">
-                            {skill.name}
-                          </Text>
+                          <Text color="$blue11">{skill.name}</Text>
                           {!showCompact && (
                             <Row gap={8}>
                               {skill.proficiency > 0 && (
@@ -170,9 +166,7 @@ export function TechnicalSkillsWidget({
                                 </Text>
                               )}
                               {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                <Text color="$blue10">
-                                  • {skill.yearsExperience}y
-                                </Text>
+                                <Text color="$blue10">• {skill.yearsExperience}y</Text>
                               )}
                             </Row>
                           )}

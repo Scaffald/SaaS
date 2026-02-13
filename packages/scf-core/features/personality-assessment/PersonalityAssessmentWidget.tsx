@@ -63,9 +63,7 @@ export function PersonalityAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">
-            Personality Assessment
-          </Text>
+          <Text color="gray">Personality Assessment</Text>
           <Text color="gray">
             Discover your personality traits through a comprehensive assessment including color
             psychology and personality questions.
@@ -76,12 +74,8 @@ export function PersonalityAssessmentWidget() {
         {hasStarted && (
           <Stack gap={spacing.xs}>
             <Row justify="space-between" align="center">
-              <Text color="gray">
-                {getStepLabel(currentStep)}
-              </Text>
-              <Text color="$blue8">
-                {completionScore}%
-              </Text>
+              <Text color="gray">{getStepLabel(currentStep)}</Text>
+              <Text color="$blue8">{completionScore}%</Text>
             </Row>
             <Progress value={completionScore} max={100}>
               <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
@@ -99,9 +93,7 @@ export function PersonalityAssessmentWidget() {
           size={20}
           marginTop={hasStarted ? spacing.xs : spacing.md}
         >
-          <Button.Text>
-            {hasStarted ? 'Continue Assessment' : 'Start Assessment'}
-          </Button.Text>
+          <Button.Text>{hasStarted ? 'Continue Assessment' : 'Start Assessment'}</Button.Text>
         </Button>
 
         {!hasStarted && (

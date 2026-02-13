@@ -833,12 +833,8 @@ const MobileSearchHeader = ({
           gap={8}
           style={{ flexShrink: 1 }}
         >
-          <Text color="$red10">
-            Map Search Unavailable
-          </Text>
-          <Text color="gray">
-            {tokenValidation.error}
-          </Text>
+          <Text color="$red10">Map Search Unavailable</Text>
+          <Text color="gray">{tokenValidation.error}</Text>
         </Stack>
       )}
 
@@ -888,9 +884,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
           >
             <Row align="center" justify="center" gap={8}>
               <MapIcon size={16} />
-              <Text>
-                Map
-              </Text>
+              <Text>Map</Text>
             </Row>
           </Tabs.Tab>
           <Tabs.Tab
@@ -903,9 +897,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
           >
             <Row align="center" justify="center" gap={8}>
               <ListIcon size={16} />
-              <Text>
-                List
-              </Text>
+              <Text>List</Text>
             </Row>
           </Tabs.Tab>
         </Tabs.List>
@@ -938,9 +930,7 @@ const MobileFiltersContent = ({
   return (
     <Stack flex={1} padding={16} gap={16}>
       <Row justify="space-between" align="center">
-        <Text>
-          Filters
-        </Text>
+        <Text>Filters</Text>
         <Button
           size={12}
           circular
@@ -1005,14 +995,10 @@ const FilterToggle = ({ label, description, value, onValueChange }: FilterToggle
     borderColor="$borderColor"
   >
     <Row justify="space-between" align="center" gap={8}>
-      <Text>
-        {label}
-      </Text>
+      <Text>{label}</Text>
       <ToggleSwitch checked={value} onCheckedChange={onValueChange} aria-label={label} />
     </Row>
-    <Text color="gray">
-      {description}
-    </Text>
+    <Text color="gray">{description}</Text>
   </Stack>
 )
 

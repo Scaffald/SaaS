@@ -27,18 +27,12 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
       shadowRadius={12}
       maxWidth={320}
     >
-      <Text color="gray">
-        {profile.name}
-      </Text>
+      <Text color="gray">{profile.name}</Text>
 
       <Row gap={8} align="center" flexWrap="wrap">
-        <Paragraph color="gray">
-          {profile.experienceYears} years
-        </Paragraph>
+        <Paragraph color="gray">{profile.experienceYears} years</Paragraph>
         <Text color="gray">•</Text>
-        <Paragraph color="gray">
-          ${profile.hourlyRate}/hr
-        </Paragraph>
+        <Paragraph color="gray">${profile.hourlyRate}/hr</Paragraph>
       </Row>
 
       {profile.skills && profile.skills.length > 0 && (
@@ -55,11 +49,7 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
               {skill}
             </Text>
           ))}
-          {profile.skills.length > 3 && (
-            <Text color="gray">
-              +{profile.skills.length - 3} more
-            </Text>
-          )}
+          {profile.skills.length > 3 && <Text color="gray">+{profile.skills.length - 3} more</Text>}
         </Row>
       )}
     </Card>

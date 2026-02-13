@@ -1,4 +1,4 @@
 export {
   type NotificationItem,
   NotificationPopover,
-} from './NotificationPopover';
+} from './NotificationPopover'

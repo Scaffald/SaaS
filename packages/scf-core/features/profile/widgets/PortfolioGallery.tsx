@@ -88,9 +88,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                       />
                     )}
                     <Stack gap={8} padding={12}>
-                      <Text numberOfLines={2}>
-                        {item.title}
-                      </Text>
+                      <Text numberOfLines={2}>{item.title}</Text>
                       {item.description && variant === 'full' && (
                         <Text color="gray" numberOfLines={3}>
                           {/* Render rich text description - simplified for now */}
@@ -102,9 +100,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                       {imageUrl && (
                         <Row gap={8} align="center" marginTop={8}>
                           <Eye size={14} color="gray" />
-                          <Text color="gray">
-                            Click to view
-                          </Text>
+                          <Text color="gray">Click to view</Text>
                         </Row>
                       )}
                     </Stack>
@@ -143,9 +139,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                   )}
                   {selectedItem.description && (
                     <Stack gap={8}>
-                      <Text>
-                        Description
-                      </Text>
+                      <Text>Description</Text>
                       <Text color="gray" lineHeight={16}>
                         {typeof selectedItem.description === 'string'
                           ? selectedItem.description

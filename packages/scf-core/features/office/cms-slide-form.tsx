@@ -99,9 +99,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
             keyboardType="numeric"
             disabled={isLoading}
           />
-          <Text opacity={0.6}>
-            Slides are shown in ascending order (1, 2, 3...)
-          </Text>
+          <Text opacity={0.6}>Slides are shown in ascending order (1, 2, 3...)</Text>
         </Stack>
 
         <Row gap={12} align="center">

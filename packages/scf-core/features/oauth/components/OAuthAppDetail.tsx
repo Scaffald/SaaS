@@ -123,11 +123,19 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             {app.display_name}
           </SizableText>
           <Row gap={8} align="center">
-            <Badge backgroundColor={statusColor} color="white" data-testid="oauth-app-detail-status">
+            <Badge
+              backgroundColor={statusColor}
+              color="white"
+              data-testid="oauth-app-detail-status"
+            >
               {app.status.toUpperCase()}
             </Badge>
             {app.requires_approval && isPending && (
-              <Badge backgroundColor="$blue10" color="white" data-testid="oauth-app-requires-approval">
+              <Badge
+                backgroundColor="$blue10"
+                color="white"
+                data-testid="oauth-app-requires-approval"
+              >
                 REQUIRES APPROVAL
               </Badge>
             )}
@@ -138,14 +146,27 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
         <Row gap={8} data-testid="oauth-app-actions">
           {isPending && (
             <>
-              <Button variant="outline" onPress={() => setShowRejectDialog(true)} data-testid="oauth-app-reject-button">
+              <Button
+                variant="outline"
+                onPress={() => setShowRejectDialog(true)}
+                data-testid="oauth-app-reject-button"
+              >
                 Reject
               </Button>
-              <Button onPress={() => setShowApproveDialog(true)} data-testid="oauth-app-approve-button">Approve</Button>
+              <Button
+                onPress={() => setShowApproveDialog(true)}
+                data-testid="oauth-app-approve-button"
+              >
+                Approve
+              </Button>
             </>
           )}
           {isActive && (
-            <Button variant="outline" onPress={() => setShowSuspendDialog(true)} data-testid="oauth-app-suspend-button">
+            <Button
+              variant="outline"
+              onPress={() => setShowSuspendDialog(true)}
+              data-testid="oauth-app-suspend-button"
+            >
               Suspend
             </Button>
           )}
@@ -155,9 +176,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       {/* App Details */}
       <Card padding={16} gap={16}>
         <Stack gap={12}>
-          <SizableText size={20}>
-            Application Details
-          </SizableText>
+          <SizableText size={20}>Application Details</SizableText>
 
           <Stack gap={8}>
             <SizableText size={12} color="gray">
@@ -221,9 +240,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             <SizableText size={12} color="gray">
               Created
             </SizableText>
-            <SizableText size={12}>
-              {new Date(app.created_at).toLocaleString()}
-            </SizableText>
+            <SizableText size={12}>{new Date(app.created_at).toLocaleString()}</SizableText>
           </Stack>
 
           {app.approved_at && (
@@ -231,9 +248,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
               <SizableText size={12} color="gray">
                 Approved
               </SizableText>
-              <SizableText size={12}>
-                {new Date(app.approved_at).toLocaleString()}
-              </SizableText>
+              <SizableText size={12}>{new Date(app.approved_at).toLocaleString()}</SizableText>
             </Stack>
           )}
         </Stack>
@@ -242,13 +257,16 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       {/* Redirect URIs */}
       <Card padding={16} gap={16} data-testid="oauth-app-redirect-uris">
         <Stack gap={12}>
-          <SizableText size={20}>
-            Redirect URIs
-          </SizableText>
+          <SizableText size={20}>Redirect URIs</SizableText>
           <Stack gap={8}>
             {app.redirect_uris.map((uri, index) => (
               <Stack key={index} gap={4}>
-                <SizableText size={12} fontFamily="$mono" color="$blue10" data-testid={`oauth-app-redirect-uri-${index}`}>
+                <SizableText
+                  size={12}
+                  fontFamily="$mono"
+                  color="$blue10"
+                  data-testid={`oauth-app-redirect-uri-${index}`}
+                >
                   {uri}
                 </SizableText>
               </Stack>
@@ -260,13 +278,16 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       {/* Allowed Scopes */}
       <Card padding={16} gap={16} data-testid="oauth-app-scopes">
         <Stack gap={12}>
-          <SizableText size={20}>
-            Allowed Scopes
-          </SizableText>
+          <SizableText size={20}>Allowed Scopes</SizableText>
           {app.allowed_scopes.length > 0 ? (
             <Row gap={8} flexWrap="wrap">
               {app.allowed_scopes.map((scope) => (
-                <Badge key={scope} backgroundColor="$blue2" color="$blue10" data-testid={`oauth-app-scope-${scope}`}>
+                <Badge
+                  key={scope}
+                  backgroundColor="$blue2"
+                  color="$blue10"
+                  data-testid={`oauth-app-scope-${scope}`}
+                >
                   {scope}
                 </Badge>
               ))}
@@ -294,9 +315,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
               {/* Scope Selection */}
               <Stack gap={12}>
-                <SizableText size={16}>
-                  Select Scopes
-                </SizableText>
+                <SizableText size={16}>Select Scopes</SizableText>
                 <Stack gap={8} maxHeight={300} overflow="scroll">
                   {scopes.map((scope) => (
                     <Row key={scope.id} gap={8} align="center">
@@ -311,9 +330,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                         }}
                       />
                       <Stack flex={1}>
-                        <SizableText size={12}>
-                          {scope.display_name}
-                        </SizableText>
+                        <SizableText size={12}>{scope.display_name}</SizableText>
                         <SizableText size={8} color="gray">
                           {scope.description}
                         </SizableText>
@@ -325,9 +342,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
               {/* Trust Level */}
               <Stack gap={12}>
-                <SizableText size={16}>
-                  Trust Level
-                </SizableText>
+                <SizableText size={16}>Trust Level</SizableText>
                 <Row gap={8}>
                   <Button
                     variant={trustLevel === 'active' ? 'default' : 'outlined'}

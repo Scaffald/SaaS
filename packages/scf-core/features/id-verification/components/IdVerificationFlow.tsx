@@ -82,18 +82,18 @@ export function IdVerificationContent() {
   const handleCreatePaymentSession = async () => {
     if (!user) {
       toast.show({
-          title: 'Sign in required',
-          message: 'Please sign in again before starting verification.',
-          variant: 'error',
-        })
+        title: 'Sign in required',
+        message: 'Please sign in again before starting verification.',
+        variant: 'error',
+      })
       return
     }
 
     if (!selectedPricing) {
       toast.show({
-          title: 'Select a plan',
-          message: 'Choose a verification option to continue.',
-        })
+        title: 'Select a plan',
+        message: 'Choose a verification option to continue.',
+      })
       return
     }
 
@@ -106,16 +106,16 @@ export function IdVerificationContent() {
       })
       setPaymentSession(response)
       toast.show({
-          title: 'Secure payment ready',
-          message: 'Enter your card details below to continue.',
-        })
+        title: 'Secure payment ready',
+        message: 'Enter your card details below to continue.',
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to start payment. Try again.'
       setRequestError(message)
       toast.show({
-          title: 'Payment setup failed',
-          variant: 'error',
-        })
+        title: 'Payment setup failed',
+        variant: 'error',
+      })
     }
   }
 
@@ -123,18 +123,18 @@ export function IdVerificationContent() {
     try {
       await confirmVerification.mutateAsync({ paymentIntentId })
       toast.show({
-          title: 'Verification scheduled',
-          message: "We're creating your Persona inquiry now.",
-        })
+        title: 'Verification scheduled',
+        message: "We're creating your Persona inquiry now.",
+      })
       setPaymentSession(null)
       void currentVerificationQuery.refetch()
     } catch (error) {
       const _message =
         error instanceof Error ? error.message : 'Unable to confirm payment with Stripe.'
       toast.show({
-          title: 'Payment confirmation failed',
-          variant: 'error',
-        })
+        title: 'Payment confirmation failed',
+        variant: 'error',
+      })
     }
   }
 
@@ -144,9 +144,7 @@ export function IdVerificationContent() {
 
       <Card padding={16} bordered>
         <Stack gap={8}>
-          <Text>
-            Why verify your identity?
-          </Text>
+          <Text>Why verify your identity?</Text>
           <Text color="gray">
             Verified profiles are highlighted across search, inquiries, and background checks,
             giving organizations confidence that you are who you say you are.
@@ -190,9 +188,7 @@ export function IdVerificationRight() {
     <Stack gap={16}>
       <Card padding={16} bordered>
         <Stack gap={8}>
-          <Text>
-            What happens after payment?
-          </Text>
+          <Text>What happens after payment?</Text>
           <Text color="gray">
             We automatically create a Persona inquiry using your Scaffald profile details. You'll
             receive an email and in-app notification with a secure link to upload your government ID
@@ -208,9 +204,7 @@ export function IdVerificationRight() {
 
       <Card padding={16} bordered backgroundColor="$blue2" borderColor="$blue6">
         <Stack gap={8}>
-          <Text color="$blue12">
-            Need help?
-          </Text>
+          <Text color="$blue12">Need help?</Text>
           <Text color="$blue11">
             Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
             to request a bulk verification plan for your organization.
@@ -251,9 +245,7 @@ function renderStatusCard(
     return (
       <Card padding={16} bordered backgroundColor="$red2" borderColor="$red6">
         <Stack gap={8}>
-          <Text color="$red12">
-            Unable to load badge
-          </Text>
+          <Text color="$red12">Unable to load badge</Text>
           <Text color="$red11">
             {queryReturn.error?.message ?? 'Please refresh to try loading your verification badge.'}
           </Text>
@@ -337,9 +329,7 @@ function PricingSection({
     return (
       <Card padding={16} bordered backgroundColor="$color2" borderColor="$borderColor">
         <Stack gap={8}>
-          <Text>
-            Verification temporarily unavailable
-          </Text>
+          <Text>Verification temporarily unavailable</Text>
           <Text color="gray">
             Pricing hasn’t been published yet. Check back soon or contact support@scaffald.com.
           </Text>
@@ -350,9 +340,7 @@ function PricingSection({
 
   return (
     <Stack gap={8}>
-      <Text>
-        Choose a verification option
-      </Text>
+      <Text>Choose a verification option</Text>
       <Stack gap={12}>
         {pricingOptions.map((plan) => {
           const isActive = plan.id === selectedPricingId
@@ -368,18 +356,10 @@ function PricingSection({
             >
               <Stack gap={8}>
                 <Row justify="space-between" align="center">
-                  <Text>
-                    {plan.name}
-                  </Text>
-                  <Text>
-                    {formatCurrency(plan.priceCents)}
-                  </Text>
+                  <Text>{plan.name}</Text>
+                  <Text>{formatCurrency(plan.priceCents)}</Text>
                 </Row>
-                {plan.description && (
-                  <Text color="gray">
-                    {plan.description}
-                  </Text>
-                )}
+                {plan.description && <Text color="gray">{plan.description}</Text>}
                 <Button
                   size={12}
                   theme={isActive ? 'blue' : undefined}
@@ -421,9 +401,7 @@ function PaymentSection({
   return (
     <Stack gap={12}>
       <Stack gap={4}>
-        <Text>
-          Secure payment
-        </Text>
+        <Text>Secure payment</Text>
         <Text color="gray">
           Charges are non-refundable and processed via Stripe. Your badge will update immediately
           after Persona confirms your identity.

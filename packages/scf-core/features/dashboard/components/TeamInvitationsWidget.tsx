@@ -68,9 +68,7 @@ export function TeamInvitationList({
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
                 <Text>{teamName}</Text>
-                <Text color="gray">
-                  {organizationName}
-                </Text>
+                <Text color="gray">{organizationName}</Text>
                 <Row gap={8} align="center" marginTop={8}>
                   <Clock size={16} color="gray" />
                   <Text color="gray">
@@ -79,13 +77,7 @@ export function TeamInvitationList({
                   </Text>
                 </Row>
               </Stack>
-              <Row
-                gap={8}
-                marginLeft={16}
-                flexShrink={0}
-                flexWrap="wrap"
-                justify="flex-end"
-              >
+              <Row gap={8} marginLeft={16} flexShrink={0} flexWrap="wrap" justify="flex-end">
                 <Button
                   size={8}
                   icon={XCircle}

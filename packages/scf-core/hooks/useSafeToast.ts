@@ -26,9 +26,7 @@ export function useSafeToast() {
 
     // On native platforms, use Alert directly if window is not available
     if (isNative && !hasWindow) {
-      const message = options?.message
-        ? `${title}: ${options.message}`
-        : title
+      const message = options?.message ? `${title}: ${options.message}` : title
       Alert.alert(title, message)
       return
     }
@@ -36,7 +34,8 @@ export function useSafeToast() {
     // Try to use toast, but catch any errors
     try {
       // Map type to variant for beyond-ui
-      const variant = options?.type === 'error' ? 'error' : options?.type === 'success' ? 'success' : 'info'
+      const variant =
+        options?.type === 'error' ? 'error' : options?.type === 'success' ? 'success' : 'info'
 
       toast.show({
         title,
@@ -54,9 +53,7 @@ export function useSafeToast() {
       ) {
         // Fallback to React Native Alert on native platforms
         if (Platform.OS !== 'web') {
-          const message = options?.message
-            ? `${title}: ${options.message}`
-            : title
+          const message = options?.message ? `${title}: ${options.message}` : title
           Alert.alert(title, message)
         } else {
           // On web, log the error but don't crash
@@ -72,4 +69,3 @@ export function useSafeToast() {
 
   return { show, hide: toast.hide }
 }
-

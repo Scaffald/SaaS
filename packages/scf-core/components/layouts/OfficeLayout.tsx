@@ -183,7 +183,7 @@ export const OfficeLayout = ({
 
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
-  const hasBothColumns = hasLeftContent && hasRightContent
+  const _hasBothColumns = hasLeftContent && hasRightContent
 
   const { $md: contentMdProps, ...restContentProps } = contentProps ?? {}
   const { $md: leftMdProps, ...restLeftContainerProps } = leftContainerProps ?? {}
@@ -238,29 +238,14 @@ export const OfficeLayout = ({
         )}
 
         {/* Content Area - Use programmatic responsive flexDirection */}
-        <Row
-          gap={12}
-          padding={12}
-          flexDirection="column"
-          {...restContentProps}
-        >
+        <Row gap={12} padding={12} flexDirection="column" {...restContentProps}>
           {hasLeftContent && (
-            <Stack
-              minWidth="100%"
-              width="100%"
-              maxWidth="100%"
-              {...restLeftContainerProps}
-            >
+            <Stack minWidth="100%" width="100%" maxWidth="100%" {...restLeftContainerProps}>
               {leftContent}
             </Stack>
           )}
           {hasRightContent && (
-            <Stack
-              minWidth="100%"
-              width="100%"
-              maxWidth="100%"
-              {...restRightContainerProps}
-            >
+            <Stack minWidth="100%" width="100%" maxWidth="100%" {...restRightContainerProps}>
               {rightContent}
             </Stack>
           )}

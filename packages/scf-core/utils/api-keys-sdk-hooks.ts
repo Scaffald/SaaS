@@ -2,7 +2,12 @@
  * React Query hooks for Scaffald SDK API Keys endpoints
  */
 
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ApiKey,
@@ -31,7 +36,7 @@ export function useApiKeys(
       if (!client) throw new Error('Scaffald client not available')
       return client.apiKeys.list()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     ...options,
   })
 }
@@ -51,7 +56,7 @@ export function useApiKeyUsage(
       if (!client) throw new Error('Scaffald client not available')
       return client.apiKeys.getUsage(id, params)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     ...options,
   })
 }

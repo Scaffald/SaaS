@@ -247,11 +247,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   Compare {comparisonInquiryIds.length}
                 </Button>
               )}
-            <Button
-              size={12}
-              theme="blue"
-              onPress={() => setShowBulkInquiry(true)}
-            >
+            <Button size={12} theme="blue" onPress={() => setShowBulkInquiry(true)}>
               Send Inquiry to {selectedApplicationIds.size}
             </Button>
           </Row>
@@ -277,9 +273,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             >
               {STATUSES.map((status) => (
                 <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
-                  <Text numberOfLines={1}>
-                    {STATUS_LABELS[status]}
-                  </Text>
+                  <Text numberOfLines={1}>{STATUS_LABELS[status]}</Text>
                   <Stack
                     backgroundColor="$color5"
                     paddingHorizontal={8}
@@ -287,9 +281,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     borderRadius={8}
                     marginTop={4}
                   >
-                    <Text color="gray">
-                      {groupedApplications[status].length}
-                    </Text>
+                    <Text color="gray">{groupedApplications[status].length}</Text>
                   </Stack>
                 </Tabs.Tab>
               ))}

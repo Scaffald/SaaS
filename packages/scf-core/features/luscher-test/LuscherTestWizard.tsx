@@ -69,7 +69,9 @@ export function LuscherTestWizard() {
   const savePart2Mutation = useSaveLuscherTestSessionMutation({
     onSuccess: () => {
       // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher', 'availability'] })
+      queryClient.invalidateQueries({
+        queryKey: ['personality-assessment', 'luscher', 'availability'],
+      })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-1', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-2', 'status'] })
@@ -211,12 +213,8 @@ export function LuscherTestWizard() {
   const railContent = (
     <Stack gap={20} padding={8}>
       <Stack gap={4}>
-        <Text color="gray">
-          Weekly Pulse
-        </Text>
-        <Text color="gray">
-          Track your focus and readiness through five quick moments.
-        </Text>
+        <Text color="gray">Weekly Pulse</Text>
+        <Text color="gray">Track your focus and readiness through five quick moments.</Text>
       </Stack>
 
       {!showResultsSidebar && (

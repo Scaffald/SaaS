@@ -111,9 +111,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
   return (
     <Stack gap={12}>
       <Row gap={8} align="center" justify="space-between" flexWrap="wrap">
-        <Text>
-          Analytics summary
-        </Text>
+        <Text>Analytics summary</Text>
         <Row gap={8} align="center" flexWrap="wrap">
           <ResponsiveSelect
             value={String(range)}
@@ -169,11 +167,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
                 : '—'}
             </StatTile>
           </Row>
-          {trendDescription ? (
-            <Text color="gray">
-              {trendDescription}
-            </Text>
-          ) : null}
+          {trendDescription ? <Text color="gray">{trendDescription}</Text> : null}
         </Stack>
       )}
     </Stack>
@@ -195,9 +189,7 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
       <Text color="gray" textTransform="uppercase">
         {label}
       </Text>
-      <Text>
-        {children}
-      </Text>
+      <Text>{children}</Text>
     </Stack>
   )
 }

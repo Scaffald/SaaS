@@ -35,9 +35,7 @@ export function RIASECAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">
-            Career Interests
-          </Text>
+          <Text color="gray">Career Interests</Text>
           <Text color="gray">
             Rate your interest in 6 career dimensions to discover careers that match your interests.
           </Text>
@@ -47,9 +45,7 @@ export function RIASECAssessmentWidget() {
           <Button.Text>Start Interest Assessment</Button.Text>
         </Button>
 
-        <Text color="gray">
-          Takes about 2-3 minutes
-        </Text>
+        <Text color="gray">Takes about 2-3 minutes</Text>
       </Stack>
     </DashboardWidget>
   )

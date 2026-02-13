@@ -85,9 +85,7 @@ export function EducationStep({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Highest education
-        </Text>
+        <Text>Highest education</Text>
         <Paragraph color="gray">
           Add your latest degree or training program. This section is optional but strengthens your
           profile.

@@ -34,12 +34,8 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
       {/* Completion Percentage */}
       <Stack gap={4}>
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Progress
-          </Text>
-          <Text color="$blue10">
-            {completionScore}%
-          </Text>
+          <Text color="gray">Progress</Text>
+          <Text color="$blue10">{completionScore}%</Text>
         </Row>
         <Stack height={8} backgroundColor="$color5" borderRadius="$10" overflow="hidden">
           <Stack
@@ -79,15 +75,9 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                   align="center"
                 >
                   {status === 'completed' ? (
-                    <Text color="gray">
-                      ✓
-                    </Text>
+                    <Text color="gray">✓</Text>
                   ) : (
-                    <Text
-                      color={status === 'current' ? '$color12' : '$color10'}
-                    >
-                      {index + 1}
-                    </Text>
+                    <Text color={status === 'current' ? '$color12' : '$color10'}>{index + 1}</Text>
                   )}
                 </Circle>
 

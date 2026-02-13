@@ -99,8 +99,8 @@ export default function OfficeTeamDetailPage() {
 
   if ((isTeamLoading || isTeamFetching) && !team) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center" gap="$3">
+        <Spinner size="lg" />
         <Text color="$color11">Loading team details…</Text>
       </Stack>
     )
@@ -141,14 +141,14 @@ export default function OfficeTeamDetailPage() {
         <Button
           key="edit"
           size="$2"
-          variant="outlined"
+          variant="outline"
           icon={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
         >Edit team</Button>,
         <Button
           key="analytics"
           size="$2"
-          variant="outlined"
+          variant="outline"
           icon={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
         >View analytics</Button>,
@@ -176,7 +176,7 @@ export default function OfficeTeamDetailPage() {
           <Row>
             <Button
               size="$2"
-              variant="outlined"
+              variant="outline"
               icon={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
             >Back to teams</Button>
@@ -186,7 +186,7 @@ export default function OfficeTeamDetailPage() {
             team={team}
             actions={
               quickActions ? (
-                <Row gap="$2" flexWrap="wrap" justifyContent="flex-end">
+                <Row gap="$2" flexWrap="wrap" justify="flex-end">
                   {quickActions}
                 </Row>
               ) : undefined
@@ -200,7 +200,7 @@ export default function OfficeTeamDetailPage() {
 
           <Button
             size="$3"
-            variant="outlined"
+            variant="outline"
             icon={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
           >View analytics</Button>
@@ -293,7 +293,7 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+    <Stack flex={1} align="center" justify="center" gap="$3" paddingHorizontal="$4">
       <Card
         padding="$4"
         borderWidth={1}
@@ -301,7 +301,7 @@ function CenteredMessageCard({
         backgroundColor="$color2"
         gap="$3"
       >
-        <Text fontSize="$6" fontWeight="700">
+        <Text>
           {title}
         </Text>
         <Text color="$color11">{description}</Text>
@@ -330,9 +330,9 @@ function InfoBanner({
       padding="$4"
       gap="$3"
     >
-      <Row gap="$2" alignItems="center">
+      <Row gap="$2" align="center">
         <Icon size={18} />
-        <Text fontSize="$5" fontWeight="700">
+        <Text>
           {title}
         </Text>
       </Row>

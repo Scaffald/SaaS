@@ -76,12 +76,8 @@ export function EnhancedRequirementsSection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text>
-        Enhanced Requirements
-      </Text>
-      <Text color="gray">
-        Additional job requirements and qualifications
-      </Text>
+      <Text>Enhanced Requirements</Text>
+      <Text color="gray">Additional job requirements and qualifications</Text>
 
       {/* Minimum Education Level */}
       <Stack gap={8}>
@@ -102,9 +98,7 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require background check</Label>
-          <Text color="gray">
-            Background screening required for this position
-          </Text>
+          <Text color="gray">Background screening required for this position</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_background_check || false}
@@ -128,9 +122,7 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require drug test</Label>
-          <Text color="gray">
-            Pre-employment drug screening required
-          </Text>
+          <Text color="gray">Pre-employment drug screening required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_drug_test || false}
@@ -143,9 +135,7 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require driver's license</Label>
-          <Text color="gray">
-            Valid driver's license required
-          </Text>
+          <Text color="gray">Valid driver's license required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_drivers_license || false}
@@ -189,9 +179,7 @@ export function EnhancedRequirementsSection({
             }
           }}
         />
-        <Text color="gray">
-          Percentage of time spent traveling for work
-        </Text>
+        <Text color="gray">Percentage of time spent traveling for work</Text>
       </Stack>
 
       {/* Shift Requirements */}

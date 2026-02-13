@@ -249,10 +249,10 @@ export function InquiryCreateForm({
       }
     } catch (error) {
       toast.show({
-          title: 'Unable to apply template',
-          message: getErrorMessage(error, 'Please try again.'),
-          variant: 'error',
-        })
+        title: 'Unable to apply template',
+        message: getErrorMessage(error, 'Please try again.'),
+        variant: 'error',
+      })
     }
   }, [selectedTemplateId, applyTemplateMutation, applicationId, form, toast, getErrorMessage])
 
@@ -262,9 +262,9 @@ export function InquiryCreateForm({
 
     if (!trimmedName) {
       toast.show({
-          title: 'Template name required',
-          message: 'Please enter a name before saving.',
-        })
+        title: 'Template name required',
+        message: 'Please enter a name before saving.',
+      })
       return
     }
 
@@ -279,20 +279,20 @@ export function InquiryCreateForm({
       })
 
       toast.show({
-          title: 'Template saved',
-          message: 'You can reuse it for future inquiries.',
-          variant: 'success',
-        })
+        title: 'Template saved',
+        message: 'You can reuse it for future inquiries.',
+        variant: 'success',
+      })
       setTemplateName('')
       setTemplateDescription('')
       setSaveTemplateOpen(false)
       refetchTemplates()
     } catch (error) {
       toast.show({
-          title: 'Unable to save template',
-          message: getErrorMessage(error, 'Please try again.'),
-          variant: 'error',
-        })
+        title: 'Unable to save template',
+        message: getErrorMessage(error, 'Please try again.'),
+        variant: 'error',
+      })
     }
   }, [
     templateName,
@@ -417,9 +417,7 @@ export function InquiryCreateForm({
 
       return (
         <Row align="center" gap={8}>
-          <Text>
-            {label}
-          </Text>
+          <Text>{label}</Text>
           {isAutoFilled && (
             <Row
               paddingHorizontal={8}
@@ -427,9 +425,7 @@ export function InquiryCreateForm({
               backgroundColor="$green3"
               borderRadius={8}
             >
-              <Text color="$green11">
-                Auto-filled
-              </Text>
+              <Text color="$green11">Auto-filled</Text>
             </Row>
           )}
         </Row>
@@ -455,18 +451,10 @@ export function InquiryCreateForm({
                   backgroundColor="$background"
                   borderRadius={16}
                 >
-                  <Row
-                    justify="space-between"
-                    align="center"
-                    gap={12}
-                  >
+                  <Row justify="space-between" align="center" gap={12}>
                     <Stack>
-                      <Text>
-                        Templates
-                      </Text>
-                      <Text color="gray">
-                        Reuse saved inquiry terms for this organization.
-                      </Text>
+                      <Text>Templates</Text>
+                      <Text color="gray">Reuse saved inquiry terms for this organization.</Text>
                     </Stack>
                     <Row gap={8}>
                       <Button
@@ -512,11 +500,7 @@ export function InquiryCreateForm({
                     </Button>
                   </Row>
 
-                  {isTemplatesLoading && (
-                    <Text color="gray">
-                      Loading templates…
-                    </Text>
-                  )}
+                  {isTemplatesLoading && <Text color="gray">Loading templates…</Text>}
                   {!isTemplatesLoading && templates.length === 0 && (
                     <Text color="gray">
                       Save templates to quickly reuse standard employment terms.
@@ -534,19 +518,11 @@ export function InquiryCreateForm({
                     backgroundColor="$background"
                     borderRadius={16}
                   >
-                    <Row
-                      justify="space-between"
-                      align="center"
-                      gap={12}
-                    >
+                    <Row justify="space-between" align="center" gap={12}>
                       <Stack gap={4} flex={1}>
-                        <Text>
-                          Smart defaults
-                        </Text>
+                        <Text>Smart defaults</Text>
                         {isSmartDefaultsLoading ? (
-                          <Text color="gray">
-                            Loading job-based recommendations…
-                          </Text>
+                          <Text color="gray">Loading job-based recommendations…</Text>
                         ) : smartDefaultsFieldCount > 0 ? (
                           <Text color="gray">
                             {smartDefaultsApplied
@@ -554,9 +530,7 @@ export function InquiryCreateForm({
                               : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
                           </Text>
                         ) : (
-                          <Text color="gray">
-                            No defaults available for this job yet.
-                          </Text>
+                          <Text color="gray">No defaults available for this job yet.</Text>
                         )}
                       </Stack>
                       <Row gap={8}>
@@ -585,9 +559,7 @@ export function InquiryCreateForm({
                             backgroundColor="$gray3"
                             borderRadius={12}
                           >
-                            <Text color="gray">
-                              {label}
-                            </Text>
+                            <Text color="gray">{label}</Text>
                           </Stack>
                         ))}
                       </Row>
@@ -598,9 +570,7 @@ export function InquiryCreateForm({
                 {/* Employment Section */}
                 <Stack gap={16}>
                   <Row align="center" gap={8}>
-                    <Text>
-                      Employment
-                    </Text>
+                    <Text>Employment</Text>
                   </Row>
 
                   {/* Employment Type */}
@@ -641,9 +611,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="gray">
-                        Non-negotiable
-                      </Text>
+                      <Text color="gray">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -685,18 +653,14 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="gray">
-                        Non-negotiable
-                      </Text>
+                      <Text color="gray">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
                   {/* Schedule Shifts */}
                   <Stack gap={8}>
                     <Row justify="space-between" align="center">
-                      <Text>
-                        Schedule shifts
-                      </Text>
+                      <Text>Schedule shifts</Text>
                       <Controller
                         control={control}
                         name="scheduleShifts"
@@ -749,9 +713,7 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursStart && (
-                          <Text color="$red10">
-                            {errors.workingHoursStart.message}
-                          </Text>
+                          <Text color="$red10">{errors.workingHoursStart.message}</Text>
                         )}
                       </Stack>
                       <Stack gap={8} flex={1}>
@@ -767,9 +729,7 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursEnd && (
-                          <Text color="$red10">
-                            {errors.workingHoursEnd.message}
-                          </Text>
+                          <Text color="$red10">{errors.workingHoursEnd.message}</Text>
                         )}
                       </Stack>
                     </Row>
@@ -785,9 +745,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="gray">
-                        Non-negotiable
-                      </Text>
+                      <Text color="gray">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -837,9 +795,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="gray">
-                        Non-negotiable
-                      </Text>
+                      <Text color="gray">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -861,9 +817,7 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentStartDate && (
-                                <Text color="$red10">
-                                  {errors.employmentStartDate.message}
-                                </Text>
+                                <Text color="$red10">{errors.employmentStartDate.message}</Text>
                               )}
                             </>
                           )}
@@ -881,16 +835,12 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentEndDate && (
-                                <Text color="$red10">
-                                  {errors.employmentEndDate.message}
-                                </Text>
+                                <Text color="$red10">{errors.employmentEndDate.message}</Text>
                               )}
                             </>
                           )}
                         />
-                        <Text color="gray">
-                          End date is not mandatory
-                        </Text>
+                        <Text color="gray">End date is not mandatory</Text>
                       </Stack>
                     </Row>
                     <Row align="center" gap={8}>
@@ -905,9 +855,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="gray">
-                        Non-negotiable
-                      </Text>
+                      <Text color="gray">Non-negotiable</Text>
                     </Row>
                   </Stack>
                 </Stack>
@@ -917,9 +865,7 @@ export function InquiryCreateForm({
                 {/* Compensation Section */}
                 <Stack gap={16}>
                   <Row align="center" gap={8}>
-                    <Text>
-                      Compensation
-                    </Text>
+                    <Text>Compensation</Text>
                   </Row>
 
                   {/* Rate Type */}
@@ -964,15 +910,11 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMinCents && (
-                          <Text color="$red10">
-                            {errors.rateMinCents.message}
-                          </Text>
+                          <Text color="$red10">{errors.rateMinCents.message}</Text>
                         )}
                       </Stack>
                       <Stack gap={8} flex={1}>
-                        <Text color="gray">
-                          to
-                        </Text>
+                        <Text color="gray">to</Text>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
@@ -993,15 +935,11 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMaxCents && (
-                          <Text color="$red10">
-                            {errors.rateMaxCents.message}
-                          </Text>
+                          <Text color="$red10">{errors.rateMaxCents.message}</Text>
                         )}
                       </Stack>
                     </Row>
-                    <Text color="gray">
-                      Add a range or a single rate
-                    </Text>
+                    <Text color="gray">Add a range or a single rate</Text>
                     <Row align="center" gap={8}>
                       <Controller
                         control={control}
@@ -1014,9 +952,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="gray">
-                        Non-negotiable
-                      </Text>
+                      <Text color="gray">Non-negotiable</Text>
                     </Row>
                   </Stack>
                 </Stack>
@@ -1026,18 +962,14 @@ export function InquiryCreateForm({
                 {/* Capabilities Section */}
                 <Stack gap={16}>
                   <Row align="center" gap={8}>
-                    <Text>
-                      Capabilities
-                    </Text>
+                    <Text>Capabilities</Text>
                   </Row>
 
                   {/* Endurance */}
                   <Stack gap={8}>
                     <Row justify="space-between" align="center">
                       <Row align="center" gap={8}>
-                        <Text>
-                          Endurance
-                        </Text>
+                        <Text>Endurance</Text>
                         <Button
                           size={8}
                           circular
@@ -1066,17 +998,13 @@ export function InquiryCreateForm({
                 {/* Other Section */}
                 <Stack gap={16}>
                   <Row align="center" gap={8}>
-                    <Text>
-                      Other
-                    </Text>
+                    <Text>Other</Text>
                   </Row>
 
                   {/* Willing to Travel */}
                   <Stack gap={8}>
                     <Row justify="space-between" align="center">
-                      <Text>
-                        Willing to travel
-                      </Text>
+                      <Text>Willing to travel</Text>
                       <Controller
                         control={control}
                         name="willingToTravel"
@@ -1118,9 +1046,7 @@ export function InquiryCreateForm({
                   {/* Willing to Work Overtime */}
                   <Stack gap={8}>
                     <Row justify="space-between" align="center">
-                      <Text>
-                        Willing to work overtime
-                      </Text>
+                      <Text>Willing to work overtime</Text>
                       <Controller
                         control={control}
                         name="willingToWorkOvertime"
@@ -1138,9 +1064,7 @@ export function InquiryCreateForm({
                   {/* Has Driver's License */}
                   <Stack gap={8}>
                     <Row justify="space-between" align="center">
-                      <Text>
-                        Has driver's license
-                      </Text>
+                      <Text>Has driver's license</Text>
                       <Controller
                         control={control}
                         name="hasDriversLicense"
@@ -1157,9 +1081,7 @@ export function InquiryCreateForm({
 
                   {/* Additional Notes */}
                   <Stack gap={8}>
-                    <Text>
-                      Additional note
-                    </Text>
+                    <Text>Additional note</Text>
                     <Controller
                       control={control}
                       name="additionalNotes"
@@ -1175,9 +1097,7 @@ export function InquiryCreateForm({
                       )}
                     />
                     {errors.additionalNotes && (
-                      <Text color="$red10">
-                        {errors.additionalNotes.message}
-                      </Text>
+                      <Text color="$red10">{errors.additionalNotes.message}</Text>
                     )}
                   </Stack>
                 </Stack>
@@ -1194,38 +1114,22 @@ export function InquiryCreateForm({
               justify="flex-end"
             >
               {onCancel && (
-                <Button
-                  variant="outline"
-                  onPress={onCancel}
-                  disabled={isSubmitting}
-                >
+                <Button variant="outline" onPress={onCancel} disabled={isSubmitting}>
                   Cancel
                 </Button>
               )}
               {mode === 'create' && (
                 <>
-                  <Button
-                    variant="outline"
-                    onPress={onSaveDraft}
-                    disabled={isSubmitting}
-                  >
+                  <Button variant="outline" onPress={onSaveDraft} disabled={isSubmitting}>
                     Save Draft
                   </Button>
-                  <Button
-                    onPress={onSubmit}
-                    disabled={isSubmitting}
-                    theme="blue"
-                  >
+                  <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
                     {isSubmitting ? 'Sending...' : 'Continue'}
                   </Button>
                 </>
               )}
               {mode === 'edit' && (
-                <Button
-                  onPress={onSubmit}
-                  disabled={isSubmitting}
-                  theme="blue"
-                >
+                <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
               )}
@@ -1255,12 +1159,8 @@ export function InquiryCreateForm({
         <Sheet.Overlay />
         <Sheet.Handle />
         <Sheet.Frame padding={16} gap={16}>
-          <Text>
-            Save template
-          </Text>
-          <Text color="gray">
-            Capture the current inquiry terms as a reusable template.
-          </Text>
+          <Text>Save template</Text>
+          <Text color="gray">Capture the current inquiry terms as a reusable template.</Text>
           <Stack gap={8}>
             <Text>Template name</Text>
             <Input
@@ -1307,13 +1207,9 @@ export function InquiryCreateForm({
         <Sheet.Overlay />
         <Sheet.Handle />
         <Sheet.Frame padding={16} gap={16}>
-          <Text>
-            Manage templates
-          </Text>
+          <Text>Manage templates</Text>
           {templates.length === 0 ? (
-            <Text color="gray">
-              No templates saved yet. Create one from the inquiry form.
-            </Text>
+            <Text color="gray">No templates saved yet. Create one from the inquiry form.</Text>
           ) : (
             <Sheet.ScrollView>
               <Stack gap={12} paddingVertical={8}>
@@ -1331,20 +1227,10 @@ export function InquiryCreateForm({
                       borderRadius={16}
                       backgroundColor="$background"
                     >
-                      <Row
-                        gap={12}
-                        align="center"
-                        justify="space-between"
-                      >
+                      <Row gap={12} align="center" justify="space-between">
                         <Stack flex={1} gap={4}>
-                          <Text>
-                            {template.name}
-                          </Text>
-                          {template.description && (
-                            <Text color="gray">
-                              {template.description}
-                            </Text>
-                          )}
+                          <Text>{template.name}</Text>
+                          {template.description && <Text color="gray">{template.description}</Text>}
                           <Text color="gray">
                             {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
                             {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}

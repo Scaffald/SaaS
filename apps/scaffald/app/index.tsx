@@ -153,7 +153,7 @@ export default function RootIndex() {
   // Show loading state while verifying magic link
   if (isVerifying) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center">
+      <Stack flex={1} justify="center" align="center">
         <Text>Verifying your email...</Text>
       </Stack>
     )
@@ -162,7 +162,7 @@ export default function RootIndex() {
   // Show error if verification failed
   if (verificationError) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center" padding="$4">
+      <Stack flex={1} justify="center" align="center" padding="$4">
         <Text color="$red10" textAlign="center" marginBottom="$4">
           Verification failed: {verificationError}
         </Text>
@@ -174,7 +174,7 @@ export default function RootIndex() {
   // Show loading state while checking auth, prerequisites, or waiting for navigation
   if (isPending || !isRouterReady || !hasNavigated || (user && isCheckingPrereqs)) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center">
+      <Stack flex={1} justify="center" align="center">
         <Text>Loading...</Text>
       </Stack>
     )
@@ -182,7 +182,7 @@ export default function RootIndex() {
 
   // This should rarely be reached, but provides a fallback
   return (
-    <Stack flex={1} justifyContent="center" alignItems="center">
+    <Stack flex={1} justify="center" align="center">
       <Text>Initializing...</Text>
     </Stack>
   )

@@ -53,9 +53,7 @@ export const PaymentStep = memo(function PaymentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="gray">
-          Payment & Authorization
-        </Text>
+        <Text color="gray">Payment & Authorization</Text>
         <Text color="gray">
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
@@ -63,12 +61,8 @@ export const PaymentStep = memo(function PaymentStep({
       </Stack>
 
       <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
-        <Text color="gray">
-          Total Due
-        </Text>
-        <Text color="gray">
-          {formatCurrency(payment.costCents)}
-        </Text>
+        <Text color="gray">Total Due</Text>
+        <Text color="gray">{formatCurrency(payment.costCents)}</Text>
         <Text color="gray">
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>

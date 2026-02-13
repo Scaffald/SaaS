@@ -74,9 +74,7 @@ export function ProfileCompletionWidget({
         {/* Progress Bar */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="gray">
-              {completionData.completionPercentage}%
-            </Text>
+            <Text color="gray">{completionData.completionPercentage}%</Text>
             {variant === 'full' && (
               <Text color="gray">
                 {completionData.completionPercentage < 100 ? 'Keep going!' : 'Profile complete!'}
@@ -106,19 +104,13 @@ export function ProfileCompletionWidget({
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text color="gray">
-              Next Step
-            </Text>
+            <Text color="gray">Next Step</Text>
             <Row gap={8} align="center">
               <Circle size={16} color="gray" />
               <Stack flex={1} gap={4}>
-                <Text>
-                  {nextIncompleteItem.title}
-                </Text>
+                <Text>{nextIncompleteItem.title}</Text>
                 {nextIncompleteItem.description && (
-                  <Text color="gray">
-                    {nextIncompleteItem.description}
-                  </Text>
+                  <Text color="gray">{nextIncompleteItem.description}</Text>
                 )}
               </Stack>
               {showEdit && nextIncompleteItem.actionRoute && (
@@ -138,9 +130,7 @@ export function ProfileCompletionWidget({
         {/* Checklist (Full variant only) */}
         {variant === 'full' && (
           <Stack gap={8}>
-            <Text color="gray">
-              Sections
-            </Text>
+            <Text color="gray">Sections</Text>
             <Stack gap={8}>
               {completionData.items.map((item) => (
                 <Row
@@ -158,16 +148,8 @@ export function ProfileCompletionWidget({
                     <Circle size={18} color="gray" />
                   )}
                   <Stack flex={1} gap={4}>
-                    <Text
-                      color={item.complete ? '$color11' : '$color12'}
-                    >
-                      {item.title}
-                    </Text>
-                    {item.description && (
-                      <Text color="gray">
-                        {item.description}
-                      </Text>
-                    )}
+                    <Text color={item.complete ? '$color11' : '$color12'}>{item.title}</Text>
+                    {item.description && <Text color="gray">{item.description}</Text>}
                   </Stack>
                   {!item.complete && showEdit && item.actionRoute && (
                     <Button

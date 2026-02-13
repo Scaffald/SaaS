@@ -177,16 +177,16 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
       setIsAdding(false)
       setFormData(createDefaultFormState())
       toast.show({
-          title: 'Portfolio Item Added',
-          message: 'Your portfolio item has been added successfully.',
-        })
+        title: 'Portfolio Item Added',
+        message: 'Your portfolio item has been added successfully.',
+      })
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Error',
-          message: getErrorMessage(error, 'Operation failed'),
-          variant: 'error',
-        })
+        title: 'Error',
+        message: getErrorMessage(error, 'Operation failed'),
+        variant: 'error',
+      })
     },
   })
 
@@ -196,16 +196,16 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
       setEditingId(null)
       setFormData(createDefaultFormState())
       toast.show({
-          title: 'Portfolio Item Updated',
-          message: 'Your portfolio item has been updated successfully.',
-        })
+        title: 'Portfolio Item Updated',
+        message: 'Your portfolio item has been updated successfully.',
+      })
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Error',
-          message: getErrorMessage(error, 'Operation failed'),
-          variant: 'error',
-        })
+        title: 'Error',
+        message: getErrorMessage(error, 'Operation failed'),
+        variant: 'error',
+      })
     },
   })
 
@@ -213,16 +213,16 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'portfolio', 'list'] })
       toast.show({
-          title: 'Portfolio Item Deleted',
-          message: 'Your portfolio item has been removed.',
-        })
+        title: 'Portfolio Item Deleted',
+        message: 'Your portfolio item has been removed.',
+      })
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Error',
-          message: getErrorMessage(error, 'Operation failed'),
-          variant: 'error',
-        })
+        title: 'Error',
+        message: getErrorMessage(error, 'Operation failed'),
+        variant: 'error',
+      })
     },
   })
 
@@ -232,16 +232,16 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'portfolio', 'list'] })
       toast.show({
-          title: 'Portfolio Reordered',
-          message: 'Your portfolio items have been reordered.',
-        })
+        title: 'Portfolio Reordered',
+        message: 'Your portfolio items have been reordered.',
+      })
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Error',
-          message: getErrorMessage(error, 'Operation failed'),
-          variant: 'error',
-        })
+        title: 'Error',
+        message: getErrorMessage(error, 'Operation failed'),
+        variant: 'error',
+      })
     },
   })
 
@@ -268,10 +268,10 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
   const handleSave = useCallback(() => {
     if (!formData.title.trim()) {
       toast.show({
-          title: 'Error',
-          message: 'Please enter a title for your portfolio item.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'Please enter a title for your portfolio item.',
+        variant: 'error',
+      })
       return
     }
 
@@ -369,10 +369,10 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
           } catch (error) {
             console.error('Error uploading image:', error)
             toast.show({
-          title: 'Error',
-          message: getErrorMessage(error, 'Operation failed'),
-          variant: 'error',
-        })
+              title: 'Error',
+              message: getErrorMessage(error, 'Operation failed'),
+              variant: 'error',
+            })
           }
         }
         reader.readAsDataURL(blob)
@@ -423,9 +423,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
 
             {/* Title */}
             <Stack gap={8}>
-              <Text>
-                Title *
-              </Text>
+              <Text>Title *</Text>
               <Input
                 placeholder="e.g., Project Name, Work Sample..."
                 value={formData.title}
@@ -435,9 +433,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
 
             {/* Description */}
             <Stack gap={8}>
-              <Text>
-                Description
-              </Text>
+              <Text>Description</Text>
               <RichTextEditor
                 value={formData.description}
                 fieldType="EXPERIENCE_DESCRIPTION"
@@ -448,9 +444,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
 
             {/* Image Upload */}
             <Stack gap={8}>
-              <Text>
-                Image
-              </Text>
+              <Text>Image</Text>
               <ImageUpload
                 value={formData.imageUrl || ''}
                 onChange={handleImageChange}
@@ -535,9 +529,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                     />
                   )}
                   <Stack gap={8}>
-                    <Text>
-                      {item.title}
-                    </Text>
+                    <Text>{item.title}</Text>
                     {item.description && (
                       <Text color="gray" numberOfLines={3}>
                         {getDescriptionPreview(item.description)}

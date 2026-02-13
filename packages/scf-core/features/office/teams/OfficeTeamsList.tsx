@@ -70,17 +70,17 @@ export function OfficeTeamsList() {
   const archiveMutation = useArchiveTeam({
     onSuccess: () => {
       toast.show({
-          title: 'Team archived',
-          message: 'The team is no longer visible to members.',
-        })
+        title: 'Team archived',
+        message: 'The team is no longer visible to members.',
+      })
       void refetch()
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
-          title: 'Unable to archive team',
-          variant: 'error',
-        })
+        title: 'Unable to archive team',
+        variant: 'error',
+      })
     },
   })
 

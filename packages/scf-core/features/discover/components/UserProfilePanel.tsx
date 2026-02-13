@@ -58,10 +58,10 @@ export function UserProfilePanel({
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
       toast.show({
-          title: 'Unable to load profile',
-          message: 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to load profile',
+        message: 'Please try again.',
+        variant: 'error',
+      })
     }
   }
 
@@ -107,15 +107,11 @@ export function UserProfilePanel({
       {isLoading ? (
         <Stack paddingVertical={16} align="center" gap={12}>
           <Spinner size="sm" color="$blue10" />
-          <Text color="gray">
-            Loading...
-          </Text>
+          <Text color="gray">Loading...</Text>
         </Stack>
       ) : !preview ? (
         <Stack paddingVertical={16} align="center">
-          <Text color="$red10">
-            Profile not found
-          </Text>
+          <Text color="$red10">Profile not found</Text>
         </Stack>
       ) : (
         <>
@@ -187,9 +183,7 @@ export function UserProfilePanel({
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text color="gray">
-                      +{topSkills.length - 3} more
-                    </Text>
+                    <Text color="gray">+{topSkills.length - 3} more</Text>
                   </Stack>
                 )}
               </Row>

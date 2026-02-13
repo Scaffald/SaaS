@@ -179,9 +179,7 @@ export function ResultsStep({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text color="gray">
-          Test Complete
-        </Text>
+        <Text color="gray">Test Complete</Text>
         <Text color="gray" lineHeight={20}>
           {feedbackMessage}
         </Text>
@@ -197,22 +195,12 @@ export function ResultsStep({
         borderColor="$borderColor"
       >
         {!canViewResults && (
-          <Text color="gray">
-            Results will appear here once both selections are complete.
-          </Text>
+          <Text color="gray">Results will appear here once both selections are complete.</Text>
         )}
 
-        {isLoadingInterpretation && (
-          <Text color="gray">
-            Loading results...
-          </Text>
-        )}
+        {isLoadingInterpretation && <Text color="gray">Loading results...</Text>}
 
-        {loadError && (
-          <Text color="$red10">
-            {loadError}
-          </Text>
-        )}
+        {loadError && <Text color="$red10">{loadError}</Text>}
 
         {interpretation && !isLoadingInterpretation && !loadError && (
           <Stack gap={12}>
@@ -221,22 +209,14 @@ export function ResultsStep({
 
               if (paragraph.startsWith('## ')) {
                 return (
-                  <Text
-                    key={paragraphKey}
-                    color="gray"
-                    marginTop={index > 0 ? '$4' : '$0'}
-                  >
+                  <Text key={paragraphKey} color="gray" marginTop={index > 0 ? '$4' : '$0'}>
                     {paragraph.replace('## ', '')}
                   </Text>
                 )
               }
               if (paragraph.startsWith('### ')) {
                 return (
-                  <Text
-                    key={paragraphKey}
-                    color="gray"
-                    marginTop={index > 0 ? '$3' : '$0'}
-                  >
+                  <Text key={paragraphKey} color="gray" marginTop={index > 0 ? '$3' : '$0'}>
                     {paragraph.replace('### ', '')}
                   </Text>
                 )

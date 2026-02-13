@@ -83,9 +83,9 @@ export function EducationEntryEditModal({
   const saveEducationMutation = useSaveEducationMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Education Updated',
-          message: 'Your education entry has been updated successfully!',
-        })
+        title: 'Education Updated',
+        message: 'Your education entry has been updated successfully!',
+      })
       queryClient.invalidateQueries({ queryKey: ['profiles', 'education'] })
       onSuccess?.()
       onOpenChange(false)
@@ -96,9 +96,9 @@ export function EducationEntryEditModal({
           ? error.message
           : 'Failed to update education entry. Please try again.'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     },
   })
 
@@ -507,11 +507,7 @@ export function EducationEntryEditModal({
           </Stack>
 
           {/* Action Buttons */}
-          <Row
-            justify="flex-end"
-            gap={12}
-            paddingTop={16}
-          >
+          <Row justify="flex-end" gap={12} paddingTop={16}>
             <Button
               variant="outline"
               disabled={!isDirty}

@@ -242,9 +242,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const filtersAccessory = (
     <Row gap={12} align="center" flexWrap="wrap">
       <Row gap={8} align="center">
-        <Text color="gray">
-          Status
-        </Text>
+        <Text color="gray">Status</Text>
         <ResponsiveSelect
           value={statusFilter ?? 'all'}
           onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
@@ -261,9 +259,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       </Row>
       {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
         <Row gap={8} align="center">
-          <Text color="gray">
-            Organization
-          </Text>
+          <Text color="gray">Organization</Text>
           <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
@@ -282,9 +278,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         </Row>
       )}
       <Row gap={8} align="center">
-        <Text color="gray">
-          Team
-        </Text>
+        <Text color="gray">Team</Text>
         <ResponsiveSelect
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
@@ -301,17 +295,13 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       </Row>
       <Row gap={8} align="center">
-        <Text color="gray">
-          My teams only
-        </Text>
+        <Text color="gray">My teams only</Text>
         <Switch size={8} checked={myTeamsOnly} onCheckedChange={setMyTeamsOnly}>
           <Switch.Thumb />
         </Switch>
       </Row>
       <Row gap={8} align="center">
-        <Text color="gray">
-          Sort
-        </Text>
+        <Text color="gray">Sort</Text>
         <ResponsiveSelect
           value={sortBy}
           onValueChange={(value: string) => setSortBy(value as SortOption)}
@@ -342,9 +332,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                 <Row justify="space-between" align="center">
                   <Stack>
                     <H2>Jobs</H2>
-                    <Text color="gray">
-                      {filteredAndSortedJobs.length} total jobs
-                    </Text>
+                    <Text color="gray">{filteredAndSortedJobs.length} total jobs</Text>
                   </Stack>
                   <Row gap={8}>
                     <Button size={12} onPress={() => setViewMode('kanban')} variant="outline">

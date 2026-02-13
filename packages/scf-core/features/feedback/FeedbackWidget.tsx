@@ -249,12 +249,8 @@ export function FeedbackWidget() {
                     borderRadius={16}
                   >
                     <input {...getInputProps()} />
-                    <Text>
-                      {isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}
-                    </Text>
-                    <Text color="gray">
-                      Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
-                    </Text>
+                    <Text>{isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}</Text>
+                    <Text color="gray">Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)</Text>
                     <Button size={8} marginTop={8} onPress={open}>
                       Choose File
                     </Button>
@@ -308,12 +304,8 @@ export function FeedbackWidget() {
 
             <Row align="center" justify="space-between" gap={12}>
               <Stack gap={4}>
-                <Text color="gray">
-                  Captured context:
-                </Text>
-                <Text color="gray">
-                  {context.pageUrl}
-                </Text>
+                <Text color="gray">Captured context:</Text>
+                <Text color="gray">{context.pageUrl}</Text>
                 <Text color="gray">
                   {context.browserName
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()

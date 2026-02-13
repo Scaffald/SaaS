@@ -147,11 +147,7 @@ export function OfficeTransactionHistory() {
         header: 'Status',
         cell: (info) => {
           const status = info.getValue()
-          return (
-            <Text color={getStatusColor(status)}>
-              {formatStatus(status)}
-            </Text>
-          )
+          return <Text color={getStatusColor(status)}>{formatStatus(status)}</Text>
         },
       }),
       columnHelper.accessor('stripePaymentIntentId', {
@@ -183,9 +179,7 @@ export function OfficeTransactionHistory() {
     <Stack flex={1} padding={16} gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
-          <Text>
-            Transaction History
-          </Text>
+          <Text>Transaction History</Text>
           <Text color="gray">View and export payment transaction records.</Text>
         </Stack>
         <Row gap={8}>
@@ -214,9 +208,7 @@ export function OfficeTransactionHistory() {
       <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={12}>
         <Row gap={12} flexWrap="wrap">
           <Stack gap={4} width={200}>
-            <Text color="gray">
-              Status
-            </Text>
+            <Text color="gray">Status</Text>
             <ResponsiveSelect
               value={statusFilter ?? ''}
               onValueChange={(value) => setStatusFilter(value || undefined)}
@@ -233,9 +225,7 @@ export function OfficeTransactionHistory() {
             />
           </Stack>
           <Stack gap={4} width={200}>
-            <Text color="gray">
-              Type
-            </Text>
+            <Text color="gray">Type</Text>
             <ResponsiveSelect
               value={transactionTypeFilter ?? ''}
               onValueChange={(value) => setTransactionTypeFilter(value || undefined)}

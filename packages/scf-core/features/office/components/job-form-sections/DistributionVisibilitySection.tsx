@@ -47,20 +47,14 @@ export function DistributionVisibilitySection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text>
-        Distribution & Visibility
-      </Text>
-      <Text color="gray">
-        Control job posting visibility and distribution
-      </Text>
+      <Text>Distribution & Visibility</Text>
+      <Text color="gray">Control job posting visibility and distribution</Text>
 
       {/* Is Featured */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Featured job</Label>
-          <Text color="gray">
-            Highlight this job in listings
-          </Text>
+          <Text color="gray">Highlight this job in listings</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_featured || false}
@@ -77,9 +71,7 @@ export function DistributionVisibilitySection({
             value={localState.featured_until || ''}
             onChangeText={(text) => handleChange('featured_until', text || undefined)}
           />
-          <Text color="gray">
-            Date when featured status expires
-          </Text>
+          <Text color="gray">Date when featured status expires</Text>
         </Stack>
       )}
 
@@ -97,9 +89,7 @@ export function DistributionVisibilitySection({
             handleChange('seo_keywords', keywords.length > 0 ? keywords : undefined)
           }}
         />
-        <Text color="gray">
-          Comma-separated keywords for search optimization
-        </Text>
+        <Text color="gray">Comma-separated keywords for search optimization</Text>
       </Stack>
 
       {/* External Application URL */}
@@ -110,9 +100,7 @@ export function DistributionVisibilitySection({
           value={localState.external_application_url || ''}
           onChangeText={(text) => handleChange('external_application_url', text || undefined)}
         />
-        <Text color="gray">
-          Redirect to external ATS for applications
-        </Text>
+        <Text color="gray">Redirect to external ATS for applications</Text>
       </Stack>
     </Stack>
   )

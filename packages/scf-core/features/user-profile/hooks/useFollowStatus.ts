@@ -6,11 +6,12 @@ export function useFollowStatus(targetUserId: string | null) {
   })
 
   const isFollowing =
-    followingData?.data.some((follow: { followee_id?: string }) => follow.followee_id === targetUserId) ?? false
+    followingData?.data.some(
+      (follow: { followee_id?: string }) => follow.followee_id === targetUserId
+    ) ?? false
 
   return {
     isFollowing,
     isLoading,
   }
 }
-

@@ -91,12 +91,8 @@ export function JobMetadataSection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text>
-        Job Metadata & Management
-      </Text>
-      <Text color="gray">
-        Internal tracking and management information
-      </Text>
+      <Text>Job Metadata & Management</Text>
+      <Text color="gray">Internal tracking and management information</Text>
 
       {/* Internal Job Code */}
       <Stack gap={8}>
@@ -210,9 +206,7 @@ export function JobMetadataSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Confidential posting</Label>
-          <Text color="gray">
-            Hide company name and details from job listings
-          </Text>
+          <Text color="gray">Hide company name and details from job listings</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_confidential || false}
@@ -229,9 +223,7 @@ export function JobMetadataSection({
           value={localState.application_deadline || ''}
           onChangeText={(text) => handleChange('application_deadline', text || undefined)}
         />
-        <Text color="gray">
-          Last date to accept applications
-        </Text>
+        <Text color="gray">Last date to accept applications</Text>
       </Stack>
 
       <Stack gap={8}>
@@ -241,9 +233,7 @@ export function JobMetadataSection({
           value={localState.target_start_date || ''}
           onChangeText={(text) => handleChange('target_start_date', text || undefined)}
         />
-        <Text color="gray">
-          When you want the hire to start
-        </Text>
+        <Text color="gray">When you want the hire to start</Text>
       </Stack>
 
       <Stack gap={8}>
@@ -253,9 +243,7 @@ export function JobMetadataSection({
           value={localState.estimated_hire_date || ''}
           onChangeText={(text) => handleChange('estimated_hire_date', text || undefined)}
         />
-        <Text color="gray">
-          When you expect to make a hire
-        </Text>
+        <Text color="gray">When you expect to make a hire</Text>
       </Stack>
     </Stack>
   )

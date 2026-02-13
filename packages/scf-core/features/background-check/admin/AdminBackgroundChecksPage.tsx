@@ -192,14 +192,8 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text color="gray">
-              {row.original.workerName}
-            </Text>
-            {row.original.workerEmail ? (
-              <Text color="gray">
-                {row.original.workerEmail}
-              </Text>
-            ) : null}
+            <Text color="gray">{row.original.workerName}</Text>
+            {row.original.workerEmail ? <Text color="gray">{row.original.workerEmail}</Text> : null}
           </Stack>
         ),
       },
@@ -253,14 +247,8 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text color="gray">
-              {row.original.workerName}
-            </Text>
-            {row.original.workerEmail ? (
-              <Text color="gray">
-                {row.original.workerEmail}
-              </Text>
-            ) : null}
+            <Text color="gray">{row.original.workerName}</Text>
+            {row.original.workerEmail ? <Text color="gray">{row.original.workerEmail}</Text> : null}
           </Stack>
         ),
       },
@@ -317,9 +305,7 @@ export function AdminBackgroundChecksPage() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">
-          Verifying admin access…
-        </Text>
+        <Text color="gray">Verifying admin access…</Text>
       </Stack>
     )
   }
@@ -327,9 +313,7 @@ export function AdminBackgroundChecksPage() {
   if (!isAdmin) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="gray">
-          Admin access required
-        </Text>
+        <Text color="gray">Admin access required</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           Background check review tools are restricted to compliance administrators. Contact an
           administrator if you believe this is an error.
@@ -349,9 +333,7 @@ export function AdminBackgroundChecksPage() {
     <Stack flex={1} backgroundColor="$background">
       <Stack padding={16} gap={16}>
         <Stack gap={8}>
-          <Text color="gray">
-            Background check administration
-          </Text>
+          <Text color="gray">Background check administration</Text>
           <Text color="gray">
             Review in-progress screenings, resolve disputes, and keep results compliant.
           </Text>
@@ -366,12 +348,8 @@ export function AdminBackgroundChecksPage() {
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text color="gray">
-              Active reviews
-            </Text>
-            <Text color="gray">
-              {summaryStats.underReview}
-            </Text>
+            <Text color="gray">Active reviews</Text>
+            <Text color="gray">{summaryStats.underReview}</Text>
           </Card>
           <Card
             padding={12}
@@ -381,12 +359,8 @@ export function AdminBackgroundChecksPage() {
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text color="gray">
-              Pending disputes
-            </Text>
-            <Text color="gray">
-              {summaryStats.pendingDisputes}
-            </Text>
+            <Text color="gray">Pending disputes</Text>
+            <Text color="gray">{summaryStats.pendingDisputes}</Text>
           </Card>
           <Card
             padding={12}
@@ -396,12 +370,8 @@ export function AdminBackgroundChecksPage() {
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text color="gray">
-              Total checks in view
-            </Text>
-            <Text color="gray">
-              {summaryStats.total}
-            </Text>
+            <Text color="gray">Total checks in view</Text>
+            <Text color="gray">{summaryStats.total}</Text>
           </Card>
         </Row>
 

@@ -129,11 +129,7 @@ const formatTimestamp = (timestamp: string): string => {
 }
 
 export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProps) {
-  const {
-    data: history,
-    isLoading,
-    error,
-  } = useInquiryHistory(inquiryId)
+  const { data: history, isLoading, error } = useInquiryHistory(inquiryId)
 
   const sortedHistory = useMemo(() => {
     if (!history) return []
@@ -172,9 +168,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   return (
     <Stack gap={12} padding={16}>
-      <Text>
-        History
-      </Text>
+      <Text>History</Text>
 
       <Stack gap={8}>
         {sortedHistory.map((event, index) => {
@@ -210,17 +204,11 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                       </Text>
                     </Avatar.Fallback>
                   </Avatar>
-                  <Text>
-                    {actorDisplayName(event.actor)}
-                  </Text>
-                  <Text color="gray">
-                    {formatEventType(event.event_type as EventType)}
-                  </Text>
+                  <Text>{actorDisplayName(event.actor)}</Text>
+                  <Text color="gray">{formatEventType(event.event_type as EventType)}</Text>
                 </Row>
 
-                <Text color="gray">
-                  {formatTimestamp(event.created_at)}
-                </Text>
+                <Text color="gray">{formatTimestamp(event.created_at)}</Text>
 
                 {/* Event-specific details */}
                 {event.event_data && (

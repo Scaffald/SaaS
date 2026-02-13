@@ -124,14 +124,8 @@ export function IdVerificationAdminPage({
         header: 'Worker',
         cell: ({ row }: CellContext<VerificationItem, unknown>) => (
           <Stack>
-            <Text color="gray">
-              {row.original.workerName}
-            </Text>
-            {row.original.workerEmail ? (
-              <Text color="gray">
-                {row.original.workerEmail}
-              </Text>
-            ) : null}
+            <Text color="gray">{row.original.workerName}</Text>
+            {row.original.workerEmail ? <Text color="gray">{row.original.workerEmail}</Text> : null}
           </Stack>
         ),
         meta: { width: '$20' },
@@ -143,11 +137,7 @@ export function IdVerificationAdminPage({
           const badgeKey = row.original.badgeStatus as Exclude<StatusFilter, 'all'>
           const meta = STATUS_META[badgeKey]
           if (!meta) {
-            return (
-              <Text color="gray">
-                {row.original.badgeStatus}
-              </Text>
-            )
+            return <Text color="gray">{row.original.badgeStatus}</Text>
           }
           return (
             <Text
@@ -262,20 +252,14 @@ export function IdVerificationAdminPage({
               borderColor="$borderColor"
               borderWidth={1}
             >
-              <Text color="gray">
-                {item.label}
-              </Text>
-              <Text color={item.color}>
-                {item.value}
-              </Text>
+              <Text color="gray">{item.label}</Text>
+              <Text color={item.color}>{item.value}</Text>
             </Card>
           ))}
         </Row>
 
         <Stack gap={8}>
-          <Text color="gray">
-            Badge status filter
-          </Text>
+          <Text color="gray">Badge status filter</Text>
           <Tabs
             value={statusFilter}
             onValueChange={(value) => setStatusFilter(value as StatusFilter)}
@@ -289,9 +273,7 @@ export function IdVerificationAdminPage({
             >
               {STATUS_TABS.map((tab) => (
                 <Tabs.Tab key={tab.value} flex={1} value={tab.value}>
-                  <Text>
-                    {tab.label}
-                  </Text>
+                  <Text>{tab.label}</Text>
                 </Tabs.Tab>
               ))}
             </Tabs.List>
@@ -299,9 +281,7 @@ export function IdVerificationAdminPage({
         </Stack>
 
         <Stack gap={8}>
-          <Text color="gray">
-            Organization
-          </Text>
+          <Text color="gray">Organization</Text>
           <ResponsiveSelect
             value={selectedOrganizationId ?? '__all__'}
             onValueChange={handleOrganizationChange}
@@ -323,9 +303,7 @@ export function IdVerificationAdminPage({
           {isLoadingOrganizations ? (
             <Row gap={8} align="center">
               <Spinner size="sm" />
-              <Text color="gray">
-                Loading organizations…
-              </Text>
+              <Text color="gray">Loading organizations…</Text>
             </Row>
           ) : null}
         </Stack>

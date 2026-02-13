@@ -1,14 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
-import {
-  Briefcase,
-  Building2,
-  Clock,
-  DollarSign,
-  ExternalLink,
-  MapPin,
-} from 'lucide-react-native'
+import { Briefcase, Building2, Clock, DollarSign, ExternalLink, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
@@ -111,9 +104,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
         </Stack>
       ) : !job ? (
         <Stack paddingVertical={32} align="center">
-          <Text color="$red10">
-            Job not found
-          </Text>
+          <Text color="$red10">Job not found</Text>
         </Stack>
       ) : (
         <>
@@ -131,15 +122,11 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             </Stack>
 
             <Stack gap={8} align="center">
-              <Text color="gray">
-                {job.title}
-              </Text>
+              <Text color="gray">{job.title}</Text>
               {job.organization?.name && (
                 <Row gap={8} align="center">
                   <Building2 size={16} color="gray" />
-                  <Text color="gray">
-                    {job.organization.name}
-                  </Text>
+                  <Text color="gray">{job.organization.name}</Text>
                 </Row>
               )}
             </Stack>
@@ -156,9 +143,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     borderWidth={1}
                     borderColor="$blue5"
                   >
-                    <Text color="$blue11">
-                      {formatEmploymentType(job.employment_type)}
-                    </Text>
+                    <Text color="$blue11">{formatEmploymentType(job.employment_type)}</Text>
                   </Row>
                 )}
                 {job.position_level && (
@@ -168,9 +153,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     paddingVertical={6}
                     borderRadius={12}
                   >
-                    <Text color="gray">
-                      {job.position_level}
-                    </Text>
+                    <Text color="gray">{job.position_level}</Text>
                   </Row>
                 )}
               </Row>
@@ -184,18 +167,14 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.location && (
               <Row gap={8} align="center">
                 <MapPin size={18} color="gray" />
-                <Text color="gray">
-                  {job.location}
-                </Text>
+                <Text color="gray">{job.location}</Text>
               </Row>
             )}
 
             {job.remote_option && (
               <Row gap={8} align="center">
                 <Clock size={18} color="gray" />
-                <Text color="gray">
-                  {formatRemoteOption(job.remote_option)}
-                </Text>
+                <Text color="gray">{formatRemoteOption(job.remote_option)}</Text>
               </Row>
             )}
 
@@ -220,9 +199,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 paddingVertical={6}
                 borderRadius={12}
               >
-                <Text color="$green11">
-                  Accepting Applications
-                </Text>
+                <Text color="$green11">Accepting Applications</Text>
               </Row>
             )}
           </Stack>
@@ -232,9 +209,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             <>
               <Separator />
               <Stack gap={8}>
-                <Text color="gray">
-                  Description
-                </Text>
+                <Text color="gray">Description</Text>
                 <Text color="gray" lineHeight={4} numberOfLines={4}>
                   {job.description}
                 </Text>

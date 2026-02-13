@@ -104,10 +104,10 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to send bulk inquiry',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to send bulk inquiry',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -151,35 +151,25 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
         <Sheet.Frame>
           <ScrollView>
             <Stack gap={16} padding={16}>
-              <Text>
-                Bulk Inquiry Results
-              </Text>
+              <Text>Bulk Inquiry Results</Text>
 
               {/* Summary */}
               <Stack gap={12} padding={16} backgroundColor="$color2" borderRadius={16}>
                 <Row gap={8} align="center">
-                  <Text color="$green10">
-                    ✓ {bulkResults.successful} Successful
-                  </Text>
+                  <Text color="$green10">✓ {bulkResults.successful} Successful</Text>
                 </Row>
                 {bulkResults.failed > 0 && (
                   <Row gap={8} align="center">
-                    <Text color="$red10">
-                      ✗ {bulkResults.failed} Failed
-                    </Text>
+                    <Text color="$red10">✗ {bulkResults.failed} Failed</Text>
                   </Row>
                 )}
-                <Text color="gray">
-                  Total: {bulkResults.total} candidates
-                </Text>
+                <Text color="gray">Total: {bulkResults.total} candidates</Text>
               </Stack>
 
               {/* Failed details */}
               {bulkResults.failed > 0 && (
                 <Stack gap={8}>
-                  <Text color="$red10">
-                    Failed Inquiries
-                  </Text>
+                  <Text color="$red10">Failed Inquiries</Text>
                   {bulkResults.results
                     .filter((r) => !r.success)
                     .map((result) => (
@@ -190,12 +180,8 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                         borderRadius={12}
                         gap={4}
                       >
-                        <Text>
-                          Application: {result.applicationId}
-                        </Text>
-                        <Text color="$red11">
-                          {result.error || 'Unknown error'}
-                        </Text>
+                        <Text>Application: {result.applicationId}</Text>
+                        <Text color="$red11">{result.error || 'Unknown error'}</Text>
                       </Stack>
                     ))}
                 </Stack>
@@ -226,9 +212,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                   <Stack gap={24} padding={16}>
                     {/* Header */}
                     <Stack gap={8}>
-                      <Text>
-                        Send Inquiry to {applicationIds.length} Candidates
-                      </Text>
+                      <Text>Send Inquiry to {applicationIds.length} Candidates</Text>
                       <Text color="gray">
                         The same inquiry will be sent to all selected candidates
                       </Text>
@@ -237,9 +221,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     {/* Progress indicator */}
                     {isSubmitting && (
                       <Stack gap={8} padding={16} backgroundColor="$blue2" borderRadius={16}>
-                        <Text>
-                          Sending inquiries...
-                        </Text>
+                        <Text>Sending inquiries...</Text>
                         <Progress value={75} />
                         <Text color="gray">
                           Please wait while we send inquiries to all candidates
@@ -250,16 +232,12 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     {/* Employment Section */}
                     <Stack gap={16}>
                       <Row align="center" gap={8}>
-                        <Text>
-                          Employment
-                        </Text>
+                        <Text>Employment</Text>
                       </Row>
 
                       {/* Employment Type */}
                       <Stack gap={8}>
-                        <Text>
-                          Employment type
-                        </Text>
+                        <Text>Employment type</Text>
                         <Controller
                           control={control}
                           name="employmentType"
@@ -295,17 +273,13 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                               />
                             )}
                           />
-                          <Text color="gray">
-                            Non-negotiable
-                          </Text>
+                          <Text color="gray">Non-negotiable</Text>
                         </Row>
                       </Stack>
 
                       {/* Work Schedule */}
                       <Stack gap={8}>
-                        <Text>
-                          Work schedule
-                        </Text>
+                        <Text>Work schedule</Text>
                         <Controller
                           control={control}
                           name="workSchedule"
@@ -336,15 +310,11 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
                     {/* Compensation Section */}
                     <Stack gap={16}>
-                      <Text>
-                        Compensation
-                      </Text>
+                      <Text>Compensation</Text>
 
                       {/* Rate Type */}
                       <Stack gap={8}>
-                        <Text>
-                          Rate type
-                        </Text>
+                        <Text>Rate type</Text>
                         <Controller
                           control={control}
                           name="rateType"
@@ -376,9 +346,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                       {/* Rate Range */}
                       <Row gap={8}>
                         <Stack gap={8} flex={1}>
-                          <Text>
-                            Minimum rate
-                          </Text>
+                          <Text>Minimum rate</Text>
                           <Controller
                             control={control}
                             name="rateMinCents"
@@ -398,9 +366,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                           />
                         </Stack>
                         <Stack gap={8} flex={1}>
-                          <Text>
-                            Maximum rate (optional)
-                          </Text>
+                          <Text>Maximum rate (optional)</Text>
                           <Controller
                             control={control}
                             name="rateMaxCents"
@@ -426,9 +392,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
                     {/* Other Section */}
                     <Stack gap={16}>
-                      <Text>
-                        Additional Notes
-                      </Text>
+                      <Text>Additional Notes</Text>
                       <Controller
                         control={control}
                         name="additionalNotes"
@@ -453,18 +417,10 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                       borderTopColor="$borderColor"
                       justify="flex-end"
                     >
-                      <Button
-                        variant="outline"
-                        onPress={handleClose}
-                        disabled={isSubmitting}
-                      >
+                      <Button variant="outline" onPress={handleClose} disabled={isSubmitting}>
                         Cancel
                       </Button>
-                      <Button
-                        onPress={onSubmit}
-                        disabled={isSubmitting}
-                        theme="blue"
-                      >
+                      <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
                         {isSubmitting
                           ? 'Sending...'
                           : `Send to ${applicationIds.length} Candidates`}

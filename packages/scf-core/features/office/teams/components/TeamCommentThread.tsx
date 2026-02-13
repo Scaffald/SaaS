@@ -54,16 +54,16 @@ export function TeamCommentThread({
       await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'comments']] })
       await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
       toast.show({
-          title: 'Comment posted',
-          message: 'Your update was shared with the team.',
-        })
+        title: 'Comment posted',
+        message: 'Your update was shared with the team.',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to post comment',
-          variant: 'error',
-        })
+        title: 'Unable to post comment',
+        variant: 'error',
+      })
     },
   })
 
@@ -98,13 +98,9 @@ export function TeamCommentThread({
       <Stack gap={8}>
         <Row gap={8} align="center">
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
-          <Text accessibilityRole="header">
-            Team discussion
-          </Text>
+          <Text accessibilityRole="header">Team discussion</Text>
         </Row>
-        <Text color="gray">
-          Share updates with your team. Mentions notify teammates instantly.
-        </Text>
+        <Text color="gray">Share updates with your team. Mentions notify teammates instantly.</Text>
       </Stack>
 
       <Stack gap={12}>
@@ -120,12 +116,7 @@ export function TeamCommentThread({
         />
 
         {mentionOptions.length > 0 ? (
-          <Row
-            gap={8}
-            flexWrap="wrap"
-            flexDirection="column"
-            align="stretch"
-          >
+          <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
             {mentionOptions.map((option) => (
               <Button
                 key={option.id}
@@ -147,11 +138,7 @@ export function TeamCommentThread({
           </Row>
         ) : null}
 
-        {mentionLabel ? (
-          <Text color="gray">
-            Mentioning @{mentionLabel}
-          </Text>
-        ) : null}
+        {mentionLabel ? <Text color="gray">Mentioning @{mentionLabel}</Text> : null}
 
         <Row justify="flex-end">
           <Button
@@ -211,14 +198,10 @@ export function TeamCommentThread({
                 width="100%"
               >
                 <Text>{actorName}</Text>
-                <Text color="gray">
-                  {occurredAt}
-                </Text>
+                <Text color="gray">{occurredAt}</Text>
                 <Text>{comment.body}</Text>
                 {mentionNames.length ? (
-                  <Text color="gray">
-                    Mentions: {mentionNames.join(', ')}
-                  </Text>
+                  <Text color="gray">Mentions: {mentionNames.join(', ')}</Text>
                 ) : null}
               </Stack>
             )

@@ -203,10 +203,10 @@ export function UserProfileHeaderEnhanced({
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to unfollow',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to unfollow',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
@@ -336,9 +336,7 @@ export function UserProfileHeaderEnhanced({
               <Avatar.Image source={{ uri: avatarUrl }} />
             ) : (
               <Avatar.Fallback backgroundColor="$blue4">
-                <Text color="$blue10">
-                  {profile.name?.charAt(0) || '?'}
-                </Text>
+                <Text color="$blue10">{profile.name?.charAt(0) || '?'}</Text>
               </Avatar.Fallback>
             )}
           </Avatar>
@@ -351,33 +349,23 @@ export function UserProfileHeaderEnhanced({
         <Row gap={16} align="flex-start" justify="space-between" flexWrap="wrap">
           <Stack flex={1} gap={8} minWidth={200}>
             {/* Name */}
-            <Text color="gray">
-              {profile.name || 'User'}
-            </Text>
+            <Text color="gray">{profile.name || 'User'}</Text>
 
             {/* Headline */}
-            {profile.headline && (
-              <Text color="gray">
-                {profile.headline}
-              </Text>
-            )}
+            {profile.headline && <Text color="gray">{profile.headline}</Text>}
 
             {/* Industry and Location */}
             <Row gap={12} flexWrap="wrap" align="center">
               {profile.industry_name && (
                 <Row gap={8} align="center">
                   <Briefcase size={16} color="gray" />
-                  <Text color="gray">
-                    {profile.industry_name}
-                  </Text>
+                  <Text color="gray">{profile.industry_name}</Text>
                 </Row>
               )}
               {profile.location && (
                 <Row gap={8} align="center">
                   <MapPin size={16} color="gray" />
-                  <Text color="gray">
-                    {profile.location}
-                  </Text>
+                  <Text color="gray">{profile.location}</Text>
                 </Row>
               )}
             </Row>
@@ -515,12 +503,8 @@ export function UserProfileHeaderEnhanced({
             >
               <Star size={24} color="$blue10" fill="$blue10" />
               <Stack>
-                <Text color="$blue11">
-                  {profile.gamified_score}
-                </Text>
-                <Text color="$blue10">
-                  Scaffald Score
-                </Text>
+                <Text color="$blue11">{profile.gamified_score}</Text>
+                <Text color="$blue10">Scaffald Score</Text>
               </Stack>
             </Row>
           )}
@@ -536,9 +520,7 @@ export function UserProfileHeaderEnhanced({
               borderRadius={12}
             >
               <Award size={18} color="gray" />
-              <Text color="gray">
-                {formattedYears} years experience
-              </Text>
+              <Text color="gray">{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -553,9 +535,7 @@ export function UserProfileHeaderEnhanced({
               borderRadius={12}
             >
               <DollarSign size={18} color="gray" />
-              <Text color="gray">
-                {formatHourlyRate(profile.hourly_rate_cents)}
-              </Text>
+              <Text color="gray">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
             </Row>
           )}
 
@@ -569,9 +549,7 @@ export function UserProfileHeaderEnhanced({
               borderWidth={1}
               borderColor="$green7"
             >
-              <Text color="$green11">
-                ✓ Available for Work
-              </Text>
+              <Text color="$green11">✓ Available for Work</Text>
             </Row>
           )}
         </Row>

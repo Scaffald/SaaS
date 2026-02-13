@@ -2,58 +2,58 @@
  * tRPC client initialization and configuration
  *
  * ## Type Safety Strategy
- * 
+ *
  * The AppRouter type is imported from @scf/supabase/client-types which uses a safe
  * type export strategy (app-router-safe-type.ts) to avoid issues with @ts-nocheck files.
- * 
+ *
  * The router structure includes these namespaces:
  * - profile: Profile management (general, employment, skills, etc.)
  * - auth: Authentication endpoints
  * - jobs: Job listings and applications
  * - applications: Application submissions
  * - And many more (see packages/supabase/functions/trpc/routers/_app-impl.ts)
- * 
+ *
  * ## Type Checking
- * 
+ *
  * - The AppRouter type is extracted directly from the actual router instance
  * - Type-only imports allow TypeScript to infer types even from @ts-nocheck files
  * - This ensures proper autocomplete and type safety in the client application
  */
 
-import { getGlobalQueryClient } from '@scf/core/provider/react-query/queryClient';
-import type { AppRouter } from '@scf/supabase/client-types';
-import { httpBatchLink, TRPCClientError, type TRPCLink } from '@trpc/client';
-import { createTRPCReact } from '@trpc/react-query';
-import { observable } from '@trpc/server/observable';
-import Constants from 'expo-constants';
-import { Platform } from 'react-native';
-import { clearAllAuthStorage } from './auth/clearAuthStorage';
-import { supabase } from './supabase/client';
+import { getGlobalQueryClient } from '@scf/core/provider/react-query/queryClient'
+import type { AppRouter } from '@scf/supabase/client-types'
+import { httpBatchLink, TRPCClientError, type TRPCLink } from '@trpc/client'
+import { createTRPCReact } from '@trpc/react-query'
+import { observable } from '@trpc/server/observable'
+import Constants from 'expo-constants'
+import { Platform } from 'react-native'
+import { clearAllAuthStorage } from './auth/clearAuthStorage'
+import { supabase } from './supabase/client'
 
 /**
  * tRPC React client instance
- * 
+ *
  * This client provides type-safe access to all backend procedures defined in the AppRouter.
  * The type is properly inferred from the actual router implementation, ensuring:
  * - Autocomplete for all available procedures
  * - Type checking for procedure inputs and outputs
  * - Runtime type validation via tRPC
- * 
+ *
  * @example
  * ```ts
  * // Query example
  * const { data } = api.profile.general.get.useQuery();
- * 
+ *
  * // Mutation example
  * const mutation = api.profile.skills.addSkill.useMutation();
  * ```
  */
-export const api = createTRPCReact<AppRouter>();
+export const api = createTRPCReact<AppRouter>()
 
 // Debounce state for auth cleanup
-let cleanupTimeout: ReturnType<typeof setTimeout> | null = null;
-let pendingCleanup: Promise<void> | null = null;
-const CLEANUP_DEBOUNCE_MS = 100; // Debounce window for batching cleanup calls
+let cleanupTimeout: ReturnType<typeof setTimeout> | null = null
+let pendingCleanup: Promise<void> | null = null
+const CLEANUP_DEBOUNCE_MS = 100 // Debounce window for batching cleanup calls
 
 // Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
@@ -63,86 +63,76 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
         next: observer.next.bind(observer),
         error: async (err) => {
           // Check if this is an UNAUTHORIZED error indicating invalid session
-          if (
-            err instanceof TRPCClientError && err.data?.code === "UNAUTHORIZED"
-          ) {
-            console.log(
-              "[tRPC] UNAUTHORIZED error detected - invalid or expired session",
-            );
+          if (err instanceof TRPCClientError && err.data?.code === 'UNAUTHORIZED') {
+            console.log('[tRPC] UNAUTHORIZED error detected - invalid or expired session')
 
             // Clear any existing timeout
             if (cleanupTimeout) {
-              clearTimeout(cleanupTimeout);
-              cleanupTimeout = null;
+              clearTimeout(cleanupTimeout)
+              cleanupTimeout = null
             }
 
             // If cleanup is already pending, wait for it
             if (pendingCleanup) {
-              console.log(
-                "[tRPC] Cleanup already pending, waiting for existing cleanup",
-              );
+              console.log('[tRPC] Cleanup already pending, waiting for existing cleanup')
               try {
-                await pendingCleanup;
+                await pendingCleanup
               } catch {
                 // Ignore errors from pending cleanup
               }
-              observer.error(err);
-              return;
+              observer.error(err)
+              return
             }
 
             // Debounce cleanup to batch multiple simultaneous errors
             cleanupTimeout = setTimeout(async () => {
-              cleanupTimeout = null;
+              cleanupTimeout = null
               try {
-                console.log(
-                  "[tRPC] Triggering comprehensive auth cleanup and redirect",
-                );
+                console.log('[tRPC] Triggering comprehensive auth cleanup and redirect')
 
                 // Get query client for cache clearing
-                const queryClient = getGlobalQueryClient();
+                const queryClient = getGlobalQueryClient()
 
                 // Perform comprehensive cleanup (this function has its own guard)
-                pendingCleanup = clearAllAuthStorage(queryClient || undefined);
-                await pendingCleanup;
+                pendingCleanup = clearAllAuthStorage(queryClient || undefined)
+                await pendingCleanup
 
-                console.log(
-                  "[tRPC] Auth cleanup completed - user will be redirected to /auth",
-                );
+                console.log('[tRPC] Auth cleanup completed - user will be redirected to /auth')
               } catch (error) {
-                console.error("[tRPC] Error during auth cleanup:", error);
+                console.error('[tRPC] Error during auth cleanup:', error)
               } finally {
-                pendingCleanup = null;
+                pendingCleanup = null
               }
-            }, CLEANUP_DEBOUNCE_MS);
+            }, CLEANUP_DEBOUNCE_MS)
           }
-          observer.error(err);
+          observer.error(err)
         },
         complete: observer.complete.bind(observer),
-      });
-      return unsubscribe;
-    });
-  };
-};
+      })
+      return unsubscribe
+    })
+  }
+}
 
-const supabaseExtra = (Constants?.expoConfig?.extra as {
-  supabase?: { url?: string; anonKey?: string };
-})?.supabase;
+const supabaseExtra = (
+  Constants?.expoConfig?.extra as {
+    supabase?: { url?: string; anonKey?: string }
+  }
+)?.supabase
 
-const resolvedSupabaseUrl =
-  process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url;
-const resolvedSupabaseAnonKey =
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey;
+const resolvedSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url
+const resolvedSupabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey
 
 if (!resolvedSupabaseUrl) {
   throw new Error(
-    "EXPO_PUBLIC_SUPABASE_URL is not configured. Update app.config.ts extra.supabase.url or the build env."
-  );
+    'EXPO_PUBLIC_SUPABASE_URL is not configured. Update app.config.ts extra.supabase.url or the build env.'
+  )
 }
 
 if (!resolvedSupabaseAnonKey) {
   throw new Error(
-    "EXPO_PUBLIC_SUPABASE_ANON_KEY is not configured. Update app.config.ts extra.supabase.anonKey or the build env."
-  );
+    'EXPO_PUBLIC_SUPABASE_ANON_KEY is not configured. Update app.config.ts extra.supabase.anonKey or the build env.'
+  )
 }
 
 export const createTrpcClient = () =>
@@ -154,37 +144,34 @@ export const createTrpcClient = () =>
       httpBatchLink({
         url: `${resolvedSupabaseUrl}/functions/v1/trpc`,
         async headers() {
-          const headers = new Map<string, string>();
+          const headers = new Map<string, string>()
 
           // Set platform-specific source header
-          headers.set(
-            "x-trpc-source",
-            Platform.OS === "web" ? "expo-web" : "expo-react",
-          );
+          headers.set('x-trpc-source', Platform.OS === 'web' ? 'expo-web' : 'expo-react')
 
           // Always include apikey header for Supabase Edge Functions
-          const anonKey = resolvedSupabaseAnonKey;
+          const anonKey = resolvedSupabaseAnonKey
           if (anonKey) {
-            headers.set("apikey", anonKey);
+            headers.set('apikey', anonKey)
           }
 
-          const session = (await supabase.auth.getSession()).data.session;
+          const session = (await supabase.auth.getSession()).data.session
 
           // Supabase Edge Functions require an Authorization header
           // Use user's access token if available, otherwise use anon key for public endpoints
           if (session?.access_token && session.access_token.trim().length > 0) {
-            headers.set("Authorization", `Bearer ${session.access_token}`);
+            headers.set('Authorization', `Bearer ${session.access_token}`)
           } else if (anonKey) {
             // For public endpoints, use anon key as Bearer token
             // This satisfies Supabase's requirement for Authorization header
-            headers.set("Authorization", `Bearer ${anonKey}`);
+            headers.set('Authorization', `Bearer ${anonKey}`)
           }
 
-          return Object.fromEntries(headers);
+          return Object.fromEntries(headers)
         },
       }),
     ],
-  });
+  })
 
 // Export individual types for easier usage
 export type {
@@ -197,7 +184,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from '@scf/supabase/client-types';
+} from '@scf/supabase/client-types'
 
 // Export constants and schemas for form usage
 export {
@@ -206,4 +193,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from '@scf/supabase/client-types';
+} from '@scf/supabase/client-types'

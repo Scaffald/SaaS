@@ -37,18 +37,18 @@ export function OccupationAssessmentWizard() {
       // Invalidate status queries to update drawer checkmarks
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'onet', 'occupation', 'status'] })
       toast.show({
-          title: 'Saved',
-          message: 'Your occupation preferences have been saved!',
-          variant: 'success',
-        })
+        title: 'Saved',
+        message: 'Your occupation preferences have been saved!',
+        variant: 'success',
+      })
       router.push(ROUTES.DASHBOARD.path)
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to save preferences. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to save preferences. Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -95,12 +95,8 @@ export function OccupationAssessmentWizard() {
         {/* Current Occupation */}
         <Stack gap={12}>
           <Stack gap={4}>
-            <Text>
-              Current Occupation (Optional)
-            </Text>
-            <Text color="gray">
-              What is your current or most recent job?
-            </Text>
+            <Text>Current Occupation (Optional)</Text>
+            <Text color="gray">What is your current or most recent job?</Text>
           </Stack>
           <OccupationSearch
             value={currentOccupation}
@@ -113,19 +109,11 @@ export function OccupationAssessmentWizard() {
         {/* Target Occupations */}
         <Stack gap={12}>
           <Stack gap={4}>
-            <Text>
-              Target Occupations (Optional)
-            </Text>
-            <Text color="gray">
-              What occupations are you interested in pursuing?
-            </Text>
+            <Text>Target Occupations (Optional)</Text>
+            <Text color="gray">What occupations are you interested in pursuing?</Text>
           </Stack>
           {targetOccupations.map((occupation, index) => (
-            <Row
-              key={`target-occupation-${index}-${occupation || 'empty'}`}
-              gap={8}
-              align="center"
-            >
+            <Row key={`target-occupation-${index}-${occupation || 'empty'}`} gap={8} align="center">
               <Stack flex={1}>
                 <OccupationSearch
                   value={occupation}

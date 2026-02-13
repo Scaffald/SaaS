@@ -1,4 +1,7 @@
-import { useSaveImportDataMutation, useClearImportDataMutation } from '@scf/core/utils/profile-import-sdk-hooks'
+import {
+  useSaveImportDataMutation,
+  useClearImportDataMutation,
+} from '@scf/core/utils/profile-import-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   CheckCircle2,
@@ -122,9 +125,7 @@ export function ImportReviewScreen() {
     return (
       <Stack gap={12} padding={16} align="center">
         <FileWarning size={32} color="$red10" />
-        <Text color="$red11">
-          We couldn’t load your import data
-        </Text>
+        <Text color="$red11">We couldn’t load your import data</Text>
         <Text color="gray">
           Please retry. If the issue persists, try uploading your resume again.
         </Text>
@@ -310,9 +311,7 @@ export function ImportReviewScreen() {
                     size={16}
                     color={expiresInLabel?.status === 'expired' ? '$red10' : '$blue10'}
                   />
-                  <Text
-                    color={expiresInLabel?.status === 'expired' ? '$red10' : '$color11'}
-                  >
+                  <Text color={expiresInLabel?.status === 'expired' ? '$red10' : '$color11'}>
                     {expiresInLabel?.label ?? 'Expires 24 hours after upload'}
                   </Text>
                 </Row>
@@ -324,10 +323,7 @@ export function ImportReviewScreen() {
                   </Text>
                 </Text>
                 <Text color="gray">
-                  Items detected:{' '}
-                  <Text color="gray">
-                    {totalItems}
-                  </Text>
+                  Items detected: <Text color="gray">{totalItems}</Text>
                 </Text>
               </Row>
             </Stack>
@@ -336,9 +332,7 @@ export function ImportReviewScreen() {
       </Card>
 
       <Stack gap={8}>
-        <Text>
-          Review Imported Data
-        </Text>
+        <Text>Review Imported Data</Text>
         <Text color="gray">
           Select the items you’d like to import. We’ll highlight anything that might need attention.
         </Text>
@@ -442,12 +436,7 @@ export function ImportReviewScreen() {
 
       <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
         <Row gap={8} flexWrap="wrap">
-          <Button
-            size={12}
-            variant="outline"
-            icon={RotateCcw}
-            onPress={() => setSelectedItems({})}
-          >
+          <Button size={12} variant="outline" icon={RotateCcw} onPress={() => setSelectedItems({})}>
             Clear selections
           </Button>
           <Button
@@ -475,7 +464,9 @@ export function ImportReviewScreen() {
             disabled={clearImportMutation.isPending}
             onPress={async () => {
               await clearImportMutation.mutateAsync()
-              await queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'import', 'data'] })
+              await queryClient.invalidateQueries({
+                queryKey: ['scaffald', 'profiles', 'import', 'data'],
+              })
               void refetch()
             }}
           >

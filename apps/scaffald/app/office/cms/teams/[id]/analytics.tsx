@@ -81,8 +81,8 @@ export default function TeamAnalyticsPage() {
 
   if (teamQuery.isLoading && !team) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center" gap="$3">
+        <Spinner size="lg" />
         <Text color="$color11">Loading team analytics…</Text>
       </Stack>
     )
@@ -106,21 +106,21 @@ export default function TeamAnalyticsPage() {
   return (
     <ScrollView>
       <Stack gap="$5" padding="$4" paddingBottom="$8">
-        <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-          <Row gap="$2" alignItems="center">
+        <Row justify="space-between" align="center" flexWrap="wrap" gap="$3">
+          <Row gap="$2" align="center">
             <Button
               size="$2"
-              variant="outlined"
+              variant="outline"
               icon={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
             >Back to team</Button>
-            <Row gap="$2" alignItems="center">
+            <Row gap="$2" align="center">
               <BarChart3 size={20} />
               <Stack>
-                <Text fontSize="$6" fontWeight="700">
+                <Text>
                   {team.name ?? 'Team analytics'}
                 </Text>
-                <Text fontSize="$3" color="$color10">
+                <Text color="$color10">
                   Insights for collaboration, hiring throughput, and workload.
                 </Text>
               </Stack>
@@ -129,7 +129,7 @@ export default function TeamAnalyticsPage() {
 
           <Button
             size="$2"
-            variant="outlined"
+            variant="outline"
             onPress={() => router.push(RouteBuilder.officeTeamsSettings(team.id))}
           >Team settings</Button>
         </Row>
@@ -160,7 +160,7 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} alignItems="center" justifyContent="center" paddingHorizontal="$4">
+    <Stack flex={1} align="center" justify="center" paddingHorizontal="$4">
       <Card
         borderWidth={1}
         borderColor="$borderColor"
@@ -168,7 +168,7 @@ function FallbackCard({
         padding="$4"
         gap="$3"
       >
-        <Text fontSize="$6" fontWeight="700">
+        <Text>
           {title}
         </Text>
         <Text color="$color11">{description}</Text>

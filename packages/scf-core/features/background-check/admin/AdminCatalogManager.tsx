@@ -301,17 +301,17 @@ export function AdminCatalogManager() {
       })
       await invalidateCatalog()
       toast.show({
-          title: 'Package saved',
-          message: 'Background check package catalog updated.',
-          variant: 'success',
-        })
+        title: 'Package saved',
+        message: 'Background check package catalog updated.',
+        variant: 'success',
+      })
       resetPackageDialog()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to save package.'
       toast.show({
-          title: 'Failed to save package',
-          variant: 'error',
-        })
+        title: 'Failed to save package',
+        variant: 'error',
+      })
       setPackageFormError(message)
     }
   }
@@ -396,17 +396,17 @@ export function AdminCatalogManager() {
       })
       await invalidateCatalog()
       toast.show({
-          title: 'Check type saved',
-          message: 'Background check components updated.',
-          variant: 'success',
-        })
+        title: 'Check type saved',
+        message: 'Background check components updated.',
+        variant: 'success',
+      })
       resetCheckTypeDialog()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to save check type.'
       toast.show({
-          title: 'Failed to save check type',
-          variant: 'error',
-        })
+        title: 'Failed to save check type',
+        variant: 'error',
+      })
       setCheckTypeFormError(message)
     }
   }
@@ -425,9 +425,9 @@ export function AdminCatalogManager() {
     } catch (error) {
       const _message = error instanceof Error ? error.message : 'Unable to update package status.'
       toast.show({
-          title: 'Failed to update package',
-          variant: 'error',
-        })
+        title: 'Failed to update package',
+        variant: 'error',
+      })
     } finally {
       setPackageToggleId(null)
     }
@@ -445,11 +445,12 @@ export function AdminCatalogManager() {
         message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
       })
     } catch (error) {
-      const _message = error instanceof Error ? error.message : 'Unable to update check type status.'
+      const _message =
+        error instanceof Error ? error.message : 'Unable to update check type status.'
       toast.show({
-          title: 'Failed to update check type',
-          variant: 'error',
-        })
+        title: 'Failed to update check type',
+        variant: 'error',
+      })
     } finally {
       setCheckTypeToggleId(null)
     }
@@ -475,9 +476,7 @@ export function AdminCatalogManager() {
             <Stack gap={4}>
               <Row gap={8} align="center">
                 <PackagePlus size={18} color="gray" />
-                <Text color="gray">
-                  Packages
-                </Text>
+                <Text color="gray">Packages</Text>
               </Row>
               <Text color="gray">
                 Manage bundles of screening components that organizations can request.
@@ -510,9 +509,7 @@ export function AdminCatalogManager() {
           {packagesQuery.isLoading ? (
             <Stack gap={8} align="center" paddingVertical={16}>
               <Spinner size="lg" />
-              <Text color="gray">
-                Loading packages…
-              </Text>
+              <Text color="gray">Loading packages…</Text>
             </Stack>
           ) : packages.length === 0 ? (
             <Stack gap={8} paddingVertical={16} align="center">
@@ -537,17 +534,9 @@ export function AdminCatalogManager() {
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
                     <Stack gap={4} flex={1}>
-                      <Text color="gray">
-                        {pkg.display_name}
-                      </Text>
-                      <Text color="gray">
-                        {pkg.slug}
-                      </Text>
-                      {pkg.description ? (
-                        <Text color="gray">
-                          {pkg.description}
-                        </Text>
-                      ) : null}
+                      <Text color="gray">{pkg.display_name}</Text>
+                      <Text color="gray">{pkg.slug}</Text>
+                      {pkg.description ? <Text color="gray">{pkg.description}</Text> : null}
                     </Stack>
                     <Row gap={8} flexWrap="wrap">
                       <Button
@@ -587,13 +576,9 @@ export function AdminCatalogManager() {
                   <Separator />
 
                   <Stack gap={8}>
-                    <Text color="gray">
-                      Components
-                    </Text>
+                    <Text color="gray">Components</Text>
                     {pkg.components.length === 0 ? (
-                      <Text color="gray">
-                        No check types linked to this package.
-                      </Text>
+                      <Text color="gray">No check types linked to this package.</Text>
                     ) : (
                       pkg.components.map((component: AdminPackageRecord['components'][number]) => (
                         <Row
@@ -608,9 +593,7 @@ export function AdminCatalogManager() {
                           backgroundColor="$background"
                         >
                           <Stack gap={4} flex={1}>
-                            <Text color="gray">
-                              {component.display_name}
-                            </Text>
+                            <Text color="gray">{component.display_name}</Text>
                             <Row gap={8} flexWrap="wrap">
                               <InfoText label="Category" value={component.category ?? 'General'} />
                               <InfoText
@@ -645,9 +628,7 @@ export function AdminCatalogManager() {
             <Stack gap={4}>
               <Row gap={8} align="center">
                 <Shield size={18} color="gray" />
-                <Text color="gray">
-                  Check types
-                </Text>
+                <Text color="gray">Check types</Text>
               </Row>
               <Text color="gray">
                 Maintain granular screening components synchronized with NationSearch.
@@ -663,15 +644,11 @@ export function AdminCatalogManager() {
           {checkTypesQuery.isLoading ? (
             <Stack gap={8} align="center" paddingVertical={16}>
               <Spinner size="lg" />
-              <Text color="gray">
-                Loading check types…
-              </Text>
+              <Text color="gray">Loading check types…</Text>
             </Stack>
           ) : checkTypes.length === 0 ? (
             <Stack gap={8} paddingVertical={16} align="center">
-              <Text color="gray">
-                No check types configured yet.
-              </Text>
+              <Text color="gray">No check types configured yet.</Text>
               <Button size={12} onPress={() => openCheckTypeDialog('create')}>
                 Create your first check type
               </Button>
@@ -690,17 +667,9 @@ export function AdminCatalogManager() {
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
                     <Stack gap={4} flex={1}>
-                      <Text color="gray">
-                        {type.display_name}
-                      </Text>
-                      <Text color="gray">
-                        {type.slug}
-                      </Text>
-                      {type.description ? (
-                        <Text color="gray">
-                          {type.description}
-                        </Text>
-                      ) : null}
+                      <Text color="gray">{type.display_name}</Text>
+                      <Text color="gray">{type.slug}</Text>
+                      {type.description ? <Text color="gray">{type.description}</Text> : null}
                     </Stack>
                     <Row gap={8} flexWrap="wrap">
                       <Button
@@ -841,16 +810,12 @@ export function AdminCatalogManager() {
                 />
 
                 <Stack gap={8}>
-                  <Text color="gray">
-                    Included check types
-                  </Text>
+                  <Text color="gray">Included check types</Text>
                   <Stack gap={8}>
                     {checkTypesQuery.isLoading ? (
                       <Row gap={8} align="center">
                         <Spinner size="sm" />
-                        <Text color="gray">
-                          Loading check types…
-                        </Text>
+                        <Text color="gray">Loading check types…</Text>
                       </Row>
                     ) : checkTypes.length === 0 ? (
                       <Text color="gray">
@@ -883,9 +848,7 @@ export function AdminCatalogManager() {
                               </Checkbox.Indicator>
                             </Checkbox>
                             <Stack gap={4} flex={1}>
-                              <Text color="gray">
-                                {type.display_name}
-                              </Text>
+                              <Text color="gray">{type.display_name}</Text>
                               <Text color="gray">
                                 {type.category ?? 'General'} ·{' '}
                                 {formatCurrency(type.platform_cost_cents)}
@@ -909,9 +872,7 @@ export function AdminCatalogManager() {
                       <Check size={16} />
                     </Checkbox.Indicator>
                   </Checkbox>
-                  <Text color="gray">
-                    Package is active and selectable
-                  </Text>
+                  <Text color="gray">Package is active and selectable</Text>
                 </Row>
 
                 <TextArea
@@ -927,11 +888,7 @@ export function AdminCatalogManager() {
                   rows={4}
                 />
 
-                {packageFormError ? (
-                  <Text color="$red10">
-                    {packageFormError}
-                  </Text>
-                ) : null}
+                {packageFormError ? <Text color="$red10">{packageFormError}</Text> : null}
 
                 <Row gap={8} justify="flex-end">
                   <Dialog.Close asChild>
@@ -1070,9 +1027,7 @@ export function AdminCatalogManager() {
                       <Check size={16} />
                     </Checkbox.Indicator>
                   </Checkbox>
-                  <Text color="gray">
-                    Check type is active
-                  </Text>
+                  <Text color="gray">Check type is active</Text>
                 </Row>
 
                 <TextArea
@@ -1091,11 +1046,7 @@ export function AdminCatalogManager() {
                   rows={4}
                 />
 
-                {checkTypeFormError ? (
-                  <Text color="$red10">
-                    {checkTypeFormError}
-                  </Text>
-                ) : null}
+                {checkTypeFormError ? <Text color="$red10">{checkTypeFormError}</Text> : null}
 
                 <Row gap={8} justify="flex-end">
                   <Dialog.Close asChild>
@@ -1138,12 +1089,8 @@ function InfoChip({ label, value }: InfoChipProps) {
       backgroundColor="$background"
       gap={4}
     >
-      <Text color="gray">
-        {label}
-      </Text>
-      <Text color="gray">
-        {value}
-      </Text>
+      <Text color="gray">{label}</Text>
+      <Text color="gray">{value}</Text>
     </Stack>
   )
 }
@@ -1156,12 +1103,8 @@ interface InfoTextProps {
 function InfoText({ label, value }: InfoTextProps) {
   return (
     <Row gap={4} align="center">
-      <Text color="gray">
-        {label}:
-      </Text>
-      <Text color="gray">
-        {value}
-      </Text>
+      <Text color="gray">{label}:</Text>
+      <Text color="gray">{value}</Text>
     </Row>
   )
 }

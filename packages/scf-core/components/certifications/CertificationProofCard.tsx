@@ -62,15 +62,11 @@ export function CertificationProofCard({
     <Card padding={16} bordered>
       <Stack gap={16}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text>
-            Add Proof
-          </Text>
+          <Text>Add Proof</Text>
           <Button size={8} circular chromeless icon={X} onPress={onClose} />
         </Row>
 
-        <Text color="gray">
-          {certificationTitle}
-        </Text>
+        <Text color="gray">{certificationTitle}</Text>
 
         <Row gap={8}>
           <Button
@@ -130,9 +126,7 @@ export function CertificationProofCard({
 
         {proofValue && (
           <Stack gap={8} paddingTop={12} borderTopWidth={1} borderColor="$borderColor">
-            <Text>
-              Current Proof
-            </Text>
+            <Text>Current Proof</Text>
             <Row gap={8} style={{ alignItems: 'center' }}>
               <Button
                 size={8}

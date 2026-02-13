@@ -1,7 +1,10 @@
 import { Send } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
-import { useApplicationMessages, useSendApplicationMessageMutation } from '@scf/core/utils/jobs-sdk-hooks'
+import {
+  useApplicationMessages,
+  useSendApplicationMessageMutation,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -70,9 +73,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
         <Spinner size="lg" />
-        <Text opacity={0.7}>
-          Loading messages...
-        </Text>
+        <Text opacity={0.7}>Loading messages...</Text>
       </Stack>
     )
   }
@@ -81,9 +82,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
     return (
       <Stack gap={12} padding={16}>
         <Card padding={16} backgroundColor="$red3">
-          <Text color="$red10">
-            Error loading messages
-          </Text>
+          <Text color="$red10">Error loading messages</Text>
           <Text color="$red10" marginTop={8}>
             {error.message || 'Failed to load messages'}
           </Text>
@@ -112,9 +111,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
               maxWidth="80%"
             >
               <Row justify="space-between" align="center" marginBottom={8} gap={12}>
-                <Text>
-                  {message.senderName}
-                </Text>
+                <Text>{message.senderName}</Text>
                 <Text opacity={0.7}>
                   {new Date(message.sentAt).toLocaleDateString('en-US', {
                     month: 'short',
@@ -129,9 +126,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
               {!message.isRead && message.sender === 'candidate' && (
                 <Stack marginTop={8}>
-                  <Text color="$red10">
-                    Unread
-                  </Text>
+                  <Text color="$red10">Unread</Text>
                 </Stack>
               )}
             </Card>
@@ -141,9 +136,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
       {/* Send Message */}
       <Card padding={16} backgroundColor="$color2">
-        <Text marginBottom={12}>
-          Send Message
-        </Text>
+        <Text marginBottom={12}>Send Message</Text>
 
         <TextArea
           placeholder="Type your message..."

@@ -111,9 +111,7 @@ export const OrganizationCard = memo(
                 paddingHorizontal={8}
                 paddingVertical={4}
               >
-                <Text color={isSelected ? '$color1' : '$blue11'}>
-                  {industry}
-                </Text>
+                <Text color={isSelected ? '$color1' : '$blue11'}>{industry}</Text>
               </Row>
             </Row>
           )}

@@ -81,9 +81,7 @@ export function OfficeNotificationsConsole() {
   return (
     <Stack gap={24}>
       <Stack gap={8}>
-        <Text>
-          Notification Operations
-        </Text>
+        <Text>Notification Operations</Text>
         <Text color="gray">
           Monitor delivery workers, inspect failures, and triage digest backlogs.
         </Text>
@@ -91,9 +89,7 @@ export function OfficeNotificationsConsole() {
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Text>
-            Delivery Queue
-          </Text>
+          <Text>Delivery Queue</Text>
           <Button
             size={8}
             theme="info"
@@ -139,24 +135,12 @@ export function OfficeNotificationsConsole() {
         ) : (
           <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
             <Row backgroundColor="$color2" padding={12} gap={12}>
-              <Text flex={2}>
-                Notification
-              </Text>
-              <Text flex={1}>
-                Channel
-              </Text>
-              <Text flex={1}>
-                Status
-              </Text>
-              <Text flex={1}>
-                Attempts
-              </Text>
-              <Text flex={2}>
-                Last error
-              </Text>
-              <Text flex={1}>
-                Updated
-              </Text>
+              <Text flex={2}>Notification</Text>
+              <Text flex={1}>Channel</Text>
+              <Text flex={1}>Status</Text>
+              <Text flex={1}>Attempts</Text>
+              <Text flex={2}>Last error</Text>
+              <Text flex={1}>Updated</Text>
             </Row>
 
             {deliveries.map((delivery, index) => {
@@ -217,9 +201,7 @@ export function OfficeNotificationsConsole() {
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Text>
-            Digest Backlog
-          </Text>
+          <Text>Digest Backlog</Text>
           <Button
             size={8}
             theme="info"
@@ -244,24 +226,12 @@ export function OfficeNotificationsConsole() {
         ) : (
           <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
             <Row backgroundColor="$color2" padding={12} gap={12}>
-              <Text flex={1}>
-                User ID
-              </Text>
-              <Text flex={1}>
-                Type
-              </Text>
-              <Text flex={1}>
-                Bucket
-              </Text>
-              <Text flex={1}>
-                Count
-              </Text>
-              <Text flex={2}>
-                Channels
-              </Text>
-              <Text flex={1}>
-                Last event
-              </Text>
+              <Text flex={1}>User ID</Text>
+              <Text flex={1}>Type</Text>
+              <Text flex={1}>Bucket</Text>
+              <Text flex={1}>Count</Text>
+              <Text flex={2}>Channels</Text>
+              <Text flex={1}>Last event</Text>
             </Row>
 
             {digestItems.map((item, index) => (

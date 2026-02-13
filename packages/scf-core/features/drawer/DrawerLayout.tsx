@@ -55,8 +55,9 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const { data: notificationsData, isPending: _isLoadingNotifications } =
-    useNotifications({ limit: 25 })
+  const { data: notificationsData, isPending: _isLoadingNotifications } = useNotifications({
+    limit: 25,
+  })
 
   // Fetch unread count
   const { data: unreadCountData } = useUnreadCount()

@@ -82,16 +82,10 @@ export function ResultsStep({
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text color="gray">
-            Personality Report
-          </Text>
+          <Text color="gray">Personality Report</Text>
           <Stack gap={12}>
             {assessment.ai_report?.split('\n').map((line, index) => (
-              <Text
-                key={`report-line-${index}-${line.slice(0, 10)}`}
-                color="gray"
-                lineHeight={20}
-              >
+              <Text key={`report-line-${index}-${line.slice(0, 10)}`} color="gray" lineHeight={20}>
                 {line}
               </Text>
             ))}
@@ -114,9 +108,7 @@ export function ResultsStep({
           borderWidth={1}
           borderColor="$blue8"
         >
-          <Text color="$blue11">
-            Generate Your Personality Report
-          </Text>
+          <Text color="$blue11">Generate Your Personality Report</Text>
           <Text color="$blue10">
             Based on your color test results, we'll generate a personalized personality report.
           </Text>
@@ -135,9 +127,7 @@ export function ResultsStep({
       {/* IPIP Scores Section */}
       {ipipScores && (
         <Stack gap={16}>
-          <Text color="gray">
-            Personality Traits (Big Five)
-          </Text>
+          <Text color="gray">Personality Traits (Big Five)</Text>
           <Stack gap={16}>
             {Object.entries(results).map(([domain, domainResult]) => {
               const domainKey = domain as keyof typeof results
@@ -155,13 +145,9 @@ export function ResultsStep({
                   borderColor="$borderColor"
                 >
                   <Row justify="space-between" align="center">
-                    <Text color="gray">
-                      {domainResult.title}
-                    </Text>
+                    <Text color="gray">{domainResult.title}</Text>
                     <Row gap={8} align="center">
-                      <Text color="gray">
-                        Score: {score.score}
-                      </Text>
+                      <Text color="gray">Score: {score.score}</Text>
                       <Text
                         color={
                           score.result === 'high'
@@ -175,13 +161,9 @@ export function ResultsStep({
                       </Text>
                     </Row>
                   </Row>
-                  <Text color="gray">
-                    {domainResult.summary}
-                  </Text>
+                  <Text color="gray">{domainResult.summary}</Text>
                   <Stack gap={8} marginTop={8}>
-                    <Text color="gray">
-                      Your Result:
-                    </Text>
+                    <Text color="gray">Your Result:</Text>
                     <Text color="gray" lineHeight={16}>
                       {domainResult.results[score.result].text}
                     </Text>

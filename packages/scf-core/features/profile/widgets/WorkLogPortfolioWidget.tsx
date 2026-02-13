@@ -10,10 +10,10 @@ interface WorkLogPortfolioWidgetProps {
 }
 
 export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) {
-  const { data, isLoading } = usePublicWorkLogsFeed(
-    userId ? { userId, limit: 12 } : undefined,
-    { enabled: Boolean(userId), staleTime: 60_000 }
-  )
+  const { data, isLoading } = usePublicWorkLogsFeed(userId ? { userId, limit: 12 } : undefined, {
+    enabled: Boolean(userId),
+    staleTime: 60_000,
+  })
 
   const workLogs: PublicWorkLog[] = data ?? []
 
@@ -53,9 +53,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
     <Card borderColor="$color6" borderWidth={1}>
       <Stack gap={16} padding={16}>
         <Stack gap={8}>
-          <Text>
-            Verified work history
-          </Text>
+          <Text>Verified work history</Text>
           <Paragraph color="gray">
             Recent verified work logs selected by this worker. Projects appear here only when the
             worker has chosen to share them publicly.
@@ -127,9 +125,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       backgroundColor="$green4"
                     >
                       <ShieldCheck size={16} color="$green11" />
-                      <Text color="$green11">
-                        Verified by Scaffald
-                      </Text>
+                      <Text color="$green11">Verified by Scaffald</Text>
                     </Row>
                   </Row>
 
@@ -161,9 +157,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                               justify="center"
                               backgroundColor="$color3"
                             >
-                              <Text color="gray">
-                                Photo unavailable
-                              </Text>
+                              <Text color="gray">Photo unavailable</Text>
                             </Stack>
                           )}
                         </Card>

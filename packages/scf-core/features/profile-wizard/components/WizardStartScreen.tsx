@@ -63,9 +63,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
           <Stack gap={12}>
             <Row gap={8} align="center">
               <Zap size={20} color="$yellow10" />
-              <Text color="gray">
-                Fast-Track Your Profile
-              </Text>
+              <Text color="gray">Fast-Track Your Profile</Text>
             </Row>
             <Paragraph color="gray">
               You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile
@@ -74,9 +72,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
           </Stack>
 
           <Stack gap={12}>
-            <Text color="gray">
-              What you&apos;ll cover
-            </Text>
+            <Text color="gray">What you&apos;ll cover</Text>
             <Stack gap={12}>
               {PROFILE_WIZARD_STEPS.map((stepId) => {
                 const meta = PROFILE_WIZARD_STEP_META[stepId]
@@ -96,16 +92,10 @@ export const WizardStartScreen = memo(function WizardStartScreen({
                       <StepIcon size={20} color="$blue10" />
                     </Card>
                     <Stack flex={1}>
-                      <Text color="gray">
-                        {meta.title}
-                      </Text>
-                      <Text color="gray">
-                        {meta.description}
-                      </Text>
+                      <Text color="gray">{meta.title}</Text>
+                      <Text color="gray">{meta.description}</Text>
                     </Stack>
-                    <Text color="gray">
-                      {meta.estimatedTimeMinutes} min
-                    </Text>
+                    <Text color="gray">{meta.estimatedTimeMinutes} min</Text>
                   </Row>
                 )
               })}
@@ -131,13 +121,9 @@ export const WizardStartScreen = memo(function WizardStartScreen({
           <Row gap={12} flexWrap="wrap">
             <Row gap={8} align="center">
               <Clock size={18} color="$blue10" />
-              <Text color="gray">
-                {estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes
-              </Text>
+              <Text color="gray">{estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes</Text>
             </Row>
-            <Text color="gray">
-              6 guided steps • Auto-save enabled • Resume anytime
-            </Text>
+            <Text color="gray">6 guided steps • Auto-save enabled • Resume anytime</Text>
           </Row>
         </Card.Header>
       </Card>

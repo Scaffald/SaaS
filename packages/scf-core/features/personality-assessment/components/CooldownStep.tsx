@@ -116,9 +116,7 @@ export function CooldownStep({
           <Text color="gray" style={{ textAlign: 'center' }}>
             Please wait 60 seconds before taking the second color test
           </Text>
-          <Text color="$blue10">
-            {formatTime(timeRemaining)}
-          </Text>
+          <Text color="$blue10">{formatTime(timeRemaining)}</Text>
         </Stack>
         <Progress value={cooldownProgress} max={100} size={8}>
           <Progress.Indicator animation="quick" />
@@ -137,16 +135,8 @@ export function CooldownStep({
         </Stack>
 
         {currentQuestion && (
-          <Stack
-            gap={16}
-            padding={16}
-            borderRadius={16}
-            borderWidth={1}
-            borderColor="$borderColor"
-          >
-            <Text color="gray">
-              {currentQuestion.text}
-            </Text>
+          <Stack gap={16} padding={16} borderRadius={16} borderWidth={1} borderColor="$borderColor">
+            <Text color="gray">{currentQuestion.text}</Text>
 
             <Stack gap={12}>
               {currentChoices.map((choice) => (

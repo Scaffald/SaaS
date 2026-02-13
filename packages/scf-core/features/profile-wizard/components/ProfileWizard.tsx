@@ -260,9 +260,7 @@ export function ProfileWizard({
   if (isError) {
     return (
       <Stack gap={12} align="center" justify="center" flex={1} padding={24}>
-        <Text>
-          We couldn't load your wizard
-        </Text>
+        <Text>We couldn't load your wizard</Text>
         <Paragraph color="gray" textAlign="center">
           Please refresh and try again. If the issue persists, contact support.
         </Paragraph>

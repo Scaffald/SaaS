@@ -53,10 +53,10 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       logger.error('Failed to update job status', error, { context: 'JobsKanbanBoard' })
       setUpdatingJobId(null)
       toast.show({
-          title: 'Failed to update job status. Please try again.',
-          variant: 'error',
-          duration: 5000,
-        })
+        title: 'Failed to update job status. Please try again.',
+        variant: 'error',
+        duration: 5000,
+      })
     },
   })
 
@@ -175,9 +175,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
         <Row justify="space-between" align="center" marginBottom={12}>
           <Row gap={8} align="center">
             <Stack width={8} height={8} borderRadius="$10" backgroundColor={color} />
-            <Text>
-              {label}
-            </Text>
+            <Text>{label}</Text>
           </Row>
           <Stack
             backgroundColor="$color5"
@@ -185,9 +183,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
             paddingVertical={4}
             borderRadius={8}
           >
-            <Text>
-              {jobs.length}
-            </Text>
+            <Text>{jobs.length}</Text>
           </Stack>
         </Row>
 

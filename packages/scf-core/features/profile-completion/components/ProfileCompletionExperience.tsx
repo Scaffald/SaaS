@@ -265,9 +265,7 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
         <Sheet.Handle />
         <Stack padding={16} gap={16} flex={1}>
           <Stack gap={8}>
-            <Text>
-              Complete Your Profile
-            </Text>
+            <Text>Complete Your Profile</Text>
             <Text color="gray">We’ll auto-save as you go. You can exit anytime.</Text>
           </Stack>
           {open ? (

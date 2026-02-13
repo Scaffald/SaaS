@@ -1,4 +1,9 @@
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import type {
   CurrentUser,
   GeneralInfo,
@@ -26,7 +31,7 @@ export function useCurrentUser(
       if (!client) throw new Error('Missing client')
       return client.profiles.getCurrentUser()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -46,7 +51,7 @@ export function useGeneralInfo(
       if (!client) throw new Error('Missing client')
       return client.profiles.getGeneralInfo()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })
@@ -84,7 +89,7 @@ export function useProfileBySlug(
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.getProfileBySlug(slug)
     },
-    enabled: !!client && !!slug && (options?.enabled !== false),
+    enabled: !!client && !!slug && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -105,7 +110,7 @@ export function useCheckSlugAvailability(
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.checkSlugAvailability(slug)
     },
-    enabled: !!client && !!slug && slug.length >= 3 && (options?.enabled !== false),
+    enabled: !!client && !!slug && slug.length >= 3 && options?.enabled !== false,
     staleTime: 0, // Always fresh for real-time availability checking
     ...options,
   })
@@ -142,7 +147,7 @@ export function useSlugHistory(
       if (!client) throw new Error('Missing client')
       return client.profiles.getSlugHistory()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })

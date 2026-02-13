@@ -1,9 +1,5 @@
 import { ControlledAddressForm } from '@scf/core/forms'
-import {
-  usePrerequisites,
-  useCompletePrerequisites,
-  useIndustries,
-} from '@scaffald/sdk/react'
+import { usePrerequisites, useCompletePrerequisites, useIndustries } from '@scaffald/sdk/react'
 import {
   Button,
   Checkbox,
@@ -140,12 +136,8 @@ export function PrerequisiteWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">
-            Complete Your Profile
-          </Text>
-          <Text color="gray">
-            Please complete these required fields to continue using Scaffald
-          </Text>
+          <Text color="gray">Complete Your Profile</Text>
+          <Text color="gray">Please complete these required fields to continue using Scaffald</Text>
         </Stack>
 
         {isCheckingStatus ? (
@@ -172,11 +164,7 @@ export function PrerequisiteWidget() {
                       />
                     )}
                   />
-                  {errors.first_name && (
-                    <Text color="$red10">
-                      {errors.first_name.message}
-                    </Text>
-                  )}
+                  {errors.first_name && <Text color="$red10">{errors.first_name.message}</Text>}
                 </Stack>
 
                 <Stack gap={8} flex={1}>
@@ -193,11 +181,7 @@ export function PrerequisiteWidget() {
                       />
                     )}
                   />
-                  {errors.last_name && (
-                    <Text color="$red10">
-                      {errors.last_name.message}
-                    </Text>
-                  )}
+                  {errors.last_name && <Text color="$red10">{errors.last_name.message}</Text>}
                 </Stack>
               </Row>
             </Stack>
@@ -280,11 +264,7 @@ export function PrerequisiteWidget() {
                   </Stack>
                 )}
               />
-              {errors.user_types && (
-                <Text color="$red10">
-                  {errors.user_types.message}
-                </Text>
-              )}
+              {errors.user_types && <Text color="$red10">{errors.user_types.message}</Text>}
             </Stack>
 
             <Separator />
@@ -315,18 +295,12 @@ export function PrerequisiteWidget() {
                         )}
                       />
                     ) : (
-                      <Text color="gray">
-                        No industries available
-                      </Text>
+                      <Text color="gray">No industries available</Text>
                     )}
                   </Stack>
                 )}
               />
-              {errors.industry_id && (
-                <Text color="$red10">
-                  {errors.industry_id.message}
-                </Text>
-              )}
+              {errors.industry_id && <Text color="$red10">{errors.industry_id.message}</Text>}
             </Stack>
 
             <Separator />
@@ -375,9 +349,7 @@ export function PrerequisiteWidget() {
                       </Pressable>
                     </Row>
                     {errors.accepts_privacy_policy && (
-                      <Text color="$red10">
-                        {errors.accepts_privacy_policy.message}
-                      </Text>
+                      <Text color="$red10">{errors.accepts_privacy_policy.message}</Text>
                     )}
                   </Stack>
                 )}
@@ -423,9 +395,7 @@ export function PrerequisiteWidget() {
                       </Pressable>
                     </Row>
                     {errors.accepts_terms_of_service && (
-                      <Text color="$red10">
-                        {errors.accepts_terms_of_service.message}
-                      </Text>
+                      <Text color="$red10">{errors.accepts_terms_of_service.message}</Text>
                     )}
                   </Stack>
                 )}

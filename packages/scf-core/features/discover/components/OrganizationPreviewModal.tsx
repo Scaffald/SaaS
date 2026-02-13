@@ -81,9 +81,7 @@ export function OrganizationPreviewModal({
         </Stack>
       ) : !organization ? (
         <Stack paddingVertical={32} align="center">
-          <Text color="$red10">
-            Organization not found
-          </Text>
+          <Text color="$red10">Organization not found</Text>
         </Stack>
       ) : (
         <>
@@ -101,14 +99,8 @@ export function OrganizationPreviewModal({
             </Stack>
 
             <Stack gap={8} align="center">
-              <Text color="gray">
-                {organization.name}
-              </Text>
-              {organization.industry_name && (
-                <Text color="gray">
-                  {organization.industry_name}
-                </Text>
-              )}
+              <Text color="gray">{organization.name}</Text>
+              {organization.industry_name && <Text color="gray">{organization.industry_name}</Text>}
             </Stack>
 
             {/* Open Jobs Badge */}
@@ -138,18 +130,14 @@ export function OrganizationPreviewModal({
             {formatAddress(organization.address) && (
               <Row gap={8} align="center">
                 <MapPin size={18} color="gray" />
-                <Text color="gray">
-                  {formatAddress(organization.address)}
-                </Text>
+                <Text color="gray">{formatAddress(organization.address)}</Text>
               </Row>
             )}
 
             {organization.employee_count_range && (
               <Row gap={8} align="center">
                 <Users size={18} color="gray" />
-                <Text color="gray">
-                  {organization.employee_count_range} employees
-                </Text>
+                <Text color="gray">{organization.employee_count_range} employees</Text>
               </Row>
             )}
 
@@ -160,9 +148,7 @@ export function OrganizationPreviewModal({
                 paddingVertical={6}
                 borderRadius={12}
               >
-                <Text color="$blue11">
-                  ✓ Verified Organization
-                </Text>
+                <Text color="$blue11">✓ Verified Organization</Text>
               </Row>
             )}
           </Stack>
@@ -172,9 +158,7 @@ export function OrganizationPreviewModal({
             <>
               <Separator />
               <Stack gap={8}>
-                <Text color="gray">
-                  About
-                </Text>
+                <Text color="gray">About</Text>
                 <Text color="gray" lineHeight={4} numberOfLines={4}>
                   {typeof organization.description === 'string'
                     ? organization.description
@@ -235,9 +219,7 @@ export function OrganizationPreviewModal({
               </Button>
             ) : (
               <Stack backgroundColor="$color3" padding={12} borderRadius={12} align="center">
-                <Text color="gray">
-                  No open positions at this time
-                </Text>
+                <Text color="gray">No open positions at this time</Text>
               </Stack>
             )}
           </Stack>

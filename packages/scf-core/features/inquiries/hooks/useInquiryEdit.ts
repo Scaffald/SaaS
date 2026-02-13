@@ -73,19 +73,19 @@ export function useInquiryEdit({
   const updateMutation = useUpdateInquiryMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Inquiry updated',
-          message: 'The inquiry has been updated. The candidate will be notified if terms changed.',
-        })
+        title: 'Inquiry updated',
+        message: 'The inquiry has been updated. The candidate will be notified if terms changed.',
+      })
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['inquiries'] })
       onSuccess?.()
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to update inquiry',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to update inquiry',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 

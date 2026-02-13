@@ -3,12 +3,7 @@ import {
   useUpdateSoftSkillsMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
-import {
-  Heading,
-  LoadingState,
-  ResponsiveModal,
-  SaveStatusIndicator,
-} from '@unicornlove/beyond-ui'
+import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator } from '@unicornlove/beyond-ui'
 import { CheckCircle2 } from 'lucide-react-native'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
@@ -57,7 +52,12 @@ export const SoftSkillsRatingForm: FC = () => {
   const lastAutoSaveRef = useRef<SoftSkillsFormData | null>(null)
 
   // Fetch soft skills data
-  const { data, isPending: isLoading, error, refetch } = useSoftSkills(undefined, {
+  const {
+    data,
+    isPending: isLoading,
+    error,
+    refetch,
+  } = useSoftSkills(undefined, {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
@@ -220,9 +220,7 @@ export const SoftSkillsRatingForm: FC = () => {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
         <Text color="$red10">Failed to load assessment</Text>
-        <Text color="gray">
-          {error.message}
-        </Text>
+        <Text color="gray">{error.message}</Text>
         <Button variant="primary" size={8} onPress={() => void refetch()}>
           Retry
         </Button>
@@ -234,9 +232,7 @@ export const SoftSkillsRatingForm: FC = () => {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
         <Text color="gray">No soft skills available</Text>
-        <Text color="gray">
-          Please contact support if this issue persists.
-        </Text>
+        <Text color="gray">Please contact support if this issue persists.</Text>
       </Stack>
     )
   }
@@ -288,14 +284,8 @@ export const SoftSkillsRatingForm: FC = () => {
               <Card key={skill.id} bordered padding={16} backgroundColor="$background">
                 <Stack gap={12}>
                   <Stack gap={4}>
-                    <Text color="gray">
-                      {skill.name}
-                    </Text>
-                    {skill.description && (
-                      <Text color="gray">
-                        {skill.description}
-                      </Text>
-                    )}
+                    <Text color="gray">{skill.name}</Text>
+                    {skill.description && <Text color="gray">{skill.description}</Text>}
                   </Stack>
 
                   <Controller
@@ -343,13 +333,8 @@ export const SoftSkillsRatingForm: FC = () => {
                                 style={{ alignItems: 'center' }}
                                 opacity={sliderValue === level.value ? 1 : 0.6}
                               >
-                                <Text color="gray">
-                                  {level.value}
-                                </Text>
-                                <Text
-                                  color="gray"
-                                  style={{ textAlign: 'center' }}
-                                >
+                                <Text color="gray">{level.value}</Text>
+                                <Text color="gray" style={{ textAlign: 'center' }}>
                                   {level.label}
                                 </Text>
                               </Stack>

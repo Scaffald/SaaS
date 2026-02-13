@@ -72,9 +72,7 @@ export function ApplicationScreeningSection({
           <Label>Current location</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="gray">
-            {localState.require_current_location ? '1' : '0'}
-          </Text>
+          <Text color="gray">{localState.require_current_location ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_current_location}
             onCheckedChange={(checked) => handleChange('require_current_location', checked)}
@@ -89,9 +87,7 @@ export function ApplicationScreeningSection({
           <Label>Willing to relocate</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="gray">
-            {localState.require_relocation_willingness ? '1' : '0'}
-          </Text>
+          <Text color="gray">{localState.require_relocation_willingness ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_relocation_willingness}
             onCheckedChange={(checked) => handleChange('require_relocation_willingness', checked)}
@@ -107,9 +103,7 @@ export function ApplicationScreeningSection({
             <Label>Minimum years of experience</Label>
           </Stack>
           <Row gap={8} align="center">
-            <Text color="gray">
-              {localState.minimum_years_experience_enabled ? '1' : '0'}
-            </Text>
+            <Text color="gray">{localState.minimum_years_experience_enabled ? '1' : '0'}</Text>
             <ToggleSwitch
               checked={localState.minimum_years_experience_enabled}
               onCheckedChange={(checked) =>
@@ -140,9 +134,7 @@ export function ApplicationScreeningSection({
           <Label>Authorized to work in US</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="gray">
-            {localState.require_work_authorization ? '1' : '0'}
-          </Text>
+          <Text color="gray">{localState.require_work_authorization ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_work_authorization}
             onCheckedChange={(checked) => handleChange('require_work_authorization', checked)}
@@ -157,9 +149,7 @@ export function ApplicationScreeningSection({
           <Label>Earliest start date</Label>
         </Stack>
         <Row gap={8} align="center">
-          <Text color="gray">
-            {localState.require_earliest_start_date ? '1' : '0'}
-          </Text>
+          <Text color="gray">{localState.require_earliest_start_date ? '1' : '0'}</Text>
           <ToggleSwitch
             checked={localState.require_earliest_start_date}
             onCheckedChange={(checked) => handleChange('require_earliest_start_date', checked)}

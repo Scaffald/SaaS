@@ -1,6 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { IPIPAnswer } from '@scf/core/features/personality-assessment/lib/ipip'
-import { useAssessmentStatus, useIPIPStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
+import {
+  useAssessmentStatus,
+  useIPIPStatus,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -56,13 +59,9 @@ export function IPIPAssessmentWidget() {
             <Stack gap={spacing.xs} flex={1}>
               <Row align="center" gap={8}>
                 <CheckCircle2 size={4} color="$green10" />
-                <Text color="gray">
-                  Personality Assessment
-                </Text>
+                <Text color="gray">Personality Assessment</Text>
               </Row>
-              <Text color="gray">
-                Your Big Five personality profile is complete
-              </Text>
+              <Text color="gray">Your Big Five personality profile is complete</Text>
             </Stack>
           </Row>
 
@@ -77,16 +76,10 @@ export function IPIPAssessmentWidget() {
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
-                <Text color="gray">
-                  Your Archetype
-                </Text>
-                <Text color="$blue11">
-                  {results.archetype.name}
-                </Text>
+                <Text color="gray">Your Archetype</Text>
+                <Text color="$blue11">{results.archetype.name}</Text>
                 {results.archetype.confidence > 0 && (
-                  <Text color="gray">
-                    {results.archetype.confidence}% confidence
-                  </Text>
+                  <Text color="gray">{results.archetype.confidence}% confidence</Text>
                 )}
               </Stack>
             </Row>
@@ -94,9 +87,7 @@ export function IPIPAssessmentWidget() {
             {/* Top 3 Domain Scores Preview */}
             {results.normalizedScores && (
               <Stack gap={8} marginTop={8}>
-                <Text color="gray">
-                  Top Traits
-                </Text>
+                <Text color="gray">Top Traits</Text>
                 {DOMAIN_ORDER.slice(0, 3).map((domain) => {
                   const normalized = results.normalizedScores?.[domain]
                   if (!normalized) return null
@@ -106,22 +97,14 @@ export function IPIPAssessmentWidget() {
                   const result = normalized.result
 
                   return (
-                    <Row
-                      key={domain}
-                      justify="space-between"
-                      align="center"
-                      gap={8}
-                    >
+                    <Row key={domain} justify="space-between" align="center" gap={8}>
                       <Text color="gray" flex={1}>
                         {domainName}
                       </Text>
                       <Progress value={percentage} max={100} size={4} width={100}>
                         <Progress.Indicator animation="bouncy" />
                       </Progress>
-                      <Text
-                        color="gray"
-                        style={{ minWidth: 45 }}
-                      >
+                      <Text color="gray" style={{ minWidth: 45 }}>
                         {percentage}%
                       </Text>
                       <Text
@@ -153,9 +136,7 @@ export function IPIPAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">
-            Personality Assessment
-          </Text>
+          <Text color="gray">Personality Assessment</Text>
           <Text color="gray">
             Answer 120 questions to discover your personality traits using the Big Five personality
             model.
@@ -166,9 +147,7 @@ export function IPIPAssessmentWidget() {
         {hasStarted && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text color="gray">
-                Progress
-              </Text>
+              <Text color="gray">Progress</Text>
               <Text color="gray">
                 {progress}/120 ({progressPercentage}%)
               </Text>
@@ -184,17 +163,13 @@ export function IPIPAssessmentWidget() {
               <Progress.Indicator animation="bouncy" />
             </Progress>
             {completedDomains > 0 && (
-              <Text color="gray">
-                {completedDomains} of 5 domains completed
-              </Text>
+              <Text color="gray">{completedDomains} of 5 domains completed</Text>
             )}
           </Stack>
         )}
 
         <Button variant="primary" onPress={handleStart} size={20}>
-          <Button.Text>
-            {hasStarted ? 'Continue Questions' : 'Start Questions'}
-          </Button.Text>
+          <Button.Text>{hasStarted ? 'Continue Questions' : 'Start Questions'}</Button.Text>
         </Button>
 
         <Text color="gray">

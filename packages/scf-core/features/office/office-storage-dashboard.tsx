@@ -117,9 +117,7 @@ export function OfficeStorageDashboard() {
           return (
             <Stack gap={4}>
               <Text>{row.displayName}</Text>
-              <Text color="gray">
-                {row.username ? `@${row.username}` : row.userId.slice(0, 8)}
-              </Text>
+              <Text color="gray">{row.username ? `@${row.username}` : row.userId.slice(0, 8)}</Text>
             </Stack>
           )
         },
@@ -145,11 +143,7 @@ export function OfficeStorageDashboard() {
         cell: (info) => {
           const row = info.row.original
           if (!row.storageLimitBytes) {
-            return (
-              <Text color="gray">
-                No limit
-              </Text>
-            )
+            return <Text color="gray">No limit</Text>
           }
 
           const percent = row.usagePercentOfLimit ?? 0
@@ -232,9 +226,7 @@ export function OfficeStorageDashboard() {
     <Stack flex={1} padding={16} gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
-          <Text>
-            Storage Analytics
-          </Text>
+          <Text>Storage Analytics</Text>
           <Paragraph color="gray">
             Monitor how workers consume storage across work logs, portfolios, and certifications.
           </Paragraph>
@@ -269,17 +261,9 @@ export function OfficeStorageDashboard() {
                 maxWidth={320}
               >
                 <Stack gap={8}>
-                  <Text color="gray">
-                    {card.label}
-                  </Text>
-                  <Text>
-                    {card.value}
-                  </Text>
-                  {card.subtext ? (
-                    <Text color="gray">
-                      {card.subtext}
-                    </Text>
-                  ) : null}
+                  <Text color="gray">{card.label}</Text>
+                  <Text>{card.value}</Text>
+                  {card.subtext ? <Text color="gray">{card.subtext}</Text> : null}
                 </Stack>
               </Card>
             ))}
@@ -287,9 +271,7 @@ export function OfficeStorageDashboard() {
 
           <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
             <Stack gap={12}>
-              <Text>
-                Usage breakdown
-              </Text>
+              <Text>Usage breakdown</Text>
               <Stack gap={12}>
                 {breakdown.map((entry: StorageAnalytics['breakdown'][number]) => (
                   <Stack key={entry.label} gap={4}>
@@ -311,9 +293,7 @@ export function OfficeStorageDashboard() {
           <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
             <Stack gap={12}>
               <Row justify="space-between" align="center">
-                <Text>
-                  Top users by storage consumption
-                </Text>
+                <Text>Top users by storage consumption</Text>
                 <Button
                   size={8}
                   variant="outline"

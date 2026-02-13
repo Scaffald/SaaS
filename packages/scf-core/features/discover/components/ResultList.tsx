@@ -160,9 +160,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           paddingTop={12}
           paddingHorizontal={12}
         >
-          <Text>
-            {allResults.length} results
-          </Text>
+          <Text>{allResults.length} results</Text>
         </Row>
         <ScrollView
           ref={scrollViewRef}

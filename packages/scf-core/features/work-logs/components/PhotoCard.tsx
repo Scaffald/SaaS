@@ -181,9 +181,7 @@ export function PhotoCard({
         <Row align="center" justify="space-between" gap={12}>
           <Row gap={8} align="center">
             <Tag size={16} color="gray" />
-            <Text>
-              {typeOption?.label ?? 'Uncategorized'}
-            </Text>
+            <Text>{typeOption?.label ?? 'Uncategorized'}</Text>
           </Row>
           <Row gap={8}>
             {canToggleVisibility ? (
@@ -216,9 +214,7 @@ export function PhotoCard({
         </Row>
 
         <Stack gap={8}>
-          <Text>
-            Caption
-          </Text>
+          <Text>Caption</Text>
           {canEditCaption && isEditingCaption ? (
             <Stack gap={8}>
               <Input
@@ -273,9 +269,7 @@ export function PhotoCard({
         <Separator />
 
         <Stack gap={8}>
-          <Text>
-            Photo Type
-          </Text>
+          <Text>Photo Type</Text>
           {canChangeType ? (
             <ResponsiveSelect
               value={(photo.photoType ?? 'general') as Exclude<WorkLogPhotoType, null>}
@@ -296,21 +290,13 @@ export function PhotoCard({
         <Separator />
 
         <Stack gap={4}>
-          <Text>
-            Details
-          </Text>
-          <Text color="gray">
-            Size: {formatBytes(photo.fileSizeBytes)}
-          </Text>
+          <Text>Details</Text>
+          <Text color="gray">Size: {formatBytes(photo.fileSizeBytes)}</Text>
           {photo.takenAt ? (
-            <Text color="gray">
-              Taken: {formatDate(photo.takenAt) ?? 'Unknown'}
-            </Text>
+            <Text color="gray">Taken: {formatDate(photo.takenAt) ?? 'Unknown'}</Text>
           ) : null}
           {photo.createdAt ? (
-            <Text color="gray">
-              Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}
-            </Text>
+            <Text color="gray">Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}</Text>
           ) : null}
         </Stack>
       </Stack>

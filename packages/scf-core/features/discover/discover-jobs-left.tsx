@@ -188,9 +188,7 @@ export function DiscoverJobsLeft({
   if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
     return (
       <Stack flex={1} align="center" justify="center" padding={16} gap={12}>
-        <Text color="gray">
-          Complete Your Assessment
-        </Text>
+        <Text color="gray">Complete Your Assessment</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           Complete your soft skills assessment to filter and sort jobs by match score.
         </Text>
@@ -209,9 +207,7 @@ export function DiscoverJobsLeft({
   if (filteredJobs.length === 0) {
     return (
       <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
-        <Text color="gray">
-          No jobs found
-        </Text>
+        <Text color="gray">No jobs found</Text>
         <Text color="gray">
           {shouldUseSoftSkillsMatch
             ? 'No jobs match your soft skills filter criteria'

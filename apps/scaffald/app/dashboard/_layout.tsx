@@ -28,9 +28,9 @@ export default function Layout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading || isCheckingPrereqs) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="large" />
-        <Text marginTop="$4">Loading...</Text>
+      <Stack flex={1} justify="center" align="center">
+        <Spinner size="lg" />
+        <Text>Loading...</Text>
       </Stack>
     )
   }

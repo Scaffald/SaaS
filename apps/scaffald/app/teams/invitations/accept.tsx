@@ -86,8 +86,8 @@ export default function AcceptTeamInvitationScreen() {
 
     if (authLoading) {
       return (
-        <Stack gap="$3" alignItems="center" paddingVertical="$6">
-          <Spinner size="large" />
+        <Stack gap="$3" align="center" paddingVertical="$6">
+          <Spinner size="lg" />
           <Text color="$color11">Preparing secure invitation…</Text>
         </Stack>
       )
@@ -96,7 +96,7 @@ export default function AcceptTeamInvitationScreen() {
     if (!session?.user) {
       return (
         <Stack gap="$4">
-          <Text fontSize="$6" fontWeight="700">
+          <Text>
             Sign in to continue
           </Text>
           <Text color="$color11">
@@ -116,10 +116,10 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'success') {
       return (
-        <Stack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap="$4" align="center" paddingVertical="$4">
           <CheckCircle size={48} color="$green9" />
-          <Stack gap="$2" alignItems="center">
-            <Text fontSize="$7" fontWeight="700">
+          <Stack gap="$2" align="center">
+            <Text>
               You&apos;re in!
             </Text>
             <Text color="$color11">
@@ -135,10 +135,10 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'declined') {
       return (
-        <Stack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap="$4" align="center" paddingVertical="$4">
           <XCircle size={48} color="$red9" />
-          <Stack gap="$2" alignItems="center">
-            <Text fontSize="$7" fontWeight="700">
+          <Stack gap="$2" align="center">
+            <Text>
               Invitation declined
             </Text>
             <Text color="$color11">
@@ -159,7 +159,7 @@ export default function AcceptTeamInvitationScreen() {
     return (
       <Stack gap="$5">
         <Stack gap="$2">
-          <Text fontSize="$7" fontWeight="700">
+          <Text>
             Join this team
           </Text>
           <Text color="$color11">
@@ -178,7 +178,7 @@ export default function AcceptTeamInvitationScreen() {
           </Button>
           <Button
             size="$4"
-            variant="outlined"
+            variant="outline"
             icon={XCircle}
             disabled={isProcessing}
             onPress={() => handleRespond('decline')}
@@ -187,8 +187,8 @@ export default function AcceptTeamInvitationScreen() {
           </Button>
         </Stack>
         {isProcessing ? (
-          <Stack gap="$2" alignItems="center">
-            <Spinner size="large" />
+          <Stack gap="$2" align="center">
+            <Spinner size="lg" />
             <Text color="$color11">Processing your response…</Text>
           </Stack>
         ) : null}
@@ -201,8 +201,8 @@ export default function AcceptTeamInvitationScreen() {
       flex={1}
       padding="$4"
       backgroundColor="$color2"
-      justifyContent="center"
-      alignItems="center"
+      justify="center"
+      align="center"
     >
       <Card
         width="100%"
@@ -220,10 +220,10 @@ export default function AcceptTeamInvitationScreen() {
 
 function ErrorState({ title, message }: { title: string; message: string }) {
   return (
-    <Stack gap="$3" alignItems="center" paddingVertical="$4">
+    <Stack gap="$3" align="center" paddingVertical="$4">
       <AlertTriangle size={48} color="$yellow9" />
-      <Stack gap="$2" alignItems="center">
-        <Text fontSize="$7" fontWeight="700">
+      <Stack gap="$2" align="center">
+        <Text>
           {title}
         </Text>
         <Text color="$color11">{message}</Text>

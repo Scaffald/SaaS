@@ -76,9 +76,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   if (!profile) {
     return (
       <Stack flex={1} align="center" justify="center" paddingVertical="$10">
-        <Text color="$red10">
-          Profile not found
-        </Text>
+        <Text color="$red10">Profile not found</Text>
       </Stack>
     )
   }

@@ -6,14 +6,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
-import {
-  Award,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  Trash2,
-  Upload,
-} from 'lucide-react-native'
+import { Award, ChevronDown, ChevronRight, ExternalLink, Trash2, Upload } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
@@ -193,9 +186,7 @@ export function ProfileCertificationsRight() {
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
               <Stack gap={8}>
-                <Text color="$blue11">
-                  Top-Level Categories
-                </Text>
+                <Text color="$blue11">Top-Level Categories</Text>
                 {depth0.map((cert) => {
                   const changeStatus = recentlyChangedCerts[cert.certification_id]
                   return (
@@ -234,9 +225,7 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text color="gray">
-                              {cert.catalog.description}
-                            </Text>
+                            <Text color="gray">{cert.catalog.description}</Text>
                           )}
                         </Stack>
                       </Row>
@@ -254,9 +243,7 @@ export function ProfileCertificationsRight() {
             {/* Depth 1 - Categories */}
             {depth1.length > 0 && (
               <Stack gap={8}>
-                <Text color="$green11">
-                  Sub-Categories
-                </Text>
+                <Text color="$green11">Sub-Categories</Text>
                 {depth1.map((cert) => {
                   const changeStatus = recentlyChangedCerts[cert.certification_id]
                   return (
@@ -295,9 +282,7 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text color="gray">
-                              {cert.catalog.description}
-                            </Text>
+                            <Text color="gray">{cert.catalog.description}</Text>
                           )}
                         </Stack>
                       </Row>
@@ -315,9 +300,7 @@ export function ProfileCertificationsRight() {
             {/* Depth 2 - Specific Certifications */}
             {depth2.length > 0 && (
               <Stack gap={8}>
-                <Text color="$purple11">
-                  Specific Certifications
-                </Text>
+                <Text color="$purple11">Specific Certifications</Text>
                 {depth2.map((cert) => {
                   const isExpanded = expandedCards.has(cert.id)
                   const hasProof = !!(cert.credential_url || cert.certificate_file_path)
@@ -372,20 +355,12 @@ export function ProfileCertificationsRight() {
                               Certification
                             </Text>
                           </Row>
-                          {hasProof && (
-                            <Text color="$green10">
-                              ✓ Proof added
-                            </Text>
-                          )}
+                          {hasProof && <Text color="$green10">✓ Proof added</Text>}
                           {changeStatus === 'added' && (
-                            <Text color="$green11">
-                              ✓ Added to profile
-                            </Text>
+                            <Text color="$green11">✓ Added to profile</Text>
                           )}
                           {changeStatus === 'removed' && (
-                            <Text color="$red11">
-                              Removed from profile
-                            </Text>
+                            <Text color="$red11">Removed from profile</Text>
                           )}
                         </Stack>
 
@@ -432,9 +407,7 @@ export function ProfileCertificationsRight() {
                         >
                           {/* File Upload */}
                           <Stack gap={8}>
-                            <Text>
-                              Upload Certificate
-                            </Text>
+                            <Text>Upload Certificate</Text>
                             <Row gap={8} style={{ alignItems: 'center' }}>
                               <Button
                                 flex={1}
@@ -475,9 +448,7 @@ export function ProfileCertificationsRight() {
 
                           {/* URL Input */}
                           <Stack gap={8}>
-                            <Text>
-                              Or Add URL
-                            </Text>
+                            <Text>Or Add URL</Text>
                             <Row gap={8}>
                               <Input
                                 flex={1}
@@ -497,9 +468,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                             </Row>
                             {cert.credential_url && (
-                              <Text color="gray">
-                                Current: {cert.credential_url}
-                              </Text>
+                              <Text color="gray">Current: {cert.credential_url}</Text>
                             )}
                           </Stack>
                         </Stack>

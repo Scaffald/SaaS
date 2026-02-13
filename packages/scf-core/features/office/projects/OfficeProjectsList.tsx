@@ -88,11 +88,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
         <Row gap={8} align="center">
           <Icon size={16} />
           <Text>{label}</Text>
-          {hasOverride && (
-            <Text color="$yellow10">
-              (Override)
-            </Text>
-          )}
+          {hasOverride && <Text color="$yellow10">(Override)</Text>}
         </Row>
       )
     },
@@ -131,9 +127,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
           {showHeader && (
             <Stack gap={8}>
               <H2>Projects</H2>
-              <Text color="$gray11">
-                Manage construction projects with geographic data
-              </Text>
+              <Text color="$gray11">Manage construction projects with geographic data</Text>
             </Stack>
           )}
           <Stack gap={16}>

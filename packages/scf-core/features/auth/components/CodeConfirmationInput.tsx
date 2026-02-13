@@ -80,7 +80,11 @@ export function CodeConfirmationInput({
             borderRadius: 12,
             width: 50,
             aspectRatio: 1,
-            backgroundColor: invalid ? colors.error[200] : value ? colors.gray[100] : colors.gray[200],
+            backgroundColor: invalid
+              ? colors.error[200]
+              : value
+                ? colors.gray[100]
+                : colors.gray[200],
           }}
         />
       )}

@@ -104,26 +104,18 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
     <Stack gap={16}>
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Overall progress
-          </Text>
-          <Text color="gray">
-            {progress}%
-          </Text>
+          <Text color="gray">Overall progress</Text>
+          <Text color="gray">{progress}%</Text>
         </Row>
         <Progress value={progress} max={100} backgroundColor="$color3" size={8}>
           <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
         </Progress>
-        <Text color="gray">
-          {statusMeta.description}
-        </Text>
+        <Text color="gray">{statusMeta.description}</Text>
       </Stack>
 
       {normalizedComponents.length > 0 && (
         <Stack gap={8}>
-          <Text color="gray">
-            Component status
-          </Text>
+          <Text color="gray">Component status</Text>
           <Stack gap={8}>
             {normalizedComponents.map((component) => {
               const componentStatusMeta =
@@ -145,13 +137,9 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   borderColor="$borderColor"
                 >
                   <Stack gap={4} flex={1}>
-                    <Text color="gray">
-                      {component.label}
-                    </Text>
+                    <Text color="gray">{component.label}</Text>
                     {component.completedAt && (
-                      <Text color="gray">
-                        Completed {formatDate(component.completedAt)}
-                      </Text>
+                      <Text color="gray">Completed {formatDate(component.completedAt)}</Text>
                     )}
                   </Stack>
                   {componentStatusMeta && (
@@ -163,9 +151,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                       borderColor={componentColors.border}
                       borderRadius={12}
                     >
-                      <Text color={componentColors.text}>
-                        {componentStatusMeta.label}
-                      </Text>
+                      <Text color={componentColors.text}>{componentStatusMeta.label}</Text>
                     </Row>
                   )}
                 </Row>
@@ -177,9 +163,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
 
       {normalizedHistory.length > 0 && (
         <Stack gap={8}>
-          <Text color="gray">
-            Recent activity
-          </Text>
+          <Text color="gray">Recent activity</Text>
           <Stack gap={8}>
             {normalizedHistory.map((entry, index) => {
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
@@ -203,21 +187,13 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                     borderColor="$borderColor"
                     gap={4}
                   >
-                    <Text color={colors.text}>
-                      {historyMeta.label}
-                    </Text>
+                    <Text color={colors.text}>{historyMeta.label}</Text>
                     <Row gap={8} align="center">
-                      {entry.occurredAt && (
-                        <Text color="gray">
-                          {formatDate(entry.occurredAt)}
-                        </Text>
-                      )}
+                      {entry.occurredAt && <Text color="gray">{formatDate(entry.occurredAt)}</Text>}
                       {entry.actor && (
                         <>
                           <Separator vertical />
-                          <Text color="gray">
-                            {entry.actor}
-                          </Text>
+                          <Text color="gray">{entry.actor}</Text>
                         </>
                       )}
                     </Row>
@@ -230,28 +206,14 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
       )}
 
       <Stack gap={8}>
-        <Text color="gray">
-          Key dates
-        </Text>
+        <Text color="gray">Key dates</Text>
         <Stack gap={4}>
-          <Text color="gray">
-            Started: {formatDate(createdAt)}
-          </Text>
+          <Text color="gray">Started: {formatDate(createdAt)}</Text>
           {estimatedCompletionDate && (
-            <Text color="gray">
-              Estimated completion: {formatDate(estimatedCompletionDate)}
-            </Text>
+            <Text color="gray">Estimated completion: {formatDate(estimatedCompletionDate)}</Text>
           )}
-          {completedAt && (
-            <Text color="gray">
-              Completed: {formatDate(completedAt)}
-            </Text>
-          )}
-          {expiresAt && (
-            <Text color="gray">
-              Expires: {formatDate(expiresAt)}
-            </Text>
-          )}
+          {completedAt && <Text color="gray">Completed: {formatDate(completedAt)}</Text>}
+          {expiresAt && <Text color="gray">Expires: {formatDate(expiresAt)}</Text>}
         </Stack>
       </Stack>
     </Stack>

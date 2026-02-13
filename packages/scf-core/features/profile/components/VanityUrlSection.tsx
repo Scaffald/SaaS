@@ -62,10 +62,10 @@ export function VanityUrlSection() {
     },
     onError: (error: VanityMutationError) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to update vanity URL. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to update vanity URL. Please try again.',
+        variant: 'error',
+      })
       setIsUpdating(false)
     },
   })
@@ -168,15 +168,15 @@ export function VanityUrlSection() {
 
     if (success) {
       toast.show({
-          title: 'Copied!',
-          message: 'Profile URL copied to clipboard',
-        })
+        title: 'Copied!',
+        message: 'Profile URL copied to clipboard',
+      })
     } else {
       toast.show({
-          title: 'Error',
-          message: 'Failed to copy URL to clipboard',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'Failed to copy URL to clipboard',
+        variant: 'error',
+      })
     }
   }
 
@@ -185,18 +185,18 @@ export function VanityUrlSection() {
 
     if (!isSlugValid(normalized)) {
       toast.show({
-          title: 'Invalid Vanity URL',
-          message: 'Please enter a valid vanity URL (3-50 characters, alphanumeric and dashes only)',
-          variant: 'error',
-        })
+        title: 'Invalid Vanity URL',
+        message: 'Please enter a valid vanity URL (3-50 characters, alphanumeric and dashes only)',
+        variant: 'error',
+      })
       return
     }
 
     if (isReservedSlug(normalized)) {
       toast.show({
-          title: 'Reserved Vanity URL',
-          message: 'This vanity URL is reserved and cannot be used',
-        })
+        title: 'Reserved Vanity URL',
+        message: 'This vanity URL is reserved and cannot be used',
+      })
       return
     }
 
@@ -241,17 +241,13 @@ export function VanityUrlSection() {
       <Stack gap={16}>
         <Stack gap={8}>
           <H4>Vanity URL</H4>
-          <Text color="gray">
-            Customize your public profile URL to make it easier to share
-          </Text>
+          <Text color="gray">Customize your public profile URL to make it easier to share</Text>
         </Stack>
 
         {/* Current URL Display */}
         {vanityUrl && !isEditing && (
           <Stack gap={8}>
-            <Text>
-              Your Profile URL
-            </Text>
+            <Text>Your Profile URL</Text>
             <Row
               gap={8}
               align="center"
@@ -261,12 +257,7 @@ export function VanityUrlSection() {
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text
-                flex={1}
-                style={{ fontFamily: 'monospace' }}
-                color="gray"
-                numberOfLines={1}
-              >
+              <Text flex={1} style={{ fontFamily: 'monospace' }} color="gray" numberOfLines={1}>
                 {typeof window !== 'undefined' && window.location
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}
@@ -281,9 +272,7 @@ export function VanityUrlSection() {
         {/* Vanity URL Input */}
         <Stack gap={8}>
           <Row align="center" justify="space-between">
-            <Text>
-              Profile Vanity URL
-            </Text>
+            <Text>Profile Vanity URL</Text>
             {!isEditing && (
               <Button
                 size={12}
@@ -298,9 +287,7 @@ export function VanityUrlSection() {
           {isEditing ? (
             <Stack gap={8}>
               <Row gap={8} align="center">
-                <Text color="gray">
-                  /u/
-                </Text>
+                <Text color="gray">/u/</Text>
                 <Input
                   flex={1}
                   value={slugInput}
@@ -323,30 +310,22 @@ export function VanityUrlSection() {
               {slugInput && (
                 <Stack gap={4}>
                   {availabilityStatus.checking ? (
-                    <Text color="gray">
-                      Checking availability...
-                    </Text>
+                    <Text color="gray">Checking availability...</Text>
                   ) : availabilityStatus.available === true ? (
                     <Row gap={8} align="center">
                       <Check size={16} color="$green10" />
-                      <Text color="$green10">
-                        Available
-                      </Text>
+                      <Text color="$green10">Available</Text>
                     </Row>
                   ) : availabilityStatus.available === false ? (
                     <Stack gap={4}>
                       <Row gap={8} align="center">
                         <AlertCircle size={16} color="$red10" />
-                        <Text color="$red10">
-                          Not available
-                        </Text>
+                        <Text color="$red10">Not available</Text>
                       </Row>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
                           <Stack gap={4} marginLeft={16}>
-                            <Text color="gray">
-                              Suggestions:
-                            </Text>
+                            <Text color="gray">Suggestions:</Text>
                             {availabilityStatus.suggestions.map((suggestion) => (
                               <Button
                                 key={suggestion}
@@ -367,9 +346,7 @@ export function VanityUrlSection() {
                       Invalid format. Use 3-50 characters, alphanumeric and dashes only.
                     </Text>
                   ) : isReservedSlug(slugInput.toLowerCase().trim()) ? (
-                    <Text color="$red10">
-                      This vanity URL is reserved and cannot be used.
-                    </Text>
+                    <Text color="$red10">This vanity URL is reserved and cannot be used.</Text>
                   ) : null}
                 </Stack>
               )}
@@ -424,9 +401,7 @@ export function VanityUrlSection() {
           >
             <Clock size={16} color="$orange10" />
             <Stack flex={1} gap={4}>
-              <Text color="$yellow11">
-                Vanity URL Change Cooldown
-              </Text>
+              <Text color="$yellow11">Vanity URL Change Cooldown</Text>
               <Text color="$yellow10">
                 You can change your vanity URL again in {daysRemaining} day
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
@@ -439,9 +414,7 @@ export function VanityUrlSection() {
         {/* Slug History */}
         {slugHistory?.history && slugHistory.history.length > 0 && (
           <Stack gap={8}>
-            <Text>
-              Change History
-            </Text>
+            <Text>Change History</Text>
             <Stack gap={4}>
               {(
                 slugHistory.history as Array<{
@@ -462,9 +435,7 @@ export function VanityUrlSection() {
                     <Text color="gray" flex={1}>
                       {entry.old_slug || '(initial)'} → {entry.new_slug}
                     </Text>
-                    <Text color="gray">
-                      {new Date(entry.changed_at).toLocaleDateString()}
-                    </Text>
+                    <Text color="gray">{new Date(entry.changed_at).toLocaleDateString()}</Text>
                   </Row>
                 ))}
             </Stack>

@@ -183,7 +183,7 @@ export default function NewsPage() {
   const content = (
     <Stack gap="$4" paddingHorizontal={spacing.lg} paddingVertical={spacing.lg}>
       <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="700" color="$color12">
+        <Text color="$color12">
           Industry News
         </Text>
         <Paragraph size="$4" color="$color10">
@@ -210,21 +210,21 @@ export default function NewsPage() {
       </Row>
 
       {isLoading && newsItems.length === 0 ? (
-        <Stack alignItems="center" gap="$3" paddingVertical="$8">
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11" fontSize="$5">
+        <Stack align="center" gap="$3" paddingVertical="$8">
+          <Spinner size="lg" color="$blue7" />
+          <Text color="$color11">
             Loading latest news…
           </Text>
         </Stack>
       ) : null}
 
       {isError ? (
-        <Stack alignItems="center" gap="$3" paddingVertical="$8">
+        <Stack align="center" gap="$3" paddingVertical="$8">
           <AlertCircle size={32} color="$red10" />
-          <Text color="$red11" fontSize="$5" style={{ textAlign: 'center' }}>
+          <Text color="$red11" style={{ textAlign: 'center' }}>
             Unable to load news at the moment.
           </Text>
-          <Text color="$color11" fontSize="$4" style={{ textAlign: 'center' }}>
+          <Text color="$color11" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
           <Button
@@ -241,11 +241,11 @@ export default function NewsPage() {
       ) : null}
 
       {!isLoading && !isError && newsItems.length === 0 ? (
-        <Stack alignItems="center" gap="$3" paddingVertical="$8">
-          <Text color="$color11" fontSize="$5" fontWeight="600">
+        <Stack align="center" gap="$3" paddingVertical="$8">
+          <Text color="$color11">
             No articles found
           </Text>
-          <Text color="$color10" fontSize="$4" style={{ textAlign: 'center' }}>
+          <Text color="$color10" style={{ textAlign: 'center' }}>
             Please check again soon for more industry updates.
           </Text>
         </Stack>
@@ -262,26 +262,26 @@ export default function NewsPage() {
             fullCardClickable
             minHeight={220}
             footer={
-              <Row gap="$3" alignItems="center">
-                <Text fontSize="$2" color="$color11">
+              <Row gap="$3" align="center">
+                <Text color="$color11">
                   {formatTimeAgo(item.pubDate)}
                 </Text>
                 {item.readTime && (
                   <>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="$color11">
                       •
                     </Text>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="$color11">
                       {item.readTime}
                     </Text>
                   </>
                 )}
                 {item.author && (
                   <>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="$color11">
                       •
                     </Text>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="$color11">
                       {item.author}
                     </Text>
                   </>

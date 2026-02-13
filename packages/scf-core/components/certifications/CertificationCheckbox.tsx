@@ -38,14 +38,8 @@ export function CertificationCheckbox({
         </Checkbox>
 
         <Stack flex={1} gap={4}>
-          <Text>
-            {certification.title}
-          </Text>
-          {certification.description && (
-            <Text color="gray">
-              {certification.description}
-            </Text>
-          )}
+          <Text>{certification.title}</Text>
+          {certification.description && <Text color="gray">{certification.description}</Text>}
         </Stack>
 
         {checked && onAddProof && (

@@ -52,11 +52,7 @@ export function OfficePaymentAnalytics() {
       }),
       columnHelper.accessor('failureReason', {
         header: 'Failure Reason',
-        cell: (info) => (
-          <Text color="$red11">
-            {info.getValue() ?? 'Unknown error'}
-          </Text>
-        ),
+        cell: (info) => <Text color="$red11">{info.getValue() ?? 'Unknown error'}</Text>,
       }),
       columnHelper.accessor('failedAt', {
         header: 'Failed At',
@@ -121,9 +117,7 @@ export function OfficePaymentAnalytics() {
     <Stack flex={1} padding={16} gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
-          <Text>
-            Payment Analytics
-          </Text>
+          <Text>Payment Analytics</Text>
           <Text color="gray">
             Monitor payment transactions, revenue, and failure rates across all services.
           </Text>
@@ -158,17 +152,9 @@ export function OfficePaymentAnalytics() {
                 maxWidth={280}
               >
                 <Stack gap={8}>
-                  <Text color="gray">
-                    {card.label}
-                  </Text>
-                  <Text>
-                    {card.value}
-                  </Text>
-                  {card.subtext ? (
-                    <Text color="gray">
-                      {card.subtext}
-                    </Text>
-                  ) : null}
+                  <Text color="gray">{card.label}</Text>
+                  <Text>{card.value}</Text>
+                  {card.subtext ? <Text color="gray">{card.subtext}</Text> : null}
                 </Stack>
               </Card>
             ))}
@@ -177,9 +163,7 @@ export function OfficePaymentAnalytics() {
           {typeBreakdown.length > 0 && (
             <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
               <Stack gap={12}>
-                <Text>
-                  Revenue by Transaction Type
-                </Text>
+                <Text>Revenue by Transaction Type</Text>
                 <Stack gap={12}>
                   {typeBreakdown.map((entry) => (
                     <Stack key={entry.type} gap={4}>
@@ -205,12 +189,8 @@ export function OfficePaymentAnalytics() {
             <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding={16}>
               <Stack gap={12}>
                 <Row justify="space-between" align="center">
-                  <Text color="$red11">
-                    Failed Transactions Queue
-                  </Text>
-                  <Text color="$red11">
-                    {failedQueue.length} failed
-                  </Text>
+                  <Text color="$red11">Failed Transactions Queue</Text>
+                  <Text color="$red11">{failedQueue.length} failed</Text>
                 </Row>
                 <DataTable
                   columns={columns}

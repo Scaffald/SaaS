@@ -23,9 +23,7 @@ export function ConnectionsManagementPage() {
   return (
     <Stack gap={16}>
       <Stack gap={4}>
-        <Text>
-          Connections
-        </Text>
+        <Text>Connections</Text>
         <Text color="gray">
           Manage your professional connections, followers, and pending requests.
         </Text>

@@ -40,8 +40,8 @@ export function DiscoverEmployersScreen() {
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
   const { data: allData, isLoading: isLoadingAll } = useEmployers()
-  const allEmployers: Employer[] = (allData?.employers ?? []).map((emp: unknown) =>
-    transformEmployerRecord(emp) as Employer
+  const allEmployers: Employer[] = (allData?.employers ?? []).map(
+    (emp: unknown) => transformEmployerRecord(emp) as Employer
   )
 
   // Create industry name to ID mapping from all employers
@@ -57,7 +57,12 @@ export function DiscoverEmployersScreen() {
             }
           }
         }
-      } else if (employer.industries && typeof employer.industries === 'object' && 'id' in employer.industries && 'name' in employer.industries) {
+      } else if (
+        employer.industries &&
+        typeof employer.industries === 'object' &&
+        'id' in employer.industries &&
+        'name' in employer.industries
+      ) {
         const industry = employer.industries as { id: string; name: string }
         if (industry.id && industry.name) {
           map.set(industry.name, industry.id)

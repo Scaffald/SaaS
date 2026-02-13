@@ -45,12 +45,8 @@ export const DomainCard = memo(function DomainCard({
         opacity={0.6}
       >
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            {domainName}
-          </Text>
-          <Text color="gray">
-            Incomplete
-          </Text>
+          <Text color="gray">{domainName}</Text>
+          <Text color="gray">Incomplete</Text>
         </Row>
         <Text color="gray">
           Complete {domainName} questions to unlock your results for this domain.
@@ -73,12 +69,8 @@ export const DomainCard = memo(function DomainCard({
       {/* Domain Header */}
       <Row justify="space-between" align="center">
         <Stack gap={4} flex={1}>
-          <Text color="gray">
-            {domainName}
-          </Text>
-          <Text color="gray">
-            {narrative?.summary || ''}
-          </Text>
+          <Text color="gray">{domainName}</Text>
+          <Text color="gray">{narrative?.summary || ''}</Text>
         </Stack>
         <Stack align="flex-end" gap={4}>
           <Text
@@ -92,9 +84,7 @@ export const DomainCard = memo(function DomainCard({
           >
             {classification.toUpperCase()}
           </Text>
-          <Text color="gray">
-            {Math.round(percentage)}%
-          </Text>
+          <Text color="gray">{Math.round(percentage)}%</Text>
         </Stack>
       </Row>
 
@@ -104,11 +94,7 @@ export const DomainCard = memo(function DomainCard({
       </Progress>
 
       {/* Domain Result Text */}
-      {domainResult && (
-        <Text color="gray">
-          {domainResult.text}
-        </Text>
-      )}
+      {domainResult && <Text color="gray">{domainResult.text}</Text>}
 
       {/* Expand/Collapse Button */}
       {score?.facet && narrative?.facets && (

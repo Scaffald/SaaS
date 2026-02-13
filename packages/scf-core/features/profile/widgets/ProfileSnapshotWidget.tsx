@@ -139,14 +139,10 @@ export function ProfileSnapshotWidget() {
           </Avatar>
 
           <Stack gap={4} align="center">
-            <Text>
-              {displayName}
-            </Text>
+            <Text>{displayName}</Text>
             {generalInfo.headline && (
               <Stack align="center">
-                <Text color="gray">
-                  {generalInfo.headline}
-                </Text>
+                <Text color="gray">{generalInfo.headline}</Text>
               </Stack>
             )}
           </Stack>
@@ -161,9 +157,7 @@ export function ProfileSnapshotWidget() {
               borderWidth={1}
               borderColor="$green7"
             >
-              <Text color="$green11">
-                Open to Work
-              </Text>
+              <Text color="$green11">Open to Work</Text>
             </Row>
           )}
         </Stack>
@@ -171,33 +165,21 @@ export function ProfileSnapshotWidget() {
         {/* Current Role */}
         {currentRole && (
           <Stack gap={4} backgroundColor="$color2" padding={12} borderRadius={12}>
-            <Text color="gray">
-              Current Role
-            </Text>
-            <Text>
-              {currentRole.job_title}
-            </Text>
-            <Text color="gray">
-              {currentRole.company_name}
-            </Text>
+            <Text color="gray">Current Role</Text>
+            <Text>{currentRole.job_title}</Text>
+            <Text color="gray">{currentRole.company_name}</Text>
           </Stack>
         )}
 
         {/* Stats Grid */}
         <Stack gap={12}>
-          <Text>
-            Profile Stats
-          </Text>
+          <Text>Profile Stats</Text>
 
           {/* Completion Bar */}
           <Stack gap={8}>
             <Row justify="space-between">
-              <Text color="gray">
-                Completion
-              </Text>
-              <Text>
-                {completion}%
-              </Text>
+              <Text color="gray">Completion</Text>
+              <Text>{completion}%</Text>
             </Row>
             <Progress value={completion} max={100}>
               <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
@@ -215,12 +197,8 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text color="$blue8">
-                {skills?.length || 0}
-              </Text>
-              <Text color="gray">
-                Skills
-              </Text>
+              <Text color="$blue8">{skills?.length || 0}</Text>
+              <Text color="gray">Skills</Text>
             </Stack>
 
             <Stack
@@ -232,12 +210,8 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text color="$green10">
-                {certifications?.length || 0}
-              </Text>
-              <Text color="gray">
-                Certs
-              </Text>
+              <Text color="$green10">{certifications?.length || 0}</Text>
+              <Text color="gray">Certs</Text>
             </Stack>
 
             <Stack
@@ -249,12 +223,8 @@ export function ProfileSnapshotWidget() {
               borderRadius={12}
               align="center"
             >
-              <Text color="$blue7">
-                {formattedYearsOfExperience}
-              </Text>
-              <Text color="gray">
-                Years
-              </Text>
+              <Text color="$blue7">{formattedYearsOfExperience}</Text>
+              <Text color="gray">Years</Text>
             </Stack>
           </Row>
         </Stack>
@@ -263,9 +233,7 @@ export function ProfileSnapshotWidget() {
         {topSkills.length > 0 && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text>
-                Top Skills
-              </Text>
+              <Text>Top Skills</Text>
               <Button
                 size={4}
                 chromeless
@@ -320,9 +288,7 @@ export function ProfileSnapshotWidget() {
           </Button>
           {completion < 100 && (
             <Stack align="center">
-              <Text color="gray">
-                Complete your profile to attract more opportunities
-              </Text>
+              <Text color="gray">Complete your profile to attract more opportunities</Text>
             </Stack>
           )}
         </Stack>

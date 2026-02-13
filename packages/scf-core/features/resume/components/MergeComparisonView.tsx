@@ -58,17 +58,11 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
           borderRadius={16}
         >
           <Row justify="space-between" align="center" gap={8} flexWrap="wrap">
-            <Text>
-              {section.label}
-            </Text>
+            <Text>{section.label}</Text>
             <StrategyPill strategy={section.strategy} />
           </Row>
 
-          {section.notes ? (
-            <Text color="gray">
-              {section.notes}
-            </Text>
-          ) : null}
+          {section.notes ? <Text color="gray">{section.notes}</Text> : null}
 
           <Row gap={16} flexWrap="wrap">
             <SummaryColumn title="Current profile" align={section.existingItems} />

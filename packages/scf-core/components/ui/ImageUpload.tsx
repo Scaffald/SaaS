@@ -325,11 +325,7 @@ export function ImageUpload({
 
   return (
     <Stack gap={8}>
-      {label && (
-        <Text>
-          {label}
-        </Text>
-      )}
+      {label && <Text>{label}</Text>}
 
       {/* Upload Area */}
       <Stack
@@ -413,9 +409,7 @@ export function ImageUpload({
 
             {/* Text */}
             <Stack gap={4} align="center">
-              <Text>
-                {isDragActive ? 'Drop image here' : 'Upload Image'}
-              </Text>
+              <Text>{isDragActive ? 'Drop image here' : 'Upload Image'}</Text>
               <Text color="gray" style={{ textAlign: 'center' }}>
                 {isUploading
                   ? `Uploading... ${uploadProgress > 0 ? `${uploadProgress}%` : ''}`
@@ -455,11 +449,7 @@ export function ImageUpload({
       </Stack>
 
       {/* Helper Text */}
-      {helperText && !error && (
-        <Text color="gray">
-          {helperText}
-        </Text>
-      )}
+      {helperText && !error && <Text color="gray">{helperText}</Text>}
 
       {/* Error Message */}
       {error && (

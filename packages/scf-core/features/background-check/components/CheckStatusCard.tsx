@@ -56,16 +56,10 @@ export const CheckStatusCard = memo(function CheckStatusCard({
       <Stack gap={16}>
         <Row justify="space-between" align="flex-start" gap={16} flexWrap="wrap">
           <Stack gap={4} flex={1}>
-            <Text color="gray">
-              {packageLabel}
-            </Text>
-            <Text color="gray">
-              Started {formatDate(check.created_at)}
-            </Text>
+            <Text color="gray">{packageLabel}</Text>
+            <Text color="gray">Started {formatDate(check.created_at)}</Text>
             {estimatedCompletion && (
-              <Text color="gray">
-                Est. completion {formatDate(estimatedCompletion)}
-              </Text>
+              <Text color="gray">Est. completion {formatDate(estimatedCompletion)}</Text>
             )}
           </Stack>
 
@@ -80,9 +74,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
               align="center"
               gap={8}
             >
-              <Text color={statusColors.text}>
-                {statusMeta.label}
-              </Text>
+              <Text color={statusColors.text}>{statusMeta.label}</Text>
             </Row>
             {check.expires_at && (
               <Row align="center" gap={8}>
@@ -103,19 +95,13 @@ export const CheckStatusCard = memo(function CheckStatusCard({
 
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="gray">
-              Progress
-            </Text>
-            <Text color="gray">
-              {progress}%
-            </Text>
+            <Text color="gray">Progress</Text>
+            <Text color="gray">{progress}%</Text>
           </Row>
           <Progress value={progress} max={100} backgroundColor="$color3" size={4}>
             <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
           </Progress>
-          <Text color="gray">
-            {statusMeta.description}
-          </Text>
+          <Text color="gray">{statusMeta.description}</Text>
         </Stack>
 
         <Row gap={8} flexWrap="wrap">

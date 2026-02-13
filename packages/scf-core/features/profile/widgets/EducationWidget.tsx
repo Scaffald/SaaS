@@ -51,9 +51,7 @@ export function EducationWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load education</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
           <Button
             variant="primary"
             size={8}
@@ -117,19 +115,13 @@ export function EducationWidget({
                       {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text color="gray">
-                      {edu.institution_name || 'Institution'}
-                    </Text>
+                    <Text color="gray">{edu.institution_name || 'Institution'}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="gray">
-                      {formatDate(edu.start_date)}
-                    </Text>
-                    <Text color="gray">
-                      -
-                    </Text>
+                    <Text color="gray">{formatDate(edu.start_date)}</Text>
+                    <Text color="gray">-</Text>
                     <Text color="gray">
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
@@ -142,19 +134,13 @@ export function EducationWidget({
                         borderWidth={1}
                         borderColor="$blue7"
                       >
-                        <Text color="$blue11">
-                          Current
-                        </Text>
+                        <Text color="$blue11">Current</Text>
                       </Row>
                     )}
                   </Row>
 
                   {/* Location */}
-                  {edu.location && (
-                    <Text color="gray">
-                      📍 {edu.location}
-                    </Text>
-                  )}
+                  {edu.location && <Text color="gray">📍 {edu.location}</Text>}
 
                   {/* Description */}
                   {edu.description && !showCompact && (

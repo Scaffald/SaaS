@@ -141,7 +141,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       try {
         // Fetch using queryClient to check slug availability
         const result = await queryClient.fetchQuery({
-          queryKey: [['office', 'checkOrganizationSlug'], { input: { slug: normalizedSlug, organizationId } }],
+          queryKey: [
+            ['office', 'checkOrganizationSlug'],
+            { input: { slug: normalizedSlug, organizationId } },
+          ],
         })
 
         if (isCancelled) return
@@ -192,36 +195,36 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   const createMutation = api.office.createOrganization.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Success',
-          message: 'Organization created successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Organization created successfully',
+        variant: 'success',
+      })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Failed to create organization',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to create organization',
+        variant: 'error',
+      })
     },
   })
 
   const updateMutation = api.office.updateOrganization.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Success',
-          message: 'Organization updated successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Organization updated successfully',
+        variant: 'success',
+      })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
       toast.show({
-          title: 'Error',
-          message: error instanceof Error ? error.message : 'Failed to update organization',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to update organization',
+        variant: 'error',
+      })
     },
   })
 
@@ -293,9 +296,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               autoCorrect={false}
               borderColor={slugHasAvailabilityError || errors.slug ? '$red8' : '$borderColor'}
             />
-            <Text opacity={0.7}>
-              Lowercase, URL-friendly username (hyphens only)
-            </Text>
+            <Text opacity={0.7}>Lowercase, URL-friendly username (hyphens only)</Text>
             {errors.slug && (
               <Text data-testid="slug-error" color="$red10">
                 {errors.slug.message}
@@ -304,26 +305,16 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
             {slugStatus.state === 'checking' && slugNeedsValidation && (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
-                <Text color="gray">
-                  Checking availability...
-                </Text>
+                <Text color="gray">Checking availability...</Text>
               </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
-              <Text color="$green10">
-                This vanity URL is available.
-              </Text>
+              <Text color="$green10">This vanity URL is available.</Text>
             )}
-            {slugStatus.state === 'invalid' && (
-              <Text color="$red10">
-                {slugStatus.message}
-              </Text>
-            )}
+            {slugStatus.state === 'invalid' && <Text color="$red10">{slugStatus.message}</Text>}
             {slugStatus.state === 'taken' && (
               <Stack gap={8}>
-                <Text color="$red10">
-                  {slugStatus.message}
-                </Text>
+                <Text color="$red10">{slugStatus.message}</Text>
                 {slugStatus.suggestions?.length ? (
                   <Row gap={8} flexWrap="wrap">
                     {slugStatus.suggestions.map((suggestion) => (
@@ -340,11 +331,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 ) : null}
               </Stack>
             )}
-            {slugStatus.state === 'error' && (
-              <Text color="$orange10">
-                {slugStatus.message}
-              </Text>
-            )}
+            {slugStatus.state === 'error' && <Text color="$orange10">{slugStatus.message}</Text>}
           </Stack>
         )}
       />
@@ -413,11 +400,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 { value: 'private', label: 'Private' },
               ]}
             />
-            {errors.visibility && (
-              <Text color="$red10">
-                {errors.visibility.message}
-              </Text>
-            )}
+            {errors.visibility && <Text color="$red10">{errors.visibility.message}</Text>}
           </Stack>
         )}
       />
@@ -461,11 +444,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       )}
 
       {/* Submit buttons */}
-      <Row
-        justify="flex-end"
-        gap={8}
-        marginTop={16}
-      >
+      <Row justify="flex-end" gap={8} marginTop={16}>
         <Button
           testID="org-form-cancel-btn"
           variant="outline"

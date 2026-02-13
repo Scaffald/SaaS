@@ -47,8 +47,7 @@ export const useTransferOrganizationOwnership = () =>
 export const useOrganizationDocuments = (
   organizationId: string,
   params?: { folderId?: string | null; search?: string }
-) =>
-  useOrgDocumentsSdk(organizationId || undefined, params, { enabled: Boolean(organizationId) })
+) => useOrgDocumentsSdk(organizationId || undefined, params, { enabled: Boolean(organizationId) })
 
 export const useDocumentUploadSession = () => useCreateDocumentUploadSessionMutation()
 

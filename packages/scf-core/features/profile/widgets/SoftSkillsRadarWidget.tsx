@@ -40,13 +40,14 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
-  const { data, isPending: isLoading, error } = useSoftSkills(
-    userId ? { userId } : undefined,
-    {
-      enabled: !!userId,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  const {
+    data,
+    isPending: isLoading,
+    error,
+  } = useSoftSkills(userId ? { userId } : undefined, {
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
 
   // Prepare skills for display
   const skills = useMemo<SoftSkill[]>(() => {
@@ -69,9 +70,9 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   // Handle export (placeholder for now)
   const handleExport = useCallback(() => {
     toast.show({
-          title: 'Export',
-          message: 'Chart export functionality coming soon!',
-        })
+      title: 'Export',
+      message: 'Chart export functionality coming soon!',
+    })
   }, [toast])
 
   if (isLoading) {
@@ -87,9 +88,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )

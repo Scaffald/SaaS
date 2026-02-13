@@ -245,9 +245,7 @@ export function APIKeyScopesManager({
               <Row ai="flex-start" gap={12}>
                 <Info size={20} color="$blue11" mt={2} />
                 <Stack f={1} gap={8}>
-                  <Paragraph color="$blue11">
-                    Permission Scopes
-                  </Paragraph>
+                  <Paragraph color="$blue11">Permission Scopes</Paragraph>
                   <Paragraph size={12} color="$blue11">
                     Scopes control what your API key can access. Grant only the minimum permissions
                     needed for your use case (principle of least privilege).
@@ -422,9 +420,7 @@ export function APIKeyScopesManager({
             {hasChanges() && (
               <Card backgroundColor="$yellow2" borderColor="$yellow6" borderWidth={1} padding={12}>
                 <Stack gap={8}>
-                  <Paragraph color="$yellow11">
-                    Pending Changes
-                  </Paragraph>
+                  <Paragraph color="$yellow11">Pending Changes</Paragraph>
                   {getAddedScopes().length > 0 && (
                     <Row gap={8} ai="center">
                       <CheckCircle size={16} color="$green11" />

@@ -19,7 +19,7 @@ export function useWorkers(params?: GetWorkersParams, options?: { enabled?: bool
       if (!client) throw new Error('Missing Scaffald client')
       return client.workers.getWorkers(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
@@ -35,7 +35,7 @@ export function useWorker(workerId: string | undefined, options?: { enabled?: bo
       if (!client || !workerId) throw new Error('Missing Scaffald client or workerId')
       return client.workers.getWorkerById({ id: workerId })
     },
-    enabled: !!client && !!workerId && (options?.enabled !== false),
+    enabled: !!client && !!workerId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

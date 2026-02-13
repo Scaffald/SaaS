@@ -75,28 +75,18 @@ export function UserProfileHeader({
                 align="center"
                 justify="center"
               >
-                <Text color="$blue10">
-                  {profile.name?.charAt(0) || '?'}
-                </Text>
+                <Text color="$blue10">{profile.name?.charAt(0) || '?'}</Text>
               </Stack>
             )}
 
             {/* Name and Headline */}
             <Stack flex={1} gap={8} minWidth={200}>
-              <Text color="gray">
-                {profile.name}
-              </Text>
-              {profile.headline && (
-                <Text color="gray">
-                  {profile.headline}
-                </Text>
-              )}
+              <Text color="gray">{profile.name}</Text>
+              {profile.headline && <Text color="gray">{profile.headline}</Text>}
               {profile.industry_name && (
                 <Row gap={8} align="center">
                   <Briefcase size={18} color="gray" />
-                  <Text color="gray">
-                    {profile.industry_name}
-                  </Text>
+                  <Text color="gray">{profile.industry_name}</Text>
                 </Row>
               )}
             </Stack>
@@ -115,12 +105,8 @@ export function UserProfileHeader({
               >
                 <Star size={32} color="$blue10" fill="$blue10" />
                 <Stack>
-                  <Text color="$blue11">
-                    {profile.gamified_score}
-                  </Text>
-                  <Text color="$blue10">
-                    Scaffald Score
-                  </Text>
+                  <Text color="$blue11">{profile.gamified_score}</Text>
+                  <Text color="$blue10">Scaffald Score</Text>
                 </Stack>
               </Row>
             )}
@@ -146,9 +132,7 @@ export function UserProfileHeader({
               borderRadius={12}
             >
               <MapPin size={18} color="gray" />
-              <Text color="gray">
-                {profile.location}
-              </Text>
+              <Text color="gray">{profile.location}</Text>
             </Row>
           )}
 
@@ -162,9 +146,7 @@ export function UserProfileHeader({
               borderRadius={12}
             >
               <Award size={18} color="gray" />
-              <Text color="gray">
-                {formattedYears} years experience
-              </Text>
+              <Text color="gray">{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -178,9 +160,7 @@ export function UserProfileHeader({
               borderRadius={12}
             >
               <DollarSign size={18} color="gray" />
-              <Text color="gray">
-                {formatHourlyRate(profile.hourly_rate_cents)}
-              </Text>
+              <Text color="gray">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
             </Row>
           )}
 
@@ -191,9 +171,7 @@ export function UserProfileHeader({
               backgroundColor="$green3"
               borderRadius={12}
             >
-              <Text color="$green11">
-                ✓ Available for Work
-              </Text>
+              <Text color="$green11">✓ Available for Work</Text>
             </Row>
           )}
         </Row>

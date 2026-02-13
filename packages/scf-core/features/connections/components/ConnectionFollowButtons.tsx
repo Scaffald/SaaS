@@ -240,9 +240,7 @@ export function ConnectionFollowButtons({
         <Stack gap={12} align="center" paddingVertical={12}>
           <Row gap={8} align="center">
             <Loader2 size={16} color="gray" />
-            <Text color="gray">
-              Loading connection status...
-            </Text>
+            <Text color="gray">Loading connection status...</Text>
           </Row>
         </Stack>
       </Card>

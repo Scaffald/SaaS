@@ -61,9 +61,7 @@ export function OfficeCMSEdit() {
       }
       rightContent={
         <Stack gap={16}>
-          <Text>
-            Edit Slide
-          </Text>
+          <Text>Edit Slide</Text>
           <Text>
             Update the slide information. Changes will be visible to users immediately if the slide
             is active.

@@ -56,9 +56,7 @@ export function SkillSearchForm({
   return (
     <Stack gap={16}>
       <Row justify="space-between" align="center">
-        <Text>
-          Search for Skills
-        </Text>
+        <Text>Search for Skills</Text>
 
         {/* Taxonomy Checkboxes */}
         <Row gap={12} align="center">
@@ -69,9 +67,7 @@ export function SkillSearchForm({
               aria-label="Filter CSI taxonomy"
               testID="search-csi"
             />
-            <Label onPress={() => onSearchCSIChange(!searchCSI)}>
-              CSI
-            </Label>
+            <Label onPress={() => onSearchCSIChange(!searchCSI)}>CSI</Label>
           </Row>
 
           <Row gap={8} align="center">
@@ -81,9 +77,7 @@ export function SkillSearchForm({
               aria-label="Filter O*NET taxonomy"
               testID="search-onet"
             />
-            <Label onPress={() => onSearchONETChange(!searchONET)}>
-              O*NET
-            </Label>
+            <Label onPress={() => onSearchONETChange(!searchONET)}>O*NET</Label>
           </Row>
         </Row>
       </Row>

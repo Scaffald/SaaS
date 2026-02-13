@@ -286,11 +286,7 @@ export function TeamForm({
               placeholder="Field Ops Team"
               borderColor={errors.name ? '$red8' : '$borderColor'}
             />
-            {errors.name && (
-              <Text color="$red10">
-                {errors.name.message}
-              </Text>
-            )}
+            {errors.name && <Text color="$red10">{errors.name.message}</Text>}
           </Stack>
         )}
       />
@@ -309,14 +305,8 @@ export function TeamForm({
               placeholder="field-ops-team"
               borderColor={errors.slug ? '$red8' : '$borderColor'}
             />
-            <Text color="gray">
-              Lowercase, URL-friendly username for the team
-            </Text>
-            {errors.slug && (
-              <Text color="$red10">
-                {errors.slug.message}
-              </Text>
-            )}
+            <Text color="gray">Lowercase, URL-friendly username for the team</Text>
+            {errors.slug && <Text color="$red10">{errors.slug.message}</Text>}
           </Stack>
         )}
       />
@@ -334,11 +324,7 @@ export function TeamForm({
               onChangeText={(value) => field.onChange(value)}
               placeholder="e.g. Hiring for Southeast operations"
             />
-            {errors.purpose && (
-              <Text color="$red10">
-                {errors.purpose.message}
-              </Text>
-            )}
+            {errors.purpose && <Text color="$red10">{errors.purpose.message}</Text>}
           </Stack>
         )}
       />
@@ -360,11 +346,7 @@ export function TeamForm({
                 label: option.label,
               }))}
             />
-            {errors.visibility && (
-              <Text color="$red10">
-                {errors.visibility.message}
-              </Text>
-            )}
+            {errors.visibility && <Text color="$red10">{errors.visibility.message}</Text>}
           </Stack>
         )}
       />
@@ -387,9 +369,7 @@ export function TeamForm({
               }))}
             />
             {errors.invitationPolicy && (
-              <Text color="$red10">
-                {errors.invitationPolicy.message}
-              </Text>
+              <Text color="$red10">{errors.invitationPolicy.message}</Text>
             )}
           </Stack>
         )}
@@ -410,9 +390,7 @@ export function TeamForm({
               rows={4}
             />
             {errors.description && (
-              <Text color="$red10">
-                {errors.description.message as string}
-              </Text>
+              <Text color="$red10">{errors.description.message as string}</Text>
             )}
           </Stack>
         )}
@@ -442,9 +420,7 @@ export function TeamForm({
               }))}
             />
             {errors.defaultRoleId && (
-              <Text color="$red10">
-                {errors.defaultRoleId.message as string}
-              </Text>
+              <Text color="$red10">{errors.defaultRoleId.message as string}</Text>
             )}
           </Stack>
         )}

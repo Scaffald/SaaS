@@ -162,9 +162,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         padding={16}
         gap={8}
       >
-        <Text>
-          Insights unavailable
-        </Text>
+        <Text>Insights unavailable</Text>
         <Text color="gray">
           We&apos;ll start charting metrics once your team begins reviewing applications and
           recording activity.
@@ -302,19 +300,9 @@ function AnalyticsCard({
       gap={12}
     >
       <Stack gap={4}>
-        <Text accessibilityRole="header">
-          {title}
-        </Text>
-        {description ? (
-          <Text color="gray">
-            {description}
-          </Text>
-        ) : null}
-        {summary ? (
-          <Text color="gray">
-            {summary}
-          </Text>
-        ) : null}
+        <Text accessibilityRole="header">{title}</Text>
+        {description ? <Text color="gray">{description}</Text> : null}
+        {summary ? <Text color="gray">{summary}</Text> : null}
       </Stack>
       {emptyMessage ? <Text color="gray">{emptyMessage}</Text> : null}
       {children}

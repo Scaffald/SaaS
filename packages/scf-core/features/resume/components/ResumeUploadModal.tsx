@@ -123,9 +123,9 @@ export function ResumeUploadModal({
       setStatus('error')
       setErrorMessage(message)
       toast.show({
-          title: 'Resume Import Failed',
-          variant: 'error',
-        })
+        title: 'Resume Import Failed',
+        variant: 'error',
+      })
     },
     [toast]
   )
@@ -404,32 +404,16 @@ export function ResumeUploadModal({
         )}
 
         {status === 'success' && (
-          <Row
-            gap={12}
-            align="center"
-            backgroundColor="$green3"
-            padding={12}
-            borderRadius={12}
-          >
+          <Row gap={12} align="center" backgroundColor="$green3" padding={12} borderRadius={12}>
             <CheckCircle2 color="$green10" size={20} />
-            <Text color="$green11">
-              Resume uploaded successfully. Redirecting...
-            </Text>
+            <Text color="$green11">Resume uploaded successfully. Redirecting...</Text>
           </Row>
         )}
 
         {status === 'error' && errorMessage && (
-          <Row
-            gap={12}
-            align="center"
-            backgroundColor="$red3"
-            padding={12}
-            borderRadius={12}
-          >
+          <Row gap={12} align="center" backgroundColor="$red3" padding={12} borderRadius={12}>
             <AlertCircle color="$red10" size={20} />
-            <Text color="$red11">
-              {errorMessage}
-            </Text>
+            <Text color="$red11">{errorMessage}</Text>
           </Row>
         )}
 

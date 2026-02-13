@@ -219,9 +219,7 @@ export function TeamSettingsForm({
       backgroundColor="$color2"
     >
       <Stack gap={8}>
-        <Text>
-          Team settings
-        </Text>
+        <Text>Team settings</Text>
         <Text color="gray">
           Configure defaults and collaboration preferences for this team. Changes are saved
           automatically.
@@ -234,9 +232,7 @@ export function TeamSettingsForm({
 
       <Stack gap={16} opacity={canEdit ? 1 : 0.6}>
         <Stack gap={8}>
-          <Text>
-            Default role for new members
-          </Text>
+          <Text>Default role for new members</Text>
           <Text color="gray">
             Select which role is assigned when a member is added without specifying a role.
           </Text>
@@ -263,9 +259,7 @@ export function TeamSettingsForm({
         </Stack>
 
         <Stack gap={12}>
-          <Text>
-            Notification preferences
-          </Text>
+          <Text>Notification preferences</Text>
           <SettingsToggle
             label="Notify team when a new member joins"
             description="Send in-app notifications for new members."
@@ -297,9 +291,7 @@ export function TeamSettingsForm({
         </Stack>
 
         <Stack gap={12}>
-          <Text>
-            Assignment rules
-          </Text>
+          <Text>Assignment rules</Text>
           <SettingsToggle
             label="Auto-assign applications to team members"
             description="Distribute applications evenly across team recruiters."
@@ -322,9 +314,7 @@ export function TeamSettingsForm({
       <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
         <Row gap={8} align="center">
           {updateMutation.isPending ? <Spinner size="sm" /> : null}
-          <Text color={statusColor}>
-            {statusLabel}
-          </Text>
+          <Text color={statusColor}>{statusLabel}</Text>
         </Row>
         <Button
           size={12}
@@ -410,9 +400,7 @@ function SettingsToggle({
           <Row justify="space-between" align="center" gap={12}>
             <Stack flex={1} gap={4}>
               <Text>{label}</Text>
-              <Text color="gray">
-                {description}
-              </Text>
+              <Text color="gray">{description}</Text>
             </Stack>
             <Switch
               checked={field.value}
@@ -444,9 +432,7 @@ function PermissionBanner() {
       <Info size={18} color="gray" />
       <Stack gap={4}>
         <Text>View only</Text>
-        <Text color="gray">
-          You need team admin permissions to update settings for this team.
-        </Text>
+        <Text color="gray">You need team admin permissions to update settings for this team.</Text>
       </Stack>
     </Row>
   )

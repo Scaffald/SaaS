@@ -42,7 +42,10 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
 
-  const { data: skills } = useSkillsWidget({ userId }, { enabled: !!userId, staleTime: 5 * 60 * 1000 })
+  const { data: skills } = useSkillsWidget(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
+  )
 
   const { data: certifications } = useCertificationsWidget(
     { userId },
@@ -138,14 +141,10 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 </Avatar>
 
                 <Stack gap={4} align="center">
-                  <Text>
-                    {displayName}
-                  </Text>
+                  <Text>{displayName}</Text>
                   {generalInfo.headline && (
                     <Stack align="center">
-                      <Text color="gray">
-                        {generalInfo.headline}
-                      </Text>
+                      <Text color="gray">{generalInfo.headline}</Text>
                     </Stack>
                   )}
                 </Stack>
@@ -160,9 +159,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     borderWidth={1}
                     borderColor="$green7"
                   >
-                    <Text color="$green11">
-                      Open to Work
-                    </Text>
+                    <Text color="$green11">Open to Work</Text>
                   </Row>
                 )}
               </Stack>
@@ -170,33 +167,21 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
               {/* Current Role */}
               {currentRole && (
                 <Stack gap={4} backgroundColor="$color2" padding={12} borderRadius={12}>
-                  <Text color="gray">
-                    Current Role
-                  </Text>
-                  <Text>
-                    {currentRole.job_title}
-                  </Text>
-                  <Text color="gray">
-                    {currentRole.company_name}
-                  </Text>
+                  <Text color="gray">Current Role</Text>
+                  <Text>{currentRole.job_title}</Text>
+                  <Text color="gray">{currentRole.company_name}</Text>
                 </Stack>
               )}
 
               {/* Stats Grid */}
               <Stack gap={12}>
-                <Text>
-                  Profile Stats
-                </Text>
+                <Text>Profile Stats</Text>
 
                 {/* Completion Bar */}
                 <Stack gap={8}>
                   <Row justify="space-between">
-                    <Text color="gray">
-                      Completion
-                    </Text>
-                    <Text>
-                      {completion}%
-                    </Text>
+                    <Text color="gray">Completion</Text>
+                    <Text>{completion}%</Text>
                   </Row>
                   <Progress value={completion} max={100}>
                     <Progress.Indicator animation="bouncy" backgroundColor="$green9" />
@@ -214,12 +199,8 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     borderRadius={12}
                     align="center"
                   >
-                    <Text color="$blue10">
-                      {skills?.length || 0}
-                    </Text>
-                    <Text color="gray">
-                      Skills
-                    </Text>
+                    <Text color="$blue10">{skills?.length || 0}</Text>
+                    <Text color="gray">Skills</Text>
                   </Stack>
 
                   <Stack
@@ -231,12 +212,8 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     borderRadius={12}
                     align="center"
                   >
-                    <Text color="$green10">
-                      {certifications?.length || 0}
-                    </Text>
-                    <Text color="gray">
-                      Certs
-                    </Text>
+                    <Text color="$green10">{certifications?.length || 0}</Text>
+                    <Text color="gray">Certs</Text>
                   </Stack>
 
                   <Stack
@@ -248,12 +225,8 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     borderRadius={12}
                     align="center"
                   >
-                    <Text color="gray">
-                      {formattedYearsOfExperience}
-                    </Text>
-                    <Text color="gray">
-                      Years
-                    </Text>
+                    <Text color="gray">{formattedYearsOfExperience}</Text>
+                    <Text color="gray">Years</Text>
                   </Stack>
                 </Row>
               </Stack>
@@ -261,9 +234,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
               {/* Top Skills Preview */}
               {topSkills.length > 0 && (
                 <Stack gap={8}>
-                  <Text>
-                    Top Skills
-                  </Text>
+                  <Text>Top Skills</Text>
                   <Row gap={8} flexWrap="wrap">
                     {topSkills.map((skill: Record<string, unknown>) => {
                       const displayCode =

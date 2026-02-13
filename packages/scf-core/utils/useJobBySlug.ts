@@ -17,7 +17,7 @@ export function useJobBySlug(slug: string | undefined, options?: { enabled?: boo
       if (!sdkClient || slug === undefined) throw new Error('Missing client or slug')
       return sdkClient.jobs.retrieveBySlug(slug)
     },
-    enabled: !!slug && !!sdkClient && (options?.enabled !== false),
+    enabled: !!slug && !!sdkClient && options?.enabled !== false,
     retry: false,
     staleTime: 5 * 60 * 1000,
   })

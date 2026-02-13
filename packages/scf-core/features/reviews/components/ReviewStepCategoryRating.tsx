@@ -19,12 +19,8 @@ export function ReviewStepCategoryRating({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          {title}
-        </Text>
-        <Text color="gray">
-          {description}
-        </Text>
+        <Text color="gray">{title}</Text>
+        <Text color="gray">{description}</Text>
       </Stack>
 
       {/* Category Rating */}

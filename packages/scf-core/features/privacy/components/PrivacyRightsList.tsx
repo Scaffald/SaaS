@@ -109,15 +109,8 @@ function RightCard({
       gap={12}
     >
       <Row gap={8} align="center">
-        <Stack
-          width={8}
-          height={8}
-          borderRadius={4}
-          backgroundColor="$green10"
-        />
-        <Text>
-          {right.title}
-        </Text>
+        <Stack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
+        <Text>{right.title}</Text>
       </Row>
 
       <Text color="gray" lineHeight={16}>
@@ -158,16 +151,11 @@ export function PrivacyRightsList({ onAction }: PrivacyRightsListProps) {
       ))}
 
       {/* Legal reference */}
-      <Stack
-        padding={12}
-        backgroundColor="$color3"
-        borderRadius={8}
-        marginTop={8}
-      >
+      <Stack padding={12} backgroundColor="$color3" borderRadius={8} marginTop={8}>
         <Text color="gray">
-          These rights are provided under the California Consumer Privacy Act (CCPA) and
-          California Privacy Rights Act (CPRA). To exercise any of these rights, you can use
-          the quick actions at the top of this page or contact our Privacy Team.
+          These rights are provided under the California Consumer Privacy Act (CCPA) and California
+          Privacy Rights Act (CPRA). To exercise any of these rights, you can use the quick actions
+          at the top of this page or contact our Privacy Team.
         </Text>
       </Stack>
     </Stack>

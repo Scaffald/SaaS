@@ -79,12 +79,8 @@ export function CompensationBenefitsSection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text>
-        Compensation & Benefits
-      </Text>
-      <Text color="gray">
-        Detailed compensation information and benefits package
-      </Text>
+      <Text>Compensation & Benefits</Text>
+      <Text color="gray">Detailed compensation information and benefits package</Text>
 
       {/* Benefits Summary */}
       <Stack gap={8}>
@@ -101,9 +97,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has bonus structure</Label>
-          <Text color="gray">
-            Performance or other bonus opportunities
-          </Text>
+          <Text color="gray">Performance or other bonus opportunities</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_bonus_structure || false}
@@ -128,9 +122,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has equity compensation</Label>
-          <Text color="gray">
-            Stock options, RSUs, or other equity
-          </Text>
+          <Text color="gray">Stock options, RSUs, or other equity</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_equity || false}
@@ -171,9 +163,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has relocation package</Label>
-          <Text color="gray">
-            Relocation assistance available
-          </Text>
+          <Text color="gray">Relocation assistance available</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_relocation_package || false}
@@ -198,9 +188,7 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Overtime eligible</Label>
-          <Text color="gray">
-            Position eligible for overtime pay
-          </Text>
+          <Text color="gray">Position eligible for overtime pay</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.overtime_eligible || false}

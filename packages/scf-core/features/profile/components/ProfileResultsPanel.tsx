@@ -50,11 +50,7 @@ export function ProfileResultsPanel({
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
         <Stack gap={16} {...props}>
-          {title && (
-            <Text>
-              {title}
-            </Text>
-          )}
+          {title && <Text>{title}</Text>}
 
           {isLoading ? (
             <Stack align="center" justify="center" padding={32} gap={12}>

@@ -80,4 +80,3 @@ export async function continueOAuthFlowIfPending(): Promise<boolean> {
   window.location.href = consentUrl.toString()
   return true
 }
-

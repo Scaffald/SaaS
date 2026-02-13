@@ -2,7 +2,10 @@ import {
   InlineSkillSearch,
   type ParentSkill,
 } from '@scf/core/features/profile/components/InlineSkillSearch'
-import { useSearchParentSkillsMutation, usePrimaryIndustry } from '@scf/core/utils/profile-skills-sdk-hooks'
+import {
+  useSearchParentSkillsMutation,
+  usePrimaryIndustry,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Button, Card, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
@@ -175,9 +178,7 @@ export function SkillsStep({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text>
-          Spotlight your strengths
-        </Text>
+        <Text>Spotlight your strengths</Text>
         <Paragraph color="gray">
           Add 3-5 core skills that best represent your expertise. Recruiters use these to match you
           with opportunities.

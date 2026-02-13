@@ -24,9 +24,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
         <Text>
           Step {orderedSteps.indexOf(currentStep) + 1} of {orderedSteps.length}
         </Text>
-        <Text color="gray">
-          {completionPercentage}%
-        </Text>
+        <Text color="gray">{completionPercentage}%</Text>
       </Row>
 
       <Progress size={8} value={completionPercentage} max={100} backgroundColor="$color3">
@@ -53,17 +51,11 @@ export const ProgressIndicator = memo(function ProgressIndicator({
                   aria-label={`${meta.title} ${isCurrent ? '(current step)' : isCompleted ? '(completed)' : '(not completed)'}`}
                   aria-current={isCurrent ? 'step' : undefined}
                 >
-                  <Text color="gray">
-                    {index + 1}
-                  </Text>
+                  <Text color="gray">{index + 1}</Text>
                 </Stack>
                 <Stack style={{ maxWidth: 160 }}>
-                  <Text color="gray">
-                    {meta.title}
-                  </Text>
-                  <Text color="gray">
-                    {meta.estimatedTimeMinutes} min
-                  </Text>
+                  <Text color="gray">{meta.title}</Text>
+                  <Text color="gray">{meta.estimatedTimeMinutes} min</Text>
                 </Stack>
                 {index < orderedSteps.length - 1 && <Separator vertical aria-hidden={true} />}
               </Row>

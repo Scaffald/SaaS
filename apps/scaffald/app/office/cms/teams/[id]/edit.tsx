@@ -34,38 +34,38 @@ export default function EditTeamPage() {
 
   if (!teamId) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$6">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack flex={1} align="center" justify="center" gap="$4" padding="$6">
+        <Text>
           Missing team identifier
         </Text>
         <Text color="$color11" style={{ textAlign: 'center' }}>
           We couldn&apos;t determine which team you want to edit.
         </Text>
-        <Button onPress={() => router.back()} variant="outlined">Go Back</Button>
+        <Button onPress={() => router.back()} variant="outline">Go Back</Button>
       </Stack>
     )
   }
 
   if (isLoading || isFetching) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center">
-        <Spinner size="large" />
-        <Text marginTop="$4">Loading team details…</Text>
+      <Stack flex={1} align="center" justify="center">
+        <Spinner size="lg" />
+        <Text>Loading team details…</Text>
       </Stack>
     )
   }
 
   if (error || !data?.team) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" padding="$6">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack flex={1} align="center" justify="center" gap="$3" padding="$6">
+        <Text>
           Unable to load team
         </Text>
         <Text color="$color11" style={{ textAlign: 'center' }}>
           {error?.message ?? 'We ran into a problem retrieving this team. Please try again.'}
         </Text>
         <Row gap="$2">
-          <Button onPress={() => router.back()} variant="outlined">Go Back</Button>
+          <Button onPress={() => router.back()} variant="outline">Go Back</Button>
           <Button onPress={() => refetch()}>Try Again</Button>
         </Row>
       </Stack>

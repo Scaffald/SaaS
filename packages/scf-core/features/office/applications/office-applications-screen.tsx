@@ -182,9 +182,7 @@ export const OfficeApplicationsScreen = () => {
   if (isError) {
     return (
       <Stack flex={1} align="center" justify="center" padding={16}>
-        <Text color="$red10">
-          Error Loading Applications
-        </Text>
+        <Text color="$red10">Error Loading Applications</Text>
         <Stack align="center">
           <Text color="gray" marginTop={8}>
             {error?.message || 'Failed to load applications. Please try again.'}
@@ -200,9 +198,7 @@ export const OfficeApplicationsScreen = () => {
       <Row justify="space-between" align="center" marginBottom={16}>
         <Stack>
           <H2>Applications</H2>
-          <Text color="gray">
-            {filteredApplications.length} total applications
-          </Text>
+          <Text color="gray">{filteredApplications.length} total applications</Text>
         </Stack>
 
         <Row gap={8}>

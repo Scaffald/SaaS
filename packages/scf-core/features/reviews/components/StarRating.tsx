@@ -12,9 +12,7 @@ interface StarRatingProps {
 export function StarRating({ label, value, onChange, readonly = false }: StarRatingProps) {
   return (
     <Stack gap={8}>
-      <Text color="gray">
-        {label}
-      </Text>
+      <Text color="gray">{label}</Text>
       <Row gap={8} align="center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Pressable

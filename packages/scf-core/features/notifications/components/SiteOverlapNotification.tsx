@@ -57,9 +57,7 @@ export function SiteOverlapNotification({
         <Row gap={12} align="flex-start">
           <AlertTriangle size={24} color="$yellow11" />
           <Stack flex={1} gap={8}>
-            <Text color="$yellow11">
-              Site Overlap Detected
-            </Text>
+            <Text color="$yellow11">Site Overlap Detected</Text>
             <Text color="$gray11">
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>

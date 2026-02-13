@@ -11,22 +11,12 @@ import { Text, Row, Stack, Button } from '@unicornlove/beyond-ui'
 /**
  * Request status type
  */
-export type RequestStatus =
-  | 'pending'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'cancelled'
+export type RequestStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
 
 /**
  * Request type
  */
-export type RequestType =
-  | 'export'
-  | 'deletion'
-  | 'correction'
-  | 'opt_out'
-  | 'opt_in'
+export type RequestType = 'export' | 'deletion' | 'correction' | 'opt_out' | 'opt_in'
 
 /**
  * Privacy request structure
@@ -93,12 +83,7 @@ function formatDate(dateString: string): string {
 function StatusBadge({ status }: { status: RequestStatus }) {
   const colors = STATUS_COLORS[status]
   return (
-    <Row
-      backgroundColor={colors.bg}
-      paddingHorizontal={8}
-      paddingVertical={4}
-      borderRadius={8}
-    >
+    <Row backgroundColor={colors.bg} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
       <Text color={colors.text} textTransform="capitalize">
         {status}
       </Text>
@@ -118,7 +103,8 @@ function RequestRow({
   onDownload?: (requestId: string) => void
   onCancel?: (requestId: string) => void
 }) {
-  const canDownload = request.status === 'completed' && request.type === 'export' && request.download_url
+  const canDownload =
+    request.status === 'completed' && request.type === 'export' && request.download_url
   const canCancel = request.status === 'pending'
 
   return (
@@ -134,58 +120,37 @@ function RequestRow({
     >
       {/* Type */}
       <Stack flex={1} minWidth={120}>
-        <Text color="gray">
-          Type
-        </Text>
-        <Text>
-          {TYPE_LABELS[request.type]}
-        </Text>
+        <Text color="gray">Type</Text>
+        <Text>{TYPE_LABELS[request.type]}</Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text color="gray">
-          Status
-        </Text>
+        <Text color="gray">Status</Text>
         <StatusBadge status={request.status} />
       </Stack>
 
       {/* Submitted Date */}
       <Stack flex={1} minWidth={140}>
-        <Text color="gray">
-          Submitted
-        </Text>
-        <Text>
-          {formatDate(request.created_at)}
-        </Text>
+        <Text color="gray">Submitted</Text>
+        <Text>{formatDate(request.created_at)}</Text>
       </Stack>
 
       {/* Completed Date */}
       <Stack flex={1} minWidth={140}>
-        <Text color="gray">
-          Completed
-        </Text>
-        <Text>
-          {request.completed_at ? formatDate(request.completed_at) : '—'}
-        </Text>
+        <Text color="gray">Completed</Text>
+        <Text>{request.completed_at ? formatDate(request.completed_at) : '—'}</Text>
       </Stack>
 
       {/* Actions */}
       <Row gap={8} minWidth={120} justify="flex-end">
         {canDownload && (
-          <Button
-            size={8}
-            onPress={() => onDownload?.(request.id)}
-          >
+          <Button size={8} onPress={() => onDownload?.(request.id)}>
             Download
           </Button>
         )}
         {canCancel && (
-          <Button
-            size={8}
-            variant="outline"
-            onPress={() => onCancel?.(request.id)}
-          >
+          <Button size={8} variant="outline" onPress={() => onCancel?.(request.id)}>
             Cancel
           </Button>
         )}
@@ -208,12 +173,10 @@ function EmptyState() {
       align="center"
       gap={8}
     >
-      <Text color="gray">
-        No privacy requests yet
-      </Text>
+      <Text color="gray">No privacy requests yet</Text>
       <Text color="gray" textAlign="center">
-        When you submit a data export, deletion, or other privacy request,
-        it will appear here so you can track its status.
+        When you submit a data export, deletion, or other privacy request, it will appear here so
+        you can track its status.
       </Text>
     </Stack>
   )
@@ -224,11 +187,7 @@ function EmptyState() {
  *
  * Displays the user's privacy request history with status and actions
  */
-export function RequestHistoryTable({
-  requests,
-  onDownload,
-  onCancel,
-}: RequestHistoryTableProps) {
+export function RequestHistoryTable({ requests, onDownload, onCancel }: RequestHistoryTableProps) {
   if (!requests || requests.length === 0) {
     return <EmptyState />
   }
@@ -236,12 +195,7 @@ export function RequestHistoryTable({
   return (
     <Stack gap={8}>
       {/* Header row - hidden on mobile */}
-      <Row
-        padding={12}
-        display="none"
-        $gtMd={{ display: 'flex' }}
-        gap={16}
-      >
+      <Row padding={12} display="none" $gtMd={{ display: 'flex' }} gap={16}>
         <Text flex={1} color="gray" minWidth={120}>
           Type
         </Text>
@@ -271,8 +225,8 @@ export function RequestHistoryTable({
 
       {/* Info text */}
       <Text color="gray" marginTop={8}>
-        Data export requests are processed within 45 days as required by CCPA.
-        Completed exports are available for download for 30 days.
+        Data export requests are processed within 45 days as required by CCPA. Completed exports are
+        available for download for 30 days.
       </Text>
     </Stack>
   )

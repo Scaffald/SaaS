@@ -150,9 +150,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
 
   return (
     <Stack gap={16} padding={16} style={{ maxWidth: 800 }} marginHorizontal="auto">
-      <Text>
-        {mode === 'create' ? 'Create Project' : 'Edit Project'}
-      </Text>
+      <Text>{mode === 'create' ? 'Create Project' : 'Edit Project'}</Text>
 
       <Card padding={16} gap={16}>
         <Stack gap={16}>
@@ -252,9 +250,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
 
               {formData.location_visibility_override && (
                 <Stack gap={8} padding={8} backgroundColor="$yellow3" borderRadius={8}>
-                  <Text color="$yellow11">
-                    ⚠️ This overrides your organization's global setting
-                  </Text>
+                  <Text color="$yellow11">⚠️ This overrides your organization's global setting</Text>
                 </Stack>
               )}
 

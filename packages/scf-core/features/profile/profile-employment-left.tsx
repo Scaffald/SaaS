@@ -11,7 +11,10 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@scf/core/utils/api'
-import { useEmployment, useUpdateEmploymentMutation } from '@scf/core/utils/profile-employment-sdk-hooks'
+import {
+  useEmployment,
+  useUpdateEmploymentMutation,
+} from '@scf/core/utils/profile-employment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
@@ -163,7 +166,10 @@ export function ProfileEmploymentLeft() {
       resetProfileSyncError()
       startProfileSync()
       await queryClient.cancelQueries({ queryKey: ['profiles', 'employment'] })
-      const previousEmployment = queryClient.getQueryData<EmploymentProfileFormData>(['profiles', 'employment'])
+      const previousEmployment = queryClient.getQueryData<EmploymentProfileFormData>([
+        'profiles',
+        'employment',
+      ])
       queryClient.setQueryData(
         ['profiles', 'employment'],
         (current: EmploymentProfileFormData | undefined): EmploymentProfileFormData =>
@@ -181,18 +187,19 @@ export function ProfileEmploymentLeft() {
       }
       failProfileSync()
       toast.show({
-          title: 'Error',
-          message: error instanceof Error
+        title: 'Error',
+        message:
+          error instanceof Error
             ? error.message
             : 'Failed to save employment preferences. Please try again.',
-          variant: 'error',
-        })
+        variant: 'error',
+      })
     },
     onSuccess: async () => {
       toast.show({
-          title: 'Employment Updated',
-          message: 'Your employment preferences have been saved successfully!',
-        })
+        title: 'Employment Updated',
+        message: 'Your employment preferences have been saved successfully!',
+      })
       await queryClient.invalidateQueries({ queryKey: ['profiles', 'employment'] })
     },
     onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
@@ -293,10 +300,10 @@ export function ProfileEmploymentLeft() {
         message: 'Please select at least one license class',
       })
       toast.show({
-          title: 'Validation Error',
-          message: 'Please select at least one license class',
-          variant: 'error',
-        })
+        title: 'Validation Error',
+        message: 'Please select at least one license class',
+        variant: 'error',
+      })
       return
     }
 
@@ -310,10 +317,10 @@ export function ProfileEmploymentLeft() {
         message: 'Please select a travel distance',
       })
       toast.show({
-          title: 'Validation Error',
-          message: 'Please select a travel distance',
-          variant: 'error',
-        })
+        title: 'Validation Error',
+        message: 'Please select a travel distance',
+        variant: 'error',
+      })
       return
     }
 
@@ -334,10 +341,10 @@ export function ProfileEmploymentLeft() {
     console.error('❌ Form validation failed!')
     console.error('Validation errors:', JSON.stringify(formErrors, null, 2))
     toast.show({
-          title: 'Validation Error',
-          message: 'Please check the form for errors',
-          variant: 'error',
-        })
+      title: 'Validation Error',
+      message: 'Please check the form for errors',
+      variant: 'error',
+    })
   }
 
   // Debug: Log errors whenever they change
@@ -402,11 +409,7 @@ export function ProfileEmploymentLeft() {
                   </Row>
                 )}
               />
-              {errors.hourly_rate && (
-                <Text color="$red10">
-                  {errors.hourly_rate.message}
-                </Text>
-              )}
+              {errors.hourly_rate && <Text color="$red10">{errors.hourly_rate.message}</Text>}
             </Stack>
 
             {/* Preferred Work Locations */}
@@ -448,9 +451,7 @@ export function ProfileEmploymentLeft() {
               />
               <Controller name="travel_distance_miles" control={control} render={() => <></>} />
               {errors.travel_distance_miles && (
-                <Text color="$red10">
-                  {errors.travel_distance_miles.message?.toString()}
-                </Text>
+                <Text color="$red10">{errors.travel_distance_miles.message?.toString()}</Text>
               )}
             </Stack>
 
@@ -479,9 +480,7 @@ export function ProfileEmploymentLeft() {
               />
             </Stack>
             {errors.us_resident && (
-              <Text color="$red10">
-                {errors.us_resident.message?.toString()}
-              </Text>
+              <Text color="$red10">{errors.us_resident.message?.toString()}</Text>
             )}
 
             {/* Drivers License */}
@@ -500,9 +499,7 @@ export function ProfileEmploymentLeft() {
                 }}
               />
               {errors.drivers_license_classes && (
-                <Text color="$red10">
-                  {errors.drivers_license_classes.message?.toString()}
-                </Text>
+                <Text color="$red10">{errors.drivers_license_classes.message?.toString()}</Text>
               )}
             </Stack>
 

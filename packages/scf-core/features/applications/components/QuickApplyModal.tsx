@@ -268,12 +268,8 @@ export function QuickApplyModal({
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Stack flex={1} gap={4}>
-                <Text color="gray">
-                  Apply to {organizationName}
-                </Text>
-                <Text color="gray">
-                  {jobTitle}
-                </Text>
+                <Text color="gray">Apply to {organizationName}</Text>
+                <Text color="gray">{jobTitle}</Text>
               </Stack>
               <Dialog.Close asChild>
                 <Button size={12} circular icon={X} chromeless />
@@ -336,11 +332,7 @@ export function QuickApplyModal({
                       </Text>
                     </Stack>
                   )}
-                  {errors.current_location && (
-                    <Text color="$red10">
-                      {errors.current_location}
-                    </Text>
-                  )}
+                  {errors.current_location && <Text color="$red10">{errors.current_location}</Text>}
                 </Stack>
 
                 {/* Willing to Relocate */}
@@ -400,9 +392,7 @@ export function QuickApplyModal({
                 {/* Required Skills (Display Only) */}
                 {requiredSkills.length > 0 && (
                   <Stack gap={8}>
-                    <Label>
-                      Required skills
-                    </Label>
+                    <Label>Required skills</Label>
                     <Stack
                       padding={12}
                       backgroundColor="$gray3"
@@ -410,9 +400,7 @@ export function QuickApplyModal({
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text color="gray">
-                        {requiredSkills.join(', ')}
-                      </Text>
+                      <Text color="gray">{requiredSkills.join(', ')}</Text>
                     </Stack>
                   </Stack>
                 )}
@@ -420,9 +408,7 @@ export function QuickApplyModal({
                 {/* Optional Skills (Display Only) */}
                 {optionalSkills.length > 0 && (
                   <Stack gap={8}>
-                    <Label>
-                      Optional skills
-                    </Label>
+                    <Label>Optional skills</Label>
                     <Stack
                       padding={12}
                       backgroundColor="$gray3"
@@ -430,9 +416,7 @@ export function QuickApplyModal({
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text color="gray">
-                        {optionalSkills.join(', ')}
-                      </Text>
+                      <Text color="gray">{optionalSkills.join(', ')}</Text>
                     </Stack>
                   </Stack>
                 )}
@@ -471,9 +455,7 @@ export function QuickApplyModal({
                     </Button>
                   </Row>
                   {errors.is_authorized_to_work && (
-                    <Text color="$red10">
-                      {errors.is_authorized_to_work}
-                    </Text>
+                    <Text color="$red10">{errors.is_authorized_to_work}</Text>
                   )}
                 </Stack>
 

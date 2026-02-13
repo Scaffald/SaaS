@@ -6,16 +6,10 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
-  Prerequisite,
-  PrerequisitesResponse,
-  PrerequisiteValidationResult,
-  PrerequisiteCheckResult,
-  CompletionStats,
   ListPrerequisitesParams,
   ValidatePrerequisitesParams,
   GetMissingParams,
   GetStatsParams,
-  PrerequisitesCheckResponse,
   CompletePrerequisitesParams,
   CompletePrerequisitesResponse,
 } from '@scaffald/sdk/resources/prerequisites'
@@ -36,7 +30,7 @@ export function usePrerequisites(
       if (!client) throw new Error('Missing client')
       return client.prerequisites.list(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -50,7 +44,7 @@ export function usePrerequisite(id: string | undefined, options?: { enabled?: bo
       if (!client || !id) throw new Error('Missing client or id')
       return client.prerequisites.getById(id)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -64,7 +58,7 @@ export function usePrerequisitesCheck(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.prerequisites.check()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - onboarding status should be fresh
   })
 }
@@ -78,7 +72,7 @@ export function usePrerequisiteCheck(id: string | undefined, options?: { enabled
       if (!client || !id) throw new Error('Missing client or id')
       return client.prerequisites.checkPrerequisite(id)
     },
-    enabled: !!client && !!id && (options?.enabled !== false),
+    enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -95,7 +89,7 @@ export function useValidatePrerequisites(
       if (!client) throw new Error('Missing client')
       return client.prerequisites.validate(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -112,7 +106,7 @@ export function useMissingPrerequisites(
       if (!client) throw new Error('Missing client')
       return client.prerequisites.getMissing(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000,
   })
 }
@@ -126,7 +120,7 @@ export function usePrerequisitesStats(params?: GetStatsParams, options?: { enabl
       if (!client) throw new Error('Missing client')
       return client.prerequisites.getCompletionStats(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }

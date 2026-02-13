@@ -93,45 +93,23 @@ function CategoryCard({ info }: { info: CategoryInfo }) {
       minWidth={280}
     >
       <Row justify="space-between" align="center">
-        <Text>
-          {info.name}
-        </Text>
+        <Text>{info.name}</Text>
         {info.hasData ? (
-          <Row
-            backgroundColor="$green3"
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
-          >
-            <Text color="$green11">
-              {info.recordCount || 0} records
-            </Text>
+          <Row backgroundColor="$green3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+            <Text color="$green11">{info.recordCount || 0} records</Text>
           </Row>
         ) : (
-          <Row
-            backgroundColor="$color4"
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
-          >
-            <Text color="gray">
-              No data
-            </Text>
+          <Row backgroundColor="$color4" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+            <Text color="gray">No data</Text>
           </Row>
         )}
       </Row>
 
-      <Text color="gray">
-        {info.description}
-      </Text>
+      <Text color="gray">{info.description}</Text>
 
       <Stack gap={4} marginTop={4}>
-        <Text color="gray">
-          Examples:
-        </Text>
-        <Text color="gray">
-          {info.examples.join(' • ')}
-        </Text>
+        <Text color="gray">Examples:</Text>
+        <Text color="gray">{info.examples.join(' • ')}</Text>
       </Stack>
     </Stack>
   )
@@ -164,13 +142,7 @@ export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
   return (
     <Stack gap={16}>
       {/* Summary banner */}
-      <Row
-        padding={12}
-        backgroundColor="$blue2"
-        borderRadius={12}
-        gap={8}
-        align="center"
-      >
+      <Row padding={12} backgroundColor="$blue2" borderRadius={12} gap={8} align="center">
         <Text color="$blue11">
           We collect data in {categoriesWithData} of 6 CCPA categories. View details below.
         </Text>

@@ -65,12 +65,8 @@ export function ReviewStep({
     <Stack gap={24} width="100%" maxWidth={800} padding={16}>
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">
-          Review Your Application
-        </Text>
-        <Text color="gray">
-          Please review your information carefully before submitting.
-        </Text>
+        <Text color="gray">Review Your Application</Text>
+        <Text color="gray">Please review your information carefully before submitting.</Text>
       </Stack>
 
       {/* Screening Information Section */}
@@ -87,9 +83,7 @@ export function ReviewStep({
         shadowRadius={3}
       >
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Screening Questions
-          </Text>
+          <Text color="gray">Screening Questions</Text>
           <Button
             size={12}
             variant="outline"
@@ -98,9 +92,7 @@ export function ReviewStep({
             disabled={isSubmitting}
             chromeless
           >
-            <Text color="$blue10">
-              Edit
-            </Text>
+            <Text color="$blue10">Edit</Text>
           </Button>
         </Row>
 
@@ -153,9 +145,7 @@ export function ReviewStep({
           shadowRadius={3}
         >
           <Row justify="space-between" align="center">
-            <Text color="gray">
-              Additional Questions
-            </Text>
+            <Text color="gray">Additional Questions</Text>
             <Button
               size={12}
               variant="outline"
@@ -164,9 +154,7 @@ export function ReviewStep({
               disabled={isSubmitting}
               chromeless
             >
-              <Text color="$blue10">
-                Edit
-              </Text>
+              <Text color="$blue10">Edit</Text>
             </Button>
           </Row>
 
@@ -198,9 +186,7 @@ export function ReviewStep({
         shadowRadius={3}
       >
         <Row justify="space-between" align="center">
-          <Text color="gray">
-            Documents
-          </Text>
+          <Text color="gray">Documents</Text>
           <Button
             size={12}
             variant="outline"
@@ -209,9 +195,7 @@ export function ReviewStep({
             disabled={isSubmitting}
             chromeless
           >
-            <Text color="$blue10">
-              Edit
-            </Text>
+            <Text color="$blue10">Edit</Text>
           </Button>
         </Row>
 
@@ -221,17 +205,13 @@ export function ReviewStep({
           {attachments.resume ? (
             <DocumentRow type="Resume" metadata={attachments.resume} required />
           ) : (
-            <Text color="gray">
-              Resume: Not provided
-            </Text>
+            <Text color="gray">Resume: Not provided</Text>
           )}
 
           {attachments.cover_letter ? (
             <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} />
           ) : (
-            <Text color="gray">
-              Cover Letter: Not provided
-            </Text>
+            <Text color="gray">Cover Letter: Not provided</Text>
           )}
 
           {attachments.portfolio && (
@@ -295,12 +275,8 @@ export function ReviewStep({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <Stack gap={8}>
-      <Text color="$gray11">
-        {label}
-      </Text>
-      <Text color="gray">
-        {value}
-      </Text>
+      <Text color="$gray11">{label}</Text>
+      <Text color="gray">{value}</Text>
     </Stack>
   )
 }
@@ -331,28 +307,14 @@ function DocumentRow({
       <FileText size={20} color="$blue10" />
       <Stack gap={4} flex={1}>
         <Row gap={8} align="center">
-          <Text color="gray">
-            {type}
-          </Text>
-          {required && (
-            <Text color="$red10">
-              (Required)
-            </Text>
-          )}
+          <Text color="gray">{type}</Text>
+          {required && <Text color="$red10">(Required)</Text>}
         </Row>
-        <Text color="gray">
-          {metadata.filename}
-        </Text>
+        <Text color="gray">{metadata.filename}</Text>
         <Row gap={8} align="center">
-          <Text color="gray">
-            {formatFileSize(metadata.size)}
-          </Text>
-          <Text color="gray">
-            •
-          </Text>
-          <Text color="gray">
-            Uploaded {formattedDate}
-          </Text>
+          <Text color="gray">{formatFileSize(metadata.size)}</Text>
+          <Text color="gray">•</Text>
+          <Text color="gray">Uploaded {formattedDate}</Text>
         </Row>
       </Stack>
     </Row>

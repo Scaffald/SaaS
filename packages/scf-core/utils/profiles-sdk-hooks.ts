@@ -6,16 +6,8 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
-  UserProfile,
-  OrganizationProfile,
-  EmployerProfile,
-  CurrentUser,
-  GeneralInfo,
   UpdateGeneralInfoParams,
-  ProfileBySlug,
-  SlugAvailability,
   UpdateSlugResponse,
-  SlugHistory,
   UploadAvatarParams,
   UploadAvatarResponse,
 } from '@scaffald/sdk/resources/profiles'
@@ -33,7 +25,7 @@ export function useUserProfile(username: string | undefined, options?: { enabled
       if (!client || !username) throw new Error('Missing client or username')
       return client.profiles.getUser(username)
     },
-    enabled: !!client && !!username && (options?.enabled !== false),
+    enabled: !!client && !!username && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -47,7 +39,7 @@ export function useOrganizationProfile(slug: string | undefined, options?: { ena
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.getOrganization(slug)
     },
-    enabled: !!client && !!slug && (options?.enabled !== false),
+    enabled: !!client && !!slug && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -61,7 +53,7 @@ export function useEmployerProfile(slug: string | undefined, options?: { enabled
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.getEmployer(slug)
     },
-    enabled: !!client && !!slug && (options?.enabled !== false),
+    enabled: !!client && !!slug && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -79,7 +71,7 @@ export function useCurrentUser(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.profiles.getCurrentUser()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes - current user rarely changes
   })
 }
@@ -93,7 +85,7 @@ export function useGeneralInfo(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.profiles.getGeneralInfo()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -107,7 +99,7 @@ export function useProfileBySlug(slug: string | undefined, options?: { enabled?:
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.getProfileBySlug(slug)
     },
-    enabled: !!client && !!slug && (options?.enabled !== false),
+    enabled: !!client && !!slug && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
   })
 }
@@ -121,7 +113,7 @@ export function useSlugAvailability(slug: string | undefined, options?: { enable
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.checkSlugAvailability(slug)
     },
-    enabled: !!client && !!slug && (options?.enabled !== false),
+    enabled: !!client && !!slug && options?.enabled !== false,
     staleTime: 30 * 1000, // 30 seconds - availability can change quickly
   })
 }
@@ -135,7 +127,7 @@ export function useSlugHistory(options?: { enabled?: boolean }) {
       if (!client) throw new Error('Missing client')
       return client.profiles.getSlugHistory()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes - history doesn't change often
   })
 }

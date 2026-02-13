@@ -4,7 +4,10 @@ import {
   USResidentToggle,
 } from '@scf/core/features/profile/components/employment-fields'
 import { api } from '@scf/core/utils/api'
-import { useEmployment, useUpdateEmploymentMutation } from '@scf/core/utils/profile-employment-sdk-hooks'
+import {
+  useEmployment,
+  useUpdateEmploymentMutation,
+} from '@scf/core/utils/profile-employment-sdk-hooks'
 import {
   Button,
   CustomCheckbox,
@@ -68,9 +71,9 @@ export function EmploymentSection({
           api.office.updateUserEmployment.useMutation({
             onSuccess: () => {
               toast.show({
-          title: 'Employment Updated',
-          message: 'Employment preferences have been saved successfully!',
-        })
+                title: 'Employment Updated',
+                message: 'Employment preferences have been saved successfully!',
+              })
               refetch()
             },
             onError: (error: unknown) => {
@@ -78,18 +81,18 @@ export function EmploymentSection({
               const _message =
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
               toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+                title: 'Error',
+                variant: 'error',
+              })
             },
           })
       : () =>
           useUpdateEmploymentMutation({
             onSuccess: () => {
               toast.show({
-          title: 'Employment Updated',
-          message: 'Your employment preferences have been saved successfully!',
-        })
+                title: 'Employment Updated',
+                message: 'Your employment preferences have been saved successfully!',
+              })
               refetch()
             },
             onError: (error: unknown) => {
@@ -97,9 +100,9 @@ export function EmploymentSection({
               const _message =
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
               toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+                title: 'Error',
+                variant: 'error',
+              })
             },
           })
 
@@ -197,11 +200,7 @@ export function EmploymentSection({
               </Row>
             )}
           />
-          {errors.hourly_rate && (
-            <Text color="$red10">
-              {errors.hourly_rate.message}
-            </Text>
-          )}
+          {errors.hourly_rate && <Text color="$red10">{errors.hourly_rate.message}</Text>}
         </Stack>
 
         {/* Preferred Work Locations */}

@@ -132,13 +132,9 @@ export const MapFilterBar = ({
           gap={8}
         >
           <Row align="center" gap={8}>
-            <Text color="$red10">
-              Map Search Unavailable
-            </Text>
+            <Text color="$red10">Map Search Unavailable</Text>
           </Row>
-          <Text color="gray">
-            {tokenValidation.error}
-          </Text>
+          <Text color="gray">{tokenValidation.error}</Text>
         </Stack>
       )}
 

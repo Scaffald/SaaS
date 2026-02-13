@@ -35,16 +35,16 @@ export function InquiryCommentThread({
     onSuccess: () => {
       setNewComment('')
       toast.show({
-          title: 'Comment added',
-          message: 'Your comment has been added to this section.',
-        })
+        title: 'Comment added',
+        message: 'Your comment has been added to this section.',
+      })
     },
     onError: (error) => {
       toast.show({
-          title: 'Failed to add comment',
-          message: error.message ?? 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Failed to add comment',
+        message: error.message ?? 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -128,23 +128,15 @@ export function InquiryCommentThread({
               >
                 <Avatar circular size={12}>
                   <Avatar.Fallback backgroundColor="$blue9">
-                    <Text color="white">
-                      {comment.sender_id.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text color="white">{comment.sender_id.charAt(0).toUpperCase()}</Text>
                   </Avatar.Fallback>
                 </Avatar>
                 <Stack flex={1} gap={4}>
                   <Row justify="space-between" align="center">
-                    <Text color="gray">
-                      {isFromCurrentUser ? 'You' : 'Organization'}
-                    </Text>
-                    <Text color="gray">
-                      {formatTimestamp(comment.created_at)}
-                    </Text>
+                    <Text color="gray">{isFromCurrentUser ? 'You' : 'Organization'}</Text>
+                    <Text color="gray">{formatTimestamp(comment.created_at)}</Text>
                   </Row>
-                  <Text color="gray">
-                    {comment.content}
-                  </Text>
+                  <Text color="gray">{comment.content}</Text>
                   {isUnread && (
                     <Button
                       size={8}
@@ -164,13 +156,7 @@ export function InquiryCommentThread({
 
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
-        <Row
-          align="center"
-          gap={8}
-          padding={8}
-          backgroundColor="$blue2"
-          borderRadius={12}
-        >
+        <Row align="center" gap={8} padding={8} backgroundColor="$blue2" borderRadius={12}>
           <MessageSquare size={16} color="$blue10" />
           <Text color="$blue11">
             {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}

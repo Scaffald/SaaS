@@ -55,7 +55,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
   const updateUserMutation = api.office.updateUser.useMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['office', 'getUser'], { input: { id: userId } }] })
+      queryClient.invalidateQueries({
+        queryKey: [['office', 'getUser'], { input: { id: userId } }],
+      })
       queryClient.invalidateQueries({ queryKey: [['office', 'listUsers']] })
       router.back()
     },
@@ -98,9 +100,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
     <ScrollView flex={1} backgroundColor="$background">
       <Stack padding={16} gap={16}>
         <Row align="center" justify="space-between">
-          <Text>
-            Edit User
-          </Text>
+          <Text>Edit User</Text>
           <Row gap={8}>
             <Button data-testid="cancel-button" onPress={() => router.back()} variant="outline">
               Cancel
@@ -119,9 +119,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         {/* Profile Information */}
         <Card padding={16}>
           <Stack gap={12}>
-            <Text marginBottom={8}>
-              Profile Information
-            </Text>
+            <Text marginBottom={8}>Profile Information</Text>
 
             <Stack gap={8}>
               <Text>First Name</Text>
@@ -170,9 +168,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         {/* Private Information */}
         <Card padding={16}>
           <Stack gap={12}>
-            <Text marginBottom={8}>
-              Private Information
-            </Text>
+            <Text marginBottom={8}>Private Information</Text>
 
             <Stack gap={8}>
               <Text>Email</Text>
@@ -222,9 +218,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         {/* Employment Information */}
         <Card padding={16}>
           <Stack gap={12}>
-            <Text marginBottom={8}>
-              Employment Information
-            </Text>
+            <Text marginBottom={8}>Employment Information</Text>
 
             <Stack gap={8}>
               <Text>Employment Status</Text>

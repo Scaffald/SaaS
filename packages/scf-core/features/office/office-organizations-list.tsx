@@ -126,9 +126,9 @@ export function OfficeOrganizationsList() {
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
-          title: 'Unable to review request',
-          variant: 'error',
-        })
+        title: 'Unable to review request',
+        variant: 'error',
+      })
     },
   })
 
@@ -274,8 +274,8 @@ export function OfficeOrganizationsList() {
           >
             <Dialog.Title>Reject Request</Dialog.Title>
             <Dialog.Description>
-              Provide a short reason for rejecting <Text>{rejectDialog.name}</Text>
-              . This helps the requester understand what to do next.
+              Provide a short reason for rejecting <Text>{rejectDialog.name}</Text>. This helps the
+              requester understand what to do next.
             </Dialog.Description>
             <Stack gap={8}>
               <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
@@ -295,11 +295,7 @@ export function OfficeOrganizationsList() {
                 style={{ minHeight: 120 }}
                 autoFocus
               />
-              {rejectError ? (
-                <Text color="$red10">
-                  {rejectError}
-                </Text>
-              ) : null}
+              {rejectError ? <Text color="$red10">{rejectError}</Text> : null}
             </Stack>
             <Row gap={12} justify="flex-end">
               <Dialog.Close asChild>
@@ -343,9 +339,7 @@ export function OfficeOrganizationsList() {
           <Stack gap={16}>
             <DashboardWidget gap={16}>
               <Row justify="space-between" align="center">
-                <Text>
-                  Moderation Summary
-                </Text>
+                <Text>Moderation Summary</Text>
                 <Button
                   size={8}
                   variant="outline"
@@ -358,77 +352,47 @@ export function OfficeOrganizationsList() {
               </Row>
               <Row gap={16}>
                 <Stack gap={4}>
-                  <Text color="gray">
-                    Pending
-                  </Text>
-                  <Text>
-                    {moderationCounts.pending}
-                  </Text>
+                  <Text color="gray">Pending</Text>
+                  <Text>{moderationCounts.pending}</Text>
                 </Stack>
                 <Stack gap={4}>
-                  <Text color="gray">
-                    Approved
-                  </Text>
-                  <Text color="$green10">
-                    {moderationCounts.approved}
-                  </Text>
+                  <Text color="gray">Approved</Text>
+                  <Text color="$green10">{moderationCounts.approved}</Text>
                 </Stack>
                 <Stack gap={4}>
-                  <Text color="gray">
-                    Rejected
-                  </Text>
-                  <Text color="$red10">
-                    {moderationCounts.rejected}
-                  </Text>
+                  <Text color="gray">Rejected</Text>
+                  <Text color="$red10">{moderationCounts.rejected}</Text>
                 </Stack>
               </Row>
             </DashboardWidget>
 
             <DashboardWidget gap={16}>
-              <Text>
-                Pending Approvals
-              </Text>
+              <Text>Pending Approvals</Text>
               {isRequestsLoading ? (
                 <Row justify="center" paddingVertical={16}>
                   <Spinner size="lg" />
                 </Row>
               ) : pendingRequests.length === 0 ? (
-                <Text color="gray">
-                  No pending organization requests. Check back soon!
-                </Text>
+                <Text color="gray">No pending organization requests. Check back soon!</Text>
               ) : (
                 <Stack gap={16}>
                   {pendingRequests.map((request, index) => (
                     <Stack key={request.id} gap={12}>
                       <Stack gap={6}>
-                        <Text>
-                          {request.name}
-                        </Text>
-                        <Text color="gray">
-                          Vanity URL: {request.slug}
-                        </Text>
-                        {request.website ? (
-                          <Text color="$blue10">
-                            {request.website}
-                          </Text>
-                        ) : null}
+                        <Text>{request.name}</Text>
+                        <Text color="gray">Vanity URL: {request.slug}</Text>
+                        {request.website ? <Text color="$blue10">{request.website}</Text> : null}
                         <Text color="gray">
                           Submitted {new Date(request.created_at).toLocaleString()}
                         </Text>
                         {request.notes ? (
-                          <Paragraph color="gray">
-                            Notes: {request.notes}
-                          </Paragraph>
+                          <Paragraph color="gray">Notes: {request.notes}</Paragraph>
                         ) : null}
                         {request.message ? (
-                          <Paragraph color="gray">
-                            Message: {request.message}
-                          </Paragraph>
+                          <Paragraph color="gray">Message: {request.message}</Paragraph>
                         ) : null}
                         {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
-                          <Text color="gray">
-                            Resent {request.resent_count} time(s)
-                          </Text>
+                          <Text color="gray">Resent {request.resent_count} time(s)</Text>
                         ) : null}
                       </Stack>
                       <Row gap={8}>

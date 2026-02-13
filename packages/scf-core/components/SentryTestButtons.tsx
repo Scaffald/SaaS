@@ -3,15 +3,15 @@ import { Button, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Test buttons for verifying Sentry integration
- * 
+ *
  * Usage:
  * ```tsx
  * import { SentryTestButtons } from '@scf/core/components/SentryTestButtons'
- * 
+ *
  * // In a development or debug screen
  * <SentryTestButtons />
  * ```
- * 
+ *
  * These buttons should only be used in development builds and removed before production.
  */
 export function SentryTestButtons() {
@@ -49,12 +49,10 @@ export function SentryTestButtons() {
 
   return (
     <Stack gap={12} padding={16}>
-      <Text>
-        Sentry Integration Tests
-      </Text>
+      <Text>Sentry Integration Tests</Text>
       <Text color="$gray11">
-        Use these buttons to verify Sentry is capturing errors correctly.
-        Check your Sentry dashboard after clicking.
+        Use these buttons to verify Sentry is capturing errors correctly. Check your Sentry
+        dashboard after clicking.
       </Text>
 
       <Stack gap={8} marginTop={12}>
@@ -85,4 +83,3 @@ export function SentryTestButtons() {
     </Stack>
   )
 }
-

@@ -466,9 +466,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack align="center" justify="center" flex={1} gap={12} paddingVertical="$10">
         <AlertCircle size={32} color="$red10" />
-        <Text color="$red11">
-          Wizard session not found
-        </Text>
+        <Text color="$red11">Wizard session not found</Text>
         <Text color="gray">Please upload your resume again to kick off the import flow.</Text>
       </Stack>
     )
@@ -547,9 +545,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   return (
     <Stack flex={1} gap={spacing.lg}>
       <Stack gap={8}>
-        <Text>
-          Resume Import
-        </Text>
+        <Text>Resume Import</Text>
         <Text color="gray">
           Review each section parsed from your resume. Make edits or skip sections you don't want to
           import.
@@ -558,9 +554,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
       {hasExistingProfileData ? (
         <Stack gap={8} backgroundColor="$blue3" padding={12} borderRadius={16}>
-          <Text color="$blue11">
-            Merge resume with existing profile data
-          </Text>
+          <Text color="$blue11">Merge resume with existing profile data</Text>
           <Text color="$blue11">
             We found previously saved information. Choose how each section merges to avoid
             overwriting details you want to keep.
@@ -570,9 +564,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
       {mergedErrors && mergedErrors.length > 0 && (
         <Stack gap={8} backgroundColor="$yellow3" padding={12} borderRadius={16}>
-          <Text color="$yellow11">
-            We couldn’t parse everything in this section.
-          </Text>
+          <Text color="$yellow11">We couldn’t parse everything in this section.</Text>
           {mergedErrors.map((error) => (
             <Text key={`${error.section}-${error.message}`} color="$yellow11">
               {error.message}
@@ -651,9 +643,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderGeneralStep() {
     return (
       <Stack gap={16}>
-        <Text>
-          General Information
-        </Text>
+        <Text>General Information</Text>
         <Paragraph color="gray">
           Update your basic profile details. We only update the fields you confirm.
         </Paragraph>
@@ -693,9 +683,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <Stack gap={16}>
-        <Text>
-          Work Experience
-        </Text>
+        <Text>Work Experience</Text>
         <MergeStrategySelector
           section="experience"
           strategy={mergeStrategies.experience}
@@ -730,9 +718,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <Stack gap={16}>
-        <Text>
-          Education
-        </Text>
+        <Text>Education</Text>
         <MergeStrategySelector
           section="education"
           strategy={mergeStrategies.education}
@@ -769,9 +755,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <Stack gap={16}>
-        <Text>
-          Skills
-        </Text>
+        <Text>Skills</Text>
         <MergeStrategySelector
           section="skills"
           strategy={mergeStrategies.skills}
@@ -798,9 +782,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <Stack gap={16}>
-        <Text>
-          Certifications
-        </Text>
+        <Text>Certifications</Text>
         <MergeStrategySelector
           section="certifications"
           strategy={mergeStrategies.certifications}
@@ -841,9 +823,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderEmploymentStep() {
     return (
       <Stack gap={16}>
-        <Text>
-          Employment Preferences
-        </Text>
+        <Text>Employment Preferences</Text>
         <Paragraph color="gray">
           Tell us about your ideal working conditions. We'll update your profile with these
           preferences.
@@ -932,9 +912,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderReviewStep() {
     return (
       <Stack gap={16}>
-        <Text>
-          Review & Confirm
-        </Text>
+        <Text>Review & Confirm</Text>
         <Paragraph color="gray">
           All set! When you finish, we’ll save the confirmed details to your profile. You can always
           make further edits from the profile sections later on.
@@ -946,9 +924,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         <Stack gap={8} backgroundColor="$green3" padding={12} borderRadius={16}>
           <Row gap={8} align="center">
             <CheckCircle2 color="$green10" />
-            <Text color="$green11">
-              Ready to finalize
-            </Text>
+            <Text color="$green11">Ready to finalize</Text>
           </Row>
           <Text color="$green11">
             Click “Finish Import” to exit the wizard and continue updating your profile.
@@ -1099,9 +1075,7 @@ function MergeStrategySelector({
           >
             <Stack gap={4} align="flex-start">
               <Text>{option.label}</Text>
-              <Text color="gray">
-                {option.description}
-              </Text>
+              <Text color="gray">{option.description}</Text>
             </Stack>
           </Button>
         ))}

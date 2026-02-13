@@ -1,4 +1,4 @@
 export {
   OrganizationCard,
   type OrganizationCardProps,
-} from './OrganizationCard';
+} from './OrganizationCard'

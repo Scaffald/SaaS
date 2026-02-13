@@ -59,16 +59,16 @@ export function TeamActivityFeed({
       setMentions([])
       await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
       toast.show({
-          title: 'Comment posted',
-          message: 'Your update is now visible to the team.',
-        })
+        title: 'Comment posted',
+        message: 'Your update is now visible to the team.',
+      })
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to post comment',
-          variant: 'error',
-        })
+        title: 'Unable to post comment',
+        variant: 'error',
+      })
     },
   })
 
@@ -131,13 +131,9 @@ export function TeamActivityFeed({
               <Text>{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
-                <Text color="gray">
-                  Mentions: {mentionNames.join(', ')}
-                </Text>
+                <Text color="gray">Mentions: {mentionNames.join(', ')}</Text>
               ) : null}
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -152,9 +148,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} assigned this team to job {jobId}
               </Text>
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -169,9 +163,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} updated the job assignment for {jobId}
               </Text>
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -186,9 +178,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} removed this team from job {jobId}
               </Text>
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -203,9 +193,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} transferred ownership to {targetMember}
               </Text>
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -217,9 +205,7 @@ export function TeamActivityFeed({
           content: (
             <Stack gap={4}>
               <Text>{actor} left the team</Text>
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -234,9 +220,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} performed {normalizedEvent}
               </Text>
-              <Text color="gray">
-                {occurredAt}
-              </Text>
+              <Text color="gray">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -290,9 +274,7 @@ export function TeamActivityFeed({
       >
         <Row gap={8} align="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
-          <Text accessibilityRole="header">
-            Team activity
-          </Text>
+          <Text accessibilityRole="header">Team activity</Text>
         </Row>
         <Button
           size={8}
@@ -308,9 +290,7 @@ export function TeamActivityFeed({
       </Row>
 
       <Stack gap={12}>
-        <Text accessibilityRole="header">
-          Share an update
-        </Text>
+        <Text accessibilityRole="header">Share an update</Text>
         <TextArea
           value={commentBody}
           onChangeText={setCommentBody}
@@ -324,15 +304,8 @@ export function TeamActivityFeed({
 
         {mentionOptions.length > 0 ? (
           <Stack gap={8}>
-            <Text color="gray">
-              Mention a teammate (optional)
-            </Text>
-            <Row
-              gap={8}
-              flexWrap="wrap"
-              flexDirection="column"
-              align="stretch"
-            >
+            <Text color="gray">Mention a teammate (optional)</Text>
+            <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}

@@ -92,9 +92,7 @@ export function StoragePreferencesWidget() {
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load storage preferences</Text>
-          <Text color="gray">
-            {error.message}
-          </Text>
+          <Text color="gray">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -107,17 +105,10 @@ export function StoragePreferencesWidget() {
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Heading variant="h4">Document Storage</Heading>
-            <Text color="gray">
-              Choose where your documents are stored
-            </Text>
+            <Text color="gray">Choose where your documents are stored</Text>
           </Stack>
           {hasChanges && (
-            <Button
-              variant="primary"
-              size={8}
-              disabled={mutation.isPending}
-              onPress={handleSave}
-            >
+            <Button variant="primary" size={8} disabled={mutation.isPending} onPress={handleSave}>
               {mutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           )}
@@ -152,17 +143,12 @@ export function StoragePreferencesWidget() {
                   align="center"
                   justify="center"
                 >
-                  <IconComponent
-                    size={24}
-                    color={isSelected ? '$blue10' : '$color11'}
-                  />
+                  <IconComponent size={24} color={isSelected ? '$blue10' : '$color11'} />
                 </Row>
 
                 <Stack flex={1} gap={4}>
                   <Row align="center" gap={8}>
-                    <Text color="gray">
-                      {option.label}
-                    </Text>
+                    <Text color="gray">{option.label}</Text>
                     {!option.available && (
                       <Row
                         backgroundColor="$yellow4"
@@ -170,9 +156,7 @@ export function StoragePreferencesWidget() {
                         paddingVertical={4}
                         borderRadius={8}
                       >
-                        <Text color="$yellow11">
-                          COMING SOON
-                        </Text>
+                        <Text color="$yellow11">COMING SOON</Text>
                       </Row>
                     )}
                     {isSelected && option.available && (
@@ -182,15 +166,11 @@ export function StoragePreferencesWidget() {
                         paddingVertical={4}
                         borderRadius={8}
                       >
-                        <Text color="$green11">
-                          ACTIVE
-                        </Text>
+                        <Text color="$green11">ACTIVE</Text>
                       </Row>
                     )}
                   </Row>
-                  <Text color="gray">
-                    {option.description}
-                  </Text>
+                  <Text color="gray">{option.description}</Text>
                 </Stack>
               </Row>
             )
@@ -198,15 +178,9 @@ export function StoragePreferencesWidget() {
         </Stack>
 
         {/* Status Messages */}
-        {mutation.isSuccess && (
-          <Text color="$green10">
-            Storage preference saved successfully.
-          </Text>
-        )}
+        {mutation.isSuccess && <Text color="$green10">Storage preference saved successfully.</Text>}
         {mutation.isError && (
-          <Text color="$red10">
-            Failed to save storage preference: {mutation.error.message}
-          </Text>
+          <Text color="$red10">Failed to save storage preference: {mutation.error.message}</Text>
         )}
 
         {/* Info Note */}
@@ -218,8 +192,8 @@ export function StoragePreferencesWidget() {
           borderColor="$blue6"
         >
           <Text color="$blue11">
-            Note: Existing documents will remain in their current storage location.
-            Only new documents will use your selected preference.
+            Note: Existing documents will remain in their current storage location. Only new
+            documents will use your selected preference.
           </Text>
         </Stack>
       </Stack>

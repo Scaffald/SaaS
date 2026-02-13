@@ -230,15 +230,11 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         <Stack gap={8}>
           <Row justify="space-between" align="center">
             <Stack flex={1} gap={4}>
-              <Text color="gray">
-                {job.title}
-              </Text>
+              <Text color="gray">{job.title}</Text>
               {job.organization && (
                 <Row gap={8} align="center">
                   <Building2 size={16} color="gray" />
-                  <Text color="gray">
-                    {job.organization.name}
-                  </Text>
+                  <Text color="gray">{job.organization.name}</Text>
                 </Row>
               )}
             </Stack>
@@ -266,17 +262,13 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {job.location && (
               <Row gap={6} align="center">
                 <MapPin size={14} color="gray" />
-                <Text color="gray">
-                  {job.location}
-                </Text>
+                <Text color="gray">{job.location}</Text>
               </Row>
             )}
             {employmentType && (
               <Row gap={6} align="center">
                 <Briefcase size={14} color="gray" />
-                <Text color="gray">
-                  {employmentType}
-                </Text>
+                <Text color="gray">{employmentType}</Text>
               </Row>
             )}
             {remoteOption && (
@@ -305,9 +297,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {payRange && (
               <Row gap={6} align="center">
                 <DollarSign size={16} color="$green10" />
-                <Text color="$green10">
-                  {payRange}
-                </Text>
+                <Text color="$green10">{payRange}</Text>
               </Row>
             )}
           </Row>
@@ -315,9 +305,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           {postedTime && (
             <Row gap={6} align="center">
               <Clock size={14} color="gray" />
-              <Text color="gray">
-                {postedTime}
-              </Text>
+              <Text color="gray">{postedTime}</Text>
             </Row>
           )}
         </Row>

@@ -27,38 +27,28 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
           borderWidth={1}
           borderColor="$color7"
         >
-          <Text color="gray">
-            What to Expect
-          </Text>
+          <Text color="gray">What to Expect</Text>
           <Stack gap={8}>
             <Row gap={8} align="center">
-              <Text color="gray">
-                •
-              </Text>
+              <Text color="gray">•</Text>
               <Text color="gray" flex={1}>
                 Takes approximately 2–3 minutes to complete
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Text color="gray">
-                •
-              </Text>
+              <Text color="gray">•</Text>
               <Text color="gray" flex={1}>
                 Two color selection rounds separated by a 60-second cooldown
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Text color="gray">
-                •
-              </Text>
+              <Text color="gray">•</Text>
               <Text color="gray" flex={1}>
                 Produces quantitative state metrics for mood tracking
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Text color="gray">
-                •
-              </Text>
+              <Text color="gray">•</Text>
               <Text color="gray" flex={1}>
                 Earns Frequency XP for consistent engagement
               </Text>

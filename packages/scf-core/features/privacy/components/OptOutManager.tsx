@@ -16,11 +16,7 @@ import { api } from '@scf/core/utils/api'
 /**
  * Opt-out category type
  */
-export type OptOutCategory =
-  | 'sale'
-  | 'sharing'
-  | 'targeted_advertising'
-  | 'sensitive_data'
+export type OptOutCategory = 'sale' | 'sharing' | 'targeted_advertising' | 'sensitive_data'
 
 /**
  * Opt-out status structure
@@ -154,12 +150,8 @@ function OptOutRow({
     >
       <Row justify="space-between" align="flex-start">
         <Stack flex={1} gap={4} marginRight={16}>
-          <Text>
-            {info.title}
-          </Text>
-          <Text color="gray">
-            {info.description}
-          </Text>
+          <Text>{info.title}</Text>
+          <Text color="gray">{info.description}</Text>
         </Stack>
 
         <Stack align="center" gap={4}>
@@ -178,18 +170,13 @@ function OptOutRow({
       {status?.opted_out_at && (
         <Row gap={8} align="center">
           <Text color="gray">
-            {isGPCOptOut ? 'Via GPC signal' : 'Manual opt-out'} on{' '}
-            {formatDate(status.opted_out_at)}
+            {isGPCOptOut ? 'Via GPC signal' : 'Manual opt-out'} on {formatDate(status.opted_out_at)}
           </Text>
         </Row>
       )}
 
       {isGPCOptOut && (
-        <Row
-          padding={8}
-          backgroundColor="$blue2"
-          borderRadius={8}
-        >
+        <Row padding={8} backgroundColor="$blue2" borderRadius={8}>
           <Text color="$blue11">
             This opt-out was automatically applied based on your browser&apos;s Global Privacy
             Control (GPC) signal. To change this setting, disable GPC in your browser.
@@ -198,9 +185,7 @@ function OptOutRow({
       )}
 
       {/* Legal basis */}
-      <Text color="gray">
-        Legal basis: {info.legalBasis}
-      </Text>
+      <Text color="gray">Legal basis: {info.legalBasis}</Text>
     </Stack>
   )
 }
@@ -224,12 +209,7 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
   }, [])
 
   // Fetch current opt-out status
-  const {
-    data: optOutData,
-    isLoading,
-    error,
-    refetch,
-  } = api.ccpa.getMyOptOuts.useQuery()
+  const { data: optOutData, isLoading, error, refetch } = api.ccpa.getMyOptOuts.useQuery()
 
   // Set opt-out mutation
   const setOptOut = api.ccpa.setOptOut.useMutation({
@@ -254,17 +234,13 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
     targeted_advertising: optOutData?.optOuts?.find(
       (o: OptOutStatus) => o.category === 'targeted_advertising'
     ),
-    sensitive_data: optOutData?.optOuts?.find(
-      (o: OptOutStatus) => o.category === 'sensitive_data'
-    ),
+    sensitive_data: optOutData?.optOuts?.find((o: OptOutStatus) => o.category === 'sensitive_data'),
   }
 
   if (error) {
     return (
       <Stack padding={16} gap={16} align="center">
-        <Text color="$red10">
-          Error loading opt-out preferences
-        </Text>
+        <Text color="$red10">Error loading opt-out preferences</Text>
         <Text color="gray">{error.message}</Text>
         <Button onPress={() => refetch()} variant="outline">
           Retry
@@ -277,12 +253,10 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
     <Stack gap={16} padding={16}>
       {/* Header */}
       <Stack gap={8}>
-        <Text>
-          Manage Opt-Out Preferences
-        </Text>
+        <Text>Manage Opt-Out Preferences</Text>
         <Text color="gray">
-          Control how your personal information is used and shared. Your choices here are
-          protected under the California Consumer Privacy Act (CCPA).
+          Control how your personal information is used and shared. Your choices here are protected
+          under the California Consumer Privacy Act (CCPA).
         </Text>
       </Stack>
 
@@ -305,17 +279,13 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
             align="center"
             justify="center"
           >
-            <Text color="white">
-              ✓
-            </Text>
+            <Text color="white">✓</Text>
           </Stack>
           <Stack flex={1}>
+            <Text color="$green11">Global Privacy Control Detected</Text>
             <Text color="$green11">
-              Global Privacy Control Detected
-            </Text>
-            <Text color="$green11">
-              Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal
-              and have automatically opted you out of data sale and sharing.
+              Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal and
+              have automatically opted you out of data sale and sharing.
             </Text>
           </Stack>
         </Row>
@@ -382,33 +352,22 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       )}
 
       {/* Non-discrimination notice */}
-      <Stack
-        padding={12}
-        backgroundColor="$color3"
-        borderRadius={8}
-        marginTop={8}
-      >
+      <Stack padding={12} backgroundColor="$color3" borderRadius={8} marginTop={8}>
         <Text color="gray">
-          <Text>Non-Discrimination Notice:</Text> We will not discriminate
-          against you for exercising any of your privacy rights. You will receive the same
-          service and pricing regardless of your privacy choices.
+          <Text>Non-Discrimination Notice:</Text> We will not discriminate against you for
+          exercising any of your privacy rights. You will receive the same service and pricing
+          regardless of your privacy choices.
         </Text>
       </Stack>
 
       {/* Info about processing */}
       <Stack gap={8} marginTop={8}>
-        <Text>
-          How Opt-Outs Work
-        </Text>
-        <Text color="gray">
-          • Opt-out preferences take effect immediately
-        </Text>
+        <Text>How Opt-Outs Work</Text>
+        <Text color="gray">• Opt-out preferences take effect immediately</Text>
         <Text color="gray">
           • We will not sell or share your data with third parties while you are opted out
         </Text>
-        <Text color="gray">
-          • You can change your preferences at any time
-        </Text>
+        <Text color="gray">• You can change your preferences at any time</Text>
         <Text color="gray">
           • If you use GPC, your opt-out will be automatically applied across all participating
           sites

@@ -213,9 +213,9 @@ export const ApplicationStatusChangeModal = ({
       // TODO: Capture signed legal acknowledgement + generated PDF once available.
       setPaymentCompleted(true)
       toast.show({
-          title: 'Upfront fee paid',
-          message: 'Hire confirmed successfully.',
-        })
+        title: 'Upfront fee paid',
+        message: 'Hire confirmed successfully.',
+      })
       await successFeeStatusQuery.refetch()
       await onConfirm(reason)
       setReason('')
@@ -223,9 +223,9 @@ export const ApplicationStatusChangeModal = ({
       const message = error instanceof Error ? error.message : 'Unable to confirm payment.'
       setPaymentError(message)
       toast.show({
-          title: 'Payment confirmation failed',
-          variant: 'error',
-        })
+        title: 'Payment confirmation failed',
+        variant: 'error',
+      })
     } finally {
       setIsProcessingPayment(false)
     }
@@ -249,8 +249,7 @@ export const ApplicationStatusChangeModal = ({
             {isRejection ? `Reject ${candidateName}?` : `Mark ${candidateName} as Hired?`}
           </Text>
           <Text color="gray">
-            This will move the application from{' '}
-            <Text>{STATUS_LABELS[fromStatus]}</Text> to{' '}
+            This will move the application from <Text>{STATUS_LABELS[fromStatus]}</Text> to{' '}
             <Text>{STATUS_LABELS[toStatus]}</Text>
           </Text>
         </Stack>
@@ -269,9 +268,7 @@ export const ApplicationStatusChangeModal = ({
             {initializingIntent && !paymentCompleted && (
               <Stack gap={4} align="center">
                 <Spinner size="sm" />
-                <Text color="gray">
-                  Preparing payment form…
-                </Text>
+                <Text color="gray">Preparing payment form…</Text>
               </Stack>
             )}
 
@@ -521,20 +518,14 @@ function HireSummaryCard({
   return (
     <Card padding={16} borderWidth={1} borderColor="$borderColor">
       <Stack gap={8}>
-        <Text>
-          Success Fee Overview
-        </Text>
+        <Text>Success Fee Overview</Text>
         <Row justify="space-between">
           <Text color="gray">Total Hire Value</Text>
-          <Text>
-            {currencyFormatter.format(hireSummary.totalHireValueCents / 100)}
-          </Text>
+          <Text>{currencyFormatter.format(hireSummary.totalHireValueCents / 100)}</Text>
         </Row>
         <Row justify="space-between">
           <Text color="gray">Upfront ({hireSummary.upfrontPercentage}%)</Text>
-          <Text>
-            {currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}
-          </Text>
+          <Text>{currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}</Text>
         </Row>
         <Row justify="space-between">
           <Text color="gray">Final ({hireSummary.finalPercentage}%)</Text>
@@ -543,21 +534,9 @@ function HireSummaryCard({
             {hireSummary.finalDueDate}
           </Text>
         </Row>
-        {isProcessing && (
-          <Text color="gray">
-            Creating payment intent...
-          </Text>
-        )}
-        {paymentError && (
-          <Text color="$red10">
-            {paymentError}
-          </Text>
-        )}
-        {isStatusLoading && (
-          <Text color="gray">
-            Checking latest payment status…
-          </Text>
-        )}
+        {isProcessing && <Text color="gray">Creating payment intent...</Text>}
+        {paymentError && <Text color="$red10">{paymentError}</Text>}
+        {isStatusLoading && <Text color="gray">Checking latest payment status…</Text>}
         {!isStatusLoading &&
           successFeeStatus &&
           typeof (successFeeStatus as unknown as Record<string, unknown>)?.status === 'string' && (

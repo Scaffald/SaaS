@@ -221,11 +221,7 @@ export const JobCard = memo(
                 organization ? (
                   <Row gap={8} align="center">
                     <Building2 size={16} color={isSelected ? '$color1' : '$color11'} />
-                    <Text
-                      color={isSelected ? '$color1' : '$color11'}
-                    >
-                      {organization.name}
-                    </Text>
+                    <Text color={isSelected ? '$color1' : '$color11'}>{organization.name}</Text>
                   </Row>
                 ) : undefined
               }
@@ -238,9 +234,7 @@ export const JobCard = memo(
                     paddingVertical={4}
                     borderRadius={8}
                   >
-                    <Text color="$green1">
-                      Applied
-                    </Text>
+                    <Text color="$green1">Applied</Text>
                   </Row>
                 ) : undefined
               }
@@ -283,9 +277,7 @@ export const JobCard = memo(
           {payRange && (
             <Row gap={6} align="center">
               <DollarSign size={16} color="$green10" />
-              <Text color="$green10">
-                {payRange}
-              </Text>
+              <Text color="$green10">{payRange}</Text>
             </Row>
           )}
 

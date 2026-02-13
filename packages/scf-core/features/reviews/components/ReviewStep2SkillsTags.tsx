@@ -27,19 +27,13 @@ export function ReviewStep2SkillsTags({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          Technical Skills - Details
-        </Text>
-        <Text color="gray">
-          Select their key strengths and areas to improve
-        </Text>
+        <Text color="gray">Technical Skills - Details</Text>
+        <Text color="gray">Select their key strengths and areas to improve</Text>
       </Stack>
 
       {/* Strengths Section */}
       <Stack gap={12}>
-        <Text color="$green11">
-          ✓ Strengths
-        </Text>
+        <Text color="$green11">✓ Strengths</Text>
         <Row gap={8} flexWrap="wrap">
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = strengths.includes(skill.id)
@@ -64,11 +58,7 @@ export function ReviewStep2SkillsTags({
                 ) : (
                   <Circle size={16} color="gray" />
                 )}
-                <Text
-                  color={isSelected ? '$green11' : '$color11'}
-                >
-                  {skill.name}
-                </Text>
+                <Text color={isSelected ? '$green11' : '$color11'}>{skill.name}</Text>
               </Row>
             )
           })}
@@ -77,9 +67,7 @@ export function ReviewStep2SkillsTags({
 
       {/* Areas to Improve Section */}
       <Stack gap={12}>
-        <Text color="$red11">
-          → Areas to Improve
-        </Text>
+        <Text color="$red11">→ Areas to Improve</Text>
         <Row gap={8} flexWrap="wrap">
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = improvements.includes(skill.id)
@@ -104,11 +92,7 @@ export function ReviewStep2SkillsTags({
                 ) : (
                   <Circle size={16} color="gray" />
                 )}
-                <Text
-                  color={isSelected ? '$red11' : '$color11'}
-                >
-                  {skill.name}
-                </Text>
+                <Text color={isSelected ? '$red11' : '$color11'}>{skill.name}</Text>
               </Row>
             )
           })}

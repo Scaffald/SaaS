@@ -144,9 +144,9 @@ export function OrganizationBackgroundCheckRequestForm() {
       })
 
       toast.show({
-          title: 'Background check requested',
-          message: 'Worker has been invited to start their background check.',
-        })
+        title: 'Background check requested',
+        message: 'Worker has been invited to start their background check.',
+      })
 
       const orgId = organizationId
       if (orgId) {
@@ -162,9 +162,9 @@ export function OrganizationBackgroundCheckRequestForm() {
     } catch (error) {
       const _message = error instanceof Error ? error.message : 'Unable to confirm payment.'
       toast.show({
-          title: 'Payment confirmation failed',
-          variant: 'error',
-        })
+        title: 'Payment confirmation failed',
+        variant: 'error',
+      })
     }
   }
 
@@ -175,23 +175,23 @@ export function OrganizationBackgroundCheckRequestForm() {
 
     if (!organizationId) {
       toast.show({
-          title: 'Select an organization',
-          message: 'Choose an organization before requesting a check.',
-        })
+        title: 'Select an organization',
+        message: 'Choose an organization before requesting a check.',
+      })
       return
     }
     if (!selectedPackage) {
       toast.show({
-          title: 'Select a package',
-          message: 'Choose a background check package to continue.',
-        })
+        title: 'Select a package',
+        message: 'Choose a background check package to continue.',
+      })
       return
     }
     if (!selectedWorkerId) {
       toast.show({
-          title: 'Select a worker',
-          message: 'Choose the worker you want to screen.',
-        })
+        title: 'Select a worker',
+        message: 'Choose the worker you want to screen.',
+      })
       return
     }
 
@@ -217,16 +217,16 @@ export function OrganizationBackgroundCheckRequestForm() {
 
       setPaymentSession(response)
       toast.show({
-          title: 'Payment required',
-          message: 'Enter billing details to submit this background check.',
-        })
+        title: 'Payment required',
+        message: 'Enter billing details to submit this background check.',
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to create payment session.'
       setRequestError(message)
       toast.show({
-          title: 'Unable to start payment',
-          variant: 'error',
-        })
+        title: 'Unable to start payment',
+        variant: 'error',
+      })
     }
   }
 
@@ -234,9 +234,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">
-          Loading options…
-        </Text>
+        <Text color="gray">Loading options…</Text>
       </Stack>
     )
   }
@@ -244,9 +242,7 @@ export function OrganizationBackgroundCheckRequestForm() {
   if (!organizations.length) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="gray">
-          No organizations available
-        </Text>
+        <Text color="gray">No organizations available</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           Create an organization before requesting a background check.
         </Text>
@@ -258,9 +254,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     <ScrollView style={{ flex: 1 }}>
       <Stack flex={1} gap={16} paddingHorizontal={16} paddingVertical={24}>
         <Stack gap={4}>
-          <Text color="gray">
-            Request Background Check
-          </Text>
+          <Text color="gray">Request Background Check</Text>
           <Text color="gray">
             Invite a worker to complete the required screening package on behalf of your
             organization.
@@ -307,9 +301,7 @@ export function OrganizationBackgroundCheckRequestForm() {
               }))}
             />
             {selectedPackage?.description ? (
-              <Text color="gray">
-                {selectedPackage.description}
-              </Text>
+              <Text color="gray">{selectedPackage.description}</Text>
             ) : null}
           </Stack>
 
@@ -385,15 +377,10 @@ export function OrganizationBackgroundCheckRequestForm() {
           <Stack gap={8} padding={12} backgroundColor="$color3" borderRadius={16}>
             <Row gap={8} align="center">
               <CircleAlert size={18} color="gray" />
-              <Text color="gray">
-                Cost summary
-              </Text>
+              <Text color="gray">Cost summary</Text>
             </Row>
             <Text color="gray">
-              Package cost:{' '}
-              <Text color="gray">
-                {formatCurrency(costCents)}
-              </Text>
+              Package cost: <Text color="gray">{formatCurrency(costCents)}</Text>
             </Text>
             <Text color="gray">
               Charges are collected immediately via Stripe. Screenings are submitted after payment
@@ -409,9 +396,7 @@ export function OrganizationBackgroundCheckRequestForm() {
 
           {paymentSession && (
             <Stack gap={8}>
-              <Text color="gray">
-                Complete payment
-              </Text>
+              <Text color="gray">Complete payment</Text>
               <PaymentIntentForm
                 clientSecret={paymentSession.clientSecret}
                 amountCents={paymentSession.amountCents}

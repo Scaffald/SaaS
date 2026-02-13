@@ -47,9 +47,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
   return (
     <Stack gap={16} padding={16}>
       <Stack gap={8}>
-        <Text>
-          Auto-Rejection
-        </Text>
+        <Text>Auto-Rejection</Text>
         <Text>Automatically reject applicants who don't meet minimum criteria</Text>
       </Stack>
 
@@ -65,16 +63,12 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           aria-label="Enable auto-rejection"
         />
       </Row>
-      <Text color="gray">
-        Based on Elevate score, work authorization and required skills
-      </Text>
+      <Text color="gray">Based on Elevate score, work authorization and required skills</Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
         <Stack gap={12} padding={12}>
-          <Text>
-            Rejection Criteria
-          </Text>
+          <Text>Rejection Criteria</Text>
 
           {/* Work Authorization */}
           <Row gap={12}>
@@ -122,9 +116,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           </Row>
 
           <Stack gap={8} padding={12}>
-            <Text color="$yellow11">
-              ⚠️ Important
-            </Text>
+            <Text color="$yellow11">⚠️ Important</Text>
             <Text color="$yellow11">
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This
               action cannot be undone automatically. Review your criteria carefully.

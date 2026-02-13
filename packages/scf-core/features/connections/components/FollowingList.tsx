@@ -85,15 +85,11 @@ export function FollowingList() {
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$purple4">
-                    <Text color="$purple10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text color="$purple10">{name.charAt(0).toUpperCase()}</Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <Text>
-                {name}
-              </Text>
+              <Text>{name}</Text>
             </Row>
           )
         },
@@ -103,11 +99,7 @@ export function FollowingList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text color="gray">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {

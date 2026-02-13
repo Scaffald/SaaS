@@ -47,8 +47,8 @@ export default function BackgroundCheckDisputeScreen() {
           <Stack flex={1} gap={16} padding={16}>
             {checksQuery.isLoading && (
               <Stack gap={12} align="center" paddingVertical={24}>
-                <Spinner size="lg" color="secondary" />
-                <Text size="sm" color="secondary">
+                <Spinner size="lg" color="$color11" />
+                <Text size="sm" color="$color11">
                   Loading background checks…
                 </Text>
               </Stack>
@@ -62,13 +62,13 @@ export default function BackgroundCheckDisputeScreen() {
                 borderRadius={8}
                 style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
-                <Text size="sm" color="secondary">
+                <Text size="sm" color="$color11">
                   We couldn't load your background checks. Please try again.
                 </Text>
                 <Button
                   size="sm"
                   variant="outline"
-                  color="blue"
+                  color="primary"
                   onPress={() => checksQuery.refetch()}
                 >
                   <Row gap={8} align="center">
@@ -87,17 +87,17 @@ export default function BackgroundCheckDisputeScreen() {
                 borderRadius={8}
                 style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
-                <Text size="sm" color="secondary">
+                <Text size="sm" color="$color11">
                   We couldn't find that background check or your access has expired.
                 </Text>
                 <Row gap={8}>
-                  <Button size="sm" variant="filled" color="blue" onPress={handleClose}>
+                  <Button size="sm" variant="filled" color="primary" onPress={handleClose}>
                     Go back
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    color="blue"
+                    color="primary"
                     onPress={() => checksQuery.refetch()}
                   >
                     <Row gap={8} align="center">
@@ -119,7 +119,7 @@ export default function BackgroundCheckDisputeScreen() {
                   <Button
                     size="sm"
                     variant="outline"
-                    color="blue"
+                    color="primary"
                     disabled={isSubmitting || isUploading}
                     onPress={handleClose}
                   >

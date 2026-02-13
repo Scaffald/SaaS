@@ -36,18 +36,18 @@ export function OrganizationPaymentMethodsPanel({
   const deleteMutation = api.payments.deletePaymentMethod.useMutation({
     onSuccess: () => {
       toast.show({
-          title: 'Payment method removed',
-          message: 'The payment method has been removed successfully.',
-        })
+        title: 'Payment method removed',
+        message: 'The payment method has been removed successfully.',
+      })
       paymentMethodQuery.refetch()
       setShowAddForm(false)
     },
     onError: (error: unknown) => {
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Failed to remove payment method',
-          variant: 'error',
-        })
+        title: 'Failed to remove payment method',
+        variant: 'error',
+      })
     },
   })
 
@@ -67,9 +67,9 @@ export function OrganizationPaymentMethodsPanel({
 
   const handleAddSuccess = () => {
     toast.show({
-          title: 'Payment method added',
-          message: 'The payment method has been saved successfully.',
-        })
+      title: 'Payment method added',
+      message: 'The payment method has been saved successfully.',
+    })
     paymentMethodQuery.refetch()
     setShowAddForm(false)
   }
@@ -88,9 +88,7 @@ export function OrganizationPaymentMethodsPanel({
   return (
     <Card bordered padding={16} gap={12}>
       <Row justify="space-between" align="center">
-        <Text>
-          Payment Method
-        </Text>
+        <Text>Payment Method</Text>
         {!showAddForm && !paymentMethod && (
           <Button size={12} theme="blue" icon={Plus} onPress={() => setShowAddForm(true)}>
             Add Payment Method
@@ -123,11 +121,7 @@ export function OrganizationPaymentMethodsPanel({
                 <Text>
                   {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                 </Text>
-                {paymentMethod.isDefault && (
-                  <Text color="$blue11">
-                    Default
-                  </Text>
-                )}
+                {paymentMethod.isDefault && <Text color="$blue11">Default</Text>}
               </Row>
               <Text color="gray">
                 Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
@@ -152,9 +146,7 @@ export function OrganizationPaymentMethodsPanel({
         </Stack>
       ) : (
         <Stack gap={8} padding={12} backgroundColor="$color2" borderRadius={16}>
-          <Text color="gray">
-            No payment method on file
-          </Text>
+          <Text color="gray">No payment method on file</Text>
           <Text color="gray">
             Add a payment method to enable automatic billing for this organization.
           </Text>

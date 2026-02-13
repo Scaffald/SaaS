@@ -62,8 +62,10 @@ export function ConnectionsList() {
 
     const search = searchTerm.toLowerCase()
     return connections.filter((conn: Connection) => {
-      const requesterName = `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
-      const addresseeName = `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+      const requesterName =
+        `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+      const addresseeName =
+        `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
       const name = requesterName || addresseeName
       return name.toLowerCase().includes(search)
     })
@@ -90,8 +92,10 @@ export function ConnectionsList() {
 
     const headers = ['Name', 'Connected Since']
     const rows = connections.map((conn: Connection) => {
-      const requesterName = `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
-      const addresseeName = `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+      const requesterName =
+        `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+      const addresseeName =
+        `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
       const name = requesterName || addresseeName || 'Unknown'
       const date = conn.created_at ? new Date(conn.created_at).toLocaleDateString() : ''
 
@@ -112,16 +116,16 @@ export function ConnectionsList() {
       link.click()
       URL.revokeObjectURL(url)
       toast.show({
-          title: 'Success',
-          message: 'Connections exported successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Connections exported successfully',
+        variant: 'success',
+      })
     } else {
       toast.show({
-          title: 'Error',
-          message: 'CSV export is only available on web',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'CSV export is only available on web',
+        variant: 'error',
+      })
     }
   }
 
@@ -132,8 +136,10 @@ export function ConnectionsList() {
         header: 'User',
         cell: ({ row }) => {
           const conn = row.original
-          const requesterName = `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
-          const addresseeName = `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+          const requesterName =
+            `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+          const addresseeName =
+            `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
           const name = requesterName || addresseeName || 'Unknown'
           const avatar = conn.requester?.avatar_url || conn.addressee?.avatar_url
 
@@ -144,15 +150,11 @@ export function ConnectionsList() {
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$blue4">
-                    <Text color="$blue10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text color="$blue10">{name.charAt(0).toUpperCase()}</Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <Text>
-                {name}
-              </Text>
+              <Text>{name}</Text>
             </Row>
           )
         },
@@ -162,11 +164,7 @@ export function ConnectionsList() {
         header: 'Connected Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text color="gray">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {

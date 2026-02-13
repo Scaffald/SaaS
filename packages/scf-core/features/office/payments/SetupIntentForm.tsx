@@ -37,9 +37,9 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
     } catch (error) {
       const _message = error instanceof Error ? error.message : 'Failed to initialize payment form'
       toast.show({
-          title: 'Error',
-          variant: 'error',
-        })
+        title: 'Error',
+        variant: 'error',
+      })
     } finally {
       setIsInitializing(false)
     }
@@ -64,9 +64,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
   if (config.isLoading || !stripePromise) {
     return (
       <Card padding={12} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text color="gray">
-          Preparing secure payment form…
-        </Text>
+        <Text color="gray">Preparing secure payment form…</Text>
       </Card>
     )
   }
@@ -84,16 +82,12 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
   if (!clientSecret) {
     return (
       <Stack gap={12}>
-        <Text>
-          Add Payment Method
-        </Text>
+        <Text>Add Payment Method</Text>
         <Text color="gray">
           Click the button below to securely add a payment method for this organization.
         </Text>
         {config.testMode && (
-          <Text color="$orange11">
-            Stripe test mode is active. Use test card numbers only.
-          </Text>
+          <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
         )}
         <Row gap={8}>
           <Button size={16} theme="blue" onPress={handleInitialize} disabled={isInitializing}>
@@ -182,13 +176,9 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
   return (
     <Card padding={16} borderColor="$borderColor" borderWidth={1} gap={12}>
       <Stack gap={4}>
-        <Text>
-          Add Payment Method
-        </Text>
+        <Text>Add Payment Method</Text>
         {testMode && (
-          <Text color="$orange11">
-            Stripe test mode is active. Use test card numbers only.
-          </Text>
+          <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
         )}
       </Stack>
 

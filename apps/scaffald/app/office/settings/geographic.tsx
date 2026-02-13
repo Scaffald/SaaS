@@ -85,8 +85,8 @@ export default function GeographicSettingsPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
-        <Text fontSize="$8" fontWeight="600">
+      <Stack flex={1} padding="$4" gap="$4" align="center" justify="center">
+        <Text>
           Geographic Settings
         </Text>
         <Spinner />
@@ -97,10 +97,10 @@ export default function GeographicSettingsPage() {
   return (
     <Stack flex={1} padding="$4" gap="$4">
       <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="600">
+        <Text>
           Geographic Settings
         </Text>
-        <Text fontSize="$4" color="$gray11">
+        <Text color="$gray11">
           Configure geographic validation settings for site boundaries
         </Text>
       </Stack>
@@ -108,10 +108,10 @@ export default function GeographicSettingsPage() {
         <Card padding="$4">
           <Stack gap="$4">
             <Stack gap="$2">
-              <Text fontSize="$6" fontWeight="600">
+              <Text>
                 Site Overlap Threshold
               </Text>
-              <Text fontSize="$3" color="$gray11">
+              <Text color="$gray11">
                 When site boundaries overlap by more than this percentage, admins will receive
                 notifications. This helps identify potential data quality issues or survey
                 discrepancies.
@@ -119,8 +119,8 @@ export default function GeographicSettingsPage() {
             </Stack>
 
             <Stack gap="$2">
-              <Text fontWeight="600">Threshold Percentage</Text>
-              <Row gap="$2" alignItems="center">
+              <Text>Threshold Percentage</Text>
+              <Row gap="$2" align="center">
                 <Input
                   value={threshold}
                   onChangeText={setThreshold}
@@ -131,28 +131,28 @@ export default function GeographicSettingsPage() {
                 />
                 <Text>%</Text>
               </Row>
-              <Text fontSize="$2" color="$gray10">
+              <Text color="$gray10">
                 Range: 0.1% - 10% (Default: 2.0%)
               </Text>
             </Stack>
 
             <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
               <Stack gap="$2">
-                <Text fontWeight="600" fontSize="$3">
+                <Text>
                   Current Setting
                 </Text>
-                <Text fontSize="$5" fontWeight="600" color="$blue11">
+                <Text color="$blue11">
                   {threshold}%
                 </Text>
-                <Text fontSize="$2" color="$gray11">
+                <Text color="$gray11">
                   Site overlaps exceeding {threshold}% will trigger admin notifications.
                 </Text>
               </Stack>
             </Card>
 
-            <Row justifyContent="flex-end" gap="$2">
+            <Row justify="flex-end" gap="$2">
               <Button
-                variant="outlined"
+                variant="outline"
                 onPress={() => {
                   // Reset to default
                   setThreshold('2.0')
@@ -174,10 +174,10 @@ export default function GeographicSettingsPage() {
 
         <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <Stack gap="$2">
-            <Text fontWeight="600" fontSize="$3">
+            <Text>
               About Site Overlaps
             </Text>
-            <Text fontSize="$2" color="$gray11">
+            <Text color="$gray11">
               Site overlaps can occur when:
               {'\n'}• Multiple projects are assigned to adjacent or overlapping geographic areas
               {'\n'}• Survey data contains inaccuracies

@@ -124,16 +124,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
       queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
-          title: 'Connection request sent',
-          message: 'Your connection request has been sent.',
-        })
+        title: 'Connection request sent',
+        message: 'Your connection request has been sent.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to send request',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to send request',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
@@ -146,16 +146,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
       queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
-          title: 'Connection accepted',
-          message: 'You are now connected.',
-        })
+        title: 'Connection accepted',
+        message: 'You are now connected.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to accept request',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to accept request',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
@@ -168,10 +168,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to decline request',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to decline request',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
@@ -183,16 +183,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
-          title: 'Following',
-          message: 'You are now following this user.',
-        })
+        title: 'Following',
+        message: 'You are now following this user.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to follow',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to follow',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
@@ -203,16 +203,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
-          title: 'Unfollowed',
-          message: 'You are no longer following this user.',
-        })
+        title: 'Unfollowed',
+        message: 'You are no longer following this user.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to unfollow',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to unfollow',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
@@ -315,10 +315,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
       toast.show({
-          title: 'Unable to load profile',
-          message: 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Unable to load profile',
+        message: 'Please try again.',
+        variant: 'error',
+      })
     }
   }
 
@@ -363,9 +363,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
         </Stack>
       ) : isLoading ? null : !profile ? (
         <Stack paddingVertical={32} align="center">
-          <Text color="$red10">
-            Profile not found
-          </Text>
+          <Text color="$red10">Profile not found</Text>
         </Stack>
       ) : (
         <>
@@ -399,14 +397,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             )}
 
             <Stack gap={8} align="center">
-              <Text color="gray">
-                {profile.name}
-              </Text>
-              {profile.headline && (
-                <Text color="gray">
-                  {profile.headline}
-                </Text>
-              )}
+              <Text color="gray">{profile.name}</Text>
+              {profile.headline && <Text color="gray">{profile.headline}</Text>}
             </Stack>
 
             {/* Scaffald Score Badge */}
@@ -422,12 +414,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 borderColor="$blue5"
               >
                 <Star size={20} color="$blue10" fill="$blue10" />
-                <Text color="$blue11">
-                  {profile.gamified_score}
-                </Text>
-                <Text color="$blue10">
-                  Scaffald Score
-                </Text>
+                <Text color="$blue11">{profile.gamified_score}</Text>
+                <Text color="$blue10">Scaffald Score</Text>
               </Row>
             )}
           </Stack>
@@ -439,18 +427,14 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             {profile.location && (
               <Row gap={8} align="center">
                 <MapPin size={18} color="gray" />
-                <Text color="gray">
-                  {profile.location}
-                </Text>
+                <Text color="gray">{profile.location}</Text>
               </Row>
             )}
 
             {profile.hourly_rate_cents && (
               <Row gap={8} align="center">
                 <DollarSign size={18} color="gray" />
-                <Text color="gray">
-                  {formatHourlyRate(profile.hourly_rate_cents)}
-                </Text>
+                <Text color="gray">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
               </Row>
             )}
 
@@ -479,9 +463,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 paddingVertical={6}
                 borderRadius={12}
               >
-                <Text color="$green11">
-                  Available for Work
-                </Text>
+                <Text color="$green11">Available for Work</Text>
               </Row>
             )}
           </Stack>
@@ -491,9 +473,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             <>
               <Separator />
               <Stack gap={8}>
-                <Text color="gray">
-                  About
-                </Text>
+                <Text color="gray">About</Text>
                 <Text color="gray" lineHeight={4} numberOfLines={4}>
                   {profile.bio}
                 </Text>
@@ -509,9 +489,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Row align="center" gap={8} justify="space-between">
                   <Row align="center" gap={8}>
                     <Award size={18} color="gray" />
-                    <Text color="gray">
-                      Top Skills
-                    </Text>
+                    <Text color="gray">Top Skills</Text>
                   </Row>
                   {skills.length > 10 && (
                     <Button size={8} variant="outline" onPress={handleViewFullProfile}>
@@ -529,9 +507,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           : skill.name
                     return (
                       <Row key={skill.id} justify="space-between" align="center">
-                        <Text color="gray">
-                          {label}
-                        </Text>
+                        <Text color="gray">{label}</Text>
                         <Row gap={8} align="center">
                           <Stack
                             width={100}
@@ -547,9 +523,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                             />
                           </Stack>
                           <Stack minWidth={30}>
-                            <Text color="gray">
-                              {skill.proficiency}%
-                            </Text>
+                            <Text color="gray">{skill.proficiency}%</Text>
                           </Stack>
                         </Row>
                       </Row>
@@ -568,9 +542,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Row align="center" gap={8} justify="space-between">
                   <Row align="center" gap={8}>
                     <BadgeCheck size={18} color="gray" />
-                    <Text color="gray">
-                      Certifications
-                    </Text>
+                    <Text color="gray">Certifications</Text>
                   </Row>
                   {certifications.length > 5 && (
                     <Button size={8} variant="outline" onPress={handleViewFullProfile}>
@@ -581,9 +553,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Stack gap={8}>
                   {topCertifications.map((cert: Certification) => (
                     <Stack key={cert.id} gap={4}>
-                      <Text color="gray">
-                        {cert.name}
-                      </Text>
+                      <Text color="gray">{cert.name}</Text>
                       <Text color="gray">
                         {cert.issuing_organization}
                         {cert.issue_date &&
@@ -604,9 +574,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Row align="center" gap={8} justify="space-between">
                   <Row align="center" gap={8}>
                     <Briefcase size={18} color="gray" />
-                    <Text color="gray">
-                      Recent Experience
-                    </Text>
+                    <Text color="gray">Recent Experience</Text>
                   </Row>
                   {experience.length > 3 && (
                     <Button size={8} variant="outline" onPress={handleViewFullProfile}>
@@ -637,9 +605,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Stack gap={8}>
                 <Row align="center" gap={8}>
                   <GraduationCap size={18} color="gray" />
-                  <Text color="gray">
-                    Education
-                  </Text>
+                  <Text color="gray">Education</Text>
                 </Row>
                 <Stack gap={8}>
                   {topEducation.map((edu: EducationEntry) => (

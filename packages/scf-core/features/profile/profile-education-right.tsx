@@ -1,4 +1,7 @@
-import { useEducation, useDeleteEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
+import {
+  useEducation,
+  useDeleteEducationMutation,
+} from '@scf/core/utils/profile-education-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardWidget, Dialog } from '@unicornlove/beyond-ui'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from 'lucide-react-native'
@@ -30,18 +33,19 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   const deleteEducationMutation = useDeleteEducationMutation({
     onError: (error: unknown) => {
       toast.show({
-          title: 'Delete Failed',
-          message: error instanceof Error
+        title: 'Delete Failed',
+        message:
+          error instanceof Error
             ? error.message
             : 'Failed to delete education entry. Please try again.',
-          variant: 'error',
-        })
+        variant: 'error',
+      })
     },
     onSuccess: () => {
       toast.show({
-          title: 'Education Deleted',
-          message: 'The education entry has been removed.',
-        })
+        title: 'Education Deleted',
+        message: 'The education entry has been removed.',
+      })
       queryClient.invalidateQueries({ queryKey: ['profiles', 'education'] })
       setDeleteDialogOpen(null)
     },
@@ -50,10 +54,10 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   const handleDelete = (educationId: string | null | undefined) => {
     if (!educationId) {
       toast.show({
-          title: 'Delete Failed',
-          message: 'Missing education identifier. Please try again.',
-          variant: 'error',
-        })
+        title: 'Delete Failed',
+        message: 'Missing education identifier. Please try again.',
+        variant: 'error',
+      })
       return
     }
     deleteEducationMutation.mutate({ educationId })
@@ -119,15 +123,11 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                 {/* Institution Name with Verification Badge */}
                 <Stack gap={4}>
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text color="gray">
-                      {edu.institution_name}
-                    </Text>
+                    <Text color="gray">{edu.institution_name}</Text>
                     {!edu.is_verified && (
                       <Row gap={4} align="center">
                         <AlertCircle size={14} color="$orange10" />
-                        <Text color="$orange10">
-                          Pending verification
-                        </Text>
+                        <Text color="$orange10">Pending verification</Text>
                       </Row>
                     )}
                   </Row>
@@ -135,32 +135,18 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {/* Current Education Badge */}
                   {edu.is_current && (
                     <Row gap={4} align="center">
-                      <Text color="$blue10">
-                        Current
-                      </Text>
+                      <Text color="$blue10">Current</Text>
                     </Row>
                   )}
 
                   {/* Degree Type */}
-                  {edu.degree_type && (
-                    <Text color="gray">
-                      {edu.degree_type}
-                    </Text>
-                  )}
+                  {edu.degree_type && <Text color="gray">{edu.degree_type}</Text>}
 
                   {/* Field of Study */}
-                  {edu.field_of_study && (
-                    <Text color="gray">
-                      {edu.field_of_study}
-                    </Text>
-                  )}
+                  {edu.field_of_study && <Text color="gray">{edu.field_of_study}</Text>}
 
                   {/* GPA */}
-                  {hasValidGpa && (
-                    <Text color="gray">
-                      GPA: {normalizedGpa.toFixed(1)}/4.0
-                    </Text>
-                  )}
+                  {hasValidGpa && <Text color="gray">GPA: {normalizedGpa.toFixed(1)}/4.0</Text>}
                 </Stack>
 
                 {/* Delete Confirmation Dialog */}
@@ -222,10 +208,10 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                             onEditEntry(edu.id)
                           } else {
                             toast.show({
-          title: 'Error',
-          message: 'Unable to edit this entry. Please try again.',
-          variant: 'error',
-        })
+                              title: 'Error',
+                              message: 'Unable to edit this entry. Please try again.',
+                              variant: 'error',
+                            })
                           }
                         }}
                       />
@@ -245,21 +231,15 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {edu.location && (
                     <Row gap={8} align="center">
                       <MapPin size={16} color="gray" />
-                      <Text color="gray">
-                        {edu.location}
-                      </Text>
+                      <Text color="gray">{edu.location}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {edu.description && (
                     <Stack gap={4}>
-                      <Text color="gray">
-                        Description:
-                      </Text>
-                      <Text color="gray">
-                        {edu.description}
-                      </Text>
+                      <Text color="gray">Description:</Text>
+                      <Text color="gray">{edu.description}</Text>
                     </Stack>
                   )}
                 </Stack>

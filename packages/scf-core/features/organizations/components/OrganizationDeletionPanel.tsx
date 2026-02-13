@@ -2,7 +2,16 @@ import { api } from '@scf/core/utils/api'
 import { useToast } from '@unicornlove/beyond-ui'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
-import { AlertDialog, Button, Card, Input, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
+import {
+  AlertDialog,
+  Button,
+  Card,
+  Input,
+  Text,
+  TextArea,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type OrganizationDeletionPanelProps = {
   organizationId: string
@@ -53,9 +62,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
       <Stack gap={12}>
         <Row align="center" gap={8}>
           <AlertTriangle color="$red11" size={20} />
-          <Text color="$red11">
-            Delete Organization
-          </Text>
+          <Text color="$red11">Delete Organization</Text>
         </Row>
 
         <Text color="gray">
@@ -84,9 +91,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
             <AlertDialog.Content style={{ maxWidth: 500 }}>
               <Stack gap={16} padding={16}>
                 <Stack gap={8}>
-                  <Text color="$red11">
-                    Delete This Organization?
-                  </Text>
+                  <Text color="$red11">Delete This Organization?</Text>
                   <Text color="gray">
                     This action cannot be undone. All organization data will be permanently deleted
                     or anonymized.
@@ -94,9 +99,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text>
-                    Reason (optional)
-                  </Text>
+                  <Text>Reason (optional)</Text>
                   <TextArea
                     value={reason}
                     onChangeText={setReason}
@@ -106,9 +109,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text>
-                    Type "DELETE" to confirm
-                  </Text>
+                  <Text>Type "DELETE" to confirm</Text>
                   <Input
                     value={confirmText}
                     onChangeText={setConfirmText}

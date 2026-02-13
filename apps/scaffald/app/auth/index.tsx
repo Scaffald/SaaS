@@ -12,7 +12,7 @@ function AuthHeaderThemeToggle() {
   const { theme, toggleTheme } = useThemeContext()
   return (
     <Button
-      variant="outlined"
+      variant="outline"
       size="sm"
       onPress={toggleTheme}
       color="gray"
@@ -53,14 +53,14 @@ export default function Screen() {
         }}
       />
       <Row flex={1}>
-        <Stack flex={2} flexBasis={0} justify="center">
+        <Stack flex={2} justify="center">
           <Stack paddingHorizontal={spacing[16]}>
             <LoginScreen />
           </Stack>
         </Stack>
 
         {!isSmallScreen && (
-          <Stack flex={3} flexBasis={0}>
+          <Stack flex={3}>
             <WelcomeScreen />
           </Stack>
         )}

@@ -180,17 +180,9 @@ export function SimpleSkillAutocomplete({
                       <Row justify="space-between" align="center">
                         <Stack flex={1}>
                           <Text>{skill.name}</Text>
-                          {skill.code && (
-                            <Text color="gray">
-                              {skill.code}
-                            </Text>
-                          )}
+                          {skill.code && <Text color="gray">{skill.code}</Text>}
                         </Stack>
-                        {isExisting && (
-                          <Text color="$blue9">
-                            Added
-                          </Text>
-                        )}
+                        {isExisting && <Text color="$blue9">Added</Text>}
                       </Row>
                     </Stack>
                   )

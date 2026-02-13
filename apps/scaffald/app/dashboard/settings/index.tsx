@@ -288,10 +288,10 @@ export default function NotificationsCenterScreen() {
     <ScrollView paddingHorizontal="$6" paddingVertical="$6">
       <Stack gap="$6">
         <Stack gap="$2">
-          <Text fontSize="$9" fontWeight="700">
+          <Text>
             Notifications
           </Text>
-          <Text fontSize="$3" color="$color10">
+          <Text color="$color10">
             Stay up to date with applications, opportunities, and platform updates.
           </Text>
         </Stack>
@@ -304,12 +304,12 @@ export default function NotificationsCenterScreen() {
           padding="$4"
           backgroundColor="$color1"
         >
-          <Row justifyContent="space-between" alignItems="center">
+          <Row justify="space-between" align="center">
             <Stack gap="$1">
-              <Text fontSize="$6" fontWeight="600">
+              <Text>
                 Preferences
               </Text>
-              <Text fontSize="$3" color="$color10">
+              <Text color="$color10">
                 Control how and when we reach you.
               </Text>
             </Stack>
@@ -326,10 +326,10 @@ export default function NotificationsCenterScreen() {
           <Separator backgroundColor="$color3" />
 
           <Stack gap="$3">
-            <Row alignItems="center" justifyContent="space-between">
+            <Row align="center" justify="space-between">
               <Label
                 color="$color12"
-                fontWeight="600"
+               
                 onPress={() =>
                   setPreferences((prev) => ({
                     ...prev,
@@ -357,7 +357,7 @@ export default function NotificationsCenterScreen() {
                   { key: 'sms', label: 'SMS' },
                 ] as const
               ).map(({ key, label }) => (
-                <Row key={key} alignItems="center" justifyContent="space-between">
+                <Row key={key} align="center" justify="space-between">
                   <Label
                     color="$color11"
                     onPress={() =>
@@ -389,13 +389,13 @@ export default function NotificationsCenterScreen() {
             <Separator backgroundColor="$color3" />
 
             <Stack gap="$2">
-              <Text fontWeight="600" color="$color12">
+              <Text color="$color12">
                 Quiet hours
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="$color10">
                 We’ll queue non-critical alerts during these hours.
               </Text>
-              <Row gap="$2" alignItems="center">
+              <Row gap="$2" align="center">
                 <Input
                   placeholder="22:00"
                   value={preferences.quietHours?.start ?? ''}
@@ -431,7 +431,7 @@ export default function NotificationsCenterScreen() {
             <Separator backgroundColor="$color3" />
 
             <Stack gap="$2">
-              <Text fontWeight="600" color="$color12">
+              <Text color="$color12">
                 Digest frequency
               </Text>
               <Row gap="$2" flexWrap="wrap">
@@ -466,12 +466,12 @@ export default function NotificationsCenterScreen() {
             </Stack>
 
             {savePreferencesMutation.isSuccess && (
-              <Text fontSize="$2" color="$green10">
+              <Text color="$green10">
                 Preferences saved.
               </Text>
             )}
             {savePreferencesMutation.isError && (
-              <Text fontSize="$2" color="$red10">
+              <Text color="$red10">
                 Failed to save preferences.
               </Text>
             )}
@@ -480,18 +480,18 @@ export default function NotificationsCenterScreen() {
           <Separator backgroundColor="$color3" />
 
           <Stack gap="$2">
-            <Text fontWeight="600" color="$color12">
+            <Text color="$color12">
               Registered devices
             </Text>
             {devicesQuery.isLoading ? (
-              <Row gap="$2" alignItems="center">
+              <Row gap="$2" align="center">
                 <Spinner size="small" color="$color10" />
-                <Text fontSize="$2" color="$color10">
+                <Text color="$color10">
                   Checking devices…
                 </Text>
               </Row>
             ) : deviceRows.length === 0 ? (
-              <Text fontSize="$2" color="$color10">
+              <Text color="$color10">
                 No devices registered yet.
               </Text>
             ) : (
@@ -502,13 +502,13 @@ export default function NotificationsCenterScreen() {
                 overflow="hidden"
               >
                 <Row backgroundColor="$color2" padding="$2">
-                  <Text flex={2} fontSize="$2" fontWeight="600">
+                  <Text flex={2}>
                     Token
                   </Text>
-                  <Text flex={1} fontSize="$2" fontWeight="600">
+                  <Text flex={1}>
                     Platform
                   </Text>
-                  <Text flex={1} fontSize="$2" fontWeight="600">
+                  <Text flex={1}>
                     Last seen
                   </Text>
                 </Row>
@@ -519,13 +519,13 @@ export default function NotificationsCenterScreen() {
                     backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                     gap="$2"
                   >
-                    <Text flex={2} fontSize="$2" color="$color11" numberOfLines={1}>
+                    <Text flex={2} color="$color11" numberOfLines={1}>
                       {device.token}
                     </Text>
-                    <Text flex={1} fontSize="$2" color="$color11">
+                    <Text flex={1} color="$color11">
                       {device.platform}
                     </Text>
-                    <Text flex={1} fontSize="$2" color="$color10">
+                    <Text flex={1} color="$color10">
                       {formatDate(
                         device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
                       )}
@@ -563,17 +563,17 @@ export default function NotificationsCenterScreen() {
         </Row>
 
         {notificationsQuery.isLoading ? (
-          <Stack gap="$3" alignItems="center" marginTop="$4">
-            <Spinner size="large" color="$color10" />
+          <Stack gap="$3" align="center">
+            <Spinner size="lg" color="$color10" />
             <Text color="$color11">Loading notifications…</Text>
           </Stack>
         ) : isEmpty ? (
-          <Stack gap="$3" alignItems="center" marginTop="$5">
+          <Stack gap="$3" align="center">
             <Info size={48} color="$color8" />
-            <Text fontSize="$5" fontWeight="600" color="$color12">
+            <Text color="$color12">
               You're all caught up!
             </Text>
-            <Text fontSize="$3" color="$color10" textAlign="center">
+            <Text color="$color10" textAlign="center">
               New alerts will show up here when there's something you need to review.
             </Text>
           </Stack>
@@ -594,11 +594,11 @@ export default function NotificationsCenterScreen() {
                   borderRadius="$4"
                   backgroundColor="$color1"
                 >
-                  <Row padding="$4" gap="$3" alignItems="flex-start">
+                  <Row padding="$4" gap="$3" align="flex-start">
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
                     <Stack flex={1} gap="$2">
-                      <Row justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$4" fontWeight="700" color="$color12">
+                      <Row justify="space-between" align="center">
+                        <Text color="$color12">
                           {notification.title}
                         </Text>
                         <NotificationTag
@@ -609,11 +609,11 @@ export default function NotificationsCenterScreen() {
                           {notification.severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="$color11">
                         {notification.preview}
                       </Text>
-                      <Row gap="$3" alignItems="center">
-                        <Text fontSize="$2" color="$color10">
+                      <Row gap="$3" align="center">
+                        <Text color="$color10">
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
                         {notification.channels.length > 0 && (
@@ -644,7 +644,7 @@ export default function NotificationsCenterScreen() {
                       />
                     </Row>
                   ) : (
-                    <Row padding="$3" gap="$3" justifyContent="flex-end" flexWrap="wrap">
+                    <Row padding="$3" gap="$3" justify="flex-end" flexWrap="wrap">
                       {!notification.read ? (
                         <Button
                           size="$2"
@@ -683,8 +683,8 @@ export default function NotificationsCenterScreen() {
 
                       {notification.ctaUrl && (
                         <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
-                          <Row gap="$2" alignItems="center">
-                            <Text fontSize="$2" fontWeight="600" color="$color12">
+                          <Row gap="$2" align="center">
+                            <Text color="$color12">
                               {notification.ctaLabel ?? 'Open'}
                             </Text>
                             <ExternalLink size={16} color="#ffffff" />
@@ -699,7 +699,7 @@ export default function NotificationsCenterScreen() {
 
             {notificationsQuery.hasNextPage && (
               <Button
-                marginTop="$4"
+               
                 theme="info"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}

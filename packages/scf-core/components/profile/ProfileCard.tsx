@@ -115,8 +115,7 @@ export const ProfileCard = memo(
       const profileBadgeConfigs: BadgeConfig[] = badges.slice(0, 3).map((badge) => ({
         key: badge.id,
         label: badge.label,
-        bg:
-          badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
+        bg: badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
         color:
           badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
         icon:
@@ -190,9 +189,7 @@ export const ProfileCard = memo(
                 paddingVertical={4}
               >
                 <Star size={12} color="$blue11" />
-                <Text color="$blue11">
-                  {score}
-                </Text>
+                <Text color="$blue11">{score}</Text>
               </Row>
             )}
           </Row>

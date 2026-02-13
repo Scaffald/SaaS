@@ -54,8 +54,8 @@ export default function SharedIPIPResultsRoute() {
 
   if (isLoading) {
     return (
-      <Stack gap="$4" padding="$8" alignItems="center">
-        <Text fontSize="$5" color="$color11">
+      <Stack gap={16} padding={32} align="center">
+        <Text color="$color11">
           Loading shared results...
         </Text>
       </Stack>
@@ -64,11 +64,11 @@ export default function SharedIPIPResultsRoute() {
 
   if (error || !sharedResults) {
     return (
-      <Stack gap="$4" padding="$8" alignItems="center">
-        <Text fontSize="$5" color="$red10" fontWeight="600">
+      <Stack gap={16} padding={32} align="center">
+        <Text color="$red10" style={{ fontWeight: '600' }}>
           {error?.message || 'Results Not Found'}
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="$color11">
           This share link may be invalid, expired, or revoked.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
@@ -77,13 +77,13 @@ export default function SharedIPIPResultsRoute() {
   }
 
   return (
-    <Stack gap="$6" width="100%" padding="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
+    <Stack gap={24} width="100%" padding={16} style={{ alignSelf: 'center', maxWidth: 1000 }}>
       {/* Header */}
-      <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Text style={{ fontWeight: 'bold' }} color="$color12">
           Shared Personality Results
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="$color11">
           Viewing shared Big Five personality assessment results.
         </Text>
       </Stack>
@@ -93,7 +93,7 @@ export default function SharedIPIPResultsRoute() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
         orientation="horizontal"
-        flexDirection="column"
+       
       >
         <Tabs.List
           separator={<Stack width="$1" />}
@@ -101,12 +101,12 @@ export default function SharedIPIPResultsRoute() {
           aria-label="Manage your personality results view"
         >
           <Tabs.Tab flex={1} value="narrative">
-            <Text fontSize="$4" fontWeight="600">
+            <Text>
               Narrative View
             </Text>
           </Tabs.Tab>
           <Tabs.Tab flex={1} value="chart">
-            <Text fontSize="$4" fontWeight="600">
+            <Text>
               Chart View
             </Text>
           </Tabs.Tab>
@@ -129,8 +129,8 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <Stack alignItems="center" padding="$4">
-                <Text fontSize="$4" color="$color11">
+              <Stack align="center" padding="$4">
+                <Text color="$color11">
                   Processing results...
                 </Text>
               </Stack>
@@ -163,8 +163,8 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <Stack alignItems="center" padding="$4">
-                <Text fontSize="$4" color="$color11">
+              <Stack align="center" padding="$4">
+                <Text color="$color11">
                   Processing results...
                 </Text>
               </Stack>

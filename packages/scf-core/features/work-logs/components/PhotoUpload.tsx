@@ -83,10 +83,11 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
   const ensureReady = useCallback(() => {
     if (!isReady) {
       toast.show({
-          title: 'Save Draft First',
-          message: 'Photos can be added after the work log draft has been saved. Please wait for auto-save to finish.',
-          variant: 'info',
-        })
+        title: 'Save Draft First',
+        message:
+          'Photos can be added after the work log draft has been saved. Please wait for auto-save to finish.',
+        variant: 'info',
+      })
       return false
     }
     if (!canUploadMore) {
@@ -105,10 +106,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         const file = selection.file
         if (!file) {
           toast.show({
-          title: 'Upload Failed',
-          message: 'Unable to process the selected file.',
-          variant: 'error',
-        })
+            title: 'Upload Failed',
+            message: 'Unable to process the selected file.',
+            variant: 'error',
+          })
           return null
         }
         return {
@@ -178,7 +179,8 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       if (status !== 'granted') {
         toast.show({
           title: 'Camera Permission Required',
-          message: 'Camera access is needed to capture photos. Please enable it in your device settings.',
+          message:
+            'Camera access is needed to capture photos. Please enable it in your device settings.',
           variant: 'warning',
         })
         return
@@ -215,10 +217,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
     } catch (error) {
       console.error('[PhotoUpload] Camera capture failed', error)
       toast.show({
-          title: 'Capture Failed',
-          message: 'Unable to capture photo. Please try again.',
-          variant: 'error',
-        })
+        title: 'Capture Failed',
+        message: 'Unable to capture photo. Please try again.',
+        variant: 'error',
+      })
     } finally {
       setIsCapturing(false)
     }
@@ -235,9 +237,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         backgroundColor="$color2"
       >
         <Stack gap={8}>
-          <Text>
-            Work Log Photos
-          </Text>
+          <Text>Work Log Photos</Text>
           <Text color="gray">
             Add up to {maxPhotos} photos documenting your work. Individual files must be 2MB or
             less.
@@ -246,9 +246,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text>
-              Storage Usage
-            </Text>
+            <Text>Storage Usage</Text>
             <Text color="gray">
               {formatStorageSummary(storageUsage.usedBytes, storageUsage.limitBytes)}
             </Text>
@@ -272,9 +270,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
             paddingVertical={8}
             gap={8}
           >
-            <Text color="$orange11">
-              Draft not yet saved
-            </Text>
+            <Text color="$orange11">Draft not yet saved</Text>
             <Text color="$orange11">
               Photos can be added after the work log draft is saved. Keep filling out the form and
               we&apos;ll enable uploads automatically.
@@ -283,9 +279,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         ) : (
           <Stack gap={12}>
             <Stack gap={8}>
-              <Text>
-                Photo Details
-              </Text>
+              <Text>Photo Details</Text>
               <Input
                 placeholder="Caption (optional)"
                 value={caption}
@@ -317,10 +311,12 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               disabled={isUploading || isCapturing || !canUploadMore}
               accept="image/jpeg,image/png,image/webp"
               maxSizeBytes={2 * 1024 * 1024}
-              onError={(_message) => toast.show({
-          title: 'Upload Failed',
-          variant: 'error',
-        })}
+              onError={(_message) =>
+                toast.show({
+                  title: 'Upload Failed',
+                  variant: 'error',
+                })
+              }
               onSelect={handleUploadSelection}
             >
               {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => (
@@ -344,12 +340,8 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                       />
                     ) : null}
                     <ImagePlus size={32} color={isDragActive ? '$blue11' : '$color10'} />
-                    <Text>
-                      Drag and drop photos here
-                    </Text>
-                    <Text color="gray">
-                      or tap below to browse your device
-                    </Text>
+                    <Text>Drag and drop photos here</Text>
+                    <Text color="gray">or tap below to browse your device</Text>
                   </Stack>
 
                   <Row gap={8}>
@@ -380,9 +372,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
             {(isUploading || uploadProgress > 0) && (
               <Stack gap={8}>
-                <Text color="gray">
-                  Upload progress
-                </Text>
+                <Text color="gray">Upload progress</Text>
                 <View height={8} backgroundColor="$color4" borderRadius={16} overflow="hidden">
                   <View height="100%" width={`${uploadProgress}%`} backgroundColor="$blue9" />
                 </View>

@@ -107,11 +107,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   shadowOpacity={status === 'current' ? 0.2 : undefined}
                   shadowRadius={status === 'current' ? 4 : undefined}
                 >
-                  <Text
-                    color={status === 'current' ? '$color12' : '$gray11'}
-                  >
-                    {stepNumber}
-                  </Text>
+                  <Text color={status === 'current' ? '$color12' : '$gray11'}>{stepNumber}</Text>
                 </Stack>
               )}
 

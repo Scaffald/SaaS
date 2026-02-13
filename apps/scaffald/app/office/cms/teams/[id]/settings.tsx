@@ -40,8 +40,8 @@ export default function OfficeTeamSettingsPage() {
 
   if ((isLoading || isFetching) && !teamData?.team) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center" gap="$3">
+        <Spinner size="lg" />
         <Text color="$color11">Loading team settings…</Text>
       </Stack>
     )
@@ -73,7 +73,7 @@ export default function OfficeTeamSettingsPage() {
         <Row>
           <Button
             size="$2"
-            variant="outlined"
+            variant="outline"
             icon={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
           >Back to teams</Button>
@@ -87,7 +87,7 @@ export default function OfficeTeamSettingsPage() {
             padding="$3"
             gap="$2"
           >
-            <Text fontWeight="600">Archived team</Text>
+            <Text>Archived team</Text>
             <Text color="$color11">
               This team has been archived. Update its settings after restoring the team.
             </Text>
@@ -118,7 +118,7 @@ function CenteredMessage({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+    <Stack flex={1} align="center" justify="center" gap="$3" paddingHorizontal="$4">
       <Card
         padding="$4"
         borderWidth={1}
@@ -126,7 +126,7 @@ function CenteredMessage({
         backgroundColor="$color2"
         gap="$3"
       >
-        <Text fontSize="$6" fontWeight="700">
+        <Text>
           {title}
         </Text>
         <Text color="$color11">{description}</Text>

@@ -47,9 +47,9 @@ export function DeveloperPortal() {
       })
 
       toast.show({
-          title: 'API Key Created',
-          message: 'Your API key has been created successfully. Save it now!',
-        })
+        title: 'API Key Created',
+        message: 'Your API key has been created successfully. Save it now!',
+      })
 
       return {
         id: result.id,
@@ -62,10 +62,10 @@ export function DeveloperPortal() {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to create API key'
       toast.show({
-          title: 'Error',
-          message,
-          variant: 'error',
-        })
+        title: 'Error',
+        message,
+        variant: 'error',
+      })
       throw error
     }
   }
@@ -78,16 +78,16 @@ export function DeveloperPortal() {
       })
 
       toast.show({
-          title: 'Scopes Updated',
-          message: 'API key permissions have been updated successfully',
-        })
+        title: 'Scopes Updated',
+        message: 'API key permissions have been updated successfully',
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update scopes'
       toast.show({
-          title: 'Error',
-          message,
-          variant: 'error',
-        })
+        title: 'Error',
+        message,
+        variant: 'error',
+      })
       throw error
     }
   }
@@ -104,16 +104,16 @@ export function DeveloperPortal() {
       await revokeKey.mutateAsync({ id: keyId })
 
       toast.show({
-          title: 'API Key Revoked',
-          message: 'The API key has been revoked and can no longer be used',
-        })
+        title: 'API Key Revoked',
+        message: 'The API key has been revoked and can no longer be used',
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to revoke API key'
       toast.show({
-          title: 'Error',
-          message,
-          variant: 'error',
-        })
+        title: 'Error',
+        message,
+        variant: 'error',
+      })
     }
   }
 

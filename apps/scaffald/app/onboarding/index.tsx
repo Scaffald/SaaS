@@ -146,8 +146,8 @@ export default function OnboardingPage() {
     <ScrollView>
       <Stack
         flex={1}
-        justifyContent="center"
-        alignItems="center"
+        justify="center"
+        align="center"
         padding="$4"
         paddingVertical="$8"
         minHeight="100vh"
@@ -163,17 +163,17 @@ export default function OnboardingPage() {
           borderColor="$borderColor"
         >
           <Stack gap={spacing.xs}>
-            <Text fontSize="$8" fontWeight="bold" color="$color12">
+            <Text color="$color12">
               Complete Your Profile
             </Text>
-            <Text fontSize="$4" color="$color11">
+            <Text color="$color11">
               Please complete these required fields to continue using Scaffald
             </Text>
           </Stack>
 
           {isCheckingStatus ? (
-            <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-              <Spinner size="large" color="$blue7" />
+            <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+              <Spinner size="lg" color="$blue7" />
               <Text color="$color11">Loading...</Text>
             </Stack>
           ) : (
@@ -182,7 +182,7 @@ export default function OnboardingPage() {
               <Stack gap="$3">
                 <Row gap="$3">
                   <Stack gap="$2" flex={1}>
-                    <Text fontWeight="600">First Name *</Text>
+                    <Text>First Name *</Text>
                     <Controller
                       name="first_name"
                       control={control}
@@ -196,14 +196,14 @@ export default function OnboardingPage() {
                       )}
                     />
                     {errors.first_name && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text color="$red10">
                         {errors.first_name.message}
                       </Text>
                     )}
                   </Stack>
 
                   <Stack gap="$2" flex={1}>
-                    <Text fontWeight="600">Last Name *</Text>
+                    <Text>Last Name *</Text>
                     <Controller
                       name="last_name"
                       control={control}
@@ -217,7 +217,7 @@ export default function OnboardingPage() {
                       )}
                     />
                     {errors.last_name && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text color="$red10">
                         {errors.last_name.message}
                       </Text>
                     )}
@@ -229,8 +229,8 @@ export default function OnboardingPage() {
 
               {/* 2. Address */}
               <Stack gap="$3">
-                <Text fontWeight="600">Address *</Text>
-                <Text fontSize="$2" color="$color11" marginBottom="$2">
+                <Text>Address *</Text>
+                <Text color="$color11" marginBottom="$2">
                   Search and select your home address
                 </Text>
                 <ControlledAddressForm
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
                   error={errors.address?.street?.message || errors.address?.city?.message}
                 />
                 {errors.address && (
-                  <Text color="$red10" fontSize="$2">
+                  <Text color="$red10">
                     {errors.address.street?.message ||
                       errors.address.city?.message ||
                       errors.address.state?.message ||
@@ -255,14 +255,14 @@ export default function OnboardingPage() {
 
               {/* 3. User Types */}
               <Stack gap="$3">
-                <Text fontWeight="600">I am a (select all that apply) *</Text>
+                <Text>I am a (select all that apply) *</Text>
                 <Controller
                   name="user_types"
                   control={control}
                   render={({ field }) => (
                     <Stack gap="$2">
                       {USER_TYPE_OPTIONS.map((option) => (
-                        <Row key={option.value} gap="$3" alignItems="center">
+                        <Row key={option.value} gap="$3" align="center">
                           <Checkbox
                             checked={field.value?.includes(option.value as UserType)}
                             onChange={(checked: boolean) => {
@@ -302,7 +302,7 @@ export default function OnboardingPage() {
                   )}
                 />
                 {errors.user_types && (
-                  <Text color="$red10" fontSize="$2">
+                  <Text color="$red10">
                     {errors.user_types.message}
                   </Text>
                 )}
@@ -312,14 +312,14 @@ export default function OnboardingPage() {
 
               {/* 4. Primary Industry */}
               <Stack gap="$3">
-                <Text fontWeight="600">Primary Industry *</Text>
+                <Text>Primary Industry *</Text>
                 <Controller
                   name="industry_id"
                   control={control}
                   render={({ field }) => (
                     <Stack gap="$2">
                       {isLoadingIndustries ? (
-                        <Row gap="$2" alignItems="center">
+                        <Row gap="$2" align="center">
                           <Spinner size="small" />
                           <Text color="$color11">Loading industries...</Text>
                         </Row>
@@ -336,7 +336,7 @@ export default function OnboardingPage() {
                           )}
                         />
                       ) : (
-                        <Text color="$color11" fontSize="$2">
+                        <Text color="$color11">
                           No industries available
                         </Text>
                       )}
@@ -344,7 +344,7 @@ export default function OnboardingPage() {
                   )}
                 />
                 {errors.industry_id && (
-                  <Text color="$red10" fontSize="$2">
+                  <Text color="$red10">
                     {errors.industry_id.message}
                   </Text>
                 )}
@@ -354,7 +354,7 @@ export default function OnboardingPage() {
 
               {/* 5. Legal Agreements */}
               <Stack gap="$3">
-                <Text fontWeight="600">Legal Agreements *</Text>
+                <Text>Legal Agreements *</Text>
 
                 {/* Privacy Policy */}
                 <Controller
@@ -362,7 +362,7 @@ export default function OnboardingPage() {
                   control={control}
                   render={({ field }) => (
                     <Stack gap="$2">
-                      <Row gap="$3" alignItems="center">
+                      <Row gap="$3" align="center">
                         <Checkbox
                           checked={field.value}
                           onChange={(checked) => {
@@ -400,7 +400,7 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_privacy_policy && (
-                        <Text color="$red10" fontSize="$2">
+                        <Text color="$red10">
                           {errors.accepts_privacy_policy.message}
                         </Text>
                       )}
@@ -414,7 +414,7 @@ export default function OnboardingPage() {
                   control={control}
                   render={({ field }) => (
                     <Stack gap="$2">
-                      <Row gap="$3" alignItems="center">
+                      <Row gap="$3" align="center">
                         <Checkbox
                           checked={field.value}
                           onChange={(checked) => {
@@ -452,7 +452,7 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_terms_of_service && (
-                        <Text color="$red10" fontSize="$2">
+                        <Text color="$red10">
                           {errors.accepts_terms_of_service.message}
                         </Text>
                       )}

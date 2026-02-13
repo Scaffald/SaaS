@@ -1,4 +1,9 @@
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import type {
   AddCollaboratorParams,
   AddCommentParams,
@@ -52,7 +57,7 @@ export function useWorkLogProjectOptions(
       if (!client) throw new Error('Missing client')
       return client.workLogs.getProjectOptions(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -73,7 +78,7 @@ export function useWorkLogProjectRollup(
       if (!client || !params) throw new Error('Missing client or params')
       return client.workLogs.getProjectRollup(params)
     },
-    enabled: !!client && !!params && (options?.enabled !== false),
+    enabled: !!client && !!params && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })
@@ -94,7 +99,7 @@ export function usePublicWorkLogsFeed(
       if (!client || !params) throw new Error('Missing client or params')
       return client.workLogs.getPublicProfileFeed(params)
     },
-    enabled: !!client && !!params && (options?.enabled !== false),
+    enabled: !!client && !!params && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
     ...options,
   })
@@ -115,7 +120,7 @@ export function useWorkLogs(
       if (!client) throw new Error('Missing client')
       return client.workLogs.list(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
     ...options,
   })
@@ -136,7 +141,7 @@ export function useWorkLogsOverview(
       if (!client) throw new Error('Missing client')
       return client.workLogs.getOverview(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })
@@ -157,7 +162,7 @@ export function useWorkLog(
       if (!client || !workLogId) throw new Error('Missing client or workLogId')
       return client.workLogs.getById(workLogId)
     },
-    enabled: !!client && !!workLogId && (options?.enabled !== false),
+    enabled: !!client && !!workLogId && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
     ...options,
   })
@@ -178,7 +183,7 @@ export function useWorkLogCollaborators(
       if (!client || !workLogId) throw new Error('Missing client or workLogId')
       return client.workLogs.getCollaborators(workLogId)
     },
-    enabled: !!client && !!workLogId && (options?.enabled !== false),
+    enabled: !!client && !!workLogId && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
     ...options,
   })
@@ -199,7 +204,7 @@ export function useWorkLogConversation(
       if (!client || !workLogId) throw new Error('Missing client or workLogId')
       return client.workLogs.getConversation(workLogId)
     },
-    enabled: !!client && !!workLogId && (options?.enabled !== false),
+    enabled: !!client && !!workLogId && options?.enabled !== false,
     staleTime: 30 * 1000, // 30 seconds
     ...options,
   })
@@ -220,7 +225,7 @@ export function useWorkLogSuggestedSkills(
       if (!client || !query) throw new Error('Missing client or query')
       return client.workLogs.getSuggestedSkills({ query })
     },
-    enabled: !!client && !!query && query.length > 0 && (options?.enabled !== false),
+    enabled: !!client && !!query && query.length > 0 && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })

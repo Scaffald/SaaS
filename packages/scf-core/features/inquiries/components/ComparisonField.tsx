@@ -16,18 +16,10 @@ export function ComparisonField({ label, value, isDifferent, description }: Comp
       gap={4}
     >
       <Row justify="space-between" align="center">
-        <Text color="gray">
-          {label}
-        </Text>
-        <Text color={isDifferent ? '$yellow11' : '$color12'}>
-          {value}
-        </Text>
+        <Text color="gray">{label}</Text>
+        <Text color={isDifferent ? '$yellow11' : '$color12'}>{value}</Text>
       </Row>
-      {description && (
-        <Text color="gray">
-          {description}
-        </Text>
-      )}
+      {description && <Text color="gray">{description}</Text>}
     </Stack>
   )
 }

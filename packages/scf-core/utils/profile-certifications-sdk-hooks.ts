@@ -1,4 +1,9 @@
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import type {
   GetTopLevelCertificationsParams,
   GetTopLevelCertificationsResponse,
@@ -42,7 +47,7 @@ export function useTopLevelCertifications(
       if (!client) throw new Error('Missing client')
       return client.certifications.getTopLevelCertifications(params)
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -63,7 +68,7 @@ export function useCertificationChildren(
       if (!client) throw new Error('Missing client')
       return client.certifications.getCertificationChildren(params)
     },
-    enabled: !!client && !!params.parent_id && (options?.enabled !== false),
+    enabled: !!client && !!params.parent_id && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   })
@@ -83,7 +88,7 @@ export function useUserCertificationTree(
       if (!client) throw new Error('Missing client')
       return client.certifications.getUserCertificationTree()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })
@@ -110,7 +115,11 @@ export function useAddCertificationMutation(
  * Add category certification (depth 1)
  */
 export function useAddCategoryCertificationMutation(
-  options?: UseMutationOptions<AddCategoryCertificationResponse, Error, AddCategoryCertificationParams>
+  options?: UseMutationOptions<
+    AddCategoryCertificationResponse,
+    Error,
+    AddCategoryCertificationParams
+  >
 ) {
   const client = useScaffaldJobsClient()
 
@@ -127,7 +136,11 @@ export function useAddCategoryCertificationMutation(
  * Toggle specific certification (depth 2)
  */
 export function useToggleSpecificCertificationMutation(
-  options?: UseMutationOptions<ToggleSpecificCertificationResponse, Error, ToggleSpecificCertificationParams>
+  options?: UseMutationOptions<
+    ToggleSpecificCertificationResponse,
+    Error,
+    ToggleSpecificCertificationParams
+  >
 ) {
   const client = useScaffaldJobsClient()
 
@@ -144,7 +157,11 @@ export function useToggleSpecificCertificationMutation(
  * Remove top-level certification
  */
 export function useRemoveTopLevelCertificationMutation(
-  options?: UseMutationOptions<RemoveTopLevelCertificationResponse, Error, RemoveTopLevelCertificationParams>
+  options?: UseMutationOptions<
+    RemoveTopLevelCertificationResponse,
+    Error,
+    RemoveTopLevelCertificationParams
+  >
 ) {
   const client = useScaffaldJobsClient()
 
@@ -161,7 +178,11 @@ export function useRemoveTopLevelCertificationMutation(
  * Update certification proof (file or URL)
  */
 export function useUpdateCertificationProofMutation(
-  options?: UseMutationOptions<UpdateCertificationProofResponse, Error, UpdateCertificationProofParams>
+  options?: UseMutationOptions<
+    UpdateCertificationProofResponse,
+    Error,
+    UpdateCertificationProofParams
+  >
 ) {
   const client = useScaffaldJobsClient()
 
@@ -192,7 +213,7 @@ export function useCertifications(
       if (!client) throw new Error('Missing client')
       return client.certifications.getCertifications()
     },
-    enabled: !!client && (options?.enabled !== false),
+    enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   })
@@ -219,7 +240,11 @@ export function useSaveCertificationsMutation(
  * Upload certification file (legacy)
  */
 export function useUploadCertificationFileMutation(
-  options?: UseMutationOptions<UploadCertificationFileResponse, Error, UploadCertificationFileParams>
+  options?: UseMutationOptions<
+    UploadCertificationFileResponse,
+    Error,
+    UploadCertificationFileParams
+  >
 ) {
   const client = useScaffaldJobsClient()
 
@@ -236,7 +261,11 @@ export function useUploadCertificationFileMutation(
  * Delete certification file (legacy)
  */
 export function useDeleteCertificationFileMutation(
-  options?: UseMutationOptions<DeleteCertificationFileResponse, Error, DeleteCertificationFileParams>
+  options?: UseMutationOptions<
+    DeleteCertificationFileResponse,
+    Error,
+    DeleteCertificationFileParams
+  >
 ) {
   const client = useScaffaldJobsClient()
 

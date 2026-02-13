@@ -86,9 +86,7 @@ export function SoftSkillsRequirementsSection({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text>
-          Soft Skills Requirements
-        </Text>
+        <Text>Soft Skills Requirements</Text>
         <Stack align="center" padding={16}>
           <Spinner size="lg" color="$blue10" />
           <Text marginTop={8} color="gray">
@@ -109,12 +107,8 @@ export function SoftSkillsRequirementsSection({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text>
-          Soft Skills Requirements
-        </Text>
-        <Text color="gray">
-          Soft skills catalog is not available.
-        </Text>
+        <Text>Soft Skills Requirements</Text>
+        <Text color="gray">Soft skills catalog is not available.</Text>
       </Stack>
     )
   }
@@ -131,9 +125,7 @@ export function SoftSkillsRequirementsSection({
       borderColor="$borderColor"
     >
       <Stack gap={8}>
-        <Text>
-          Soft Skills Requirements
-        </Text>
+        <Text>Soft Skills Requirements</Text>
         <Text color="gray">
           Select which soft skills are required for this job and set their importance level (1-5).
           Candidates will see how well their soft skills match your requirements.
@@ -208,9 +200,7 @@ export function SoftSkillsRequirementsSection({
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Text color="$blue11">
-            Preview: How candidates will see this
-          </Text>
+          <Text color="$blue11">Preview: How candidates will see this</Text>
           <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               type SoftSkill = {

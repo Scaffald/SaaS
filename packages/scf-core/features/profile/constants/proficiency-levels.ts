@@ -47,4 +47,3 @@ export function getProficiencyLevel(value: number): ProficiencyLevel | undefined
 export function getProficiencyLabel(value: number): string {
   return PROFICIENCY_LABELS[value] ?? 'Unknown'
 }
-

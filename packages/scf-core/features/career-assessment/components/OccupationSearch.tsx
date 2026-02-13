@@ -178,12 +178,8 @@ export function OccupationSearch({
               onPress={() => handleSelect(occupation)}
             >
               <Stack flex={1} gap={4}>
-                <Text>
-                  {occupation.title}
-                </Text>
-                <Text color="gray">
-                  {occupation.onetsoc_code}
-                </Text>
+                <Text>{occupation.title}</Text>
+                <Text color="gray">{occupation.onetsoc_code}</Text>
               </Stack>
             </Row>
           ))}
@@ -224,9 +220,7 @@ export function OccupationSearch({
           padding={12}
           zIndex={1000}
         >
-          <Text color="gray">
-            No occupations found for "{debouncedSearch}"
-          </Text>
+          <Text color="gray">No occupations found for "{debouncedSearch}"</Text>
         </Stack>
       )}
     </Stack>

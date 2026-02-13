@@ -39,8 +39,7 @@ const iosBuildNumber =
   Constants.nativeBuildVersion ??
   segments.derivedBuildNumber.toString()
 
-const androidVersionCode =
-  Constants.expoConfig?.android?.versionCode ?? segments.derivedBuildNumber
+const androidVersionCode = Constants.expoConfig?.android?.versionCode ?? segments.derivedBuildNumber
 
 const runtimeVersion =
   typeof Updates.runtimeVersion === 'string'
@@ -76,4 +75,3 @@ export const getVersionDebugPayload = () => ({
   runtimeVersion,
   updateChannel,
 })
-

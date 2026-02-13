@@ -50,11 +50,7 @@ export const EditableField = memo(function EditableField({
         <Input value={inputValue} onChangeText={onChange} placeholder={placeholder} />
       )}
 
-      {error && (
-        <Text color="$red10">
-          {error}
-        </Text>
-      )}
+      {error && <Text color="$red10">{error}</Text>}
     </Stack>
   )
 })

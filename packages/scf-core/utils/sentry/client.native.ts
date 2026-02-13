@@ -142,4 +142,3 @@ export function setContext(name: string, context: Record<string, unknown>) {
 
 // Export Sentry for advanced usage and routing integration
 export { Sentry }
-

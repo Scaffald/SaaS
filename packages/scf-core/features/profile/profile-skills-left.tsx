@@ -103,9 +103,7 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text color="gray">
-                Select your industry to search for relevant skills
-              </Text>
+              <Text color="gray">Select your industry to search for relevant skills</Text>
             </Stack>
 
             <Separator />

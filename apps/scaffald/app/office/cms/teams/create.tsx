@@ -27,20 +27,20 @@ export default function CreateTeamPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center">
+        <Spinner size="lg" />
       </Stack>
     )
   }
 
   if (!organizations.length) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
-        <Text fontSize="$5" fontWeight="600">
+      <Stack flex={1} align="center" justify="center" gap="$2">
+        <Text>
           No organizations available
         </Text>
         <Text color="$color11">Create an organization before adding teams.</Text>
-        <Button onPress={() => router.back()} variant="outlined">Go Back</Button>
+        <Button onPress={() => router.back()} variant="outline">Go Back</Button>
       </Stack>
     )
   }
@@ -98,10 +98,10 @@ export default function CreateTeamPage() {
           padding="$6"
           backgroundColor="$color3"
           borderRadius="$6"
-          alignItems="center"
+          align="center"
           gap="$2"
         >
-          <Text fontSize="$6" fontWeight="700">
+          <Text>
             Choose an organization to continue
           </Text>
           <Text color="$color11" style={{ textAlign: 'center' }}>

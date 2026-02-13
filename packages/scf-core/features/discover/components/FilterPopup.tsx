@@ -1,7 +1,15 @@
 import { ToggleSwitch } from '@unicornlove/beyond-ui'
 import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { AnimatePresence, Button, Label, ScrollView, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import {
+  AnimatePresence,
+  Button,
+  Label,
+  ScrollView,
+  Text,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 
 type FilterPopupProps = {
   isOpen: boolean
@@ -128,9 +136,7 @@ export const FilterPopup = ({
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
-              <Text>
-                Filters
-              </Text>
+              <Text>Filters</Text>
               <Button
                 size={8}
                 circular
@@ -156,9 +162,7 @@ export const FilterPopup = ({
                     borderRadius={12}
                   >
                     <Row justify="space-between" align="center" flex={1}>
-                      <Text>
-                        {getSectionHeaderText()}
-                      </Text>
+                      <Text>{getSectionHeaderText()}</Text>
                       {openSections.has('show') ? (
                         <ChevronDown size={16} />
                       ) : (
@@ -172,9 +176,7 @@ export const FilterPopup = ({
                       {/* Workers Toggle */}
                       <Stack gap={4}>
                         <Row justify="space-between" align="center">
-                          <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>
-                            Workers
-                          </Label>
+                          <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
                           <ToggleSwitch
                             checked={showWorkers}
                             onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
@@ -191,9 +193,7 @@ export const FilterPopup = ({
                       {/* Employers Toggle */}
                       <Stack gap={4}>
                         <Row justify="space-between" align="center">
-                          <Label
-                            onPress={() => onShowOrganizationsChange?.(!showOrganizations)}
-                          >
+                          <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                             Employers
                           </Label>
                           <ToggleSwitch
@@ -214,9 +214,7 @@ export const FilterPopup = ({
                       {/* Jobs Toggle */}
                       <Stack gap={4}>
                         <Row justify="space-between" align="center">
-                          <Label onPress={() => onShowJobsChange?.(!showJobs)}>
-                            Jobs
-                          </Label>
+                          <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
                           <ToggleSwitch
                             checked={showJobs}
                             onCheckedChange={(checked) => onShowJobsChange?.(checked)}

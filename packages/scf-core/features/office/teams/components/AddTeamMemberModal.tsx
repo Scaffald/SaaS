@@ -92,9 +92,7 @@ export function AddTeamMemberModal({
         </Text>
 
         <Stack gap={8}>
-          <Text color="gray">
-            Member
-          </Text>
+          <Text color="gray">Member</Text>
           <UserSearch
             value={selectedUserId}
             onUserSelect={(id, name) => {
@@ -109,9 +107,7 @@ export function AddTeamMemberModal({
         </Stack>
 
         <Stack gap={8}>
-          <Text color="gray">
-            Role
-          </Text>
+          <Text color="gray">Role</Text>
           {isLoadingRoles ? (
             <Row align="center" gap={8}>
               <Spinner size="sm" />

@@ -168,12 +168,7 @@ export function UserSearch({
         />
         {isLoading && <Spinner size="sm" />}
         {searchTerm && !isLoading && (
-          <Text
-            color="gray"
-            cursor="pointer"
-            onPress={handleClear}
-            paddingHorizontal={8}
-          >
+          <Text color="gray" cursor="pointer" onPress={handleClear} paddingHorizontal={8}>
             ✕
           </Text>
         )}
@@ -220,9 +215,7 @@ export function UserSearch({
                         ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
                         : user.display_name || user.username}
                     </Text>
-                    <Text color="gray">
-                      @{user.username}
-                    </Text>
+                    <Text color="gray">@{user.username}</Text>
                   </Stack>
                 </Row>
               )
@@ -249,17 +242,11 @@ export function UserSearch({
           padding={12}
           zIndex={1000}
         >
-          <Text color="gray">
-            No users found for "{debouncedSearch}"
-          </Text>
+          <Text color="gray">No users found for "{debouncedSearch}"</Text>
         </Stack>
       )}
 
-      {error && (
-        <Text color="$red10">
-          {error}
-        </Text>
-      )}
+      {error && <Text color="$red10">{error}</Text>}
     </Stack>
   )
 }

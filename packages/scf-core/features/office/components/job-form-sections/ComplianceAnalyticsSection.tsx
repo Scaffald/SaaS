@@ -48,12 +48,8 @@ export function ComplianceAnalyticsSection({
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text>
-        Compliance & Analytics
-      </Text>
-      <Text color="gray">
-        EEO compliance and tracking settings
-      </Text>
+      <Text>Compliance & Analytics</Text>
+      <Text color="gray">EEO compliance and tracking settings</Text>
 
       {/* EEO Job Category */}
       <Stack gap={8}>
@@ -63,18 +59,14 @@ export function ComplianceAnalyticsSection({
           value={localState.eeo_job_category || ''}
           onChangeText={(text) => handleChange('eeo_job_category', text || undefined)}
         />
-        <Text color="gray">
-          Equal Employment Opportunity category
-        </Text>
+        <Text color="gray">Equal Employment Opportunity category</Text>
       </Stack>
 
       {/* Veteran Friendly */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Veteran friendly</Label>
-          <Text color="gray">
-            Position suitable for veterans
-          </Text>
+          <Text color="gray">Position suitable for veterans</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_veteran_friendly || false}
@@ -87,9 +79,7 @@ export function ComplianceAnalyticsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Disability friendly</Label>
-          <Text color="gray">
-            Accommodations available for disabilities
-          </Text>
+          <Text color="gray">Accommodations available for disabilities</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_disability_friendly || false}
@@ -102,9 +92,7 @@ export function ComplianceAnalyticsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Affirmative action plan</Label>
-          <Text color="gray">
-            Part of affirmative action hiring
-          </Text>
+          <Text color="gray">Part of affirmative action hiring</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.affirmative_action_plan || false}
@@ -117,9 +105,7 @@ export function ComplianceAnalyticsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Source tracking enabled</Label>
-          <Text color="gray">
-            Track where applicants find this job
-          </Text>
+          <Text color="gray">Track where applicants find this job</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.source_tracking_enabled || false}

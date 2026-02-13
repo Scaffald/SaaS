@@ -137,13 +137,9 @@ export function AssessmentWizard({
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
         <AlertCircle size={48} color="$red10" />
-        <Text color="$red11">
-          Error loading assessment
-        </Text>
+        <Text color="$red11">Error loading assessment</Text>
         <Stack align="center">
-          <Text color="gray">
-            {error.message || 'An unexpected error occurred'}
-          </Text>
+          <Text color="gray">{error.message || 'An unexpected error occurred'}</Text>
         </Stack>
       </Stack>
     )
@@ -156,16 +152,10 @@ export function AssessmentWizard({
         <Stack padding={16} gap={12}>
           {(title || description) && (
             <Stack gap={4}>
-              {title && (
-                <Text color="gray">
-                  {title}
-                </Text>
-              )}
+              {title && <Text color="gray">{title}</Text>}
               {description && (
                 <Stack align="center">
-                  <Text color="gray">
-                    {description}
-                  </Text>
+                  <Text color="gray">{description}</Text>
                 </Stack>
               )}
             </Stack>

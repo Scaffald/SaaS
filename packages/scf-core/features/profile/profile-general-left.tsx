@@ -279,11 +279,7 @@ export function ProfileGeneralLeft() {
             }
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && (
-            <Text color="gray">
-              Uploading avatar...
-            </Text>
-          )}
+          {uploadAvatarMutation.isPending && <Text color="gray">Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -407,9 +403,7 @@ export function ProfileGeneralLeft() {
               />
             )}
           />
-          <Text color="gray">
-            Email changes must be made through account settings
-          </Text>
+          <Text color="gray">Email changes must be made through account settings</Text>
         </Stack>
 
         {/* Home Address with Smart Autocomplete */}

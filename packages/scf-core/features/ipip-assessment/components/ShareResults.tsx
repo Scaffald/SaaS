@@ -32,17 +32,17 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       const shareUrl = `${baseUrl}/dashboard/assessments/ipip/shared/${data.token}`
       setShareLink(shareUrl)
       toast.show({
-          title: 'Share link created!',
-          message: 'Your results are now shareable. Copy the link to share.',
-        })
+        title: 'Share link created!',
+        message: 'Your results are now shareable. Copy the link to share.',
+      })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error creating share link',
-          message: error.message || 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Error creating share link',
+        message: error.message || 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -50,27 +50,27 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     onSuccess: () => {
       setShareLink(null)
       toast.show({
-          title: 'Share link revoked',
-          message: 'Your share link has been deactivated.',
-        })
+        title: 'Share link revoked',
+        message: 'Your share link has been deactivated.',
+      })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error revoking share link',
-          message: error.message || 'Please try again.',
-          variant: 'error',
-        })
+        title: 'Error revoking share link',
+        message: error.message || 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
   const handleGenerateShareLink = () => {
     if (!isComplete) {
       toast.show({
-          title: 'Complete assessment first',
-          message: 'You must complete the assessment before sharing results.',
-          variant: 'error',
-        })
+        title: 'Complete assessment first',
+        message: 'You must complete the assessment before sharing results.',
+        variant: 'error',
+      })
       return
     }
 
@@ -85,15 +85,15 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     const success = await copyToClipboard(shareLink)
     if (success) {
       toast.show({
-          title: 'Copied!',
-          message: 'Share link copied to clipboard',
-        })
+        title: 'Copied!',
+        message: 'Share link copied to clipboard',
+      })
     } else {
       toast.show({
-          title: 'Error',
-          message: 'Failed to copy link to clipboard',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'Failed to copy link to clipboard',
+        variant: 'error',
+      })
     }
   }
 
@@ -143,9 +143,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       >
         <Row align="center" gap={8}>
           <Lock size={4} color="gray" />
-          <Text color="gray">
-            Complete Assessment to Share
-          </Text>
+          <Text color="gray">Complete Assessment to Share</Text>
         </Row>
         <Text color="gray">
           Finish all 120 questions to generate a shareable link to your personality results.
@@ -166,9 +164,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       <Stack gap={8}>
         <Row align="center" gap={8}>
           <Share2 size={4} color="gray" />
-          <Text color="gray">
-            Share Your Results
-          </Text>
+          <Text color="gray">Share Your Results</Text>
         </Row>
         <Text color="gray">
           Create a shareable link to your personality assessment results. You control what's visible
@@ -178,9 +174,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
       {/* Privacy Controls */}
       <Stack gap={12}>
-        <Text color="gray">
-          Privacy Settings
-        </Text>
+        <Text color="gray">Privacy Settings</Text>
 
         <Row
           justify="space-between"
@@ -190,12 +184,8 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           borderRadius={12}
         >
           <Stack flex={1} gap={4}>
-            <Text color="gray">
-              Include Archetype
-            </Text>
-            <Text color="gray">
-              Show your personality archetype classification
-            </Text>
+            <Text color="gray">Include Archetype</Text>
+            <Text color="gray">Show your personality archetype classification</Text>
           </Stack>
           <Switch
             checked={includeArchetype}
@@ -213,12 +203,8 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           borderRadius={12}
         >
           <Stack flex={1} gap={4}>
-            <Text color="gray">
-              Include Domain Scores
-            </Text>
-            <Text color="gray">
-              Show Big Five domain scores and percentages
-            </Text>
+            <Text color="gray">Include Domain Scores</Text>
+            <Text color="gray">Show Big Five domain scores and percentages</Text>
           </Stack>
           <Switch
             checked={includeScores}
@@ -235,9 +221,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       {!shareLink ? (
         <Stack gap={12}>
           <Stack gap={8}>
-            <Text color="gray">
-              Expiration (Optional)
-            </Text>
+            <Text color="gray">Expiration (Optional)</Text>
             <Text color="gray">
               Set how many days until the link expires (1-365 days). Leave empty for no expiration.
             </Text>
@@ -289,9 +273,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
         </Stack>
       ) : (
         <Stack gap={12} aria-live="polite">
-          <Text color="gray">
-            Your Share Link
-          </Text>
+          <Text color="gray">Your Share Link</Text>
           <Row
             gap={8}
             align="center"
@@ -345,9 +327,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           >
             <Row align="center" gap={8}>
               <Calendar size={4} color="$yellow11" />
-              <Text color="$yellow11">
-                Retake Available Soon
-              </Text>
+              <Text color="$yellow11">Retake Available Soon</Text>
             </Row>
             <Text color="$yellow10">
               You can retake the IPIP assessment in{' '}
