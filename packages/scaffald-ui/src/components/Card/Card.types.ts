@@ -35,6 +35,16 @@ export interface CardProps {
   children: ReactNode;
   /** Visual variant */
   variant?: CardVariant;
+  /** @deprecated Use variant="outlined" - Show border */
+  bordered?: boolean;
+  /** @deprecated Use variant="elevated" - Elevated shadow style */
+  elevate?: boolean;
+  /** @deprecated Use variant or style - Background color override */
+  backgroundColor?: string;
+  /** @deprecated Use style - Border color */
+  borderColor?: string;
+  /** @deprecated Use style - Border width */
+  borderWidth?: number;
   /** Internal padding */
   padding?: CardPadding;
   /** Border radius */

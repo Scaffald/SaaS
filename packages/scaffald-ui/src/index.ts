@@ -86,6 +86,9 @@ export type {
   UseAnimatedTimingReturn,
 } from "./animation";
 
+// Re-export ScrollView from react-native for convenience (RN-compatible)
+export { ScrollView } from "react-native";
+
 // Export platform utilities
 export {
   isFocusVisibleActive,
@@ -554,6 +557,7 @@ export type {
 } from "./components/Radio";
 
 export { Toggle } from "./components/Toggle";
+export { Toggle as Switch } from "./components/Toggle";
 export type {
   ToggleColor,
   ToggleProps,

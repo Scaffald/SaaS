@@ -91,6 +91,10 @@ export interface RowProps extends Omit<ViewProps, 'style'> {
   backgroundColor?: string
   /** Border radius */
   borderRadius?: number
+  /** Border width */
+  borderWidth?: number
+  /** Border color */
+  borderColor?: string
 
   /** Custom style override */
   style?: ViewStyle

@@ -38,6 +38,7 @@
  * ```
  */
 
+import type { ViewStyle } from 'react-native'
 import { Box } from './Box'
 import type { StackProps } from './Stack.types'
 
@@ -72,9 +73,16 @@ export function Stack({
   maxHeight,
   backgroundColor,
   borderRadius,
+  borderWidth,
+  borderColor,
   style,
   ...viewProps
 }: StackProps) {
+  const resolvedStyle: ViewStyle | undefined =
+    borderWidth !== undefined || borderColor !== undefined
+      ? { ...(style ?? {}), borderWidth, borderColor }
+      : style
+
   return (
     <Box
       direction="column"
@@ -107,7 +115,7 @@ export function Stack({
       maxHeight={maxHeight}
       backgroundColor={backgroundColor}
       borderRadius={borderRadius}
-      style={style}
+      style={resolvedStyle}
       {...viewProps}
     >
       {children}

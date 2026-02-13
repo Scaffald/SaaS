@@ -549,5 +549,13 @@ export type BorderColorToken = keyof typeof colors.border.light
 export type ForegroundColorToken = keyof typeof colors.fg.light
 export type IconColorToken = keyof typeof colors.icon.light
 
+/** Union of color token key types (e.g. "$gray11") - use for component color props */
+export type ColorTokens =
+  | TextColorToken
+  | BackgroundColorToken
+  | BorderColorToken
+  | ForegroundColorToken
+  | IconColorToken
+
 // Theme mode type
 export type ThemeMode = 'light' | 'dark'

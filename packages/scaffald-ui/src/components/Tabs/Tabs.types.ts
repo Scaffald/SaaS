@@ -213,6 +213,12 @@ export interface TabContentProps {
   children: ReactNode
 
   /**
+   * Value that associates this content panel with a TabTrigger (for Radix-style API)
+   * When the active tab value matches, this content is shown
+   */
+  value?: string
+
+  /**
    * Custom container style
    */
   containerStyle?: ViewStyle

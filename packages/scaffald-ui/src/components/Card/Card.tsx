@@ -63,7 +63,7 @@ import {
  */
 export function Card({
   children,
-  variant = 'elevated',
+  variant: variantProp = 'elevated',
   padding = 'none',
   radius = 'lg',
   elevation = 'sm',
@@ -75,8 +75,17 @@ export function Card({
   style,
   testID,
   accessibilityLabel,
+  bordered,
+  elevate,
+  backgroundColor,
+  borderColor,
+  borderWidth,
 }: CardProps): React.ReactElement {
   const [isPressed, setIsPressed] = useState(false)
+
+  // Map deprecated props to variant
+  const variant =
+    elevate === true ? 'elevated' : bordered === true ? 'outlined' : variantProp
 
   const handlePressIn = useCallback(() => {
     setIsPressed(true)
@@ -90,7 +99,18 @@ export function Card({
 
   // Get styles from factory function
   const styles = getCardStyles(variant, padding, radius, elevation, isPressed, disabled)
-  const combinedStyle = [styles.container, styles.pressed, styles.disabled, style]
+  const deprecatedStyle = [
+    backgroundColor !== undefined && { backgroundColor },
+    borderColor !== undefined && { borderColor },
+    borderWidth !== undefined && { borderWidth },
+  ].filter(Boolean)
+  const combinedStyle = [
+    styles.container,
+    styles.pressed,
+    styles.disabled,
+    ...deprecatedStyle,
+    style,
+  ]
 
   if (pressable && onPress) {
     return (

@@ -35,6 +35,7 @@
  * ```
  */
 
+import type { ViewStyle } from 'react-native'
 import { Box } from './Box'
 import type { RowProps } from './Row.types'
 
@@ -71,9 +72,16 @@ export function Row({
   maxHeight,
   backgroundColor,
   borderRadius,
+  borderWidth,
+  borderColor,
   style,
   ...viewProps
 }: RowProps) {
+  const resolvedStyle: ViewStyle | undefined =
+    borderWidth !== undefined || borderColor !== undefined
+      ? { ...(style ?? {}), borderWidth, borderColor }
+      : style
+
   // Convert boolean wrap to FlexWrap value
   const flexWrap = wrap === true ? 'wrap' : wrap === false ? undefined : wrap
 
@@ -111,7 +119,7 @@ export function Row({
       maxHeight={maxHeight}
       backgroundColor={backgroundColor}
       borderRadius={borderRadius}
-      style={style}
+      style={resolvedStyle}
       {...viewProps}
     >
       {children}
