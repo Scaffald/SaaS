@@ -194,8 +194,10 @@ export function StripeSettingsPage() {
             />
             <Row gap={8} justify="flex-end">
               <Button
-                style={{ backgroundColor: colors.bg[theme].primary }}
-                style={{ color: colors.text[theme].secondary }}
+                style={{
+                  backgroundColor: colors.bg[theme].primary,
+                  color: colors.text[theme].secondary,
+                }}
                 disabled={updatePublishableKey.isPending || publishableKey.length < 16}
                 onPress={() =>
                   updatePublishableKey.mutate({
@@ -231,8 +233,10 @@ export function StripeSettingsPage() {
               />
               <Row gap={8} justify="flex-end">
                 <Button
-                  style={{ backgroundColor: colors.bg[theme].success }}
-                  style={{ color: colors.text[theme].secondary }}
+                  style={{
+                    backgroundColor: colors.bg[theme].success,
+                    color: colors.text[theme].secondary,
+                  }}
                   disabled={updateApiKey.isPending || apiSecret.length < 20}
                   onPress={() => {
                     updateApiKey.mutate({ secret: apiSecret })
@@ -261,8 +265,10 @@ export function StripeSettingsPage() {
               />
               <Row gap={8} justify="flex-end">
                 <Button
-                  style={{ backgroundColor: colors.bg[theme].success }}
-                  style={{ color: colors.text[theme].secondary }}
+                  style={{
+                    backgroundColor: colors.bg[theme].success,
+                    color: colors.text[theme].secondary,
+                  }}
                   disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
                   onPress={() => {
                     updateWebhookSecret.mutate({ secret: webhookSecret })
@@ -344,8 +350,10 @@ export function StripeSettingsPage() {
 
           <Row gap={8} justify="flex-end">
             <Button
-              style={{ backgroundColor: colors.bg[theme].primary }}
-              style={{ color: colors.text[theme].secondary }}
+              style={{
+                backgroundColor: colors.bg[theme].primary,
+                color: colors.text[theme].secondary,
+              }}
               disabled={testConnection.isPending || !data?.hasApiKey}
               onPress={() => testConnection.mutate()}
             >

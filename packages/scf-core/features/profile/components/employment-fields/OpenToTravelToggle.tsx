@@ -1,6 +1,5 @@
-import { ToggleCard } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
-import type { ToggleCardProps } , useThemeContext } from '@unicornlove/beyond-ui'
+import { ToggleCard } from '@unicornlove/beyond-ui'
+import type { ToggleCardProps } from '@unicornlove/beyond-ui'
 import { Plane } from 'lucide-react-native'
 
 export interface OpenToTravelToggleProps
@@ -13,15 +12,16 @@ export interface OpenToTravelToggleProps
  * Shared "Open to travel" toggle card component
  * Used in both profile employment and resume wizard contexts
  */
-export function OpenToTravelToggle() {
-  const { theme } = useThemeContext()
+export function OpenToTravelToggle({
   description = 'I am willing to travel for work opportunities',
-  ...toggleCardProps: OpenToTravelToggleProps) 
+  ...toggleCardProps
+}: OpenToTravelToggleProps) {
   return (
     <ToggleCard
-      iconStart={<Plane size="xs" style={{ color: colors.text[theme].secondary }} />}
+      iconStart={<Plane size="xs" color="$gray11" />}
       title="Open to travel"
       description={description}
       {...toggleCardProps}
     />
   )
+}

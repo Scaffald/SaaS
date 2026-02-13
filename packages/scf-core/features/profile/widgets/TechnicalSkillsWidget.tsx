@@ -7,12 +7,12 @@ import {
   Heading,
   LoadingState,
   spacing,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
+import type { ProfileWidgetProps } from './types'
 import type { SkillWidgetEntry } from '@scaffald/sdk'
 
 type EnrichedUserSkill = SkillWidgetEntry
@@ -25,11 +25,11 @@ type EnrichedUserSkill = SkillWidgetEntry
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function TechnicalSkillsWidget() {
-  const { theme } = useThemeContext()
+export function TechnicalSkillsWidget({
   userId,
   showEdit = false,
-  variant = 'full',: ProfileWidgetProps) {
+  variant = 'full',
+}: ProfileWidgetProps) {
   const router = useRouter()
 
   // Fetch technical skills
@@ -52,8 +52,8 @@ export function TechnicalSkillsWidget() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.text[theme].error }}>Failed to load skills</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
+          <Text color="$red10">Failed to load skills</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
             size="xs"
@@ -135,7 +135,7 @@ export function TechnicalSkillsWidget() {
             {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
               <Stack key={taxonomy} gap={8}>
                 {/* Taxonomy Header */}
-                <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
+                <Text color="$gray11" textTransform="uppercase">
                   {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                 </Text>
 
@@ -146,27 +146,27 @@ export function TechnicalSkillsWidget() {
                     .map((skill: EnrichedUserSkill) => (
                       <Row
                         key={skill.id}
-                        style={{ backgroundColor: colors.bg[theme].info }}
+                        backgroundColor="$blue2"
                         paddingHorizontal={12}
                         paddingVertical={8}
                         borderRadius={12}
                         borderWidth={1}
-                        borderColor={skill.verified ? '$blue7' : colors.border[theme].subtle}
+                        borderColor={skill.verified ? '$blue7' : '$blue5'}
                         gap={8}
                         align="center"
                       >
-                        {skill.verified && <CheckCircle size="md" style={{ color: colors.text[theme].info }} />}
+                        {skill.verified && <CheckCircle size="md" color="$blue11" />}
                         <Stack gap={2}>
-                          <Text style={{ color: colors.text[theme].info }}>{skill.name}</Text>
+                          <Text color="$blue11">{skill.name}</Text>
                           {!showCompact && (
                             <Row gap={8}>
                               {skill.proficiency > 0 && (
-                                <Text style={{ color: colors.text[theme].info }}>
+                                <Text color="$blue10">
                                   {getProficiencyLabel(skill.proficiency)}
                                 </Text>
                               )}
                               {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                <Text style={{ color: colors.text[theme].info }}>• {skill.yearsExperience}y</Text>
+                                <Text color="$blue10">• {skill.yearsExperience}y</Text>
                               )}
                             </Row>
                           )}
@@ -180,10 +180,10 @@ export function TechnicalSkillsWidget() {
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
               <Text
-                style={{ color: colors.border[theme].info }}
+                color="$blue7"
                 cursor="pointer"
-                hoverStyle={{ color: colors.border[theme].info }}
-                pressStyle={{ color: colors.bg[theme].primary }}
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >
                 View all {skills.length} skills →

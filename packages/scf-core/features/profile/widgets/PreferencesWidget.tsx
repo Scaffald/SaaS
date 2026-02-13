@@ -1,9 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { usePreferencesWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
-import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * PreferencesWidget
@@ -12,8 +11,7 @@ import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
  *
  * @param showEdit - Show edit button for own profile
  */
-export function PreferencesWidget() {
-  const { theme } = useThemeContext()showEdit = false : showEdit?: boolean ) {
+export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) {
   const router = useRouter()
   const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -31,8 +29,8 @@ export function PreferencesWidget() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.text[theme].error }}>Failed to load preferences</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
+          <Text color="$red10">Failed to load preferences</Text>
+          <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -42,7 +40,7 @@ export function PreferencesWidget() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.text[theme].secondary }}>No preferences data available</Text>
+          <Text color="$gray11">No preferences data available</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -82,7 +80,7 @@ export function PreferencesWidget() {
           {data.availability && typeof data.availability === 'string' && (
             <Stack gap={8}>
               <Text>Availability</Text>
-              <Text style={{ color: colors.text[theme].secondary }} textTransform="capitalize">
+              <Text color="$gray11" textTransform="capitalize">
                 {data.availability.replace('_', ' ')}
               </Text>
             </Stack>
@@ -92,7 +90,7 @@ export function PreferencesWidget() {
           {data.career_level && typeof data.career_level === 'string' && (
             <Stack gap={8}>
               <Text>Career Level</Text>
-              <Text style={{ color: colors.text[theme].secondary }} textTransform="capitalize">
+              <Text color="$gray11" textTransform="capitalize">
                 {data.career_level.replace('_', ' ')}
               </Text>
             </Stack>
@@ -102,7 +100,7 @@ export function PreferencesWidget() {
           {data.hourly_rate_cents && (
             <Stack gap={8}>
               <Text>Hourly Rate</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>{formatCurrency(data.hourly_rate_cents)}</Text>
+              <Text color="$gray11">{formatCurrency(data.hourly_rate_cents)}</Text>
             </Stack>
           )}
 
@@ -116,14 +114,14 @@ export function PreferencesWidget() {
                   {data.preferred_work_locations.map((location: string) => (
                     <Row
                       key={location}
-                      style={{ backgroundColor: colors.bg[theme].info }}
+                      backgroundColor="$blue2"
                       paddingHorizontal={12}
                       paddingVertical={6}
                       borderRadius={12}
                       borderWidth={1}
-                      style={{ borderColor: colors.border[theme].info }}
+                      borderColor="$blue7"
                     >
-                      <Text style={{ color: colors.text[theme].info }}>{location}</Text>
+                      <Text color="$blue11">{location}</Text>
                     </Row>
                   ))}
                 </Row>
@@ -135,11 +133,11 @@ export function PreferencesWidget() {
             <Stack gap={8}>
               <Text>Travel</Text>
               <Row gap={8} align="center">
-                <Text style={{ color: colors.text[theme].secondary }}>
+                <Text color="$gray11">
                   {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
                 </Text>
                 {data.travel_distance_miles && (
-                  <Text style={{ color: colors.text[theme].secondary }}>• Up to {data.travel_distance_miles} miles</Text>
+                  <Text color="$gray11">• Up to {data.travel_distance_miles} miles</Text>
                 )}
               </Row>
             </Stack>
@@ -155,15 +153,17 @@ export function PreferencesWidget() {
               <Text>Work Authorization</Text>
               <Stack gap={4}>
                 {data.us_resident !== null && (
-                  <Text style={{ color: colors.text[theme].secondary }}>{data.us_resident ? '✓' : '✗'} US Resident</Text>
+                  <Text color="$gray11">{data.us_resident ? '✓' : '✗'} US Resident</Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text style={{ color: colors.text[theme].secondary }}>{data.us_passport ? '✓' : '✗'} US Passport</Text>
+                  <Text color="$gray11">{data.us_passport ? '✓' : '✗'} US Passport</Text>
                 )}
                 {data.authorized_countries &&
                   Array.isArray(data.authorized_countries) &&
                   data.authorized_countries.length > 0 && (
-                    <Text style={{ color: colors.text[theme].secondary }}>Authorized: {formatArray(data.authorized_countries)}</Text>
+                    <Text color="$gray11">
+                      Authorized: {formatArray(data.authorized_countries)}
+                    </Text>
                   )}
               </Stack>
             </Stack>
@@ -179,14 +179,14 @@ export function PreferencesWidget() {
                   {data.drivers_license_classes.map((license: string) => (
                     <Row
                       key={license}
-                      style={{ backgroundColor: colors.bg[theme].info }}
+                      backgroundColor="$blue2"
                       paddingHorizontal={12}
                       paddingVertical={6}
                       borderRadius={12}
                       borderWidth={1}
-                      style={{ borderColor: colors.border[theme].info }}
+                      borderColor="$blue7"
                     >
-                      <Text style={{ color: colors.text[theme].info }}>Class {license}</Text>
+                      <Text color="$blue11">Class {license}</Text>
                     </Row>
                   ))}
                 </Row>
@@ -199,10 +199,10 @@ export function PreferencesWidget() {
               <Text>Military Service</Text>
               <Stack gap={4}>
                 {data.veteran !== null && (
-                  <Text style={{ color: colors.text[theme].secondary }}>{data.veteran ? 'Veteran' : 'Not a veteran'}</Text>
+                  <Text color="$gray11">{data.veteran ? 'Veteran' : 'Not a veteran'}</Text>
                 )}
                 {data.military_status && typeof data.military_status === 'string' && (
-                  <Text style={{ color: colors.text[theme].secondary }} textTransform="capitalize">
+                  <Text color="$gray11" textTransform="capitalize">
                     Status: {data.military_status.replace('_', ' ')}
                   </Text>
                 )}

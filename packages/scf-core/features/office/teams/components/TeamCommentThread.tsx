@@ -150,8 +150,10 @@ export function TeamCommentThread({
           <Button
             size="sm"
             iconStart={Send}
-            style={{ backgroundColor: colors.bg[theme].primary }}
-            style={{ color: colors.text[theme].secondary }}
+            style={{
+              backgroundColor: colors.bg[theme].primary,
+              color: colors.text[theme].secondary,
+            }}
             onPress={() => void handleSubmit()}
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"

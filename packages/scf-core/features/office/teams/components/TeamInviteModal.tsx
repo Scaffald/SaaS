@@ -295,8 +295,10 @@ export function TeamInviteModal({
             Cancel
           </Button>
           <Button
-            style={{ backgroundColor: colors.bg[theme].primary }}
-            style={{ color: colors.text[theme].secondary }}
+            style={{
+              backgroundColor: colors.bg[theme].primary,
+              color: colors.text[theme].secondary,
+            }}
             iconStart={inviteType === 'email' ? Mail : UserPlus}
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}

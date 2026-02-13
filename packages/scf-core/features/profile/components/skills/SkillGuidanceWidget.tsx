@@ -1,5 +1,4 @@
-import { Text, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 import type { SkillSuggestion } from '../../constants/skill-guidance'
 
 interface SkillGuidanceWidgetProps {
@@ -19,8 +18,7 @@ interface SkillGuidanceWidgetProps {
  * Skill Guidance Widget Component
  * Displays skill recommendations, examples, and tips for an industry
  */
-export function SkillGuidanceWidget() {
-  const { theme } = useThemeContext()skillGuidance : SkillGuidanceWidgetProps) 
+export function SkillGuidanceWidget({ skillGuidance }: SkillGuidanceWidgetProps) {
   // Don't render if there are no tips
   if (skillGuidance.tips.length === 0) {
     return null
@@ -30,10 +28,11 @@ export function SkillGuidanceWidget() {
     <Stack gap={12}>
       <Stack gap={4}>
         {skillGuidance.tips.map((tip) => (
-          <Text key={tip} style={{ color: colors.text[theme].secondary }}>
+          <Text key={tip} color="$gray11">
             • {tip}
           </Text>
         ))}
       </Stack>
     </Stack>
   )
+}

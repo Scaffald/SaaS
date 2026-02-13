@@ -162,8 +162,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         )}
         {job.remote_option && (
           <Text
-            style={{ color: colors.text[theme].secondary }}
-            style={{ backgroundColor: colors.bg[theme].muted }}
+            style={{ color: colors.text[theme].secondary, backgroundColor: colors.bg[theme].muted }}
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}
@@ -173,8 +172,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         )}
         {job.employment_type && (
           <Text
-            style={{ color: colors.text[theme].secondary }}
-            style={{ backgroundColor: colors.bg[theme].muted }}
+            style={{ color: colors.text[theme].secondary, backgroundColor: colors.bg[theme].muted }}
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}

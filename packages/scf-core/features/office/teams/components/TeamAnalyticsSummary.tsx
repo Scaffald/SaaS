@@ -187,8 +187,7 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
       borderRadius={16}
       paddingHorizontal={12}
       paddingVertical={8}
-      style={{ backgroundColor: colors.bg[theme].subtle }}
-      style={{ minWidth: 140 }}
+      style={{ backgroundColor: colors.bg[theme].subtle, minWidth: 140 }}
     >
       <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
         {label}

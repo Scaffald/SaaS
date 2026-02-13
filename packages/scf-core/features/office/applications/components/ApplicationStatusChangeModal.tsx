@@ -278,7 +278,7 @@ export const ApplicationStatusChangeModal = ({
               <Card
                 padding="sm"
                 style={{ backgroundColor: colors.bg[theme].successSubtle }}
-                borderColor="$green6"
+                borderColor={colors.border[theme].success}
                 borderWidth={1}
               >
                 <Text style={{ color: colors.text[theme].success }}>

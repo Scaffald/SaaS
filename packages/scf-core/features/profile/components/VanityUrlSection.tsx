@@ -7,12 +7,11 @@ import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
-import { Button, DashboardWidget } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
 import { AlertCircle, Check, Clock, Copy } from 'lucide-react-native'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
-import { H4, Input, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { H4, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type UpdateSlugResult = {
   success: boolean
@@ -27,8 +26,6 @@ type VanityMutationError = { message?: string }
  * Allows users to view and update their profile slug for vanity URLs
  */
 export function VanityUrlSection() {
-  const { theme } = useThemeContext()
-) {
   const toast = useToast()
   const [slugInput, setSlugInput] = useState('')
   const [isEditing, setIsEditing] = useState(false)
@@ -244,7 +241,7 @@ export function VanityUrlSection() {
       <Stack gap={16}>
         <Stack gap={8}>
           <H4>Vanity URL</H4>
-          <Text style={{ color: colors.text[theme].secondary }}>Customize your public profile URL to make it easier to share</Text>
+          <Text color="$gray11">Customize your public profile URL to make it easier to share</Text>
         </Stack>
 
         {/* Current URL Display */}
@@ -255,12 +252,12 @@ export function VanityUrlSection() {
               gap={8}
               align="center"
               padding="sm"
-              backgroundColor={colors.bg[theme].muted}
+              backgroundColor="$color3"
               borderRadius={16}
               borderWidth={1}
-              style={{ borderColor: colors.border[theme].subtle }}
+              borderColor="$color6"
             >
-              <Text flex={1} style={{ fontFamily: 'monospace' }} style={{ color: colors.text[theme].secondary }} >
+              <Text flex={1} style={{ fontFamily: 'monospace' }} color="$gray11">
                 {typeof window !== 'undefined' && window.location
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}
@@ -290,7 +287,7 @@ export function VanityUrlSection() {
           {isEditing ? (
             <Stack gap={8}>
               <Row gap={8} align="center">
-                <Text style={{ color: colors.text[theme].secondary }}>/u/</Text>
+                <Text color="$gray11">/u/</Text>
                 <Input
                   flex={1}
                   value={slugInput}
@@ -300,10 +297,10 @@ export function VanityUrlSection() {
                   autoCorrect={false}
                   borderColor={
                     availabilityStatus.available === false
-                      ? colors.border[theme].error
+                      ? '$red8'
                       : availabilityStatus.available === true
-                        ? colors.border[theme].success
-                        : colors.border[theme].default
+                        ? '$green8'
+                        : '$borderColor'
                   }
                 />
                 {isCheckingAvailability && <Spinner size="sm" />}
@@ -313,22 +310,22 @@ export function VanityUrlSection() {
               {slugInput && (
                 <Stack gap={4}>
                   {availabilityStatus.checking ? (
-                    <Text style={{ color: colors.text[theme].secondary }}>Checking availability...</Text>
+                    <Text color="$gray11">Checking availability...</Text>
                   ) : availabilityStatus.available === true ? (
                     <Row gap={8} align="center">
-                      <Check size="md" style={{ color: colors.text[theme].success }} />
-                      <Text style={{ color: colors.text[theme].success }}>Available</Text>
+                      <Check size="md" color="$green10" />
+                      <Text color="$green10">Available</Text>
                     </Row>
                   ) : availabilityStatus.available === false ? (
                     <Stack gap={4}>
                       <Row gap={8} align="center">
-                        <AlertCircle size="md" style={{ color: colors.text[theme].error }} />
-                        <Text style={{ color: colors.text[theme].error }}>Not available</Text>
+                        <AlertCircle size="md" color="$red10" />
+                        <Text color="$red10">Not available</Text>
                       </Row>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
                           <Stack gap={4} marginLeft={16}>
-                            <Text style={{ color: colors.text[theme].secondary }}>Suggestions:</Text>
+                            <Text color="$gray11">Suggestions:</Text>
                             {availabilityStatus.suggestions.map((suggestion) => (
                               <Button
                                 key={suggestion}
@@ -345,11 +342,11 @@ export function VanityUrlSection() {
                         )}
                     </Stack>
                   ) : !isSlugValid(slugInput.toLowerCase().trim()) ? (
-                    <Text style={{ color: colors.text[theme].error }}>
+                    <Text color="$red10">
                       Invalid format. Use 3-50 characters, alphanumeric and dashes only.
                     </Text>
                   ) : isReservedSlug(slugInput.toLowerCase().trim()) ? (
-                    <Text style={{ color: colors.text[theme].error }}>This vanity URL is reserved and cannot be used.</Text>
+                    <Text color="$red10">This vanity URL is reserved and cannot be used.</Text>
                   ) : null}
                 </Stack>
               )}
@@ -379,12 +376,12 @@ export function VanityUrlSection() {
               gap={8}
               align="center"
               padding="sm"
-              backgroundColor={colors.bg[theme].muted}
+              backgroundColor="$color3"
               borderRadius={16}
               borderWidth={1}
-              style={{ borderColor: colors.border[theme].subtle }}
+              borderColor="$color6"
             >
-              <Text flex={1} style={{ fontFamily: 'monospace' }} style={{ color: colors.text[theme].secondary }}>
+              <Text flex={1} style={{ fontFamily: 'monospace' }} color="$gray11">
                 {currentSlug || 'No vanity URL set'}
               </Text>
             </Row>
@@ -397,15 +394,15 @@ export function VanityUrlSection() {
             gap={8}
             align="center"
             padding="sm"
-            style={{ backgroundColor: colors.bg[theme].warning }}
+            backgroundColor="$yellow3"
             borderRadius={16}
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].warning }}
+            borderColor="$yellow7"
           >
             <Clock size="md" color="$orange10" />
             <Stack flex={1} gap={4}>
-              <Text style={{ color: colors.text[theme].warning }}>Vanity URL Change Cooldown</Text>
-              <Text style={{ color: colors.text[theme].warning }}>
+              <Text color="$yellow11">Vanity URL Change Cooldown</Text>
+              <Text color="$yellow10">
                 You can change your vanity URL again in {daysRemaining} day
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
                 )
@@ -432,13 +429,13 @@ export function VanityUrlSection() {
                     key={`${entry.changed_at}-${entry.new_slug}`}
                     gap={8}
                     padding="xs"
-                    backgroundColor={colors.bg[theme].muted}
+                    backgroundColor="$color3"
                     borderRadius={8}
                   >
-                    <Text style={{ color: colors.text[theme].secondary }} flex={1}>
+                    <Text color="$gray11" flex={1}>
                       {entry.old_slug || '(initial)'} → {entry.new_slug}
                     </Text>
-                    <Text style={{ color: colors.text[theme].secondary }}>{new Date(entry.changed_at).toLocaleDateString()}</Text>
+                    <Text color="$gray11">{new Date(entry.changed_at).toLocaleDateString()}</Text>
                   </Row>
                 ))}
             </Stack>

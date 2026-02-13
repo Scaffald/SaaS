@@ -1,7 +1,6 @@
-import { DashboardWidget } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, Stack, type YStackProps } , useThemeContext } from '@unicornlove/beyond-ui'
+import { ScrollView, Spinner, Text, Stack, type YStackProps } from '@unicornlove/beyond-ui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */
@@ -37,8 +36,7 @@ interface ProfileResultsPanelProps extends YStackProps {
  * </ProfileResultsPanel>
  * ```
  */
-export function ProfileResultsPanel() {
-  const { theme } = useThemeContext()
+export function ProfileResultsPanel({
   children,
   title,
   isLoading = false,
@@ -46,7 +44,8 @@ export function ProfileResultsPanel() {
   emptyIcon: EmptyIcon,
   emptyMessage,
   showScrollbar = false,
-  ...props: ProfileResultsPanelProps) 
+  ...props
+}: ProfileResultsPanelProps) {
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
@@ -56,12 +55,12 @@ export function ProfileResultsPanel() {
           {isLoading ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
               <Spinner size="lg" />
-              <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
+              <Text color="$gray11">Loading...</Text>
             </Stack>
           ) : isEmpty ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
-              {EmptyIcon && <EmptyIcon size={48} style={{ color: colors.text[theme].secondary }} />}
-              <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+              {EmptyIcon && <EmptyIcon size={48} color="$gray11" />}
+              <Text color="$gray11" textAlign="center">
                 {emptyMessage || 'No items added yet'}
               </Text>
             </Stack>
@@ -72,3 +71,4 @@ export function ProfileResultsPanel() {
       </DashboardWidget>
     </ScrollView>
   )
+}

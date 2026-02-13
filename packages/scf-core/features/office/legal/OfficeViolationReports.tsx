@@ -32,7 +32,7 @@ const formatStatus = (status: string): string => {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'pending':
-      return '$orange11' as const
+      return colors.text[theme].warning
     case 'under_review':
       return colors.text[theme].info
     case 'confirmed':

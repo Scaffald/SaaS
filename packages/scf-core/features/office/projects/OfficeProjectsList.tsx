@@ -176,8 +176,10 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
 
               <Button
                 onPress={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
-                style={{ backgroundColor: colors.bg[theme].primary }}
-                style={{ color: colors.text[theme].primary }}
+                style={{
+                  backgroundColor: colors.bg[theme].primary,
+                  color: colors.text[theme].primary,
+                }}
               >
                 Create Project
               </Button>

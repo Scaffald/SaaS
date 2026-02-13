@@ -1,7 +1,6 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Card, Separator, Slider, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */
@@ -22,14 +21,14 @@ interface SkillProficiencySelectorProps {
  * Skill Proficiency Selector Component
  * Displays proficiency slider and level guide for selecting skill proficiency
  */
-export function SkillProficiencySelector() {
-  const { theme } = useThemeContext()
+export function SkillProficiencySelector({
   skill,
   taxonomy,
   proficiency,
   onProficiencyChange,
   onAdd,
-  onCancel,: SkillProficiencySelectorProps) {
+  onCancel,
+}: SkillProficiencySelectorProps) {
   const currentLevel = getProficiencyLevel(proficiency)
 
   return (
@@ -37,12 +36,12 @@ export function SkillProficiencySelector() {
       <Text>Set Proficiency Level</Text>
 
       {/* Selected Skill */}
-      <Card bordered backgroundColor={colors.bg[theme].muted}>
+      <Card bordered backgroundColor="$color3">
         <Card.Header>
           <Stack gap={4}>
             <Text>{skill.name}</Text>
             {skill.code && (
-              <Text style={{ color: colors.text[theme].secondary }}>
+              <Text color="$gray11">
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
@@ -64,19 +63,19 @@ export function SkillProficiencySelector() {
           step={1}
           size="sm"
         >
-          <Slider.Track backgroundColor={colors.bg[theme].default} height={6}>
-            <Slider.TrackActive style={{ backgroundColor: colors.bg[theme].success }} />
+          <Slider.Track backgroundColor="$color4" height={6}>
+            <Slider.TrackActive backgroundColor="$green9" />
           </Slider.Track>
-          <Slider.Thumb index={0}  size={4} />
+          <Slider.Thumb index={0} size={4} />
         </Slider>
 
         {/* Current Level Display */}
-        <Card bordered backgroundColor={colors.bg[theme].muted}>
+        <Card bordered backgroundColor="$color3">
           <Card.Header>
             <Row justify="space-between" align="center">
               <Stack>
                 <Text color="$green9">{currentLevel?.label}</Text>
-                <Text style={{ color: colors.text[theme].secondary }}>{currentLevel?.description}</Text>
+                <Text color="$gray11">{currentLevel?.description}</Text>
               </Stack>
               <Text color="$green9">{proficiency}</Text>
             </Row>

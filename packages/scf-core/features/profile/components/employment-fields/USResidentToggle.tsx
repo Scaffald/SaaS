@@ -1,6 +1,5 @@
-import { ToggleCard } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
-import type { ToggleCardProps } , useThemeContext } from '@unicornlove/beyond-ui'
+import { ToggleCard } from '@unicornlove/beyond-ui'
+import type { ToggleCardProps } from '@unicornlove/beyond-ui'
 import { Flag } from 'lucide-react-native'
 
 export interface USResidentToggleProps
@@ -13,15 +12,16 @@ export interface USResidentToggleProps
  * Shared "US Resident" toggle card component
  * Used in profile employment sections
  */
-export function USResidentToggle() {
-  const { theme } = useThemeContext()
+export function USResidentToggle({
   description = 'I am a resident of the United States',
-  ...toggleCardProps: USResidentToggleProps) 
+  ...toggleCardProps
+}: USResidentToggleProps) {
   return (
     <ToggleCard
-      iconStart={<Flag size="xs" style={{ color: colors.text[theme].secondary }} />}
+      iconStart={<Flag size="xs" color="$gray11" />}
       title="US Resident"
       description={description}
       {...toggleCardProps}
     />
   )
+}

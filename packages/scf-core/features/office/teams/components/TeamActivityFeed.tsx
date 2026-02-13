@@ -346,8 +346,10 @@ export function TeamActivityFeed({
         <Row justify="flex-end">
           <Button
             size="sm"
-            style={{ backgroundColor: colors.bg[theme].primary }}
-            style={{ color: colors.text[theme].secondary }}
+            style={{
+              backgroundColor: colors.bg[theme].primary,
+              color: colors.text[theme].secondary,
+            }}
             iconStart={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}

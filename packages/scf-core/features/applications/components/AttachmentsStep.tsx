@@ -318,8 +318,10 @@ export function AttachmentsStep({
             padding="md"
             borderRadius={16}
             borderWidth={2}
-            style={{ borderColor: colors.border[theme].success }}
-            style={{ backgroundColor: colors.bg[theme].success }}
+            style={{
+              borderColor: colors.border[theme].success,
+              backgroundColor: colors.bg[theme].success,
+            }}
             justify="space-between"
             align="center"
             gap={12}
@@ -349,8 +351,10 @@ export function AttachmentsStep({
               padding="xl"
               borderRadius={16}
               borderWidth={2}
-              style={{ borderColor: colors.border[theme].info }}
-              style={{ backgroundColor: colors.bg[theme].info }}
+              style={{
+                borderColor: colors.border[theme].info,
+                backgroundColor: colors.bg[theme].info,
+              }}
               align="center"
               gap={12}
             >
@@ -362,9 +366,9 @@ export function AttachmentsStep({
                 <Progress
                   value={uploadProgress.resume || 0}
                   max={100}
-                  style={{ backgroundColor: colors.bg[theme].subtle }}
+                  style={{ backgroundColor: colors.bg[theme].primary }}
                 >
-                  <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.bg[theme].primary }} />
+                  <Progress.Indicator animation="bouncy" />
                 </Progress>
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   {uploadProgress.resume || 0}%
@@ -404,9 +408,12 @@ export function AttachmentsStep({
                   onDragOver={(e) => handleDragOver('resume', e)}
                   onDragLeave={() => handleDragLeave('resume')}
                   onDrop={(e) => handleDrop('resume', e)}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    color: errors.resume ? colors.border[theme].error : colors.border[theme].info,
+                  }}
                 >
-                  <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
+                  <Upload size={32} />
                   <Stack gap={4} align="center">
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
@@ -451,8 +458,10 @@ export function AttachmentsStep({
             padding="md"
             borderRadius={16}
             borderWidth={2}
-            style={{ borderColor: colors.border[theme].success }}
-            style={{ backgroundColor: colors.bg[theme].success }}
+            style={{
+              borderColor: colors.border[theme].success,
+              backgroundColor: colors.bg[theme].success,
+            }}
             justify="space-between"
             align="center"
             gap={12}
@@ -482,8 +491,10 @@ export function AttachmentsStep({
               padding="xl"
               borderRadius={16}
               borderWidth={2}
-              style={{ borderColor: colors.border[theme].info }}
-              style={{ backgroundColor: colors.bg[theme].info }}
+              style={{
+                borderColor: colors.border[theme].info,
+                backgroundColor: colors.bg[theme].info,
+              }}
               align="center"
               gap={12}
             >
@@ -495,9 +506,9 @@ export function AttachmentsStep({
                 <Progress
                   value={uploadProgress.cover_letter || 0}
                   max={100}
-                  style={{ backgroundColor: colors.bg[theme].subtle }}
+                  style={{ backgroundColor: colors.bg[theme].primary }}
                 >
-                  <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.bg[theme].primary }} />
+                  <Progress.Indicator animation="bouncy" />
                 </Progress>
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   {uploadProgress.cover_letter || 0}%
@@ -513,28 +524,38 @@ export function AttachmentsStep({
                 padding="xl"
                 borderRadius={16}
                 borderWidth={2}
-                borderColor={
-                  errors.cover_letter
-                    ? '$red9'
+                style={{
+                  borderColor: errors.cover_letter
+                    ? colors.border[theme].error
                     : dragOverRefs.current.cover_letter
-                      ? '$blue9'
-                      : '$borderColor'
-                }
+                      ? colors.border[theme].info
+                      : colors.border[theme].default,
+                  backgroundColor: dragOverRefs.current.cover_letter
+                    ? colors.bg[theme].info
+                    : colors.bg[theme].default,
+                }}
                 borderStyle="dashed"
-                backgroundColor={dragOverRefs.current.cover_letter ? '$blue2' : '$background'}
                 align="center"
                 gap={12}
                 cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
+                hoverStyle={{
+                  borderColor: colors.border[theme].info,
+                  backgroundColor: colors.bg[theme].info,
+                }}
               >
                 <section
                   aria-label="Cover letter upload drop zone"
                   onDragOver={(e) => handleDragOver('cover_letter', e)}
                   onDragLeave={() => handleDragLeave('cover_letter')}
                   onDrop={(e) => handleDrop('cover_letter', e)}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    color: errors.cover_letter
+                      ? colors.border[theme].error
+                      : colors.border[theme].info,
+                  }}
                 >
-                  <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
+                  <Upload size={32} />
                   <Stack gap={4} align="center">
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
@@ -579,8 +600,10 @@ export function AttachmentsStep({
             padding="md"
             borderRadius={16}
             borderWidth={2}
-            style={{ borderColor: colors.border[theme].success }}
-            style={{ backgroundColor: colors.bg[theme].success }}
+            style={{
+              borderColor: colors.border[theme].success,
+              backgroundColor: colors.bg[theme].success,
+            }}
             justify="space-between"
             align="center"
             gap={12}
@@ -610,8 +633,10 @@ export function AttachmentsStep({
               padding="xl"
               borderRadius={16}
               borderWidth={2}
-              style={{ borderColor: colors.border[theme].info }}
-              style={{ backgroundColor: colors.bg[theme].info }}
+              style={{
+                borderColor: colors.border[theme].info,
+                backgroundColor: colors.bg[theme].info,
+              }}
               align="center"
               gap={12}
             >
@@ -623,9 +648,9 @@ export function AttachmentsStep({
                 <Progress
                   value={uploadProgress.portfolio || 0}
                   max={100}
-                  style={{ backgroundColor: colors.bg[theme].subtle }}
+                  style={{ backgroundColor: colors.bg[theme].primary }}
                 >
-                  <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.bg[theme].primary }} />
+                  <Progress.Indicator animation="bouncy" />
                 </Progress>
                 <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
                   {uploadProgress.portfolio || 0}%
@@ -641,28 +666,38 @@ export function AttachmentsStep({
                 padding="xl"
                 borderRadius={16}
                 borderWidth={2}
-                borderColor={
-                  errors.portfolio
-                    ? '$red9'
+                style={{
+                  borderColor: errors.portfolio
+                    ? colors.border[theme].error
                     : dragOverRefs.current.portfolio
-                      ? '$blue9'
-                      : '$borderColor'
-                }
+                      ? colors.border[theme].info
+                      : colors.border[theme].default,
+                  backgroundColor: dragOverRefs.current.portfolio
+                    ? colors.bg[theme].info
+                    : colors.bg[theme].default,
+                }}
                 borderStyle="dashed"
-                backgroundColor={dragOverRefs.current.portfolio ? '$blue2' : '$background'}
                 align="center"
                 gap={12}
                 cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
+                hoverStyle={{
+                  borderColor: colors.border[theme].info,
+                  backgroundColor: colors.bg[theme].info,
+                }}
               >
                 <section
                   aria-label="Portfolio upload drop zone"
                   onDragOver={(e) => handleDragOver('portfolio', e)}
                   onDragLeave={() => handleDragLeave('portfolio')}
                   onDrop={(e) => handleDrop('portfolio', e)}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    color: errors.portfolio
+                      ? colors.border[theme].error
+                      : colors.border[theme].info,
+                  }}
                 >
-                  <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
+                  <Upload size={32} />
                   <Stack gap={4} align="center">
                     <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
@@ -699,11 +734,10 @@ export function AttachmentsStep({
       <Stack
         padding="md"
         borderRadius={16}
-        style={{ backgroundColor: colors.bg[theme].info }}
+        style={{ backgroundColor: colors.bg[theme].info, borderColor: colors.border[theme].subtle }}
         borderWidth={1}
-        borderColor="$blue7"
       >
-        <Text color="$blue11">
+        <Text style={{ color: colors.text[theme].info }}>
           💡 Tip: Make sure your documents are up-to-date and clearly showcase your relevant
           experience and skills for this position.
         </Text>

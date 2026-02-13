@@ -307,13 +307,9 @@ const DrawerProfileCard = ({
           backgroundColor="$color2"
           align="center"
           justify="center"
-          style={{ borderRadius: avatarSize / 2 }}
+          style={{ borderRadius: avatarSize / 2, width: '100%', height: '100%' }}
         >
-          <Image
-            source={{ uri: avatarUri }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Image source={{ uri: avatarUri }} contentFit="cover" />
         </Stack>
       ) : (
         <Stack

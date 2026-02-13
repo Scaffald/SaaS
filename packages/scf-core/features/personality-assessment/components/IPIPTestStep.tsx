@@ -147,9 +147,9 @@ export function IPIPTestStep({
         width="100%"
         align="center"
         padding={32}
-        style={{ maxWidth: 800, alignSelf: 'center' }}
+        style={{ maxWidth: 800, alignSelf: 'center', color: colors.text[theme].success }}
       >
-        <Text style={{ color: colors.text[theme].success }}>✓ All Questions Complete!</Text>
+        <Text>✓ All Questions Complete!</Text>
         <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>

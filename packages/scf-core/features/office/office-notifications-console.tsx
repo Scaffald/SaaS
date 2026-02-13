@@ -160,7 +160,10 @@ export function OfficeNotificationsConsole() {
               return (
                 <Stack
                   key={delivery.id}
-                  style={{ backgroundColor: index % 2 === 0 ? colors.bg[theme].onPrimary : colors.bg[theme].subtle }}
+                  style={{
+                    backgroundColor:
+                      index % 2 === 0 ? colors.bg[theme].onPrimary : colors.bg[theme].subtle,
+                  }}
                   padding="sm"
                 >
                   <Row gap={12} align="center">
@@ -169,7 +172,11 @@ export function OfficeNotificationsConsole() {
                         <Text style={{ color: colors.text[theme].secondary }}>
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
-                        <NotificationTag size="sm" themeName={tagTheme} textColorToken={colors.text[theme].primary}>
+                        <NotificationTag
+                          size="sm"
+                          themeName={tagTheme}
+                          textColorToken={colors.text[theme].primary}
+                        >
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
@@ -253,7 +260,10 @@ export function OfficeNotificationsConsole() {
                 key={item.id}
                 gap={12}
                 padding="sm"
-                style={{ backgroundColor: index % 2 === 0 ? colors.bg[theme].onPrimary : colors.bg[theme].subtle }}
+                style={{
+                  backgroundColor:
+                    index % 2 === 0 ? colors.bg[theme].onPrimary : colors.bg[theme].subtle,
+                }}
                 align="flex-start"
               >
                 <Text flex={1} style={{ color: colors.text[theme].secondary }}>

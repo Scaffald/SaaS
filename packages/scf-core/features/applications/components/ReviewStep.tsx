@@ -84,12 +84,14 @@ export function ReviewStep({
       {/* Screening Information Section */}
       <Stack
         gap={16}
-        style={{ backgroundColor: colors.bg[theme].default }}
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderColor: colors.border[theme].default,
+        }}
         padding="xl"
         borderRadius={16}
         borderWidth={1}
-        style={{ borderColor: colors.border[theme].default }}
-        shadowColor="$gray4"
+        shadowColor={colors.bg[theme].muted}
         shadowOffset={{ width: 0, height: 1 }}
         shadowOpacity={0.1}
         shadowRadius={3}
@@ -146,12 +148,14 @@ export function ReviewStep({
       {customQuestionAnswers.length > 0 && (
         <Stack
           gap={16}
-          style={{ backgroundColor: colors.bg[theme].default }}
+          style={{
+            backgroundColor: colors.bg[theme].default,
+            borderColor: colors.border[theme].default,
+          }}
           padding="xl"
           borderRadius={16}
           borderWidth={1}
-          style={{ borderColor: colors.border[theme].default }}
-          shadowColor="$gray4"
+          shadowColor={colors.bg[theme].muted}
           shadowOffset={{ width: 0, height: 1 }}
           shadowOpacity={0.1}
           shadowRadius={3}
@@ -187,12 +191,14 @@ export function ReviewStep({
       {/* Attachments Section */}
       <Stack
         gap={16}
-        style={{ backgroundColor: colors.bg[theme].default }}
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderColor: colors.border[theme].default,
+        }}
         padding="xl"
         borderRadius={16}
         borderWidth={1}
-        style={{ borderColor: colors.border[theme].default }}
-        shadowColor="$gray4"
+        shadowColor={colors.bg[theme].muted}
         shadowOffset={{ width: 0, height: 1 }}
         shadowOpacity={0.1}
         shadowRadius={3}
@@ -236,10 +242,12 @@ export function ReviewStep({
       <Stack
         gap={12}
         padding="md"
-        style={{ backgroundColor: colors.bg[theme].default }}
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderColor: colors.border[theme].default,
+        }}
         borderRadius={16}
         borderWidth={1}
-        style={{ borderColor: colors.border[theme].default }}
       >
         <Row gap={12} align="flex-start">
           <Checkbox

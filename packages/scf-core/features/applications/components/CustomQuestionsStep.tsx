@@ -235,9 +235,11 @@ export function CustomQuestionsStep({
         <Stack
           padding="md"
           borderRadius={16}
-          style={{ backgroundColor: colors.bg[theme].error }}
+          style={{
+            backgroundColor: colors.bg[theme].error,
+            borderColor: colors.border[theme].error,
+          }}
           borderWidth={1}
-          style={{ borderColor: colors.border[theme].error }}
           gap={8}
         >
           <Text style={{ color: colors.text[theme].error }}>Please complete the following:</Text>
@@ -294,9 +296,12 @@ export function CustomQuestionsStep({
                 />
                 <Row justify="flex-end">
                   <Text
-                    color={
-                      getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
-                    }
+                    style={{
+                      color:
+                        getCharacterCount(question.id) > getMaxLength(question)
+                          ? colors.text[theme].error
+                          : colors.text[theme].secondary,
+                    }}
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
                   </Text>
@@ -330,9 +335,12 @@ export function CustomQuestionsStep({
                 />
                 <Row justify="flex-end">
                   <Text
-                    color={
-                      getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
-                    }
+                    style={{
+                      color:
+                        getCharacterCount(question.id) > getMaxLength(question)
+                          ? colors.text[theme].error
+                          : colors.text[theme].secondary,
+                    }}
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
                   </Text>
@@ -495,10 +503,12 @@ export function CustomQuestionsStep({
           padding="xl"
           align="center"
           gap={8}
-          style={{ backgroundColor: colors.bg[theme].default }}
+          style={{
+            backgroundColor: colors.bg[theme].default,
+            borderColor: colors.border[theme].default,
+          }}
           borderRadius={16}
           borderWidth={1}
-          style={{ borderColor: colors.border[theme].default }}
         >
           <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
             This position has no additional questions.

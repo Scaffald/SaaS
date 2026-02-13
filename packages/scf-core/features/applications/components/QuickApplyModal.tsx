@@ -293,9 +293,11 @@ export function QuickApplyModal({
                 width={80}
                 height={80}
                 borderRadius="$12"
-                style={{ backgroundColor: colors.bg[theme].success }}
+                style={{
+                  backgroundColor: colors.bg[theme].success,
+                  borderColor: colors.border[theme].success,
+                }}
                 borderWidth={2}
-                style={{ borderColor: colors.border[theme].success }}
                 align="center"
                 justify="center"
               >
@@ -413,10 +415,12 @@ export function QuickApplyModal({
                     <Label>Required skills</Label>
                     <Stack
                       padding="sm"
-                      style={{ backgroundColor: colors.bg[theme].muted }}
+                      style={{
+                        backgroundColor: colors.bg[theme].muted,
+                        borderColor: colors.border[theme].default,
+                      }}
                       borderRadius={12}
                       borderWidth={1}
-                      style={{ borderColor: colors.border[theme].default }}
                     >
                       <Text style={{ color: colors.text[theme].secondary }}>
                         {requiredSkills.join(', ')}
@@ -431,10 +435,12 @@ export function QuickApplyModal({
                     <Label>Optional skills</Label>
                     <Stack
                       padding="sm"
-                      style={{ backgroundColor: colors.bg[theme].muted }}
+                      style={{
+                        backgroundColor: colors.bg[theme].muted,
+                        borderColor: colors.border[theme].default,
+                      }}
                       borderRadius={12}
                       borderWidth={1}
-                      style={{ borderColor: colors.border[theme].default }}
                     >
                       <Text style={{ color: colors.text[theme].secondary }}>
                         {optionalSkills.join(', ')}

@@ -12,12 +12,11 @@ import {
   FieldError,
   MonthYearPicker,
   Popover,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown, Plus, X } from 'lucide-react-native'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import {
@@ -31,7 +30,7 @@ import {
   TextArea,
   Row,
   Stack,
-} , useThemeContext } from '@unicornlove/beyond-ui'
+} from '@unicornlove/beyond-ui'
 import {
   createNewEducationEntry,
   DEGREE_TYPE_OPTIONS,
@@ -105,10 +104,10 @@ interface ProfileEducationLeftProps {
  * Profile Education Left Component
  * Form for managing education background
  */
-export function ProfileEducationLeft() {
-  const { theme } = useThemeContext()
+export function ProfileEducationLeft({
   editingEntryId,
-  onEditComplete,: ProfileEducationLeftProps = ) {
+  onEditComplete,
+}: ProfileEducationLeftProps = {}) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
@@ -351,7 +350,7 @@ export function ProfileEducationLeft() {
         })
       }
     }
-  }, [fields, educationQuery.data, watch])
+  }, [fields, educationQuery.data, editingEntryId, watch])
 
   // Scroll to editing entry when editingEntryId changes
   useEffect(() => {
@@ -408,7 +407,7 @@ export function ProfileEducationLeft() {
         }, 100)
       }
     }
-  }, [fields, watch, handleUniversitySearch])
+  }, [editingEntryId, fields, watch, handleUniversitySearch])
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {
@@ -476,7 +475,7 @@ export function ProfileEducationLeft() {
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading education data...</Text>
+          <Text color="$gray11">Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -487,7 +486,7 @@ export function ProfileEducationLeft() {
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text style={{ color: colors.text[theme].error }}>Failed to load education data</Text>
+          <Text color="$red10">Failed to load education data</Text>
           <Button onPress={() => educationQuery.refetch()}>Retry</Button>
         </Stack>
       </DashboardWidget>
@@ -506,14 +505,14 @@ export function ProfileEducationLeft() {
           padding="sm"
           gap={8}
           borderWidth={1}
-          style={{ borderColor: colors.border[theme].error }}
-          style={{ backgroundColor: colors.bg[theme].error }}
+          borderColor="$red7"
+          backgroundColor="$red3"
           borderRadius={16}
         >
-          <Text style={{ color: colors.text[theme].error }}>Please resolve the following issues:</Text>
+          <Text color="$red11">Please resolve the following issues:</Text>
           <Stack gap={4}>
             {errorSummary.map((message) => (
-              <Text key={message} style={{ color: colors.text[theme].error }}>
+              <Text key={message} color="$red11">
                 • {message}
               </Text>
             ))}
@@ -586,8 +585,8 @@ export function ProfileEducationLeft() {
                 gap={12}
                 padding="sm"
                 borderWidth={1}
-                borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : colors.border[theme].default}
-                backgroundColor={isEditing ? colors.bg[theme].info : hasEntryErrors ? '$red2' : '$background'}
+                borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : '$borderColor'}
+                backgroundColor={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
                 borderRadius={16}
               >
                 <Row justify="space-between" align="center">
@@ -974,7 +973,7 @@ export function ProfileEducationLeft() {
 
           {fields.length === 0 && (
             <Stack padding="md" align="center" gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>No education entries added yet</Text>
+              <Text color="$gray11">No education entries added yet</Text>
             </Stack>
           )}
         </Stack>
@@ -1123,8 +1122,8 @@ function SmartSelect({
             justify="space-between"
             iconAfter={ChevronDown}
             disabled={disabled}
-            borderColor={error ? '$red9' : colors.border[theme].default}
-            color={selectedOption ? colors.text[theme].primary : colors.text[theme].secondary}
+            borderColor={error ? '$red9' : '$borderColor'}
+            color={selectedOption ? '$color12' : '$color11'}
             onPress={() => handleOpenChange(!open)}
           >
             {displayLabel}
@@ -1137,8 +1136,8 @@ function SmartSelect({
           enterStyle={{ opacity: 0, scale: 0.96 }}
           exitStyle={{ opacity: 0, scale: 0.96 }}
           borderWidth={1}
-          style={{ borderColor: colors.border[theme].default }}
-          style={{ backgroundColor: colors.bg[theme].subtle }}
+          borderColor="$borderColor"
+          backgroundColor="$color2"
           padding="xs"
           style={{
             width: contentWidth,
@@ -1155,7 +1154,7 @@ function SmartSelect({
                   justify="flex-start"
                   onPress={() => handleSelect(undefined)}
                   disabled={disabled}
-                  hoverStyle={{ backgroundColor: colors.bg[theme].muted }}
+                  hoverStyle={{ backgroundColor: '$color3' }}
                 >
                   Clear selection
                 </Button>
@@ -1172,9 +1171,9 @@ function SmartSelect({
                     onPress={() => handleSelect(option.value)}
                     disabled={disabled}
                     backgroundColor={isSelected ? '$blue3' : 'transparent'}
-                    hoverStyle={{ backgroundColor: colors.bg[theme].info }}
+                    hoverStyle={{ backgroundColor: '$blue4' }}
                     borderRadius={12}
-                    color={isSelected ? '$blue12' : colors.text[theme].primary}
+                    color={isSelected ? '$blue12' : '$color12'}
                   >
                     {option.label}
                   </Button>
@@ -1184,7 +1183,7 @@ function SmartSelect({
           </ScrollView>
         </Popover.Content>
       </Popover>
-      {error && <Text style={{ color: colors.text[theme].error }}>{error}</Text>}
+      {error && <Text color="$red10">{error}</Text>}
     </Stack>
   )
 }

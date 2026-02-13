@@ -343,7 +343,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 ) : null}
               </Stack>
             )}
-            {slugStatus.state === 'error' && <Text color="$orange10">{slugStatus.message}</Text>}
+            {slugStatus.state === 'error' && (
+              <Text style={{ color: colors.text[theme].warning }}>{slugStatus.message}</Text>
+            )}
           </Stack>
         )}
       />

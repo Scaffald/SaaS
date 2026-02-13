@@ -138,8 +138,10 @@ export function AddTeamMemberModal({
           </Button>
           <Button
             onPress={handleSubmit}
-            style={{ backgroundColor: colors.bg[theme].primary }}
-            style={{ color: colors.text[theme].secondary }}
+            style={{
+              backgroundColor: colors.bg[theme].primary,
+              color: colors.text[theme].secondary,
+            }}
             disabled={addMemberMutation.isPending}
           >
             {addMemberMutation.isPending ? (

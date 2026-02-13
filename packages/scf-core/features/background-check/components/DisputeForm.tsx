@@ -84,8 +84,10 @@ export function DisputeForm({
 
         {hasActiveDispute ? (
           <Card
-            style={{ backgroundColor: colors.bg[theme].warning }}
-            style={{ borderColor: colors.border[theme].warning }}
+            style={{
+              backgroundColor: colors.bg[theme].warning,
+              borderColor: colors.border[theme].warning,
+            }}
             borderWidth={1}
             paddingHorizontal={12}
             paddingVertical={8}
@@ -195,19 +197,19 @@ export function DisputeForm({
               <Stack
                 {...getRootProps()}
                 borderWidth={1}
-                style={{
-                  borderColor: isDragActive
-                    ? colors.border[theme].info
-                    : colors.border[theme].default,
-                }}
                 borderStyle="dashed"
                 borderRadius={16}
                 paddingHorizontal={16}
                 paddingVertical={20}
                 gap={8}
-                style={{ backgroundColor: colors.bg[theme].subtle }}
                 align="center"
                 justify="center"
+                style={{
+                  borderColor: isDragActive
+                    ? colors.border[theme].info
+                    : colors.border[theme].default,
+                  backgroundColor: colors.bg[theme].subtle,
+                }}
               >
                 <input {...getInputProps()} />
                 <Upload size={24} style={{ color: colors.text[theme].info }} />
@@ -247,8 +249,10 @@ export function DisputeForm({
               {attachments.map((attachment) => (
                 <Row
                   key={attachment.id}
-                  style={{ backgroundColor: colors.bg[theme].subtle }}
-                  style={{ borderColor: colors.border[theme].default }}
+                  style={{
+                    backgroundColor: colors.bg[theme].subtle,
+                    borderColor: colors.border[theme].default,
+                  }}
                   borderWidth={1}
                   borderRadius={12}
                   paddingHorizontal={12}

@@ -14,13 +14,12 @@ import {
   LoadingState,
   ResponsiveModal,
   spacing,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { Download } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useMemo, useState, type FC } from 'react'
-import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -29,11 +28,11 @@ import type { ProfileWidgetProps } from './types'
  * Main soft skills radar chart widget for profile display.
  * Shows 4-category overview with self/peer overlay and interactive drill-down.
  */
-export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = () => {
-  const { theme } = useThemeContext()
+export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   userId,
   showEdit = false,
-  variant = 'full',) => {
+  variant = 'full',
+}) => {
   const router = useRouter()
   const toast = useToast()
   const [drillDownOpen, setDrillDownOpen] = useState(false)
@@ -88,8 +87,8 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = () => {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.text[theme].error }}>Failed to load soft skills</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
+          <Text color="$red10">Failed to load soft skills</Text>
+          <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )

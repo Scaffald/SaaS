@@ -158,7 +158,7 @@ export function OfficeTransactionHistory() {
       columnHelper.accessor('stripePaymentIntentId', {
         header: 'Stripe ID',
         cell: (info) => (
-          <Text style={{ color: colors.text[theme].secondary }} style={{ fontFamily: 'monospace' }}>
+          <Text style={{ color: colors.text[theme].secondary, fontFamily: 'monospace' }}>
             {info.getValue().slice(0, 20)}...
           </Text>
         ),

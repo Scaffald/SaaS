@@ -3,13 +3,12 @@ import {
   useRemoveSkillMultiTaxonomyMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { ConfirmationDialog, DashboardWidget } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { ConfirmationDialog, DashboardWidget } from '@unicornlove/beyond-ui'
 import { Award } from 'lucide-react-native'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { TRPCClientError } from '@trpc/client'
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
-import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileResultCard, ProfileResultsPanel } from './components'
 import { SkillCompletionProgress } from './components/skills/SkillCompletionProgress'
 import { SkillGuidanceWidget } from './components/skills/SkillGuidanceWidget'
@@ -21,8 +20,6 @@ import { useProfileSkillsContext } from './profile-skills-context'
  * Display user's saved skills with remove capability
  */
 export function ProfileSkillsRight() {
-  const { theme } = useThemeContext()
-) {
   const toast = useToast()
   const {
     industryDisplayName,
@@ -272,13 +269,13 @@ export function ProfileSkillsRight() {
                   <Stack gap={8}>
                     <Text>{skill.skill_details?.name || 'Unknown Skill'}</Text>
                     {skill.skill_details?.display_code && (
-                      <Text style={{ color: colors.text[theme].secondary }}>Code: {skill.skill_details.display_code}</Text>
+                      <Text color="$gray11">Code: {skill.skill_details.display_code}</Text>
                     )}
 
                     {/* Proficiency Level */}
                     <Row justify="space-between" align="center" paddingTop={8}>
                       <Stack gap={4}>
-                        <Text style={{ color: colors.text[theme].secondary }}>Proficiency</Text>
+                        <Text color="$gray11">Proficiency</Text>
                         <Text>
                           {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)

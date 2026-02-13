@@ -16,14 +16,13 @@ import {
   plainTextToTipTap,
   RichTextEditor,
   SkeletonForm,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { useSafeToast } from '@scf/core/hooks/useSafeToast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -45,8 +44,6 @@ interface UpdateGeneralContext {
  * Form for editing general profile information
  */
 export function ProfileGeneralLeft() {
-  const { theme } = useThemeContext()
-) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
@@ -282,7 +279,7 @@ export function ProfileGeneralLeft() {
             }
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text style={{ color: colors.text[theme].secondary }}>Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && <Text color="$gray11">Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -297,7 +294,7 @@ export function ProfileGeneralLeft() {
                   placeholder="First name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.first_name ? colors.border[theme].error : colors.border[theme].default}
+                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
                   aria-label="First name"
                   accessibilityLabel="First name"
                   aria-required="true"
@@ -307,7 +304,7 @@ export function ProfileGeneralLeft() {
               )}
             />
             {errors.first_name && (
-              <Text id="first_name-error" style={{ color: colors.text[theme].error }} role="alert">
+              <Text id="first_name-error" color="$red10" role="alert">
                 {errors.first_name.message}
               </Text>
             )}
@@ -323,7 +320,7 @@ export function ProfileGeneralLeft() {
                   placeholder="Last name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.last_name ? colors.border[theme].error : colors.border[theme].default}
+                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
                   aria-label="Last name"
                   accessibilityLabel="Last name"
                   aria-required="true"
@@ -333,7 +330,7 @@ export function ProfileGeneralLeft() {
               )}
             />
             {errors.last_name && (
-              <Text id="last_name-error" style={{ color: colors.text[theme].error }} role="alert">
+              <Text id="last_name-error" color="$red10" role="alert">
                 {errors.last_name.message}
               </Text>
             )}
@@ -401,12 +398,12 @@ export function ProfileGeneralLeft() {
                 autoCapitalize="none"
                 editable={false}
                 opacity={0.7}
-                style={{ backgroundColor: colors.bg[theme].subtle }}
+                backgroundColor="$color2"
                 borderColor="$color6"
               />
             )}
           />
-          <Text style={{ color: colors.text[theme].secondary }}>Email changes must be made through account settings</Text>
+          <Text color="$gray11">Email changes must be made through account settings</Text>
         </Stack>
 
         {/* Home Address with Smart Autocomplete */}

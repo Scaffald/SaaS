@@ -1,8 +1,7 @@
 import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react-native'
 import { useMemo, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsProgressionChartProps {
@@ -25,8 +24,7 @@ interface SkillProgression {
  * Displays skill progression trends showing which skills improved,
  * declined, or stayed stable between versions.
  */
-export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = () => {
-  const { theme } = useThemeContext()userId ) => {
+export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = ({ userId }) => {
   // Fetch version history
   const {
     data: historyData,
@@ -112,8 +110,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (isLoading) {
     return (
       <Stack gap={16} align="center" justify="center" padding="md">
-        <Spinner size="lg" style={{ color: colors.text[theme].info }} />
-        <Text style={{ color: colors.text[theme].secondary }}>Loading progression data...</Text>
+        <Spinner size="lg" color="$blue10" />
+        <Text color="$gray11">Loading progression data...</Text>
       </Stack>
     )
   }
@@ -121,8 +119,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (error) {
     return (
       <Stack gap={8} padding="md">
-        <Text style={{ color: colors.text[theme].error }}>Error loading progression</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>{error.message || 'Failed to load progression data'}</Text>
+        <Text color="$red11">Error loading progression</Text>
+        <Text color="$gray11">{error.message || 'Failed to load progression data'}</Text>
       </Stack>
     )
   }
@@ -130,8 +128,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (versions.length < 2) {
     return (
       <Stack gap={8} padding="md" align="center">
-        <Text style={{ color: colors.text[theme].secondary }}>Progression Tracking</Text>
-        <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
+        <Text color="$gray11">Progression Tracking</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Complete at least two assessments to see skill progression trends.
         </Text>
       </Stack>
@@ -157,11 +155,11 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const getTrendIcon = (trend: SkillProgression['trend']) => {
     switch (trend) {
       case 'improved':
-        return <ArrowUp size="md" style={{ color: colors.text[theme].success }} />
+        return <ArrowUp size="md" color="$green10" />
       case 'declined':
-        return <ArrowDown size="md" style={{ color: colors.text[theme].error }} />
+        return <ArrowDown size="md" color="$red10" />
       case 'stable':
-        return <ArrowRight size="md" style={{ color: colors.text[theme].secondary }} />
+        return <ArrowRight size="md" color="$gray11" />
       default:
         return null
     }
@@ -170,13 +168,13 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const getTrendColor = (trend: SkillProgression['trend']) => {
     switch (trend) {
       case 'improved':
-        return colors.text[theme].success
+        return '$green11'
       case 'declined':
-        return colors.text[theme].error
+        return '$red11'
       case 'stable':
-        return colors.text[theme].secondary
+        return '$color11'
       default:
-        return colors.text[theme].tertiary
+        return '$color10'
     }
   }
 
@@ -188,8 +186,8 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
         <Stack gap={8}>
-          <Text style={{ color: colors.text[theme].secondary }}>Skill Progression</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>Track how your soft skills have changed over time.</Text>
+          <Text color="$gray11">Skill Progression</Text>
+          <Text color="$gray11">Track how your soft skills have changed over time.</Text>
         </Stack>
 
         {/* Summary Stats */}
@@ -197,14 +195,14 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
           <Stack
             gap={4}
             padding="sm"
-            style={{ backgroundColor: colors.bg[theme].success }}
+            backgroundColor="$green2"
             borderRadius={12}
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].success }}
+            borderColor="$green7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text style={{ color: colors.text[theme].success }}>Improved</Text>
-            <Text style={{ color: colors.text[theme].success }}>{improvedSkills}</Text>
+            <Text color="$green10">Improved</Text>
+            <Text color="$green11">{improvedSkills}</Text>
           </Stack>
           <Stack
             gap={4}
@@ -212,23 +210,23 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
             backgroundColor="$red2"
             borderRadius={12}
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].error }}
+            borderColor="$red7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text style={{ color: colors.text[theme].error }}>Declined</Text>
-            <Text style={{ color: colors.text[theme].error }}>{declinedSkills}</Text>
+            <Text color="$red10">Declined</Text>
+            <Text color="$red11">{declinedSkills}</Text>
           </Stack>
           <Stack
             gap={4}
             padding="sm"
-            style={{ backgroundColor: colors.bg[theme].subtle }}
+            backgroundColor="$color2"
             borderRadius={12}
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].default }}
+            borderColor="$borderColor"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text style={{ color: colors.text[theme].secondary }}>Stable</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>{stableSkills}</Text>
+            <Text color="$gray11">Stable</Text>
+            <Text color="$gray11">{stableSkills}</Text>
           </Stack>
         </Row>
 
@@ -238,27 +236,29 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
           return (
             <Stack key={category} gap={12}>
-              <Text style={{ color: colors.text[theme].secondary }}>{categoryLabels[category as SoftSkillCategory]}</Text>
+              <Text color="$gray11">{categoryLabels[category as SoftSkillCategory]}</Text>
               <Stack gap={8}>
                 {skills.map((skill) => (
                   <Stack
                     key={skill.skillId}
                     gap={8}
                     padding="sm"
-                    style={{ backgroundColor: colors.bg[theme].subtle }}
+                    backgroundColor="$color2"
                     borderRadius={12}
                     borderWidth={1}
-                    style={{ borderColor: colors.border[theme].default }}
+                    borderColor="$borderColor"
                   >
                     <Row align="center" justify="space-between" flexWrap="wrap" gap={8}>
                       <Stack gap={4} flex={1}>
-                        <Text style={{ color: colors.text[theme].secondary }}>{skill.skillName}</Text>
+                        <Text color="$gray11">{skill.skillName}</Text>
                         <Row gap={12} align="center">
                           {skill.previousRating !== null && (
-                            <Text style={{ color: colors.text[theme].secondary }}>Previous: {skill.previousRating.toFixed(1)}/5</Text>
+                            <Text color="$gray11">
+                              Previous: {skill.previousRating.toFixed(1)}/5
+                            </Text>
                           )}
                           {skill.currentRating !== null && (
-                            <Text style={{ color: colors.text[theme].secondary }}>Current: {skill.currentRating.toFixed(1)}/5</Text>
+                            <Text color="$gray11">Current: {skill.currentRating.toFixed(1)}/5</Text>
                           )}
                         </Row>
                       </Stack>

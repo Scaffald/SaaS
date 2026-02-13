@@ -194,13 +194,12 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
           {jobs.length === 0 ? (
             <Stack
               padding="md"
-              style={{ backgroundColor: colors.bg[theme].muted }}
+              style={{ backgroundColor: colors.bg[theme].muted, minHeight: 100 }}
               borderRadius={12}
               align="center"
               justify="center"
-              style={{ minHeight: 100 }}
             >
-              <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
+              <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                 No jobs
               </Text>
             </Stack>

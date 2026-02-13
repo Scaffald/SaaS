@@ -24,15 +24,14 @@ import {
   LocationListInput,
   SkeletonForm,
   ToggleCard,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from 'lucide-react-native'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Label, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Label, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,
@@ -148,8 +147,6 @@ function MultiSelectToggleField({
  * Form for editing employment preferences
  */
 export function ProfileEmploymentLeft() {
-  const { theme } = useThemeContext()
-) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
@@ -376,13 +373,13 @@ export function ProfileEmploymentLeft() {
               padding="sm"
               borderRadius={16}
               borderWidth={1}
-              style={{ borderColor: colors.border[theme].error }}
+              borderColor="$red8"
             >
-              <Text style={{ color: colors.text[theme].error }} marginBottom={8}>
+              <Text color="$red11" marginBottom={8}>
                 Validation Errors:
               </Text>
               {Object.entries(errors).map(([key, error]) => (
-                <Text key={key} style={{ color: colors.text[theme].error }}>
+                <Text key={key} color="$red11">
                   • {key}: {error?.message?.toString() || 'Invalid value'}
                 </Text>
               ))}
@@ -407,12 +404,12 @@ export function ProfileEmploymentLeft() {
                         field.onChange(Number.isNaN(numValue) ? 0 : numValue)
                       }}
                       keyboardType="numeric"
-                      borderColor={errors.hourly_rate ? colors.border[theme].error : colors.border[theme].default}
+                      borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                     />
                   </Row>
                 )}
               />
-              {errors.hourly_rate && <Text style={{ color: colors.text[theme].error }}>{errors.hourly_rate.message}</Text>}
+              {errors.hourly_rate && <Text color="$red10">{errors.hourly_rate.message}</Text>}
             </Stack>
 
             {/* Preferred Work Locations */}
@@ -454,7 +451,7 @@ export function ProfileEmploymentLeft() {
               />
               <Controller name="travel_distance_miles" control={control} render={() => <></>} />
               {errors.travel_distance_miles && (
-                <Text style={{ color: colors.text[theme].error }}>{errors.travel_distance_miles.message?.toString()}</Text>
+                <Text color="$red10">{errors.travel_distance_miles.message?.toString()}</Text>
               )}
             </Stack>
 
@@ -483,7 +480,7 @@ export function ProfileEmploymentLeft() {
               />
             </Stack>
             {errors.us_resident && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.us_resident.message?.toString()}</Text>
+              <Text color="$red10">{errors.us_resident.message?.toString()}</Text>
             )}
 
             {/* Drivers License */}
@@ -492,7 +489,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="drivers_license_classes"
-                iconStart={<Car size="xs" style={{ color: colors.text[theme].secondary }} />}
+                iconStart={<Car size="xs" color="$gray11" />}
                 title="I have a valid driver's license"
                 description="Select all license classes that apply"
                 options={DRIVERS_LICENSE_OPTIONS}
@@ -502,7 +499,7 @@ export function ProfileEmploymentLeft() {
                 }}
               />
               {errors.drivers_license_classes && (
-                <Text style={{ color: colors.text[theme].error }}>{errors.drivers_license_classes.message?.toString()}</Text>
+                <Text color="$red10">{errors.drivers_license_classes.message?.toString()}</Text>
               )}
             </Stack>
 
@@ -512,7 +509,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="military_status"
-                iconStart={<Shield size="xs" style={{ color: colors.text[theme].secondary }} />}
+                iconStart={<Shield size="xs" color="$gray11" />}
                 title="Former/Current Military"
                 description="Select all that apply"
                 options={MILITARY_STATUS_OPTIONS}
@@ -526,7 +523,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="availability"
-                iconStart={<Calendar size="xs" style={{ color: colors.text[theme].secondary }} />}
+                iconStart={<Calendar size="xs" color="$gray11" />}
                 title="I'm available for work"
                 description="Select all that apply"
                 options={AVAILABILITY_OPTIONS}

@@ -1,6 +1,5 @@
 import { Sparkles } from 'lucide-react-native'
-import { Progress, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface SkillCompletionProgressProps {
   /** Current skill count */
@@ -15,29 +14,29 @@ interface SkillCompletionProgressProps {
  * Skill Completion Progress Component
  * Displays skill completion progress and messaging
  */
-export function SkillCompletionProgress() {
-  const { theme } = useThemeContext()
+export function SkillCompletionProgress({
   skillCount,
   hasMinimumSkills,
-  completionPercent,: SkillCompletionProgressProps) 
+  completionPercent,
+}: SkillCompletionProgressProps) {
   return (
     <Stack
       padding="md"
       gap={12}
-      style={{ backgroundColor: colors.bg[theme].info }}
+      backgroundColor="$blue2"
       borderWidth={1}
-      style={{ borderColor: colors.border[theme].subtle }}
+      borderColor="$blue5"
       borderRadius={16}
     >
       <Row gap={12} align="center">
-        <Sparkles size="lg" style={{ color: colors.text[theme].info }} />
+        <Sparkles size="lg" color="$blue10" />
         <Stack gap={4} flex={1}>
-          <Text style={{ color: colors.text[theme].info }}>
+          <Text color="$blue11">
             {hasMinimumSkills
               ? `Great! You've added ${skillCount} skill${skillCount === 1 ? '' : 's'}.`
               : 'Experts recommend adding at least 5 skills to your profile.'}
           </Text>
-          <Text style={{ color: colors.text[theme].info }}>
+          <Text color="$blue11">
             Add role-specific, safety, and leadership skills to improve your match rate.
           </Text>
         </Stack>
@@ -45,12 +44,13 @@ export function SkillCompletionProgress() {
 
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text style={{ color: colors.text[theme].info }}>Skill section completeness</Text>
-          <Text style={{ color: colors.text[theme].info }}>{completionPercent}%</Text>
+          <Text color="$blue11">Skill section completeness</Text>
+          <Text color="$blue11">{completionPercent}%</Text>
         </Row>
-        <Progress value={completionPercent} max={100} backgroundColor={colors.bg[theme].info} size="xs">
-          <Progress.Indicator backgroundColor={completionPercent >= 100 ? colors.bg[theme].success : colors.bg[theme].primary} />
+        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="xs">
+          <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />
         </Progress>
       </Stack>
     </Stack>
   )
+}

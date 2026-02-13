@@ -1,6 +1,7 @@
 import type { ApplicationStepType } from '@scf/schemas'
 import { CheckCircle2 } from 'lucide-react-native'
-import { Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface ProgressIndicatorProps {
   /**
@@ -38,6 +39,8 @@ export interface ProgressIndicatorProps {
  * - Accessibility support
  */
 export function ProgressIndicator({ currentStep, completedSteps, steps }: ProgressIndicatorProps) {
+  const { theme } = useThemeContext()
+
   const getStepStatus = (stepId: ApplicationStepType): 'completed' | 'current' | 'upcoming' => {
     if (completedSteps.includes(stepId)) return 'completed'
     if (stepId === currentStep) return 'current'
@@ -80,42 +83,64 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   width={32}
                   height={32}
                   borderRadius="$10"
-                  backgroundColor="$blue9"
+                  style={{
+                    backgroundColor: colors.bg[theme].primary,
+                    borderColor: colors.border[theme].info,
+                    shadowColor: colors.bg[theme].primary,
+                  }}
                   align="center"
                   justify="center"
                   borderWidth={2}
-                  borderColor="$blue10"
-                  shadowColor="$blue9"
                   shadowOffset={{ width: 0, height: 2 }}
                   shadowOpacity={0.2}
                   shadowRadius={4}
                 >
-                  <CheckCircle2 size="lg" color="$gray11" />
+                  <CheckCircle2 size="lg" style={{ color: colors.text[theme].secondary }} />
                 </Stack>
               ) : (
                 <Stack
                   width={32}
                   height={32}
                   borderRadius="$10"
-                  backgroundColor={status === 'current' ? '$blue9' : '$gray4'}
+                  style={{
+                    backgroundColor:
+                      status === 'current' ? colors.bg[theme].primary : colors.bg[theme].muted,
+                    borderColor:
+                      status === 'current'
+                        ? colors.border[theme].info
+                        : colors.border[theme].subtle,
+                    shadowColor: status === 'current' ? colors.bg[theme].primary : undefined,
+                  }}
                   align="center"
                   justify="center"
                   borderWidth={status === 'current' ? 2 : 1}
-                  borderColor={status === 'current' ? '$blue10' : '$gray7'}
-                  shadowColor={status === 'current' ? '$blue9' : undefined}
                   shadowOffset={status === 'current' ? { width: 0, height: 2 } : undefined}
                   shadowOpacity={status === 'current' ? 0.2 : undefined}
                   shadowRadius={status === 'current' ? 4 : undefined}
                 >
-                  <Text color={status === 'current' ? '$color12' : '$gray11'}>{stepNumber}</Text>
+                  <Text
+                    style={{
+                      color:
+                        status === 'current'
+                          ? colors.text[theme].primary
+                          : colors.text[theme].secondary,
+                    }}
+                  >
+                    {stepNumber}
+                  </Text>
                 </Stack>
               )}
 
               {/* Step Label */}
               <Text
-                color={
-                  status === 'current' ? '$blue10' : status === 'completed' ? '$gray11' : '$gray10'
-                }
+                style={{
+                  color:
+                    status === 'current'
+                      ? colors.text[theme].info
+                      : status === 'completed'
+                        ? colors.text[theme].secondary
+                        : colors.text[theme].tertiary,
+                }}
                 textAlign="center"
                 maxWidth={100}
                 ellipsizeMode="tail"
@@ -129,7 +154,11 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
               <Stack
                 flex={1}
                 height={2}
-                backgroundColor={isLineCompleted ? '$blue9' : '$gray4'}
+                style={{
+                  backgroundColor: isLineCompleted
+                    ? colors.bg[theme].primary
+                    : colors.bg[theme].muted,
+                }}
                 marginHorizontal={8}
                 minWidth={20}
               />

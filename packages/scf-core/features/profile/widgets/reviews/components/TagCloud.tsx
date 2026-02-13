@@ -1,5 +1,4 @@
-import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { TagData } from '../types'
 
 interface TagCloudProps {
@@ -13,8 +12,7 @@ interface TagCloudProps {
  * TagCloud component displays skill tags with frequency-based sizing
  * Used for showing strengths and areas for improvement from reviews
  */
-export function TagCloud() {
-  const { theme } = useThemeContext()title, tags, variant, maxTags = 20 : TagCloudProps) {
+export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) {
   if (!tags || tags.length === 0) {
     return null
   }
@@ -30,12 +28,12 @@ export function TagCloud() {
     return 1 + normalized * 2 // Range: 1-3
   }
 
-  const bgColor = variant === 'strength' ? colors.bg[theme].success : colors.bg[theme].error
-  const textColor = variant === 'strength' ? colors.text[theme].success : colors.text[theme].error
+  const bgColor = variant === 'strength' ? '$green3' : '$red3'
+  const textColor = variant === 'strength' ? '$green11' : '$red11'
 
   return (
     <Stack gap={12}>
-      <Text style={{ color: colors.text[theme].secondary }}>{title}</Text>
+      <Text color="$gray11">{title}</Text>
       <Row gap={8} flexWrap="wrap">
         {displayTags.map((tag) => {
           const relativeSize = getRelativeSize(tag.count)

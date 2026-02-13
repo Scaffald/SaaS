@@ -1,10 +1,10 @@
 import { usePortfolioItems } from '@scf/core/utils/portfolio-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, ResponsiveModal } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
 import { Eye } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, H4, Image, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Card, H4, Image, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
   id: string
@@ -25,8 +25,7 @@ interface PortfolioItem {
  * @param showEdit - Whether to show edit actions (always false for gallery)
  * @param variant - Display variant (compact or full)
  */
-export function PortfolioGallery() {
-  const { theme } = useThemeContext()userId, variant = 'full' : ProfileWidgetProps) {
+export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProps) {
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
@@ -46,7 +45,7 @@ export function PortfolioGallery() {
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Spinner size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading portfolio...</Text>
+          <Text color="$gray11">Loading portfolio...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -89,9 +88,9 @@ export function PortfolioGallery() {
                       />
                     )}
                     <Stack gap={8} padding="sm">
-                      <Text >{item.title}</Text>
+                      <Text>{item.title}</Text>
                       {item.description && variant === 'full' && (
-                        <Text style={{ color: colors.text[theme].secondary }} >
+                        <Text color="$gray11">
                           {/* Render rich text description - simplified for now */}
                           {typeof item.description === 'string'
                             ? item.description
@@ -100,8 +99,8 @@ export function PortfolioGallery() {
                       )}
                       {imageUrl && (
                         <Row gap={8} align="center" marginTop={8}>
-                          <Eye size="md" style={{ color: colors.text[theme].secondary }} />
-                          <Text style={{ color: colors.text[theme].secondary }}>Click to view</Text>
+                          <Eye size="md" color="$gray11" />
+                          <Text color="$gray11">Click to view</Text>
                         </Row>
                       )}
                     </Stack>
@@ -141,7 +140,7 @@ export function PortfolioGallery() {
                   {selectedItem.description && (
                     <Stack gap={8}>
                       <Text>Description</Text>
-                      <Text style={{ color: colors.text[theme].secondary }} lineHeight={16}>
+                      <Text color="$gray11" lineHeight={16}>
                         {typeof selectedItem.description === 'string'
                           ? selectedItem.description
                           : 'Rich text description'}

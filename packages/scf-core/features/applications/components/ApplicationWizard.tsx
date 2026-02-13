@@ -183,9 +183,11 @@ export function ApplicationWizard({
       {/* Header */}
       <Stack
         padding="md"
-        style={{ backgroundColor: colors.bg[theme].default }}
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderBottomColor: colors.border[theme].default,
+        }}
         borderBottomWidth={1}
-        style={{ borderBottomColor: colors.border[theme].default }}
         gap={12}
       >
         <Row justify="space-between" align="flex-start" width="100%">
@@ -215,9 +217,11 @@ export function ApplicationWizard({
       {submitError && (
         <Stack
           padding="md"
-          style={{ backgroundColor: colors.bg[theme].error }}
+          style={{
+            backgroundColor: colors.bg[theme].error,
+            borderBottomColor: colors.border[theme].error,
+          }}
           borderBottomWidth={1}
-          style={{ borderBottomColor: colors.border[theme].error }}
         >
           <Row gap={8} align="center">
             <AlertCircle size="lg" style={{ color: colors.text[theme].error }} />
@@ -321,14 +325,16 @@ export function ApplicationWizard({
           padding="md"
         >
           <Stack
-            style={{ backgroundColor: colors.bg[theme].default }}
+            style={{
+              backgroundColor: colors.bg[theme].default,
+              borderColor: colors.border[theme].default,
+            }}
             borderRadius={16}
             padding="xl"
             gap={16}
             maxWidth={400}
             width="100%"
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].default }}
           >
             <Stack gap={8}>
               <Text style={{ color: colors.text[theme].secondary }}>Cancel Application?</Text>

@@ -1,6 +1,5 @@
 import { useExperience, useExperienceSummary } from '@scf/core/utils/profile-experience-sdk-hooks'
-import { DashboardWidget, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { Briefcase, Calendar, MapPin, Pencil } from 'lucide-react-native'
 import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileEmptyState } from './components'
@@ -76,7 +75,6 @@ function formatLocationForDisplay(
  * Displays saved work experience entries in the right column
  */
 export function ProfileExperienceRight() {
-  const { theme } = useThemeContext()
   const { startEditing } = useExperienceEdit()
 
   // Query saved experience data
@@ -90,7 +88,7 @@ export function ProfileExperienceRight() {
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading experience data...</Text>
+          <Text color="$gray11">Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -101,7 +99,7 @@ export function ProfileExperienceRight() {
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text style={{ color: colors.text[theme].error }}>Failed to load experience data</Text>
+          <Text color="$red10">Failed to load experience data</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -111,7 +109,7 @@ export function ProfileExperienceRight() {
     <DashboardWidget>
       <H4>Saved Work Experience</H4>
 
-      <Text style={{ color: colors.text[theme].secondary }} marginBottom={16}>
+      <Text color="$gray11" marginBottom={16}>
         Your work experience history is displayed here. Edit entries in the left panel.
       </Text>
 
@@ -120,22 +118,18 @@ export function ProfileExperienceRight() {
         gap={12}
         marginBottom={16}
         padding="sm"
-        style={{
-          backgroundColor: colors.bg[theme].default,
-          borderColor: colors.border[theme].default,
-        }}
+        backgroundColor="$background"
         borderWidth={1}
+        borderColor="$borderColor"
         borderRadius={16}
       >
         <H4>Experience Summary</H4>
         {experienceSummaryQuery.data?.career_level ? (
-          <Text style={{ color: colors.text[theme].secondary }}>
+          <Text color="$gray11">
             Career Level: <Text>{experienceSummaryQuery.data.career_level}</Text>
           </Text>
         ) : (
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Add a career level to highlight your experience level
-          </Text>
+          <Text color="$gray11">Add a career level to highlight your experience level</Text>
         )}
       </Stack>
 
@@ -154,30 +148,26 @@ export function ProfileExperienceRight() {
                 key={exp.id}
                 padding="md"
                 gap={12}
-                style={{
-                  backgroundColor: colors.bg[theme].default,
-                  borderColor: colors.border[theme].default,
-                }}
+                backgroundColor="$background"
                 borderWidth={1}
+                borderColor="$borderColor"
                 borderRadius={16}
                 hoverStyle={{
-                  borderColor: colors.border[theme].subtle,
-                  backgroundColor: colors.bg[theme].subtle,
+                  borderColor: '$borderColorHover',
+                  backgroundColor: '$backgroundHover',
                 }}
               >
                 {/* Job Title */}
                 <Stack gap={4}>
-                  <Text style={{ color: colors.text[theme].secondary }}>{exp.job_title}</Text>
+                  <Text color="$gray11">{exp.job_title}</Text>
 
                   {/* Company Name */}
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text style={{ color: colors.text[theme].secondary }}>{exp.company_name}</Text>
+                    <Text color="$gray11">{exp.company_name}</Text>
                     {exp.employment_type && (
                       <>
-                        <Text style={{ color: colors.text[theme].secondary }}>•</Text>
-                        <Text style={{ color: colors.text[theme].secondary }}>
-                          {exp.employment_type}
-                        </Text>
+                        <Text color="$gray11">•</Text>
+                        <Text color="$gray11">{exp.employment_type}</Text>
                       </>
                     )}
                   </Row>
@@ -185,7 +175,7 @@ export function ProfileExperienceRight() {
                   {/* Current Position Badge */}
                   {exp.is_current && (
                     <Row gap={4} align="center">
-                      <Text style={{ color: colors.text[theme].info }}>Current Position</Text>
+                      <Text color="$blue10">Current Position</Text>
                     </Row>
                   )}
                 </Stack>
@@ -195,8 +185,8 @@ export function ProfileExperienceRight() {
                   {/* Date Range */}
                   {(exp.start_date || exp.end_date || exp.is_current) && (
                     <Row gap={8} align="center">
-                      <Calendar size="md" style={{ color: colors.text[theme].secondary }} />
-                      <Text style={{ color: colors.text[theme].secondary }}>
+                      <Calendar size="md" color="$gray11" />
+                      <Text color="$gray11">
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
                       </Text>
                     </Row>
@@ -205,16 +195,16 @@ export function ProfileExperienceRight() {
                   {/* Location */}
                   {locationDisplay && (
                     <Row gap={8} align="center">
-                      <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
-                      <Text style={{ color: colors.text[theme].secondary }}>{locationDisplay}</Text>
+                      <MapPin size="md" color="$gray11" />
+                      <Text color="$gray11">{locationDisplay}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && (
                     <Stack gap={4}>
-                      <Text style={{ color: colors.text[theme].secondary }}>Description:</Text>
-                      <Text style={{ color: colors.text[theme].secondary }}>
+                      <Text color="$gray11">Description:</Text>
+                      <Text color="$gray11">
                         {exp.description.length > 200
                           ? `${exp.description.substring(0, 200)}...`
                           : exp.description}

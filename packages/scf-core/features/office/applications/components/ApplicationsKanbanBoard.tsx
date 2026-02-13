@@ -411,8 +411,15 @@ function InquiryComparisonModal({
 
   return (
     <Stack
-      style={{ backgroundColor: colors.bg[theme].default }}
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
+      style={{
+        backgroundColor: colors.bg[theme].default,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1000,
+      }}
     >
       <InquiryComparisonView
         inquiryIds={inquiryIds}

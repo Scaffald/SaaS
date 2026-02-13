@@ -1,6 +1,5 @@
-import { RangeSliderCard } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
-import type { RangeSliderCardProps } , useThemeContext } from '@unicornlove/beyond-ui'
+import { RangeSliderCard } from '@unicornlove/beyond-ui'
+import type { RangeSliderCardProps } from '@unicornlove/beyond-ui'
 import { Plane } from 'lucide-react-native'
 
 export interface MaximumTravelDistanceCardProps
@@ -30,17 +29,17 @@ export interface MaximumTravelDistanceCardProps
  * Shared "Maximum Travel Distance" range slider card component
  * Used in profile employment sections
  */
-export function MaximumTravelDistanceCard() {
-  const { theme } = useThemeContext()
+export function MaximumTravelDistanceCard({
   description = 'Select your maximum travel distance to find opportunities that match your preferences',
   min = 10,
   max = 250,
   step = 5,
   value = 25,
-  ...rangeSliderCardProps: MaximumTravelDistanceCardProps) 
+  ...rangeSliderCardProps
+}: MaximumTravelDistanceCardProps) {
   return (
     <RangeSliderCard
-      iconStart={<Plane size="xs" style={{ color: colors.text[theme].secondary }} />}
+      iconStart={<Plane size="xs" color="$gray11" />}
       title="Maximum Travel Distance"
       description={description}
       value={value}
@@ -53,3 +52,4 @@ export function MaximumTravelDistanceCard() {
       {...rangeSliderCardProps}
     />
   )
+}

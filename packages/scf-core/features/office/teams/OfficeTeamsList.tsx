@@ -172,13 +172,12 @@ export function OfficeTeamsList() {
       afterContent={
         archiveMutation.isPending ? (
           <Stack
-            style={{ backgroundColor: colors.bg[theme].subtle }}
+            style={{ backgroundColor: colors.bg[theme].subtle, alignSelf: 'flex-end' }}
             padding="sm"
             borderRadius={16}
             shadowColor={colors.text[theme].tertiary}
             marginRight={16}
             marginBottom={16}
-            style={{ alignSelf: 'flex-end' }}
           >
             <Row gap={12} align="center">
               <Spinner size="sm" />

@@ -11,13 +11,12 @@ import {
   Button,
   DashboardWidget,
   PhoneNumberInput,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, TextArea, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { AnimatePresence, Input, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,
@@ -45,11 +44,11 @@ interface GeneralProfileSectionProps {
  * Shared General Profile Section Component
  * Works in both user dashboard and admin office contexts
  */
-export function GeneralProfileSection() {
-  const { theme } = useThemeContext()
+export function GeneralProfileSection({
   userId,
   mode = 'user',
-  readOnly = false,: GeneralProfileSectionProps) {
+  readOnly = false,
+}: GeneralProfileSectionProps) {
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
 
@@ -231,7 +230,7 @@ export function GeneralProfileSection() {
             disabled={readOnly || uploadAvatarMutation.isPending}
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text style={{ color: colors.text[theme].secondary }}>Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && <Text color="$gray11">Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -246,14 +245,14 @@ export function GeneralProfileSection() {
                   placeholder="First name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.first_name ? colors.border[theme].error : colors.border[theme].default}
+                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
                   editable={!readOnly}
                   opacity={readOnly ? 0.7 : 1}
                 />
               )}
             />
             {errors.first_name && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text color="$red10">
                 {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
               </Text>
             )}
@@ -269,14 +268,14 @@ export function GeneralProfileSection() {
                   placeholder="Last name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.last_name ? colors.border[theme].error : colors.border[theme].default}
+                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
                   editable={!readOnly}
                   opacity={readOnly ? 0.7 : 1}
                 />
               )}
             />
             {errors.last_name && (
-              <Text style={{ color: colors.text[theme].error }}>
+              <Text color="$red10">
                 {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
               </Text>
             )}
@@ -295,14 +294,14 @@ export function GeneralProfileSection() {
                 value={typeof field.value === 'string' ? field.value : ''}
                 onChangeText={field.onChange}
                 minHeight={100}
-                borderColor={errors.about ? colors.border[theme].error : colors.border[theme].default}
+                borderColor={errors.about ? '$red8' : '$borderColor'}
                 editable={!readOnly}
                 opacity={readOnly ? 0.7 : 1}
               />
             )}
           />
           {errors.about && (
-            <Text style={{ color: colors.text[theme].error }}>
+            <Text color="$red10">
               {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
             </Text>
           )}
@@ -341,13 +340,13 @@ export function GeneralProfileSection() {
                 autoCapitalize="none"
                 editable={false}
                 opacity={0.7}
-                style={{ backgroundColor: colors.bg[theme].subtle }}
-                style={{ borderColor: colors.border[theme].subtle }}
+                backgroundColor="$color2"
+                borderColor="$color6"
               />
             )}
           />
           {mode === 'user' && (
-            <Text style={{ color: colors.text[theme].secondary }}>Email changes must be made through account settings</Text>
+            <Text color="$gray11">Email changes must be made through account settings</Text>
           )}
         </Stack>
 

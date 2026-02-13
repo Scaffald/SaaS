@@ -107,7 +107,6 @@ export function RowActionOverlay<TData>({
     <Row
       ref={overlayRef}
       position="absolute"
-      style={{ backgroundColor: colors.bg[theme].subtle }}
       borderWidth={1}
       borderColor={colors.border[theme].default}
       borderRadius={16}
@@ -115,6 +114,7 @@ export function RowActionOverlay<TData>({
       gap={8}
       boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
       style={{
+        backgroundColor: colors.bg[theme].subtle,
         zIndex: 1000,
         left: `${position.x}px`,
         top: `${position.y}px`,

@@ -7,12 +7,12 @@ import {
   Heading,
   LoadingState,
   spacing,
-} , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+} from '@unicornlove/beyond-ui'
 import { Briefcase } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
+import type { ProfileWidgetProps } from './types'
 import type { ExperienceWidgetEntry } from '@scaffald/sdk'
 
 type UserExperience = ExperienceWidgetEntry
@@ -25,11 +25,11 @@ type UserExperience = ExperienceWidgetEntry
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function ExperienceWidget() {
-  const { theme } = useThemeContext()
+export function ExperienceWidget({
   userId,
   showEdit = false,
-  variant = 'full',: ProfileWidgetProps) {
+  variant = 'full',
+}: ProfileWidgetProps) {
   const router = useRouter()
   const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
     { userId },
@@ -50,8 +50,8 @@ export function ExperienceWidget() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.text[theme].error }}>Failed to load experience</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
+          <Text color="$red10">Failed to load experience</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
             size="xs"
@@ -112,26 +112,26 @@ export function ExperienceWidget() {
                   {/* Job Title & Company */}
                   <Stack gap={4}>
                     <Text>{exp.job_title}</Text>
-                    <Text style={{ color: colors.text[theme].secondary }}>{exp.company_name}</Text>
+                    <Text color="$gray11">{exp.company_name}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text style={{ color: colors.text[theme].secondary }}>{formatDate(exp.start_date)}</Text>
-                    <Text style={{ color: colors.text[theme].secondary }}>-</Text>
-                    <Text style={{ color: colors.text[theme].secondary }}>
+                    <Text color="$gray11">{formatDate(exp.start_date)}</Text>
+                    <Text color="$gray11">-</Text>
+                    <Text color="$gray11">
                       {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
                       <Row
-                        style={{ backgroundColor: colors.bg[theme].info }}
+                        backgroundColor="$blue2"
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
                         borderWidth={1}
-                        style={{ borderColor: colors.border[theme].info }}
+                        borderColor="$blue7"
                       >
-                        <Text style={{ color: colors.text[theme].info }}>Current</Text>
+                        <Text color="$blue11">Current</Text>
                       </Row>
                     )}
                   </Row>
@@ -139,15 +139,15 @@ export function ExperienceWidget() {
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
                     <Row gap={8} flexWrap="wrap">
-                      {exp.location && <Text style={{ color: colors.text[theme].secondary }}>📍 {exp.location}</Text>}
-                      {exp.employment_type && <Text style={{ color: colors.text[theme].secondary }}>• {exp.employment_type}</Text>}
-                      {exp.is_remote && <Text style={{ color: colors.text[theme].secondary }}>• Remote</Text>}
+                      {exp.location && <Text color="$gray11">📍 {exp.location}</Text>}
+                      {exp.employment_type && <Text color="$gray11">• {exp.employment_type}</Text>}
+                      {exp.is_remote && <Text color="$gray11">• Remote</Text>}
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && !showCompact && (
-                    <Text style={{ color: colors.text[theme].secondary }} lineHeight={12}>
+                    <Text color="$gray11" lineHeight={12}>
                       {exp.description}
                     </Text>
                   )}
@@ -160,10 +160,10 @@ export function ExperienceWidget() {
             {/* Show More link for compact view */}
             {showCompact && experiences.length > 3 && (
               <Text
-                style={{ color: colors.border[theme].info }}
+                color="$blue7"
                 cursor="pointer"
-                hoverStyle={{ color: colors.border[theme].info }}
-                pressStyle={{ color: colors.bg[theme].primary }}
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
               >
                 View all {experiences.length} positions →

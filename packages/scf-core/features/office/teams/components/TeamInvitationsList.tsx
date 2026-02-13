@@ -33,7 +33,7 @@ const STATUS_LABELS: Record<InvitationStatus, string> = {
 }
 
 const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
-  pending: '$orange10',
+  pending: colors.text[theme].warning,
   accepted: colors.text[theme].success,
   declined: colors.text[theme].error,
   expired: colors.text[theme].secondary,

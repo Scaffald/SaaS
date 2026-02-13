@@ -211,7 +211,11 @@ export function TeamSettingsForm({
   })()
 
   const statusColor =
-    status === 'error' ? colors.text[theme].error : status === 'saved' ? colors.text[theme].success : colors.text[theme].secondary
+    status === 'error'
+      ? colors.text[theme].error
+      : status === 'saved'
+        ? colors.text[theme].success
+        : colors.text[theme].secondary
 
   return (
     <Card

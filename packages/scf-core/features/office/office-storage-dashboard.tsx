@@ -164,7 +164,10 @@ export function OfficeStorageDashboard() {
               >
                 <Progress.Indicator
                   animation="bouncy"
-                  style={{ backgroundColor: percent > 100 ? colors.text[theme].error : colors.text[theme].success }}
+                  style={{
+                    backgroundColor:
+                      percent > 100 ? colors.text[theme].error : colors.text[theme].success,
+                  }}
                 />
               </Progress>
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -304,7 +307,10 @@ export function OfficeStorageDashboard() {
                       style={{ backgroundColor: colors.bg[theme].muted }}
                       size={4}
                     >
-                      <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.text[theme].info }} />
+                      <Progress.Indicator
+                        animation="bouncy"
+                        style={{ backgroundColor: colors.text[theme].info }}
+                      />
                     </Progress>
                   </Stack>
                 ))}

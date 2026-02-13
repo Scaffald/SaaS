@@ -4,6 +4,10 @@
 
 [![npm version](https://img.shields.io/npm/v/@scaffald/sdk.svg)](https://www.npmjs.com/package/@scaffald/sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
+[![Documentation](https://img.shields.io/badge/docs-scaffald.github.io-blue)](https://scaffald.github.io/sdk/)
+
+**[📚 Documentation](https://scaffald.github.io/sdk/)** | **[📦 npm Package](https://www.npmjs.com/package/@scaffald/sdk)** | **[💻 GitHub](https://github.com/Scaffald/sdk)**
 
 A complete, type-safe JavaScript/TypeScript SDK for integrating with the Scaffald job platform API.
 

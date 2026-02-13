@@ -12,7 +12,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { CircleAlert } from 'lucide-react-native'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
@@ -49,6 +50,7 @@ const getPackageTier = (pkg: PackageSummary | null) => {
 }
 
 export function OrganizationBackgroundCheckRequestForm() {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
 
@@ -236,7 +238,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading options…</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading options…</Text>
       </Stack>
     )
   }
@@ -244,8 +246,8 @@ export function OrganizationBackgroundCheckRequestForm() {
   if (!organizations.length) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="$gray11">No organizations available</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: colors.text[theme].secondary }}>No organizations available</Text>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           Create an organization before requesting a background check.
         </Text>
       </Stack>
@@ -256,8 +258,8 @@ export function OrganizationBackgroundCheckRequestForm() {
     <ScrollView style={{ flex: 1 }}>
       <Stack flex={1} gap={16} paddingHorizontal={16} paddingVertical={24}>
         <Stack gap={4}>
-          <Text color="$gray11">Request Background Check</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>Request Background Check</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Invite a worker to complete the required screening package on behalf of your
             organization.
           </Text>
@@ -303,7 +305,9 @@ export function OrganizationBackgroundCheckRequestForm() {
               }))}
             />
             {selectedPackage?.description ? (
-              <Text color="$gray11">{selectedPackage.description}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {selectedPackage.description}
+              </Text>
             ) : null}
           </Stack>
 
@@ -376,29 +380,41 @@ export function OrganizationBackgroundCheckRequestForm() {
             />
           </Stack>
 
-          <Stack gap={8} padding="sm" backgroundColor="$color3" borderRadius={16}>
+          <Stack
+            gap={8}
+            padding="sm"
+            style={{ backgroundColor: colors.bg[theme].muted }}
+            borderRadius={16}
+          >
             <Row gap={8} align="center">
-              <CircleAlert size={18} color="$gray11" />
-              <Text color="$gray11">Cost summary</Text>
+              <CircleAlert size={18} style={{ color: colors.text[theme].secondary }} />
+              <Text style={{ color: colors.text[theme].secondary }}>Cost summary</Text>
             </Row>
-            <Text color="$gray11">
-              Package cost: <Text color="$gray11">{formatCurrency(costCents)}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Package cost:{' '}
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {formatCurrency(costCents)}
+              </Text>
             </Text>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               Charges are collected immediately via Stripe. Screenings are submitted after payment
               succeeds.
             </Text>
           </Stack>
 
           {requestError && (
-            <Stack backgroundColor="$red3" padding="sm" borderRadius={16}>
-              <Text color="$red11">{requestError}</Text>
+            <Stack
+              style={{ backgroundColor: colors.bg[theme].error }}
+              padding="sm"
+              borderRadius={16}
+            >
+              <Text style={{ color: colors.text[theme].error }}>{requestError}</Text>
             </Stack>
           )}
 
           {paymentSession && (
             <Stack gap={8}>
-              <Text color="$gray11">Complete payment</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Complete payment</Text>
               <PaymentIntentForm
                 clientSecret={paymentSession.clientSecret}
                 amountCents={paymentSession.amountCents}

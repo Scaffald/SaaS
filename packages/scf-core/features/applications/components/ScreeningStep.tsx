@@ -243,10 +243,12 @@ export function ScreeningStep({
           <Label>Required skills</Label>
           <Stack
             padding="sm"
-            style={{ backgroundColor: colors.bg[theme].muted }}
+            style={{
+              backgroundColor: colors.bg[theme].muted,
+              borderColor: colors.border[theme].default,
+            }}
             borderRadius={12}
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].default }}
           >
             <Text style={{ color: colors.text[theme].secondary }}>{requiredSkills.join(', ')}</Text>
           </Stack>
@@ -259,10 +261,12 @@ export function ScreeningStep({
           <Label>Optional skills</Label>
           <Stack
             padding="sm"
-            style={{ backgroundColor: colors.bg[theme].muted }}
+            style={{
+              backgroundColor: colors.bg[theme].muted,
+              borderColor: colors.border[theme].default,
+            }}
             borderRadius={12}
             borderWidth={1}
-            style={{ borderColor: colors.border[theme].default }}
           >
             <Text style={{ color: colors.text[theme].secondary }}>{optionalSkills.join(', ')}</Text>
           </Stack>

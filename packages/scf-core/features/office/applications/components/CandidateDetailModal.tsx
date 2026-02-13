@@ -175,7 +175,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
     application.score >= 80
       ? colors.bg[theme].successSubtle
       : application.score >= 60
-        ? '$blue3'
+        ? colors.bg[theme].info
         : colors.bg[theme].errorSubtle
 
   const inquiryFormValues = useMemo(() => {

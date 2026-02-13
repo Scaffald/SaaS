@@ -62,7 +62,7 @@ const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = 
   completed: { bg: colors.bg[theme].successSubtle, text: colors.text[theme].success },
   failed: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
   cancelled: { bg: '$color4', text: colors.text[theme].secondary },
-  appealed: { bg: '$orange3', text: '$orange11' },
+  appealed: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
 }
 
 /**
@@ -71,7 +71,7 @@ const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
   low: { bg: '$color4', text: colors.text[theme].secondary },
   medium: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
-  high: { bg: '$orange3', text: '$orange11' },
+  high: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
   urgent: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
 }
 
@@ -132,7 +132,11 @@ function MetricCard({
   color?: string
 }) {
   const trendColor =
-    trend === 'up' ? '$green10' : trend === 'down' ? '$red10' : colors.text[theme].secondary
+    trend === 'up'
+      ? colors.text[theme].success
+      : trend === 'down'
+        ? colors.text[theme].error
+        : colors.text[theme].secondary
 
   return (
     <Stack
@@ -173,7 +177,11 @@ function RequestRow({
   return (
     <Row
       padding="sm"
-      style={{ backgroundColor: request.is_overdue ? colors.bg[theme].errorSubtle : colors.bg[theme].subtle }}
+      style={{
+        backgroundColor: request.is_overdue
+          ? colors.bg[theme].errorSubtle
+          : colors.bg[theme].subtle,
+      }}
       borderRadius={8}
       borderWidth={1}
       borderColor={request.is_overdue ? colors.border[theme].error : colors.border[theme].default}
@@ -217,7 +225,11 @@ function RequestRow({
         <Text style={{ color: colors.text[theme].secondary }}>Days</Text>
         <Text
           color={
-            request.is_overdue ? colors.text[theme].error : request.days_elapsed > 30 ? colors.text[theme].warning : colors.text[theme].primary
+            request.is_overdue
+              ? colors.text[theme].error
+              : request.days_elapsed > 30
+                ? colors.text[theme].warning
+                : colors.text[theme].primary
           }
         >
           {request.days_elapsed}
@@ -419,7 +431,11 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Pending"
                 value={metrics?.pending_requests || 0}
-                style={{ color: metrics?.pending_requests ? colors.text[theme].warning : colors.text[theme].primary }}
+                style={{
+                  color: metrics?.pending_requests
+                    ? colors.text[theme].warning
+                    : colors.text[theme].primary,
+                }}
               />
               <MetricCard
                 label="Processing"
@@ -435,23 +451,32 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Avg Processing Days"
                 value={`${metrics?.average_processing_days?.toFixed(1) || 0}`}
-                style={{ color: (metrics?.average_processing_days || 0) > 30 ? colors.text[theme].warning : colors.text[theme].success }}
+                style={{
+                  color:
+                    (metrics?.average_processing_days || 0) > 30
+                      ? colors.text[theme].warning
+                      : colors.text[theme].success,
+                }}
               />
               <MetricCard
                 label="Compliance Rate"
                 value={`${((metrics?.compliance_rate || 0) * 100).toFixed(1)}%`}
                 color={
                   (metrics?.compliance_rate || 0) >= 0.95
-                    ? '$green10'
+                    ? colors.text[theme].success
                     : (metrics?.compliance_rate || 0) >= 0.8
-                      ? '$orange10'
-                      : '$red10'
+                      ? colors.text[theme].warning
+                      : colors.text[theme].error
                 }
               />
               <MetricCard
                 label="Overdue Requests"
                 value={metrics?.overdue_count || 0}
-                style={{ color: metrics?.overdue_count ? colors.text[theme].error : colors.text[theme].success }}
+                style={{
+                  color: metrics?.overdue_count
+                    ? colors.text[theme].error
+                    : colors.text[theme].success,
+                }}
               />
             </Row>
           )}
@@ -550,13 +575,23 @@ export function CCPAAdminDashboard() {
           <Text>CCPA Timeline Requirements</Text>
           <Stack gap={8}>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} style={{ backgroundColor: colors.text[theme].info }} />
+              <Stack
+                width={8}
+                height={8}
+                borderRadius={4}
+                style={{ backgroundColor: colors.text[theme].info }}
+              />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>10 days</Text> - Acknowledge receipt of request
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} backgroundColor="$orange10" />
+              <Stack
+                width={8}
+                height={8}
+                borderRadius={4}
+                style={{ backgroundColor: colors.text[theme].warning }}
+              />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>45 days</Text> - Complete request (with possible 45-day extension)
               </Text>

@@ -3,15 +3,14 @@ import {
   useUpdateSoftSkillsMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator } from '@unicornlove/beyond-ui'
 import { CheckCircle2 } from 'lucide-react-native'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
-import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
+import { useToast } from '@unicornlove/beyond-ui'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Slider, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
+import { Button, Card, Separator, Slider, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { softSkillsUpdateSchema, type SoftSkillsUpdateInput } from '@scf/schemas/profile'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
@@ -220,8 +219,8 @@ export const SoftSkillsRatingForm: FC = () => {
   if (error) {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
-        <Text style={{ color: colors.text[theme].error }}>Failed to load assessment</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
+        <Text color="$red10">Failed to load assessment</Text>
+        <Text color="$gray11">{error.message}</Text>
         <Button variant="primary" size="xs" onPress={() => void refetch()}>
           Retry
         </Button>
@@ -232,8 +231,8 @@ export const SoftSkillsRatingForm: FC = () => {
   if (formSkills.length === 0) {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
-        <Text style={{ color: colors.text[theme].secondary }}>No soft skills available</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>Please contact support if this issue persists.</Text>
+        <Text color="$gray11">No soft skills available</Text>
+        <Text color="$gray11">Please contact support if this issue persists.</Text>
       </Stack>
     )
   }
@@ -250,7 +249,7 @@ export const SoftSkillsRatingForm: FC = () => {
         />
       </Row>
 
-      <Text style={{ color: colors.text[theme].secondary }}>
+      <Text color="$gray11">
         Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
         saved every 30 seconds.
       </Text>
@@ -269,7 +268,7 @@ export const SoftSkillsRatingForm: FC = () => {
       <Stack gap={16}>
         {categorySkills.length === 0 ? (
           <Stack gap={8} align="center" paddingVertical={32}>
-            <Text style={{ color: colors.text[theme].secondary }}>No skills in this category</Text>
+            <Text color="$gray11">No skills in this category</Text>
           </Stack>
         ) : (
           categorySkills.map((skill) => {
@@ -282,11 +281,11 @@ export const SoftSkillsRatingForm: FC = () => {
             }
 
             return (
-              <Card key={skill.id} bordered padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+              <Card key={skill.id} bordered padding="md" backgroundColor="$background">
                 <Stack gap={12}>
                   <Stack gap={4}>
-                    <Text style={{ color: colors.text[theme].secondary }}>{skill.name}</Text>
-                    {skill.description && <Text style={{ color: colors.text[theme].secondary }}>{skill.description}</Text>}
+                    <Text color="$gray11">{skill.name}</Text>
+                    {skill.description && <Text color="$gray11">{skill.description}</Text>}
                   </Stack>
 
                   <Controller
@@ -312,16 +311,15 @@ export const SoftSkillsRatingForm: FC = () => {
                             marginTop={16}
                             marginBottom={8}
                           >
-                            <Slider.Track backgroundColor={colors.bg[theme].default} height={6} borderRadius={10}>
-                              <Slider.TrackActive style={{ backgroundColor: colors.bg[theme].primary }} borderRadius={10} />
+                            <Slider.Track backgroundColor="$color4" height={6} borderRadius={10}>
+                              <Slider.TrackActive backgroundColor="$blue9" borderRadius={10} />
                             </Slider.Track>
                             <Slider.Thumb
                               index={0}
-                              
                               size={4}
-                              style={{ backgroundColor: colors.bg[theme].primary }}
+                              backgroundColor="$blue9"
                               borderWidth={2}
-                              style={{ borderColor: colors.border[theme].info }}
+                              borderColor="$blue11"
                             />
                           </Slider>
 
@@ -334,8 +332,8 @@ export const SoftSkillsRatingForm: FC = () => {
                                 style={{ alignItems: 'center' }}
                                 opacity={sliderValue === level.value ? 1 : 0.6}
                               >
-                                <Text style={{ color: colors.text[theme].secondary }}>{level.value}</Text>
-                                <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
+                                <Text color="$gray11">{level.value}</Text>
+                                <Text color="$gray11" style={{ textAlign: 'center' }}>
                                   {level.label}
                                 </Text>
                               </Stack>
@@ -381,20 +379,20 @@ export const SoftSkillsRatingForm: FC = () => {
             width={80}
             height={80}
             borderRadius="$12"
-            style={{ backgroundColor: colors.bg[theme].success }}
+            backgroundColor="$green2"
             borderWidth={2}
-            style={{ borderColor: colors.border[theme].success }}
+            borderColor="$green9"
             align="center"
             justify="center"
           >
-            <CheckCircle2 size={48} style={{ color: colors.text[theme].success }} />
+            <CheckCircle2 size={48} color="$green10" />
           </Stack>
 
           <Stack gap={8} align="center">
-            <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
-            <Text style={{ color: colors.text[theme].secondary }} style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Your assessment has been saved successfully. Your ratings will be used to improve job
               matching and showcase your strengths.
             </Text>

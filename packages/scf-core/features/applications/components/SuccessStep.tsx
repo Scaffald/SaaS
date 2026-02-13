@@ -83,9 +83,11 @@ export function SuccessStep({
         width={80}
         height={80}
         borderRadius="$12"
-        style={{ backgroundColor: colors.bg[theme].success }}
+        style={{
+          backgroundColor: colors.bg[theme].success,
+          borderColor: colors.border[theme].success,
+        }}
         borderWidth={2}
-        style={{ borderColor: colors.border[theme].success }}
         align="center"
         justify="center"
         aria-hidden={true}
@@ -118,10 +120,12 @@ export function SuccessStep({
       <Stack
         gap={12}
         padding="md"
-        style={{ backgroundColor: colors.bg[theme].default }}
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderColor: colors.border[theme].default,
+        }}
         borderRadius={16}
         borderWidth={1}
-        style={{ borderColor: colors.border[theme].default }}
         width="100%"
         marginTop={32}
       >

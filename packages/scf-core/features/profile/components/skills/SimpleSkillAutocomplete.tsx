@@ -1,7 +1,6 @@
 import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -35,15 +34,15 @@ interface SimpleSkillAutocompleteProps {
  * Simple Skill Autocomplete Component
  * Decoupled from SearchSelect and ResponsiveSelect to avoid infinite loops
  */
-export function SimpleSkillAutocomplete() {
-  const { theme } = useThemeContext()
+export function SimpleSkillAutocomplete({
   value,
   onChangeText,
   onSearch,
   onSelect,
   isLoading = false,
   placeholder = 'Search for a skill...',
-  existingSkillIds = [],: SimpleSkillAutocompleteProps) {
+  existingSkillIds = [],
+}: SimpleSkillAutocompleteProps) {
   const [results, setResults] = useState<ParentSkill[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debouncedValue = useDebounceValue(value, 300)
@@ -53,7 +52,7 @@ export function SimpleSkillAutocomplete() {
   const onSearchRef = useRef(onSearch)
   useEffect(() => {
     onSearchRef.current = onSearch
-  }, [])
+  }, [onSearch])
 
   // Handle search
   useEffect(() => {
@@ -97,7 +96,7 @@ export function SimpleSkillAutocomplete() {
     if (!value) {
       setShowResults(false)
     }
-  }, [])
+  }, [value])
 
   const handleSelect = useCallback(
     (skill: ParentSkill) => {
@@ -105,7 +104,7 @@ export function SimpleSkillAutocomplete() {
       setShowResults(false)
       onChangeText('') // Clear input after selection
     },
-    []
+    [onSelect, onChangeText]
   )
 
   return (
@@ -120,8 +119,8 @@ export function SimpleSkillAutocomplete() {
           placeholder={placeholder}
           paddingRight={40}
           size="md"
-          style={{ borderColor: colors.border[theme].default }}
-          focusStyle={{ borderColor: colors.bg[theme].primary }}
+          borderColor="$borderColor"
+          focusStyle={{ borderColor: '$blue9' }}
         />
 
         {value.length > 0 && (
@@ -131,7 +130,6 @@ export function SimpleSkillAutocomplete() {
             top={4}
             bottom={4}
             size="xs"
-            
             chromeless
             onPress={() => {
               onChangeText('')
@@ -154,14 +152,14 @@ export function SimpleSkillAutocomplete() {
           marginTop={4}
           maxHeight={300}
           zIndex={2000}
-          style={{ backgroundColor: colors.bg[theme].default }}
+          backgroundColor="$background"
         >
           <ScrollView>
             <Stack>
               {isLoading || isSearching ? (
                 <Stack padding="md" align="center" justify="center">
                   <Spinner size="sm" />
-                  <Text style={{ color: colors.text[theme].secondary }} marginTop={8}>
+                  <Text color="$gray11" marginTop={8}>
                     Searching...
                   </Text>
                 </Stack>
@@ -181,16 +179,16 @@ export function SimpleSkillAutocomplete() {
                       <Row justify="space-between" align="center">
                         <Stack flex={1}>
                           <Text>{skill.name}</Text>
-                          {skill.code && <Text style={{ color: colors.text[theme].secondary }}>{skill.code}</Text>}
+                          {skill.code && <Text color="$gray11">{skill.code}</Text>}
                         </Stack>
-                        {isExisting && <Text style={{ color: colors.text[theme].info }}>Added</Text>}
+                        {isExisting && <Text color="$blue9">Added</Text>}
                       </Row>
                     </Stack>
                   )
                 })
               ) : (
                 <Stack padding="md" align="center">
-                  <Text style={{ color: colors.text[theme].secondary }}>No skills found</Text>
+                  <Text color="$gray11">No skills found</Text>
                 </Stack>
               )}
             </Stack>

@@ -188,8 +188,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         <Button
           iconStart={Plus}
           onPress={() => setIsAddModalOpen(true)}
-          style={{ backgroundColor: colors.bg[theme].primary }}
-          style={{ color: colors.text[theme].secondary }}
+          style={{ backgroundColor: colors.bg[theme].primary, color: colors.text[theme].secondary }}
           size="sm"
           accessibilityLabel="Add a new team member"
           width="100%"
@@ -440,8 +439,10 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
                 <Button
-                  style={{ backgroundColor: colors.bg[theme].error }}
-                  style={{ color: colors.text[theme].secondary }}
+                  style={{
+                    backgroundColor: colors.bg[theme].error,
+                    color: colors.text[theme].secondary,
+                  }}
                   iconStart={LogOut}
                   onPress={() => void handleLeaveTeam()}
                   disabled={selfRemoveMutation.isPending}
