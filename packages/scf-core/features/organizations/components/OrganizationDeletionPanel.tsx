@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { useToast } from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -12,6 +12,7 @@ import {
   Row,
   Stack,
 } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OrganizationDeletionPanelProps = {
   organizationId: string
@@ -22,6 +23,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
   const [reason, setReason] = useState('')
   const [confirmText, setConfirmText] = useState('')
   const toast = useToast()
+  const { theme } = useThemeContext()
 
   const deletionMutation = api.accountDeletion.requestOrganizationDeletion.useMutation({
     onSuccess: () => {
@@ -77,8 +79,8 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
 
         <Button
           variant="outline"
-          borderColor="$red8"
-          color="$red11"
+          style={{ borderColor: colors.border[theme].error }}
+          color="error"
           icon={Trash2}
           onPress={() => setIsOpen(true)}
         >
@@ -91,8 +93,8 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
             <AlertDialog.Content style={{ maxWidth: 500 }}>
               <Stack gap={16} padding="md">
                 <Stack gap={8}>
-                  <Text color="$red11">Delete This Organization?</Text>
-                  <Text color="$gray11">
+                  <Text style={{ color: colors.text[theme].error }}>Delete This Organization?</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     This action cannot be undone. All organization data will be permanently deleted
                     or anonymized.
                   </Text>
@@ -114,7 +116,12 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                     value={confirmText}
                     onChangeText={setConfirmText}
                     placeholder="DELETE"
-                    borderColor={confirmText === 'DELETE' ? '$green8' : '$red8'}
+                    style={{
+                      borderColor:
+                        confirmText === 'DELETE'
+                          ? colors.border[theme].success
+                          : colors.border[theme].error,
+                    }}
                   />
                 </Stack>
 

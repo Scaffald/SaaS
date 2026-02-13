@@ -44,7 +44,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
     </button>
   )
   const Card = ({ children }: { children?: ReactNode }) => <div>{children}</div>
-  const Avatar = ({ children }: { children?: ReactNode; ?: boolean; size?: string }) => (
+  const Avatar = ({ children }: { children?: ReactNode; circular?: boolean; size?: string }) => (
     <div>{children}</div>
   )
   const AvatarImage = ({ source }: { source?: { uri?: string } }) => (

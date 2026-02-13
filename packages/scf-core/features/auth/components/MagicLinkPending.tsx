@@ -8,7 +8,7 @@ import { CheckCircle2 } from 'lucide-react-native'
 import { TRPCClientError } from '@trpc/client'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Box, Paragraph, Spinner, Stack } from '@unicornlove/beyond-ui'
+import { Box, Paragraph, Spinner, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 import { CodeConfirmation } from './CodeConfirmation'
@@ -27,6 +27,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const [error, setError] = useState<string | null>(null)
   const requestMagicLink = api.auth.requestMagicLink.useMutation()
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
 
   const handleEnter = useCallback(
     async (enteredCode: number) => {
@@ -117,11 +118,11 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         {codeEntered && (
           <Box style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
             {verified && (
-              <Paragraph style={{ color: colors.green[600] }}>
+              <Paragraph style={{ color: colors.text[theme].success }}>
                 {t('auth.verify.successBanner')}
               </Paragraph>
             )}
-            <CheckCircle2 size={24} color={colors.green[600]} />
+            <CheckCircle2 size={24} color={colors.icon[theme].success} />
           </Box>
         )}
 
@@ -148,7 +149,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             </Box>
 
             {error && (
-              <Paragraph style={{ color: colors.error[600], textAlign: 'center', fontSize: 14 }}>
+              <Paragraph style={{ color: colors.text[theme].error, textAlign: 'center', fontSize: 14 }}>
                 {error}
               </Paragraph>
             )}
@@ -163,9 +164,9 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
               bottom={0}
               align="center"
               justify="center"
-              style={{ backgroundColor: colors.bg.primary }}
+              style={{ backgroundColor: colors.bg[theme].default }}
             >
-              <Spinner style={{ color: colors.gray[700] }} />
+              <Spinner style={{ color: colors.icon[theme].secondary }} />
             </Box>
           )}
         </Box>
