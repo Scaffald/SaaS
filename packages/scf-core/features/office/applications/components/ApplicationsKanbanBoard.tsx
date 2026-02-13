@@ -250,7 +250,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             <Button
               size={12}
               theme="blue"
-              onPress={() => setShowBulkInquiry(true)}}
+              onPress={() => setShowBulkInquiry(true)}
             >
               Send Inquiry to {selectedApplicationIds.size}
             </Button>

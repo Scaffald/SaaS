@@ -6,6 +6,7 @@ import {
   getResults,
   getScore,
 } from '@scf/core/features/personality-assessment/lib/ipip';
+import { useAssessmentStatus } from '@scf/core/utils/personality-assessment-sdk-hooks';
 import { api } from '@scf/core/utils/api';
 import { useMemo } from 'react';
 import { normalizeScores } from '../utils/scoreNormalizer';
@@ -45,15 +46,14 @@ export interface IPIPResultsData {
  */
 export function useIPIPResults(): IPIPResultsData {
   const {
-    data: assessment,
+    data: assessmentData,
     isLoading: assessmentLoading,
     error: assessmentError,
-  } = api.personalityAssessment.getAssessmentStatus.useQuery(undefined, {
-    staleTime: RESULTS_STALE_TIME_MS,
-    gcTime: RESULTS_CACHE_TIME_MS,
-    refetchOnWindowFocus: false,
-  });
+  } = useAssessmentStatus();
 
+  const assessment = assessmentData?.data;
+
+  // TODO: Migrate getArchetype to SDK - currently still uses tRPC
   const { data: archetypeData, isLoading: archetypeLoading } = api
     .personalityAssessment.getArchetype.useQuery(undefined, {
       enabled: !!assessment?.ipip_completed_at,

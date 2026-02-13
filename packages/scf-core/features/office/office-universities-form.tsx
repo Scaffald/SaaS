@@ -370,14 +370,14 @@ export function OfficeUniversitiesForm({
           <Row
             justify="flex-end"
             paddingTop={16}
-            gap={8}}
+            gap={8}
           >
             {isEditing && (
               <Button
                 variant="outline"
                 onPress={onCancel}
                 disabled={isLoading}
-                data-testid="cancel-button"}}
+                data-testid="cancel-button"
               >
                 Cancel
               </Button>
@@ -387,7 +387,7 @@ export function OfficeUniversitiesForm({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}}}
+              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>

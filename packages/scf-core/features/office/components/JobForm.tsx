@@ -1253,14 +1253,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Actions */}
         <Row
           gap={12}
-          paddingTop={16}}}
+          paddingTop={16}
         >
           <Button
             data-testid="job-cancel-button"
             flex={1}
             variant="outline"
             onPress={() => router.back()}
-            disabled={isLoading}}
+            disabled={isLoading}
           >
             Cancel
           </Button>
@@ -1270,7 +1270,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               variant="outline"
               icon={Eye}
               onPress={() => setPreviewOpen(true)}
-              disabled={isLoading || !formData.title || !formData.organization_id}}
+              disabled={isLoading || !formData.title || !formData.organization_id}
             >
               Preview
             </Button>
@@ -1287,7 +1287,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               (typeof formData.description === 'object' &&
                 formData.description !== null &&
                 extractPlainText(formData.description).trim().length === 0)
-            }}}
+            }
           >
             {isLoading && <Spinner />}
             {!isLoading && 'Save as Draft'}
@@ -1305,7 +1305,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 !formData.organization_id ||
                 (formData.scheduled_publish_at &&
                   new Date(formData.scheduled_publish_at) <= new Date())
-            )}}}
+            )}
           >
             {isLoading && <Spinner />}
             {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}

@@ -238,7 +238,7 @@ export function GeneralProfileSection({
         </Stack>
 
         {/* Name Fields */}
-        <Row gap={12}}>
+        <Row gap={12}>
           <Stack gap={8} flex={1}>
             <Text>First Name *</Text>
             <Controller
@@ -419,7 +419,7 @@ export function GeneralProfileSection({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}}
+              space={isLoading ? '$2' : 0}
             >
               <AnimatePresence>
                 {isLoading && (

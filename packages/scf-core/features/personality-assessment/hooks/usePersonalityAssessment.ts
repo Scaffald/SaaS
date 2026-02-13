@@ -1,4 +1,11 @@
-import { api } from '@scf/core/utils/api';
+import {
+  useAssessmentStatus,
+  useSaveLuscher1Mutation,
+  useSaveIPIPProgressMutation,
+  useSaveLuscher2Mutation,
+  useGenerateReportMutation,
+  useUpdateCurrentStepMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import type { AssessmentStep } from '../utils/assessment-steps';
 
@@ -7,48 +14,48 @@ export function usePersonalityAssessment() {
 
   // Get assessment status
   const {
-    data: assessment,
+    data: assessmentData,
     isLoading,
     error,
-  } = api.personalityAssessment.getAssessmentStatus.useQuery();
+  } = useAssessmentStatus();
+
+  const assessment = assessmentData?.data;
 
   // Save Luscher 1
-  const saveLuscher1 = api.personalityAssessment.saveLuscher1.useMutation({
+  const saveLuscher1 = useSaveLuscher1Mutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] });
     },
   });
 
   // Save IPIP progress
-  const saveIPIPProgress = api.personalityAssessment.saveIPIPProgress
-    .useMutation({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
-      },
-    });
+  const saveIPIPProgress = useSaveIPIPProgressMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] });
+    },
+  });
 
   // Save Luscher 2
-  const saveLuscher2 = api.personalityAssessment.saveLuscher2.useMutation({
+  const saveLuscher2 = useSaveLuscher2Mutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] });
     },
   });
 
   // Generate report
-  const generateReport = api.personalityAssessment.generateReport.useMutation({
+  const generateReport = useGenerateReportMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getResults']] });
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] });
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'results'] });
     },
   });
 
   // Update current step
-  const updateCurrentStep = api.personalityAssessment.updateCurrentStep
-    .useMutation({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] });
-      },
-    });
+  const updateCurrentStep = useUpdateCurrentStepMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] });
+    },
+  });
 
   const currentStep = (assessment?.current_step as AssessmentStep) ||
     'luscher1';

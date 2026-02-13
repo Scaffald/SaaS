@@ -280,7 +280,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     justify="flex-start"
                     align="stretch"
                   >
-                    <Stack width="100%"}>
+                    <Stack width="100%">
                       <TeamMemberRoleSelect
                         teamId={teamId}
                         userId={member.userId ?? ''}

@@ -140,7 +140,7 @@ export function TeamInvitationsList({
           width="100%"
         >
           {headerAction}
-          <Stack width="100%"}>
+          <Stack width="100%">
             <ResponsiveSelect
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}

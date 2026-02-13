@@ -1,30 +1,28 @@
 import { DisputeBackgroundCheckContent } from '@scf/core/features/background-check'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
+import type { BackgroundCheck } from '@scaffald/sdk/resources/background-checks'
 import { RefreshCcw } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { Stack as ExpoStack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { ScrollView } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, Row, Spinner, Stack, Text } from '@unicornlove/beyond-ui'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]
+type BackgroundCheckSummary = BackgroundCheck
 
 export default function BackgroundCheckDisputeScreen() {
   const { checkId } = useLocalSearchParams<{ checkId?: string }>()
   const router = useRouter()
   const insets = useSafeAreaInsets()
 
-  const checksQuery = api.backgroundChecks.listChecks.useQuery(undefined, {
-    refetchOnWindowFocus: true,
-    staleTime: 60 * 1000,
+  const checksQuery = useBackgroundChecks({
+    enabled: true,
   })
 
   const selectedCheck = useMemo<BackgroundCheckSummary | null>(() => {
     if (!checkId || !checksQuery.data) return null
-    return checksQuery.data.find((check: BackgroundCheckSummary) => check.id === checkId) ?? null
+    const checks = checksQuery.data as BackgroundCheck[]
+    return checks.find((check: BackgroundCheck) => check.id === checkId) ?? null
   }, [checkId, checksQuery.data])
 
   const handleClose = useCallback(() => {

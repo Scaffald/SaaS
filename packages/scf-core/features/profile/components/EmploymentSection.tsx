@@ -467,7 +467,7 @@ export function EmploymentSection({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}}
+              space={isLoading ? '$2' : 0}
             >
               <AnimatePresence>
                 {isLoading && (

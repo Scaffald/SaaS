@@ -470,7 +470,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           testID="org-form-cancel-btn"
           variant="outline"
           onPress={() => router.back()}
-          disabled={isLoading}}
+          disabled={isLoading}
         >
           Cancel
         </Button>
@@ -478,7 +478,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading || slugAvailabilityBlocksSubmit}
-          icon={isLoading ? <Spinner /> : undefined}}}
+          icon={isLoading ? <Spinner /> : undefined}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>

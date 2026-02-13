@@ -397,7 +397,7 @@ export function EducationEntryEditModal({
 
           {/* Start and End Dates */}
           <Stack gap={8}>
-            <Row gap={12}}>
+            <Row gap={12}>
               <Stack gap={8} flex={1}>
                 <Controller
                   name="start_date"
@@ -510,13 +510,13 @@ export function EducationEntryEditModal({
           <Row
             justify="flex-end"
             gap={12}
-            paddingTop={16}}}
+            paddingTop={16}
           >
             <Button
               variant="outline"
               disabled={!isDirty}
               onPress={() => setShowCancelDialog(true)}
-              opacity={!isDirty ? 0.5 : 1}}}
+              opacity={!isDirty ? 0.5 : 1}
             >
               Cancel
             </Button>
@@ -524,7 +524,7 @@ export function EducationEntryEditModal({
               variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}}}
+              opacity={!isDirty || isLoading ? 0.5 : 1}
             >
               {isLoading ? (
                 <Row gap={8} align="center">
