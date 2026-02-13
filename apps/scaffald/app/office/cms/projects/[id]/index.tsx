@@ -112,7 +112,7 @@ export default function ProjectDetailPage() {
       </Stack>
       <Stack gap={16}>
         {/* Project Info */}
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={16}>
             <Row justify="space-between" align="center">
               <Text>
@@ -175,7 +175,7 @@ export default function ProjectDetailPage() {
         </Card>
 
         {/* Location Section */}
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={16}>
             <Row justify="space-between" align="center">
               <Text>
@@ -239,7 +239,7 @@ export default function ProjectDetailPage() {
         </Card>
 
         {/* Workers Section */}
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={16}>
             <Row justify="space-between" align="center">
               <Text>

@@ -105,7 +105,7 @@ export default function GeographicSettingsPage() {
         </Text>
       </Stack>
       <Stack gap={16} style={{ maxWidth: 600 }}>
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>
@@ -136,7 +136,7 @@ export default function GeographicSettingsPage() {
               </Text>
             </Stack>
 
-            <Card padding={12}>
+            <Card padding="md">
               <Stack gap={8}>
                 <Text>
                   Current Setting
@@ -172,7 +172,7 @@ export default function GeographicSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={8}>
             <Text>
               About Site Overlaps

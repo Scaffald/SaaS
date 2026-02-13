@@ -3,10 +3,10 @@ import { AlertCircle, Bell, Info, ShieldAlert, X } from 'lucide-react-native'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react'
+import { ScrollView } from 'react-native'
 import {
   Button,
   Card,
-  ScrollView,
   Separator,
   Spinner,
   type StackProps,

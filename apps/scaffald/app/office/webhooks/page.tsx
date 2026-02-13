@@ -37,7 +37,7 @@ export default function WebhooksPage() {
     >
       <ScrollView padding={16}>
         {/* Documentation Banner */}
-        <Card padding={20}>
+        <Card padding="lg">
           <Stack gap={12}>
             <Text>Getting Started with Webhooks</Text>
             <Text color="$gray11">
@@ -82,7 +82,7 @@ export default function WebhooksPage() {
 
         {/* Event Types Reference */}
         {webhooks.length > 0 && (
-          <Card padding={20}>
+          <Card padding="lg">
             <Text>Available Event Types</Text>
             <Text color="$gray11">
               Subscribe to these events to receive notifications:

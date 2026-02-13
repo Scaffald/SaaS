@@ -150,7 +150,7 @@ export default function CreateWebhookPage() {
     >
       <ScrollView padding={16}>
         {/* Endpoint Configuration */}
-        <Card padding={20} gap={20}>
+        <Card padding="lg" gap={20}>
           <Text>Endpoint Configuration</Text>
 
           <Stack gap={8}>
@@ -179,7 +179,7 @@ export default function CreateWebhookPage() {
         </Card>
 
         {/* Event Selection */}
-        <Card padding={20} gap={20}>
+        <Card padding="lg" gap={20}>
           <Text>Event Subscriptions *</Text>
           <Text color="$gray11">
             ResponsiveSelect the events you want to receive notifications for
@@ -227,7 +227,7 @@ export default function CreateWebhookPage() {
         </Card>
 
         {/* Configuration Info */}
-        <Card padding={20}>
+        <Card padding="lg">
           <Text>
             Configuration Details
           </Text>

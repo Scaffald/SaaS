@@ -17,8 +17,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useRef, useState } from 'react'
-import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from '@unicornlove/beyond-ui'
+import { Platform, ScrollView, View } from 'react-native'
+import { Button, Input, Text, Row } from '@unicornlove/beyond-ui'
 import { Table } from '@unicornlove/beyond-ui'
+
+const isWeb = Platform.OS === 'web'
 
 const HEADER_ROW_HEIGHT = 48
 

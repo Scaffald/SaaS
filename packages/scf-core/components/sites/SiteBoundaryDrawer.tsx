@@ -88,7 +88,7 @@ export function SiteBoundaryDrawer({
 
   return (
     <Stack gap={16}>
-      <Card padding={16}>
+      <Card padding="md">
         <Stack gap={16}>
           <Row justify="space-between" align="center">
             <Text>Site Boundary</Text>
@@ -98,7 +98,7 @@ export function SiteBoundaryDrawer({
           </Row>
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
-          <Card padding={16} backgroundColor="$gray2" minHeight={400} borderRadius={16}>
+          <Card padding="md" backgroundColor="$gray2" minHeight={400} borderRadius={16}>
             <Text color="$gray10" style={{ textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
@@ -117,7 +117,7 @@ export function SiteBoundaryDrawer({
 
           {/* Area Display */}
           {areaSqft > 0 && (
-            <Card padding={12} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+            <Card padding="md" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
               <Text color="$blue11">
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft

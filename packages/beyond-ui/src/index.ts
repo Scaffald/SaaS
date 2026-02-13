@@ -217,7 +217,17 @@ export type {
 export type { LabelProps as FormLabelProps } from './components/Typography'
 
 // Card components
-export { Card, CardHeader, CardContent, CardFooter, CardMedia } from './components/Card'
+export {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardMedia,
+  SelectableCard,
+  CardMetadata,
+  CardBadges,
+  CardActions,
+} from './components/Card'
 export type {
   CardProps,
   CardHeaderProps,
@@ -228,6 +238,13 @@ export type {
   CardPadding,
   CardRadius,
   CardElevation,
+  SelectableCardProps,
+  CardMetadataProps,
+  MetadataItem,
+  CardBadgesProps,
+  BadgeConfig,
+  CardActionsProps,
+  CardAction,
 } from './components/Card'
 
 // Toast components
