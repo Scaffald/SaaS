@@ -1,5 +1,5 @@
 import { Download } from 'lucide-react-native'
-import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -8,6 +8,8 @@ interface ApplicationDetailsTabProps {
 }
 
 export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProps) => {
+  const { theme } = useThemeContext()
+
   return (
     <Stack gap={16}>
       {/* Screening Answers */}
