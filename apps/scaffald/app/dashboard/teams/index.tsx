@@ -5,9 +5,7 @@ import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useTeams } from '@scaffald/sdk/react'
-import type { TeamResponse } from '@scaffald/sdk'
-
-type TeamRecord = TeamResponse['data']
+import type { Team } from '@scaffald/sdk'
 
 export default function DashboardTeamsIndexPage() {
   const router = useRouter()
@@ -15,7 +13,7 @@ export default function DashboardTeamsIndexPage() {
     includeArchived: false,
   })
 
-  const teams = useMemo<TeamRecord[]>(() => data?.data ?? [], [data?.data])
+  const teams = useMemo<Team[]>(() => data?.teams ?? [], [data?.teams])
 
   const mainContent = (
     <Stack gap={16}>
@@ -73,37 +71,39 @@ export default function DashboardTeamsIndexPage() {
               : 'General'
 
             return (
-              <Card key={team.id} padding={16} gap={12}>
-                <Row gap={12} align="center">
-                  <Users size={20} />
-                  <Text>{team.name || 'Untitled team'}</Text>
-                </Row>
-                {team.description ? (
-                  <Text color="gray">{team.description}</Text>
-                ) : (
-                  <Text color="gray">No description provided for this team.</Text>
-                )}
-                <Row gap={12} align="center">
-                  <Text color="gray">{formattedPurpose}</Text>
-                  <Text color="gray">
-                    Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
-                  </Text>
-                </Row>
-                <Row gap={8}>
-                  <Button
-                    size="md"
-                    onPress={() => router.push(RouteBuilder.dashboardTeamDetail(team.id))}
-                  >
-                    Open team
-                  </Button>
-                  <Button
-                    size="md"
-                    variant="outline"
-                    onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
-                  >
-                    View invitations
-                  </Button>
-                </Row>
+              <Card key={team.id} padding="md">
+                <Stack gap={12}>
+                  <Row gap={12} align="center">
+                    <Users size={20} />
+                    <Text>{team.name || 'Untitled team'}</Text>
+                  </Row>
+                  {team.description ? (
+                    <Text color="gray">{team.description}</Text>
+                  ) : (
+                    <Text color="gray">No description provided for this team.</Text>
+                  )}
+                  <Row gap={12} align="center">
+                    <Text color="gray">{formattedPurpose}</Text>
+                    <Text color="gray">
+                      Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
+                    </Text>
+                  </Row>
+                  <Row gap={8}>
+                    <Button
+                      size="md"
+                      onPress={() => router.push(RouteBuilder.dashboardTeamDetail(team.id))}
+                    >
+                      Open team
+                    </Button>
+                    <Button
+                      size="md"
+                      variant="outline"
+                      onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
+                    >
+                      View invitations
+                    </Button>
+                  </Row>
+                </Stack>
               </Card>
             )
           })}

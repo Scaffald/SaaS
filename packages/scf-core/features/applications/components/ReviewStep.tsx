@@ -113,15 +113,15 @@ export function ReviewStep({
         <Separator />
 
         <Stack gap={16}>
-          <InfoRow
+          <InfoRow theme={theme}
             label="Current Location"
             value={screeningAnswers.current_location || 'Not provided'}
           />
-          <InfoRow
+          <InfoRow theme={theme}
             label="Willing to Relocate"
             value={screeningAnswers.willing_to_relocate ? 'Yes' : 'No'}
           />
-          <InfoRow
+          <InfoRow theme={theme}
             label="Years of Experience"
             value={
               screeningAnswers.years_experience
@@ -129,7 +129,7 @@ export function ReviewStep({
                 : 'Not provided'
             }
           />
-          <InfoRow
+          <InfoRow theme={theme}
             label="Work Authorization"
             value={
               screeningAnswers.is_authorized_to_work
@@ -137,7 +137,7 @@ export function ReviewStep({
                 : 'No, will require sponsorship'
             }
           />
-          <InfoRow
+          <InfoRow theme={theme}
             label="Earliest Start Date"
             value={screeningAnswers.earliest_start_date || 'Not provided'}
           />
@@ -178,7 +178,7 @@ export function ReviewStep({
 
           <Stack gap={16}>
             {customQuestionAnswers.map((answer, index) => (
-              <InfoRow
+              <InfoRow theme={theme}
                 key={answer.question_id || index}
                 label={answer.question}
                 value={formatAnswer(answer.answer)}
@@ -221,19 +221,19 @@ export function ReviewStep({
 
         <Stack gap={16}>
           {attachments.resume ? (
-            <DocumentRow type="Resume" metadata={attachments.resume} required />
+            <DocumentRow type="Resume" metadata={attachments.resume} required theme={theme} />
           ) : (
             <Text style={{ color: colors.text[theme].secondary }}>Resume: Not provided</Text>
           )}
 
           {attachments.cover_letter ? (
-            <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} />
+            <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} theme={theme} />
           ) : (
             <Text style={{ color: colors.text[theme].secondary }}>Cover Letter: Not provided</Text>
           )}
 
           {attachments.portfolio && (
-            <DocumentRow type="Portfolio" metadata={attachments.portfolio} required={false} />
+            <DocumentRow type="Portfolio" metadata={attachments.portfolio} required={false} theme={theme} />
           )}
         </Stack>
       </Stack>
@@ -292,7 +292,7 @@ export function ReviewStep({
 /**
  * Helper component for displaying info rows
  */
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value, theme }: { label: string; value: string; theme: 'light' | 'dark' }) {
   return (
     <Stack gap={8}>
       <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
@@ -308,10 +308,12 @@ function DocumentRow({
   type,
   metadata,
   required,
+  theme,
 }: {
   type: string
   metadata: AttachmentMetadata
   required: boolean
+  theme: 'light' | 'dark'
 }) {
   const uploadedDate = metadata.uploaded_at ? new Date(metadata.uploaded_at) : null
   const formattedDate = uploadedDate

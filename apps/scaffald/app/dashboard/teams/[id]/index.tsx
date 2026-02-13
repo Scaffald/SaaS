@@ -184,11 +184,11 @@ export default function DashboardTeamDetailPage() {
     <Stack gap={16}>
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
-      <Card padding="md" gap={16}>
+      <Card padding="md">
         <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
-      <Card padding="md" gap={16}>
+      <Card padding="md">
         <TeamAutomationSettings
           teamId={teamId}
           allowSelfJoin={team.allowSelfJoin ?? false}
@@ -200,7 +200,7 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card padding="md" gap={16}>
+      <Card padding="md">
         <TeamActivityFeed
           teamId={teamId}
           mentionOptions={mentionOptions}
@@ -208,11 +208,11 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card padding="md" gap={16}>
+      <Card padding="md">
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
       </Card>
 
-      <Card padding="md" gap={16}>
+      <Card padding="md">
         <TeamInvitationsList
           teamId={teamId}
           refreshKey={invitationRefreshKey}
@@ -275,15 +275,17 @@ function ErrorCard({
   onAction: () => void
 }) {
   return (
-    <Card padding={16} gap={12}>
-      <Row gap={8} align="center">
-        <AlertTriangle size={20} color="$yellow10" />
-        <Text>{title}</Text>
-      </Row>
-      <Text color="gray">{message}</Text>
-      <Button size="md" onPress={onAction}>
-        {actionLabel}
-      </Button>
+    <Card padding="md">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <AlertTriangle size={20} color="$yellow10" />
+          <Text>{title}</Text>
+        </Row>
+        <Text color="gray">{message}</Text>
+        <Button size="md" onPress={onAction}>
+          {actionLabel}
+        </Button>
+      </Stack>
     </Card>
   )
 }

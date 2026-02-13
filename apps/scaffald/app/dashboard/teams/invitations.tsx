@@ -64,7 +64,7 @@ export default function DashboardTeamInvitationsScreen() {
       </Row>
 
       {invitationsQuery.isLoading ? (
-        <Stack align="center" justify="center" gap={8} paddingVertical="$10">
+        <Stack align="center" justify="center" gap={8} paddingVertical="lg">
           <Spinner size="lg" />
           <Text color="gray">Loading invitations…</Text>
         </Stack>

@@ -364,7 +364,7 @@ export const notificationsHandlers = [
 
   // GET /v1/notifications/unread-count
   http.get(`${BASE_URL}/v1/notifications/unread-count`, () => {
-    return HttpResponse.json({ count: 3 })
+    return HttpResponse.json({ data: { unread_count: 3 } })
   }),
 
   // PATCH /v1/notifications/:id/read
@@ -439,20 +439,22 @@ export const notificationsHandlers = [
   // GET /v1/notifications/preferences
   http.get(`${BASE_URL}/v1/notifications/preferences`, () => {
     return HttpResponse.json({
-      globalEnabled: true,
-      channelEnabled: {
-        in_app: true,
-        email: true,
-        push: false,
-        sms: false,
+      data: {
+        user_id: 'user_123',
+        email_notifications: true,
+        push_notifications: false,
+        notification_types: {
+          application_status: { email: true, push: true },
+          connection_request: { email: true, push: true },
+          message: { email: false, push: true },
+          job_match: { email: true, push: false },
+        },
+        quiet_hours: {
+          enabled: true,
+          start: '22:00',
+          end: '08:00',
+        },
       },
-      quietHours: {
-        start: '22:00',
-        end: '08:00',
-      },
-      digestFrequency: 'immediate',
-      typeOverrides: {},
-      updatedAt: '2024-01-15T10:00:00Z',
     })
   }),
 

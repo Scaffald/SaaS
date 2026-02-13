@@ -179,7 +179,10 @@ export default function NotificationsCenterScreen() {
   })
 
   const notificationsQuery = useInfiniteNotifications(
-    { limit: 25, status: filter },
+    {
+      limit: 25,
+      ...(filter === 'unread' ? { read: false } : filter === 'all' ? {} : {})
+    },
     {
       placeholderData: (previousData) => previousData,
     }
@@ -243,7 +246,7 @@ export default function NotificationsCenterScreen() {
     [notificationsQuery.data]
   )
 
-  const unreadCount = unreadCountQuery.data?.count ?? 0
+  const unreadCount = unreadCountQuery.data?.data?.unread_count ?? 0
   const isEmpty = notifications.length === 0 && !notificationsQuery.isLoading
 
   const [preferences, setPreferences] = useState({
@@ -254,27 +257,35 @@ export default function NotificationsCenterScreen() {
   })
 
   useEffect(() => {
-    if (preferencesQuery.data) {
+    if (preferencesQuery.data?.data) {
+      const prefs = preferencesQuery.data.data
       setPreferences({
         channelEnabled: {
-          email: preferencesQuery.data.channelEnabled.email,
-          in_app: preferencesQuery.data.channelEnabled.in_app,
-          push: preferencesQuery.data.channelEnabled.push,
-          sms: preferencesQuery.data.channelEnabled.sms,
+          email: prefs.email_notifications,
+          in_app: true, // Always enabled for in-app
+          push: prefs.push_notifications,
+          sms: false, // Not supported yet
         },
-        digestFrequency: preferencesQuery.data.digestFrequency,
-        globalEnabled: preferencesQuery.data.globalEnabled,
-        quietHours: preferencesQuery.data.quietHours ?? null,
+        digestFrequency: 'immediate', // Default value, not in SDK yet
+        globalEnabled: prefs.email_notifications || prefs.push_notifications,
+        quietHours: prefs.quiet_hours?.enabled
+          ? { start: prefs.quiet_hours.start, end: prefs.quiet_hours.end }
+          : null,
       })
     }
   }, [preferencesQuery.data])
 
   const handleSavePreferences = () => {
     savePreferencesMutation.mutate({
-      channelEnabled: preferences.channelEnabled,
-      digestFrequency: preferences.digestFrequency,
-      globalEnabled: preferences.globalEnabled,
-      quietHours: preferences.quietHours ?? undefined,
+      email_notifications: preferences.channelEnabled.email,
+      push_notifications: preferences.channelEnabled.push,
+      quiet_hours: preferences.quietHours
+        ? {
+            enabled: true,
+            start: preferences.quietHours.start,
+            end: preferences.quietHours.end,
+          }
+        : { enabled: false, start: '22:00', end: '08:00' },
     })
   }
 
@@ -426,7 +437,7 @@ export default function NotificationsCenterScreen() {
                       key={option.value}
                       size="md"
                       color={isSelected ? 'primary' : 'gray'}
-                      {...(!isSelected ? { variant: 'outlined' as const } : {})}
+                      {...(!isSelected ? { variant: 'outline' as const } : {})}
                       onPress={() =>
                         setPreferences((prev) => ({
                           ...prev,
@@ -488,7 +499,7 @@ export default function NotificationsCenterScreen() {
             return (
               <Button
                 key={item.value}
-                color={isActive ? 'blue' : 'gray'}
+                color={isActive ? 'primary' : 'gray'}
                 {...(!isActive ? { variant: 'outline' as const } : {})}
                 onPress={() => {
                   setFilter(item.value)

@@ -86,22 +86,15 @@ export default function SharedIPIPResultsRoute() {
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
-        orientation="horizontal"
       >
-        <Tabs.List
-          separator={<Stack />}
-          disablePassBorderRadius="bottom"
-          aria-label="Manage your personality results view"
-        >
-          <Tabs.Tab value="narrative">
-            <Text>Narrative View</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="chart">
-            <Text>Chart View</Text>
-          </Tabs.Tab>
-        </Tabs.List>
+        <Tabs.Item value="narrative">
+          <Tabs.Trigger>Narrative View</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="chart">
+          <Tabs.Trigger>Chart View</Tabs.Trigger>
+        </Tabs.Item>
 
-        <Tabs.Content value="narrative" padding={16}>
+        <Tabs.Content value="narrative">
           <Stack padding={16}>
             {processedResults ? (
               <NarrativeView
@@ -119,7 +112,7 @@ export default function SharedIPIPResultsRoute() {
           </Stack>
         </Tabs.Content>
 
-        <Tabs.Content value="chart" padding={16}>
+        <Tabs.Content value="chart">
           <Stack padding={16}>
             {processedResults ? (
               <ChartView

@@ -19,29 +19,27 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
   onSectionChange,
 }: ImportSectionTabsProps) {
   return (
-    <Tabs value={activeSection} onValueChange={onSectionChange} activationMode="manual">
-      <Tabs.List
-        orientation="horizontal"
-        borderBottomWidth={1}
-        borderBottomColor="$borderColor"
-        backgroundColor="$background"
-        scrollable
-      >
-        <Row gap={12} paddingHorizontal={8}>
-          {sections.map((section) => (
-            <Tabs.Tab
-              key={section.id}
-              value={section.id}
+    <Row
+      gap={12}
+      paddingHorizontal={8}
+      borderBottomWidth={1}
+      borderBottomColor="$borderColor"
+      backgroundColor="$background"
+    >
+      <Tabs value={activeSection} onValueChange={onSectionChange} activationMode="manual">
+        {sections.map((section) => (
+          <Tabs.Item key={section.id} value={section.id}>
+            <Tabs.Trigger
               borderBottomWidth={activeSection === section.id ? 2 : 0}
               borderBottomColor="$blue10"
               paddingHorizontal={12}
               paddingVertical={8}
             >
               {section.label} ({section.count})
-            </Tabs.Tab>
-          ))}
-        </Row>
-      </Tabs.List>
-    </Tabs>
+            </Tabs.Trigger>
+          </Tabs.Item>
+        ))}
+      </Tabs>
+    </Row>
   )
 })

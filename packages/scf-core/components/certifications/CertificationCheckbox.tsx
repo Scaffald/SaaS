@@ -39,7 +39,7 @@ export function CertificationCheckbox({
         </Stack>
 
         {checked && onAddProof && (
-          <Button size="xs" variant="outline" onPress={onAddProof} disabled={disabled}>
+          <Button size="sm" variant="outline" onPress={onAddProof} disabled={disabled}>
             <Row gap={4} align="center">
               <Link size="md" />
               <Text size="xs">{hasProof ? 'View Proof' : 'Add Proof'}</Text>

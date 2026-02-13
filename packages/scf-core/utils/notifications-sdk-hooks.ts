@@ -23,6 +23,7 @@ import type {
   SuccessResponse,
   MarkAllAsReadResponse,
   NotificationPreferences,
+  PreferencesResponse,
   SavePreferencesParams,
   NotificationDevice,
   RegisterDeviceParams,
@@ -101,7 +102,7 @@ export function useUnreadCount(
  * Get notification preferences
  */
 export function useNotificationPreferences(
-  options?: Omit<UseQueryOptions<NotificationPreferences>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PreferencesResponse>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffaldJobsClient()
 
