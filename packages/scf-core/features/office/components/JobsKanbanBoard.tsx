@@ -1,14 +1,22 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DraggableCard, DroppableColumn, useThemeContext } from '@scaffald/ui'
+import { useThemeContext } from '@scaffald/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ScrollView } from 'react-native'
-import { type GetThemeValueForKey, Text, Row, Stack, useToast } from '@scaffald/ui'
+import { ScrollView, View } from 'react-native'
+import { Text, Row, Stack, useToast } from '@scaffald/ui'
 import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
 import { colors } from '@scaffald/ui/tokens'
@@ -29,10 +37,49 @@ const STATUS_LABELS: Record<JobStatus, string> = {
 
 const getStatusColors = (theme: 'light' | 'dark'): Record<JobStatus, string> => ({
   draft: colors.bg[theme].muted,
-  open: theme === "light" ? colors.green[50] : colors.green[900],
-  paused: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-  closed: theme === "light" ? colors.error[50] : colors.error[900],
+  open: theme === 'light' ? colors.green[50] : colors.green[900],
+  paused: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+  closed: theme === 'light' ? colors.error[50] : colors.error[900],
 })
+
+/** Local droppable column using @dnd-kit (scaffald does not export DroppableColumn) */
+function DroppableColumn({
+  id,
+  children,
+}: {
+  id: string
+  align?: string[]
+  children?: React.ReactNode
+}) {
+  const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
+  return (
+    <View ref={setNodeRef} style={isOver ? { opacity: 0.9 } : undefined}>
+      {children}
+    </View>
+  )
+}
+
+/** Local draggable card using @dnd-kit (scaffald does not export DraggableCard) */
+function DraggableCard({
+  id,
+  disabled,
+  children,
+}: {
+  id: string
+  disabled?: boolean
+  children?: React.ReactNode
+}) {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id,
+    data: { type: 'card' },
+    disabled,
+  })
+  return (
+    <View ref={setNodeRef} {...attributes} {...listeners}>
+      {children}
+    </View>
+  )
+}
 
 interface JobsKanbanBoardProps {
   jobs: Job[]
@@ -155,7 +202,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
 interface StatusColumnProps {
   status: JobStatus
   label: string
-  color: GetThemeValueForKey<'backgroundColor'>
+  color: string
   jobs: Job[]
   onJobPress: (job: Job) => void
   isUpdating: boolean
@@ -168,20 +215,22 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
       <Stack
         data-testid={`kanban-column-${status}`}
         width={320}
-        style={{ backgroundColor: colors.bg[theme].subtle }}
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderWidth: 1,
+          borderColor: colors.border[theme].default,
+        }}
         borderRadius={16}
         padding="sm"
-        borderWidth={1}
-        borderColor={colors.border[theme].default}
       >
         {/* Column Header */}
-        <Row justify="space-between" align="center" marginBottom={12}>
+        <Row justify="space-between" align="center" style={{ marginBottom: 12 }}>
           <Row gap={8} align="center">
             <Stack width={8} height={8} borderRadius="$10" backgroundColor={color} />
             <Text>{label}</Text>
           </Row>
           <Stack
-            style={{ backgroundColor: colors.bg[theme].inactive }}
+            style={{ backgroundColor: colors.bg[theme].muted }}
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={8}
@@ -200,7 +249,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
               align="center"
               justify="center"
             >
-              <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+              <Text style={{ color: colors.text[theme].secondary }} align="center">
                 No jobs
               </Text>
             </Stack>

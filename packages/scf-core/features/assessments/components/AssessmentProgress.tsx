@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react-native'
-import { Circle, Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface AssessmentStep {
   id: string
@@ -37,19 +37,15 @@ export function AssessmentProgress({
             <Stack gap={4}>
               <Row
                 height={8}
-                backgroundColor="$color5"
-                borderRadius="$10"
-                overflow="hidden"
-                width="100%"
+                style={{ backgroundColor: '#e5e7eb', overflow: 'hidden', width: '100%' }}
+                borderRadius={10}
               >
                 <Row
                   height="100%"
-                  backgroundColor="$blue9"
-                  width={`${completionScore}%`}
-                  animation="quick"
+                  style={{ backgroundColor: '#3b82f6', width: `${completionScore}%` }}
                 />
               </Row>
-              <Text color="$blue10" style={{ textAlign: 'right' }}>
+              <Text color="$blue10" align="right">
                 {completionScore}%
               </Text>
             </Stack>
@@ -78,25 +74,33 @@ export function AssessmentProgress({
             return (
               <Row key={step.id} gap={12} align="flex-start">
                 <Stack align="center" gap={4} style={{ minWidth: 32 }}>
-                  <Circle
-                    size={32}
-                    backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
-                    borderWidth={2}
-                    borderColor={isCurrent ? '$blue11' : 'transparent'}
+                  <Stack
+                    width={32}
+                    height={32}
+                    borderRadius={16}
                     align="center"
                     justify="center"
+                    style={{
+                      backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#3b82f6' : '#e5e7eb',
+                      borderWidth: 2,
+                      borderColor: isCurrent ? '#1d4ed8' : 'transparent',
+                    }}
                   >
                     {isCompleted ? (
                       <Check size={18} color="white" />
                     ) : (
-                      <Text color={isCurrent ? 'white' : '$color11'}>{index + 1}</Text>
+                      <Text color={isCurrent ? 'white' : '#6b7280'}>{index + 1}</Text>
                     )}
-                  </Circle>
+                  </Stack>
                   {!isLast && (
                     <Stack
-                      backgroundColor={isCompleted || isPast ? '$blue8' : '$color6'}
-                      opacity={isCompleted || isPast ? 0.85 : 0.4}
-                      style={{ width: 2, flexGrow: 1, minHeight: 24 }}
+                      style={{
+                        width: 2,
+                        flexGrow: 1,
+                        minHeight: 24,
+                        backgroundColor: isCompleted || isPast ? '#93c5fd' : '#e5e7eb',
+                        opacity: isCompleted || isPast ? 0.85 : 0.4,
+                      }}
                     />
                   )}
                 </Stack>
@@ -124,16 +128,12 @@ export function AssessmentProgress({
           </Row>
           <Row
             height={8}
-            backgroundColor="$color5"
-            borderRadius="$10"
-            overflow="hidden"
-            width="100%"
+            style={{ backgroundColor: '#e5e7eb', overflow: 'hidden', width: '100%' }}
+            borderRadius={10}
           >
             <Row
               height="100%"
-              backgroundColor="$blue9"
-              width={`${completionScore}%`}
-              animation="quick"
+              style={{ backgroundColor: '#3b82f6', width: `${completionScore}%` }}
             />
           </Row>
         </Stack>
@@ -152,22 +152,26 @@ export function AssessmentProgress({
               key={step.id}
               align="center"
               gap={8}
-              opacity={isPast || isCurrent || isCompleted ? 1 : 0.5}
+              style={{ opacity: isPast || isCurrent || isCompleted ? 1 : 0.5 }}
             >
-              <Circle
-                size={32}
-                backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
-                borderWidth={2}
-                borderColor={isCurrent ? '$blue11' : 'transparent'}
+              <Stack
+                width={32}
+                height={32}
+                borderRadius={16}
                 align="center"
                 justify="center"
+                style={{
+                  backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#3b82f6' : '#e5e7eb',
+                  borderWidth: 2,
+                  borderColor: isCurrent ? '#1d4ed8' : 'transparent',
+                }}
               >
                 {isCompleted ? (
-                  <Check size="md" color="white" />
+                  <Check size={24} color="white" />
                 ) : (
-                  <Text color={isCurrent ? 'white' : '$color11'}>{index + 1}</Text>
+                  <Text color={isCurrent ? 'white' : '#6b7280'}>{index + 1}</Text>
                 )}
-              </Circle>
+              </Stack>
               <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
             </Row>
           )
