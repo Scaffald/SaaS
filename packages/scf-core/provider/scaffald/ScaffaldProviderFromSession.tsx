@@ -11,10 +11,18 @@ import { useMemo } from 'react'
 import { useSessionContext } from '../../utils/supabase/useSessionContext'
 
 function getSupabaseApiBaseUrl(): string {
+  // Explicit override for API URL (must include /functions/v1/api for local Supabase)
+  const explicitApiUrl = process.env.EXPO_PUBLIC_SCAFFALD_API_URL
+  if (explicitApiUrl?.trim()) return explicitApiUrl.replace(/\/$/, '')
+
   const supabaseExtra = (Constants?.expoConfig?.extra as { supabase?: { url?: string } })?.supabase
   const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url
   if (!url) return ''
-  return `${url.replace(/\/$/, '')}/functions/v1/api`
+  const base = url.replace(/\/$/, '')
+  // Already includes API path (avoid double-append)
+  if (base.endsWith('/functions/v1/api')) return base
+  // Local Supabase API is at /functions/v1/api - requests to /v1/* alone hit Kong with no CORS
+  return `${base}/functions/v1/api`
 }
 
 function getSupabaseAnonKey(): string {

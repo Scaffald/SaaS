@@ -672,6 +672,22 @@ git commit --no-verify
 - **Naming**: PascalCase for components, camelCase for functions
 - **Imports**: Absolute imports via `@app/*`, `@scf/*` aliases
 
+### @scaffald/ui Prop Mapping (Tamagui Migration)
+
+When migrating from Tamagui-style props to scaffald-ui, use this mapping:
+
+| Tamagui | scaffald-ui |
+|---------|-------------|
+| `ai` | `align` |
+| `jc` | `justify` |
+| `f` | `flex` |
+| `position`, `borderWidth`, `borderColor` on layout | Pass via `style` |
+| `backgroundColor`, `padded`, `bordered` on Card | Use `style`, `padding`, `variant="outlined"` |
+| `chromeless` on Button | `variant="text"` |
+| `fontFamily`, `mt`, `textAlign` on Paragraph | Use `style` or `align` |
+| `"outlined"` (ButtonVariant) | `"outline"` |
+| `"$red12"`, `"$blue10"` for colors | Use semantic: `color="error"`, `color="primary"` |
+
 ---
 
 ## Deployment

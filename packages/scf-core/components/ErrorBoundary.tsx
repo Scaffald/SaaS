@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (__DEV__) {
       logger.error('ErrorBoundary caught error', error, {
         componentStack: errorInfo.componentStack,
-        digest: errorInfo.digest,
+        ...('digest' in errorInfo && { digest: (errorInfo as { digest?: string }).digest }),
       })
     }
 

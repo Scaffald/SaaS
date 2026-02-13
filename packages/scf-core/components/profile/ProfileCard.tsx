@@ -179,7 +179,7 @@ export const ProfileCard = memo(
         >
           {/* Header with score badge */}
           <Row justify="space-between" align="center">
-            <CardHeader title={name} action={avatar} />
+            <CardHeader title={name} action={avatar} children={undefined} />
             {score && (
               <Row
                 align="center"

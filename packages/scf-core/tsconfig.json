@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "composite": true,
     "noEmit": true,
     "skipLibCheck": true,
     "paths": {

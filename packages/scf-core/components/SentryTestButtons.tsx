@@ -77,7 +77,7 @@ export function SentryTestButtons() {
         </Button>
       </Stack>
 
-      <Text color="$gray10" marginTop={12}>
+      <Text color="$gray10" style={{ marginTop: 12 }}>
         ⚠️ Remove these test buttons before production deployment
       </Text>
     </Stack>

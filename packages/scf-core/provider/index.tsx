@@ -8,9 +8,10 @@ import { QueryClientProvider } from './react-query'
 import { ScaffaldProviderFromSession } from './scaffald/ScaffaldProviderFromSession'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
-import { ScaffaldJobsSdkProviderFromSession } from '../utils/jobs-sdk-context'
+import { ScaffaldJobsSdkProviderFromSession, useScaffaldJobsClient } from '../utils/jobs-sdk-context'
 
 export { loadThemePromise } from './theme/UniversalThemeProvider'
+export { useScaffaldJobsClient }
 
 export function Provider({
   initialSession,

@@ -1,54 +1,20 @@
+import { useSocialAuthHandlers } from '../hooks/useSocialAuthHandlers'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Caption, Row, Separator, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-
-import { AppleSignIn } from './AppleSignIn'
-import { GoogleSignIn } from './GoogleSignIn'
+import { SocialLoginGroup } from '@scaffald/ui'
+import { Platform } from 'react-native'
 
 export function SocialLogin() {
   const { t } = useTranslation()
+  const { onGooglePress, onApplePress } = useSocialAuthHandlers()
 
   return (
-    <Stack gap={20}>
-      <OrSeparator label={t('common.or')} />
-      <Row gap={12}>
-        <AppleSignIn />
-        <GoogleSignIn />
-      </Row>
-    </Stack>
-  )
-}
-
-function OrSeparator({ label }: { label: string }) {
-  const { theme } = useThemeContext()
-  const textTertiary = colors.text[theme].tertiary
-
-  return (
-    <Stack style={{ position: 'relative' }}>
-      <Stack
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        align="center"
-        justify="center"
-      >
-        <Separator style={{ flex: 1 }} />
-      </Stack>
-      <Stack align="center" justify="center">
-        <Caption
-          style={{
-            backgroundColor: 'transparent',
-            paddingHorizontal: 12,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            color: textTertiary,
-          }}
-        >
-          {label}
-        </Caption>
-      </Stack>
-    </Stack>
+    <SocialLoginGroup
+      onGooglePress={onGooglePress}
+      onApplePress={onApplePress}
+      orLabel={t('common.or')}
+      googleText={t('auth.login.googleButton')}
+      appleText={t('auth.login.appleButton')}
+      showApple={Platform.OS === 'web' || Platform.OS === 'ios'}
+    />
   )
 }

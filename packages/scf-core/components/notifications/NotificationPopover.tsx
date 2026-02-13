@@ -1,5 +1,5 @@
-import { Popover } from '@scaffald/ui'
-import { AlertCircle, Bell, Info, ShieldAlert, X } from 'lucide-react-native'
+import { Popover, PopoverHeader, PopoverContent } from '@scaffald/ui'
+import { AlertCircle, Bell, Info, ShieldAlert } from 'lucide-react-native'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react'
@@ -228,73 +228,14 @@ export function NotificationPopover({
     }
   }, [])
 
-  return (
-    <Popover placement="bottom-end" open={open} onOpenChange={handleOpenChange}>
-      <Popover.Trigger asChild>
-        <Button
-          ref={triggerRef}
-          borderStyle="unset"
-          borderWidth={0}
-          backgroundColor="transparent"
-          height={30}
-          position="relative"
-          aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-          onPress={() => setOpen(!open)}
-        >
-          <Bell size={20} />
-          {unreadCount > 0 && (
-            <Stack
-              position="absolute"
-              top={-4}
-              right={-4}
-              backgroundColor="$red9"
-              borderRadius="$10"
-              paddingHorizontal="xs"
-              paddingVertical="xs"
-              minWidth={20}
-              align="center"
-              justify="center"
-              style={{ zIndex: 1 }}
-            >
-              <Text color="white">{unreadCount > 99 ? '99+' : unreadCount}</Text>
-            </Stack>
-          )}
-        </Button>
-      </Popover.Trigger>
-
-      <Popover.Content
-        role="menu"
-        aria-labelledby="notifications-title"
-        animation="quick"
-        enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      >
-        {/* Header */}
-        <Row
-          justify="space-between"
-          align="center"
-          padding="md"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-        >
-          <Row align="center" gap={12}>
-            <Bell size={20} color="gray" />
-            <Text id="notifications-title" color="gray">
-              Notifications
-            </Text>
-          </Row>
-          <Row>
-            <Button
-              size="sm"
-              iconStart={X}
-              onPress={() => handleOpenChange(false)}
-              backgroundColor="transparent"
-              borderWidth={0}
-              aria-label="Close notifications"
-            />
-          </Row>
-        </Row>
-
+  const popoverContent = (
+    <>
+      <PopoverHeader
+        title="Notifications"
+        showCloseButton
+        onClose={() => handleOpenChange(false)}
+      />
+      <PopoverContent>
         {/* Content */}
         {isLoading ? (
           <Stack padding="md" align="center" gap={12}>
@@ -312,7 +253,7 @@ export function NotificationPopover({
             </Text>
           </Stack>
         ) : (
-          <ScrollView maxHeight={320} showsVerticalScrollIndicator={false}>
+          <ScrollView style={{ maxHeight: 320 }} showsVerticalScrollIndicator={false}>
             <Stack>
               {/* Unread Section */}
               {unreadNotifications.length > 0 && (
@@ -321,8 +262,7 @@ export function NotificationPopover({
                     padding="sm"
                     paddingHorizontal="md"
                     backgroundColor="$color2"
-                    borderBottomWidth={1}
-                    borderBottomColor="$borderColor"
+                    style={{ borderBottomWidth: 1, borderBottomColor: 'var(--color-border)' }}
                   >
                     <Text color="gray">Unread ({unreadNotifications.length})</Text>
                   </Row>
@@ -334,18 +274,16 @@ export function NotificationPopover({
                       return (
                         <Stack key={notification.id}>
                           <Card
-                            role="menuitem"
-                            tabIndex={0}
+                            pressable
                             padding="sm"
-                            backgroundColor="$color3"
-                            borderWidth={1}
-                            borderColor="$color5"
-                            borderRadius={0}
-                            pressStyle={{ backgroundColor: '$color4' }}
-                            hoverStyle={{ backgroundColor: '$color4' }}
                             onPress={() => handleNotificationClick(notification)}
-                            cursor="pointer"
-                            aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
+                            style={{
+                              backgroundColor: 'var(--color-3)',
+                              borderWidth: 1,
+                              borderColor: 'var(--color-5)',
+                              borderRadius: 0,
+                            }}
+                            accessibilityLabel={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
                             <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
@@ -358,14 +296,14 @@ export function NotificationPopover({
                                     width={6}
                                     height={6}
                                     backgroundColor="$blue9"
-                                    borderRadius="$10"
-                                    marginTop="xs"
+                                    borderRadius={8}
+                                    style={{ marginTop: 4 }}
                                   />
                                 </Row>
                                 <Text color="gray" style={{ lineHeight: 12 }}>
                                   {notification.preview}
                                 </Text>
-                                <Row gap={8} align="center" marginTop="xs">
+                                <Row gap={8} align="center" marginTop={8}>
                                   <Text color="gray">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
@@ -387,8 +325,8 @@ export function NotificationPopover({
                                 {notification.ctaLabel && (
                                   <Button
                                     size="sm"
-                                    marginTop="xs"
-                                    theme="info"
+                                    color="primary"
+                                    style={{ marginTop: 4 }}
                                     onPress={() => handleNotificationClick(notification)}
                                   >
                                     {notification.ctaLabel}
@@ -398,7 +336,7 @@ export function NotificationPopover({
                             </Row>
                           </Card>
                           {index < unreadNotifications.length - 1 && (
-                            <Separator backgroundColor="$borderColor" />
+                            <Separator style={{ backgroundColor: 'var(--color-border)' }} />
                           )}
                         </Stack>
                       )
@@ -409,7 +347,7 @@ export function NotificationPopover({
 
               {/* Separator between sections */}
               {unreadNotifications.length > 0 && readNotifications.length > 0 && (
-                <Separator backgroundColor="$borderColor" />
+                <Separator style={{ backgroundColor: 'var(--color-border)' }} />
               )}
 
               {/* Read Section */}
@@ -419,8 +357,7 @@ export function NotificationPopover({
                     padding="sm"
                     paddingHorizontal="md"
                     backgroundColor="$color2"
-                    borderBottomWidth={1}
-                    borderBottomColor="$borderColor"
+                    style={{ borderBottomWidth: 1, borderBottomColor: 'var(--color-border)' }}
                   >
                     <Text color="gray">Read</Text>
                   </Row>
@@ -432,18 +369,16 @@ export function NotificationPopover({
                       return (
                         <Stack key={notification.id}>
                           <Card
-                            role="menuitem"
-                            tabIndex={0}
+                            pressable
                             padding="sm"
-                            backgroundColor="$color2"
-                            borderWidth={0}
-                            borderRadius={0}
-                            opacity={0.7}
-                            pressStyle={{ backgroundColor: '$color3', opacity: 1 }}
-                            hoverStyle={{ backgroundColor: '$color3', opacity: 1 }}
                             onPress={() => handleNotificationClick(notification)}
-                            cursor="pointer"
-                            aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
+                            style={{
+                              backgroundColor: 'var(--color-2)',
+                              borderWidth: 0,
+                              borderRadius: 0,
+                              opacity: 0.7,
+                            }}
+                            accessibilityLabel={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
                             <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
@@ -452,7 +387,7 @@ export function NotificationPopover({
                                 <Text color="gray" style={{ lineHeight: 12 }}>
                                   {notification.preview}
                                 </Text>
-                                <Row gap={8} align="center" marginTop="xs">
+                                <Row gap={8} align="center" marginTop={8}>
                                   <Text color="gray">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
@@ -474,8 +409,8 @@ export function NotificationPopover({
                                 {notification.ctaLabel && (
                                   <Button
                                     size="sm"
-                                    marginTop="xs"
-                                    theme="info"
+                                    color="primary"
+                                    style={{ marginTop: 4 }}
                                     onPress={() => handleNotificationClick(notification)}
                                   >
                                     {notification.ctaLabel}
@@ -485,7 +420,7 @@ export function NotificationPopover({
                             </Row>
                           </Card>
                           {index < readNotifications.length - 1 && (
-                            <Separator backgroundColor="$borderColor" />
+                            <Separator style={{ backgroundColor: 'var(--color-border)' }} />
                           )}
                         </Stack>
                       )
@@ -496,7 +431,51 @@ export function NotificationPopover({
             </Stack>
           </ScrollView>
         )}
-      </Popover.Content>
+      </PopoverContent>
+    </>
+  )
+
+  return (
+    <Popover
+      placement="bottom-end"
+      open={open}
+      onOpenChange={handleOpenChange}
+      content={popoverContent}
+    >
+      <Button
+        ref={triggerRef}
+        variant="text"
+        color="gray"
+        style={{
+          borderWidth: 0,
+          backgroundColor: 'transparent',
+          height: 30,
+          position: 'relative',
+        }}
+        accessibilityLabel={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+        onPress={() => setOpen(!open)}
+      >
+        <Bell size={20} />
+        {unreadCount > 0 && (
+          <Stack
+            style={{
+              position: 'absolute',
+              top: -4,
+              right: -4,
+              backgroundColor: 'var(--red-9)',
+              borderRadius: 8,
+              paddingHorizontal: 4,
+              paddingVertical: 4,
+              minWidth: 20,
+              zIndex: 1,
+            }}
+          >
+            <Row align="center" justify="center">
+              <Text color="white">{unreadCount > 99 ? '99+' : unreadCount}</Text>
+            </Row>
+          </Stack>
+        )}
+      </Button>
     </Popover>
   )
 }

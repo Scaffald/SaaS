@@ -28,7 +28,7 @@ import {
 import { format } from 'date-fns'
 import { useAPIKeyUsage } from './hooks'
 
-interface APIKeyUsageData {
+export interface APIKeyUsageData {
   apiKeyId: string
   apiKeyName: string
   metrics: {
@@ -62,7 +62,7 @@ interface APIKeyUsageData {
   statusCodeBreakdown: Record<string, number>
 }
 
-interface APIKeyUsageChartProps {
+export interface APIKeyUsageChartProps {
   apiKeyId: string
   onClose?: () => void
 }
@@ -241,7 +241,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
 
   if (isLoading) {
     return (
-      <Stack f={1} jc="center" ai="center" padding={32}>
+      <Stack flex={1} justify="center" align="center" padding={32}>
         <Spinner size="lg" color="$blue10" />
         <Paragraph mt={16} color="$gray11">
           Loading usage analytics...
@@ -253,9 +253,9 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   if (!data) {
     return (
       <Card padded bordered>
-        <Stack ai="center" gap={16} padding="xl">
+        <Stack align="center" gap={16} padding="xl">
           <AlertCircle size={48} color="$gray9" />
-          <Stack ai="center" gap={8}>
+          <Stack align="center" gap={8}>
             <H4>No Data Available</H4>
             <Paragraph color="$gray11" textAlign="center">
               Unable to load usage analytics for this API key
@@ -267,9 +267,9 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   }
 
   return (
-    <Stack f={1} gap={16}>
+    <Stack flex={1} gap={16}>
       {/* Header */}
-      <Row jc="space-between" ai="center">
+      <Row justify="space-between" align="center">
         <Stack gap={8}>
           <H3>API Key Usage Analytics</H3>
           <Paragraph color="$gray11">{data.apiKeyName}</Paragraph>
@@ -301,16 +301,16 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
       {/* Key Metrics */}
       <Row gap={12} wrap>
         {/* Total Requests */}
-        <Card f={1} minWidth={200} padded bordered>
+        <Card flex={1} minWidth={200} padded bordered>
           <Stack gap={12}>
-            <Row jc="space-between" ai="center">
+            <Row justify="space-between" align="center">
               <Paragraph size="sm" color="$gray11">
                 Total Requests
               </Paragraph>
               <Activity size="lg" color="$blue10" />
             </Row>
             <H3>{data.metrics.totalRequests.toLocaleString()}</H3>
-            <Row ai="center" gap={8}>
+            <Row align="center" gap={8}>
               <TrendingUp size="md" color="$green10" />
               <Paragraph size="sm" color="$green10">
                 +12% from last period
@@ -320,16 +320,16 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
         </Card>
 
         {/* Success Rate */}
-        <Card f={1} minWidth={200} padded bordered>
+        <Card flex={1} minWidth={200} padded bordered>
           <Stack gap={12}>
-            <Row jc="space-between" ai="center">
+            <Row justify="space-between" align="center">
               <Paragraph size="sm" color="$gray11">
                 Success Rate
               </Paragraph>
               <CheckCircle size="lg" color="$green10" />
             </Row>
             <H3>{successRate}%</H3>
-            <Row ai="center" gap={8}>
+            <Row align="center" gap={8}>
               <Paragraph size="sm" color="$gray11">
                 {data.metrics.successfulRequests.toLocaleString()} successful
               </Paragraph>
@@ -338,16 +338,16 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
         </Card>
 
         {/* Avg Response Time */}
-        <Card f={1} minWidth={200} padded bordered>
+        <Card flex={1} minWidth={200} padded bordered>
           <Stack gap={12}>
-            <Row jc="space-between" ai="center">
+            <Row justify="space-between" align="center">
               <Paragraph size="sm" color="$gray11">
                 Avg Response Time
               </Paragraph>
               <Clock size="lg" color="$orange10" />
             </Row>
             <H3>{data.metrics.averageResponseTime}ms</H3>
-            <Row ai="center" gap={8}>
+            <Row align="center" gap={8}>
               <ArrowDown size="md" color="$green10" />
               <Paragraph size="sm" color="$green10">
                 8% faster
@@ -357,16 +357,16 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
         </Card>
 
         {/* Errors */}
-        <Card f={1} minWidth={200} padded bordered>
+        <Card flex={1} minWidth={200} padded bordered>
           <Stack gap={12}>
-            <Row jc="space-between" ai="center">
+            <Row justify="space-between" align="center">
               <Paragraph size="sm" color="$gray11">
                 Failed Requests
               </Paragraph>
               <XCircle size="lg" color="$red10" />
             </Row>
             <H3>{data.metrics.failedRequests}</H3>
-            <Row ai="center" gap={8}>
+            <Row align="center" gap={8}>
               <Paragraph size="sm" color="$gray11">
                 {((data.metrics.failedRequests / data.metrics.totalRequests) * 100).toFixed(2)}%
                 error rate
@@ -379,7 +379,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
       {/* Rate Limit Status */}
       <Card bordered padding="md" backgroundColor="$blue2">
         <Stack gap={12}>
-          <Row jc="space-between" ai="center">
+          <Row justify="space-between" align="center">
             <H4>Rate Limit Status</H4>
             <Card
               backgroundColor={getRateLimitColor()}
@@ -393,9 +393,9 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
             </Card>
           </Row>
 
-          <Row ai="center" gap={16}>
-            <Stack f={1} gap={8}>
-              <Row jc="space-between">
+          <Row align="center" gap={16}>
+            <Stack flex={1} gap={8}>
+              <Row justify="space-between">
                 <Paragraph size="sm" color="$gray11">
                   Remaining
                 </Paragraph>
@@ -424,7 +424,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
       {/* Requests Timeline (Simple visualization) */}
       <Card bordered padding="md">
         <Stack gap={16}>
-          <Row jc="space-between" ai="center">
+          <Row justify="space-between" align="center">
             <H4>Request Volume</H4>
             <BarChart3 size="lg" color="$blue10" />
           </Row>
@@ -437,12 +437,12 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
 
               return (
                 <Stack key={index} gap={4}>
-                  <Row jc="space-between" ai="center">
+                  <Row justify="space-between" align="center">
                     <Paragraph size="sm" color="$gray11" minWidth={60}>
                       {day.date}
                     </Paragraph>
                     <Card
-                      f={1}
+                      flex={1}
                       height={24}
                       backgroundColor="$gray3"
                       borderRadius={8}
@@ -471,9 +471,9 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
             {data.endpointBreakdown.map((endpoint, index) => (
               <Card key={index} backgroundColor="$gray2" padding="sm" borderRadius={12}>
                 <Stack gap={8}>
-                  <Row jc="space-between" ai="center">
-                    <Stack f={1}>
-                      <Row ai="center" gap={8}>
+                  <Row justify="space-between" align="center">
+                    <Stack flex={1}>
+                      <Row align="center" gap={8}>
                         <Card
                           backgroundColor={
                             endpoint.method === 'GET'
@@ -543,7 +543,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                   borderRadius={12}
                   minWidth={100}
                 >
-                  <Stack gap={4} ai="center">
+                  <Stack gap={4} align="center">
                     <Paragraph
                       size="sm"
                       color={isSuccess ? '$green11' : isClientError ? '$orange11' : '$red11'}

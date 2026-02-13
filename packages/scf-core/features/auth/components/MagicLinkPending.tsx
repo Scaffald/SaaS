@@ -8,8 +8,8 @@ import { CheckCircle2 } from 'lucide-react-native'
 import { TRPCClientError } from '@trpc/client'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Box, Paragraph, Spinner, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Box, Card, Paragraph, Spinner, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -99,26 +99,26 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const displayEmail = email ?? t('auth.verify.fallbackEmail')
 
   return (
-    <Box flex={1} align="center" justify="center" padding="md" style={{ width: '100%' }}>
-      <Box
+    <Box flex={1} align="center" justify="center" padding={spacing[20]} style={{ width: '100%' }}>
+      <Card
+        variant="elevated"
+        radius="lg"
+        elevation="md"
+        padding="lg"
         style={{
-          borderWidth: 1,
-          borderColor: colors.border.light.default,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 16,
-          overflow: 'hidden',
-          padding: 16,
-          paddingHorizontal: 12,
           minWidth: 300,
           width: '100%',
           maxWidth: 450,
         }}
       >
         {codeEntered && (
-          <Box style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+          <Box style={{ flexDirection: 'row', gap: spacing[8], marginBottom: spacing[8] }}>
             {verified && (
-              <Paragraph style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+              <Paragraph
+                style={{
+                  color: theme === 'light' ? colors.green[700] : colors.green[300],
+                }}
+              >
                 {t('auth.verify.successBanner')}
               </Paragraph>
             )}
@@ -137,7 +137,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         >
           <Stack
             justify="space-between"
-            gap={16}
+            gap={spacing[16]}
             style={{ opacity: code !== undefined ? 0 : 1, width: '100%' }}
           >
             <EmailHeader email={displayEmail} />
@@ -150,7 +150,11 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
             {error && (
               <Paragraph
-                style={{ color: theme === "light" ? colors.error[700] : colors.error[300], textAlign: 'center', fontSize: 14 }}
+                size="sm"
+                style={{
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
+                  textAlign: 'center',
+                }}
               >
                 {error}
               </Paragraph>
@@ -175,7 +179,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             </Box>
           )}
         </Box>
-      </Box>
+      </Card>
     </Box>
   )
 }

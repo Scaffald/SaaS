@@ -14,6 +14,8 @@ import type { ComponentType } from 'react'
 
 interface WelcomeScreenProps {
   onOnboarded?: () => void
+  /** When true, shows single static branded panel (no carousel). Use in auth split layout. */
+  brandedPanel?: boolean
 }
 
 const createDefaultSlides = (
@@ -52,7 +54,7 @@ const createDefaultSlides = (
   },
 ]
 
-export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
+export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
   const { data, isLoading } = api.cms.getActiveWelcomeSlides.useQuery()
   const { t } = useTranslation()
 
@@ -89,9 +91,16 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
         })
       : createDefaultSlides(t)
 
+  const stepsToShow = brandedPanel ? steps.slice(0, 1) : steps
+
   return (
     <ThemeProvider>
-      <Onboarding autoSwipe onOnboarded={onOnboarded} steps={steps} />
+      <Onboarding
+        autoSwipe={!brandedPanel}
+        onOnboarded={onOnboarded}
+        steps={stepsToShow}
+        staticMode={brandedPanel}
+      />
     </ThemeProvider>
   )
 }

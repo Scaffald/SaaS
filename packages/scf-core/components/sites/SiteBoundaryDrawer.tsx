@@ -1,13 +1,16 @@
-import type { Boundary, Coordinate } from '@scaffald/ui'
+import type { MapCoordinate } from '@scaffald/ui'
 import { Edit3, Plus, Trash2 } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
 import { Button, Card, Input, Text, Row, Stack } from '@scaffald/ui'
+
+/** Polygon boundary as array of [lng, lat] coordinates */
+export type Boundary = MapCoordinate[]
 
 export interface SiteBoundaryDrawerProps {
   boundary?: Boundary
   onBoundaryChange?: (boundary: Boundary) => void
   onAreaChange?: (areaSqft: number) => void
-  center?: [number, number]
+  center?: MapCoordinate
   zoom?: number
 }
 
@@ -61,7 +64,7 @@ export function SiteBoundaryDrawer({
 
   const handleAddPoint = () => {
     // Add a new point at the center of the current boundary or at map center
-    const newPoint: Coordinate = center
+    const newPoint: MapCoordinate = center
     const newCoords = [...coordinates, newPoint]
     setCoordinates(newCoords)
     onBoundaryChange?.(newCoords)
@@ -72,12 +75,12 @@ export function SiteBoundaryDrawer({
       // Need at least 3 points for a polygon
       return
     }
-    const newCoords = coordinates.filter((_, i) => i !== index)
+    const newCoords = coordinates.filter((_: MapCoordinate, i: number) => i !== index)
     setCoordinates(newCoords)
     onBoundaryChange?.(newCoords)
   }
 
-  const handleCoordinateChange = (index: number, coord: Coordinate) => {
+  const handleCoordinateChange = (index: number, coord: MapCoordinate) => {
     const newCoords = [...coordinates]
     newCoords[index] = coord
     setCoordinates(newCoords)
@@ -98,7 +101,10 @@ export function SiteBoundaryDrawer({
           </Row>
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
-          <Card padding="md" backgroundColor="$gray2" minHeight={400} borderRadius={16}>
+          <Card
+            padding="md"
+            style={{ backgroundColor: '$gray2', minHeight: 400, borderRadius: 16 }}
+          >
             <Text color="$gray10" style={{ textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
@@ -117,7 +123,10 @@ export function SiteBoundaryDrawer({
 
           {/* Area Display */}
           {areaSqft > 0 && (
-            <Card padding="md" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+            <Card
+              padding="md"
+              style={{ backgroundColor: '$blue2', borderColor: '$blue8', borderWidth: 1 }}
+            >
               <Text color="$blue11">
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft
@@ -132,11 +141,11 @@ export function SiteBoundaryDrawer({
               <Text color="$gray10">No points added yet. Click "Add Point" to start drawing.</Text>
             ) : (
               <Stack gap={8}>
-                {coordinates.map((coord, index) => (
+                {coordinates.map((coord: MapCoordinate, index: number) => (
                   <Card
                     key={`${coord[0]}-${coord[1]}-${index}`}
                     padding="sm"
-                    backgroundColor="$gray2"
+                    style={{ backgroundColor: '$gray2' }}
                   >
                     <Row gap={8} align="center" justify="space-between">
                       <Row gap={8} style={{ flex: 1 }}>
@@ -144,7 +153,6 @@ export function SiteBoundaryDrawer({
                         {editingIndex === index ? (
                           <Row gap={8} style={{ flex: 1 }}>
                             <Input
-                              size="sm"
                               value={coord[0].toString()}
                               onChangeText={(value) => {
                                 const lng = Number.parseFloat(value) || 0
@@ -154,7 +162,6 @@ export function SiteBoundaryDrawer({
                               keyboardType="numeric"
                             />
                             <Input
-                              size="sm"
                               value={coord[1].toString()}
                               onChangeText={(value) => {
                                 const lat = Number.parseFloat(value) || 0
@@ -198,8 +205,8 @@ export function SiteBoundaryDrawer({
 
           {coordinates.length > 0 && (
             <Button
-              backgroundColor="$red9"
-              color="$red12"
+              color="error"
+              style={{ backgroundColor: '$red9' }}
               onPress={() => {
                 setCoordinates([])
                 onBoundaryChange?.([])

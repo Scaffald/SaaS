@@ -3,43 +3,57 @@ import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-let mockPlatform: 'web' | 'ios' = 'web'
-
 vi.mock('@scaffald/ui', () => ({
-  Row: ({ children }: { children?: ReactNode }) => (
-    <div data-testid="social-login-row">{children}</div>
+  SocialLoginGroup: ({
+    orLabel,
+    googleText,
+    appleText,
+    showApple,
+    onGooglePress,
+    onApplePress,
+  }: {
+    orLabel?: string
+    googleText?: string
+    appleText?: string
+    showApple?: boolean
+    onGooglePress?: () => void
+    onApplePress?: () => void
+  }) => (
+    <div data-testid="social-login-group">
+      <span data-testid="or-label">{orLabel}</span>
+      <span data-testid="google-text">{googleText}</span>
+      <span data-testid="apple-text">{appleText}</span>
+      <span data-testid="show-apple">{String(showApple)}</span>
+      <button
+        data-testid="google-button"
+        type="button"
+        onClick={onGooglePress}
+      >
+        Google
+      </button>
+      <button data-testid="apple-button" type="button" onClick={onApplePress}>
+        Apple
+      </button>
+    </div>
   ),
-  Stack: ({ children }: { children?: ReactNode }) => (
-    <div data-testid="social-login-stack">{children}</div>
-  ),
-  Separator: () => <div data-testid="separator" />,
-  Caption: ({ children }: { children?: ReactNode }) => (
-    <span data-testid="caption">{children}</span>
-  ),
-  usePlatform: () => ({ platform: mockPlatform }),
-  useThemeContext: () => ({ theme: 'light' as const, setTheme: () => {}, toggleTheme: () => {} }),
-}))
-
-vi.mock('@scaffald/ui/tokens', () => ({
-  colors: {
-    bg: { primary: '#fff' },
-    text: {
-      light: { secondary: '#414e62', tertiary: '#97a1af' },
-      dark: { secondary: '#97a1af', tertiary: '#6b7280' },
-    },
-  },
 }))
 
 vi.mock('@scf/core/utils/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock('../AppleSignIn', () => ({
-  AppleSignIn: () => <div data-testid="apple-sign-in" />,
+vi.mock('react-native', () => ({
+  Platform: { OS: 'web' },
 }))
 
-vi.mock('../GoogleSignIn', () => ({
-  GoogleSignIn: () => <div data-testid="google-sign-in" />,
+const mockOnGooglePress = vi.fn()
+const mockOnApplePress = vi.fn()
+
+vi.mock('../../hooks/useSocialAuthHandlers', () => ({
+  useSocialAuthHandlers: () => ({
+    onGooglePress: mockOnGooglePress,
+    onApplePress: mockOnApplePress,
+  }),
 }))
 
 describe('SocialLogin', () => {
@@ -47,24 +61,25 @@ describe('SocialLogin', () => {
     vi.clearAllMocks()
   })
 
-  it('renders Apple and Google sign in options with OR separator on web', async () => {
-    mockPlatform = 'web'
+  it('renders SocialLoginGroup with correct props', async () => {
     const { SocialLogin } = await import('../SocialLogin')
-    const { getByTestId, getByText } = render(<SocialLogin />)
+    const { getByTestId } = render(<SocialLogin />)
 
-    expect(getByTestId('apple-sign-in')).toBeInTheDocument()
-    expect(getByTestId('google-sign-in')).toBeInTheDocument()
-    expect(getByText(/or/i)).toBeInTheDocument()
-    expect(getByTestId('social-login-row')).toBeInTheDocument()
+    expect(getByTestId('social-login-group')).toBeInTheDocument()
+    expect(getByTestId('or-label')).toHaveTextContent('common.or')
+    expect(getByTestId('google-text')).toHaveTextContent('auth.login.googleButton')
+    expect(getByTestId('apple-text')).toHaveTextContent('auth.login.appleButton')
+    expect(getByTestId('show-apple')).toHaveTextContent('true')
   })
 
-  it('renders Apple and Google sign in on native', async () => {
-    mockPlatform = 'ios'
+  it('provides Google and Apple handlers to SocialLoginGroup', async () => {
     const { SocialLogin } = await import('../SocialLogin')
-    const { getByTestId, getByText } = render(<SocialLogin />)
+    const { getByTestId } = render(<SocialLogin />)
 
-    expect(getByTestId('apple-sign-in')).toBeInTheDocument()
-    expect(getByTestId('google-sign-in')).toBeInTheDocument()
-    expect(getByText(/or/i)).toBeInTheDocument()
+    getByTestId('google-button').click()
+    expect(mockOnGooglePress).toHaveBeenCalledTimes(1)
+
+    getByTestId('apple-button').click()
+    expect(mockOnApplePress).toHaveBeenCalledTimes(1)
   })
 })

@@ -51,7 +51,7 @@ export const ProfileLayout = ({
 
         {/* Tab Navigation - positioned at top */}
         {showTabs && (
-          <Stack marginHorizontal="$7" marginTop={12}>
+          <Stack marginHorizontal={28} marginTop={12}>
             <ProfileTabs />
           </Stack>
         )}

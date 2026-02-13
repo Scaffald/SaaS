@@ -18,7 +18,7 @@ import {
 import { Copy, Key, MoreVertical, Plus, Trash2 } from 'lucide-react-native'
 import { format } from 'date-fns'
 
-interface APIKey {
+export interface APIKey {
   id: string
   name: string
   key_prefix: string
@@ -30,7 +30,7 @@ interface APIKey {
   expires_at: string | null
 }
 
-interface APIKeysListProps {
+export interface APIKeysListProps {
   keys: APIKey[]
   isLoading?: boolean
   onCreateKey: () => void
@@ -83,9 +83,9 @@ export function APIKeysList({
 
   if (isLoading) {
     return (
-      <Stack f={1} jc="center" ai="center" padding="xl">
-        <Spinner size="lg" color="$blue10" />
-        <Paragraph mt={16} color="$gray11">
+      <Stack flex={1} justify="center" align="center" padding="xl">
+        <Spinner size="lg" color="primary" />
+        <Paragraph style={{ marginTop: 16 }} color="$gray11">
           Loading API keys...
         </Paragraph>
       </Stack>
@@ -93,9 +93,9 @@ export function APIKeysList({
   }
 
   return (
-    <Stack f={1} gap={16}>
+    <Stack flex={1} gap={16}>
       {/* Header */}
-      <Row jc="space-between" ai="center">
+      <Row justify="space-between" align="center">
         <Stack gap={8}>
           <H2>API Keys</H2>
           <Paragraph color="$gray11">
@@ -111,12 +111,12 @@ export function APIKeysList({
 
       {/* Keys List */}
       {keys.length === 0 ? (
-        <Card padded bordered>
-          <Stack ai="center" gap={16} padding="xl">
+        <Card padding="lg" variant="outlined">
+          <Stack align="center" gap={16} padding="xl">
             <Key size={48} color="$gray9" />
-            <Stack ai="center" gap={8}>
+            <Stack align="center" gap={8}>
               <H4>No API Keys</H4>
-              <Paragraph color="$gray11" textAlign="center">
+              <Paragraph color="$gray11" align="center">
                 Create your first API key to start using the Scaffald SDK
               </Paragraph>
             </Stack>
@@ -128,19 +128,21 @@ export function APIKeysList({
       ) : (
         <Stack gap={12}>
           {keys.map((key) => (
-            <Card key={key.id} padded bordered hoverStyle={{ borderColor: '$blue8' }}>
+            <Card key={key.id} padding="lg" variant="outlined">
               <Stack gap={16}>
                 {/* Key Header */}
-                <Row jc="space-between" ai="flex-start">
-                  <Stack gap={8} f={1}>
-                    <Row ai="center" gap={8}>
+                <Row justify="space-between" align="flex-start">
+                  <Stack gap={8} flex={1}>
+                    <Row align="center" gap={8}>
                       <H4>{key.name}</H4>
                       {!key.is_active && (
                         <Card
-                          backgroundColor="$red3"
-                          paddingHorizontal={8}
-                          paddingVertical={4}
-                          borderRadius={8}
+                          style={{
+                            backgroundColor: '$red3',
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 8,
+                          }}
                         >
                           <Paragraph size="sm" color="$red11">
                             REVOKED
@@ -150,20 +152,22 @@ export function APIKeysList({
                     </Row>
 
                     {/* Key Prefix */}
-                    <Row ai="center" gap={8}>
+                    <Row align="center" gap={8}>
                       <Card
-                        backgroundColor="$gray3"
-                        paddingHorizontal={12}
-                        paddingVertical={8}
-                        borderRadius={12}
+                        style={{
+                          backgroundColor: '$gray3',
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 12,
+                        }}
                       >
-                        <Paragraph fontFamily="$mono" size="sm">
+                        <Paragraph size="sm" style={{ fontFamily: '$mono' }}>
                           {key.key_prefix}
                         </Paragraph>
                       </Card>
                       <Button
                         size="sm"
-                        chromeless
+                        variant="text"
                         iconStart={Copy}
                         onPress={() => copyToClipboard(key.key_prefix, key.id)}
                       >
@@ -173,7 +177,7 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Actions Menu */}
-                  <Button size="sm" chromeless iconStart={MoreVertical} />
+                  <Button size="sm" variant="text" iconStart={MoreVertical} />
                 </Row>
 
                 {/* Key Metadata */}
@@ -184,10 +188,12 @@ export function APIKeysList({
                       Rate Limit
                     </Paragraph>
                     <Card
-                      backgroundColor={getRateLimitBadgeColor(key.rate_limit_tier)}
-                      paddingHorizontal={8}
-                      paddingVertical={4}
-                      borderRadius={8}
+                      style={{
+                        backgroundColor: getRateLimitBadgeColor(key.rate_limit_tier),
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 8,
+                      }}
                     >
                       <Paragraph size="sm" color="$gray12">
                         {key.rate_limit_tier.toUpperCase()} -{' '}
@@ -197,7 +203,7 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Scopes */}
-                  <Stack gap={4} f={1}>
+                  <Stack gap={4} flex={1}>
                     <Paragraph size="sm" color="$gray11">
                       Scopes
                     </Paragraph>
@@ -205,10 +211,12 @@ export function APIKeysList({
                       {key.scopes.map((scope) => (
                         <Card
                           key={scope}
-                          backgroundColor="$blue3"
-                          paddingHorizontal={8}
-                          paddingVertical={4}
-                          borderRadius={8}
+                          style={{
+                            backgroundColor: '$blue3',
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 8,
+                          }}
                         >
                           <Paragraph size="sm" color="$blue11">
                             {scope}

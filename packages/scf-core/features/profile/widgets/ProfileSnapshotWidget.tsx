@@ -10,7 +10,16 @@ import {
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, H4, Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import {
+  Avatar,
+  Button,
+  H4,
+  ProgressBarBase,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
@@ -131,14 +140,19 @@ export function ProfileSnapshotWidget() {
 
         {/* Avatar & Name Section */}
         <Stack gap={12} align="center">
-          <Avatar size={32}>
-            <Avatar.Image
-              source={{
-                uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
-              }}
-            />
-            <Avatar.Fallback backgroundColor="$color6" />
-          </Avatar>
+          <Avatar
+            size={32}
+            src={getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || undefined}
+            initials={
+              displayName
+                ?.split(/\s+/)
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2) ?? ''
+            }
+            color="gray"
+          />
 
           <Stack gap={4} align="center">
             <Text>{displayName}</Text>
@@ -152,14 +166,16 @@ export function ProfileSnapshotWidget() {
           {/* Open to Work Badge */}
           {generalInfo.open_to_work && (
             <Row
-              backgroundColor="$green3"
               paddingHorizontal={12}
               paddingVertical={6}
-              borderRadius="$10"
-              borderWidth={1}
-              borderColor="$green7"
+              borderRadius={10}
+              style={{
+                backgroundColor: colors.green[100],
+                borderWidth: 1,
+                borderColor: colors.green[600],
+              }}
             >
-              <Text color="$green11">Open to Work</Text>
+              <Text style={{ color: colors.green[800] }}>Open to Work</Text>
             </Row>
           )}
         </Stack>
@@ -183,9 +199,7 @@ export function ProfileSnapshotWidget() {
               <Text style={{ color: colors.text[theme].secondary }}>Completion</Text>
               <Text>{completion}%</Text>
             </Row>
-            <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }} />
-            </Progress>
+            <ProgressBarBase value={completion} color="primary" />
           </Stack>
 
           {/* Stats Row */}
@@ -254,21 +268,22 @@ export function ProfileSnapshotWidget() {
                     : displayCode
                       ? `${displayCode} · ${skillName}`
                       : skillName
+                const isVerified = skill.verified === true
 
                 return (
                   <Row
                     key={skill.id as string}
-                    backgroundColor="$color3"
                     paddingHorizontal={10}
                     paddingVertical={6}
                     borderRadius={8}
-                    borderWidth={1}
-                    borderColor={skill.verified ? '$green7' : '$color6'}
+                    style={{
+                      backgroundColor: colors.gray[100],
+                      borderWidth: 1,
+                      borderColor: isVerified ? colors.green[600] : colors.gray[300],
+                    }}
                   >
-                    {skill.verified && (
-                      <Text color="$green10" marginRight={4}>
-                        ✓
-                      </Text>
+                    {isVerified && (
+                      <Text style={{ color: colors.green[700], marginRight: 4 }}>✓</Text>
                     )}
                     <Text>{chipLabel}</Text>
                   </Row>

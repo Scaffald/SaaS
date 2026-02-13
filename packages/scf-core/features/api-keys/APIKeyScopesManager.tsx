@@ -5,18 +5,18 @@
 
 import { useState } from 'react'
 import {
-  Button,
   Card,
-  Dialog,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
   H3,
   H4,
   Paragraph,
   Separator,
-  Spinner,
   Row,
   Stack,
   Checkbox,
-  ScrollView,
 } from '@scaffald/ui'
 import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from 'lucide-react-native'
 
@@ -188,48 +188,16 @@ export function APIKeyScopesManager({
   }
 
   return (
-    <Dialog modal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap={16}
-          width="90%"
-          maxWidth={700}
-          maxHeight="85vh"
-        >
-          <Stack gap={16} f={1}>
-            {/* Header */}
-            <Dialog.Title>
-              <H3>Manage API Key Permissions</H3>
-            </Dialog.Title>
-            <Dialog.Description>
-              <Paragraph color="$gray11">{apiKey.name}</Paragraph>
-            </Dialog.Description>
-
+    <Modal visible={isOpen} onClose={handleClose}>
+      <ModalHeader title="Manage API Key Permissions" subtitle={apiKey.name} />
+      <ModalContent>
+        <Stack gap={16}>
             {!apiKey.is_active && (
-              <Card backgroundColor="$orange2" borderColor="$orange6" borderWidth={1} padding="sm">
-                <Row ai="center" gap={8}>
+              <Card
+                padding="sm"
+                style={{ backgroundColor: '$orange2', borderColor: '$orange6', borderWidth: 1 }}
+              >
+                <Row align="center" gap={8}>
                   <AlertCircle size="lg" color="$orange11" />
                   <Paragraph color="$orange11">
                     This API key is revoked. Updating scopes will not re-activate it.
@@ -241,10 +209,13 @@ export function APIKeyScopesManager({
             <Separator />
 
             {/* Info Card */}
-            <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} padding="sm">
-              <Row ai="flex-start" gap={12}>
-                <Info size="lg" color="$blue11" mt={2} />
-                <Stack f={1} gap={8}>
+            <Card
+              padding="sm"
+              style={{ backgroundColor: '$blue2', borderColor: '$blue6', borderWidth: 1 }}
+            >
+              <Row align="flex-start" gap={12}>
+                <Info size={24} color="$blue11" />
+                <Stack flex={1} gap={8}>
                   <Paragraph color="$blue11">Permission Scopes</Paragraph>
                   <Paragraph size="sm" color="$blue11">
                     Scopes control what your API key can access. Grant only the minimum permissions
@@ -255,11 +226,10 @@ export function APIKeyScopesManager({
             </Card>
 
             {/* Scopes Selection - Scrollable */}
-            <ScrollView maxHeight={400}>
-              <Stack gap={16}>
+            <Stack gap={16} style={{ maxHeight: 400 }}>
                 {/* Read Permissions */}
                 <Stack gap={12}>
-                  <Row ai="center" gap={8}>
+                  <Row align="center" gap={8}>
                     <Shield size="lg" color="$green10" />
                     <H4>Read Permissions</H4>
                   </Row>
@@ -268,38 +238,40 @@ export function APIKeyScopesManager({
                       <Card
                         key={scope.id}
                         padding="sm"
-                        backgroundColor={selectedScopes.includes(scope.id) ? '$green2' : '$gray2'}
-                        borderColor={selectedScopes.includes(scope.id) ? '$green6' : '$gray6'}
-                        borderWidth={1}
-                        pressStyle={{ scale: 0.98 }}
+                        pressable
                         onPress={() => toggleScope(scope.id)}
-                        cursor="pointer"
+                        style={{
+                          backgroundColor: selectedScopes.includes(scope.id) ? '$green2' : '$gray2',
+                          borderColor: selectedScopes.includes(scope.id) ? '$green6' : '$gray6',
+                          borderWidth: 1,
+                        }}
                       >
-                        <Row ai="flex-start" gap={12}>
+                        <Row align="flex-start" gap={12}>
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
                             onChange={() => toggleScope(scope.id)}
-                            mt={2}
                           />
-                          <Stack f={1} gap={8}>
+                          <Stack flex={1} gap={8}>
                             <Paragraph>{scope.label}</Paragraph>
                             <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.requires && scope.requires.length > 0 && (
-                              <Row ai="center" gap={8} wrap>
+                              <Row align="center" gap={8} wrap>
                                 <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
                                   <Card
                                     key={req}
-                                    backgroundColor="$gray4"
-                                    paddingHorizontal={8}
-                                    paddingVertical={4}
-                                    borderRadius={8}
+                                    style={{
+                                      backgroundColor: '$gray4',
+                                      paddingHorizontal: 8,
+                                      paddingVertical: 4,
+                                      borderRadius: 8,
+                                    }}
                                   >
-                                    <Paragraph size="sm" color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="sm" color="$gray11" style={{ fontFamily: '$mono' }}>
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -315,7 +287,7 @@ export function APIKeyScopesManager({
 
                 {/* Write Permissions */}
                 <Stack gap={12}>
-                  <Row ai="center" gap={8}>
+                  <Row align="center" gap={8}>
                     <Lock size="lg" color="$orange10" />
                     <H4>Write Permissions</H4>
                   </Row>
@@ -324,53 +296,57 @@ export function APIKeyScopesManager({
                       <Card
                         key={scope.id}
                         padding="sm"
-                        backgroundColor={selectedScopes.includes(scope.id) ? '$orange2' : '$gray2'}
-                        borderColor={selectedScopes.includes(scope.id) ? '$orange6' : '$gray6'}
-                        borderWidth={1}
-                        pressStyle={{ scale: 0.98 }}
+                        pressable
                         onPress={() => toggleScope(scope.id)}
-                        cursor="pointer"
+                        style={{
+                          backgroundColor: selectedScopes.includes(scope.id) ? '$orange2' : '$gray2',
+                          borderColor: selectedScopes.includes(scope.id) ? '$orange6' : '$gray6',
+                          borderWidth: 1,
+                        }}
                       >
-                        <Row ai="flex-start" gap={12}>
+                        <Row align="flex-start" gap={12}>
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
                             onChange={() => toggleScope(scope.id)}
-                            mt={2}
                           />
-                          <Stack f={1} gap={8}>
+                          <Stack flex={1} gap={8}>
                             <Paragraph>{scope.label}</Paragraph>
                             <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.warning && (
                               <Card
-                                backgroundColor="$orange2"
-                                borderColor="$orange6"
-                                borderWidth={1}
-                                padding="xs"
+                                padding="sm"
+                                style={{
+                                  backgroundColor: '$orange2',
+                                  borderColor: '$orange6',
+                                  borderWidth: 1,
+                                }}
                               >
-                                <Row ai="flex-start" gap={8}>
-                                  <AlertCircle size="md" color="$orange11" mt={2} />
-                                  <Paragraph size="sm" color="$orange11" f={1}>
+                                <Row align="flex-start" gap={8}>
+                                  <AlertCircle size={20} color="$orange11" />
+                                  <Paragraph size="sm" color="$orange11" style={{ flex: 1 }}>
                                     {scope.warning}
                                   </Paragraph>
                                 </Row>
                               </Card>
                             )}
                             {scope.requires && scope.requires.length > 0 && (
-                              <Row ai="center" gap={8} wrap>
+                              <Row align="center" gap={8} wrap>
                                 <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
                                   <Card
                                     key={req}
-                                    backgroundColor="$gray4"
-                                    paddingHorizontal={8}
-                                    paddingVertical={4}
-                                    borderRadius={8}
+                                    style={{
+                                      backgroundColor: '$gray4',
+                                      paddingHorizontal: 8,
+                                      paddingVertical: 4,
+                                      borderRadius: 8,
+                                    }}
                                   >
-                                    <Paragraph size="sm" color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="sm" color="$gray11" style={{ fontFamily: '$mono' }}>
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -384,10 +360,9 @@ export function APIKeyScopesManager({
                   </Stack>
                 </Stack>
               </Stack>
-            </ScrollView>
 
             {/* Summary */}
-            <Card backgroundColor="$gray3" padding="sm">
+            <Card padding="sm" style={{ backgroundColor: '$gray3' }}>
               <Stack gap={8}>
                 <Paragraph size="sm" color="$gray11">
                   Selected Permissions
@@ -401,10 +376,12 @@ export function APIKeyScopesManager({
                     selectedScopes.map((scope) => (
                       <Card
                         key={scope}
-                        backgroundColor="$blue3"
-                        paddingHorizontal={8}
-                        paddingVertical={4}
-                        borderRadius={8}
+                        style={{
+                          backgroundColor: '$blue3',
+                          paddingHorizontal: 8,
+                          paddingVertical: 4,
+                          borderRadius: 8,
+                        }}
                       >
                         <Paragraph size="sm" color="$blue11">
                           {scope}
@@ -418,11 +395,18 @@ export function APIKeyScopesManager({
 
             {/* Changes Summary */}
             {hasChanges() && (
-              <Card backgroundColor="$yellow2" borderColor="$yellow6" borderWidth={1} padding="sm">
+              <Card
+                padding="sm"
+                style={{
+                  backgroundColor: '$yellow2',
+                  borderColor: '$yellow6',
+                  borderWidth: 1,
+                }}
+              >
                 <Stack gap={8}>
                   <Paragraph color="$yellow11">Pending Changes</Paragraph>
                   {getAddedScopes().length > 0 && (
-                    <Row gap={8} ai="center">
+                    <Row gap={8} align="center">
                       <CheckCircle size="md" color="$green11" />
                       <Paragraph size="sm" color="$gray11">
                         Adding: {getAddedScopes().join(', ')}
@@ -430,7 +414,7 @@ export function APIKeyScopesManager({
                     </Row>
                   )}
                   {getRemovedScopes().length > 0 && (
-                    <Row gap={8} ai="center">
+                    <Row gap={8} align="center">
                       <XCircle size="md" color="$red11" />
                       <Paragraph size="sm" color="$gray11">
                         Removing: {getRemovedScopes().join(', ')}
@@ -443,10 +427,17 @@ export function APIKeyScopesManager({
 
             {/* Error Message */}
             {error && (
-              <Card backgroundColor="$red2" borderColor="$red6" borderWidth={1} padding="sm">
-                <Row ai="center" gap={8}>
-                  <AlertCircle size="lg" color="$red11" />
-                  <Paragraph color="$red11" f={1}>
+              <Card
+                padding="sm"
+                style={{
+                  backgroundColor: '$red2',
+                  borderColor: '$red6',
+                  borderWidth: 1,
+                }}
+              >
+                <Row align="center" gap={8}>
+                  <AlertCircle size={24} color="$red11" />
+                  <Paragraph color="$red11" style={{ flex: 1 }}>
                     {error}
                   </Paragraph>
                 </Row>
@@ -455,33 +446,37 @@ export function APIKeyScopesManager({
 
             {/* Success Message */}
             {success && (
-              <Card backgroundColor="$green2" borderColor="$green6" borderWidth={1} padding="sm">
-                <Row ai="center" gap={8}>
+              <Card
+                padding="sm"
+                style={{
+                  backgroundColor: '$green2',
+                  borderColor: '$green6',
+                  borderWidth: 1,
+                }}
+              >
+                <Row align="center" gap={8}>
                   <CheckCircle size="lg" color="$green11" />
                   <Paragraph color="$green11">Scopes updated successfully!</Paragraph>
                 </Row>
               </Card>
             )}
 
-            {/* Actions */}
-            <Row gap={12} jc="flex-end">
-              <Dialog.Close asChild>
-                <Button variant="outline" disabled={isUpdating || success}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-              <Button
-                color="primary"
-                onPress={handleUpdate}
-                disabled={isUpdating || !hasChanges() || selectedScopes.length === 0 || success}
-                iconStart={isUpdating ? <Spinner /> : undefined}
-              >
-                {isUpdating ? 'Updating...' : 'Update Permissions'}
-              </Button>
-            </Row>
-          </Stack>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+        </Stack>
+      </ModalContent>
+      <ModalActions
+        orientation="right"
+        primaryAction={{
+          label: isUpdating ? 'Updating...' : 'Update Permissions',
+          onPress: handleUpdate,
+          loading: isUpdating,
+          disabled: isUpdating || !hasChanges() || selectedScopes.length === 0 || success,
+        }}
+        secondaryAction={{
+          label: 'Cancel',
+          onPress: handleClose,
+          disabled: isUpdating || success,
+        }}
+      />
+    </Modal>
   )
 }

@@ -218,6 +218,7 @@ export const JobCard = memo(
             <CardHeader
               title={title}
               subtitle={organization?.name}
+              children={undefined}
               action={
                 <>
                   {hasApplied && (

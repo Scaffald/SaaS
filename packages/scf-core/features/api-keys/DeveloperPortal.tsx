@@ -134,7 +134,7 @@ export function DeveloperPortal() {
   }
 
   return (
-    <Stack f={1} gap={16} padding="md">
+    <Stack flex={1} gap={16} padding="md">
       {/* Main List */}
       <APIKeysList
         keys={keys}

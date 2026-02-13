@@ -9,10 +9,11 @@ import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useUser } from '@scf/core/utils/useUser'
 import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
-import { Button, Form, Input, Paragraph, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Card, Form, H5, Input, Paragraph, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 import type { AuthChangeEvent } from '@supabase/auth-js'
 import { TRPCClientError } from '@trpc/client'
+import { Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -124,53 +125,70 @@ export const LoginScreen = () => {
 
   return (
     <FormProvider {...form}>
-      <Stack gap={20} padding={20}>
-        <Stack gap={20} marginBottom={12} align="center">
-          <ScaffaldLogo width={200} height={33} />
-          <Stack gap={spacing[2]} align="center">
-            <Paragraph size="sm" style={{ textAlign: 'center', color: textSecondary }}>
-              {t('auth.login.description')}
-            </Paragraph>
-          </Stack>
-        </Stack>
-
-        <Form onSubmit={handleSubmit} gap={20}>
-          <Stack gap={20}>
-            <Input
-              placeholder={t('auth.login.emailPlaceholder')}
-              value={form.watch('email')}
-              onChangeText={(text) => form.setValue('email', text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-
-            {form.formState.errors.email && (
-              <Paragraph size="sm" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                {form.formState.errors.email.message}
+      <Stack
+        gap={spacing[20]}
+        padding={spacing[20]}
+        align="center"
+        style={{ width: '100%', maxWidth: 440 }}
+      >
+        <Card variant="elevated" radius="lg" elevation="md" padding="lg" style={{ width: '100%' }}>
+          <Stack gap={spacing[20]} align="center">
+            <ScaffaldLogo width={200} height={33} />
+            <Stack gap={spacing[2]} align="center">
+              <H5
+                serif
+                weight="regular"
+                align="center"
+                style={{
+                  color: colors.text[theme].primary,
+                  fontFamily: 'RobotoSerif_400Regular',
+                }}
+              >
+                {t('auth.login.title')}
+              </H5>
+              <Paragraph size="sm" style={{ textAlign: 'center', color: textSecondary }}>
+                {t('auth.login.description')}
               </Paragraph>
-            )}
-
-            <Button
-              onPress={handleSubmit}
-              disabled={isSubmitting || requestMagicLink.isPending}
-              color="primary"
-              variant="filled"
-              style={{
-                opacity: isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
-              }}
-            >
-              {isSubmitting || requestMagicLink.isPending
-                ? t('auth.login.sending')
-                : t('auth.login.submitButton')}
-            </Button>
-
-            <SocialLogin />
-            <Paragraph size="sm" style={{ textAlign: 'center', color: textTertiary }}>
-              {t('auth.login.socialDescription')}
-            </Paragraph>
+            </Stack>
           </Stack>
-        </Form>
+
+          <Form onSubmit={handleSubmit} gap={spacing[20]}>
+            <Stack gap={spacing[20]}>
+              <Input
+                label={t('auth.login.emailLabel')}
+                placeholder={t('auth.login.emailPlaceholder')}
+                value={form.watch('email')}
+                onChangeText={(text) => form.setValue('email', text)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                iconStart={Mail}
+                error={!!form.formState.errors.email}
+                errorMessage={form.formState.errors.email?.message}
+              />
+
+              <Button
+                onPress={handleSubmit}
+                disabled={isSubmitting || requestMagicLink.isPending}
+                color="primary"
+                variant="filled"
+                style={{
+                  alignSelf: 'stretch',
+                  opacity: isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
+                }}
+              >
+                {isSubmitting || requestMagicLink.isPending
+                  ? t('auth.login.sending')
+                  : t('auth.login.submitButton')}
+              </Button>
+
+              <SocialLogin />
+              <Paragraph size="sm" style={{ textAlign: 'center', color: textTertiary }}>
+                {t('auth.login.socialDescription')}
+              </Paragraph>
+            </Stack>
+          </Form>
+        </Card>
       </Stack>
       {isLoadingSession && <LoadingOverlay />}
     </FormProvider>
