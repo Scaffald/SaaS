@@ -51,10 +51,10 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
 
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text>Verified work history</Text>
-          <Paragraph color="gray">
+          <Paragraph color="$gray11">
             Recent verified work logs selected by this worker. Projects appear here only when the
             worker has chosen to share them publicly.
           </Paragraph>
@@ -63,10 +63,10 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
         {isLoading ? (
           <Row gap={8} align="center">
             <Spinner size="sm" />
-            <Text color="gray">Loading work history…</Text>
+            <Text color="$gray11">Loading work history…</Text>
           </Row>
         ) : workLogs.length === 0 ? (
-          <Paragraph color="gray">
+          <Paragraph color="$gray11">
             No verified work logs are currently visible on this profile.
           </Paragraph>
         ) : (
@@ -112,9 +112,9 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                     <Stack gap={4}>
                       <Text>{group.projectName ?? 'Project'}</Text>
                       {group.organizationName ? (
-                        <Text color="gray">{group.organizationName}</Text>
+                        <Text color="$gray11">{group.organizationName}</Text>
                       ) : null}
-                      <Text color="gray">{dateLabel}</Text>
+                      <Text color="$gray11">{dateLabel}</Text>
                     </Stack>
                     <Row
                       gap={8}
@@ -124,7 +124,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       borderRadius={16}
                       backgroundColor="$green4"
                     >
-                      <ShieldCheck size={16} color="$green11" />
+                      <ShieldCheck size="md" color="$green11" />
                       <Text color="$green11">Verified by Scaffald</Text>
                     </Row>
                   </Row>
@@ -157,14 +157,14 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                               justify="center"
                               backgroundColor="$color3"
                             >
-                              <Text color="gray">Photo unavailable</Text>
+                              <Text color="$gray11">Photo unavailable</Text>
                             </Stack>
                           )}
                         </Card>
                       ))}
                     </Row>
                   ) : (
-                    <Paragraph color="gray">No photos were shared for this project.</Paragraph>
+                    <Paragraph color="$gray11">No photos were shared for this project.</Paragraph>
                   )}
                 </Stack>
               )

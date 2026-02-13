@@ -143,10 +143,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load skills</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
-            size={8}
+            size="xs"
             onPress={() => {
               void refetch()
             }}
@@ -196,7 +196,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           {showEdit && (
             <Button
               variant="outline"
-              size={8}
+              size="xs"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -224,10 +224,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           ) : error ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text color="$red10">Failed to load skills</Text>
-              <Text color="gray">{(error as unknown as Record<string, unknown>).message}</Text>
+              <Text color="$gray11">{(error as unknown as Record<string, unknown>).message}</Text>
               <Button
                 variant="primary"
-                size={8}
+                size="xs"
                 onPress={() => {
                   void (refetch as unknown as () => Promise<unknown>)()
                 }}
@@ -256,7 +256,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
                 <Stack key={taxonomy} gap={8}>
                   {/* Taxonomy Header */}
-                  <Text color="gray" textTransform="uppercase">
+                  <Text color="$gray11" textTransform="uppercase">
                     {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                   </Text>
 
@@ -320,10 +320,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text color="$red10">Failed to load soft skills</Text>
-              <Text color="gray">{softSkillsError.message}</Text>
+              <Text color="$gray11">{softSkillsError.message}</Text>
               <Button
                 variant="primary"
-                size={8}
+                size="xs"
                 onPress={() => {
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }}
@@ -359,7 +359,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Skills Chart for Active Category */}
               {categoryChartData && categoryChartData.length > 0 && (
                 <Stack gap={8} align="center">
-                  <Text color="gray">{categoryLabels[activeCategory]} Skills</Text>
+                  <Text color="$gray11">{categoryLabels[activeCategory]} Skills</Text>
                   <SkillsChart
                     datasets={categoryChartData}
                     height={variant === 'compact' ? 200 : 300}
@@ -367,7 +367,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     maxValue={100}
                     isAnimated={true}
                   />
-                  <Text color="gray" style={{ textAlign: 'center' }}>
+                  <Text color="$gray11" style={{ textAlign: 'center' }}>
                     Individual skill ratings in {categoryLabels[activeCategory]}
                   </Text>
                 </Stack>
@@ -385,12 +385,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Action Buttons */}
               {showEdit && (
                 <Row justify="flex-end" gap={8} paddingTop={8} flexWrap="wrap">
-                  <Button variant="outline" size={12} onPress={() => setShowHistoryModal(true)}>
+                  <Button variant="outline" size="sm" onPress={() => setShowHistoryModal(true)}>
                     View History
                   </Button>
                   <Button
                     variant="primary"
-                    size={12}
+                    size="sm"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
                     Update Assessment
@@ -409,19 +409,19 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         size="lg"
         showCloseButton={true}
       >
-        <Stack gap={16} padding={16}>
+        <Stack gap={16} padding="md">
           {/* View Toggle */}
           <Row gap={8} justify="center">
             <Button
               variant={historyView === 'timeline' ? 'primary' : 'outlined'}
-              size={12}
+              size="sm"
               onPress={() => setHistoryView('timeline')}
             >
               Timeline
             </Button>
             <Button
               variant={historyView === 'progression' ? 'primary' : 'outlined'}
-              size={12}
+              size="sm"
               onPress={() => setHistoryView('progression')}
             >
               Progression

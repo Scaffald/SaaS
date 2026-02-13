@@ -25,7 +25,7 @@ export function PersonalityAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
           <Spinner size="lg" color="$blue7" />
-          <Text color="gray">Loading...</Text>
+          <Text color="$gray11">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -63,8 +63,8 @@ export function PersonalityAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">Personality Assessment</Text>
-          <Text color="gray">
+          <Text color="$gray11">Personality Assessment</Text>
+          <Text color="$gray11">
             Discover your personality traits through a comprehensive assessment including color
             psychology and personality questions.
           </Text>
@@ -74,13 +74,13 @@ export function PersonalityAssessmentWidget() {
         {hasStarted && (
           <Stack gap={spacing.xs}>
             <Row justify="space-between" align="center">
-              <Text color="gray">{getStepLabel(currentStep)}</Text>
+              <Text color="$gray11">{getStepLabel(currentStep)}</Text>
               <Text color="$blue8">{completionScore}%</Text>
             </Row>
             <Progress value={completionScore} max={100}>
               <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
             </Progress>
-            <Text color="gray">
+            <Text color="$gray11">
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
             </Text>
           </Stack>
@@ -90,14 +90,14 @@ export function PersonalityAssessmentWidget() {
         <Button
           variant="primary"
           onPress={handleStart}
-          size={20}
+          size="lg"
           marginTop={hasStarted ? spacing.xs : spacing.md}
         >
           <Button.Text>{hasStarted ? 'Continue Assessment' : 'Start Assessment'}</Button.Text>
         </Button>
 
         {!hasStarted && (
-          <Text color="gray">
+          <Text color="$gray11">
             This assessment takes about 10-15 minutes and includes color tests and 120 personality
             questions.
           </Text>

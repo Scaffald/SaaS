@@ -269,13 +269,13 @@ export function ProfileSkillsRight() {
                   <Stack gap={8}>
                     <Text>{skill.skill_details?.name || 'Unknown Skill'}</Text>
                     {skill.skill_details?.display_code && (
-                      <Text color="gray">Code: {skill.skill_details.display_code}</Text>
+                      <Text color="$gray11">Code: {skill.skill_details.display_code}</Text>
                     )}
 
                     {/* Proficiency Level */}
                     <Row justify="space-between" align="center" paddingTop={8}>
                       <Stack gap={4}>
-                        <Text color="gray">Proficiency</Text>
+                        <Text color="$gray11">Proficiency</Text>
                         <Text>
                           {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)

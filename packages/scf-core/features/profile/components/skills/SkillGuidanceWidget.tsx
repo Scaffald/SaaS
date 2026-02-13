@@ -28,7 +28,7 @@ export function SkillGuidanceWidget({ skillGuidance }: SkillGuidanceWidgetProps)
     <Stack gap={12}>
       <Stack gap={4}>
         {skillGuidance.tips.map((tip) => (
-          <Text key={tip} color="gray">
+          <Text key={tip} color="$gray11">
             • {tip}
           </Text>
         ))}

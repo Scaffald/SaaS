@@ -66,7 +66,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   if (appQuery.isLoading) {
     return (
-      <Stack flex={1} padding={16} gap={16}>
+      <Stack flex={1} padding="md" gap={16}>
         <SizableText>Loading...</SizableText>
       </Stack>
     )
@@ -74,7 +74,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   if (!app) {
     return (
-      <Stack flex={1} padding={16} gap={16}>
+      <Stack flex={1} padding="md" gap={16}>
         <SizableText>App not found</SizableText>
       </Stack>
     )
@@ -174,43 +174,43 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Row>
 
       {/* App Details */}
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <Stack gap={12}>
-          <SizableText size={20}>Application Details</SizableText>
+          <SizableText size="lg">Application Details</SizableText>
 
           <Stack gap={8}>
-            <SizableText size={12} color="gray">
+            <SizableText size="sm" color="$gray11">
               Description
             </SizableText>
-            <Paragraph size={12}>{app.description || 'No description provided'}</Paragraph>
+            <Paragraph size="sm">{app.description || 'No description provided'}</Paragraph>
           </Stack>
 
           <Separator />
 
           <Stack gap={8}>
-            <SizableText size={12} color="gray">
+            <SizableText size="sm" color="$gray11">
               Client ID
             </SizableText>
-            <SizableText size={12} fontFamily="$mono" data-testid="oauth-app-client-id">
+            <SizableText size="sm" fontFamily="$mono" data-testid="oauth-app-client-id">
               {app.client_id}
             </SizableText>
           </Stack>
 
           <Stack gap={8}>
-            <SizableText size={12} color="gray">
+            <SizableText size="sm" color="$gray11">
               Homepage URL
             </SizableText>
-            <SizableText size={12} color="$blue10">
+            <SizableText size="sm" color="$blue10">
               {app.homepage_url || 'Not provided'}
             </SizableText>
           </Stack>
 
           {app.privacy_policy_url && (
             <Stack gap={8}>
-              <SizableText size={12} color="gray">
+              <SizableText size="sm" color="$gray11">
                 Privacy Policy URL
               </SizableText>
-              <SizableText size={12} color="$blue10">
+              <SizableText size="sm" color="$blue10">
                 {app.privacy_policy_url}
               </SizableText>
             </Stack>
@@ -218,10 +218,10 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
           {app.terms_of_service_url && (
             <Stack gap={8}>
-              <SizableText size={12} color="gray">
+              <SizableText size="sm" color="$gray11">
                 Terms of Service URL
               </SizableText>
-              <SizableText size={12} color="$blue10">
+              <SizableText size="sm" color="$blue10">
                 {app.terms_of_service_url}
               </SizableText>
             </Stack>
@@ -230,39 +230,39 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           <Separator />
 
           <Stack gap={8}>
-            <SizableText size={12} color="gray">
+            <SizableText size="sm" color="$gray11">
               Owner Email
             </SizableText>
-            <SizableText size={12}>{app.owner_email || 'Not provided'}</SizableText>
+            <SizableText size="sm">{app.owner_email || 'Not provided'}</SizableText>
           </Stack>
 
           <Stack gap={8}>
-            <SizableText size={12} color="gray">
+            <SizableText size="sm" color="$gray11">
               Created
             </SizableText>
-            <SizableText size={12}>{new Date(app.created_at).toLocaleString()}</SizableText>
+            <SizableText size="sm">{new Date(app.created_at).toLocaleString()}</SizableText>
           </Stack>
 
           {app.approved_at && (
             <Stack gap={8}>
-              <SizableText size={12} color="gray">
+              <SizableText size="sm" color="$gray11">
                 Approved
               </SizableText>
-              <SizableText size={12}>{new Date(app.approved_at).toLocaleString()}</SizableText>
+              <SizableText size="sm">{new Date(app.approved_at).toLocaleString()}</SizableText>
             </Stack>
           )}
         </Stack>
       </Card>
 
       {/* Redirect URIs */}
-      <Card padding={16} gap={16} data-testid="oauth-app-redirect-uris">
+      <Card padding="md" gap={16} data-testid="oauth-app-redirect-uris">
         <Stack gap={12}>
-          <SizableText size={20}>Redirect URIs</SizableText>
+          <SizableText size="lg">Redirect URIs</SizableText>
           <Stack gap={8}>
             {app.redirect_uris.map((uri, index) => (
               <Stack key={index} gap={4}>
                 <SizableText
-                  size={12}
+                  size="sm"
                   fontFamily="$mono"
                   color="$blue10"
                   data-testid={`oauth-app-redirect-uri-${index}`}
@@ -276,9 +276,9 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Card>
 
       {/* Allowed Scopes */}
-      <Card padding={16} gap={16} data-testid="oauth-app-scopes">
+      <Card padding="md" gap={16} data-testid="oauth-app-scopes">
         <Stack gap={12}>
-          <SizableText size={20}>Allowed Scopes</SizableText>
+          <SizableText size="lg">Allowed Scopes</SizableText>
           {app.allowed_scopes.length > 0 ? (
             <Row gap={8} flexWrap="wrap">
               {app.allowed_scopes.map((scope) => (
@@ -293,7 +293,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
               ))}
             </Row>
           ) : (
-            <Paragraph size={12} color="gray" data-testid="oauth-app-no-scopes">
+            <Paragraph size="sm" color="$gray11" data-testid="oauth-app-no-scopes">
               No scopes approved yet
             </Paragraph>
           )}
@@ -315,13 +315,13 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
               {/* Scope Selection */}
               <Stack gap={12}>
-                <SizableText size={16}>Select Scopes</SizableText>
+                <SizableText size="md">Select Scopes</SizableText>
                 <Stack gap={8} maxHeight={300} overflow="scroll">
                   {scopes.map((scope) => (
                     <Row key={scope.id} gap={8} align="center">
                       <Checkbox
                         checked={selectedScopes.includes(scope.scope)}
-                        onCheckedChange={(checked) => {
+                        onChange={(checked) => {
                           if (checked) {
                             setSelectedScopes([...selectedScopes, scope.scope])
                           } else {
@@ -330,8 +330,8 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                         }}
                       />
                       <Stack flex={1}>
-                        <SizableText size={12}>{scope.display_name}</SizableText>
-                        <SizableText size={8} color="gray">
+                        <SizableText size="sm">{scope.display_name}</SizableText>
+                        <SizableText size="xs" color="$gray11">
                           {scope.description}
                         </SizableText>
                       </Stack>
@@ -342,7 +342,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
               {/* Trust Level */}
               <Stack gap={12}>
-                <SizableText size={16}>Trust Level</SizableText>
+                <SizableText size="md">Trust Level</SizableText>
                 <Row gap={8}>
                   <Button
                     variant={trustLevel === 'active' ? 'default' : 'outlined'}
@@ -359,7 +359,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                     Trusted
                   </Button>
                 </Row>
-                <Paragraph size={8} color="gray">
+                <Paragraph size="xs" color="$gray11">
                   {trustLevel === 'active'
                     ? 'Active apps require user consent for each authorization'
                     : 'Trusted apps can skip the consent screen'}
@@ -399,7 +399,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
               </Stack>
 
               <Stack gap={8}>
-                <SizableText size={12}>Rejection Reason (Optional)</SizableText>
+                <SizableText size="sm">Rejection Reason (Optional)</SizableText>
                 <Input
                   value={rejectReason}
                   onChangeText={setRejectReason}

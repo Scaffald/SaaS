@@ -166,7 +166,7 @@ export function EmploymentSection({
 
   if (isLoadingEmployment) {
     return (
-      <Stack gap={16} padding={16} flex={1} justify="center" align="center">
+      <Stack gap={16} padding="md" flex={1} justify="center" align="center">
         <Spinner size="lg" />
         <Text>Loading employment preferences...</Text>
       </Stack>
@@ -233,7 +233,7 @@ export function EmploymentSection({
             render={({ field: openToTravelField }) => (
               <OpenToTravelCard
                 checked={openToTravelField.value ?? true}
-                onCheckedChange={openToTravelField.onChange}
+                onChange={openToTravelField.onChange}
                 travelDistanceValue={travelDistanceMiles ?? 25}
                 onTravelDistanceChange={(value) => {
                   setValue('travel_distance_miles', value, { shouldValidate: true })
@@ -254,7 +254,7 @@ export function EmploymentSection({
             render={({ field }) => (
               <USResidentToggle
                 checked={field.value || false}
-                onCheckedChange={field.onChange}
+                onChange={field.onChange}
                 disabled={readOnly}
               />
             )}
@@ -265,7 +265,7 @@ export function EmploymentSection({
             render={({ field }) => (
               <USPassportToggle
                 checked={field.value || false}
-                onCheckedChange={field.onChange}
+                onChange={field.onChange}
                 disabled={readOnly}
               />
             )}
@@ -285,11 +285,11 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Car size={8} color="gray" />}
+                  icon={<Car size="xs" color="$gray11" />}
                   title="I have a valid driver's license"
                   description="Class D (standard license) is automatically selected. Add any additional classes below."
                   checked={isExpanded}
-                  onCheckedChange={(checked: boolean) => {
+                  onChange={(checked: boolean) => {
                     if (readOnly) return
                     setIsExpanded(checked)
                     if (checked) {
@@ -306,7 +306,7 @@ export function EmploymentSection({
                         <Row key={license} gap={12} align="center">
                           <CustomCheckbox
                             checked={field.value?.includes(license) || false}
-                            onCheckedChange={(checked: boolean) => {
+                            onChange={(checked: boolean) => {
                               if (readOnly) return
                               const current = field.value || []
                               if (checked) {
@@ -363,11 +363,11 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Shield size={8} color="gray" />}
+                  icon={<Shield size="xs" color="$gray11" />}
                   title="Former/Current Military"
                   description="Select all that apply"
                   checked={isExpanded}
-                  onCheckedChange={(checked: boolean) => {
+                  onChange={(checked: boolean) => {
                     if (readOnly) return
                     setIsExpanded(checked)
                     if (!checked) {
@@ -381,7 +381,7 @@ export function EmploymentSection({
                         <Row key={status} gap={12} align="center">
                           <CustomCheckbox
                             checked={field.value?.includes(status) || false}
-                            onCheckedChange={(checked: boolean) => {
+                            onChange={(checked: boolean) => {
                               if (readOnly) return
                               const current = field.value || []
                               if (checked) {
@@ -417,11 +417,11 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Calendar size={8} color="gray" />}
+                  icon={<Calendar size="xs" color="$gray11" />}
                   title="I'm available for work"
                   description="Select all that apply"
                   checked={isExpanded}
-                  onCheckedChange={(checked: boolean) => {
+                  onChange={(checked: boolean) => {
                     if (readOnly) return
                     setIsExpanded(checked)
                     if (!checked) {
@@ -435,7 +435,7 @@ export function EmploymentSection({
                         <Row key={option} gap={12} align="center">
                           <CustomCheckbox
                             checked={field.value?.includes(option) || false}
-                            onCheckedChange={(checked: boolean) => {
+                            onChange={(checked: boolean) => {
                               if (readOnly) return
                               const current = field.value || []
                               if (checked) {

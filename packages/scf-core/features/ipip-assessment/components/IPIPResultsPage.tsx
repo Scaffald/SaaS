@@ -39,7 +39,7 @@ export function IPIPResultsPage() {
   if (results.isLoading) {
     return (
       <Stack gap={16} padding={32} align="center" aria-live="polite">
-        <Text color="gray">Loading your results...</Text>
+        <Text color="$gray11">Loading your results...</Text>
       </Stack>
     )
   }
@@ -53,13 +53,13 @@ export function IPIPResultsPage() {
   if (results.error && !results.hasPartialResults) {
     return (
       <Stack gap={16} padding={32} align="center" aria-live="assertive">
-        <AlertCircle size={12} color="$red10" />
+        <AlertCircle size="sm" color="$red10" />
         <Text color="$red10">Error Loading Results</Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
         <Row gap={12}>
-          <Button icon={RefreshCcw} onPress={handleRetry} theme="blue">
+          <Button icon={RefreshCcw} onPress={handleRetry} color="primary">
             Retry
           </Button>
           <Button variant="outline" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
@@ -74,8 +74,8 @@ export function IPIPResultsPage() {
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
       <Stack gap={16} padding={32} align="center">
-        <Text color="gray">No Results Yet</Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11">No Results Yet</Text>
+        <Text color="$gray11" textAlign="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
@@ -89,11 +89,11 @@ export function IPIPResultsPage() {
   const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
-    <Stack gap={24} width="100%" padding={16} style={{ maxWidth: 1000, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" padding="md" style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">Your Personality Results</Text>
-        <Text color="gray">
+        <Text color="$gray11">Your Personality Results</Text>
+        <Text color="$gray11">
           Discover your Big Five personality traits and how they shape your work style.
         </Text>
       </Stack>
@@ -120,7 +120,7 @@ export function IPIPResultsPage() {
 
         <Tabs.Content
           value="narrative"
-          padding={16}
+          padding="md"
           backgroundColor="$color1"
           borderBottomLeftRadius={16}
           borderBottomRightRadius={16}
@@ -138,7 +138,7 @@ export function IPIPResultsPage() {
 
         <Tabs.Content
           value="chart"
-          padding={16}
+          padding="md"
           backgroundColor="$color1"
           borderBottomLeftRadius={16}
           borderBottomRightRadius={16}
@@ -167,7 +167,7 @@ export function IPIPResultsPage() {
       {hasDataErrors && (
         <Stack
           gap={8}
-          padding={16}
+          padding="md"
           backgroundColor="$yellow2"
           borderRadius={16}
           borderWidth={1}
@@ -183,7 +183,7 @@ export function IPIPResultsPage() {
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
-          <Button size={12} variant="outline" icon={RefreshCcw} onPress={handleRetry} marginTop={8}>
+          <Button size="sm" variant="outline" icon={RefreshCcw} onPress={handleRetry} marginTop={8}>
             Refresh Data
           </Button>
         </Stack>

@@ -45,7 +45,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Spinner size="lg" />
-          <Text color="gray">Loading portfolio...</Text>
+          <Text color="$gray11">Loading portfolio...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -87,10 +87,10 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         borderRadius={12}
                       />
                     )}
-                    <Stack gap={8} padding={12}>
+                    <Stack gap={8} padding="sm">
                       <Text numberOfLines={2}>{item.title}</Text>
                       {item.description && variant === 'full' && (
-                        <Text color="gray" numberOfLines={3}>
+                        <Text color="$gray11" numberOfLines={3}>
                           {/* Render rich text description - simplified for now */}
                           {typeof item.description === 'string'
                             ? item.description
@@ -99,8 +99,8 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                       )}
                       {imageUrl && (
                         <Row gap={8} align="center" marginTop={8}>
-                          <Eye size={14} color="gray" />
-                          <Text color="gray">Click to view</Text>
+                          <Eye size={14} color="$gray11" />
+                          <Text color="$gray11">Click to view</Text>
                         </Row>
                       )}
                     </Stack>
@@ -140,7 +140,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                   {selectedItem.description && (
                     <Stack gap={8}>
                       <Text>Description</Text>
-                      <Text color="gray" lineHeight={16}>
+                      <Text color="$gray11" lineHeight={16}>
                         {typeof selectedItem.description === 'string'
                           ? selectedItem.description
                           : 'Rich text description'}

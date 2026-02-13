@@ -180,7 +180,7 @@ export function ApplicationWizard({
     <Stack flex={1} backgroundColor="$background">
       {/* Header */}
       <Stack
-        padding={16}
+        padding="md"
         backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
@@ -188,10 +188,10 @@ export function ApplicationWizard({
       >
         <Row justify="space-between" align="flex-start" width="100%">
           <Stack gap={4} flex={1}>
-            <Text color="gray">
+            <Text color="$gray11">
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
             </Text>
-            <Text color="gray">{organizationName}</Text>
+            <Text color="$gray11">{organizationName}</Text>
           </Stack>
           {/* Save Status Indicator */}
           <SaveStatusIndicator
@@ -211,9 +211,9 @@ export function ApplicationWizard({
 
       {/* Error Display */}
       {submitError && (
-        <Stack padding={16} backgroundColor="$red2" borderBottomWidth={1} borderBottomColor="$red7">
+        <Stack padding="md" backgroundColor="$red2" borderBottomWidth={1} borderBottomColor="$red7">
           <Row gap={8} align="center">
-            <AlertCircle size={20} color="$red10" />
+            <AlertCircle size="lg" color="$red10" />
             <Text color="$red11" flex={1}>
               {submitError.message || 'An error occurred'}
             </Text>
@@ -223,7 +223,7 @@ export function ApplicationWizard({
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <Stack padding={16} align="center">
+        <Stack padding="md" align="center">
           {currentStep === 'screening' && (
             <ScreeningStep
               answers={screeningAnswers}
@@ -311,12 +311,12 @@ export function ApplicationWizard({
           backgroundColor="rgba(0,0,0,0.5)"
           align="center"
           justify="center"
-          padding={16}
+          padding="md"
         >
           <Stack
             backgroundColor="$background"
             borderRadius={16}
-            padding={24}
+            padding="xl"
             gap={16}
             maxWidth={400}
             width="100%"
@@ -324,18 +324,18 @@ export function ApplicationWizard({
             borderColor="$borderColor"
           >
             <Stack gap={8}>
-              <Text color="gray">Cancel Application?</Text>
-              <Text color="gray">
+              <Text color="$gray11">Cancel Application?</Text>
+              <Text color="$gray11">
                 Your progress has been auto-saved. You can return to complete your application
                 later.
               </Text>
             </Stack>
 
             <Row gap={12} justify="flex-end">
-              <Button size={16} variant="outline" onPress={() => setShowCancelConfirm(false)}>
+              <Button size="md" variant="outline" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>
-              <Button size={16} theme="error" onPress={confirmCancel}>
+              <Button size="md" theme="error" onPress={confirmCancel}>
                 Exit Application
               </Button>
             </Row>

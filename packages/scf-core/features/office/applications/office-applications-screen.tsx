@@ -171,7 +171,7 @@ export const OfficeApplicationsScreen = () => {
     return (
       <Stack flex={1} align="center" justify="center" backgroundColor="$background">
         <Spinner size="lg" />
-        <Text marginTop={16} color="gray">
+        <Text marginTop={16} color="$gray11">
           Loading applications...
         </Text>
       </Stack>
@@ -181,10 +181,10 @@ export const OfficeApplicationsScreen = () => {
   // Error state
   if (isError) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16}>
+      <Stack flex={1} align="center" justify="center" padding="md">
         <Text color="$red10">Error Loading Applications</Text>
         <Stack align="center">
-          <Text color="gray" marginTop={8}>
+          <Text color="$gray11" marginTop={8}>
             {error?.message || 'Failed to load applications. Please try again.'}
           </Text>
         </Stack>
@@ -193,24 +193,24 @@ export const OfficeApplicationsScreen = () => {
   }
 
   return (
-    <Stack flex={1} padding={16} backgroundColor="$background">
+    <Stack flex={1} padding="md" backgroundColor="$background">
       {/* Header */}
       <Row justify="space-between" align="center" marginBottom={16}>
         <Stack>
           <H2>Applications</H2>
-          <Text color="gray">{filteredApplications.length} total applications</Text>
+          <Text color="$gray11">{filteredApplications.length} total applications</Text>
         </Stack>
 
         <Row gap={8}>
           <Button
-            size={12}
+            size="sm"
             onPress={() => setViewMode('kanban')}
             variant={viewMode === 'kanban' ? 'outlined' : undefined}
           >
             Kanban
           </Button>
           <Button
-            size={12}
+            size="sm"
             onPress={() => setViewMode('list')}
             variant={viewMode === 'list' ? 'outlined' : undefined}
           >
@@ -226,7 +226,7 @@ export const OfficeApplicationsScreen = () => {
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       ) : (
-        <Stack padding={16}>
+        <Stack padding="md">
           <Text>List view coming soon...</Text>
         </Stack>
       )}

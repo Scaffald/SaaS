@@ -475,7 +475,7 @@ export function ProfileEducationLeft({
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text color="gray">Loading education data...</Text>
+          <Text color="$gray11">Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -502,7 +502,7 @@ export function ProfileEducationLeft({
           role="alert"
           marginTop={8}
           marginBottom={8}
-          padding={12}
+          padding="sm"
           gap={8}
           borderWidth={1}
           borderColor="$red7"
@@ -548,7 +548,7 @@ export function ProfileEducationLeft({
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text>Education History</Text>
-            <Button size={12} onPress={addEducationEntry} icon={Plus}>
+            <Button size="sm" onPress={addEducationEntry} icon={Plus}>
               Add Education
             </Button>
           </Row>
@@ -583,7 +583,7 @@ export function ProfileEducationLeft({
                   }
                 }}
                 gap={12}
-                padding={12}
+                padding="sm"
                 borderWidth={1}
                 borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : '$borderColor'}
                 backgroundColor={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
@@ -591,7 +591,7 @@ export function ProfileEducationLeft({
               >
                 <Row justify="space-between" align="center">
                   <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
-                  <Button size={8} variant="outline" onPress={() => remove(index)} icon={X}>
+                  <Button size="xs" variant="outline" onPress={() => remove(index)} icon={X}>
                     Remove
                   </Button>
                 </Row>
@@ -639,7 +639,7 @@ export function ProfileEducationLeft({
                                     }
                                   />
                                   <Button
-                                    size={8}
+                                    size="xs"
                                     variant="outline"
                                     onPress={() => {
                                       setManualEntryMode((prev) => ({ ...prev, [index]: true }))
@@ -667,7 +667,7 @@ export function ProfileEducationLeft({
                                   />
                                   <FieldError message={entryErrors?.institution_name?.message} />
                                   <Button
-                                    size={8}
+                                    size="xs"
                                     variant="outline"
                                     onPress={() => {
                                       setManualEntryMode((prev) => ({ ...prev, [index]: false }))
@@ -909,7 +909,7 @@ export function ProfileEducationLeft({
                         <Row gap={8} align="center">
                           <CustomCheckbox
                             checked={isCurrent}
-                            onCheckedChange={handleChange}
+                            onChange={handleChange}
                             testID={`education-current-${index}`}
                             aria-label="Currently enrolled"
                           />
@@ -972,8 +972,8 @@ export function ProfileEducationLeft({
           })}
 
           {fields.length === 0 && (
-            <Stack padding={16} align="center" gap={8}>
-              <Text color="gray">No education entries added yet</Text>
+            <Stack padding="md" align="center" gap={8}>
+              <Text color="$gray11">No education entries added yet</Text>
             </Stack>
           )}
         </Stack>
@@ -1138,7 +1138,7 @@ function SmartSelect({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          padding={8}
+          padding="xs"
           style={{
             width: contentWidth,
             minWidth: contentWidth ?? 220,
@@ -1149,7 +1149,7 @@ function SmartSelect({
             <Stack gap={4}>
               {allowClear && (
                 <Button
-                  size={8}
+                  size="xs"
                   chromeless
                   justify="flex-start"
                   onPress={() => handleSelect(undefined)}
@@ -1165,7 +1165,7 @@ function SmartSelect({
                 return (
                   <Button
                     key={option.value}
-                    size={12}
+                    size="sm"
                     chromeless
                     justify="flex-start"
                     onPress={() => handleSelect(option.value)}

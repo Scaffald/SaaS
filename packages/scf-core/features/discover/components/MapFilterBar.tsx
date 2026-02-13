@@ -125,7 +125,7 @@ export const MapFilterBar = ({
           flex={1}
           minWidth={200}
           backgroundColor="$background"
-          padding={12}
+          padding="sm"
           borderRadius={16}
           borderWidth={1}
           borderColor="$red8"
@@ -134,7 +134,7 @@ export const MapFilterBar = ({
           <Row align="center" gap={8}>
             <Text color="$red10">Map Search Unavailable</Text>
           </Row>
-          <Text color="gray">{tokenValidation.error}</Text>
+          <Text color="$gray11">{tokenValidation.error}</Text>
         </Stack>
       )}
 
@@ -150,7 +150,7 @@ export const MapFilterBar = ({
 
       {/* Results Count */}
       <Button
-        size={16}
+        size="md"
         variant="outline"
         onPress={onResultsPress}
         backgroundColor="$background"
@@ -169,7 +169,7 @@ export const MapFilterBar = ({
 
       {/* Reset Button */}
       <Button
-        size={16}
+        size="md"
         variant="outline"
         icon={RotateCcw}
         scaleIcon={1.2}

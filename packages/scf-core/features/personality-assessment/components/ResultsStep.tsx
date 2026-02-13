@@ -76,22 +76,22 @@ export function ResultsStep({
       {hasReport && (
         <Stack
           gap={16}
-          padding={24}
+          padding="xl"
           backgroundColor="$color2"
           borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text color="gray">Personality Report</Text>
+          <Text color="$gray11">Personality Report</Text>
           <Stack gap={12}>
             {assessment.ai_report?.split('\n').map((line, index) => (
-              <Text key={`report-line-${index}-${line.slice(0, 10)}`} color="gray" lineHeight={20}>
+              <Text key={`report-line-${index}-${line.slice(0, 10)}`} color="$gray11" lineHeight={20}>
                 {line}
               </Text>
             ))}
           </Stack>
           {assessment.ai_report_generated_at && (
-            <Text color="gray" marginTop={8}>
+            <Text color="$gray11" marginTop={8}>
               Generated on {new Date(assessment.ai_report_generated_at).toLocaleDateString()}
             </Text>
           )}
@@ -102,7 +102,7 @@ export function ResultsStep({
       {!hasReport && !isReadOnly && onGenerateReport && (
         <Stack
           gap={16}
-          padding={24}
+          padding="xl"
           backgroundColor="$blue2"
           borderRadius={16}
           borderWidth={1}
@@ -113,7 +113,7 @@ export function ResultsStep({
             Based on your color test results, we'll generate a personalized personality report.
           </Text>
           <Button
-            size={16}
+            size="md"
             theme="info"
             onPress={handleGenerateReport}
             disabled={generatingReport || isLoading}
@@ -127,7 +127,7 @@ export function ResultsStep({
       {/* IPIP Scores Section */}
       {ipipScores && (
         <Stack gap={16}>
-          <Text color="gray">Personality Traits (Big Five)</Text>
+          <Text color="$gray11">Personality Traits (Big Five)</Text>
           <Stack gap={16}>
             {Object.entries(results).map(([domain, domainResult]) => {
               const domainKey = domain as keyof typeof results
@@ -138,16 +138,16 @@ export function ResultsStep({
                 <Stack
                   key={domain}
                   gap={12}
-                  padding={16}
+                  padding="md"
                   backgroundColor="$color2"
                   borderRadius={16}
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
                   <Row justify="space-between" align="center">
-                    <Text color="gray">{domainResult.title}</Text>
+                    <Text color="$gray11">{domainResult.title}</Text>
                     <Row gap={8} align="center">
-                      <Text color="gray">Score: {score.score}</Text>
+                      <Text color="$gray11">Score: {score.score}</Text>
                       <Text
                         color={
                           score.result === 'high'
@@ -161,10 +161,10 @@ export function ResultsStep({
                       </Text>
                     </Row>
                   </Row>
-                  <Text color="gray">{domainResult.summary}</Text>
+                  <Text color="$gray11">{domainResult.summary}</Text>
                   <Stack gap={8} marginTop={8}>
-                    <Text color="gray">Your Result:</Text>
-                    <Text color="gray" lineHeight={16}>
+                    <Text color="$gray11">Your Result:</Text>
+                    <Text color="$gray11" lineHeight={16}>
                       {domainResult.results[score.result].text}
                     </Text>
                   </Stack>
@@ -178,7 +178,7 @@ export function ResultsStep({
       {/* No Results State */}
       {!ipipScores && !hasReport && (
         <Stack gap={16} align="center" padding={32}>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             Complete the assessment to see your results.
           </Text>
         </Stack>

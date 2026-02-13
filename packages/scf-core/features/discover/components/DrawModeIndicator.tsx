@@ -15,7 +15,7 @@ export function DrawModeIndicator({ isActive }: DrawModeIndicatorProps) {
       right={16}
       zIndex={100}
       backgroundColor="$blue9"
-      padding={12}
+      padding="sm"
       borderRadius={16}
       align="center"
     >

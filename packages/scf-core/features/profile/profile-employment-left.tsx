@@ -115,7 +115,7 @@ function MultiSelectToggleField({
       title={title}
       description={description}
       checked={isExpanded || hasValues}
-      onCheckedChange={(checked) => handleToggleChange(Boolean(checked))}
+      onChange={(checked) => handleToggleChange(Boolean(checked))}
       testID={testID}
       expandedContent={
         <Stack gap={8} paddingTop={8}>
@@ -127,7 +127,7 @@ function MultiSelectToggleField({
                 <CustomCheckbox
                   aria-label={option}
                   checked={isChecked}
-                  onCheckedChange={(value) => handleOptionChange(option, value)}
+                  onChange={(value) => handleOptionChange(option, value)}
                   testID={checkboxId}
                 />
                 <Label cursor="pointer" onPress={() => handleOptionChange(option, !isChecked)}>
@@ -356,7 +356,7 @@ export function ProfileEmploymentLeft() {
 
   if (isLoadingEmployment) {
     return (
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <SkeletonForm fields={5} />
       </Stack>
     )
@@ -365,12 +365,12 @@ export function ProfileEmploymentLeft() {
   return (
     <Stack>
       <DashboardWidget>
-        <Stack gap={16} padding={16} flex={1}>
+        <Stack gap={16} padding="md" flex={1}>
           {/* Debug: Show validation errors */}
           {Object.keys(errors).length > 0 && (
             <Stack
               backgroundColor="$red2"
-              padding={12}
+              padding="sm"
               borderRadius={16}
               borderWidth={1}
               borderColor="$red8"
@@ -441,7 +441,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field: openToTravelField }) => (
                   <OpenToTravelCard
                     checked={openToTravelField.value ?? true}
-                    onCheckedChange={(checked) => openToTravelField.onChange(Boolean(checked))}
+                    onChange={(checked) => openToTravelField.onChange(Boolean(checked))}
                     travelDistanceValue={travelDistanceValue ?? 25}
                     onTravelDistanceChange={(value) => {
                       setValue('travel_distance_miles', value, { shouldValidate: true })
@@ -464,7 +464,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field }) => (
                   <USResidentToggle
                     checked={field.value ?? false}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    onChange={(checked) => field.onChange(Boolean(checked))}
                   />
                 )}
               />
@@ -474,7 +474,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field }) => (
                   <USPassportToggle
                     checked={field.value ?? false}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    onChange={(checked) => field.onChange(Boolean(checked))}
                   />
                 )}
               />
@@ -489,7 +489,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="drivers_license_classes"
-                icon={<Car size={8} color="gray" />}
+                icon={<Car size="xs" color="$gray11" />}
                 title="I have a valid driver's license"
                 description="Select all license classes that apply"
                 options={DRIVERS_LICENSE_OPTIONS}
@@ -509,7 +509,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="military_status"
-                icon={<Shield size={8} color="gray" />}
+                icon={<Shield size="xs" color="$gray11" />}
                 title="Former/Current Military"
                 description="Select all that apply"
                 options={MILITARY_STATUS_OPTIONS}
@@ -523,7 +523,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="availability"
-                icon={<Calendar size={8} color="gray" />}
+                icon={<Calendar size="xs" color="$gray11" />}
                 title="I'm available for work"
                 description="Select all that apply"
                 options={AVAILABILITY_OPTIONS}

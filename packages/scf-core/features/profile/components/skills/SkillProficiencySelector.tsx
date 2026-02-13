@@ -41,7 +41,7 @@ export function SkillProficiencySelector({
           <Stack gap={4}>
             <Text>{skill.name}</Text>
             {skill.code && (
-              <Text color="gray">
+              <Text color="$gray11">
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
@@ -61,7 +61,7 @@ export function SkillProficiencySelector({
           min={1}
           max={5}
           step={1}
-          size={12}
+          size="sm"
         >
           <Slider.Track backgroundColor="$color4" height={6}>
             <Slider.TrackActive backgroundColor="$green9" />
@@ -75,7 +75,7 @@ export function SkillProficiencySelector({
             <Row justify="space-between" align="center">
               <Stack>
                 <Text color="$green9">{currentLevel?.label}</Text>
-                <Text color="gray">{currentLevel?.description}</Text>
+                <Text color="$gray11">{currentLevel?.description}</Text>
               </Stack>
               <Text color="$green9">{proficiency}</Text>
             </Row>

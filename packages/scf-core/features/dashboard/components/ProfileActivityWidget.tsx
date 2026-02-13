@@ -81,11 +81,11 @@ export function ProfileActivityWidget() {
 
   return (
     <Card>
-      <Text color="gray">Profile Activity</Text>
+      <Text color="$gray11">Profile Activity</Text>
       {isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
-          <Text color="gray">Loading activity...</Text>
+          <Text color="$gray11">Loading activity...</Text>
         </Stack>
       ) : (
         <Stack gap={16}>
@@ -94,7 +94,7 @@ export function ProfileActivityWidget() {
             <Stack
               gap={8}
               backgroundColor="$blue2"
-              padding={12}
+              padding="sm"
               borderRadius={16}
               borderWidth={1}
               borderColor="$blue6"
@@ -108,9 +108,9 @@ export function ProfileActivityWidget() {
                 {viewAnalytics.trend !== 0 && (
                   <Row align="center" gap={4}>
                     {viewAnalytics.trend > 0 ? (
-                      <ArrowUp size={16} color="$green10" />
+                      <ArrowUp size="md" color="$green10" />
                     ) : (
-                      <ArrowDown size={16} color="$red10" />
+                      <ArrowDown size="md" color="$red10" />
                     )}
                     <Text color={viewAnalytics.trend > 0 ? '$green11' : '$red11'}>
                       {Math.abs(viewAnalytics.trend).toFixed(1)}%
@@ -128,18 +128,18 @@ export function ProfileActivityWidget() {
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Row align="center" gap={8}>
-                <Eye size={18} color="gray" />
-                <Text color="gray">Recent Views</Text>
+                <Eye size={18} color="$gray11" />
+                <Text color="$gray11">Recent Views</Text>
               </Row>
               {profileViews && profileViews.total > 0 && (
-                <Button size={8} variant="outline" onPress={handleViewAllProfileViews}>
+                <Button size="xs" variant="outline" onPress={handleViewAllProfileViews}>
                   View All
                 </Button>
               )}
             </Row>
 
             {!profileViews || profileViews.views.length === 0 ? (
-              <Text color="gray" fontStyle="italic">
+              <Text color="$gray11" fontStyle="italic">
                 No profile views yet
               </Text>
             ) : (
@@ -169,11 +169,11 @@ export function ProfileActivityWidget() {
                         )}
                       </Avatar>
                       <Stack flex={1} gap={4}>
-                        <Text color="gray">
+                        <Text color="$gray11">
                           {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
                         </Text>
                         {view.viewed_at && (
-                          <Text color="gray">
+                          <Text color="$gray11">
                             {new Date(view.viewed_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -194,13 +194,13 @@ export function ProfileActivityWidget() {
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Row align="center" gap={8}>
-                <UserPlus size={18} color="gray" />
-                <Text color="gray">New Followers</Text>
+                <UserPlus size={18} color="$gray11" />
+                <Text color="$gray11">New Followers</Text>
               </Row>
             </Row>
 
             {!followers || followers.length === 0 ? (
-              <Text color="gray" fontStyle="italic">
+              <Text color="$gray11" fontStyle="italic">
                 No followers yet
               </Text>
             ) : (
@@ -230,11 +230,11 @@ export function ProfileActivityWidget() {
                         )}
                       </Avatar>
                       <Stack flex={1} gap={4}>
-                        <Text color="gray">
+                        <Text color="$gray11">
                           {follow.user?.display_name || follow.user?.username || 'User'}
                         </Text>
                         {follow.created_at && (
-                          <Text color="gray">
+                          <Text color="$gray11">
                             {new Date(follow.created_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -255,8 +255,8 @@ export function ProfileActivityWidget() {
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Row align="center" gap={8}>
-                <Users size={18} color="gray" />
-                <Text color="gray">Pending Requests</Text>
+                <Users size={18} color="$gray11" />
+                <Text color="$gray11">Pending Requests</Text>
                 {pendingRequests && pendingRequests.received.length > 0 && (
                   <Row
                     backgroundColor="$orange3"
@@ -270,13 +270,13 @@ export function ProfileActivityWidget() {
                   </Row>
                 )}
               </Row>
-              <Button size={8} variant="outline" onPress={handleManageConnections}>
+              <Button size="xs" variant="outline" onPress={handleManageConnections}>
                 Manage
               </Button>
             </Row>
 
             {!pendingRequests || pendingRequests.received.length === 0 ? (
-              <Text color="gray" fontStyle="italic">
+              <Text color="$gray11" fontStyle="italic">
                 No pending requests
               </Text>
             ) : (
@@ -307,11 +307,11 @@ export function ProfileActivityWidget() {
                           )}
                         </Avatar>
                         <Stack flex={1} gap={4}>
-                          <Text color="gray">
+                          <Text color="$gray11">
                             {request.user?.display_name || request.user?.username || 'User'}
                           </Text>
                           {request.created_at && (
-                            <Text color="gray">
+                            <Text color="$gray11">
                               {new Date(request.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
@@ -322,7 +322,7 @@ export function ProfileActivityWidget() {
                       </Row>
                       <Row gap={4}>
                         <Button
-                          size={8}
+                          size="xs"
                           circular
                           icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
                           theme="success"
@@ -332,7 +332,7 @@ export function ProfileActivityWidget() {
                           }
                         />
                         <Button
-                          size={8}
+                          size="xs"
                           circular
                           icon={declineRequestMutation.isPending ? Loader2 : X}
                           variant="outline"
@@ -348,7 +348,7 @@ export function ProfileActivityWidget() {
                 {pendingRequests.received.length > 3 && (
                   <>
                     <Separator />
-                    <Text color="gray">
+                    <Text color="$gray11">
                       {pendingRequests.received.length - 3} more request
                       {pendingRequests.received.length - 3 === 1 ? '' : 's'}
                     </Text>

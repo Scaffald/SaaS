@@ -338,7 +338,7 @@ export function ProfileExperienceLeft() {
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text color="gray">Loading experience data...</Text>
+          <Text color="$gray11">Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -394,7 +394,7 @@ export function ProfileExperienceLeft() {
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text>Work History</Text>
-            <Button size={12} onPress={addExperienceEntry} icon={Plus}>
+            <Button size="sm" onPress={addExperienceEntry} icon={Plus}>
               Add Experience
             </Button>
           </Row>
@@ -403,14 +403,14 @@ export function ProfileExperienceLeft() {
             <Stack
               key={field.id}
               gap={12}
-              padding={12}
+              padding="sm"
               borderWidth={1}
               borderColor="$borderColor"
               borderRadius={16}
             >
               <Row justify="space-between" align="center">
                 <Text>Position {index + 1}</Text>
-                <Button size={8} variant="outline" onPress={() => remove(index)} icon={X}>
+                <Button size="xs" variant="outline" onPress={() => remove(index)} icon={X}>
                   Remove
                 </Button>
               </Row>
@@ -504,7 +504,7 @@ export function ProfileExperienceLeft() {
                     error={errors.experience_entries?.[index]?.location?.message}
                   />
                   {watch(`experience_entries.${index}.is_remote`) && (
-                    <Text color="gray">Enter company headquarters location</Text>
+                    <Text color="$gray11">Enter company headquarters location</Text>
                   )}
                   {errors.experience_entries?.[index]?.location && (
                     <Text color="$red10">
@@ -524,7 +524,7 @@ export function ProfileExperienceLeft() {
                     <Row gap={8} align="center">
                       <CustomCheckbox
                         checked={isRemote}
-                        onCheckedChange={field.onChange}
+                        onChange={field.onChange}
                         testID={`remote-${index}`}
                         aria-label="Remote work"
                       />
@@ -588,7 +588,7 @@ export function ProfileExperienceLeft() {
                     <Row gap={8} align="center">
                       <CustomCheckbox
                         checked={isCurrent}
-                        onCheckedChange={field.onChange}
+                        onChange={field.onChange}
                         testID={`current-${index}`}
                         aria-label="Currently work here"
                       />
@@ -620,8 +620,8 @@ export function ProfileExperienceLeft() {
           ))}
 
           {fields.length === 0 && (
-            <Stack padding={16} align="center" gap={8}>
-              <Text color="gray">No work experience added yet</Text>
+            <Stack padding="md" align="center" gap={8}>
+              <Text color="$gray11">No work experience added yet</Text>
             </Stack>
           )}
         </Stack>
@@ -630,7 +630,7 @@ export function ProfileExperienceLeft() {
         {saveBanner && (
           <Stack
             marginTop={16}
-            padding={12}
+            padding="sm"
             gap={8}
             borderWidth={1}
             borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
@@ -684,7 +684,7 @@ export function ProfileExperienceLeft() {
               </Row>
             ) : isSyncing && saveState === 'saving' ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" color="gray" />
+                <Spinner size="sm" color="$gray11" />
                 <Text>Saving...</Text>
               </Row>
             ) : editingEntryId ? (

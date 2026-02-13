@@ -29,9 +29,9 @@ export function InquiryOverviewWidget() {
   const entries = data.slice(0, 3)
 
   return (
-    <Stack padding={16} backgroundColor="$color2" borderRadius={16} gap={12}>
+    <Stack padding="md" backgroundColor="$color2" borderRadius={16} gap={12}>
       <Text>Negotiations</Text>
-      <Text color="gray">
+      <Text color="$gray11">
         {data.length === 1
           ? 'You have 1 active inquiry.'
           : `You have ${data.length} active inquiries.`}
@@ -39,7 +39,7 @@ export function InquiryOverviewWidget() {
       {entries.map((application: ApplicationRecord) => (
         <Stack
           key={application.id}
-          padding={12}
+          padding="sm"
           gap={8}
           backgroundColor="$background"
           borderRadius={12}
@@ -47,9 +47,9 @@ export function InquiryOverviewWidget() {
           borderColor="$borderColor"
         >
           <Text>{application.job?.title ?? 'Role'}</Text>
-          <Text color="gray">{application.job?.location ?? 'Location TBD'}</Text>
+          <Text color="$gray11">{application.job?.location ?? 'Location TBD'}</Text>
           <Button
-            size={12}
+            size="sm"
             onPress={() =>
               router.push(
                 buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id })
@@ -61,7 +61,7 @@ export function InquiryOverviewWidget() {
         </Stack>
       ))}
       {data.length > entries.length && (
-        <Text color="gray">{data.length - entries.length} more in progress</Text>
+        <Text color="$gray11">{data.length - entries.length} more in progress</Text>
       )}
     </Stack>
   )

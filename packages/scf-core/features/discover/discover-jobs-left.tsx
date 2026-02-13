@@ -187,9 +187,9 @@ export function DiscoverJobsLeft({
   // Handle soft skills assessment required state
   if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={12}>
-        <Text color="gray">Complete Your Assessment</Text>
-        <Text color="gray" style={{ textAlign: 'center' }}>
+      <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
+        <Text color="$gray11">Complete Your Assessment</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Complete your soft skills assessment to filter and sort jobs by match score.
         </Text>
       </Stack>
@@ -198,7 +198,7 @@ export function DiscoverJobsLeft({
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding={16}>
+      <Stack flex={1} padding="md">
         <SkeletonList count={5} gap={12} variant="job" />
       </Stack>
     )
@@ -206,9 +206,9 @@ export function DiscoverJobsLeft({
 
   if (filteredJobs.length === 0) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
-        <Text color="gray">No jobs found</Text>
-        <Text color="gray">
+      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+        <Text color="$gray11">No jobs found</Text>
+        <Text color="$gray11">
           {shouldUseSoftSkillsMatch
             ? 'No jobs match your soft skills filter criteria'
             : 'Try adjusting your filters or search query'}
@@ -219,8 +219,8 @@ export function DiscoverJobsLeft({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} padding={16}>
-        <Text color="gray">
+      <Stack gap={12} padding="md">
+        <Text color="$gray11">
           {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
         </Text>
 

@@ -49,7 +49,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
       gap={8}
       align="center"
       flexWrap="wrap"
-      padding={16}
+      padding="md"
       role="progressbar"
       aria-label="Application progress"
       aria-valuenow={steps.findIndex((s) => s.id === currentStep) + 1}
@@ -90,7 +90,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   shadowOpacity={0.2}
                   shadowRadius={4}
                 >
-                  <CheckCircle2 size={20} color="gray" />
+                  <CheckCircle2 size="lg" color="$gray11" />
                 </Stack>
               ) : (
                 <Stack

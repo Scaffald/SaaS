@@ -60,7 +60,7 @@ export const FilterBar = ({
         }
       >
         <Button
-          size={16}
+          size="md"
           circular
           onPress={onResultsPress}
           variant="outline"
@@ -71,7 +71,7 @@ export const FilterBar = ({
           {resultsCount > 0 ? resultsCount : <List size={22} />}
         </Button>
         <Button
-          size={16}
+          size="md"
           circular
           icon={Search}
           scaleIcon={1.4}
@@ -83,7 +83,7 @@ export const FilterBar = ({
           pressStyle={{ backgroundColor: searchActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
-          size={16}
+          size="md"
           circular
           icon={SlidersHorizontal}
           scaleIcon={1.4}
@@ -95,7 +95,7 @@ export const FilterBar = ({
           pressStyle={{ backgroundColor: filterActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
-          size={16}
+          size="md"
           circular
           icon={RotateCcw}
           scaleIcon={1.4}

@@ -212,7 +212,7 @@ export function TeamSettingsForm({
 
   return (
     <Card
-      padding={16}
+      padding="md"
       borderWidth={1}
       borderColor="$borderColor"
       gap={16}
@@ -220,7 +220,7 @@ export function TeamSettingsForm({
     >
       <Stack gap={8}>
         <Text>Team settings</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Configure defaults and collaboration preferences for this team. Changes are saved
           automatically.
         </Text>
@@ -233,7 +233,7 @@ export function TeamSettingsForm({
       <Stack gap={16} opacity={canEdit ? 1 : 0.6}>
         <Stack gap={8}>
           <Text>Default role for new members</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Select which role is assigned when a member is added without specifying a role.
           </Text>
           <Controller
@@ -317,7 +317,7 @@ export function TeamSettingsForm({
           <Text color={statusColor}>{statusLabel}</Text>
         </Row>
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           onPress={handleReset}
           disabled={!canEdit || updateMutation.isPending}
@@ -394,19 +394,19 @@ function SettingsToggle({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color3"
-          padding={12}
+          padding="sm"
           gap={8}
         >
           <Row justify="space-between" align="center" gap={12}>
             <Stack flex={1} gap={4}>
               <Text>{label}</Text>
-              <Text color="gray">{description}</Text>
+              <Text color="$gray11">{description}</Text>
             </Stack>
             <Switch
               checked={field.value}
-              onCheckedChange={(value) => field.onChange(Boolean(value))}
+              onChange={(value) => field.onChange(Boolean(value))}
               disabled={disabled}
-              size={12}
+              size="sm"
             >
               <Switch.Thumb />
             </Switch>
@@ -429,10 +429,10 @@ function PermissionBanner() {
       paddingHorizontal={12}
       paddingVertical={8}
     >
-      <Info size={18} color="gray" />
+      <Info size={18} color="$gray11" />
       <Stack gap={4}>
         <Text>View only</Text>
-        <Text color="gray">You need team admin permissions to update settings for this team.</Text>
+        <Text color="$gray11">You need team admin permissions to update settings for this team.</Text>
       </Stack>
     </Row>
   )

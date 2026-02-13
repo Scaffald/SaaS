@@ -182,7 +182,7 @@ export function GeneralProfileSection({
 
   if (isLoadingProfile) {
     return (
-      <Stack gap={16} padding={16} flex={1} justify="center" align="center">
+      <Stack gap={16} padding="md" flex={1} justify="center" align="center">
         <Spinner size="lg" />
         <Text>Loading profile...</Text>
       </Stack>
@@ -230,7 +230,7 @@ export function GeneralProfileSection({
             disabled={readOnly || uploadAvatarMutation.isPending}
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text color="gray">Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && <Text color="$gray11">Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -346,7 +346,7 @@ export function GeneralProfileSection({
             )}
           />
           {mode === 'user' && (
-            <Text color="gray">Email changes must be made through account settings</Text>
+            <Text color="$gray11">Email changes must be made through account settings</Text>
           )}
         </Stack>
 

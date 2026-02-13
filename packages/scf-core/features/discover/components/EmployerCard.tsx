@@ -41,8 +41,8 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         <Row justify="space-between" align="flex-start" gap={12}>
           <Stack flex={1} gap={8}>
             <Row align="center" gap={8}>
-              <Building2 size={20} color="$blue10" />
-              <Text color="gray">{employer.name}</Text>
+              <Building2 size="lg" color="$blue10" />
+              <Text color="$gray11">{employer.name}</Text>
             </Row>
 
             {employer.industries && <Text color="$blue10">{employer.industries.name}</Text>}
@@ -51,7 +51,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
         {/* Description */}
         {employer.description && (
-          <Text color="gray" numberOfLines={3}>
+          <Text color="$gray11" numberOfLines={3}>
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
@@ -62,21 +62,21 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         <Stack gap={8}>
           {location && (
             <Row align="center" gap={8}>
-              <MapPin size={16} color="gray" />
-              <Text color="gray">{location}</Text>
+              <MapPin size="md" color="$gray11" />
+              <Text color="$gray11">{location}</Text>
             </Row>
           )}
 
           {employer.employee_count_range && (
             <Row align="center" gap={8}>
-              <Users size={16} color="gray" />
-              <Text color="gray">{employer.employee_count_range} employees</Text>
+              <Users size="md" color="$gray11" />
+              <Text color="$gray11">{employer.employee_count_range} employees</Text>
             </Row>
           )}
 
           {employer.website_url && (
             <Row align="center" gap={8}>
-              <ExternalLink size={16} color="gray" />
+              <ExternalLink size="md" color="$gray11" />
               <Text color="$blue10" numberOfLines={1}>
                 {employer.website_url.replace(/^https?:\/\//, '')}
               </Text>

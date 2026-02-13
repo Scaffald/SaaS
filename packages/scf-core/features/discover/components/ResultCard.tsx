@@ -46,7 +46,7 @@ export const ResultCard = memo(
           onPress={handleCardPress}
         >
           <Row justify="space-between" align="center">
-            <SizableText size={20} color={isSelected ? '$color1' : '$color12'}>
+            <SizableText size="lg" color={isSelected ? '$color1' : '$color12'}>
               {profile.name}
             </SizableText>
             <Row align="center" gap={8}>
@@ -58,13 +58,13 @@ export const ResultCard = memo(
                 paddingHorizontal={8}
                 paddingVertical={4}
               >
-                <Star size={12} color="$blue11" />
+                <Star size="sm" color="$blue11" />
                 <Text color="$blue11">{profile.score}</Text>
               </Row>
             </Row>
           </Row>
 
-          <Paragraph size={12} color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+          <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
             {profile.title}
           </Paragraph>
 
@@ -105,11 +105,11 @@ export const ResultCard = memo(
                 }
               >
                 {badge.tone === 'success' ? (
-                  <BadgeCheck size={12} color="$green11" />
+                  <BadgeCheck size="sm" color="$green11" />
                 ) : badge.tone === 'warning' ? (
-                  <Award size={12} color="$yellow11" />
+                  <Award size="sm" color="$yellow11" />
                 ) : (
-                  <Award size={12} color="$red11" />
+                  <Award size="sm" color="$red11" />
                 )}
                 <Text
                   color={
@@ -125,7 +125,7 @@ export const ResultCard = memo(
               </Row>
             ))}
             {profile.badges.length > 3 && (
-              <Text color="gray">+{profile.badges.length - 3} more</Text>
+              <Text color="$gray11">+{profile.badges.length - 3} more</Text>
             )}
           </Row>
 
@@ -141,7 +141,7 @@ export const ResultCard = memo(
               </Button>
             ))}
             {(profile.certifications.length > 2 || profile.skills.length > 3) && (
-              <Text color="gray">
+              <Text color="$gray11">
                 +{profile.certifications.length - 2 + profile.skills.length - 3} more
               </Text>
             )}

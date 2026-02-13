@@ -33,11 +33,11 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
   }
 
   return (
-    <Card bordered padding={16} gap={12}>
+    <Card bordered padding="md" gap={12}>
       <Row justify="space-between" align="center">
         <H4>Documents</H4>
         <Button
-          size={12}
+          size="sm"
           onPress={() => {
             uploadSession.mutate({
               organizationId,
@@ -55,7 +55,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
       {isLoading ? (
         <Spinner />
       ) : !documents || documents.length === 0 ? (
-        <Paragraph color="gray">No documents uploaded yet.</Paragraph>
+        <Paragraph color="$gray11">No documents uploaded yet.</Paragraph>
       ) : (
         <Table>
           <Table.Head>
@@ -78,7 +78,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
                 <Table.Row key={document.id}>
                   <Table.Cell>
                     <Text>{document.name}</Text>
-                    <Paragraph color="gray">{document.category}</Paragraph>
+                    <Paragraph color="$gray11">{document.category}</Paragraph>
                   </Table.Cell>
                   <Table.Cell>
                     {document.folder_id ? (folderLookup.get(document.folder_id) ?? '—') : '—'}
@@ -86,7 +86,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
                   <Table.Cell>{new Date(document.updated_at).toLocaleDateString()}</Table.Cell>
                   <Table.Cell>
                     <Button
-                      size={8}
+                      size="xs"
                       onPress={() => handleDownload(document.id)}
                       disabled={downloadMutation.isPending}
                     >

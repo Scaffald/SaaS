@@ -63,7 +63,7 @@ export function SkillSearchForm({
           <Row gap={8} align="center">
             <CustomCheckbox
               checked={searchCSI}
-              onCheckedChange={onSearchCSIChange}
+              onChange={onSearchCSIChange}
               aria-label="Filter CSI taxonomy"
               testID="search-csi"
             />
@@ -73,7 +73,7 @@ export function SkillSearchForm({
           <Row gap={8} align="center">
             <CustomCheckbox
               checked={searchONET}
-              onCheckedChange={onSearchONETChange}
+              onChange={onSearchONETChange}
               aria-label="Filter O*NET taxonomy"
               testID="search-onet"
             />

@@ -109,7 +109,7 @@ function RequestRow({
 
   return (
     <Row
-      padding={12}
+      padding="sm"
       backgroundColor="$color2"
       borderRadius={8}
       borderWidth={1}
@@ -120,37 +120,37 @@ function RequestRow({
     >
       {/* Type */}
       <Stack flex={1} minWidth={120}>
-        <Text color="gray">Type</Text>
+        <Text color="$gray11">Type</Text>
         <Text>{TYPE_LABELS[request.type]}</Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text color="gray">Status</Text>
+        <Text color="$gray11">Status</Text>
         <StatusBadge status={request.status} />
       </Stack>
 
       {/* Submitted Date */}
       <Stack flex={1} minWidth={140}>
-        <Text color="gray">Submitted</Text>
+        <Text color="$gray11">Submitted</Text>
         <Text>{formatDate(request.created_at)}</Text>
       </Stack>
 
       {/* Completed Date */}
       <Stack flex={1} minWidth={140}>
-        <Text color="gray">Completed</Text>
+        <Text color="$gray11">Completed</Text>
         <Text>{request.completed_at ? formatDate(request.completed_at) : '—'}</Text>
       </Stack>
 
       {/* Actions */}
       <Row gap={8} minWidth={120} justify="flex-end">
         {canDownload && (
-          <Button size={8} onPress={() => onDownload?.(request.id)}>
+          <Button size="xs" onPress={() => onDownload?.(request.id)}>
             Download
           </Button>
         )}
         {canCancel && (
-          <Button size={8} variant="outline" onPress={() => onCancel?.(request.id)}>
+          <Button size="xs" variant="outline" onPress={() => onCancel?.(request.id)}>
             Cancel
           </Button>
         )}
@@ -165,7 +165,7 @@ function RequestRow({
 function EmptyState() {
   return (
     <Stack
-      padding={24}
+      padding="xl"
       backgroundColor="$color2"
       borderRadius={12}
       borderWidth={1}
@@ -173,8 +173,8 @@ function EmptyState() {
       align="center"
       gap={8}
     >
-      <Text color="gray">No privacy requests yet</Text>
-      <Text color="gray" textAlign="center">
+      <Text color="$gray11">No privacy requests yet</Text>
+      <Text color="$gray11" textAlign="center">
         When you submit a data export, deletion, or other privacy request, it will appear here so
         you can track its status.
       </Text>
@@ -195,20 +195,20 @@ export function RequestHistoryTable({ requests, onDownload, onCancel }: RequestH
   return (
     <Stack gap={8}>
       {/* Header row - hidden on mobile */}
-      <Row padding={12} display="none" $gtMd={{ display: 'flex' }} gap={16}>
-        <Text flex={1} color="gray" minWidth={120}>
+      <Row padding="sm" display="none" $gtMd={{ display: 'flex' }} gap={16}>
+        <Text flex={1} color="$gray11" minWidth={120}>
           Type
         </Text>
-        <Text color="gray" minWidth={100}>
+        <Text color="$gray11" minWidth={100}>
           Status
         </Text>
-        <Text flex={1} color="gray" minWidth={140}>
+        <Text flex={1} color="$gray11" minWidth={140}>
           Submitted
         </Text>
-        <Text flex={1} color="gray" minWidth={140}>
+        <Text flex={1} color="$gray11" minWidth={140}>
           Completed
         </Text>
-        <Text color="gray" minWidth={120} textAlign="right">
+        <Text color="$gray11" minWidth={120} textAlign="right">
           Actions
         </Text>
       </Row>
@@ -224,7 +224,7 @@ export function RequestHistoryTable({ requests, onDownload, onCancel }: RequestH
       ))}
 
       {/* Info text */}
-      <Text color="gray" marginTop={8}>
+      <Text color="$gray11" marginTop={8}>
         Data export requests are processed within 45 days as required by CCPA. Completed exports are
         available for download for 30 days.
       </Text>

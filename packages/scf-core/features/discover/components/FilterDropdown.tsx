@@ -53,7 +53,7 @@ export const FilterDropdown = ({
     <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
       <Popover.Trigger asChild>
         <Button
-          size={16}
+          size="md"
           variant="outline"
           backgroundColor={activeFilterCount < 3 ? '$blue9' : '$background'}
           color={activeFilterCount < 3 ? 'white' : '$color'}
@@ -69,7 +69,7 @@ export const FilterDropdown = ({
 
       <Popover.Content
         borderRadius={16}
-        padding={12}
+        padding="sm"
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$background"
@@ -91,11 +91,11 @@ export const FilterDropdown = ({
               <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
               <ToggleSwitch
                 checked={showWorkers}
-                onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
+                onChange={(checked) => onShowWorkersChange?.(checked)}
                 aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
               />
             </Row>
-            <Text color="gray" paddingLeft={4}>
+            <Text color="$gray11" paddingLeft={4}>
               Show worker profiles on the map
             </Text>
           </Stack>
@@ -108,13 +108,13 @@ export const FilterDropdown = ({
               </Label>
               <ToggleSwitch
                 checked={showOrganizations}
-                onCheckedChange={(checked) => onShowOrganizationsChange?.(checked)}
+                onChange={(checked) => onShowOrganizationsChange?.(checked)}
                 aria-label={
                   showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
                 }
               />
             </Row>
-            <Text color="gray" paddingLeft={4}>
+            <Text color="$gray11" paddingLeft={4}>
               Show employer organizations on the map
             </Text>
           </Stack>
@@ -125,11 +125,11 @@ export const FilterDropdown = ({
               <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
               <ToggleSwitch
                 checked={showJobs}
-                onCheckedChange={(checked) => onShowJobsChange?.(checked)}
+                onChange={(checked) => onShowJobsChange?.(checked)}
                 aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
               />
             </Row>
-            <Text color="gray" paddingLeft={4}>
+            <Text color="$gray11" paddingLeft={4}>
               Show job openings on the map
             </Text>
           </Stack>

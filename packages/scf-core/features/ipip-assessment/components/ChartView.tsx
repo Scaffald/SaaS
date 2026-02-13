@@ -54,8 +54,8 @@ export function ChartView({
   // Handle missing data gracefully
   if (!scores && completedDomains === 0) {
     return (
-      <Stack gap={16} padding={16} align="center">
-        <Text color="gray">
+      <Stack gap={16} padding="md" align="center">
+        <Text color="$gray11">
           No chart data available yet. Complete at least one domain to see visualizations.
         </Text>
       </Stack>
@@ -117,7 +117,7 @@ export function ChartView({
       {isComplete && archetype && (
         <Stack
           gap={12}
-          padding={20}
+          padding="lg"
           backgroundColor="$blue2"
           borderRadius={16}
           borderWidth={2}
@@ -138,15 +138,15 @@ export function ChartView({
       {/* Big Five Radar Chart */}
       <Stack
         gap={12}
-        padding={16}
+        padding="md"
         backgroundColor="$color2"
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text color="gray">Big Five Personality Traits</Text>
-        <Text color="gray">Your scores across the five major personality domains (0-100%)</Text>
-        <Stack align="center" padding={16}>
+        <Text color="$gray11">Big Five Personality Traits</Text>
+        <Text color="$gray11">Your scores across the five major personality domains (0-100%)</Text>
+        <Stack align="center" padding="md">
           <SkillsChart
             datasets={[
               {
@@ -184,13 +184,13 @@ export function ChartView({
                 key={trait.domainName}
                 justify="space-between"
                 align="center"
-                padding={8}
+                padding="xs"
                 backgroundColor="$color1"
                 borderRadius={8}
               >
-                <Text color="gray">{trait.domainName}</Text>
+                <Text color="$gray11">{trait.domainName}</Text>
                 <Row gap={12} align="center">
-                  <Text color="gray">{trait.value}%</Text>
+                  <Text color="$gray11">{trait.value}%</Text>
                   <Text color={resultColor}>{trait.result.toUpperCase()}</Text>
                 </Row>
               </Row>
@@ -212,7 +212,7 @@ export function ChartView({
               <Stack
                 key={domain}
                 gap={8}
-                padding={16}
+                padding="md"
                 backgroundColor="$gray2"
                 borderRadius={16}
                 borderWidth={1}
@@ -246,14 +246,14 @@ export function ChartView({
             <Stack
               key={domain}
               gap={12}
-              padding={16}
+              padding="md"
               backgroundColor="$color2"
               borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">{domainName} Facets</Text>
-              <Text color="gray">Six sub-traits within {domainName} (0-100%)</Text>
+              <Text color="$gray11">{domainName} Facets</Text>
+              <Text color="$gray11">Six sub-traits within {domainName} (0-100%)</Text>
               <BarChart
                 data={facetData}
                 height={200}
@@ -282,14 +282,14 @@ export function ChartView({
                     <Row
                       key={facetKey}
                       gap={8}
-                      padding={8}
+                      padding="xs"
                       backgroundColor="$color1"
                       borderRadius={8}
                       align="center"
                       justify="center"
                       style={{ minWidth: 80 }}
                     >
-                      <Text color="gray">F{facetKey}</Text>
+                      <Text color="$gray11">F{facetKey}</Text>
                       <Text color={resultColor}>{percentage}%</Text>
                     </Row>
                   )
@@ -304,7 +304,7 @@ export function ChartView({
       {!isComplete && completedDomains > 0 && (
         <Stack
           gap={8}
-          padding={16}
+          padding="md"
           backgroundColor="$yellow2"
           borderRadius={16}
           borderWidth={1}

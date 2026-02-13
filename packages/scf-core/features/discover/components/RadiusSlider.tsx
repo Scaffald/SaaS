@@ -26,7 +26,7 @@ export const RadiusSlider = ({
   return (
     <Stack gap={8} flex={1}>
       <Row justify="space-between" align="center">
-        <Text color="gray">Search Radius</Text>
+        <Text color="$gray11">Search Radius</Text>
         <Text color="$blue10">{formatRadius(value)}</Text>
       </Row>
 
@@ -60,8 +60,8 @@ export const RadiusSlider = ({
       </Slider>
 
       <Row justify="space-between" align="center">
-        <Text color="gray">{formatRadius(min)}</Text>
-        <Text color="gray">{formatRadius(max)}</Text>
+        <Text color="$gray11">{formatRadius(min)}</Text>
+        <Text color="$gray11">{formatRadius(max)}</Text>
       </Row>
     </Stack>
   )

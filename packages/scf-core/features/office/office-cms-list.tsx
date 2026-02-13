@@ -65,7 +65,7 @@ export function OfficeCMSList() {
 
           <Row gap={8} align="center">
             <Button
-              size={12}
+              size="sm"
               chromeless={!includeInactive}
               onPress={() => setIncludeInactive(!includeInactive)}
             >
@@ -91,7 +91,7 @@ export function OfficeCMSList() {
                 }) => (
                   <Row
                     key={slide.id}
-                    padding={16}
+                    padding="md"
                     gap={12}
                     backgroundColor="$background"
                     borderRadius={16}
@@ -113,7 +113,7 @@ export function OfficeCMSList() {
 
                     <Row gap={8}>
                       <Button
-                        size={12}
+                        size="sm"
                         icon={slide.is_active ? EyeOff : Eye}
                         onPress={() => handleToggleActive(slide)}
                         chromeless
@@ -122,10 +122,10 @@ export function OfficeCMSList() {
                         href={ROUTES.OFFICE.CMS.WELCOME.EDIT.path.replace(':id', slide.id)}
                         asChild
                       >
-                        <Button size={12} icon={Pencil} chromeless />
+                        <Button size="sm" icon={Pencil} chromeless />
                       </Link>
                       <Button
-                        size={12}
+                        size="sm"
                         icon={Trash2}
                         onPress={() => handleDelete(slide.id, slide.title)}
                         chromeless

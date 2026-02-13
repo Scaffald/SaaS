@@ -99,7 +99,7 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
 
   return (
     <ScrollView>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         {/* Title */}
         <Stack gap={8}>
           <Text>Job Title *</Text>

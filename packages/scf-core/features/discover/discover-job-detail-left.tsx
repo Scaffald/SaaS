@@ -120,9 +120,9 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16}>
+      <Stack flex={1} align="center" justify="center" padding="md">
         <Spinner size="lg" color="$blue10" />
-        <Text marginTop={8} color="gray">
+        <Text marginTop={8} color="$gray11">
           Loading...
         </Text>
       </Stack>
@@ -131,8 +131,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (!job) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
-        <Text color="gray">Job not found</Text>
+      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+        <Text color="$gray11">Job not found</Text>
       </Stack>
     )
   }
@@ -142,17 +142,17 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (
-        <Stack flex={1} padding={16} gap={16}>
+        <Stack flex={1} padding="md" gap={16}>
           <Stack gap={12}>
-            <Text color="gray">Apply to {job.title}</Text>
-            <Text color="gray" lineHeight={20}>
+            <Text color="$gray11">Apply to {job.title}</Text>
+            <Text color="$gray11" lineHeight={20}>
               This is a quick application. You'll answer a few screening questions and submit your
               application.
             </Text>
           </Stack>
 
           <Button
-            size={20}
+            size="lg"
             theme="info"
             onPress={() => {
               setShowQuickApply(true)
@@ -178,7 +178,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           </Button>
 
           <Button
-            size={16}
+            size="md"
             chromeless
             onPress={() => {
               router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
@@ -264,17 +264,17 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job - show external link button
   if (isExternal && 'company_name' in job && job.url) {
     return (
-      <Stack flex={1} padding={16} gap={16}>
+      <Stack flex={1} padding="md" gap={16}>
         <Stack gap={12}>
-          <Text color="gray">Apply to this Position</Text>
-          <Text color="gray" lineHeight={20}>
+          <Text color="$gray11">Apply to this Position</Text>
+          <Text color="$gray11" lineHeight={20}>
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.
           </Text>
         </Stack>
 
         <Button
-          size={20}
+          size="lg"
           theme="info"
           icon={ExternalLink}
           onPress={() => {
@@ -294,7 +294,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         </Button>
 
         <Button
-          size={16}
+          size="md"
           chromeless
           onPress={() => {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
@@ -309,12 +309,12 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job without URL
   if (isExternal) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={12}>
-        <Text color="gray" textAlign="center">
+      <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
+        <Text color="$gray11" textAlign="center">
           Application link not available
         </Text>
         <Button
-          size={16}
+          size="md"
           theme="info"
           onPress={() => {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)

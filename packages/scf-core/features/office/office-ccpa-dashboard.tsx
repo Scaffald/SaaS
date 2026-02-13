@@ -126,7 +126,7 @@ function MetricCard({
 
   return (
     <Stack
-      padding={16}
+      padding="md"
       backgroundColor="$color2"
       borderRadius={12}
       borderWidth={1}
@@ -135,7 +135,7 @@ function MetricCard({
       minWidth={150}
       gap={4}
     >
-      <Text color="gray">{label}</Text>
+      <Text color="$gray11">{label}</Text>
       <Text color={color}>{value}</Text>
       {trend && (
         <Text color={trendColor}>
@@ -162,7 +162,7 @@ function RequestRow({
 }) {
   return (
     <Row
-      padding={12}
+      padding="sm"
       backgroundColor={request.is_overdue ? '$red2' : '$color2'}
       borderRadius={8}
       borderWidth={1}
@@ -173,38 +173,38 @@ function RequestRow({
     >
       {/* Request ID */}
       <Stack minWidth={100}>
-        <Text color="gray">Request ID</Text>
+        <Text color="$gray11">Request ID</Text>
         <Text>{request.id.slice(0, 8)}...</Text>
       </Stack>
 
       {/* User */}
       <Stack flex={1} minWidth={140}>
-        <Text color="gray">User</Text>
+        <Text color="$gray11">User</Text>
         <Text>{request.user_name}</Text>
-        <Text color="gray">{request.user_email}</Text>
+        <Text color="$gray11">{request.user_email}</Text>
       </Stack>
 
       {/* Type */}
       <Stack minWidth={100}>
-        <Text color="gray">Type</Text>
+        <Text color="$gray11">Type</Text>
         <Text textTransform="capitalize">{request.type.replace('_', ' ')}</Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text color="gray">Status</Text>
+        <Text color="$gray11">Status</Text>
         <StatusBadge status={request.status} />
       </Stack>
 
       {/* Priority */}
       <Stack minWidth={80}>
-        <Text color="gray">Priority</Text>
+        <Text color="$gray11">Priority</Text>
         <PriorityBadge priority={request.priority} />
       </Stack>
 
       {/* Days Elapsed */}
       <Stack minWidth={80}>
-        <Text color="gray">Days</Text>
+        <Text color="$gray11">Days</Text>
         <Text
           color={
             request.is_overdue ? '$red10' : request.days_elapsed > 30 ? '$orange10' : '$color12'
@@ -217,22 +217,22 @@ function RequestRow({
 
       {/* Submitted */}
       <Stack flex={1} minWidth={120}>
-        <Text color="gray">Submitted</Text>
+        <Text color="$gray11">Submitted</Text>
         <Text>{formatDate(request.created_at)}</Text>
       </Stack>
 
       {/* Actions */}
       <Row gap={8} minWidth={200} justify="flex-end">
-        <Button size={8} variant="outline" onPress={() => onView?.(request.id)}>
+        <Button size="xs" variant="outline" onPress={() => onView?.(request.id)}>
           View
         </Button>
         {request.status === 'pending' && (
-          <Button size={8} variant="outline" onPress={() => onAssign?.(request.id)}>
+          <Button size="xs" variant="outline" onPress={() => onAssign?.(request.id)}>
             Assign
           </Button>
         )}
         {(request.status === 'pending' || request.status === 'processing') && (
-          <Button size={8} onPress={() => onProcess?.(request.id)}>
+          <Button size="xs" onPress={() => onProcess?.(request.id)}>
             Process
           </Button>
         )}
@@ -262,12 +262,12 @@ function FilterBar({
   return (
     <Row gap={12} flexWrap="wrap" align="center">
       <Stack gap={4}>
-        <Text color="gray">Status</Text>
+        <Text color="$gray11">Status</Text>
         <Row gap={8}>
           {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <Button
               key={status}
-              size={8}
+              size="xs"
               variant={statusFilter === status ? undefined : 'outlined'}
               onPress={() => onStatusChange(status)}
             >
@@ -278,12 +278,12 @@ function FilterBar({
       </Stack>
 
       <Stack gap={4}>
-        <Text color="gray">Type</Text>
+        <Text color="$gray11">Type</Text>
         <Row gap={8}>
           {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
             <Button
               key={type}
-              size={8}
+              size="xs"
               variant={typeFilter === type ? undefined : 'outlined'}
               onPress={() => onTypeChange(type)}
             >
@@ -296,12 +296,12 @@ function FilterBar({
       </Stack>
 
       <Stack gap={4}>
-        <Text color="gray">Priority</Text>
+        <Text color="$gray11">Priority</Text>
         <Row gap={8}>
           {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
               key={priority}
-              size={8}
+              size="xs"
               variant={priorityFilter === priority ? undefined : 'outlined'}
               onPress={() => onPriorityChange(priority)}
             >
@@ -355,9 +355,9 @@ export function CCPAAdminDashboard() {
 
   if (hasError) {
     return (
-      <Stack padding={16} gap={16} align="center" justify="center" flex={1}>
+      <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
         <Text color="$red10">Error Loading CCPA Dashboard</Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           {metricsError?.message || requestsError?.message}
         </Text>
         <Button onPress={() => window.location.reload()} variant="outline">
@@ -382,11 +382,11 @@ export function CCPAAdminDashboard() {
 
   return (
     <ScrollView>
-      <Stack padding={16} gap={24} maxWidth={1400} marginHorizontal="auto">
+      <Stack padding="md" gap={24} maxWidth={1400} marginHorizontal="auto">
         {/* Page Header */}
         <Stack gap={8}>
           <Text>CCPA Compliance Dashboard</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Manage CCPA requests, monitor compliance metrics, and ensure regulatory compliance.
           </Text>
         </Stack>
@@ -395,7 +395,7 @@ export function CCPAAdminDashboard() {
         <Stack gap={12}>
           <Text>Compliance Metrics</Text>
           {isLoading ? (
-            <Row padding={24} justify="center">
+            <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
@@ -449,7 +449,7 @@ export function CCPAAdminDashboard() {
         {/* 45-Day Deadline Warning */}
         {(metrics?.overdue_count || 0) > 0 && (
           <Row
-            padding={16}
+            padding="md"
             backgroundColor="$red2"
             borderRadius={12}
             borderWidth={1}
@@ -480,12 +480,12 @@ export function CCPAAdminDashboard() {
         {/* Request List */}
         <Stack gap={8}>
           {isLoading ? (
-            <Row padding={24} justify="center">
+            <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : requests?.requests?.length === 0 ? (
             <Stack
-              padding={24}
+              padding="xl"
               backgroundColor="$color2"
               borderRadius={12}
               borderWidth={1}
@@ -493,7 +493,7 @@ export function CCPAAdminDashboard() {
               align="center"
               gap={8}
             >
-              <Text color="gray">No requests match the current filters</Text>
+              <Text color="$gray11">No requests match the current filters</Text>
             </Stack>
           ) : (
             requests?.requests?.map((request: AdminCCPARequest) => (
@@ -512,14 +512,14 @@ export function CCPAAdminDashboard() {
         <Stack gap={12}>
           <Text>Quick Actions</Text>
           <Row gap={12} flexWrap="wrap">
-            <Button size={16}>Generate Compliance Report</Button>
-            <Button size={16} variant="outline">
+            <Button size="md">Generate Compliance Report</Button>
+            <Button size="md" variant="outline">
               Export All Requests
             </Button>
-            <Button size={16} variant="outline">
+            <Button size="md" variant="outline">
               View Breach Notifications
             </Button>
-            <Button size={16} variant="outline">
+            <Button size="md" variant="outline">
               Audit Log
             </Button>
           </Row>
@@ -528,7 +528,7 @@ export function CCPAAdminDashboard() {
         {/* CCPA Timeline Requirements */}
         <Stack
           gap={12}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           borderRadius={16}
           borderWidth={1}
@@ -538,25 +538,25 @@ export function CCPAAdminDashboard() {
           <Stack gap={8}>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
-              <Text color="gray">
+              <Text color="$gray11">
                 <Text>10 days</Text> - Acknowledge receipt of request
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$orange10" />
-              <Text color="gray">
+              <Text color="$gray11">
                 <Text>45 days</Text> - Complete request (with possible 45-day extension)
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
-              <Text color="gray">
+              <Text color="$gray11">
                 <Text>12 months</Text> - Retain request records
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$red10" />
-              <Text color="gray">
+              <Text color="$gray11">
                 <Text>72 hours</Text> - Notify users of data breaches
               </Text>
             </Row>

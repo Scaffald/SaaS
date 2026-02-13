@@ -242,13 +242,13 @@ export const ApplicationStatusChangeModal = ({
       }}
       title={isRejection ? 'Reject Application' : 'Mark as Hired'}
     >
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         {/* Confirmation message */}
         <Stack gap={8}>
           <Text>
             {isRejection ? `Reject ${candidateName}?` : `Mark ${candidateName} as Hired?`}
           </Text>
-          <Text color="gray">
+          <Text color="$gray11">
             This will move the application from <Text>{STATUS_LABELS[fromStatus]}</Text> to{' '}
             <Text>{STATUS_LABELS[toStatus]}</Text>
           </Text>
@@ -268,12 +268,12 @@ export const ApplicationStatusChangeModal = ({
             {initializingIntent && !paymentCompleted && (
               <Stack gap={4} align="center">
                 <Spinner size="sm" />
-                <Text color="gray">Preparing payment form…</Text>
+                <Text color="$gray11">Preparing payment form…</Text>
               </Stack>
             )}
 
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
-              <Card padding={12} backgroundColor="$green2" borderColor="$green6" borderWidth={1}>
+              <Card padding="sm" backgroundColor="$green2" borderColor="$green6" borderWidth={1}>
                 <Text color="$green11">
                   Upfront fee paid on{' '}
                   {successFeeStatus.upfrontPaidAt
@@ -291,7 +291,7 @@ export const ApplicationStatusChangeModal = ({
               successFeeStatus?.status !== 'upfront_paid' && (
                 <Stack gap={12}>
                   <Card
-                    padding={12}
+                    padding="sm"
                     backgroundColor="$color2"
                     borderColor="$borderColor"
                     borderWidth={1}
@@ -300,9 +300,9 @@ export const ApplicationStatusChangeModal = ({
                       <CustomCheckbox
                         aria-label="Acknowledge success-fee agreement"
                         checked={legalAccepted}
-                        onCheckedChange={(next) => setLegalAccepted(Boolean(next))}
+                        onChange={(next) => setLegalAccepted(Boolean(next))}
                       />
-                      <Text flex={1} color="gray">
+                      <Text flex={1} color="$gray11">
                         {legalCopy}
                       </Text>
                     </Row>
@@ -500,7 +500,7 @@ function HireSummaryCard({
 }) {
   if (hasMissingData) {
     return (
-      <Card padding={12} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+      <Card padding="sm" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
         <Text color="$yellow11">
           Add pay range information to this job before marking the hire.
         </Text>
@@ -516,31 +516,31 @@ function HireSummaryCard({
   }
 
   return (
-    <Card padding={16} borderWidth={1} borderColor="$borderColor">
+    <Card padding="md" borderWidth={1} borderColor="$borderColor">
       <Stack gap={8}>
         <Text>Success Fee Overview</Text>
         <Row justify="space-between">
-          <Text color="gray">Total Hire Value</Text>
+          <Text color="$gray11">Total Hire Value</Text>
           <Text>{currencyFormatter.format(hireSummary.totalHireValueCents / 100)}</Text>
         </Row>
         <Row justify="space-between">
-          <Text color="gray">Upfront ({hireSummary.upfrontPercentage}%)</Text>
+          <Text color="$gray11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
           <Text>{currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}</Text>
         </Row>
         <Row justify="space-between">
-          <Text color="gray">Final ({hireSummary.finalPercentage}%)</Text>
+          <Text color="$gray11">Final ({hireSummary.finalPercentage}%)</Text>
           <Text>
             {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due{' '}
             {hireSummary.finalDueDate}
           </Text>
         </Row>
-        {isProcessing && <Text color="gray">Creating payment intent...</Text>}
+        {isProcessing && <Text color="$gray11">Creating payment intent...</Text>}
         {paymentError && <Text color="$red10">{paymentError}</Text>}
-        {isStatusLoading && <Text color="gray">Checking latest payment status…</Text>}
+        {isStatusLoading && <Text color="$gray11">Checking latest payment status…</Text>}
         {!isStatusLoading &&
           successFeeStatus &&
           typeof (successFeeStatus as unknown as Record<string, unknown>)?.status === 'string' && (
-            <Text color="gray">
+            <Text color="$gray11">
               Current status:{' '}
               {(successFeeStatus as unknown as Record<string, unknown>).status
                 ?.toString()

@@ -28,7 +28,7 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
       <Stack gap={12} align="center">
         <Trophy size={48} color="$yellow10" />
         <H3>Profile Complete!</H3>
-        <Paragraph color="gray" textAlign="center" style={{ maxWidth: 400 }}>
+        <Paragraph color="$gray11" textAlign="center" style={{ maxWidth: 400 }}>
           Amazing work—your profile is {completionPercentage}% complete. You&apos;re now ready to be
           discovered by top employers and collaborators.
         </Paragraph>
@@ -36,12 +36,12 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
 
       <Card bordered backgroundColor="$color2" style={{ maxWidth: 440, width: '100%' }}>
         <Card.Header padded gap={12}>
-          <Text color="gray">Benefits Unlocked</Text>
+          <Text color="$gray11">Benefits Unlocked</Text>
           <Stack gap={8}>
             {benefitsToShow.map((benefit) => (
               <Row key={benefit} gap={8} align="center">
                 <Star size={18} color="$green9" />
-                <Text color="gray">{benefit}</Text>
+                <Text color="$gray11">{benefit}</Text>
               </Row>
             ))}
           </Stack>
@@ -49,10 +49,10 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
       </Card>
 
       <Stack gap={12} style={{ width: '100%', maxWidth: 440 }}>
-        <Button size={20} themeInverse iconAfter={ArrowRight} onPress={onViewProfile}>
+        <Button size="lg" themeInverse iconAfter={ArrowRight} onPress={onViewProfile}>
           View My Profile
         </Button>
-        <Button size={20} variant="outline" onPress={onContinueEditing}>
+        <Button size="lg" variant="outline" onPress={onContinueEditing}>
           Continue Editing
         </Button>
       </Stack>

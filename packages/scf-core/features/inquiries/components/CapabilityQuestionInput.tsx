@@ -45,8 +45,8 @@ export function CapabilityQuestionInput({
       </Row>
       {/* Alternative: Toggle Switch */}
       <Row justify="space-between" align="center" marginTop={8}>
-        <Text color="gray">Toggle answer</Text>
-        <ToggleSwitch checked={localValue ?? false} onCheckedChange={handleValueChange} />
+        <Text color="$gray11">Toggle answer</Text>
+        <ToggleSwitch checked={localValue ?? false} onChange={handleValueChange} />
       </Row>
     </Stack>
   )

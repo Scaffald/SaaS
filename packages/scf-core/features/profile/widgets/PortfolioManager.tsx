@@ -398,7 +398,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
 
         {!isEditing ? (
           <Stack gap={12}>
-            <Text color="gray">
+            <Text color="$gray11">
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
             <Button
@@ -416,7 +416,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
           <Stack gap={16}>
             <Row justify="space-between" align="center">
               <H4>{editingId ? 'Edit Portfolio Item' : 'Add Portfolio Item'}</H4>
-              <Button size={8} variant="outline" onPress={handleCancel}>
+              <Button size="xs" variant="outline" onPress={handleCancel}>
                 Cancel
               </Button>
             </Row>
@@ -494,14 +494,14 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   <Row gap={8}>
                     {/* Reorder buttons */}
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       icon={ArrowUp}
                       onPress={() => handleMoveUp(index)}
                       disabled={index === 0 || reorderMutation.isPending}
                     />
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       icon={ArrowDown}
                       onPress={() => handleMoveDown(index)}
@@ -509,7 +509,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                     />
                     {/* Edit button */}
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       icon={Edit3}
                       onPress={() => handleEdit(item)}
@@ -531,7 +531,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   <Stack gap={8}>
                     <Text>{item.title}</Text>
                     {item.description && (
-                      <Text color="gray" numberOfLines={3}>
+                      <Text color="$gray11" numberOfLines={3}>
                         {getDescriptionPreview(item.description)}
                       </Text>
                     )}

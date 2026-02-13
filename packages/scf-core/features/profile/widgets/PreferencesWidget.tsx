@@ -30,7 +30,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load preferences</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -40,7 +40,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="gray">No preferences data available</Text>
+          <Text color="$gray11">No preferences data available</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -67,7 +67,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {showEdit && (
             <Button
               variant="outline"
-              size={8}
+              size="xs"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
             >
               Edit
@@ -80,7 +80,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {data.availability && typeof data.availability === 'string' && (
             <Stack gap={8}>
               <Text>Availability</Text>
-              <Text color="gray" textTransform="capitalize">
+              <Text color="$gray11" textTransform="capitalize">
                 {data.availability.replace('_', ' ')}
               </Text>
             </Stack>
@@ -90,7 +90,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {data.career_level && typeof data.career_level === 'string' && (
             <Stack gap={8}>
               <Text>Career Level</Text>
-              <Text color="gray" textTransform="capitalize">
+              <Text color="$gray11" textTransform="capitalize">
                 {data.career_level.replace('_', ' ')}
               </Text>
             </Stack>
@@ -100,7 +100,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {data.hourly_rate_cents && (
             <Stack gap={8}>
               <Text>Hourly Rate</Text>
-              <Text color="gray">{formatCurrency(data.hourly_rate_cents)}</Text>
+              <Text color="$gray11">{formatCurrency(data.hourly_rate_cents)}</Text>
             </Stack>
           )}
 
@@ -133,11 +133,11 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             <Stack gap={8}>
               <Text>Travel</Text>
               <Row gap={8} align="center">
-                <Text color="gray">
+                <Text color="$gray11">
                   {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
                 </Text>
                 {data.travel_distance_miles && (
-                  <Text color="gray">• Up to {data.travel_distance_miles} miles</Text>
+                  <Text color="$gray11">• Up to {data.travel_distance_miles} miles</Text>
                 )}
               </Row>
             </Stack>
@@ -153,15 +153,15 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               <Text>Work Authorization</Text>
               <Stack gap={4}>
                 {data.us_resident !== null && (
-                  <Text color="gray">{data.us_resident ? '✓' : '✗'} US Resident</Text>
+                  <Text color="$gray11">{data.us_resident ? '✓' : '✗'} US Resident</Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text color="gray">{data.us_passport ? '✓' : '✗'} US Passport</Text>
+                  <Text color="$gray11">{data.us_passport ? '✓' : '✗'} US Passport</Text>
                 )}
                 {data.authorized_countries &&
                   Array.isArray(data.authorized_countries) &&
                   data.authorized_countries.length > 0 && (
-                    <Text color="gray">Authorized: {formatArray(data.authorized_countries)}</Text>
+                    <Text color="$gray11">Authorized: {formatArray(data.authorized_countries)}</Text>
                   )}
               </Stack>
             </Stack>
@@ -197,10 +197,10 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               <Text>Military Service</Text>
               <Stack gap={4}>
                 {data.veteran !== null && (
-                  <Text color="gray">{data.veteran ? 'Veteran' : 'Not a veteran'}</Text>
+                  <Text color="$gray11">{data.veteran ? 'Veteran' : 'Not a veteran'}</Text>
                 )}
                 {data.military_status && typeof data.military_status === 'string' && (
-                  <Text color="gray" textTransform="capitalize">
+                  <Text color="$gray11" textTransform="capitalize">
                     Status: {data.military_status.replace('_', ' ')}
                   </Text>
                 )}

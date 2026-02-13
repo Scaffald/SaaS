@@ -238,8 +238,8 @@ export function ConnectionFollowButtonsInline({
   if (isLoading) {
     return (
       <Row gap={8} align="center">
-        <Loader2 size={16} color="gray" />
-        <Text color="gray">Loading...</Text>
+        <Loader2 size="md" color="$gray11" />
+        <Text color="$gray11">Loading...</Text>
       </Row>
     )
   }
@@ -305,7 +305,7 @@ export function ConnectionFollowButtonsInline({
         <Button
           size={size}
           icon={isConnectionMutating ? Loader2 : UserPlus}
-          theme="blue"
+          color="primary"
           onPress={handleConnect}
           disabled={isConnectionMutating}
         >

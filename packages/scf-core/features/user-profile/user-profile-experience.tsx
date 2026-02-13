@@ -27,26 +27,26 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
 
   return (
     <Card elevate bordered>
-      <Stack gap={16} padding={20}>
+      <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
           <Briefcase size={24} color="$blue10" />
-          <Text color="gray">Work Experience</Text>
+          <Text color="$gray11">Work Experience</Text>
         </Row>
 
         <Stack gap={12}>
           {experience.map((exp) => (
             <Card key={exp.id} bordered backgroundColor="$color2">
-              <Stack gap={12} padding={16}>
+              <Stack gap={12} padding="md">
                 <Stack gap={4}>
-                  <Text color="gray">{exp.job_title}</Text>
-                  {exp.company_name && <Text color="gray">{exp.company_name}</Text>}
+                  <Text color="$gray11">{exp.job_title}</Text>
+                  {exp.company_name && <Text color="$gray11">{exp.company_name}</Text>}
                 </Stack>
 
                 <Row gap={12} flexWrap="wrap">
                   {(exp.start_date || exp.end_date) && (
                     <Row gap={8} align="center">
-                      <Calendar size={16} color="gray" />
-                      <Text color="gray">
+                      <Calendar size="md" color="$gray11" />
+                      <Text color="$gray11">
                         {formatDate(exp.start_date)} -{' '}
                         {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                       </Text>
@@ -54,14 +54,14 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                   )}
                   {exp.location && (
                     <Row gap={8} align="center">
-                      <MapPin size={16} color="gray" />
-                      <Text color="gray">{exp.location}</Text>
+                      <MapPin size="md" color="$gray11" />
+                      <Text color="$gray11">{exp.location}</Text>
                     </Row>
                   )}
                 </Row>
 
                 {exp.description && (
-                  <Text color="gray" lineHeight={20}>
+                  <Text color="$gray11" lineHeight={20}>
                     {exp.description}
                   </Text>
                 )}

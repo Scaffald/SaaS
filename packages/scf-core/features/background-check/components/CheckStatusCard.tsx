@@ -56,10 +56,10 @@ export const CheckStatusCard = memo(function CheckStatusCard({
       <Stack gap={16}>
         <Row justify="space-between" align="flex-start" gap={16} flexWrap="wrap">
           <Stack gap={4} flex={1}>
-            <Text color="gray">{packageLabel}</Text>
-            <Text color="gray">Started {formatDate(check.created_at)}</Text>
+            <Text color="$gray11">{packageLabel}</Text>
+            <Text color="$gray11">Started {formatDate(check.created_at)}</Text>
             {estimatedCompletion && (
-              <Text color="gray">Est. completion {formatDate(estimatedCompletion)}</Text>
+              <Text color="$gray11">Est. completion {formatDate(estimatedCompletion)}</Text>
             )}
           </Stack>
 
@@ -95,18 +95,18 @@ export const CheckStatusCard = memo(function CheckStatusCard({
 
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="gray">Progress</Text>
-            <Text color="gray">{progress}%</Text>
+            <Text color="$gray11">Progress</Text>
+            <Text color="$gray11">{progress}%</Text>
           </Row>
           <Progress value={progress} max={100} backgroundColor="$color3" size={4}>
             <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
           </Progress>
-          <Text color="gray">{statusMeta.description}</Text>
+          <Text color="$gray11">{statusMeta.description}</Text>
         </Stack>
 
         <Row gap={8} flexWrap="wrap">
           <Button
-            size={12}
+            size="sm"
             icon={Eye}
             onPress={() => onViewDetails(check)}
             accessibilityLabel="View background check details"
@@ -114,7 +114,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             View details
           </Button>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={RefreshCcw}
             onPress={() => onRenew(check)}
@@ -123,7 +123,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             Renew
           </Button>
           {onDispute && (
-            <Button size={12} variant="outline" theme="warning" onPress={() => onDispute(check)}>
+            <Button size="sm" variant="outline" theme="warning" onPress={() => onDispute(check)}>
               Dispute
             </Button>
           )}

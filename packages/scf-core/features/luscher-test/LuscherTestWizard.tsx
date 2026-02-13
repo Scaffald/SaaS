@@ -211,10 +211,10 @@ export function LuscherTestWizard() {
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
   const railContent = (
-    <Stack gap={20} padding={8}>
+    <Stack gap={20} padding="xs">
       <Stack gap={4}>
-        <Text color="gray">Weekly Pulse</Text>
-        <Text color="gray">Track your focus and readiness through five quick moments.</Text>
+        <Text color="$gray11">Weekly Pulse</Text>
+        <Text color="$gray11">Track your focus and readiness through five quick moments.</Text>
       </Stack>
 
       {!showResultsSidebar && (

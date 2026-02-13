@@ -118,20 +118,20 @@ export function IPIPAssessmentWizard() {
         >
           <Stack gap={16} align="center">
             <Text color="$green10">✓ {DOMAIN_NAMES[completedDomain]} Complete!</Text>
-            <Text color="gray" textAlign="center">
+            <Text color="$gray11" textAlign="center">
               You've completed {completedDomains} of 5 domains
             </Text>
-            <Text color="gray" textAlign="center">
+            <Text color="$gray11" textAlign="center">
               Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
               assessment.
             </Text>
           </Stack>
 
           <Stack gap={12} width="100%" maxWidth={400}>
-            <Button size={20} theme="info" onPress={handleContinueToNextDomain}>
+            <Button size="lg" theme="info" onPress={handleContinueToNextDomain}>
               Continue to Next Domain
             </Button>
-            <Button size={16} variant="outline" onPress={handleTakeBreak}>
+            <Button size="md" variant="outline" onPress={handleTakeBreak}>
               Take a Break
             </Button>
           </Stack>

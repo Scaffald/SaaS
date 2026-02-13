@@ -96,7 +96,7 @@ export function OccupationAssessmentWizard() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Current Occupation (Optional)</Text>
-            <Text color="gray">What is your current or most recent job?</Text>
+            <Text color="$gray11">What is your current or most recent job?</Text>
           </Stack>
           <OccupationSearch
             value={currentOccupation}
@@ -110,7 +110,7 @@ export function OccupationAssessmentWizard() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Target Occupations (Optional)</Text>
-            <Text color="gray">What occupations are you interested in pursuing?</Text>
+            <Text color="$gray11">What occupations are you interested in pursuing?</Text>
           </Stack>
           {targetOccupations.map((occupation, index) => (
             <Row key={`target-occupation-${index}-${occupation || 'empty'}`} gap={8} align="center">
@@ -123,7 +123,7 @@ export function OccupationAssessmentWizard() {
                 />
               </Stack>
               <Button
-                size={12}
+                size="sm"
                 variant="outline"
                 icon={X}
                 onPress={() => handleRemoveTarget(index)}
@@ -132,7 +132,7 @@ export function OccupationAssessmentWizard() {
             </Row>
           ))}
           <Button
-            size={16}
+            size="md"
             variant="outline"
             icon={Plus}
             onPress={handleAddTarget}
@@ -142,7 +142,7 @@ export function OccupationAssessmentWizard() {
           </Button>
         </Stack>
 
-        <Button size={20} themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
+        <Button size="lg" themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
           <Button.Text>Save Preferences</Button.Text>
         </Button>
       </Stack>

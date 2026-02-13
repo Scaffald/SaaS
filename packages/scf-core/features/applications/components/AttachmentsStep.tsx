@@ -295,11 +295,11 @@ export function AttachmentsStep({
   }
 
   return (
-    <Stack gap={24} width="100%" maxWidth={800} padding={16}>
+    <Stack gap={24} width="100%" maxWidth={800} padding="md">
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">Upload Documents</Text>
-        <Text color="gray">
+        <Text color="$gray11">Upload Documents</Text>
+        <Text color="$gray11">
           Upload your resume and any additional documents to support your application.
         </Text>
       </Stack>
@@ -307,13 +307,13 @@ export function AttachmentsStep({
       {/* Resume Upload */}
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <Text color="gray">Resume</Text>
+          <Text color="$gray11">Resume</Text>
           {requireResume && <Text color="$red10">Required</Text>}
         </Row>
 
         {getAttachment('resume') ? (
           <Row
-            padding={16}
+            padding="md"
             borderRadius={16}
             borderWidth={2}
             borderColor="$green9"
@@ -325,12 +325,12 @@ export function AttachmentsStep({
             <Row gap={12} align="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <Stack flex={1}>
-                <Text color="gray">{getAttachment('resume')?.filename}</Text>
-                <Text color="gray">{formatFileSize(getAttachment('resume')?.size ?? 0)}</Text>
+                <Text color="$gray11">{getAttachment('resume')?.filename}</Text>
+                <Text color="$gray11">{formatFileSize(getAttachment('resume')?.size ?? 0)}</Text>
               </Stack>
             </Row>
             <Button
-              size={12}
+              size="sm"
               circular
               variant="outline"
               icon={X}
@@ -341,7 +341,7 @@ export function AttachmentsStep({
         ) : uploading.resume ? (
           <Stack gap={8}>
             <Stack
-              padding={24}
+              padding="xl"
               borderRadius={16}
               borderWidth={2}
               borderColor="$blue9"
@@ -351,13 +351,13 @@ export function AttachmentsStep({
             >
               <Upload size={32} color="$blue10" />
               <Stack gap={8} width="100%">
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   Uploading...
                 </Text>
                 <Progress value={uploadProgress.resume || 0} max={100} backgroundColor="$blue4">
                   <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
                 </Progress>
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   {uploadProgress.resume || 0}%
                 </Text>
               </Stack>
@@ -368,7 +368,7 @@ export function AttachmentsStep({
             <label htmlFor="resume-upload">
               <Stack
                 asChild
-                padding={24}
+                padding="xl"
                 borderRadius={16}
                 borderWidth={2}
                 borderColor={
@@ -390,8 +390,8 @@ export function AttachmentsStep({
                 >
                   <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
                   <Stack gap={4} align="center">
-                    <Text color="gray">Choose a file or drag it here</Text>
-                    <Text color="gray" textAlign="center">
+                    <Text color="$gray11">Choose a file or drag it here</Text>
+                    <Text color="$gray11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </Stack>
@@ -420,13 +420,13 @@ export function AttachmentsStep({
       {/* Cover Letter Upload (Optional) */}
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <Text color="gray">Cover Letter</Text>
-          <Text color="gray">Optional</Text>
+          <Text color="$gray11">Cover Letter</Text>
+          <Text color="$gray11">Optional</Text>
         </Row>
 
         {getAttachment('cover_letter') ? (
           <Row
-            padding={16}
+            padding="md"
             borderRadius={16}
             borderWidth={2}
             borderColor="$green9"
@@ -438,12 +438,12 @@ export function AttachmentsStep({
             <Row gap={12} align="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <Stack flex={1}>
-                <Text color="gray">{getAttachment('cover_letter')?.filename}</Text>
-                <Text color="gray">{formatFileSize(getAttachment('cover_letter')?.size ?? 0)}</Text>
+                <Text color="$gray11">{getAttachment('cover_letter')?.filename}</Text>
+                <Text color="$gray11">{formatFileSize(getAttachment('cover_letter')?.size ?? 0)}</Text>
               </Stack>
             </Row>
             <Button
-              size={12}
+              size="sm"
               circular
               variant="outline"
               icon={X}
@@ -454,7 +454,7 @@ export function AttachmentsStep({
         ) : uploading.cover_letter ? (
           <Stack gap={8}>
             <Stack
-              padding={24}
+              padding="xl"
               borderRadius={16}
               borderWidth={2}
               borderColor="$blue9"
@@ -464,7 +464,7 @@ export function AttachmentsStep({
             >
               <Upload size={32} color="$blue10" />
               <Stack gap={8} width="100%">
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   Uploading...
                 </Text>
                 <Progress
@@ -474,7 +474,7 @@ export function AttachmentsStep({
                 >
                   <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
                 </Progress>
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   {uploadProgress.cover_letter || 0}%
                 </Text>
               </Stack>
@@ -485,7 +485,7 @@ export function AttachmentsStep({
             <label htmlFor="cover-letter-upload">
               <Stack
                 asChild
-                padding={24}
+                padding="xl"
                 borderRadius={16}
                 borderWidth={2}
                 borderColor={
@@ -511,8 +511,8 @@ export function AttachmentsStep({
                 >
                   <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
                   <Stack gap={4} align="center">
-                    <Text color="gray">Choose a file or drag it here</Text>
-                    <Text color="gray" textAlign="center">
+                    <Text color="$gray11">Choose a file or drag it here</Text>
+                    <Text color="$gray11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </Stack>
@@ -541,13 +541,13 @@ export function AttachmentsStep({
       {/* Portfolio Upload (Optional) */}
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <Text color="gray">Portfolio / Work Samples</Text>
-          <Text color="gray">Optional</Text>
+          <Text color="$gray11">Portfolio / Work Samples</Text>
+          <Text color="$gray11">Optional</Text>
         </Row>
 
         {getAttachment('portfolio') ? (
           <Row
-            padding={16}
+            padding="md"
             borderRadius={16}
             borderWidth={2}
             borderColor="$green9"
@@ -559,12 +559,12 @@ export function AttachmentsStep({
             <Row gap={12} align="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <Stack flex={1}>
-                <Text color="gray">{getAttachment('portfolio')?.filename}</Text>
-                <Text color="gray">{formatFileSize(getAttachment('portfolio')?.size ?? 0)}</Text>
+                <Text color="$gray11">{getAttachment('portfolio')?.filename}</Text>
+                <Text color="$gray11">{formatFileSize(getAttachment('portfolio')?.size ?? 0)}</Text>
               </Stack>
             </Row>
             <Button
-              size={12}
+              size="sm"
               circular
               variant="outline"
               icon={X}
@@ -575,7 +575,7 @@ export function AttachmentsStep({
         ) : uploading.portfolio ? (
           <Stack gap={8}>
             <Stack
-              padding={24}
+              padding="xl"
               borderRadius={16}
               borderWidth={2}
               borderColor="$blue9"
@@ -585,13 +585,13 @@ export function AttachmentsStep({
             >
               <Upload size={32} color="$blue10" />
               <Stack gap={8} width="100%">
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   Uploading...
                 </Text>
                 <Progress value={uploadProgress.portfolio || 0} max={100} backgroundColor="$blue4">
                   <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
                 </Progress>
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   {uploadProgress.portfolio || 0}%
                 </Text>
               </Stack>
@@ -602,7 +602,7 @@ export function AttachmentsStep({
             <label htmlFor="portfolio-upload">
               <Stack
                 asChild
-                padding={24}
+                padding="xl"
                 borderRadius={16}
                 borderWidth={2}
                 borderColor={
@@ -628,8 +628,8 @@ export function AttachmentsStep({
                 >
                   <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
                   <Stack gap={4} align="center">
-                    <Text color="gray">Choose a file or drag it here</Text>
-                    <Text color="gray" textAlign="center">
+                    <Text color="$gray11">Choose a file or drag it here</Text>
+                    <Text color="$gray11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </Stack>
@@ -657,7 +657,7 @@ export function AttachmentsStep({
 
       {/* Info Box */}
       <Stack
-        padding={16}
+        padding="md"
         borderRadius={16}
         backgroundColor="$blue2"
         borderWidth={1}
@@ -672,7 +672,7 @@ export function AttachmentsStep({
       {/* Navigation Buttons */}
       <Row gap={12} justify="space-between" marginTop={16}>
         <Button
-          size={16}
+          size="md"
           variant="outline"
           icon={ArrowLeft}
           onPress={onPrevious}
@@ -681,7 +681,7 @@ export function AttachmentsStep({
           Previous
         </Button>
         <Button
-          size={16}
+          size="md"
           theme="info"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}

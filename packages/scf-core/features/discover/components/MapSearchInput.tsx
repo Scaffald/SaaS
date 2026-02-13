@@ -114,7 +114,7 @@ export const MapSearchInput = ({
             <Stack
               style={{ minWidth: 250, width: '100%' }}
               backgroundColor="$background"
-              padding={16}
+              padding="md"
               borderRadius={32}
               borderWidth={1}
               borderColor="$red8"
@@ -128,7 +128,7 @@ export const MapSearchInput = ({
                 <AlertCircle size={18} color="$red10" />
                 <Text color="$red10">Map Search Unavailable</Text>
               </Row>
-              <Text color="gray">{tokenValidation.error}</Text>
+              <Text color="$gray11">{tokenValidation.error}</Text>
             </Stack>
           )}
         </Row>

@@ -33,7 +33,7 @@ export function AuthorizedAppsList() {
 
   if (consentsQuery.isLoading) {
     return (
-      <Stack flex={1} padding={16} gap={16}>
+      <Stack flex={1} padding="md" gap={16}>
         <SizableText>Loading authorized apps...</SizableText>
       </Stack>
     )
@@ -44,7 +44,7 @@ export function AuthorizedAppsList() {
       {/* Header */}
       <Stack gap={8}>
         <SizableText size={24}>Authorized Applications</SizableText>
-        <Paragraph size={12} color="gray">
+        <Paragraph size="sm" color="$gray11">
           These apps have access to your Scaffald account. You can revoke access at any time.
         </Paragraph>
       </Stack>
@@ -58,7 +58,7 @@ export function AuthorizedAppsList() {
             const expiresAt = consent.expires_at ? new Date(consent.expires_at) : null
 
             return (
-              <Card key={consent.id} padding={16} data-testid={`authorized-app-${consent.id}`}>
+              <Card key={consent.id} padding="md" data-testid={`authorized-app-${consent.id}`}>
                 <Row gap={16} align="flex-start">
                   {/* App Logo */}
                   {app?.logo_url && (
@@ -80,16 +80,16 @@ export function AuthorizedAppsList() {
                   {/* App Info */}
                   <Stack flex={1} gap={12}>
                     <Stack gap={4}>
-                      <SizableText size={20} data-testid="authorized-app-name">
+                      <SizableText size="lg" data-testid="authorized-app-name">
                         {app?.display_name || 'Unknown App'}
                       </SizableText>
                       {app?.description && (
-                        <Paragraph size={12} color="gray" data-testid="authorized-app-description">
+                        <Paragraph size="sm" color="$gray11" data-testid="authorized-app-description">
                           {app.description}
                         </Paragraph>
                       )}
                       {app?.homepage_url && (
-                        <SizableText size={8} color="$blue10" data-testid="authorized-app-homepage">
+                        <SizableText size="xs" color="$blue10" data-testid="authorized-app-homepage">
                           {app.homepage_url}
                         </SizableText>
                       )}
@@ -99,14 +99,14 @@ export function AuthorizedAppsList() {
 
                     {/* Scopes */}
                     <Stack gap={8}>
-                      <SizableText size={12}>Permissions</SizableText>
+                      <SizableText size="sm">Permissions</SizableText>
                       <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
                           <Row key={scope} gap={8} align="center">
-                            <SizableText size={4} color="gray">
+                            <SizableText size={4} color="$gray11">
                               •
                             </SizableText>
-                            <SizableText size={8} color="gray">
+                            <SizableText size="xs" color="$gray11">
                               {scope}
                             </SizableText>
                           </Row>
@@ -116,11 +116,11 @@ export function AuthorizedAppsList() {
 
                     {/* Metadata */}
                     <Stack gap={4}>
-                      <SizableText size={8} color="gray">
+                      <SizableText size="xs" color="$gray11">
                         Authorized on {grantedAt.toLocaleDateString()}
                       </SizableText>
                       {expiresAt && (
-                        <SizableText size={8} color="gray">
+                        <SizableText size="xs" color="$gray11">
                           Expires on {expiresAt.toLocaleDateString()}
                         </SizableText>
                       )}
@@ -141,10 +141,10 @@ export function AuthorizedAppsList() {
           })}
         </Stack>
       ) : (
-        <Card padding={24} data-testid="no-authorized-apps">
+        <Card padding="xl" data-testid="no-authorized-apps">
           <Stack gap={12} align="center">
-            <SizableText size={20}>No Authorized Apps</SizableText>
-            <Paragraph size={12} color="gray" textAlign="center">
+            <SizableText size="lg">No Authorized Apps</SizableText>
+            <Paragraph size="sm" color="$gray11" textAlign="center">
               You haven't authorized any third-party applications to access your account yet.
             </Paragraph>
           </Stack>
@@ -167,9 +167,9 @@ export function AuthorizedAppsList() {
               </Stack>
 
               <Stack gap={8} paddingLeft={16}>
-                <Paragraph size={12}>• Immediately invalidate all access tokens</Paragraph>
-                <Paragraph size={12}>• Prevent the app from accessing your data</Paragraph>
-                <Paragraph size={12}>
+                <Paragraph size="sm">• Immediately invalidate all access tokens</Paragraph>
+                <Paragraph size="sm">• Prevent the app from accessing your data</Paragraph>
+                <Paragraph size="sm">
                   • Require you to re-authorize if you want to use the app again
                 </Paragraph>
               </Stack>

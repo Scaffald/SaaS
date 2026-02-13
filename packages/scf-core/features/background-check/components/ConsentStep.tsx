@@ -37,8 +37,8 @@ export const ConsentStep = memo(function ConsentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="gray">Consent & Disclosures</Text>
-        <Text color="gray">
+        <Text color="$gray11">Consent & Disclosures</Text>
+        <Text color="$gray11">
           Please review the disclosure and confirm your consent to continue with the background
           check.
         </Text>
@@ -46,22 +46,22 @@ export const ConsentStep = memo(function ConsentStep({
 
       <ScrollView flex={1}>
         <Stack gap={16} paddingBottom={24}>
-          <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
-            <Text color="gray">FCRA Disclosure</Text>
-            <Text color="gray">{FCRA_DISCLOSURE.trim()}</Text>
+          <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
+            <Text color="$gray11">FCRA Disclosure</Text>
+            <Text color="$gray11">{FCRA_DISCLOSURE.trim()}</Text>
           </Stack>
 
-          <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
-            <Text color="gray">Summary of Rights</Text>
-            <Text color="gray">{SUMMARY_OF_RIGHTS.trim()}</Text>
+          <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
+            <Text color="$gray11">Summary of Rights</Text>
+            <Text color="$gray11">{SUMMARY_OF_RIGHTS.trim()}</Text>
           </Stack>
 
           <Stack gap={12}>
             <Row gap={12} align="center">
               <Switch
-                size={12}
+                size="sm"
                 checked={consent.acceptsDisclosure}
-                onCheckedChange={(checked) => {
+                onChange={(checked) => {
                   onChange({
                     acceptsDisclosure: checked,
                   })
@@ -69,13 +69,13 @@ export const ConsentStep = memo(function ConsentStep({
               >
                 <Switch.Thumb />
               </Switch>
-              <Text color="gray">I have read and authorize the background check.</Text>
+              <Text color="$gray11">I have read and authorize the background check.</Text>
             </Row>
 
             <Stack gap={8}>
-              <Text color="gray">Electronic Signature</Text>
+              <Text color="$gray11">Electronic Signature</Text>
               <TextArea
-                size={16}
+                size="md"
                 value={consent.signature}
                 onChangeText={(value) =>
                   onChange({
@@ -92,7 +92,7 @@ export const ConsentStep = memo(function ConsentStep({
                 placeholder={signaturePlaceholder}
                 autoCapitalize="words"
               />
-              <Text color="gray">
+              <Text color="$gray11">
                 Type your full name as it appears on government-issued identification.
               </Text>
             </Stack>
@@ -100,7 +100,7 @@ export const ConsentStep = memo(function ConsentStep({
         </Stack>
       </ScrollView>
 
-      <Button size={16} theme="blue" disabled={!canContinue} onPress={onContinue}>
+      <Button size="md" color="primary" disabled={!canContinue} onPress={onContinue}>
         Continue
       </Button>
     </Stack>

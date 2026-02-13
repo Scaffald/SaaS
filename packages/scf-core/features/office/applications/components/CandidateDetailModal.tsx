@@ -220,20 +220,20 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
       {/* Quick Actions */}
       <Row gap={8}>
-        <Button theme="success" flex={1} size={16}>
+        <Button theme="success" flex={1} size="md">
           Advance to Interview
         </Button>
-        <Button theme="error" flex={1} size={16}>
+        <Button theme="error" flex={1} size="md">
           Reject
         </Button>
       </Row>
-      <Button flex={1} size={16}>
+      <Button flex={1} size="md">
         Send Message
       </Button>
       {teamId && currentUser?.id ? (
         <Button
           flex={1}
-          size={16}
+          size="md"
           variant="outline"
           onPress={() =>
             assignMutation.mutate({
@@ -334,7 +334,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
         <Tabs.Content value="inquiry" paddingTop={16}>
           {inquiryMode === 'view' && isInquiryLoading && (
-            <Stack padding={16} align="center" gap={16}>
+            <Stack padding="md" align="center" gap={16}>
               <Spinner size="lg" />
               <Text>Loading inquiry...</Text>
             </Stack>
@@ -371,16 +371,16 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           ) : null}
 
           {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-            <Stack padding={16} gap={12}>
-              <Text color="gray">No inquiry has been created for this candidate yet.</Text>
-              <Button theme="blue" onPress={() => setInquiryMode('create')}>
+            <Stack padding="md" gap={12}>
+              <Text color="$gray11">No inquiry has been created for this candidate yet.</Text>
+              <Button color="primary" onPress={() => setInquiryMode('create')}>
                 Start Inquiry
               </Button>
             </Stack>
           )}
 
           {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-            <Stack padding={16} align="center" gap={16}>
+            <Stack padding="md" align="center" gap={16}>
               <Spinner size="lg" />
               <Text>Preparing inquiry for editing...</Text>
             </Stack>

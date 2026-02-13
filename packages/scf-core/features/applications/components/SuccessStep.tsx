@@ -71,7 +71,7 @@ export function SuccessStep({
       gap={24}
       width="100%"
       maxWidth={600}
-      padding={24}
+      padding="xl"
       align="center"
       aria-live="polite"
       aria-label="Application submitted successfully"
@@ -93,7 +93,7 @@ export function SuccessStep({
 
       {/* Success Message */}
       <Stack gap={8} align="center">
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           Application Submitted Successfully!
         </Text>
         <Text color="$gray11" textAlign="center">
@@ -115,7 +115,7 @@ export function SuccessStep({
       {/* What Happens Next */}
       <Stack
         gap={12}
-        padding={16}
+        padding="md"
         backgroundColor="$background"
         borderRadius={16}
         borderWidth={1}
@@ -123,7 +123,7 @@ export function SuccessStep({
         width="100%"
         marginTop={32}
       >
-        <Text color="gray">What happens next:</Text>
+        <Text color="$gray11">What happens next:</Text>
 
         <Stack gap={12} marginTop={8}>
           <NextStepItem text="Our team will review your application within 3-5 business days" />
@@ -136,7 +136,7 @@ export function SuccessStep({
       <Row gap={12} width="100%" marginTop={32} flexWrap="wrap" justify="center">
         {onViewApplication && (
           <Button
-            size={20}
+            size="lg"
             theme="info"
             icon={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
@@ -148,13 +148,13 @@ export function SuccessStep({
         )}
 
         {onReturnToJobs && (
-          <Button size={20} variant="outline" onPress={onReturnToJobs} flex={1} minWidth={200}>
+          <Button size="lg" variant="outline" onPress={onReturnToJobs} flex={1} minWidth={200}>
             Browse More Jobs
           </Button>
         )}
 
         <Button
-          size={20}
+          size="lg"
           variant="outline"
           icon={Home}
           onPress={handleReturnToDashboard}

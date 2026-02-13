@@ -218,10 +218,10 @@ export const DrawerContent = ({
           {isCollapsed ? (
             <Stack gap={12} align="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="gray" />
+                <SettingsIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="gray" />
+                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -229,9 +229,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="gray" />
+                    <PanelRightClose size={footerIconSize} color="$gray11" />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="gray" />
+                    <PanelLeftClose size={footerIconSize} color="$gray11" />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -245,10 +245,10 @@ export const DrawerContent = ({
               paddingHorizontal={12}
             >
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="gray" />
+                <SettingsIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="gray" />
+                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -256,9 +256,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="gray" />
+                    <PanelRightClose size={footerIconSize} color="$gray11" />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="gray" />
+                    <PanelLeftClose size={footerIconSize} color="$gray11" />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -292,7 +292,7 @@ const DrawerProfileCard = ({
       width="100%"
       borderWidth={1}
       borderColor="$color4"
-      padding={12}
+      padding="sm"
       gap={12}
       align="center"
       borderRadius={16}
@@ -326,12 +326,12 @@ const DrawerProfileCard = ({
           borderColor="$borderColor"
           style={{ borderRadius: avatarSize / 2 }}
         >
-          <Text color="gray">{fallbackInitial}</Text>
+          <Text color="$gray11">{fallbackInitial}</Text>
         </Stack>
       )}
 
       <Stack flex={1} gap={8}>
-        <Text color="gray">{displayName}</Text>
+        <Text color="$gray11">{displayName}</Text>
         <Row gap={16}>
           <Text
             color="$blue10"

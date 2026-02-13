@@ -139,7 +139,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (isLoading) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading history...</Text>
       </Stack>
     )
@@ -147,7 +147,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (error) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load history</Text>
       </Stack>
     )
@@ -155,8 +155,8 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (!sortedHistory || sortedHistory.length === 0) {
     return (
-      <Stack padding={16} align="center" gap={16}>
-        <Text color="gray">No history available</Text>
+      <Stack padding="md" align="center" gap={16}>
+        <Text color="$gray11">No history available</Text>
       </Stack>
     )
   }
@@ -167,7 +167,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   }
 
   return (
-    <Stack gap={12} padding={16}>
+    <Stack gap={12} padding="md">
       <Text>History</Text>
 
       <Stack gap={8}>
@@ -188,7 +188,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                   align="center"
                   justify="center"
                 >
-                  <EventIcon size={8} color="white" />
+                  <EventIcon size="xs" color="white" />
                 </Stack>
                 {!isLast && <Stack flex={1} width={2} backgroundColor="$gray5" height={40} />}
               </Stack>
@@ -196,7 +196,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
               {/* Event details */}
               <Stack flex={1} gap={4}>
                 <Row gap={8} align="center">
-                  <Avatar size={8} circular>
+                  <Avatar size="xs" circular>
                     <Avatar.Image src={event.actor?.avatar_path || undefined} />
                     <Avatar.Fallback backgroundColor="$blue9">
                       <Text color="white">
@@ -205,14 +205,14 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                     </Avatar.Fallback>
                   </Avatar>
                   <Text>{actorDisplayName(event.actor)}</Text>
-                  <Text color="gray">{formatEventType(event.event_type as EventType)}</Text>
+                  <Text color="$gray11">{formatEventType(event.event_type as EventType)}</Text>
                 </Row>
 
-                <Text color="gray">{formatTimestamp(event.created_at)}</Text>
+                <Text color="$gray11">{formatTimestamp(event.created_at)}</Text>
 
                 {/* Event-specific details */}
                 {event.event_data && (
-                  <Text color="gray" marginTop={4}>
+                  <Text color="$gray11" marginTop={4}>
                     {formatEventData(event.event_type as EventType, event.event_data)}
                   </Text>
                 )}

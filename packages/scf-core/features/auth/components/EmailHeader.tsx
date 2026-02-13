@@ -17,7 +17,7 @@ export function EmailHeader({ email }: EmailHeaderProps) {
       </H1>
 
       <Row align="center" justify="center" gap={8}>
-        <Mail size={20} color={colors.gray[900]} />
+        <Mail size="lg" color={colors.gray[900]} />
         <Paragraph
           style={{
             fontSize: 16,

@@ -242,12 +242,12 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const filtersAccessory = (
     <Row gap={12} align="center" flexWrap="wrap">
       <Row gap={8} align="center">
-        <Text color="gray">Status</Text>
+        <Text color="$gray11">Status</Text>
         <ResponsiveSelect
           value={statusFilter ?? 'all'}
           onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
           placeholder="All statuses"
-          size={8}
+          size="xs"
           options={[
             { value: 'all', label: 'All statuses' },
             { value: 'draft', label: 'Draft' },
@@ -259,12 +259,12 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       </Row>
       {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
         <Row gap={8} align="center">
-          <Text color="gray">Organization</Text>
+          <Text color="$gray11">Organization</Text>
           <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
             placeholder="All organizations"
-            size={8}
+            size="xs"
             options={[
               { value: 'all', label: 'All organizations' },
               ...organizationsData.organizations.map(
@@ -278,12 +278,12 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         </Row>
       )}
       <Row gap={8} align="center">
-        <Text color="gray">Team</Text>
+        <Text color="$gray11">Team</Text>
         <ResponsiveSelect
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
           placeholder={teamFilterPlaceholder}
-          size={8}
+          size="xs"
           disabled={teamsLoading}
           options={[
             { value: 'all', label: 'All teams' },
@@ -295,18 +295,18 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       </Row>
       <Row gap={8} align="center">
-        <Text color="gray">My teams only</Text>
-        <Switch size={8} checked={myTeamsOnly} onCheckedChange={setMyTeamsOnly}>
+        <Text color="$gray11">My teams only</Text>
+        <Switch size="xs" checked={myTeamsOnly} onChange={setMyTeamsOnly}>
           <Switch.Thumb />
         </Switch>
       </Row>
       <Row gap={8} align="center">
-        <Text color="gray">Sort</Text>
+        <Text color="$gray11">Sort</Text>
         <ResponsiveSelect
           value={sortBy}
           onValueChange={(value: string) => setSortBy(value as SortOption)}
           placeholder="Sort by"
-          size={8}
+          size="xs"
           options={[
             { value: 'created_desc', label: 'Newest first' },
             { value: 'created_asc', label: 'Oldest first' },
@@ -328,21 +328,21 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         leftContent={
           <Stack flex={1} backgroundColor="$background">
             {showHeader && (
-              <Stack padding={16} paddingBottom={12} gap={12}>
+              <Stack padding="md" paddingBottom={12} gap={12}>
                 <Row justify="space-between" align="center">
                   <Stack>
                     <H2>Jobs</H2>
-                    <Text color="gray">{filteredAndSortedJobs.length} total jobs</Text>
+                    <Text color="$gray11">{filteredAndSortedJobs.length} total jobs</Text>
                   </Stack>
                   <Row gap={8}>
-                    <Button size={12} onPress={() => setViewMode('kanban')} variant="outline">
+                    <Button size="sm" onPress={() => setViewMode('kanban')} variant="outline">
                       Kanban
                     </Button>
-                    <Button size={12} onPress={() => setViewMode('list')}>
+                    <Button size="sm" onPress={() => setViewMode('list')}>
                       List
                     </Button>
                     <Button
-                      size={12}
+                      size="sm"
                       onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
                     >
                       Create Job
@@ -395,10 +395,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           rightAccessory: (
             <Row gap={8} align="center">
               {filtersAccessory}
-              <Button size={8} onPress={() => setViewMode('kanban')} variant="outline">
+              <Button size="xs" onPress={() => setViewMode('kanban')} variant="outline">
                 Kanban
               </Button>
-              <Button size={8} onPress={() => setViewMode('list')}>
+              <Button size="xs" onPress={() => setViewMode('list')}>
                 List
               </Button>
             </Row>

@@ -75,13 +75,13 @@ export function LuscherTestStep({
   return (
     <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto">
       <Stack gap={8} align="center">
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           Click the colors in order based on what makes you feel the best.
         </Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           {isComplete
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
@@ -172,7 +172,7 @@ export function LuscherTestStep({
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
         <Row justify="center">
-          <Button variant="primary" size={16} onPress={() => onSave(selectedOrder)}>
+          <Button variant="primary" size="md" onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>
         </Row>

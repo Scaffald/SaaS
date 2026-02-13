@@ -28,8 +28,8 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="gray">Upload required documents</Text>
-        <Text color="gray">
+        <Text color="$gray11">Upload required documents</Text>
+        <Text color="$gray11">
           Provide clear copies of each requested document. Depending on your package, this might
           include government ID, SSN card, or driving history.
         </Text>
@@ -44,20 +44,20 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
                 key={docType}
                 bordered
                 borderRadius={16}
-                padding={12}
+                padding="sm"
                 backgroundColor={isChecked ? '$green3' : '$color2'}
               >
                 <Row align="center" gap={12}>
                   <Checkbox
-                    size={16}
+                    size="md"
                     checked={isChecked}
-                    onCheckedChange={(checked) => onToggleDocument(docType, Boolean(checked))}
+                    onChange={(checked) => onToggleDocument(docType, Boolean(checked))}
                   >
                     <Checkbox.Indicator />
                   </Checkbox>
                   <Stack gap={4} flex={1}>
-                    <Text color="gray">{docType.replace(/_/g, ' ')}</Text>
-                    <Text color="gray">
+                    <Text color="$gray11">{docType.replace(/_/g, ' ')}</Text>
+                    <Text color="$gray11">
                       Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
                     </Text>
                   </Stack>
@@ -66,13 +66,13 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
             )
           })
         ) : (
-          <Card bordered borderRadius={16} padding={12} backgroundColor="$color2">
-            <Text color="gray">No documents are required for this package.</Text>
+          <Card bordered borderRadius={16} padding="sm" backgroundColor="$color2">
+            <Text color="$gray11">No documents are required for this package.</Text>
           </Card>
         )}
       </Stack>
 
-      <Button size={16} theme="blue" disabled={!allDocumentsProvided} onPress={onContinue}>
+      <Button size="md" color="primary" disabled={!allDocumentsProvided} onPress={onContinue}>
         Continue
       </Button>
     </Stack>

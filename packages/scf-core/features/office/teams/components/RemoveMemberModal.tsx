@@ -70,7 +70,7 @@ export function RemoveMemberModal({
         </Text>
 
         <Stack gap={8}>
-          <Text color="gray">Removal reason (optional)</Text>
+          <Text color="$gray11">Removal reason (optional)</Text>
           <TextArea
             value={reason}
             onChangeText={setReason}
@@ -84,17 +84,17 @@ export function RemoveMemberModal({
           />
         </Stack>
 
-        <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
+        <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={16}>
           <Text>What happens next?</Text>
-          <Text color="gray">• The member loses access to the team immediately.</Text>
-          <Text color="gray">• Their review history is preserved for auditing.</Text>
-          <Text color="gray">• You can re-add them later if needed.</Text>
+          <Text color="$gray11">• The member loses access to the team immediately.</Text>
+          <Text color="$gray11">• Their review history is preserved for auditing.</Text>
+          <Text color="$gray11">• You can re-add them later if needed.</Text>
         </Stack>
 
         <Stack gap={12}>
           <Button
             backgroundColor="$red9"
-            color="gray"
+            color="$gray11"
             onPress={handleRemove}
             disabled={removeMemberMutation.isPending}
           >

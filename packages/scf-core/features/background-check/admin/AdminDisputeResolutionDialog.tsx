@@ -127,7 +127,7 @@ export function AdminDisputeResolutionDialog({
             <Row justify="space-between" align="center">
               <Dialog.Title>Resolve dispute</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size={8} variant="outline" disabled={isSubmitting}>
+                <Button size="xs" variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>
@@ -137,7 +137,7 @@ export function AdminDisputeResolutionDialog({
               <Stack gap={12}>
                 <Stack
                   gap={8}
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$borderColor"
@@ -145,14 +145,14 @@ export function AdminDisputeResolutionDialog({
                 >
                   <Row gap={8} align="center">
                     <AlertTriangle size={18} color="$yellow10" />
-                    <Text color="gray">{workerName}</Text>
+                    <Text color="$gray11">{workerName}</Text>
                   </Row>
-                  <Text color="gray">Submitted {formatDateTime(dispute.created_at)}</Text>
-                  <Text color="gray">Current status: {dispute.status}</Text>
+                  <Text color="$gray11">Submitted {formatDateTime(dispute.created_at)}</Text>
+                  <Text color="$gray11">Current status: {dispute.status}</Text>
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text color="gray">Dispute reason</Text>
+                  <Text color="$gray11">Dispute reason</Text>
                   <TextArea
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
@@ -162,7 +162,7 @@ export function AdminDisputeResolutionDialog({
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text color="gray">Dispute details</Text>
+                  <Text color="$gray11">Dispute details</Text>
                   <TextArea
                     value={dispute.dispute_details ?? ''}
                     editable={false}
@@ -205,7 +205,7 @@ export function AdminDisputeResolutionDialog({
             ) : (
               <Stack gap={12} align="center" justify="center" paddingVertical={24}>
                 <Spinner size="lg" />
-                <Text color="gray">Loading dispute…</Text>
+                <Text color="$gray11">Loading dispute…</Text>
               </Stack>
             )}
 
@@ -213,20 +213,20 @@ export function AdminDisputeResolutionDialog({
 
             <Row gap={8} justify="flex-end">
               <Dialog.Close asChild>
-                <Button size={12} variant="outline" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Cancel
                 </Button>
               </Dialog.Close>
               <Button
-                size={12}
-                theme="blue"
+                size="sm"
+                color="primary"
                 onPress={handleResolve}
                 disabled={!dispute || isSubmitting}
               >
                 {isSubmitting ? (
                   <Row gap={8} align="center">
-                    <Spinner size="sm" color="gray" />
-                    <Text color="gray">Resolving…</Text>
+                    <Spinner size="sm" color="$gray11" />
+                    <Text color="$gray11">Resolving…</Text>
                   </Row>
                 ) : (
                   'Resolve dispute'

@@ -32,7 +32,7 @@ export function PhotoGallery({
         gap={8}
       >
         <Text>Photo Gallery</Text>
-        <Text color="gray">No photos have been uploaded yet.</Text>
+        <Text color="$gray11">No photos have been uploaded yet.</Text>
       </Stack>
     )
   }

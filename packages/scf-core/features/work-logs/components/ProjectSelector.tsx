@@ -62,7 +62,7 @@ export const ProjectSelector = memo(function ProjectSelector({
 
       {hasMultipleOrganizations && (
         <Stack gap={4}>
-          <Text color="gray">Organization</Text>
+          <Text color="$gray11">Organization</Text>
           <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(nextValue) => {
@@ -73,7 +73,7 @@ export const ProjectSelector = memo(function ProjectSelector({
               }
             }}
             placeholder="All organizations"
-            size={16}
+            size="md"
             options={[
               { value: 'all', label: 'All organizations' },
               ...organizations.map((organization) => ({
@@ -86,12 +86,12 @@ export const ProjectSelector = memo(function ProjectSelector({
       )}
 
       <Stack gap={4}>
-        <Text color="gray">Select a project to associate with this work log.</Text>
+        <Text color="$gray11">Select a project to associate with this work log.</Text>
         <ResponsiveSelect
           value={value}
           onValueChange={onChange}
           placeholder={isLoading ? 'Loading projects...' : 'Select a project'}
-          size={16}
+          size="md"
           disabled={disabled || isLoading || filteredProjects.length === 0}
           options={filteredProjects.map((project) => ({
             value: project.id,
@@ -118,13 +118,13 @@ export const ProjectSelector = memo(function ProjectSelector({
           paddingHorizontal={12}
           paddingVertical={8}
         >
-          <AlertCircle size={16} color="$red10" />
+          <AlertCircle size="md" color="$red10" />
           <Text flex={1} color="$red10">
             {error}
           </Text>
           {onRetry && (
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               icon={RefreshCw}
               onPress={onRetry}
@@ -134,10 +134,10 @@ export const ProjectSelector = memo(function ProjectSelector({
         </Row>
       )}
 
-      {helperText && <Text color="gray">{helperText}</Text>}
+      {helperText && <Text color="$gray11">{helperText}</Text>}
 
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <Text color="gray">No projects available for the selected organization.</Text>
+        <Text color="$gray11">No projects available for the selected organization.</Text>
       )}
     </Stack>
   )

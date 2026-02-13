@@ -37,8 +37,8 @@ export function BackgroundCheckNavigationMenu() {
   return (
     <DashboardWidget gap={16}>
       <Stack gap={4}>
-        <Text color="gray">Background Check Tools</Text>
-        <Text color="gray">Switch between related workflows and management tools.</Text>
+        <Text color="$gray11">Background Check Tools</Text>
+        <Text color="$gray11">Switch between related workflows and management tools.</Text>
       </Stack>
 
       <Stack gap={8}>
@@ -76,7 +76,7 @@ export function BackgroundCheckNavigationMenu() {
 
                 <Row gap={8} align="center">
                   <Text color={isActive ? '$blue12' : '$color11'}>View workspace</Text>
-                  <ArrowRight size={16} color={isActive ? '$blue11' : '$color10'} />
+                  <ArrowRight size="md" color={isActive ? '$blue11' : '$color10'} />
                 </Row>
               </Stack>
             </Link>

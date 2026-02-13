@@ -68,8 +68,8 @@ export function DisputeForm({
     <FormProvider {...form}>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="gray">Submit a dispute</Text>
-          <Text color="gray">
+          <Text color="$gray11">Submit a dispute</Text>
+          <Text color="$gray11">
             Share what needs review and, if helpful, include supporting documents so our compliance
             team can investigate quickly.
           </Text>
@@ -148,7 +148,7 @@ export function DisputeForm({
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
                   borderColor={error ? '$red8' : '$borderColor'}
                 />
-                <Text color="gray">Minimum 20 characters. Max 2000 characters.</Text>
+                <Text color="$gray11">Minimum 20 characters. Max 2000 characters.</Text>
                 {error ? <Text color="$red10">{error.message}</Text> : null}
               </Stack>
             )}
@@ -156,8 +156,8 @@ export function DisputeForm({
         </Fieldset>
 
         <Stack gap={8}>
-          <Text color="gray">Supporting documents (optional)</Text>
-          <Text color="gray">
+          <Text color="$gray11">Supporting documents (optional)</Text>
+          <Text color="$gray11">
             Upload up to five files (PDF, JPG, or PNG, 10MB each) to help us verify your dispute.
           </Text>
 
@@ -186,14 +186,14 @@ export function DisputeForm({
               >
                 <input {...getInputProps()} />
                 <Upload size={24} color="$blue10" />
-                <Text color="gray">{isProcessing ? 'Processing…' : 'Drag a file here'}</Text>
-                <Text color="gray">
+                <Text color="$gray11">{isProcessing ? 'Processing…' : 'Drag a file here'}</Text>
+                <Text color="$gray11">
                   or <Text color="$blue11">browse your device</Text>
                 </Text>
-                <Button size={8} variant="outline" onPress={open} icon={Upload}>
+                <Button size="xs" variant="outline" onPress={open} icon={Upload}>
                   Choose file
                 </Button>
-                <Text color="gray">Accepted: PDF, PNG, JPG • Max 10MB each</Text>
+                <Text color="$gray11">Accepted: PDF, PNG, JPG • Max 10MB each</Text>
               </Stack>
             )}
           </UploadSurface>
@@ -207,7 +207,7 @@ export function DisputeForm({
               backgroundColor="$red3"
               borderRadius={12}
             >
-              <AlertCircle size={16} color="$red10" />
+              <AlertCircle size="md" color="$red10" />
               <Text color="$red10">{attachmentError}</Text>
             </Row>
           ) : null}
@@ -229,15 +229,15 @@ export function DisputeForm({
                   justify="space-between"
                 >
                   <Stack flex={1} gap={4}>
-                    <Text color="gray" numberOfLines={1}>
+                    <Text color="$gray11" numberOfLines={1}>
                       {attachment.name}
                     </Text>
-                    <Text color="gray">
+                    <Text color="$gray11">
                       {attachment.mimeType.toUpperCase()} • {formatFileSize(attachment.size)}
                     </Text>
                   </Stack>
                   <Button
-                    size={8}
+                    size="xs"
                     variant="outline"
                     icon={X}
                     onPress={() => onRemoveAttachment(attachment.id)}
@@ -259,15 +259,15 @@ export function DisputeForm({
             backgroundColor="$red3"
             borderRadius={12}
           >
-            <AlertCircle size={16} color="$red10" />
+            <AlertCircle size="md" color="$red10" />
             <Text color="$red10">{submissionError}</Text>
           </Row>
         ) : null}
 
         <Row gap={8} justify="flex-end">
           <Button
-            size={12}
-            theme="blue"
+            size="sm"
+            color="primary"
             disabled={disableSubmit}
             onPress={async () => {
               const successful = await onSubmit()

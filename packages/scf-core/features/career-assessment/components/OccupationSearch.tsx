@@ -166,7 +166,7 @@ export function OccupationSearch({
           {occupations.map((occupation: Occupation) => (
             <Row
               key={occupation.onetsoc_code}
-              padding={12}
+              padding="sm"
               gap={8}
               hoverStyle={{
                 backgroundColor: '$backgroundHover',
@@ -179,7 +179,7 @@ export function OccupationSearch({
             >
               <Stack flex={1} gap={4}>
                 <Text>{occupation.title}</Text>
-                <Text color="gray">{occupation.onetsoc_code}</Text>
+                <Text color="$gray11">{occupation.onetsoc_code}</Text>
               </Stack>
             </Row>
           ))}
@@ -197,7 +197,7 @@ export function OccupationSearch({
           borderColor="$borderColor"
           borderRadius={12}
           backgroundColor="$background"
-          padding={12}
+          padding="sm"
           zIndex={1000}
         >
           <Text color="$red10">
@@ -217,10 +217,10 @@ export function OccupationSearch({
           borderColor="$borderColor"
           borderRadius={12}
           backgroundColor="$background"
-          padding={12}
+          padding="sm"
           zIndex={1000}
         >
-          <Text color="gray">No occupations found for "{debouncedSearch}"</Text>
+          <Text color="$gray11">No occupations found for "{debouncedSearch}"</Text>
         </Stack>
       )}
     </Stack>

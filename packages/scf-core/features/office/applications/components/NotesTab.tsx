@@ -12,7 +12,7 @@ export const NotesTab = ({ applicationId, teamId, mentionOptions = [] }: NotesTa
     return (
       <Stack gap={12}>
         <Text>Team discussion unavailable</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Assign this job to a team to enable collaborative comments and mentions.
         </Text>
       </Stack>

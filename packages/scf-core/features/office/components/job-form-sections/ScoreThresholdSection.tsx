@@ -18,7 +18,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
   const currentScore = value[0] || 50
 
   return (
-    <Stack gap={16} padding={16}>
+    <Stack gap={16} padding="md">
       <Stack gap={8}>
         <Row gap={8}>
           <Label flex={1}>Minimum Score</Label>
@@ -41,7 +41,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
         </Row>
       </Stack>
 
-      <Stack gap={8} padding={12}>
+      <Stack gap={8} padding="sm">
         <Text color="$blue11">Score Guidelines</Text>
         <Text color="$blue11">
           • <Text>0-25:</Text> Entry level, minimal requirements

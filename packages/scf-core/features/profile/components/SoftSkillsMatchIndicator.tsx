@@ -34,16 +34,16 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
 
       {/* Skill Info */}
       <Stack flex={1} gap={4}>
-        <Text color="gray">{skillName}</Text>
+        <Text color="$gray11">{skillName}</Text>
         <Row gap={12} align="center">
           {userRating !== null && userRating > 0 ? (
-            <Text color="gray">Your rating: {userRating}/5</Text>
+            <Text color="$gray11">Your rating: {userRating}/5</Text>
           ) : (
-            <Text color="gray" fontStyle="italic">
+            <Text color="$gray11" fontStyle="italic">
               Not assessed
             </Text>
           )}
-          <Text color="gray">Required: {requiredImportance}/5</Text>
+          <Text color="$gray11">Required: {requiredImportance}/5</Text>
         </Row>
       </Stack>
     </Row>

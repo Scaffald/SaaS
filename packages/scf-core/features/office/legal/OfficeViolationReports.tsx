@@ -97,9 +97,9 @@ export function OfficeViolationReports() {
             return (
               <Row gap={4}>
                 <Button
-                  size={8}
+                  size="xs"
                   variant="outline"
-                  theme="blue"
+                  color="primary"
                   onPress={() => {
                     updateMutation.mutate({
                       reportId: info.getValue(),
@@ -121,16 +121,16 @@ export function OfficeViolationReports() {
   }, [updateMutation])
 
   return (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Anti-Circumvention Violation Reports</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Review and manage reports of off-platform hires and fee avoidance.
           </Text>
         </Stack>
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           icon={RefreshCw}
           onPress={() => reportsQuery.refetch()}
@@ -143,10 +143,10 @@ export function OfficeViolationReports() {
       {reportsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="gray">Loading violation reports…</Text>
+          <Text color="$gray11">Loading violation reports…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
           <DataTable
             columns={reportsColumns}
             data={reportsQuery.data?.items ?? []}
@@ -155,7 +155,7 @@ export function OfficeViolationReports() {
             emptyMessage="No violation reports found."
           />
           {reportsQuery.data && reportsQuery.data.totalCount > 0 && (
-            <Text color="gray" marginTop={12}>
+            <Text color="$gray11" marginTop={12}>
               Showing {reportsQuery.data.items.length} of {reportsQuery.data.totalCount} reports
             </Text>
           )}

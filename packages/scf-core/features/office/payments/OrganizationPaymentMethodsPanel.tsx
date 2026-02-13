@@ -76,21 +76,21 @@ export function OrganizationPaymentMethodsPanel({
 
   if (paymentMethodQuery.isLoading) {
     return (
-      <Card bordered padding={16}>
+      <Card bordered padding="md">
         <Stack gap={12} align="center" paddingVertical={16}>
           <Spinner size="lg" />
-          <Text color="gray">Loading payment method…</Text>
+          <Text color="$gray11">Loading payment method…</Text>
         </Stack>
       </Card>
     )
   }
 
   return (
-    <Card bordered padding={16} gap={12}>
+    <Card bordered padding="md" gap={12}>
       <Row justify="space-between" align="center">
         <Text>Payment Method</Text>
         {!showAddForm && !paymentMethod && (
-          <Button size={12} theme="blue" icon={Plus} onPress={() => setShowAddForm(true)}>
+          <Button size="sm" color="primary" icon={Plus} onPress={() => setShowAddForm(true)}>
             Add Payment Method
           </Button>
         )}
@@ -109,13 +109,13 @@ export function OrganizationPaymentMethodsPanel({
           <Row
             gap={12}
             align="center"
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <CreditCard size={24} color="gray" />
+            <CreditCard size={24} color="$gray11" />
             <Stack flex={1} gap={4}>
               <Row gap={8} align="center">
                 <Text>
@@ -123,13 +123,13 @@ export function OrganizationPaymentMethodsPanel({
                 </Text>
                 {paymentMethod.isDefault && <Text color="$blue11">Default</Text>}
               </Row>
-              <Text color="gray">
+              <Text color="$gray11">
                 Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
                 {paymentMethod.billingName ? ` • ${paymentMethod.billingName}` : ''}
               </Text>
             </Stack>
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               icon={Trash2}
               onPress={handleDelete}
@@ -140,14 +140,14 @@ export function OrganizationPaymentMethodsPanel({
               Remove
             </Button>
           </Row>
-          <Button size={12} variant="outline" icon={Plus} onPress={() => setShowAddForm(true)}>
+          <Button size="sm" variant="outline" icon={Plus} onPress={() => setShowAddForm(true)}>
             Replace Payment Method
           </Button>
         </Stack>
       ) : (
-        <Stack gap={8} padding={12} backgroundColor="$color2" borderRadius={16}>
-          <Text color="gray">No payment method on file</Text>
-          <Text color="gray">
+        <Stack gap={8} padding="sm" backgroundColor="$color2" borderRadius={16}>
+          <Text color="$gray11">No payment method on file</Text>
+          <Text color="$gray11">
             Add a payment method to enable automatic billing for this organization.
           </Text>
         </Stack>

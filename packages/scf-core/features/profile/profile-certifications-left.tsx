@@ -611,7 +611,7 @@ export function ProfileCertificationsLeft({
           <Row justify="space-between" align="center">
             <Text>Custom Certifications</Text>
             <Button
-              size={12}
+              size="sm"
               icon={PlusCircle}
               variant={showCustomForm ? 'outlined' : undefined}
               theme={showCustomForm ? undefined : 'accent'}
@@ -630,8 +630,8 @@ export function ProfileCertificationsLeft({
 
           {showCustomForm && (
             <Card bordered backgroundColor="$color2">
-              <Stack gap={12} padding={16}>
-                <Text color="gray">
+              <Stack gap={12} padding="md">
+                <Text color="$gray11">
                   Add certifications that are not in our catalog. These appear alongside saved
                   certifications on the right panel.
                 </Text>
@@ -732,7 +732,7 @@ export function ProfileCertificationsLeft({
                   <Text>Proof (optional)</Text>
                   <Row gap={8} flexWrap="wrap" align="center">
                     <Button
-                      size={12}
+                      size="sm"
                       icon={UploadCloud}
                       variant="outline"
                       onPress={handleCustomFileSelect}
@@ -742,7 +742,7 @@ export function ProfileCertificationsLeft({
                     </Button>
                     {customForm.file && (
                       <Button
-                        size={8}
+                        size="xs"
                         variant="outline"
                         onPress={handleClearCustomFile}
                         disabled={isSavingCustom}
@@ -861,7 +861,7 @@ function Depth1Categories({
   const typedTree = certTree as unknown as CertificationTree
 
   if (depth1Categories.length === 0) {
-    return <Text color="gray">No sub-categories available</Text>
+    return <Text color="$gray11">No sub-categories available</Text>
   }
 
   return (
@@ -878,7 +878,7 @@ function Depth1Categories({
             title={category.title}
             description={categoryDescription}
             checked={isExpanded}
-            onCheckedChange={() => onToggle(category.id, parentId, category.title)}
+            onChange={() => onToggle(category.id, parentId, category.title)}
             expandedContent={
               <Depth2Certifications
                 categoryId={category.id}
@@ -929,7 +929,7 @@ function Depth2Certifications({
   const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
 
   if (depth2Certs.length === 0) {
-    return <Text color="gray">No specific certifications available</Text>
+    return <Text color="$gray11">No specific certifications available</Text>
   }
 
   // Create a map of saved certifications
@@ -952,7 +952,7 @@ function Depth2Certifications({
         return (
           <Stack
             key={cert.id}
-            padding={12}
+            padding="sm"
             borderRadius={16}
             borderWidth={1}
             animation="quick"
@@ -974,7 +974,7 @@ function Depth2Certifications({
             <CertificationCheckbox
               certification={sanitizedCert}
               checked={isChecked}
-              onCheckedChange={(checked: boolean) =>
+              onChange={(checked: boolean) =>
                 onCheck(cert.id, parentId, checked, categoryId, cert.title)
               }
               hasProof={hasProof}

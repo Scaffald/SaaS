@@ -180,12 +180,12 @@ export function OfficeUniversitiesForm({
 
   return (
     <DashboardWidget>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <Row justify="space-between" align="center">
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               onPress={onCancel}
               icon={X}
@@ -227,7 +227,7 @@ export function OfficeUniversitiesForm({
             <Text>
               Vanity URL <Text color="$red10">*</Text>
             </Text>
-            <Text color="gray">URL-friendly username (auto-generated from name)</Text>
+            <Text color="$gray11">URL-friendly username (auto-generated from name)</Text>
             <Controller
               name="slug"
               control={control}
@@ -278,7 +278,7 @@ export function OfficeUniversitiesForm({
             <Text>
               Country Code <Text color="$red10">*</Text>
             </Text>
-            <Text color="gray">2-letter ISO country code (e.g. US, CA, GB)</Text>
+            <Text color="$gray11">2-letter ISO country code (e.g. US, CA, GB)</Text>
             <Controller
               name="alpha_two_code"
               control={control}
@@ -303,7 +303,7 @@ export function OfficeUniversitiesForm({
           {/* State/Province */}
           <Stack gap={8}>
             <Text>State/Province</Text>
-            <Text color="gray">Optional state or province (e.g. Massachusetts, Ontario)</Text>
+            <Text color="$gray11">Optional state or province (e.g. Massachusetts, Ontario)</Text>
             <Controller
               name="state_province"
               control={control}
@@ -321,7 +321,7 @@ export function OfficeUniversitiesForm({
           {/* Domains */}
           <Stack gap={8}>
             <Text>Domains</Text>
-            <Text color="gray">Email domains (comma-separated, e.g. harvard.edu, hbs.edu)</Text>
+            <Text color="$gray11">Email domains (comma-separated, e.g. harvard.edu, hbs.edu)</Text>
             <Controller
               name="domains"
               control={control}
@@ -340,7 +340,7 @@ export function OfficeUniversitiesForm({
           {/* Web Pages */}
           <Stack gap={8}>
             <Text>Web Pages</Text>
-            <Text color="gray">Official websites (comma-separated URLs)</Text>
+            <Text color="$gray11">Official websites (comma-separated URLs)</Text>
             <Controller
               name="web_pages"
               control={control}

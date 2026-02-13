@@ -43,7 +43,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
       borderWidth={1}
       borderColor="$borderColor"
       borderRadius={16}
-      padding={12}
+      padding="sm"
       gap={8}
       backgroundColor="$background"
     >
@@ -85,7 +85,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
         </Stack>
 
         <Button
-          size={12}
+          size="sm"
           chromeless
           onPress={onRemove}
           disabled={disableRemove}

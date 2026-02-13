@@ -149,10 +149,10 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   const isLoading = createMutation.isPending || updateMutation.isPending
 
   return (
-    <Stack gap={16} padding={16} style={{ maxWidth: 800 }} marginHorizontal="auto">
+    <Stack gap={16} padding="md" style={{ maxWidth: 800 }} marginHorizontal="auto">
       <Text>{mode === 'create' ? 'Create Project' : 'Edit Project'}</Text>
 
-      <Card padding={16} gap={16}>
+      <Card padding="md" gap={16}>
         <Stack gap={16}>
           <Stack gap={8}>
             <Text>Organization</Text>
@@ -234,14 +234,14 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             </Stack>
           </Row>
 
-          <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+          <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
             <Stack gap={16}>
               <Text>Location Visibility Settings</Text>
 
               <Row gap={8} align="center">
                 <Switch
                   checked={formData.location_visibility_override}
-                  onCheckedChange={(checked) =>
+                  onChange={(checked) =>
                     setFormData((prev) => ({ ...prev, location_visibility_override: checked }))
                   }
                 />
@@ -249,7 +249,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               </Row>
 
               {formData.location_visibility_override && (
-                <Stack gap={8} padding={8} backgroundColor="$yellow3" borderRadius={8}>
+                <Stack gap={8} padding="xs" backgroundColor="$yellow3" borderRadius={8}>
                   <Text color="$yellow11">⚠️ This overrides your organization's global setting</Text>
                 </Stack>
               )}
@@ -292,7 +292,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               Cancel
             </Button>
             <Button
-              theme="blue"
+              color="primary"
               onPress={handleSubmit}
               disabled={isLoading || !formData.name || !formData.organization_id}
             >

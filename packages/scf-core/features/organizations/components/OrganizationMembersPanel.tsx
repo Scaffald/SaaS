@@ -75,7 +75,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
 
   return (
     <Stack gap={16}>
-      <Card bordered padding={16} gap={16}>
+      <Card bordered padding="md" gap={16}>
         <H4>Invite a member</H4>
         <Stack gap={12}>
           <Controller
@@ -122,10 +122,10 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         </Stack>
       </Card>
 
-      <Card bordered padding={16} gap={12}>
+      <Card bordered padding="md" gap={12}>
         <Row justify="space-between" align="center">
           <H4>Members</H4>
-          {membersLoading ? <Spinner /> : <Text color="gray">{activeMembers.length} total</Text>}
+          {membersLoading ? <Spinner /> : <Text color="$gray11">{activeMembers.length} total</Text>}
         </Row>
         <Separator />
         {membersLoading ? (
@@ -157,13 +157,13 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                     <Table.Row key={member.userId}>
                       <Table.Cell>
                         <Text>{member.profile?.display_name ?? 'Unknown'}</Text>
-                        <Paragraph color="gray">{member.profile?.headline}</Paragraph>
+                        <Paragraph color="$gray11">{member.profile?.headline}</Paragraph>
                       </Table.Cell>
                       <Table.Cell>{member.roles.join(', ') || 'Member'}</Table.Cell>
                       <Table.Cell>
                         {activitySummary ? `${activitySummary.actions} actions` : '—'}
                         {activitySummary?.lastActionAt ? (
-                          <Paragraph color="gray">
+                          <Paragraph color="$gray11">
                             {new Date(activitySummary.lastActionAt).toLocaleDateString()}
                           </Paragraph>
                         ) : null}
@@ -177,16 +177,16 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         )}
       </Card>
 
-      <Card bordered padding={16} gap={12}>
+      <Card bordered padding="md" gap={12}>
         <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
-          {invitesLoading ? <Spinner /> : <Text color="gray">{pendingInvites.length} pending</Text>}
+          {invitesLoading ? <Spinner /> : <Text color="$gray11">{pendingInvites.length} pending</Text>}
         </Row>
         <Separator />
         {invitesLoading ? (
           <Paragraph>Loading invitations…</Paragraph>
         ) : pendingInvites.length === 0 ? (
-          <Paragraph color="gray">No pending invitations</Paragraph>
+          <Paragraph color="$gray11">No pending invitations</Paragraph>
         ) : (
           <Stack gap={8}>
             {pendingInvites.map(
@@ -199,9 +199,9 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 <Row key={invite.id} justify="space-between" align="center">
                   <Stack>
                     <Text>{invite.invitee_email}</Text>
-                    <Paragraph color="gray">{invite.role_name ?? 'member'}</Paragraph>
+                    <Paragraph color="$gray11">{invite.role_name ?? 'member'}</Paragraph>
                   </Stack>
-                  <Text color="gray">{invite.status}</Text>
+                  <Text color="$gray11">{invite.status}</Text>
                 </Row>
               )
             )}

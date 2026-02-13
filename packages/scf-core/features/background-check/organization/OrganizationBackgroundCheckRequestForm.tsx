@@ -236,7 +236,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Loading options…</Text>
+        <Text color="$gray11">Loading options…</Text>
       </Stack>
     )
   }
@@ -244,8 +244,8 @@ export function OrganizationBackgroundCheckRequestForm() {
   if (!organizations.length) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="gray">No organizations available</Text>
-        <Text color="gray" style={{ textAlign: 'center' }}>
+        <Text color="$gray11">No organizations available</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Create an organization before requesting a background check.
         </Text>
       </Stack>
@@ -256,8 +256,8 @@ export function OrganizationBackgroundCheckRequestForm() {
     <ScrollView style={{ flex: 1 }}>
       <Stack flex={1} gap={16} paddingHorizontal={16} paddingVertical={24}>
         <Stack gap={4}>
-          <Text color="gray">Request Background Check</Text>
-          <Text color="gray">
+          <Text color="$gray11">Request Background Check</Text>
+          <Text color="$gray11">
             Invite a worker to complete the required screening package on behalf of your
             organization.
           </Text>
@@ -303,7 +303,7 @@ export function OrganizationBackgroundCheckRequestForm() {
               }))}
             />
             {selectedPackage?.description ? (
-              <Text color="gray">{selectedPackage.description}</Text>
+              <Text color="$gray11">{selectedPackage.description}</Text>
             ) : null}
           </Stack>
 
@@ -376,29 +376,29 @@ export function OrganizationBackgroundCheckRequestForm() {
             />
           </Stack>
 
-          <Stack gap={8} padding={12} backgroundColor="$color3" borderRadius={16}>
+          <Stack gap={8} padding="sm" backgroundColor="$color3" borderRadius={16}>
             <Row gap={8} align="center">
-              <CircleAlert size={18} color="gray" />
-              <Text color="gray">Cost summary</Text>
+              <CircleAlert size={18} color="$gray11" />
+              <Text color="$gray11">Cost summary</Text>
             </Row>
-            <Text color="gray">
-              Package cost: <Text color="gray">{formatCurrency(costCents)}</Text>
+            <Text color="$gray11">
+              Package cost: <Text color="$gray11">{formatCurrency(costCents)}</Text>
             </Text>
-            <Text color="gray">
+            <Text color="$gray11">
               Charges are collected immediately via Stripe. Screenings are submitted after payment
               succeeds.
             </Text>
           </Stack>
 
           {requestError && (
-            <Stack backgroundColor="$red3" padding={12} borderRadius={16}>
+            <Stack backgroundColor="$red3" padding="sm" borderRadius={16}>
               <Text color="$red11">{requestError}</Text>
             </Stack>
           )}
 
           {paymentSession && (
             <Stack gap={8}>
-              <Text color="gray">Complete payment</Text>
+              <Text color="$gray11">Complete payment</Text>
               <PaymentIntentForm
                 clientSecret={paymentSession.clientSecret}
                 amountCents={paymentSession.amountCents}
@@ -414,7 +414,7 @@ export function OrganizationBackgroundCheckRequestForm() {
         <Row gap={12}>
           <Button
             flex={1}
-            size={16}
+            size="md"
             variant="outline"
             disabled={requestPaymentMutation.isPending || confirmPaymentMutation.isPending}
             onPress={() => router.back()}
@@ -424,8 +424,8 @@ export function OrganizationBackgroundCheckRequestForm() {
           {!paymentSession && (
             <Button
               flex={1}
-              size={16}
-              theme="blue"
+              size="md"
+              color="primary"
               onPress={handleSubmit}
               disabled={requestPaymentMutation.isPending}
             >
@@ -435,7 +435,7 @@ export function OrganizationBackgroundCheckRequestForm() {
         </Row>
         {paymentSession && (
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             marginTop={8}
             onPress={() => {

@@ -18,7 +18,7 @@ export function USPassportToggle({
 }: USPassportToggleProps) {
   return (
     <ToggleCard
-      icon={<MapPin size={8} color="gray" />}
+      icon={<MapPin size="xs" color="$gray11" />}
       title="US Passport"
       description={description}
       {...toggleCardProps}

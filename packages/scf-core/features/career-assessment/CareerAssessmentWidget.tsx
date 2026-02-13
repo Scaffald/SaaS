@@ -86,7 +86,7 @@ export function CareerAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
           <Spinner size="lg" color="$blue7" />
-          <Text color="gray">Loading...</Text>
+          <Text color="$gray11">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -101,8 +101,8 @@ export function CareerAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">Career Assessment</Text>
-          <Text color="gray">
+          <Text color="$gray11">Career Assessment</Text>
+          <Text color="$gray11">
             Take a quick assessment to help us recommend jobs that match your interests and skills
           </Text>
         </Stack>
@@ -128,7 +128,7 @@ export function CareerAssessmentWidget() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Current Occupation (Optional)</Text>
-            <Text color="gray">What is your current or most recent job?</Text>
+            <Text color="$gray11">What is your current or most recent job?</Text>
           </Stack>
           <Controller
             name="current_occupation_code"
@@ -153,7 +153,7 @@ export function CareerAssessmentWidget() {
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
           opacity={isSubmitting ? 0.5 : 1}
-          size={20}
+          size="lg"
           marginTop={spacing.xs}
         >
           {isSubmitting ? (
@@ -166,7 +166,7 @@ export function CareerAssessmentWidget() {
           )}
         </Button>
 
-        <Text color="gray">
+        <Text color="$gray11">
           This assessment takes about 2 minutes and helps us recommend careers that fit your
           interests
         </Text>

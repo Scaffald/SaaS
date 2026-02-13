@@ -52,7 +52,7 @@ export function SiteOverlapNotification({
   }
 
   return (
-    <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+    <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
       <Stack gap={16}>
         <Row gap={12} align="flex-start">
           <AlertTriangle size={24} color="$yellow11" />
@@ -62,13 +62,13 @@ export function SiteOverlapNotification({
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
             <Row gap={8} flexWrap="wrap">
-              <Card padding={8} backgroundColor="$yellow3" borderRadius={8}>
+              <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
                 <Row gap={8} align="center">
                   <MapPin size={14} />
                   <Text>Site 1: {siteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
-              <Card padding={8} backgroundColor="$yellow3" borderRadius={8}>
+              <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
                 <Row gap={8} align="center">
                   <MapPin size={14} />
                   <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
@@ -80,17 +80,17 @@ export function SiteOverlapNotification({
 
         <Row gap={8} flexWrap="wrap" justify="flex-end">
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={MessageSquare}
             onPress={handleRequestSurveyData}
           >
             Request Survey Data
           </Button>
-          <Button size={12} variant="outline" icon={MapPin} onPress={handleAdjustBoundaries}>
+          <Button size="sm" variant="outline" icon={MapPin} onPress={handleAdjustBoundaries}>
             Adjust Boundaries
           </Button>
-          <Button size={12} variant="outline" icon={X} onPress={handleDismiss}>
+          <Button size="sm" variant="outline" icon={X} onPress={handleDismiss}>
             Dismiss
           </Button>
         </Row>

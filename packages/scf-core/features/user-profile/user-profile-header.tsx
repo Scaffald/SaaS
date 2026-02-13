@@ -47,7 +47,7 @@ export function UserProfileHeader({
 
   return (
     <Card elevate bordered>
-      <Stack gap={16} padding={20}>
+      <Stack gap={16} padding="lg">
         {/* Header Row */}
         <Row gap={16} align="center" flexWrap="wrap" justify="space-between">
           <Row gap={16} align="center" flexWrap="wrap" flex={1}>
@@ -81,12 +81,12 @@ export function UserProfileHeader({
 
             {/* Name and Headline */}
             <Stack flex={1} gap={8} minWidth={200}>
-              <Text color="gray">{profile.name}</Text>
-              {profile.headline && <Text color="gray">{profile.headline}</Text>}
+              <Text color="$gray11">{profile.name}</Text>
+              {profile.headline && <Text color="$gray11">{profile.headline}</Text>}
               {profile.industry_name && (
                 <Row gap={8} align="center">
-                  <Briefcase size={18} color="gray" />
-                  <Text color="gray">{profile.industry_name}</Text>
+                  <Briefcase size={18} color="$gray11" />
+                  <Text color="$gray11">{profile.industry_name}</Text>
                 </Row>
               )}
             </Stack>
@@ -114,7 +114,7 @@ export function UserProfileHeader({
 
           {/* Leave Review Button */}
           {canLeaveReview && onLeaveReview && (
-            <Button size={16} theme="info" icon={MessageSquare} onPress={onLeaveReview}>
+            <Button size="md" theme="info" icon={MessageSquare} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}
@@ -131,8 +131,8 @@ export function UserProfileHeader({
               backgroundColor="$color2"
               borderRadius={12}
             >
-              <MapPin size={18} color="gray" />
-              <Text color="gray">{profile.location}</Text>
+              <MapPin size={18} color="$gray11" />
+              <Text color="$gray11">{profile.location}</Text>
             </Row>
           )}
 
@@ -145,8 +145,8 @@ export function UserProfileHeader({
               backgroundColor="$color2"
               borderRadius={12}
             >
-              <Award size={18} color="gray" />
-              <Text color="gray">{formattedYears} years experience</Text>
+              <Award size={18} color="$gray11" />
+              <Text color="$gray11">{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -159,8 +159,8 @@ export function UserProfileHeader({
               backgroundColor="$color2"
               borderRadius={12}
             >
-              <DollarSign size={18} color="gray" />
-              <Text color="gray">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              <DollarSign size={18} color="$gray11" />
+              <Text color="$gray11">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
             </Row>
           )}
 

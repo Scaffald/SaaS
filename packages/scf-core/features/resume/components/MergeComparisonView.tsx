@@ -29,7 +29,7 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
     return (
       <Row gap={8} align="center">
         <Spinner size="sm" />
-        <Text color="gray">Loading current profile data…</Text>
+        <Text color="$gray11">Loading current profile data…</Text>
       </Row>
     )
   }
@@ -38,7 +38,7 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
     return (
       <Stack gap={8}>
         <Text>Nothing to review</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           We didn’t detect any changes to compare. You can still finish the wizard to exit.
         </Text>
       </Stack>
@@ -51,7 +51,7 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
         <Stack
           key={section.id}
           gap={12}
-          padding={12}
+          padding="sm"
           borderWidth={1}
           borderColor="$color6"
           backgroundColor="$color2"
@@ -62,7 +62,7 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
             <StrategyPill strategy={section.strategy} />
           </Row>
 
-          {section.notes ? <Text color="gray">{section.notes}</Text> : null}
+          {section.notes ? <Text color="$gray11">{section.notes}</Text> : null}
 
           <Row gap={16} flexWrap="wrap">
             <SummaryColumn title="Current profile" align={section.existingItems} />
@@ -91,18 +91,18 @@ function SummaryColumn({
     <Stack
       gap={8}
       flex={1}
-      padding={8}
+      padding="xs"
       backgroundColor={highlight ? '$blue3' : 'transparent'}
       borderRadius={12}
       style={{ minWidth: 220 }}
     >
       <Text>{title}</Text>
       {items.length === 0 ? (
-        <Text color="gray">No data</Text>
+        <Text color="$gray11">No data</Text>
       ) : (
         items.map((item, index) => (
           <Fragment key={`${title}-${index}-${item}`}>
-            <Text color="gray">{item}</Text>
+            <Text color="$gray11">{item}</Text>
           </Fragment>
         ))
       )}

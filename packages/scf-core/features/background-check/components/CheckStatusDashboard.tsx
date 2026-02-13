@@ -89,7 +89,7 @@ export function CheckStatusDashboard() {
         <Stack gap={16} paddingHorizontal={16} paddingBottom={24}>
           <Stack
             gap={12}
-            padding={16}
+            padding="md"
             backgroundColor="$background"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
@@ -97,8 +97,8 @@ export function CheckStatusDashboard() {
             <Row gap={12} align="center">
               <ShieldCheck size={28} color="$blue10" />
               <Stack gap={4}>
-                <Text color="gray">Background check dashboard</Text>
-                <Text color="gray">
+                <Text color="$gray11">Background check dashboard</Text>
+                <Text color="$gray11">
                   Track your screenings, monitor progress, and manage who can see your results.
                 </Text>
               </Stack>
@@ -109,7 +109,7 @@ export function CheckStatusDashboard() {
                 return (
                   <Button
                     key={filter.value}
-                    size={12}
+                    size="sm"
                     theme={isActive ? 'blue' : undefined}
                     variant={isActive ? undefined : 'outlined'}
                     onPress={() => setActiveFilter(filter.value)}
@@ -127,23 +127,23 @@ export function CheckStatusDashboard() {
 
           {checksQuery.isLoading && (
             <Stack gap={8} align="center" paddingVertical={24}>
-              <Spinner size="lg" color="gray" />
-              <Text color="gray">Loading your background checks…</Text>
+              <Spinner size="lg" color="$gray11" />
+              <Text color="$gray11">Loading your background checks…</Text>
             </Stack>
           )}
 
           {checksQuery.isError && (
             <Stack
               gap={12}
-              padding={16}
+              padding="md"
               backgroundColor="$color2"
               borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">We couldn’t load your background checks. Please try again.</Text>
+              <Text color="$gray11">We couldn’t load your background checks. Please try again.</Text>
               <Button
-                size={12}
+                size="sm"
                 variant="outline"
                 icon={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
@@ -156,14 +156,14 @@ export function CheckStatusDashboard() {
           {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
             <Stack
               gap={12}
-              padding={16}
+              padding="md"
               backgroundColor="$color2"
               borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="gray">No background checks found for this filter.</Text>
-              <Button size={12} theme="blue" onPress={handleStartNewCheck}>
+              <Text color="$gray11">No background checks found for this filter.</Text>
+              <Button size="sm" color="primary" onPress={handleStartNewCheck}>
                 Start a background check
               </Button>
             </Stack>
@@ -187,17 +187,17 @@ export function CheckStatusDashboard() {
 
           <Stack
             gap={8}
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text color="gray">Need a new screening?</Text>
-            <Text color="gray">
+            <Text color="$gray11">Need a new screening?</Text>
+            <Text color="$gray11">
               Start a new background check whenever you need to refresh your credentials.
             </Text>
-            <Button size={12} theme="blue" onPress={handleStartNewCheck}>
+            <Button size="sm" color="primary" onPress={handleStartNewCheck}>
               Start background check
             </Button>
           </Stack>

@@ -99,7 +99,7 @@ export function FollowingList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -109,7 +109,7 @@ export function FollowingList() {
           const follow = row.original
           return (
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               icon={UserMinus}
               onPress={() => handleUnfollow(follow.id, follow.followee_id)}
@@ -128,7 +128,7 @@ export function FollowingList() {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Loading following…</Text>
+        <Text color="$gray11">Loading following…</Text>
       </Stack>
     )
   }
@@ -139,7 +139,7 @@ export function FollowingList() {
         placeholder="Search following..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size={16}
+        size="md"
       />
 
       {filteredFollowing.length === 0 ? (
@@ -148,14 +148,14 @@ export function FollowingList() {
           borderWidth={1}
           borderColor="$borderColor"
           borderRadius={16}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           align="center"
           justify="center"
           style={{ minHeight: 300 }}
         >
           <Text>Not following anyone yet</Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No users match your search.'
               : "You're not following anyone yet. Discover workers and start following them."}

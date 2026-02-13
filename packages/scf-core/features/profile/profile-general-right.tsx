@@ -29,7 +29,7 @@ export function ProfileGeneralRight() {
       <Stack gap={16}>
         <DashboardWidget>
           <H3>General Information</H3>
-          <Text color="gray">
+          <Text color="$gray11">
             Update your basic profile information including your name, photo, and contact details.
           </Text>
         </DashboardWidget>
@@ -37,14 +37,14 @@ export function ProfileGeneralRight() {
         <DashboardWidget>
           <Stack gap={spacing.sm}>
             <H4>Import from your resume</H4>
-            <Text color="gray">
+            <Text color="$gray11">
               Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the
               details before they’re saved to your profile.
             </Text>
-            <Text color="gray">
+            <Text color="$gray11">
               Accepted formats: PDF, DOC, DOCX. You can re-import your resume at any time.
             </Text>
-            <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size={16} />
+            <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="md" />
           </Stack>
         </DashboardWidget>
 

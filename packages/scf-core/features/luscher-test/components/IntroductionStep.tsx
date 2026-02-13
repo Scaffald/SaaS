@@ -10,10 +10,10 @@ export interface IntroductionStepProps {
  */
 export function IntroductionStep({ onBegin }: IntroductionStepProps) {
   return (
-    <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto" padding={16}>
+    <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto" padding="md">
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="gray" lineHeight={4}>
+          <Text color="$gray11" lineHeight={4}>
             This lightweight, weekly self-assessment helps you track your mood and encourages
             consistent, reflective engagement.
           </Text>
@@ -22,34 +22,34 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
         <Stack
           gap={12}
           backgroundColor="$color3"
-          padding={16}
+          padding="md"
           borderRadius={16}
           borderWidth={1}
           borderColor="$color7"
         >
-          <Text color="gray">What to Expect</Text>
+          <Text color="$gray11">What to Expect</Text>
           <Stack gap={8}>
             <Row gap={8} align="center">
-              <Text color="gray">•</Text>
-              <Text color="gray" flex={1}>
+              <Text color="$gray11">•</Text>
+              <Text color="$gray11" flex={1}>
                 Takes approximately 2–3 minutes to complete
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Text color="gray">•</Text>
-              <Text color="gray" flex={1}>
+              <Text color="$gray11">•</Text>
+              <Text color="$gray11" flex={1}>
                 Two color selection rounds separated by a 60-second cooldown
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Text color="gray">•</Text>
-              <Text color="gray" flex={1}>
+              <Text color="$gray11">•</Text>
+              <Text color="$gray11" flex={1}>
                 Produces quantitative state metrics for mood tracking
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Text color="gray">•</Text>
-              <Text color="gray" flex={1}>
+              <Text color="$gray11">•</Text>
+              <Text color="$gray11" flex={1}>
                 Earns Frequency XP for consistent engagement
               </Text>
             </Row>
@@ -58,23 +58,23 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
 
         <Stack
           gap={12}
-          padding={16}
+          padding="md"
           backgroundColor="$blue2"
           borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             Pick the colors that feel most right to you right now.
           </Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             There are no right or wrong answers. The test cannot be "gamed" — every version will
             reveal your deeper truths, both positive and negative.
           </Text>
         </Stack>
       </Stack>
 
-      <Button size={20} themeInverse onPress={onBegin}>
+      <Button size="lg" themeInverse onPress={onBegin}>
         <Button.Text>Begin Test</Button.Text>
       </Button>
     </Stack>

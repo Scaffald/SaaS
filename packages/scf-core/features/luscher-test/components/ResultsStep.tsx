@@ -169,18 +169,18 @@ export function ResultsStep({
   }, [canViewResults, interpretation, isLoadingInterpretation, loadError, loadInterpretation])
 
   return (
-    <Stack gap={24} width="100%" alignSelf="center" padding={16} style={{ maxWidth: 800 }}>
+    <Stack gap={24} width="100%" alignSelf="center" padding="md" style={{ maxWidth: 800 }}>
       {/* Feedback Message */}
       <Stack
         gap={16}
-        padding={24}
+        padding="xl"
         backgroundColor="$color2"
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text color="gray">Test Complete</Text>
-        <Text color="gray" lineHeight={20}>
+        <Text color="$gray11">Test Complete</Text>
+        <Text color="$gray11" lineHeight={20}>
           {feedbackMessage}
         </Text>
       </Stack>
@@ -188,17 +188,17 @@ export function ResultsStep({
       {/* Results Content */}
       <Stack
         gap={16}
-        padding={24}
+        padding="xl"
         backgroundColor="$color1"
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
         {!canViewResults && (
-          <Text color="gray">Results will appear here once both selections are complete.</Text>
+          <Text color="$gray11">Results will appear here once both selections are complete.</Text>
         )}
 
-        {isLoadingInterpretation && <Text color="gray">Loading results...</Text>}
+        {isLoadingInterpretation && <Text color="$gray11">Loading results...</Text>}
 
         {loadError && <Text color="$red10">{loadError}</Text>}
 
@@ -209,20 +209,20 @@ export function ResultsStep({
 
               if (paragraph.startsWith('## ')) {
                 return (
-                  <Text key={paragraphKey} color="gray" marginTop={index > 0 ? '$4' : '$0'}>
+                  <Text key={paragraphKey} color="$gray11" marginTop={index > 0 ? '$4' : '$0'}>
                     {paragraph.replace('## ', '')}
                   </Text>
                 )
               }
               if (paragraph.startsWith('### ')) {
                 return (
-                  <Text key={paragraphKey} color="gray" marginTop={index > 0 ? '$3' : '$0'}>
+                  <Text key={paragraphKey} color="$gray11" marginTop={index > 0 ? '$3' : '$0'}>
                     {paragraph.replace('### ', '')}
                   </Text>
                 )
               }
               return (
-                <Text key={paragraphKey} color="gray" lineHeight={20}>
+                <Text key={paragraphKey} color="$gray11" lineHeight={20}>
                   {paragraph}
                 </Text>
               )

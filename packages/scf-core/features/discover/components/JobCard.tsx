@@ -36,15 +36,15 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {/* Job Title and Organization */}
       <Stack gap={4}>
         <Row align="center" gap={8}>
-          <Briefcase size={16} color={isSelected ? '$yellow10' : '$color10'} />
+          <Briefcase size="md" color={isSelected ? '$yellow10' : '$color10'} />
           <Text color={isSelected ? '$yellow11' : '$color12'} numberOfLines={2}>
             {job.title}
           </Text>
         </Row>
         {job.organization_name && (
           <Row align="center" gap={6} marginLeft={24}>
-            <Building2 size={14} color="gray" />
-            <Text color="gray" numberOfLines={1}>
+            <Building2 size={14} color="$gray11" />
+            <Text color="$gray11" numberOfLines={1}>
               {job.organization_name}
             </Text>
           </Row>
@@ -55,7 +55,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {job.location && (
         <Row align="center" gap={6}>
           <MapPin size={14} color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color="gray" numberOfLines={1}>
+          <Text color="$gray11" numberOfLines={1}>
             {job.location}
           </Text>
         </Row>
@@ -65,7 +65,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       <Row gap={8} flexWrap="wrap">
         {job.employment_type && (
           <Text
-            color="gray"
+            color="$gray11"
             backgroundColor="$color3"
             paddingHorizontal={8}
             paddingVertical={4}
@@ -76,7 +76,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
         )}
         {job.remote_option && (
           <Text
-            color="gray"
+            color="$gray11"
             backgroundColor="$color3"
             paddingHorizontal={8}
             paddingVertical={4}
@@ -87,7 +87,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
         )}
         {job.position_level && (
           <Text
-            color="gray"
+            color="$gray11"
             backgroundColor="$color3"
             paddingHorizontal={8}
             paddingVertical={4}
@@ -108,7 +108,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
 
       {/* View Details Button */}
       <Button
-        size={8}
+        size="xs"
         backgroundColor={isSelected ? '$yellow8' : '$color4'}
         color={isSelected ? '$yellow12' : '$color11'}
         hoverStyle={{

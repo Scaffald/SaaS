@@ -90,7 +90,7 @@ export const ApplicationsFilters = ({
       {(filters.jobId || filters.status || filters.minScore > 0) && (
         <Stack justify="flex-end">
           <Button
-            size={12}
+            size="sm"
             chromeless
             onPress={() => {
               onFiltersChange({

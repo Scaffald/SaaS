@@ -200,22 +200,22 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
   if (isCreatingDraft || !reviewId) {
     return (
       <Card elevate bordered>
-        <Stack gap={16} padding={20} minHeight={600} justify="center" align="center">
-          <Text color="gray">Preparing review form...</Text>
+        <Stack gap={16} padding="lg" minHeight={600} justify="center" align="center">
+          <Text color="$gray11">Preparing review form...</Text>
         </Stack>
       </Card>
     )
   }
 
   return (
-    <Stack gap={16} padding={20}>
+    <Stack gap={16} padding="lg">
       {/* Progress Indicator */}
       <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
-      <Text color="gray">Reviewing {subjectName}</Text>
+      <Text color="$gray11">Reviewing {subjectName}</Text>
 
       {/* Step Content */}
       <Card backgroundColor="$color2" bordered>
-        <Stack padding={20} minHeight={400} gap={16}>
+        <Stack padding="lg" minHeight={400} gap={16}>
           {/* Step 1: Technical Skills Rating */}
           {reviewDraft.currentStep === 1 && (
             <ReviewStep1Skills
@@ -303,7 +303,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
       {/* Navigation Buttons */}
       <Row gap={12} justify="space-between">
         <Button
-          size={16}
+          size="md"
           variant="outline"
           icon={ChevronLeft}
           onPress={handleBack}
@@ -314,17 +314,17 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
         </Button>
 
         <Row gap={8}>
-          <Button size={16} variant="outline" onPress={onCancel}>
+          <Button size="md" variant="outline" onPress={onCancel}>
             Save & Exit
           </Button>
 
           {isLastStep ? (
-            <Button size={16} theme="success" onPress={handleSubmit}>
+            <Button size="md" theme="success" onPress={handleSubmit}>
               Submit Review
             </Button>
           ) : (
             <Button
-              size={16}
+              size="md"
               theme="info"
               iconAfter={ChevronRight}
               onPress={handleNext}
@@ -338,7 +338,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
 
       {/* Auto-save Indicator */}
       <Row justify="center">
-        <Text color="gray">
+        <Text color="$gray11">
           {reviewDraft.hasUnsavedChanges ? '💾 Saving...' : '✓ All changes saved'}
         </Text>
       </Row>

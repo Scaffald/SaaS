@@ -26,25 +26,25 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
 
   return (
     <Card elevate bordered>
-      <Stack gap={16} padding={20}>
+      <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
           <GraduationCap size={24} color="$blue10" />
-          <Text color="gray">Education</Text>
+          <Text color="$gray11">Education</Text>
         </Row>
 
         <Stack gap={12}>
           {education.map((edu) => (
             <Card key={edu.id} bordered backgroundColor="$color2">
-              <Stack gap={8} padding={16}>
-                <Text color="gray">
+              <Stack gap={8} padding="md">
+                <Text color="$gray11">
                   {edu.degree_type}
                   {edu.field_of_study && ` in ${edu.field_of_study}`}
                 </Text>
-                {edu.institution_name && <Text color="gray">{edu.institution_name}</Text>}
+                {edu.institution_name && <Text color="$gray11">{edu.institution_name}</Text>}
                 {(edu.start_date || edu.end_date) && (
                   <Row gap={8} align="center">
-                    <Calendar size={16} color="gray" />
-                    <Text color="gray">
+                    <Calendar size="md" color="$gray11" />
+                    <Text color="$gray11">
                       {formatDate(edu.start_date)} -{' '}
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>

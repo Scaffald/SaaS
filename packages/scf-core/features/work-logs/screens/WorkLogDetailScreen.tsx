@@ -283,19 +283,19 @@ export function WorkLogDetailScreen() {
     return (
       <Stack flex={1} justify="center" align="center" gap={12}>
         <Spinner size="lg" />
-        <Text color="gray">Loading work log…</Text>
+        <Text color="$gray11">Loading work log…</Text>
       </Stack>
     )
   }
 
   if (!workLog) {
     return (
-      <Stack flex={1} justify="center" align="center" gap={12} padding={16}>
+      <Stack flex={1} justify="center" align="center" gap={12} padding="md">
         <Text>Work log not found</Text>
-        <Paragraph color="gray" style={{ textAlign: 'center' }}>
+        <Paragraph color="$gray11" style={{ textAlign: 'center' }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
-        <Button size={16} onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}>
+        <Button size="md" onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}>
           Back to work logs
         </Button>
       </Stack>
@@ -397,16 +397,16 @@ export function WorkLogDetailScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <Stack padding={16} gap={16}>
+      <Stack padding="md" gap={16}>
         <Stack gap={8}>
           <Row justify="space-between" align="center">
             <Stack gap={4} flex={1}>
               <Text>{project?.name ?? 'Work Log'}</Text>
-              <Text color="gray">
+              <Text color="$gray11">
                 Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
             </Stack>
-            <Button size={12} variant="outline" icon={Edit} onPress={() => workLogQuery.refetch()}>
+            <Button size="sm" variant="outline" icon={Edit} onPress={() => workLogQuery.refetch()}>
               Refresh
             </Button>
           </Row>
@@ -414,7 +414,7 @@ export function WorkLogDetailScreen() {
         </Stack>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Text>Summary</Text>
             <Row gap={16} flexWrap="wrap">
               <SummaryMetric
@@ -436,7 +436,7 @@ export function WorkLogDetailScreen() {
             <Separator />
             <Stack gap={8}>
               <Text>Description</Text>
-              <Paragraph color="gray">
+              <Paragraph color="$gray11">
                 {workLog.work_description || 'No description provided.'}
               </Paragraph>
             </Stack>
@@ -444,9 +444,9 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Text>Profile visibility</Text>
-            <Paragraph color="gray">
+            <Paragraph color="$gray11">
               Control how this work log appears on your public profile.
             </Paragraph>
             {!isVerified && (
@@ -458,14 +458,14 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center" gap={16}>
                 <Stack gap={4} flex={1}>
                   <Text>Show on public profile</Text>
-                  <Paragraph color="gray">
+                  <Paragraph color="$gray11">
                     Display this work log on your public profile. Only verified work is eligible.
                   </Paragraph>
                 </Stack>
                 <ToggleSwitch
                   checked={includeOnProfile}
                   disabled={!isVerified || visibilityMutationPending}
-                  onCheckedChange={handleShowOnProfileToggle}
+                  onChange={handleShowOnProfileToggle}
                   testID="work-log-profile-toggle"
                 />
               </Row>
@@ -473,14 +473,14 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center" gap={16}>
                 <Stack gap={4} flex={1}>
                   <Text>Show date on profile</Text>
-                  <Paragraph color="gray">
+                  <Paragraph color="$gray11">
                     When enabled, the logged date is shown on your public profile.
                   </Paragraph>
                 </Stack>
                 <ToggleSwitch
                   checked={showDateRange}
                   disabled={!includeOnProfile || visibilityMutationPending}
-                  onCheckedChange={handleShowDateRangeToggle}
+                  onChange={handleShowDateRangeToggle}
                   testID="work-log-date-toggle"
                 />
               </Row>
@@ -488,7 +488,7 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center">
                 <Stack gap={4}>
                   <Text>Verification status</Text>
-                  <Paragraph color="gray">
+                  <Paragraph color="$gray11">
                     {isVerified
                       ? 'Verified entries display a “Verified by Scaffald” badge on your public profile.'
                       : 'Awaiting verification. Visibility controls unlock once this log is verified.'}
@@ -508,7 +508,7 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center">
                 <Stack gap={4}>
                   <Text>Current visibility</Text>
-                  <Paragraph color="gray">
+                  <Paragraph color="$gray11">
                     {isPublicVisibility
                       ? 'This work log is set to public visibility.'
                       : 'This work log is currently private.'}
@@ -520,11 +520,11 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Text>Time entries</Text>
             <Stack gap={8}>
               {timeEntryItems.length === 0 ? (
-                <Paragraph color="gray">No time entries recorded.</Paragraph>
+                <Paragraph color="$gray11">No time entries recorded.</Paragraph>
               ) : (
                 timeEntryItems.map((entry) => (
                   <Row
@@ -538,7 +538,7 @@ export function WorkLogDetailScreen() {
                     <Text>
                       {entry.start}–{entry.end}
                     </Text>
-                    <Text color="gray">{computeEntryHours(entry.start, entry.end)}h</Text>
+                    <Text color="$gray11">{computeEntryHours(entry.start, entry.end)}h</Text>
                   </Row>
                 ))
               )}
@@ -547,10 +547,10 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Text>Tasks completed</Text>
             {taskItems.length === 0 ? (
-              <Paragraph color="gray">No tasks recorded for this entry.</Paragraph>
+              <Paragraph color="$gray11">No tasks recorded for this entry.</Paragraph>
             ) : (
               <Stack gap={8}>
                 {taskItems.map((task) => (
@@ -569,7 +569,7 @@ export function WorkLogDetailScreen() {
             <Separator />
             <Text>Skills used</Text>
             {skillNames.length === 0 ? (
-              <Paragraph color="gray">No skills associated with this log.</Paragraph>
+              <Paragraph color="$gray11">No skills associated with this log.</Paragraph>
             ) : (
               <Row gap={8} flexWrap="wrap">
                 {skillNames.map((skill) => (
@@ -590,7 +590,7 @@ export function WorkLogDetailScreen() {
 
         {photos.length > 0 && (
           <Card borderColor="$color6" borderWidth={1}>
-            <Stack gap={12} padding={12}>
+            <Stack gap={12} padding="sm">
               <Text>Photos</Text>
               <PhotoGallery
                 disabled={photoVisibilityMutationPending}
@@ -619,11 +619,11 @@ export function WorkLogDetailScreen() {
         )}
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Row justify="space-between" align="center">
               <Text>Collaborators</Text>
               <Button
-                size={12}
+                size="sm"
                 icon={Users}
                 variant="outline"
                 onPress={() => collaboratorsQuery.refetch()}
@@ -631,12 +631,12 @@ export function WorkLogDetailScreen() {
                 Refresh
               </Button>
             </Row>
-            <Paragraph color="gray">
+            <Paragraph color="$gray11">
               Share this work log with teammates to give them edit or view access.
             </Paragraph>
             <Stack gap={8}>
               {collaborators.length === 0 ? (
-                <Paragraph color="gray">No collaborators yet.</Paragraph>
+                <Paragraph color="$gray11">No collaborators yet.</Paragraph>
               ) : (
                 collaborators.map((collaborator) => (
                   <CollaboratorRow
@@ -662,7 +662,7 @@ export function WorkLogDetailScreen() {
               <Row gap={8}>
                 <Button
                   flex={1}
-                  size={12}
+                  size="sm"
                   variant={collaboratorPermission === 'view' ? 'default' : 'outlined'}
                   onPress={() => setCollaboratorPermission('view')}
                 >
@@ -670,7 +670,7 @@ export function WorkLogDetailScreen() {
                 </Button>
                 <Button
                   flex={1}
-                  size={12}
+                  size="sm"
                   variant={collaboratorPermission === 'edit' ? 'default' : 'outlined'}
                   onPress={() => setCollaboratorPermission('edit')}
                 >
@@ -678,7 +678,7 @@ export function WorkLogDetailScreen() {
                 </Button>
               </Row>
               <Button
-                size={12}
+                size="sm"
                 icon={Users}
                 loading={addCollaboratorMutation.isPending}
                 onPress={handleAddCollaborator}
@@ -690,11 +690,11 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Row justify="space-between" align="center">
               <Text>Conversation</Text>
               <Button
-                size={12}
+                size="sm"
                 icon={MessageSquare}
                 variant="outline"
                 onPress={() => conversationQuery.refetch()}
@@ -704,7 +704,7 @@ export function WorkLogDetailScreen() {
             </Row>
             <Stack gap={12}>
               {conversation.length === 0 ? (
-                <Paragraph color="gray">
+                <Paragraph color="$gray11">
                   No messages yet. Start the conversation to give additional context.
                 </Paragraph>
               ) : (
@@ -724,7 +724,7 @@ export function WorkLogDetailScreen() {
                 placeholder="Share an update or ask a question…"
               />
               <Button
-                size={12}
+                size="sm"
                 icon={MessageSquare}
                 loading={addCommentMutation.isPending}
                 onPress={handleAddComment}
@@ -736,15 +736,15 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap={12} padding={12}>
+          <Stack gap={12} padding="sm">
             <Text>Exports</Text>
-            <Paragraph color="gray">
+            <Paragraph color="$gray11">
               Generate a shareable export for reporting or offline records. Links expire after ten
               minutes.
             </Paragraph>
             <Row gap={12} flexWrap="wrap">
               <Button
-                size={16}
+                size="md"
                 icon={DownloadCloud}
                 loading={exportMutation.isPending && exportMutation.variables?.format === 'pdf'}
                 onPress={() =>
@@ -757,7 +757,7 @@ export function WorkLogDetailScreen() {
                 Export PDF
               </Button>
               <Button
-                size={16}
+                size="md"
                 icon={DownloadCloud}
                 variant="outline"
                 loading={exportMutation.isPending && exportMutation.variables?.format === 'csv'}
@@ -794,10 +794,10 @@ function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps
       gap={8}
       align="center"
     >
-      <IconComponent size={16} color="currentColor" />
+      <IconComponent size="md" color="currentColor" />
       <Stack gap={4}>
         <Text>{value}</Text>
-        <Text color="gray">{label}</Text>
+        <Text color="$gray11">{label}</Text>
       </Stack>
     </Row>
   )
@@ -825,15 +825,15 @@ function CollaboratorRow({
 
   return (
     <Card borderWidth={1} borderColor="$color6">
-      <Stack gap={8} padding={12}>
+      <Stack gap={8} padding="sm">
         <Text>{displayName}</Text>
-        <Text color="gray">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
+        <Text color="$gray11">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
         <Row gap={8}>
-          <Button size={12} variant="outline" disabled={isUpdating} onPress={onTogglePermission}>
+          <Button size="sm" variant="outline" disabled={isUpdating} onPress={onTogglePermission}>
             Toggle permission
           </Button>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             color="$red10"
             disabled={isUpdating}
@@ -868,7 +868,7 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
     >
       <Row justify="space-between">
         <Text>{authorName}</Text>
-        <Text color="gray">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
+        <Text color="$gray11">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
       </Row>
       <Paragraph>{entry.message}</Paragraph>
     </Stack>

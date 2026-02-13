@@ -62,18 +62,18 @@ export function ReviewStep({
   const [hasConsent, setHasConsent] = useState(false)
 
   return (
-    <Stack gap={24} width="100%" maxWidth={800} padding={16}>
+    <Stack gap={24} width="100%" maxWidth={800} padding="md">
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">Review Your Application</Text>
-        <Text color="gray">Please review your information carefully before submitting.</Text>
+        <Text color="$gray11">Review Your Application</Text>
+        <Text color="$gray11">Please review your information carefully before submitting.</Text>
       </Stack>
 
       {/* Screening Information Section */}
       <Stack
         gap={16}
         backgroundColor="$background"
-        padding={24}
+        padding="xl"
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
@@ -83,9 +83,9 @@ export function ReviewStep({
         shadowRadius={3}
       >
         <Row justify="space-between" align="center">
-          <Text color="gray">Screening Questions</Text>
+          <Text color="$gray11">Screening Questions</Text>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={Edit3}
             onPress={() => onEdit('screening')}
@@ -135,7 +135,7 @@ export function ReviewStep({
         <Stack
           gap={16}
           backgroundColor="$background"
-          padding={24}
+          padding="xl"
           borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
@@ -145,9 +145,9 @@ export function ReviewStep({
           shadowRadius={3}
         >
           <Row justify="space-between" align="center">
-            <Text color="gray">Additional Questions</Text>
+            <Text color="$gray11">Additional Questions</Text>
             <Button
-              size={12}
+              size="sm"
               variant="outline"
               icon={Edit3}
               onPress={() => onEdit('questions')}
@@ -176,7 +176,7 @@ export function ReviewStep({
       <Stack
         gap={16}
         backgroundColor="$background"
-        padding={24}
+        padding="xl"
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
@@ -186,9 +186,9 @@ export function ReviewStep({
         shadowRadius={3}
       >
         <Row justify="space-between" align="center">
-          <Text color="gray">Documents</Text>
+          <Text color="$gray11">Documents</Text>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={Edit3}
             onPress={() => onEdit('attachments')}
@@ -205,13 +205,13 @@ export function ReviewStep({
           {attachments.resume ? (
             <DocumentRow type="Resume" metadata={attachments.resume} required />
           ) : (
-            <Text color="gray">Resume: Not provided</Text>
+            <Text color="$gray11">Resume: Not provided</Text>
           )}
 
           {attachments.cover_letter ? (
             <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} />
           ) : (
-            <Text color="gray">Cover Letter: Not provided</Text>
+            <Text color="$gray11">Cover Letter: Not provided</Text>
           )}
 
           {attachments.portfolio && (
@@ -223,7 +223,7 @@ export function ReviewStep({
       {/* Submission Consent */}
       <Stack
         gap={12}
-        padding={16}
+        padding="md"
         backgroundColor="$background"
         borderRadius={16}
         borderWidth={1}
@@ -232,16 +232,16 @@ export function ReviewStep({
         <Row gap={12} align="flex-start">
           <Checkbox
             checked={hasConsent}
-            onCheckedChange={(value) => setHasConsent(value === true)}
+            onChange={(value) => setHasConsent(value === true)}
             disabled={isSubmitting}
-            size={12}
+            size="sm"
             aria-label="I certify that the information provided is accurate and complete"
           />
           <Stack gap={4} flex={1}>
-            <Text color="gray">
+            <Text color="$gray11">
               I certify that the information provided is accurate and complete
             </Text>
-            <Text color="gray">
+            <Text color="$gray11">
               By submitting this application, you agree to our Terms of Service and Privacy Policy
             </Text>
           </Stack>
@@ -250,7 +250,7 @@ export function ReviewStep({
 
       {/* Submit Button */}
       <Button
-        size={20}
+        size="lg"
         theme="info"
         onPress={onSubmit}
         disabled={isSubmitting || !hasConsent}
@@ -276,7 +276,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <Stack gap={8}>
       <Text color="$gray11">{label}</Text>
-      <Text color="gray">{value}</Text>
+      <Text color="$gray11">{value}</Text>
     </Stack>
   )
 }
@@ -304,17 +304,17 @@ function DocumentRow({
 
   return (
     <Row gap={12} align="center">
-      <FileText size={20} color="$blue10" />
+      <FileText size="lg" color="$blue10" />
       <Stack gap={4} flex={1}>
         <Row gap={8} align="center">
-          <Text color="gray">{type}</Text>
+          <Text color="$gray11">{type}</Text>
           {required && <Text color="$red10">(Required)</Text>}
         </Row>
-        <Text color="gray">{metadata.filename}</Text>
+        <Text color="$gray11">{metadata.filename}</Text>
         <Row gap={8} align="center">
-          <Text color="gray">{formatFileSize(metadata.size)}</Text>
-          <Text color="gray">•</Text>
-          <Text color="gray">Uploaded {formattedDate}</Text>
+          <Text color="$gray11">{formatFileSize(metadata.size)}</Text>
+          <Text color="$gray11">•</Text>
+          <Text color="$gray11">Uploaded {formattedDate}</Text>
         </Row>
       </Stack>
     </Row>

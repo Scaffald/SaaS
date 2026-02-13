@@ -664,7 +664,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                   onPress={() => handleRemoveSkill(skill.id)}
                   disabled={disabled}
                 >
-                  <X size={12} />
+                  <X size="sm" />
                 </Button>
               </Row>
             ))}
@@ -677,7 +677,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             left={0}
             right={0}
             zIndex={1000}
-            elevation={16}
+            elevation="lg"
             height={300}
             overflow="hidden"
           >
@@ -688,7 +688,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     key={skill.id}
                     unstyled
                     onPress={() => handleAddSkill(skill)}
-                    padding={12}
+                    padding="sm"
                     hoverStyle={{ backgroundColor: '$gray2' }}
                   >
                     <Text>{skill.name}</Text>
@@ -826,7 +826,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                   onPress={() => handleRemoveCertification(cert.id)}
                   disabled={disabled}
                 >
-                  <X size={12} />
+                  <X size="sm" />
                 </Button>
               </Row>
             ))}
@@ -839,7 +839,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             left={0}
             right={0}
             zIndex={1000}
-            elevation={16}
+            elevation="lg"
             height={300}
             overflow="hidden"
           >
@@ -850,7 +850,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     key={cert.id}
                     unstyled
                     onPress={() => handleAddCertification(cert)}
-                    padding={12}
+                    padding="sm"
                     hoverStyle={{ backgroundColor: '$gray2' }}
                   >
                     <Text>{cert.name}</Text>
@@ -866,7 +866,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   return (
     <ScrollView>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         {/* Organization Selector */}
         <Stack gap={8}>
           <Text>Organization *</Text>
@@ -886,7 +886,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Details Section */}
         <Stack
           gap={16}
-          padding={16}
+          padding="md"
           backgroundColor="$background"
           borderRadius={16}
           borderWidth={1}
@@ -971,11 +971,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           <Stack gap={8}>
             <Text>Elevate Teams</Text>
             {!formData.organization_id ? (
-              <Text color="gray">Select an organization to load available teams.</Text>
+              <Text color="$gray11">Select an organization to load available teams.</Text>
             ) : teamsLoading ? (
-              <Text color="gray">Loading teams…</Text>
+              <Text color="$gray11">Loading teams…</Text>
             ) : teams.length === 0 ? (
-              <Text color="gray">No teams available for this organization.</Text>
+              <Text color="$gray11">No teams available for this organization.</Text>
             ) : (
               <ResponsiveSelect
                 value={primaryTeamId || ''}
@@ -993,14 +993,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 }))}
               />
             )}
-            <Text color="gray">Not visible on job posting</Text>
+            <Text color="$gray11">Not visible on job posting</Text>
           </Stack>
         </Stack>
 
         {/* Application Section */}
         <Stack
           gap={16}
-          padding={16}
+          padding="md"
           backgroundColor="$background"
           borderRadius={16}
           borderWidth={1}
@@ -1159,7 +1159,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Schedule Publish Section */}
         <Stack
           gap={12}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           borderRadius={16}
           borderWidth={1}
@@ -1167,12 +1167,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         >
           <Row gap={12} align="center" justify="space-between">
             <Stack flex={1} gap={4}>
-              <Text color="gray">Schedule Publish</Text>
-              <Text color="gray">Set a date and time to automatically publish this job</Text>
+              <Text color="$gray11">Schedule Publish</Text>
+              <Text color="$gray11">Set a date and time to automatically publish this job</Text>
             </Stack>
             <Switch
               checked={!!formData.scheduled_publish_at}
-              onCheckedChange={(checked) => {
+              onChange={(checked) => {
                 if (checked) {
                   // Set default to 1 hour from now
                   const defaultDate = new Date()
@@ -1195,7 +1195,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Row>
           {formData.scheduled_publish_at && (
             <Stack gap={8}>
-              <Text color="gray">Publish Date & Time</Text>
+              <Text color="$gray11">Publish Date & Time</Text>
               <Input
                 value={
                   formData.scheduled_publish_at
@@ -1227,7 +1227,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 disabled={isLoading}
                 keyboardType="default"
               />
-              <Text color="gray">
+              <Text color="$gray11">
                 {formData.scheduled_publish_at &&
                   `Will be published on ${new Date(formData.scheduled_publish_at).toLocaleString()}`}
               </Text>

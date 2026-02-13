@@ -21,7 +21,7 @@ export function SkillCompletionProgress({
 }: SkillCompletionProgressProps) {
   return (
     <Stack
-      padding={16}
+      padding="md"
       gap={12}
       backgroundColor="$blue2"
       borderWidth={1}
@@ -29,7 +29,7 @@ export function SkillCompletionProgress({
       borderRadius={16}
     >
       <Row gap={12} align="center">
-        <Sparkles size={20} color="$blue10" />
+        <Sparkles size="lg" color="$blue10" />
         <Stack gap={4} flex={1}>
           <Text color="$blue11">
             {hasMinimumSkills
@@ -47,7 +47,7 @@ export function SkillCompletionProgress({
           <Text color="$blue11">Skill section completeness</Text>
           <Text color="$blue11">{completionPercent}%</Text>
         </Row>
-        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size={8}>
+        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="xs">
           <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />
         </Progress>
       </Stack>

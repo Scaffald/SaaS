@@ -92,7 +92,7 @@ export function StoragePreferencesWidget() {
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load storage preferences</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -105,10 +105,10 @@ export function StoragePreferencesWidget() {
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Heading variant="h4">Document Storage</Heading>
-            <Text color="gray">Choose where your documents are stored</Text>
+            <Text color="$gray11">Choose where your documents are stored</Text>
           </Stack>
           {hasChanges && (
-            <Button variant="primary" size={8} disabled={mutation.isPending} onPress={handleSave}>
+            <Button variant="primary" size="xs" disabled={mutation.isPending} onPress={handleSave}>
               {mutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           )}
@@ -123,7 +123,7 @@ export function StoragePreferencesWidget() {
             return (
               <Row
                 key={option.value}
-                padding={16}
+                padding="md"
                 borderRadius={16}
                 borderWidth={2}
                 borderColor={isSelected ? '$blue8' : '$borderColor'}
@@ -148,7 +148,7 @@ export function StoragePreferencesWidget() {
 
                 <Stack flex={1} gap={4}>
                   <Row align="center" gap={8}>
-                    <Text color="gray">{option.label}</Text>
+                    <Text color="$gray11">{option.label}</Text>
                     {!option.available && (
                       <Row
                         backgroundColor="$yellow4"
@@ -170,7 +170,7 @@ export function StoragePreferencesWidget() {
                       </Row>
                     )}
                   </Row>
-                  <Text color="gray">{option.description}</Text>
+                  <Text color="$gray11">{option.description}</Text>
                 </Stack>
               </Row>
             )
@@ -186,7 +186,7 @@ export function StoragePreferencesWidget() {
         {/* Info Note */}
         <Stack
           backgroundColor="$blue2"
-          padding={12}
+          padding="sm"
           borderRadius={12}
           borderWidth={1}
           borderColor="$blue6"

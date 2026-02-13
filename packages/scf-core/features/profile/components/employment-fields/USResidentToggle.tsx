@@ -18,7 +18,7 @@ export function USResidentToggle({
 }: USResidentToggleProps) {
   return (
     <ToggleCard
-      icon={<Flag size={8} color="gray" />}
+      icon={<Flag size="xs" color="$gray11" />}
       title="US Resident"
       description={description}
       {...toggleCardProps}

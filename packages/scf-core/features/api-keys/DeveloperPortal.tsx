@@ -134,7 +134,7 @@ export function DeveloperPortal() {
   }
 
   return (
-    <Stack f={1} gap={16} padding={16}>
+    <Stack f={1} gap={16} padding="md">
       {/* Main List */}
       <APIKeysList
         keys={keys}
@@ -171,7 +171,7 @@ export function DeveloperPortal() {
           right={0}
           bottom={0}
           backgroundColor="$background"
-          padding={16}
+          padding="md"
           zi={100}
         >
           <APIKeyUsageChart apiKeyId={usageKeyId} onClose={() => setUsageKeyId(null)} />

@@ -56,10 +56,10 @@ export function GeneralInfoWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load profile information</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
-            size={8}
+            size="xs"
             onPress={() => {
               void refetch()
             }}
@@ -76,7 +76,7 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="gray">No profile data available</Text>
+          <Text color="$gray11">No profile data available</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -122,11 +122,11 @@ export function GeneralInfoWidget({
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ''}
                   isOwnProfile={isOwnProfile}
-                  size={12}
+                  size="sm"
                 />
                 {canLeaveReview && (
                   <Button
-                    size={12}
+                    size="sm"
                     theme="info"
                     icon={MessageSquarePlus}
                     onPress={handleLeaveReview}
@@ -151,10 +151,10 @@ export function GeneralInfoWidget({
               <Text>{displayName}</Text>
               {data.headline && (
                 <Stack align="center" maxWidth="100%">
-                  <Text color="gray">{data.headline}</Text>
+                  <Text color="$gray11">{data.headline}</Text>
                 </Stack>
               )}
-              {data.username && <Text color="gray">@{data.username}</Text>}
+              {data.username && <Text color="$gray11">@{data.username}</Text>}
               {badge && (
                 <IdVerificationBadge
                   status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
@@ -184,7 +184,7 @@ export function GeneralInfoWidget({
           {data.about && variant === 'full' && (
             <Stack gap={8}>
               <Text>About</Text>
-              <Text color="gray" lineHeight={12}>
+              <Text color="$gray11" lineHeight={12}>
                 {data.about}
               </Text>
             </Stack>
@@ -197,21 +197,21 @@ export function GeneralInfoWidget({
 
               {data.privateData.email && (
                 <Stack gap={4}>
-                  <Text color="gray">Email</Text>
+                  <Text color="$gray11">Email</Text>
                   <Text>{data.privateData.email}</Text>
                 </Stack>
               )}
 
               {data.privateData.phone && (
                 <Stack gap={4}>
-                  <Text color="gray">Phone</Text>
+                  <Text color="$gray11">Phone</Text>
                   <Text>{data.privateData.phone}</Text>
                 </Stack>
               )}
 
               {data.privateData.location && (
                 <Stack gap={4}>
-                  <Text color="gray">Location</Text>
+                  <Text color="$gray11">Location</Text>
                   <Text>{data.privateData.location}</Text>
                 </Stack>
               )}
@@ -238,7 +238,7 @@ export function GeneralInfoWidget({
                   if (formattedYears === null) return null
                   return (
                     <Stack gap={4} flex={1} minWidth={120}>
-                      <Text color="gray">Experience</Text>
+                      <Text color="$gray11">Experience</Text>
                       <Text>
                         {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
@@ -248,7 +248,7 @@ export function GeneralInfoWidget({
 
                 {data.industries && (
                   <Stack gap={4} flex={1} minWidth={120}>
-                    <Text color="gray">Industry</Text>
+                    <Text color="$gray11">Industry</Text>
                     <Text>{data.industries.name}</Text>
                   </Stack>
                 )}

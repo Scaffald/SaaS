@@ -98,7 +98,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
           <Spinner size="lg" color="$blue10" />
-          <Text marginTop={16} color="gray">
+          <Text marginTop={16} color="$gray11">
             Loading job details...
           </Text>
         </Stack>
@@ -122,11 +122,11 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             </Stack>
 
             <Stack gap={8} align="center">
-              <Text color="gray">{job.title}</Text>
+              <Text color="$gray11">{job.title}</Text>
               {job.organization?.name && (
                 <Row gap={8} align="center">
-                  <Building2 size={16} color="gray" />
-                  <Text color="gray">{job.organization.name}</Text>
+                  <Building2 size="md" color="$gray11" />
+                  <Text color="$gray11">{job.organization.name}</Text>
                 </Row>
               )}
             </Stack>
@@ -153,7 +153,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     paddingVertical={6}
                     borderRadius={12}
                   >
-                    <Text color="gray">{job.position_level}</Text>
+                    <Text color="$gray11">{job.position_level}</Text>
                   </Row>
                 )}
               </Row>
@@ -166,22 +166,22 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
           <Stack gap={12}>
             {job.location && (
               <Row gap={8} align="center">
-                <MapPin size={18} color="gray" />
-                <Text color="gray">{job.location}</Text>
+                <MapPin size={18} color="$gray11" />
+                <Text color="$gray11">{job.location}</Text>
               </Row>
             )}
 
             {job.remote_option && (
               <Row gap={8} align="center">
-                <Clock size={18} color="gray" />
-                <Text color="gray">{formatRemoteOption(job.remote_option)}</Text>
+                <Clock size={18} color="$gray11" />
+                <Text color="$gray11">{formatRemoteOption(job.remote_option)}</Text>
               </Row>
             )}
 
             {(job.pay_range_min_cents || job.pay_range_max_cents) && (
               <Row gap={8} align="center">
-                <DollarSign size={18} color="gray" />
-                <Text color="gray">
+                <DollarSign size={18} color="$gray11" />
+                <Text color="$gray11">
                   {formatPayRange(
                     job.pay_range_min_cents ?? null,
                     job.pay_range_max_cents ?? null,
@@ -209,8 +209,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             <>
               <Separator />
               <Stack gap={8}>
-                <Text color="gray">Description</Text>
-                <Text color="gray" lineHeight={4} numberOfLines={4}>
+                <Text color="$gray11">Description</Text>
+                <Text color="$gray11" lineHeight={4} numberOfLines={4}>
                   {job.description}
                 </Text>
               </Stack>
@@ -221,7 +221,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
           {/* CTA Button */}
           <Button
-            size={20}
+            size="lg"
             theme="info"
             iconAfter={<ExternalLink size={18} />}
             onPress={handleViewFullDetails}

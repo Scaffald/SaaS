@@ -441,11 +441,11 @@ export function InquiryCreateForm({
           {/* Main Form */}
           <Stack flex={1} gap={16}>
             <ScrollView>
-              <Stack gap={24} padding={16}>
+              <Stack gap={24} padding="md">
                 {/* Templates Section */}
                 <Stack
                   gap={12}
-                  padding={12}
+                  padding="sm"
                   borderWidth={1}
                   borderColor="$borderColor"
                   backgroundColor="$background"
@@ -454,11 +454,11 @@ export function InquiryCreateForm({
                   <Row justify="space-between" align="center" gap={12}>
                     <Stack>
                       <Text>Templates</Text>
-                      <Text color="gray">Reuse saved inquiry terms for this organization.</Text>
+                      <Text color="$gray11">Reuse saved inquiry terms for this organization.</Text>
                     </Stack>
                     <Row gap={8}>
                       <Button
-                        size={12}
+                        size="sm"
                         variant="outline"
                         onPress={() => setSaveTemplateOpen(true)}
                         disabled={createTemplateMutation.isPending}
@@ -466,7 +466,7 @@ export function InquiryCreateForm({
                         Save current
                       </Button>
                       <Button
-                        size={12}
+                        size="sm"
                         variant="outline"
                         onPress={() => setManageTemplatesOpen(true)}
                       >
@@ -492,7 +492,7 @@ export function InquiryCreateForm({
                     </Stack>
 
                     <Button
-                      size={12}
+                      size="sm"
                       onPress={handleApplyTemplate}
                       disabled={!selectedTemplateId || applyTemplateMutation.isPending}
                     >
@@ -500,9 +500,9 @@ export function InquiryCreateForm({
                     </Button>
                   </Row>
 
-                  {isTemplatesLoading && <Text color="gray">Loading templates…</Text>}
+                  {isTemplatesLoading && <Text color="$gray11">Loading templates…</Text>}
                   {!isTemplatesLoading && templates.length === 0 && (
-                    <Text color="gray">
+                    <Text color="$gray11">
                       Save templates to quickly reuse standard employment terms.
                     </Text>
                   )}
@@ -512,7 +512,7 @@ export function InquiryCreateForm({
                 {mode === 'create' && (
                   <Stack
                     gap={12}
-                    padding={12}
+                    padding="sm"
                     borderWidth={1}
                     borderColor="$borderColor"
                     backgroundColor="$background"
@@ -522,15 +522,15 @@ export function InquiryCreateForm({
                       <Stack gap={4} flex={1}>
                         <Text>Smart defaults</Text>
                         {isSmartDefaultsLoading ? (
-                          <Text color="gray">Loading job-based recommendations…</Text>
+                          <Text color="$gray11">Loading job-based recommendations…</Text>
                         ) : smartDefaultsFieldCount > 0 ? (
-                          <Text color="gray">
+                          <Text color="$gray11">
                             {smartDefaultsApplied
                               ? `Applied ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`
                               : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
                           </Text>
                         ) : (
-                          <Text color="gray">No defaults available for this job yet.</Text>
+                          <Text color="$gray11">No defaults available for this job yet.</Text>
                         )}
                       </Stack>
                       <Row gap={8}>
@@ -559,7 +559,7 @@ export function InquiryCreateForm({
                             backgroundColor="$gray3"
                             borderRadius={12}
                           >
-                            <Text color="gray">{label}</Text>
+                            <Text color="$gray11">{label}</Text>
                           </Stack>
                         ))}
                       </Row>
@@ -590,7 +590,7 @@ export function InquiryCreateForm({
                                 theme={isSelected ? 'blue' : 'gray'}
                                 variant={isSelected ? undefined : 'outlined'}
                                 onPress={() => field.onChange(option.value)}
-                                size={16}
+                                size="md"
                               >
                                 {option.label}
                               </Button>
@@ -606,12 +606,12 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <CustomCheckbox
                             checked={!field.value}
-                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
                       />
-                      <Text color="gray">Non-negotiable</Text>
+                      <Text color="$gray11">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -632,7 +632,7 @@ export function InquiryCreateForm({
                                 theme={isSelected ? 'blue' : 'gray'}
                                 variant={isSelected ? undefined : 'outlined'}
                                 onPress={() => field.onChange(option.value)}
-                                size={16}
+                                size="md"
                               >
                                 {option.label}
                               </Button>
@@ -648,12 +648,12 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <CustomCheckbox
                             checked={!field.value}
-                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
                       />
-                      <Text color="gray">Non-negotiable</Text>
+                      <Text color="$gray11">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -667,8 +667,8 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <Switch
                             checked={field.value}
-                            onCheckedChange={field.onChange}
-                            size={16}
+                            onChange={field.onChange}
+                            size="md"
                           />
                         )}
                       />
@@ -740,12 +740,12 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <CustomCheckbox
                             checked={!field.value}
-                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
                       />
-                      <Text color="gray">Non-negotiable</Text>
+                      <Text color="$gray11">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -772,7 +772,7 @@ export function InquiryCreateForm({
                                     field.onChange([...current, day.value])
                                   }
                                 }}
-                                size={12}
+                                size="sm"
                                 paddingHorizontal={12}
                                 borderRadius="$10"
                               >
@@ -790,12 +790,12 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <CustomCheckbox
                             checked={!field.value}
-                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
                       />
-                      <Text color="gray">Non-negotiable</Text>
+                      <Text color="$gray11">Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -840,7 +840,7 @@ export function InquiryCreateForm({
                             </>
                           )}
                         />
-                        <Text color="gray">End date is not mandatory</Text>
+                        <Text color="$gray11">End date is not mandatory</Text>
                       </Stack>
                     </Row>
                     <Row align="center" gap={8}>
@@ -850,12 +850,12 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <CustomCheckbox
                             checked={!field.value}
-                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
                       />
-                      <Text color="gray">Non-negotiable</Text>
+                      <Text color="$gray11">Non-negotiable</Text>
                     </Row>
                   </Stack>
                 </Stack>
@@ -914,7 +914,7 @@ export function InquiryCreateForm({
                         )}
                       </Stack>
                       <Stack gap={8} flex={1}>
-                        <Text color="gray">to</Text>
+                        <Text color="$gray11">to</Text>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
@@ -939,7 +939,7 @@ export function InquiryCreateForm({
                         )}
                       </Stack>
                     </Row>
-                    <Text color="gray">Add a range or a single rate</Text>
+                    <Text color="$gray11">Add a range or a single rate</Text>
                     <Row align="center" gap={8}>
                       <Controller
                         control={control}
@@ -947,12 +947,12 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <CustomCheckbox
                             checked={!field.value}
-                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
                       />
-                      <Text color="gray">Non-negotiable</Text>
+                      <Text color="$gray11">Non-negotiable</Text>
                     </Row>
                   </Stack>
                 </Stack>
@@ -971,7 +971,7 @@ export function InquiryCreateForm({
                       <Row align="center" gap={8}>
                         <Text>Endurance</Text>
                         <Button
-                          size={8}
+                          size="xs"
                           circular
                           chromeless
                           icon={Info}
@@ -984,8 +984,8 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <Switch
                             checked={field.value}
-                            onCheckedChange={field.onChange}
-                            size={16}
+                            onChange={field.onChange}
+                            size="md"
                           />
                         )}
                       />
@@ -1011,8 +1011,8 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <Switch
                             checked={field.value ?? false}
-                            onCheckedChange={field.onChange}
-                            size={16}
+                            onChange={field.onChange}
+                            size="md"
                           />
                         )}
                       />
@@ -1053,8 +1053,8 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <Switch
                             checked={field.value ?? false}
-                            onCheckedChange={field.onChange}
-                            size={16}
+                            onChange={field.onChange}
+                            size="md"
                           />
                         )}
                       />
@@ -1071,8 +1071,8 @@ export function InquiryCreateForm({
                         render={({ field }) => (
                           <Switch
                             checked={field.value ?? false}
-                            onCheckedChange={field.onChange}
-                            size={16}
+                            onChange={field.onChange}
+                            size="md"
                           />
                         )}
                       />
@@ -1107,7 +1107,7 @@ export function InquiryCreateForm({
             {/* Form Actions */}
             <Row
               gap={12}
-              padding={16}
+              padding="md"
               backgroundColor="$background"
               borderTopWidth={1}
               borderTopColor="$borderColor"
@@ -1123,13 +1123,13 @@ export function InquiryCreateForm({
                   <Button variant="outline" onPress={onSaveDraft} disabled={isSubmitting}>
                     Save Draft
                   </Button>
-                  <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+                  <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
                     {isSubmitting ? 'Sending...' : 'Continue'}
                   </Button>
                 </>
               )}
               {mode === 'edit' && (
-                <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+                <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
               )}
@@ -1139,7 +1139,7 @@ export function InquiryCreateForm({
           {/* Help Sidebar */}
           <Stack
             width={300}
-            padding={16}
+            padding="md"
             backgroundColor="$color2"
             borderLeftWidth={1}
             borderLeftColor="$borderColor"
@@ -1158,9 +1158,9 @@ export function InquiryCreateForm({
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame padding={16} gap={16}>
+        <Sheet.Frame padding="md" gap={16}>
           <Text>Save template</Text>
-          <Text color="gray">Capture the current inquiry terms as a reusable template.</Text>
+          <Text color="$gray11">Capture the current inquiry terms as a reusable template.</Text>
           <Stack gap={8}>
             <Text>Template name</Text>
             <Input
@@ -1187,7 +1187,7 @@ export function InquiryCreateForm({
               Cancel
             </Button>
             <Button
-              theme="blue"
+              color="primary"
               onPress={handleSaveTemplate}
               disabled={createTemplateMutation.isPending}
             >
@@ -1206,10 +1206,10 @@ export function InquiryCreateForm({
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame padding={16} gap={16}>
+        <Sheet.Frame padding="md" gap={16}>
           <Text>Manage templates</Text>
           {templates.length === 0 ? (
-            <Text color="gray">No templates saved yet. Create one from the inquiry form.</Text>
+            <Text color="$gray11">No templates saved yet. Create one from the inquiry form.</Text>
           ) : (
             <Sheet.ScrollView>
               <Stack gap={12} paddingVertical={8}>
@@ -1220,7 +1220,7 @@ export function InquiryCreateForm({
                   return (
                     <Stack
                       key={templateId}
-                      padding={12}
+                      padding="sm"
                       gap={8}
                       borderWidth={1}
                       borderColor="$borderColor"
@@ -1230,14 +1230,14 @@ export function InquiryCreateForm({
                       <Row gap={12} align="center" justify="space-between">
                         <Stack flex={1} gap={4}>
                           <Text>{template.name}</Text>
-                          {template.description && <Text color="gray">{template.description}</Text>}
-                          <Text color="gray">
+                          {template.description && <Text color="$gray11">{template.description}</Text>}
+                          <Text color="$gray11">
                             {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
                             {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}
                           </Text>
                         </Stack>
                         <Button
-                          size={12}
+                          size="sm"
                           variant="outline"
                           color="$red11"
                           borderColor="$red8"

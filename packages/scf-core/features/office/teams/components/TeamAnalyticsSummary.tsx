@@ -117,14 +117,14 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
             placeholder="Select range"
-            size={8}
+            size="xs"
             options={RANGE_OPTIONS.map((option) => ({
               value: String(option.value),
               label: option.label,
             }))}
           />
           <Button
-            size={8}
+            size="xs"
             variant="outline"
             icon={RefreshCw}
             onPress={() => void analyticsQuery.refetch()}
@@ -138,12 +138,12 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       {analyticsQuery.isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
-          <Text color="gray">Loading analytics…</Text>
+          <Text color="$gray11">Loading analytics…</Text>
         </Stack>
       ) : metrics.length === 0 ? (
         <Stack gap={8}>
           <Text>No analytics yet</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Metrics will appear once the team starts reviewing invitations and applications.
           </Text>
         </Stack>
@@ -167,7 +167,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
                 : '—'}
             </StatTile>
           </Row>
-          {trendDescription ? <Text color="gray">{trendDescription}</Text> : null}
+          {trendDescription ? <Text color="$gray11">{trendDescription}</Text> : null}
         </Stack>
       )}
     </Stack>
@@ -186,7 +186,7 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
       backgroundColor="$color2"
       style={{ minWidth: 140 }}
     >
-      <Text color="gray" textTransform="uppercase">
+      <Text color="$gray11" textTransform="uppercase">
         {label}
       </Text>
       <Text>{children}</Text>

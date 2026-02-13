@@ -57,11 +57,11 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
   })
 
   return (
-    <Card bordered padding={16} gap={12}>
+    <Card bordered padding="md" gap={12}>
       <Row justify="space-between" align="center">
         <H4>Organization Settings</H4>
         {usage.data ? (
-          <Text color="gray">
+          <Text color="$gray11">
             {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used ({usage.data.documentCount}{' '}
             docs)
           </Text>
@@ -108,7 +108,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             render={({ field }) => (
               <Row justify="space-between" align="center">
                 <Text>Require MFA for members</Text>
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                <Switch checked={field.value} onChange={field.onChange} />
               </Row>
             )}
           />

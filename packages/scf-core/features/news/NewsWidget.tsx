@@ -436,24 +436,24 @@ export function NewsWidget({
   return (
     <Stack gap={spacing.md}>
       <Row justify="space-between" align="center" paddingTop={spacing.sm}>
-        <Text color="gray">News</Text>
+        <Text color="$gray11">News</Text>
 
         <Row gap={spacing.xs} align="center">
           {/* TODO: Implement and refine filter button functionality later */}
           {/* <Button
-            size={12}
+            size="sm"
             variant="outline"
-            icon={<Settings2 size={16} />}
+            icon={<Settings2 size="md" />}
             onPress={() => setPreferencesOpen(true)}
           /> */}
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             onPress={() => {
               void refetch()
             }}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="sm" /> : <RefreshCw size={16} />}
+            icon={isLoading ? <Spinner size="sm" /> : <RefreshCw size="md" />}
           />
         </Row>
       </Row>
@@ -461,7 +461,7 @@ export function NewsWidget({
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
         <Stack align="center" gap={spacing.sm}>
           <Spinner size="lg" color="$blue7" />
-          <Text color="gray">Loading personalised news...</Text>
+          <Text color="$gray11">Loading personalised news...</Text>
         </Stack>
       ) : null}
 
@@ -471,7 +471,7 @@ export function NewsWidget({
           <Text color="$red11" style={{ textAlign: 'center' }}>
             Failed to load news feed
           </Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
           <Button
@@ -479,7 +479,7 @@ export function NewsWidget({
             onPress={() => {
               void refetch()
             }}
-            size={12}
+            size="sm"
           >
             Try Again
           </Button>
@@ -493,7 +493,7 @@ export function NewsWidget({
               {({ pressed }) => (
                 <Stack
                   gap={8}
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$color4"
@@ -501,15 +501,15 @@ export function NewsWidget({
                   style={{ borderRadius: 12 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text color="gray" flex={1} numberOfLines={2}>
+                    <Text color="$gray11" flex={1} numberOfLines={2}>
                       {item.title}
                     </Text>
-                    <ExternalLink size={16} color="gray" />
+                    <ExternalLink size="md" color="$gray11" />
                   </Row>
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text color="gray">{formatTimeAgo(item.pubDate)}</Text>
-                    {item.category && <Text color="gray">• {capitalise(item.category)}</Text>}
-                    <Text color="gray">• {relevanceLabel(item.relevanceScore)}</Text>
+                    <Text color="$gray11">{formatTimeAgo(item.pubDate)}</Text>
+                    {item.category && <Text color="$gray11">• {capitalise(item.category)}</Text>}
+                    <Text color="$gray11">• {relevanceLabel(item.relevanceScore)}</Text>
                   </Row>
                   {item.reasons.length > 0 && (
                     <Row gap={8} flexWrap="wrap">
@@ -532,10 +532,10 @@ export function NewsWidget({
           ))}
 
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             onPress={handleViewAll}
-            iconAfter={<ExternalLink size={16} />}
+            iconAfter={<ExternalLink size="md" />}
           >
             View All News
           </Button>
@@ -550,47 +550,47 @@ export function NewsWidget({
         dismissOnSnapToBottom
       >
         <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame padding={16} gap={12}>
+        <Sheet.Frame padding="md" gap={12}>
           <Sheet.Handle />
           <Text>Customise Recommendations</Text>
-          <Paragraph color="gray" size={12}>
+          <Paragraph color="$gray11" size="sm">
             Tailor the news feed using your profile information.
           </Paragraph>
 
           <Stack gap={12}>
             <Row justify="space-between" align="center">
-              <Paragraph size={12}>Match my skills</Paragraph>
+              <Paragraph size="sm">Match my skills</Paragraph>
               <Switch
-                size={8}
+                size="xs"
                 checked={preferences.matchSkills}
-                onCheckedChange={(value) => updatePreference('matchSkills', value)}
+                onChange={(value) => updatePreference('matchSkills', value)}
               />
             </Row>
 
             <Row justify="space-between" align="center">
-              <Paragraph size={12}>Match my industry</Paragraph>
+              <Paragraph size="sm">Match my industry</Paragraph>
               <Switch
-                size={8}
+                size="xs"
                 checked={preferences.matchIndustry}
-                onCheckedChange={(value) => updatePreference('matchIndustry', value)}
+                onChange={(value) => updatePreference('matchIndustry', value)}
               />
             </Row>
 
             <Row justify="space-between" align="center">
-              <Paragraph size={12}>Boost trending stories</Paragraph>
+              <Paragraph size="sm">Boost trending stories</Paragraph>
               <Switch
-                size={8}
+                size="xs"
                 checked={preferences.prioritizeTrending}
-                onCheckedChange={(value) => updatePreference('prioritizeTrending', value)}
+                onChange={(value) => updatePreference('prioritizeTrending', value)}
               />
             </Row>
 
             <Row justify="space-between" align="center">
-              <Paragraph size={12}>Show recent stories only</Paragraph>
+              <Paragraph size="sm">Show recent stories only</Paragraph>
               <Switch
-                size={8}
+                size="xs"
                 checked={preferences.recentOnly}
-                onCheckedChange={(value) => updatePreference('recentOnly', value)}
+                onChange={(value) => updatePreference('recentOnly', value)}
               />
             </Row>
           </Stack>

@@ -206,7 +206,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
           },
           children: (
             <Stack gap={12}>
-              <Paragraph size={16} color="gray">
+              <Paragraph size="md" color="$gray11">
                 This modal will collect user details in an upcoming iteration. Until then, use the
                 primary action below to launch the full create page.
               </Paragraph>

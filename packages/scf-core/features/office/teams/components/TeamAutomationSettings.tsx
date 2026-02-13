@@ -179,7 +179,7 @@ export function TeamAutomationSettings({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Automation & workload</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Configure how the team auto-assigns work and balances workloads across members.
         </Text>
       </Stack>
@@ -219,7 +219,7 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text color="gray">Invitations expire automatically after this number of days.</Text>
+          <Text color="$gray11">Invitations expire automatically after this number of days.</Text>
         </Stack>
 
         <Stack gap={8}>
@@ -236,7 +236,7 @@ export function TeamAutomationSettings({
               label: option.label,
             }))}
           />
-          <Text color="gray">
+          <Text color="$gray11">
             Choose how work should be distributed when new applications arrive.
           </Text>
         </Stack>
@@ -245,7 +245,7 @@ export function TeamAutomationSettings({
           <Stack gap={12} paddingLeft={8} borderLeftWidth={2} borderColor="$borderColor">
             <Text>Load balance settings</Text>
             <Stack gap={8}>
-              <Text color="gray">Maximum active assignments</Text>
+              <Text color="$gray11">Maximum active assignments</Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxActiveAssignments ?? 10)}
@@ -260,7 +260,7 @@ export function TeamAutomationSettings({
               />
             </Stack>
             <Stack gap={8}>
-              <Text color="gray">Maximum pending assignments</Text>
+              <Text color="$gray11">Maximum pending assignments</Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxPendingAssignments ?? 15)}
@@ -274,7 +274,7 @@ export function TeamAutomationSettings({
                 }
               />
             </Stack>
-            <Text color="gray">
+            <Text color="$gray11">
               When a member reaches these limits, assignments roll to the next available teammate.
             </Text>
           </Stack>
@@ -298,16 +298,16 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text color="gray">
+          <Text color="$gray11">
             Controls how often analytics snapshots should refresh for this team.
           </Text>
         </Stack>
       </Stack>
 
       <Row justify="space-between" align="center">
-        <Text color="gray">{statusLabel}</Text>
+        <Text color="$gray11">{statusLabel}</Text>
         <Button
-          size={8}
+          size="xs"
           variant="outline"
           disabled={!canEdit || updateMutation.isPending}
           onPress={() => setFormState(DEFAULT_FORM_STATE)}
@@ -336,13 +336,13 @@ function SettingsToggle({
     <Row justify="space-between" gap={12} align="center" flexWrap="wrap">
       <Stack gap={4} flex={1} style={{ minWidth: 200 }}>
         <Text>{label}</Text>
-        <Text color="gray">{description}</Text>
+        <Text color="$gray11">{description}</Text>
       </Stack>
       <Switch
-        size={8}
+        size="xs"
         checked={value}
         disabled={disabled}
-        onCheckedChange={(checked) => onValueChange(Boolean(checked))}
+        onChange={(checked) => onValueChange(Boolean(checked))}
       >
         <Switch.Thumb animation="quick" />
       </Switch>

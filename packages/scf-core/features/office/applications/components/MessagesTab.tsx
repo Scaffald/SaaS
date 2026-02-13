@@ -80,8 +80,8 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
   if (error) {
     return (
-      <Stack gap={12} padding={16}>
-        <Card padding={16} backgroundColor="$red3">
+      <Stack gap={12} padding="md">
+        <Card padding="md" backgroundColor="$red3">
           <Text color="$red10">Error loading messages</Text>
           <Text color="$red10" marginTop={8}>
             {error.message || 'Failed to load messages'}
@@ -96,7 +96,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       {/* Message Thread */}
       <Stack gap={12}>
         {transformedMessages.length === 0 ? (
-          <Card padding={16} backgroundColor="$color2">
+          <Card padding="md" backgroundColor="$color2">
             <Text opacity={0.7} textAlign="center">
               No messages yet. Start the conversation below!
             </Text>
@@ -105,7 +105,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           transformedMessages.map((message) => (
             <Card
               key={message.id}
-              padding={16}
+              padding="md"
               backgroundColor={message.sender === 'recruiter' ? '$blue3' : '$color2'}
               alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
@@ -135,7 +135,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       </Stack>
 
       {/* Send Message */}
-      <Card padding={16} backgroundColor="$color2">
+      <Card padding="md" backgroundColor="$color2">
         <Text marginBottom={12}>Send Message</Text>
 
         <TextArea

@@ -51,10 +51,10 @@ export function ExperienceWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load experience</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
-            size={8}
+            size="xs"
             onPress={() => {
               void refetch()
             }}
@@ -79,7 +79,7 @@ export function ExperienceWidget({
           {showEdit && (
             <Button
               variant="outline"
-              size={8}
+              size="xs"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
             >
               Edit
@@ -112,14 +112,14 @@ export function ExperienceWidget({
                   {/* Job Title & Company */}
                   <Stack gap={4}>
                     <Text>{exp.job_title}</Text>
-                    <Text color="gray">{exp.company_name}</Text>
+                    <Text color="$gray11">{exp.company_name}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="gray">{formatDate(exp.start_date)}</Text>
-                    <Text color="gray">-</Text>
-                    <Text color="gray">
+                    <Text color="$gray11">{formatDate(exp.start_date)}</Text>
+                    <Text color="$gray11">-</Text>
+                    <Text color="$gray11">
                       {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
@@ -139,15 +139,15 @@ export function ExperienceWidget({
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
                     <Row gap={8} flexWrap="wrap">
-                      {exp.location && <Text color="gray">📍 {exp.location}</Text>}
-                      {exp.employment_type && <Text color="gray">• {exp.employment_type}</Text>}
-                      {exp.is_remote && <Text color="gray">• Remote</Text>}
+                      {exp.location && <Text color="$gray11">📍 {exp.location}</Text>}
+                      {exp.employment_type && <Text color="$gray11">• {exp.employment_type}</Text>}
+                      {exp.is_remote && <Text color="$gray11">• Remote</Text>}
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && !showCompact && (
-                    <Text color="gray" lineHeight={12}>
+                    <Text color="$gray11" lineHeight={12}>
                       {exp.description}
                     </Text>
                   )}

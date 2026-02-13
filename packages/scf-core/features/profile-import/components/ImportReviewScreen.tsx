@@ -114,22 +114,22 @@ export function ImportReviewScreen() {
 
   if (isLoading) {
     return (
-      <Stack gap={16} padding={16} align="center">
-        <Loader2 size={32} color="gray" />
-        <Text color="gray">Retrieving imported data...</Text>
+      <Stack gap={16} padding="md" align="center">
+        <Loader2 size={32} color="$gray11" />
+        <Text color="$gray11">Retrieving imported data...</Text>
       </Stack>
     )
   }
 
   if (isError || !importData) {
     return (
-      <Stack gap={12} padding={16} align="center">
+      <Stack gap={12} padding="md" align="center">
         <FileWarning size={32} color="$red10" />
         <Text color="$red11">We couldn’t load your import data</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Please retry. If the issue persists, try uploading your resume again.
         </Text>
-        <Button size={16} onPress={() => refetch()}>
+        <Button size="md" onPress={() => refetch()}>
           Retry
         </Button>
       </Stack>
@@ -292,38 +292,38 @@ export function ImportReviewScreen() {
   }
 
   return (
-    <Stack gap={16} padding={16}>
+    <Stack gap={16} padding="md">
       <Card bordered backgroundColor="$color2">
         <Card.Header padded gap={12}>
           <Row gap={12} align="flex-start" flexWrap="wrap">
-            <Info size={20} color="$blue10" />
+            <Info size="lg" color="$blue10" />
             <Stack flex={1} gap={8}>
               <Row gap={8} align="center">
                 <H5>Imported data overview</H5>
               </Row>
-              <Paragraph color="gray">
+              <Paragraph color="$gray11">
                 Review and confirm the details we extracted. You can import everything, bring over a
                 subset, or clear the import and start again.
               </Paragraph>
               <Row gap={12} flexWrap="wrap">
                 <Row gap={8} align="center">
                   <Clock
-                    size={16}
+                    size="md"
                     color={expiresInLabel?.status === 'expired' ? '$red10' : '$blue10'}
                   />
                   <Text color={expiresInLabel?.status === 'expired' ? '$red10' : '$color11'}>
                     {expiresInLabel?.label ?? 'Expires 24 hours after upload'}
                   </Text>
                 </Row>
-                {storedAtLabel && <Text color="gray">Uploaded {storedAtLabel}</Text>}
-                <Text color="gray">
+                {storedAtLabel && <Text color="$gray11">Uploaded {storedAtLabel}</Text>}
+                <Text color="$gray11">
                   Source:{' '}
-                  <Text color="gray">
+                  <Text color="$gray11">
                     {metadata?.source === 'json' ? 'JSON export' : 'Resume upload'}
                   </Text>
                 </Text>
-                <Text color="gray">
-                  Items detected: <Text color="gray">{totalItems}</Text>
+                <Text color="$gray11">
+                  Items detected: <Text color="$gray11">{totalItems}</Text>
                 </Text>
               </Row>
             </Stack>
@@ -333,7 +333,7 @@ export function ImportReviewScreen() {
 
       <Stack gap={8}>
         <Text>Review Imported Data</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Select the items you’d like to import. We’ll highlight anything that might need attention.
         </Text>
       </Stack>
@@ -349,9 +349,9 @@ export function ImportReviewScreen() {
       <ScrollView flex={1}>
         <Stack gap={12} marginTop={12}>
           {currentSection?.items.length === 0 && (
-            <Card bordered padding={16} backgroundColor="$color2">
+            <Card bordered padding="md" backgroundColor="$color2">
               <Card.Header>
-                <Text color="gray">No items were detected for this section.</Text>
+                <Text color="$gray11">No items were detected for this section.</Text>
               </Card.Header>
             </Card>
           )}
@@ -367,7 +367,7 @@ export function ImportReviewScreen() {
                   <Row justify="space-between" align="center">
                     <ConfidenceBadge level={confidenceLevel} />
                     <Button
-                      size={8}
+                      size="xs"
                       variant={isSelected ? 'outlined' : undefined}
                       onPress={() => handleToggleItem(currentSection.id, item.id)}
                     >
@@ -436,11 +436,11 @@ export function ImportReviewScreen() {
 
       <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
         <Row gap={8} flexWrap="wrap">
-          <Button size={12} variant="outline" icon={RotateCcw} onPress={() => setSelectedItems({})}>
+          <Button size="sm" variant="outline" icon={RotateCcw} onPress={() => setSelectedItems({})}>
             Clear selections
           </Button>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={ListPlus}
             onPress={handleSelectAll}
@@ -450,16 +450,16 @@ export function ImportReviewScreen() {
           </Button>
         </Row>
         <Row gap={12} align="center" flexWrap="wrap">
-          <Text color="gray" aria-live="polite">
+          <Text color="$gray11" aria-live="polite">
             Selected {selectedCount} of {totalItems}
           </Text>
           {isImporting && (
-            <Text color="gray" aria-live="assertive">
+            <Text color="$gray11" aria-live="assertive">
               Importing {importProgress.completed} of {importProgress.total}...
             </Text>
           )}
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             disabled={clearImportMutation.isPending}
             onPress={async () => {
@@ -473,7 +473,7 @@ export function ImportReviewScreen() {
             Clear import
           </Button>
           <Button
-            size={16}
+            size="md"
             iconAfter={CheckCircle2}
             disabled={selectedCount === 0 || isImporting}
             onPress={handleImportSelected}

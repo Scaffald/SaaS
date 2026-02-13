@@ -58,19 +58,19 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding={16}>
+    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color="$red11" size={20} />
+          <AlertTriangle color="$red11" size="lg" />
           <Text color="$red11">Delete Organization</Text>
         </Row>
 
-        <Text color="gray">
+        <Text color="$gray11">
           Permanently delete this organization and all associated data. This action cannot be
           undone.
         </Text>
 
-        <Text color="gray">
+        <Text color="$gray11">
           • All payment data will be anonymized • All payment methods will be removed from Stripe •
           Organization members will lose access • All jobs and applications will be archived
         </Text>
@@ -89,10 +89,10 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
           <AlertDialog.Portal>
             <AlertDialog.Overlay />
             <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <Stack gap={16} padding={16}>
+              <Stack gap={16} padding="md">
                 <Stack gap={8}>
                   <Text color="$red11">Delete This Organization?</Text>
-                  <Text color="gray">
+                  <Text color="$gray11">
                     This action cannot be undone. All organization data will be permanently deleted
                     or anonymized.
                   </Text>

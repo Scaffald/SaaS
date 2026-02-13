@@ -96,7 +96,7 @@ export function DuplicateButton({
             </Dialog.Description>
 
             <Stack gap={8}>
-              <Text color="gray">
+              <Text color="$gray11">
                 A new {itemType} will be created as a draft with "(Copy)" appended to the title. All
                 settings, requirements, and team assignments will be copied.
               </Text>

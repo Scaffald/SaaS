@@ -179,7 +179,7 @@ export function SkillsStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Spotlight your strengths</Text>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Add 3-5 core skills that best represent your expertise. Recruiters use these to match you
           with opportunities.
         </Paragraph>
@@ -192,7 +192,7 @@ export function SkillsStep({
         {skills.length === 0 ? (
           <Card bordered backgroundColor="$color2">
             <Card.Header>
-              <Paragraph color="gray">
+              <Paragraph color="$gray11">
                 Start by selecting your signature skills. We recommend adding at least three.
               </Paragraph>
             </Card.Header>
@@ -205,12 +205,12 @@ export function SkillsStep({
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
                       <Text>{skill.name}</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {skill.taxonomy.toUpperCase()} • Proficiency {skill.proficiency}/5
                       </Text>
                     </Stack>
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       onPress={() => handleRemoveSkill(skill.id)}
                       aria-label={`Remove ${skill.name}`}
@@ -223,7 +223,7 @@ export function SkillsStep({
             ))}
           </Stack>
         )}
-        <Paragraph id={guidanceId} color="gray" aria-live="polite">
+        <Paragraph id={guidanceId} color="$gray11" aria-live="polite">
           {guidance}
         </Paragraph>
       </Stack>
@@ -236,7 +236,7 @@ export function SkillsStep({
           isSearching={searchParentSkillsMutation.isPending}
         />
         {skills.length >= MAX_SKILLS && (
-          <Paragraph color="gray" aria-live="polite">
+          <Paragraph color="$gray11" aria-live="polite">
             You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick wizard. You can add
             more later from your full profile.
           </Paragraph>

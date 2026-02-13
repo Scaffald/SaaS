@@ -85,7 +85,7 @@ export function ExperienceStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Add your latest experience</Text>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Showcase your most recent role. You can add more later in your full profile.
         </Paragraph>
       </Stack>
@@ -154,7 +154,7 @@ export function ExperienceStep({
           render={({ field }) => (
             <ToggleSwitch
               checked={Boolean(field.value)}
-              onCheckedChange={field.onChange}
+              onChange={field.onChange}
               aria-label="I currently work here"
               data-testid="toggle-current-job"
             />

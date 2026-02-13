@@ -99,8 +99,8 @@ export function ConsentScreen({
   }
 
   return (
-    <Stack flex={1} padding={16} maxWidth={600} alignSelf="center" gap={16}>
-      <Card padding={16} gap={16}>
+    <Stack flex={1} padding="md" maxWidth={600} alignSelf="center" gap={16}>
+      <Card padding="md" gap={16}>
         <Stack gap={12}>
           <Row gap={12} align="center">
             {app.logo_url && (
@@ -115,7 +115,7 @@ export function ConsentScreen({
             <Stack flex={1} gap={4}>
               <SizableText size={24}>{app.name} wants to access your Scaffald account</SizableText>
               {app.description && (
-                <Paragraph size={8} color="gray">
+                <Paragraph size="xs" color="$gray11">
                   {app.description}
                 </Paragraph>
               )}
@@ -123,7 +123,7 @@ export function ConsentScreen({
           </Row>
 
           {app.homepage_url && (
-            <Paragraph size={8}>
+            <Paragraph size="xs">
               <a href={app.homepage_url} target="_blank" rel="noopener noreferrer">
                 Visit {app.name}
               </a>
@@ -134,7 +134,7 @@ export function ConsentScreen({
         <Separator />
 
         <Stack gap={8}>
-          <SizableText size={16}>Permissions Requested</SizableText>
+          <SizableText size="md">Permissions Requested</SizableText>
           <Stack gap={8}>
             {requestedScopes.map((scope) => (
               <ScopePermissionItem key={scope} scope={scope} />
@@ -145,12 +145,12 @@ export function ConsentScreen({
         <Separator />
 
         <Stack gap={8}>
-          <SizableText size={12} color="gray">
+          <SizableText size="sm" color="$gray11">
             Authorizing as {user?.email}
           </SizableText>
           <Checkbox
             checked={rememberConsent}
-            onCheckedChange={setRememberConsent}
+            onChange={setRememberConsent}
             label="Remember this authorization (skip consent screen in the future)"
           />
         </Stack>
@@ -168,7 +168,7 @@ export function ConsentScreen({
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
           <Stack gap={4}>
-            <SizableText size={4} color="gray" textAlign="center">
+            <SizableText size={4} color="$gray11" textAlign="center">
               <a
                 href={app.privacy_policy_url}
                 target="_blank"
@@ -210,10 +210,10 @@ function ScopePermissionItem({ scope }: { scope: string }) {
 
   return (
     <Row gap={8} align="flex-start">
-      <SizableText size={12}>•</SizableText>
+      <SizableText size="sm">•</SizableText>
       <Stack flex={1}>
-        <SizableText size={12}>{description}</SizableText>
-        <SizableText size={4} color="gray">
+        <SizableText size="sm">{description}</SizableText>
+        <SizableText size={4} color="$gray11">
           {scope}
         </SizableText>
       </Stack>

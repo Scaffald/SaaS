@@ -45,15 +45,15 @@ export const ResultsViewer = memo(function ResultsViewer({
     return (
       <Stack
         gap={12}
-        padding={16}
+        padding="md"
         backgroundColor="$background"
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
         <Row gap={8} align="center">
-          <Spinner size="sm" color="gray" />
-          <Text color="gray">Loading background check details…</Text>
+          <Spinner size="sm" color="$gray11" />
+          <Text color="$gray11">Loading background check details…</Text>
         </Row>
       </Stack>
     )
@@ -63,7 +63,7 @@ export const ResultsViewer = memo(function ResultsViewer({
     return (
       <Stack
         gap={12}
-        padding={16}
+        padding="md"
         backgroundColor="$background"
         borderRadius={16}
         borderWidth={1}
@@ -73,7 +73,7 @@ export const ResultsViewer = memo(function ResultsViewer({
           <AlertTriangle size={18} color="$red10" />
           <Text color="$red11">We couldn’t load your background check details. Try again.</Text>
         </Row>
-        <Button size={12} variant="outline" onPress={() => getCheckQuery.refetch()}>
+        <Button size="sm" variant="outline" onPress={() => getCheckQuery.refetch()}>
           Retry
         </Button>
       </Stack>
@@ -103,7 +103,7 @@ export const ResultsViewer = memo(function ResultsViewer({
   return (
     <Stack
       gap={16}
-      padding={16}
+      padding="md"
       backgroundColor="$background"
       borderRadius={16}
       borderWidth={1}
@@ -111,7 +111,7 @@ export const ResultsViewer = memo(function ResultsViewer({
     >
       <Row justify="space-between" align="center">
         <Stack gap={4}>
-          <Text color="gray">{summary?.package?.display_name ?? 'Background check results'}</Text>
+          <Text color="$gray11">{summary?.package?.display_name ?? 'Background check results'}</Text>
           <Row gap={8} align="center">
             <Stack
               paddingHorizontal={12}
@@ -123,10 +123,10 @@ export const ResultsViewer = memo(function ResultsViewer({
             >
               <Text color={statusColors.text}>{statusMeta.label}</Text>
             </Stack>
-            <Text color="gray">Last updated {formatDate(detail.updated_at)}</Text>
+            <Text color="$gray11">Last updated {formatDate(detail.updated_at)}</Text>
           </Row>
         </Stack>
-        <Button size={12} variant="outline" icon={CloseIcon} onPress={onClose}>
+        <Button size="sm" variant="outline" icon={CloseIcon} onPress={onClose}>
           Close
         </Button>
       </Row>
@@ -150,19 +150,19 @@ export const ResultsViewer = memo(function ResultsViewer({
       {onRequestDispute && summary?.status && (
         <Stack
           gap={8}
-          padding={12}
+          padding="sm"
           backgroundColor="$color2"
           borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text color="gray">Notice something inaccurate?</Text>
-          <Text color="gray">
+          <Text color="$gray11">Notice something inaccurate?</Text>
+          <Text color="$gray11">
             Submit a dispute so our compliance team can review and correct any issues.
           </Text>
           <Button
-            size={12}
-            theme="blue"
+            size="sm"
+            color="primary"
             disabled={hasActiveDispute}
             onPress={() => {
               if (checkId) {
@@ -177,23 +177,23 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       {detail.summary && (
         <Stack gap={8}>
-          <Text color="gray">Summary</Text>
-          <Text color="gray">{detail.summary}</Text>
+          <Text color="$gray11">Summary</Text>
+          <Text color="$gray11">{detail.summary}</Text>
         </Stack>
       )}
 
       {detail.findings && (
         <Stack gap={8}>
-          <Text color="gray">Findings</Text>
-          <Text color="gray">{JSON.stringify(detail.findings, null, 2)}</Text>
+          <Text color="$gray11">Findings</Text>
+          <Text color="$gray11">{JSON.stringify(detail.findings, null, 2)}</Text>
         </Stack>
       )}
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Text color="gray">Documents</Text>
+          <Text color="$gray11">Documents</Text>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={DownloadCloud}
             onPress={() =>
@@ -208,7 +208,7 @@ export const ResultsViewer = memo(function ResultsViewer({
           </Button>
         </Row>
         {documents.length === 0 ? (
-          <Text color="gray">No documents uploaded yet.</Text>
+          <Text color="$gray11">No documents uploaded yet.</Text>
         ) : (
           <Stack gap={8}>
             {documents.map((document: BackgroundCheckDocument) => (
@@ -216,17 +216,17 @@ export const ResultsViewer = memo(function ResultsViewer({
                 key={document.id}
                 justify="space-between"
                 align="center"
-                padding={12}
+                padding="sm"
                 backgroundColor="$color2"
                 borderRadius={12}
                 borderWidth={1}
                 borderColor="$borderColor"
               >
                 <Stack gap={4}>
-                  <Text color="gray">{document.file_name}</Text>
-                  <Text color="gray">Uploaded {formatDate(document.uploaded_at)}</Text>
+                  <Text color="$gray11">{document.file_name}</Text>
+                  <Text color="$gray11">Uploaded {formatDate(document.uploaded_at)}</Text>
                 </Stack>
-                <Button size={8} variant="outline" disabled>
+                <Button size="xs" variant="outline" disabled>
                   View
                 </Button>
               </Row>

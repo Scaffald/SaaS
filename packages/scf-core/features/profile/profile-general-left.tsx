@@ -226,7 +226,7 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <SkeletonForm fields={6} />
       </Stack>
     )
@@ -279,7 +279,7 @@ export function ProfileGeneralLeft() {
             }
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text color="gray">Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && <Text color="$gray11">Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -403,7 +403,7 @@ export function ProfileGeneralLeft() {
               />
             )}
           />
-          <Text color="gray">Email changes must be made through account settings</Text>
+          <Text color="$gray11">Email changes must be made through account settings</Text>
         </Stack>
 
         {/* Home Address with Smart Autocomplete */}

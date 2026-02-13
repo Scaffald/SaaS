@@ -105,7 +105,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
         <Row gap={12} align="center">
           <ToggleSwitch
             checked={isActive}
-            onCheckedChange={setIsActive}
+            onChange={setIsActive}
             disabled={isLoading}
             aria-label="Slide active"
           />

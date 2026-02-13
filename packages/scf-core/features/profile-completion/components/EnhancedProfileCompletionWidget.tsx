@@ -139,7 +139,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={24}>
-          <Text color="gray">Loading profile insights...</Text>
+          <Text color="$gray11">Loading profile insights...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -165,19 +165,19 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     <DashboardWidget>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="gray">Profile Progress</Text>
+          <Text color="$gray11">Profile Progress</Text>
           <Text>{headline}</Text>
         </Stack>
 
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text>{completionStatus.completionPercentage}%</Text>
-            <Text color="gray">
+            <Text color="$gray11">
               {completionStatus.incompleteSections.length} sections remaining
             </Text>
           </Row>
           <Progress
-            size={12}
+            size="sm"
             backgroundColor="$color4"
             borderRadius={20}
             height={18}
@@ -193,14 +193,14 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
           <Card.Header padded gap={12}>
             <Row justify="space-between" align="center">
               <Row gap={8} align="center">
-                <Sparkles size={20} color="$blue10" />
+                <Sparkles size="lg" color="$blue10" />
                 <Text>Profile Suggestion</Text>
               </Row>
 
               {showCarouselControls && (
                 <Row gap={4}>
                   <Button
-                    size={8}
+                    size="xs"
                     circular
                     chromeless
                     width={32}
@@ -213,7 +213,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     onPress={retreatBenefit}
                   />
                   <Button
-                    size={8}
+                    size="xs"
                     circular
                     chromeless
                     width={32}
@@ -238,13 +238,13 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                 <AnimatePresence initial={false}>
                   {isBenefitLoading ? (
                     <AnimatedSuggestion key="loading" onLayout={handleSuggestionLayout}>
-                      <Text color="gray">Gathering personalized suggestions…</Text>
+                      <Text color="$gray11">Gathering personalized suggestions…</Text>
                     </AnimatedSuggestion>
                   ) : currentBenefit ? (
                     <AnimatedSuggestion key={currentBenefit.id} onLayout={handleSuggestionLayout}>
-                      <Text color="gray">{currentBenefit.title}</Text>
-                      <Text color="gray">{currentBenefit.description}</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">{currentBenefit.title}</Text>
+                      <Text color="$gray11">{currentBenefit.description}</Text>
+                      <Text color="$gray11">
                         Suggested section: {(() => {
                           try {
                             const sectionId = currentBenefit.relatedSection as ProfileWizardStepId
@@ -261,7 +261,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     </AnimatedSuggestion>
                   ) : (
                     <AnimatedSuggestion key="empty" onLayout={handleSuggestionLayout}>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         Stay on track by finishing your remaining sections. We’ll surface targeted
                         ideas here once more data is available.
                       </Text>
@@ -313,11 +313,11 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         </Stack>
 
         <Row gap={12} flexWrap="wrap">
-          <Button size={16} flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
+          <Button size="md" flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
             Complete Profile
           </Button>
           {/* TODO: Uncomment this when we fix the route
-          <Button size={16} flex={1} icon={UploadCloud} onPress={() => {}}>
+          <Button size="md" flex={1} icon={UploadCloud} onPress={() => {}}>
             Import Data
           </Button>
           */}

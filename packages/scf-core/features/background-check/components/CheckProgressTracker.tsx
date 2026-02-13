@@ -104,18 +104,18 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
     <Stack gap={16}>
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text color="gray">Overall progress</Text>
-          <Text color="gray">{progress}%</Text>
+          <Text color="$gray11">Overall progress</Text>
+          <Text color="$gray11">{progress}%</Text>
         </Row>
-        <Progress value={progress} max={100} backgroundColor="$color3" size={8}>
+        <Progress value={progress} max={100} backgroundColor="$color3" size="xs">
           <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
         </Progress>
-        <Text color="gray">{statusMeta.description}</Text>
+        <Text color="$gray11">{statusMeta.description}</Text>
       </Stack>
 
       {normalizedComponents.length > 0 && (
         <Stack gap={8}>
-          <Text color="gray">Component status</Text>
+          <Text color="$gray11">Component status</Text>
           <Stack gap={8}>
             {normalizedComponents.map((component) => {
               const componentStatusMeta =
@@ -130,16 +130,16 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   key={component.id}
                   justify="space-between"
                   align="center"
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$color2"
                   borderRadius={12}
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
                   <Stack gap={4} flex={1}>
-                    <Text color="gray">{component.label}</Text>
+                    <Text color="$gray11">{component.label}</Text>
                     {component.completedAt && (
-                      <Text color="gray">Completed {formatDate(component.completedAt)}</Text>
+                      <Text color="$gray11">Completed {formatDate(component.completedAt)}</Text>
                     )}
                   </Stack>
                   {componentStatusMeta && (
@@ -163,7 +163,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
 
       {normalizedHistory.length > 0 && (
         <Stack gap={8}>
-          <Text color="gray">Recent activity</Text>
+          <Text color="$gray11">Recent activity</Text>
           <Stack gap={8}>
             {normalizedHistory.map((entry, index) => {
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
@@ -180,7 +180,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   </Stack>
                   <Stack
                     flex={1}
-                    padding={12}
+                    padding="sm"
                     backgroundColor="$color2"
                     borderRadius={12}
                     borderWidth={1}
@@ -189,11 +189,11 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   >
                     <Text color={colors.text}>{historyMeta.label}</Text>
                     <Row gap={8} align="center">
-                      {entry.occurredAt && <Text color="gray">{formatDate(entry.occurredAt)}</Text>}
+                      {entry.occurredAt && <Text color="$gray11">{formatDate(entry.occurredAt)}</Text>}
                       {entry.actor && (
                         <>
                           <Separator vertical />
-                          <Text color="gray">{entry.actor}</Text>
+                          <Text color="$gray11">{entry.actor}</Text>
                         </>
                       )}
                     </Row>
@@ -206,14 +206,14 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
       )}
 
       <Stack gap={8}>
-        <Text color="gray">Key dates</Text>
+        <Text color="$gray11">Key dates</Text>
         <Stack gap={4}>
-          <Text color="gray">Started: {formatDate(createdAt)}</Text>
+          <Text color="$gray11">Started: {formatDate(createdAt)}</Text>
           {estimatedCompletionDate && (
-            <Text color="gray">Estimated completion: {formatDate(estimatedCompletionDate)}</Text>
+            <Text color="$gray11">Estimated completion: {formatDate(estimatedCompletionDate)}</Text>
           )}
-          {completedAt && <Text color="gray">Completed: {formatDate(completedAt)}</Text>}
-          {expiresAt && <Text color="gray">Expires: {formatDate(expiresAt)}</Text>}
+          {completedAt && <Text color="$gray11">Completed: {formatDate(completedAt)}</Text>}
+          {expiresAt && <Text color="$gray11">Expires: {formatDate(expiresAt)}</Text>}
         </Stack>
       </Stack>
     </Stack>

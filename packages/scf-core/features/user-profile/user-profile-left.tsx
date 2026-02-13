@@ -66,7 +66,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
     return (
       <Stack flex={1} align="center" justify="center" paddingVertical="$10">
         <Spinner size="lg" color="$blue10" />
-        <Text marginTop={16} color="gray">
+        <Text marginTop={16} color="$gray11">
           Loading profile...
         </Text>
       </Stack>
@@ -84,7 +84,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   return (
     <>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Stack gap={24} padding={16} paddingBottom={32}>
+        <Stack gap={24} padding="md" paddingBottom={32}>
           <Row justify="flex-end">
             <Stack
               paddingHorizontal={12}
@@ -125,7 +125,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 </Text>
               </Row>
               {syncStatus === 'error' && (
-                <Button size={8} variant="outline" onPress={resetProfileSyncError} marginTop={8}>
+                <Button size="xs" variant="outline" onPress={resetProfileSyncError} marginTop={8}>
                   Dismiss
                 </Button>
               )}

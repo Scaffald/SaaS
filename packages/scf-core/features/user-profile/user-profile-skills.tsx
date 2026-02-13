@@ -19,10 +19,10 @@ interface UserProfileSkillsProps {
 export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
   return (
     <Card elevate bordered>
-      <Stack gap={16} padding={20}>
+      <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
           <Award size={24} color="$blue10" />
-          <Text color="gray">Skills & Proficiency</Text>
+          <Text color="$gray11">Skills & Proficiency</Text>
         </Row>
 
         <Stack gap={12}>
@@ -30,7 +30,7 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
             <Stack key={skill.id} gap={8}>
               <Row justify="space-between" align="center">
                 <Stack flex={1}>
-                  <Text color="gray">
+                  <Text color="$gray11">
                     {typeof skill.label === 'string' && skill.label.length > 0
                       ? skill.label
                       : skill.displayCode
@@ -38,7 +38,7 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
                         : skill.name}
                   </Text>
                   {typeof skill.yearsExperience === 'number' && (
-                    <Text color="gray">{skill.yearsExperience} years experience</Text>
+                    <Text color="$gray11">{skill.yearsExperience} years experience</Text>
                   )}
                 </Stack>
                 <Text color="$blue11">{skill.proficiency}%</Text>

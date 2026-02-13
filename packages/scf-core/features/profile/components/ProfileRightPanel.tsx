@@ -15,8 +15,8 @@ export function ProfileRightPanel({ title, description, stats }: ProfileRightPan
   return (
     <DashboardWidget>
       <H3>{title}</H3>
-      {stats && <Text color="gray">{stats}</Text>}
-      <Text color="gray">{description}</Text>
+      {stats && <Text color="$gray11">{stats}</Text>}
+      <Text color="$gray11">{description}</Text>
     </DashboardWidget>
   )
 }

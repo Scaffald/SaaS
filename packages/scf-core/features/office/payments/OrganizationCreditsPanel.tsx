@@ -79,35 +79,35 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
 
   if (isLoading) {
     return (
-      <Card bordered padding={16}>
+      <Card bordered padding="md">
         <Stack gap={12} align="center" paddingVertical={16}>
           <Spinner size="lg" />
-          <Text color="gray">Loading account credits…</Text>
+          <Text color="$gray11">Loading account credits…</Text>
         </Stack>
       </Card>
     )
   }
 
   return (
-    <Card bordered padding={16} gap={12}>
+    <Card bordered padding="md" gap={12}>
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Account Credits</Text>
-          <Text color="gray">Pre-funded balance for automatic payments</Text>
+          <Text color="$gray11">Pre-funded balance for automatic payments</Text>
         </Stack>
         {!showDepositForm && (
-          <Button size={12} theme="blue" icon={Plus} onPress={() => setShowDepositForm(true)}>
+          <Button size="sm" color="primary" icon={Plus} onPress={() => setShowDepositForm(true)}>
             Add Credits
           </Button>
         )}
       </Row>
 
       {/* Balance Display */}
-      <Card padding={16} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+      <Card padding="md" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
         <Row gap={12} align="center">
           <DollarSign size={32} color="$green11" />
           <Stack flex={1}>
-            <Text color="gray">Current Balance</Text>
+            <Text color="$gray11">Current Balance</Text>
             <Text color="$green11">
               {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
             </Text>
@@ -124,13 +124,13 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               value={depositAmount}
               onChangeText={setDepositAmount}
               keyboardType="decimal-pad"
-              size={16}
+              size="md"
             />
-            <Text color="gray">Enter the amount you want to add to your account credits.</Text>
+            <Text color="$gray11">Enter the amount you want to add to your account credits.</Text>
           </Stack>
           <Row gap={8}>
             <Button
-              size={16}
+              size="md"
               variant="outline"
               onPress={() => {
                 setShowDepositForm(false)
@@ -140,8 +140,8 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               Cancel
             </Button>
             <Button
-              size={16}
-              theme="blue"
+              size="md"
+              color="primary"
               icon={CreditCard}
               onPress={() => {
                 const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
@@ -187,13 +187,13 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                         key={entry.id}
                         justify="space-between"
                         align="center"
-                        padding={8}
+                        padding="xs"
                         backgroundColor="$color2"
                         borderRadius={8}
                       >
                         <Stack flex={1}>
                           <Text>{entry.description ?? entry.transactionType}</Text>
-                          <Text color="gray">{new Date(entry.createdAt).toLocaleDateString()}</Text>
+                          <Text color="$gray11">{new Date(entry.createdAt).toLocaleDateString()}</Text>
                         </Stack>
                         <Text color={entry.direction === 'credit' ? '$green11' : '$red11'}>
                           {entry.direction === 'credit' ? '+' : '-'}

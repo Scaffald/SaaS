@@ -39,7 +39,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
               align="center"
               justify="center"
             >
-              <Text color="gray">{index + 1}</Text>
+              <Text color="$gray11">{index + 1}</Text>
             </Circle>
             <Text color={isActive ? '$color12' : '$color10'}>{STEP_LABELS[step]}</Text>
           </Stack>

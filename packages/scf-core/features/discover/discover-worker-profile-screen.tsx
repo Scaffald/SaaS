@@ -219,7 +219,7 @@ export function DiscoverWorkerProfileScreen({
       <DashboardWidget>
         <Stack align="center" justify="center" gap={8} paddingVertical={32}>
           <Text color="$red10">Worker not found</Text>
-          <Text color="gray">Select a worker from the list to view their profile.</Text>
+          <Text color="$gray11">Select a worker from the list to view their profile.</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -242,7 +242,7 @@ export function DiscoverWorkerProfileScreen({
       <DashboardWidget>
         <Stack align="center" justify="center" gap={8} paddingVertical={32}>
           <Text color="$red10">Profile unavailable</Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             We couldn&apos;t load this worker profile. Please try another worker.
           </Text>
         </Stack>

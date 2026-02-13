@@ -39,7 +39,7 @@ export const DrawerFooter = () => {
     >
       {/* Theme Toggle Button */}
       <Button
-        size={12}
+        size="sm"
         circular
         backgroundColor="$color3"
         borderColor="$color4"
@@ -55,12 +55,12 @@ export const DrawerFooter = () => {
         onPress={handleThemeToggle}
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       >
-        {isDark ? <Sun size={20} color="$blue5" /> : <Moon size={20} color="$blue5" />}
+        {isDark ? <Sun size="lg" color="$blue5" /> : <Moon size="lg" color="$blue5" />}
       </Button>
 
       {/* Logout Button */}
       <Button
-        size={12}
+        size="sm"
         circular
         backgroundColor="$color3"
         borderColor="$color4"
@@ -76,7 +76,7 @@ export const DrawerFooter = () => {
         onPress={handleLogout}
         aria-label="Sign out"
       >
-        <LogOut size={20} color="$blue5" />
+        <LogOut size="lg" color="$blue5" />
       </Button>
     </Row>
   )

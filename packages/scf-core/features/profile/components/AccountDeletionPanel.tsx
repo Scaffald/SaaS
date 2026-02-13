@@ -54,18 +54,18 @@ export function AccountDeletionPanel() {
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding={16}>
+    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color="$red11" size={20} />
+          <AlertTriangle color="$red11" size="lg" />
           <Text color="$red11">Delete Account</Text>
         </Row>
 
-        <Text color="gray">
+        <Text color="$gray11">
           Permanently delete your account and all associated data. This action cannot be undone.
         </Text>
 
-        <Text color="gray">
+        <Text color="$gray11">
           • All payment data will be anonymized • Your profile will be removed • You will lose
           access to all organizations and teams
         </Text>
@@ -84,10 +84,10 @@ export function AccountDeletionPanel() {
           <AlertDialog.Portal>
             <AlertDialog.Overlay />
             <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <Stack gap={16} padding={16}>
+              <Stack gap={16} padding="md">
                 <Stack gap={8}>
                   <Text color="$red11">Delete Your Account?</Text>
-                  <Text color="gray">
+                  <Text color="$gray11">
                     This action cannot be undone. All your data will be permanently deleted or
                     anonymized.
                   </Text>

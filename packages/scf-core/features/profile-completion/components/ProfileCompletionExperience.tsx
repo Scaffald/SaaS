@@ -263,10 +263,10 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
       <Sheet.Overlay />
       <Sheet.Frame backgroundColor="$background" aria-label="Profile completion wizard">
         <Sheet.Handle />
-        <Stack padding={16} gap={16} flex={1}>
+        <Stack padding="md" gap={16} flex={1}>
           <Stack gap={8}>
             <Text>Complete Your Profile</Text>
-            <Text color="gray">We’ll auto-save as you go. You can exit anytime.</Text>
+            <Text color="$gray11">We’ll auto-save as you go. You can exit anytime.</Text>
           </Stack>
           {open ? (
             <ProfileWizard
@@ -276,7 +276,7 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
               onViewProfile={onViewProfile}
             />
           ) : null}
-          <Button size={16} variant="outline" onPress={onClose}>
+          <Button size="md" variant="outline" onPress={onClose}>
             Close
           </Button>
         </Stack>

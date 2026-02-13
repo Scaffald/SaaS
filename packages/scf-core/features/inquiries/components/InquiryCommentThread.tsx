@@ -120,26 +120,26 @@ export function InquiryCommentThread({
               <Row
                 key={comment.id}
                 gap={12}
-                padding={12}
+                padding="sm"
                 backgroundColor={isUnread ? '$blue2' : '$color2'}
                 borderRadius={12}
                 borderWidth={1}
                 borderColor={isUnread ? '$blue9' : '$borderColor'}
               >
-                <Avatar circular size={12}>
+                <Avatar circular size="sm">
                   <Avatar.Fallback backgroundColor="$blue9">
                     <Text color="white">{comment.sender_id.charAt(0).toUpperCase()}</Text>
                   </Avatar.Fallback>
                 </Avatar>
                 <Stack flex={1} gap={4}>
                   <Row justify="space-between" align="center">
-                    <Text color="gray">{isFromCurrentUser ? 'You' : 'Organization'}</Text>
-                    <Text color="gray">{formatTimestamp(comment.created_at)}</Text>
+                    <Text color="$gray11">{isFromCurrentUser ? 'You' : 'Organization'}</Text>
+                    <Text color="$gray11">{formatTimestamp(comment.created_at)}</Text>
                   </Row>
-                  <Text color="gray">{comment.content}</Text>
+                  <Text color="$gray11">{comment.content}</Text>
                   {isUnread && (
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       onPress={() => handleMarkRead(comment.id)}
                       marginTop={4}
@@ -156,8 +156,8 @@ export function InquiryCommentThread({
 
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
-        <Row align="center" gap={8} padding={8} backgroundColor="$blue2" borderRadius={12}>
-          <MessageSquare size={16} color="$blue10" />
+        <Row align="center" gap={8} padding="xs" backgroundColor="$blue2" borderRadius={12}>
+          <MessageSquare size="md" color="$blue10" />
           <Text color="$blue11">
             {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}
           </Text>
@@ -180,7 +180,7 @@ export function InquiryCommentThread({
             icon={Send}
             onPress={handleAddComment}
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            theme="blue"
+            color="primary"
           >
             {addCommentMutation.isPending ? 'Sending...' : 'Send'}
           </Button>

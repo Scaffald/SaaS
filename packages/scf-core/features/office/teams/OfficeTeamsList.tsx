@@ -171,7 +171,7 @@ export function OfficeTeamsList() {
         archiveMutation.isPending ? (
           <Stack
             backgroundColor="$color2"
-            padding={12}
+            padding="sm"
             borderRadius={16}
             shadowColor="$color10"
             marginRight={16}

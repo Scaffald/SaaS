@@ -127,7 +127,7 @@ export function AssessmentWizard({
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
         <Spinner size="lg" />
-        <Text color="gray">Loading assessment...</Text>
+        <Text color="$gray11">Loading assessment...</Text>
       </Stack>
     )
   }
@@ -139,7 +139,7 @@ export function AssessmentWizard({
         <AlertCircle size={48} color="$red10" />
         <Text color="$red11">Error loading assessment</Text>
         <Stack align="center">
-          <Text color="gray">{error.message || 'An unexpected error occurred'}</Text>
+          <Text color="$gray11">{error.message || 'An unexpected error occurred'}</Text>
         </Stack>
       </Stack>
     )
@@ -149,13 +149,13 @@ export function AssessmentWizard({
     <Stack flex={1}>
       {/* Header */}
       {shouldRenderHeader && (
-        <Stack padding={16} gap={12}>
+        <Stack padding="md" gap={12}>
           {(title || description) && (
             <Stack gap={4}>
-              {title && <Text color="gray">{title}</Text>}
+              {title && <Text color="$gray11">{title}</Text>}
               {description && (
                 <Stack align="center">
-                  <Text color="gray">{description}</Text>
+                  <Text color="$gray11">{description}</Text>
                 </Stack>
               )}
             </Stack>
@@ -176,23 +176,23 @@ export function AssessmentWizard({
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <Stack padding={16} gap={16}>
+        <Stack padding="md" gap={16}>
           {children}
         </Stack>
       </ScrollView>
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <Stack padding={16} borderTopWidth={1} borderTopColor="$borderColor">
+        <Stack padding="md" borderTopWidth={1} borderTopColor="$borderColor">
           <Row gap={12} justify="space-between">
             {showPrevious && (
-              <Button size={16} variant="outline" icon={ChevronLeft} onPress={onPrevious}>
+              <Button size="md" variant="outline" icon={ChevronLeft} onPress={onPrevious}>
                 Previous
               </Button>
             )}
 
             {showNext && (
-              <Button size={16} iconAfter={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
+              <Button size="md" iconAfter={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
                 Next
               </Button>
             )}

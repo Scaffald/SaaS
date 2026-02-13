@@ -33,7 +33,7 @@ export function AssessmentProgress({
       <Stack gap={20} width="100%">
         {completionScore !== undefined && (
           <Stack gap={8}>
-            <Text color="gray">Progress</Text>
+            <Text color="$gray11">Progress</Text>
             <Stack gap={4}>
               <Row
                 height={8}
@@ -119,7 +119,7 @@ export function AssessmentProgress({
       {completionScore !== undefined && (
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="gray">Progress</Text>
+            <Text color="$gray11">Progress</Text>
             <Text color="$blue10">{completionScore}%</Text>
           </Row>
           <Row
@@ -163,7 +163,7 @@ export function AssessmentProgress({
                 justify="center"
               >
                 {isCompleted ? (
-                  <Check size={16} color="white" />
+                  <Check size="md" color="white" />
                 ) : (
                   <Text color={isCurrent ? 'white' : '$color11'}>{index + 1}</Text>
                 )}

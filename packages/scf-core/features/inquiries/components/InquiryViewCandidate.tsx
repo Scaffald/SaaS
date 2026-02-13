@@ -147,7 +147,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   if (isLoading) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading inquiry...</Text>
       </Stack>
     )
@@ -155,7 +155,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   if (error || !data || !data.inquiry) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load inquiry</Text>
       </Stack>
     )
@@ -336,7 +336,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const DetailRow = ({ label, value }: { label: string; value?: string | null }) => (
     <Row justify="space-between" align="center">
       <Text>{label}</Text>
-      <Text color="gray">{value && value.length > 0 ? value : 'Not specified'}</Text>
+      <Text color="$gray11">{value && value.length > 0 ? value : 'Not specified'}</Text>
     </Row>
   )
 
@@ -356,7 +356,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
       <Row
         align="center"
         justify="space-between"
-        padding={12}
+        padding="sm"
         backgroundColor="$color2"
         borderRadius={12}
         cursor="pointer"
@@ -364,9 +364,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
       >
         <Row align="center" gap={8} flex={1}>
           {isExpanded ? (
-            <ChevronUp size={16} color="gray" />
+            <ChevronUp size="md" color="$gray11" />
           ) : (
-            <ChevronDown size={16} color="gray" />
+            <ChevronDown size="md" color="$gray11" />
           )}
           <Text>{title}</Text>
           {isAccepted && (
@@ -378,14 +378,14 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               align="center"
               gap={4}
             >
-              <Check size={12} color="$green11" />
+              <Check size="sm" color="$green11" />
               <Text color="$green11">Accepted</Text>
             </Row>
           )}
           {commentCount > 0 && (
             <Row align="center" gap={4}>
-              <MessageSquare size={14} color="gray" />
-              <Text color="gray">{commentCount}</Text>
+              <MessageSquare size={14} color="$gray11" />
+              <Text color="$gray11">{commentCount}</Text>
             </Row>
           )}
         </Row>
@@ -401,9 +401,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   return (
     <ScrollView>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         {/* Progress Indicator */}
-        <Stack gap={8} padding={16} backgroundColor="$blue2" borderRadius={16}>
+        <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
           <Row justify="space-between" align="center">
             <Text>Inquiry Progress</Text>
             <Text color="$blue11">
@@ -431,7 +431,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           {expandedSections.has('job_details') && (
             <Stack
               gap={8}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderRadius={12}
               borderWidth={1}
@@ -458,7 +458,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           {expandedSections.has('application_data') && (
             <Stack
               gap={8}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderRadius={12}
               borderWidth={1}
@@ -480,7 +480,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <DetailRow label="Stage changed" value={stageChangedDisplay} />
                 </Stack>
               ) : (
-                <Text color="gray">Application metadata is unavailable.</Text>
+                <Text color="$gray11">Application metadata is unavailable.</Text>
               )}
             </Stack>
           )}
@@ -502,7 +502,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           {expandedSections.has('employment') && (
             <Stack
               gap={12}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderRadius={12}
               borderWidth={1}
@@ -600,7 +600,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'employment')?.accepted_by && (
                 <Stack
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$green2"
                   borderRadius={12}
                   borderWidth={1}
@@ -629,7 +629,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           {expandedSections.has('compensation') && (
             <Stack
               gap={12}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderRadius={12}
               borderWidth={1}
@@ -669,7 +669,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'compensation')?.accepted_by && (
                 <Stack
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$green2"
                   borderRadius={12}
                   borderWidth={1}
@@ -700,7 +700,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           {expandedSections.has('capabilities') && (
             <Stack
               gap={12}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderRadius={12}
               borderWidth={1}
@@ -796,7 +796,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'capabilities')?.accepted_by && (
                 <Stack
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$green2"
                   borderRadius={12}
                   borderWidth={1}
@@ -825,7 +825,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           {expandedSections.has('other') && (
             <Stack
               gap={12}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderRadius={12}
               borderWidth={1}
@@ -858,7 +858,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 {inquiry.additional_notes && (
                   <Stack gap={8}>
                     <Text>Additional notes</Text>
-                    <Text color="gray">{inquiry.additional_notes}</Text>
+                    <Text color="$gray11">{inquiry.additional_notes}</Text>
                   </Stack>
                 )}
               </Stack>
@@ -886,7 +886,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'other')?.accepted_by && (
                 <Stack
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$green2"
                   borderRadius={12}
                   borderWidth={1}

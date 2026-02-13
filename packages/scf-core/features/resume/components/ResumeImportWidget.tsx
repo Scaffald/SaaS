@@ -47,8 +47,8 @@ export function ResumeImportWidget() {
               <FileText color="$blue10" size={26} />
             </Stack>
             <Stack gap={4}>
-              <Text color="gray">Import Your Resume</Text>
-              <Text color="gray">
+              <Text color="$gray11">Import Your Resume</Text>
+              <Text color="$gray11">
                 Upload a PDF or Word document and we’ll auto-fill your profile details for you.
               </Text>
             </Stack>
@@ -59,10 +59,10 @@ export function ResumeImportWidget() {
               <ShieldCheck size={18} color="$green10" />
               <Text color="$green11">Files stay private — only you can access your resume.</Text>
             </Row>
-            <Text color="gray">Accepted formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
+            <Text color="$gray11">Accepted formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
           </Stack>
 
-          <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size={16} />
+          <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size="md" />
         </Stack>
       </DashboardWidget>
 

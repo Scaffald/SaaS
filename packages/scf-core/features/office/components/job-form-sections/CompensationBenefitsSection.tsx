@@ -73,14 +73,14 @@ export function CompensationBenefitsSection({
   return (
     <Stack
       gap={16}
-      padding={16}
+      padding="md"
       backgroundColor="$background"
       borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text>Compensation & Benefits</Text>
-      <Text color="gray">Detailed compensation information and benefits package</Text>
+      <Text color="$gray11">Detailed compensation information and benefits package</Text>
 
       {/* Benefits Summary */}
       <Stack gap={8}>
@@ -97,11 +97,11 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has bonus structure</Label>
-          <Text color="gray">Performance or other bonus opportunities</Text>
+          <Text color="$gray11">Performance or other bonus opportunities</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_bonus_structure || false}
-          onCheckedChange={(checked) => handleChange('has_bonus_structure', checked)}
+          onChange={(checked) => handleChange('has_bonus_structure', checked)}
           aria-label="Has bonus structure"
         />
       </Row>
@@ -122,11 +122,11 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has equity compensation</Label>
-          <Text color="gray">Stock options, RSUs, or other equity</Text>
+          <Text color="$gray11">Stock options, RSUs, or other equity</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_equity || false}
-          onCheckedChange={(checked) => handleChange('has_equity', checked)}
+          onChange={(checked) => handleChange('has_equity', checked)}
           aria-label="Has equity compensation"
         />
       </Row>
@@ -163,11 +163,11 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Has relocation package</Label>
-          <Text color="gray">Relocation assistance available</Text>
+          <Text color="$gray11">Relocation assistance available</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.has_relocation_package || false}
-          onCheckedChange={(checked) => handleChange('has_relocation_package', checked)}
+          onChange={(checked) => handleChange('has_relocation_package', checked)}
           aria-label="Has relocation package"
         />
       </Row>
@@ -188,11 +188,11 @@ export function CompensationBenefitsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Overtime eligible</Label>
-          <Text color="gray">Position eligible for overtime pay</Text>
+          <Text color="$gray11">Position eligible for overtime pay</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.overtime_eligible || false}
-          onCheckedChange={(checked) => handleChange('overtime_eligible', checked)}
+          onChange={(checked) => handleChange('overtime_eligible', checked)}
           aria-label="Overtime eligible"
         />
       </Row>

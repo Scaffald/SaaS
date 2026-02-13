@@ -136,14 +136,14 @@ export function PrerequisiteWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">Complete Your Profile</Text>
-          <Text color="gray">Please complete these required fields to continue using Scaffald</Text>
+          <Text color="$gray11">Complete Your Profile</Text>
+          <Text color="$gray11">Please complete these required fields to continue using Scaffald</Text>
         </Stack>
 
         {isCheckingStatus ? (
           <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
             <Spinner size="lg" color="$blue7" />
-            <Text color="gray">Loading...</Text>
+            <Text color="$gray11">Loading...</Text>
           </Stack>
         ) : (
           <>
@@ -191,7 +191,7 @@ export function PrerequisiteWidget() {
             {/* 2. Address */}
             <Stack gap={12}>
               <Text>Address *</Text>
-              <Text color="gray" marginBottom={8}>
+              <Text color="$gray11" marginBottom={8}>
                 Search and select your home address
               </Text>
               <ControlledAddressForm
@@ -280,7 +280,7 @@ export function PrerequisiteWidget() {
                     {isLoadingIndustries ? (
                       <Row gap={8} align="center">
                         <Spinner size="sm" />
-                        <Text color="gray">Loading industries...</Text>
+                        <Text color="$gray11">Loading industries...</Text>
                       </Row>
                     ) : industriesData?.data && industriesData.data.length > 0 ? (
                       <ResponsiveSelect
@@ -295,7 +295,7 @@ export function PrerequisiteWidget() {
                         )}
                       />
                     ) : (
-                      <Text color="gray">No industries available</Text>
+                      <Text color="$gray11">No industries available</Text>
                     )}
                   </Stack>
                 )}

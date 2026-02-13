@@ -37,7 +37,7 @@ export const DrawerLink = ({
 
   const renderIcon = useCallback(() => {
     if (!Icon) return null
-    return <Icon size={20} color={active ? '$color1' : '$color12'} />
+    return <Icon size="lg" color={active ? '$color1' : '$color12'} />
   }, [Icon, active])
 
   const renderContent = useCallback(() => {
@@ -61,7 +61,7 @@ export const DrawerLink = ({
     return (
       <Row align="center" gap={12}>
         {iconWrapper}
-        <Paragraph size={16} color={active ? '$color1' : '$color12'}>
+        <Paragraph size="md" color={active ? '$color1' : '$color12'}>
           {title}
         </Paragraph>
       </Row>
@@ -89,7 +89,7 @@ export const DrawerLink = ({
             </Paragraph>
           </Row>
         )}
-        {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="gray" />}
+        {!item.isExpandable && item.hasChevron && <ChevronRight size="md" color="$gray11" />}
       </Row>
     )
   }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable])
@@ -126,8 +126,8 @@ export const DrawerLink = ({
         cursor="not-allowed"
         flex={1}
       >
-        {Icon && <Icon size={18} color="gray" />}
-        <Paragraph size={12} color="gray">
+        {Icon && <Icon size={18} color="$gray11" />}
+        <Paragraph size="sm" color="$gray11">
           {title}
         </Paragraph>
       </Row>
@@ -169,13 +169,13 @@ export const DrawerLink = ({
           cursor="pointer"
           flex={1}
         >
-          <Paragraph size={16} color={active ? '$blue9' : '$color12'}>
+          <Paragraph size="md" color={active ? '$blue9' : '$color12'}>
             {title}
           </Paragraph>
           {item.isOnCooldown ? (
-            <Clock size={16} color="$blue9" />
+            <Clock size="md" color="$blue9" />
           ) : item.isCompleted ? (
-            <Check size={16} color="$green9" />
+            <Check size="md" color="$green9" />
           ) : null}
         </Row>
       </Link>

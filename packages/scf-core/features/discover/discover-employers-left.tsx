@@ -21,9 +21,9 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16}>
+      <Stack flex={1} align="center" justify="center" padding="md">
         <Spinner size="lg" color="$blue10" />
-        <Text marginTop={8} color="gray">
+        <Text marginTop={8} color="$gray11">
           Loading employers...
         </Text>
       </Stack>
@@ -32,17 +32,17 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (employers.length === 0) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
-        <Text color="gray">No employers found</Text>
-        <Text color="gray">Try adjusting your filters or search query</Text>
+      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+        <Text color="$gray11">No employers found</Text>
+        <Text color="$gray11">Try adjusting your filters or search query</Text>
       </Stack>
     )
   }
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} padding={16}>
-        <Text color="gray">
+      <Stack gap={12} padding="md">
+        <Text color="$gray11">
           {employers.length} {employers.length === 1 ? 'Employer' : 'Employers'}
         </Text>
 

@@ -45,7 +45,7 @@ export function ProfileCompletionWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={16}>
-          <Text color="gray">Loading completion status...</Text>
+          <Text color="$gray11">Loading completion status...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -65,7 +65,7 @@ export function ProfileCompletionWidget({
         <Row justify="space-between" align="center">
           <H4>Profile Completion</H4>
           {variant === 'full' && (
-            <Text color="gray">
+            <Text color="$gray11">
               {completionData.totalComplete} of {completionData.totalItems} complete
             </Text>
           )}
@@ -74,9 +74,9 @@ export function ProfileCompletionWidget({
         {/* Progress Bar */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="gray">{completionData.completionPercentage}%</Text>
+            <Text color="$gray11">{completionData.completionPercentage}%</Text>
             {variant === 'full' && (
-              <Text color="gray">
+              <Text color="$gray11">
                 {completionData.completionPercentage < 100 ? 'Keep going!' : 'Profile complete!'}
               </Text>
             )}
@@ -98,24 +98,24 @@ export function ProfileCompletionWidget({
         {variant === 'full' && nextIncompleteItem && (
           <Stack
             gap={12}
-            padding={12}
+            padding="sm"
             backgroundColor="$color3"
             borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text color="gray">Next Step</Text>
+            <Text color="$gray11">Next Step</Text>
             <Row gap={8} align="center">
-              <Circle size={16} color="gray" />
+              <Circle size="md" color="$gray11" />
               <Stack flex={1} gap={4}>
                 <Text>{nextIncompleteItem.title}</Text>
                 {nextIncompleteItem.description && (
-                  <Text color="gray">{nextIncompleteItem.description}</Text>
+                  <Text color="$gray11">{nextIncompleteItem.description}</Text>
                 )}
               </Stack>
               {showEdit && nextIncompleteItem.actionRoute && (
                 <Button
-                  size={8}
+                  size="xs"
                   theme="info"
                   icon={ChevronRight}
                   onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
@@ -130,14 +130,14 @@ export function ProfileCompletionWidget({
         {/* Checklist (Full variant only) */}
         {variant === 'full' && (
           <Stack gap={8}>
-            <Text color="gray">Sections</Text>
+            <Text color="$gray11">Sections</Text>
             <Stack gap={8}>
               {completionData.items.map((item) => (
                 <Row
                   key={item.id}
                   gap={8}
                   align="center"
-                  padding={8}
+                  padding="xs"
                   backgroundColor={item.complete ? '$color2' : '$color3'}
                   borderRadius={8}
                   opacity={item.complete ? 0.7 : 1}
@@ -145,15 +145,15 @@ export function ProfileCompletionWidget({
                   {item.complete ? (
                     <CheckCircle size={18} color="$green10" />
                   ) : (
-                    <Circle size={18} color="gray" />
+                    <Circle size={18} color="$gray11" />
                   )}
                   <Stack flex={1} gap={4}>
                     <Text color={item.complete ? '$color11' : '$color12'}>{item.title}</Text>
-                    {item.description && <Text color="gray">{item.description}</Text>}
+                    {item.description && <Text color="$gray11">{item.description}</Text>}
                   </Stack>
                   {!item.complete && showEdit && item.actionRoute && (
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       onPress={() => router.push(item.actionRoute as string)}
                     >
@@ -171,7 +171,7 @@ export function ProfileCompletionWidget({
           <Stack gap={8}>
             {nextIncompleteItem.actionRoute && showEdit && (
               <Button
-                size={12}
+                size="sm"
                 theme="info"
                 onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
               >

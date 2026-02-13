@@ -220,8 +220,8 @@ export const SoftSkillsRatingForm: FC = () => {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
         <Text color="$red10">Failed to load assessment</Text>
-        <Text color="gray">{error.message}</Text>
-        <Button variant="primary" size={8} onPress={() => void refetch()}>
+        <Text color="$gray11">{error.message}</Text>
+        <Button variant="primary" size="xs" onPress={() => void refetch()}>
           Retry
         </Button>
       </Stack>
@@ -231,8 +231,8 @@ export const SoftSkillsRatingForm: FC = () => {
   if (formSkills.length === 0) {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
-        <Text color="gray">No soft skills available</Text>
-        <Text color="gray">Please contact support if this issue persists.</Text>
+        <Text color="$gray11">No soft skills available</Text>
+        <Text color="$gray11">Please contact support if this issue persists.</Text>
       </Stack>
     )
   }
@@ -249,7 +249,7 @@ export const SoftSkillsRatingForm: FC = () => {
         />
       </Row>
 
-      <Text color="gray">
+      <Text color="$gray11">
         Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
         saved every 30 seconds.
       </Text>
@@ -268,7 +268,7 @@ export const SoftSkillsRatingForm: FC = () => {
       <Stack gap={16}>
         {categorySkills.length === 0 ? (
           <Stack gap={8} align="center" paddingVertical={32}>
-            <Text color="gray">No skills in this category</Text>
+            <Text color="$gray11">No skills in this category</Text>
           </Stack>
         ) : (
           categorySkills.map((skill) => {
@@ -281,11 +281,11 @@ export const SoftSkillsRatingForm: FC = () => {
             }
 
             return (
-              <Card key={skill.id} bordered padding={16} backgroundColor="$background">
+              <Card key={skill.id} bordered padding="md" backgroundColor="$background">
                 <Stack gap={12}>
                   <Stack gap={4}>
-                    <Text color="gray">{skill.name}</Text>
-                    {skill.description && <Text color="gray">{skill.description}</Text>}
+                    <Text color="$gray11">{skill.name}</Text>
+                    {skill.description && <Text color="$gray11">{skill.description}</Text>}
                   </Stack>
 
                   <Controller
@@ -307,7 +307,7 @@ export const SoftSkillsRatingForm: FC = () => {
                             min={1}
                             max={5}
                             step={1}
-                            size={12}
+                            size="sm"
                             marginTop={16}
                             marginBottom={8}
                           >
@@ -333,8 +333,8 @@ export const SoftSkillsRatingForm: FC = () => {
                                 style={{ alignItems: 'center' }}
                                 opacity={sliderValue === level.value ? 1 : 0.6}
                               >
-                                <Text color="gray">{level.value}</Text>
-                                <Text color="gray" style={{ textAlign: 'center' }}>
+                                <Text color="$gray11">{level.value}</Text>
+                                <Text color="$gray11" style={{ textAlign: 'center' }}>
                                   {level.label}
                                 </Text>
                               </Stack>
@@ -357,7 +357,7 @@ export const SoftSkillsRatingForm: FC = () => {
       <Row justify="flex-end" paddingTop={8}>
         <Button
           variant="primary"
-          size={16}
+          size="md"
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
           icon={updateMutation.isPending ? undefined : CheckCircle2}
@@ -375,7 +375,7 @@ export const SoftSkillsRatingForm: FC = () => {
         size="md"
         showCloseButton={true}
       >
-        <Stack gap={16} padding={16} align="center">
+        <Stack gap={16} padding="md" align="center">
           <Stack
             width={80}
             height={80}
@@ -390,10 +390,10 @@ export const SoftSkillsRatingForm: FC = () => {
           </Stack>
 
           <Stack gap={8} align="center">
-            <Text color="gray" style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
-            <Text color="gray" style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Your assessment has been saved successfully. Your ratings will be used to improve job
               matching and showcase your strengths.
             </Text>

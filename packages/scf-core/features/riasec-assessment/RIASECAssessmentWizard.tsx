@@ -83,7 +83,7 @@ export function RIASECAssessmentWizard() {
         />
 
         <Button
-          size={20}
+          size="lg"
           themeInverse
           onPress={handleComplete}
           disabled={!allRated || saveMutation.isPending}

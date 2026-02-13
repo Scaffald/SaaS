@@ -344,28 +344,28 @@ export function UserProfileHeaderEnhanced({
       </Stack>
 
       {/* Content Section */}
-      <Stack gap={16} padding={20} paddingTop={isMobile ? 80 : 96}>
+      <Stack gap={16} padding="lg" paddingTop={isMobile ? 80 : 96}>
         {/* Header Row - Name, Headline, and Actions */}
         <Row gap={16} align="flex-start" justify="space-between" flexWrap="wrap">
           <Stack flex={1} gap={8} minWidth={200}>
             {/* Name */}
-            <Text color="gray">{profile.name || 'User'}</Text>
+            <Text color="$gray11">{profile.name || 'User'}</Text>
 
             {/* Headline */}
-            {profile.headline && <Text color="gray">{profile.headline}</Text>}
+            {profile.headline && <Text color="$gray11">{profile.headline}</Text>}
 
             {/* Industry and Location */}
             <Row gap={12} flexWrap="wrap" align="center">
               {profile.industry_name && (
                 <Row gap={8} align="center">
-                  <Briefcase size={16} color="gray" />
-                  <Text color="gray">{profile.industry_name}</Text>
+                  <Briefcase size="md" color="$gray11" />
+                  <Text color="$gray11">{profile.industry_name}</Text>
                 </Row>
               )}
               {profile.location && (
                 <Row gap={8} align="center">
-                  <MapPin size={16} color="gray" />
-                  <Text color="gray">{profile.location}</Text>
+                  <MapPin size="md" color="$gray11" />
+                  <Text color="$gray11">{profile.location}</Text>
                 </Row>
               )}
             </Row>
@@ -519,8 +519,8 @@ export function UserProfileHeaderEnhanced({
               backgroundColor="$color2"
               borderRadius={12}
             >
-              <Award size={18} color="gray" />
-              <Text color="gray">{formattedYears} years experience</Text>
+              <Award size={18} color="$gray11" />
+              <Text color="$gray11">{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -534,8 +534,8 @@ export function UserProfileHeaderEnhanced({
               backgroundColor="$color2"
               borderRadius={12}
             >
-              <DollarSign size={18} color="gray" />
-              <Text color="gray">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              <DollarSign size={18} color="$gray11" />
+              <Text color="$gray11">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
             </Row>
           )}
 

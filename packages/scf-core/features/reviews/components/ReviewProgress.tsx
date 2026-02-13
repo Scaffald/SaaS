@@ -11,7 +11,7 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
     <Stack gap={12}>
       {/* Step Counter */}
       <Row justify="center">
-        <Text color="gray">
+        <Text color="$gray11">
           Step {currentStep} of {totalSteps}
         </Text>
       </Row>
@@ -32,7 +32,7 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
                 justify="center"
               >
                 {isCompleted ? (
-                  <Check size={16} color="white" />
+                  <Check size="md" color="white" />
                 ) : (
                   <Text color={isCurrent ? 'white' : '$color11'}>{stepNumber}</Text>
                 )}

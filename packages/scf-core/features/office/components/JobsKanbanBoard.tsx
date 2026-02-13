@@ -167,7 +167,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
         width={320}
         backgroundColor="$color2"
         borderRadius={16}
-        padding={12}
+        padding="sm"
         borderWidth={1}
         borderColor="$borderColor"
       >
@@ -191,14 +191,14 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
         <Stack gap={12} flex={1}>
           {jobs.length === 0 ? (
             <Stack
-              padding={16}
+              padding="md"
               backgroundColor="$color3"
               borderRadius={12}
               align="center"
               justify="center"
               style={{ minHeight: 100 }}
             >
-              <Text color="gray" style={{ textAlign: 'center' }}>
+              <Text color="$gray11" style={{ textAlign: 'center' }}>
                 No jobs
               </Text>
             </Stack>

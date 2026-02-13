@@ -219,17 +219,17 @@ export function CustomQuestionsStep({
   }
 
   return (
-    <Stack gap={24} width="100%" maxWidth={800} padding={16}>
+    <Stack gap={24} width="100%" maxWidth={800} padding="md">
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">Additional Questions</Text>
-        <Text color="gray">The employer has requested additional information</Text>
+        <Text color="$gray11">Additional Questions</Text>
+        <Text color="$gray11">The employer has requested additional information</Text>
       </Stack>
 
       {/* Validation Summary */}
       {Object.entries(errors).some(([, error]) => error !== undefined) && (
         <Stack
-          padding={16}
+          padding="md"
           borderRadius={16}
           backgroundColor="$red2"
           borderWidth={1}
@@ -336,7 +336,7 @@ export function CustomQuestionsStep({
                     key={option}
                     gap={12}
                     align="center"
-                    padding={12}
+                    padding="sm"
                     borderRadius={16}
                     borderWidth={1}
                     borderColor={
@@ -368,7 +368,7 @@ export function CustomQuestionsStep({
                         <Stack width={12} height={12} borderRadius="$12" backgroundColor="$blue9" />
                       )}
                     </Stack>
-                    <Text color="gray" flex={1}>
+                    <Text color="$gray11" flex={1}>
                       {option}
                     </Text>
                   </Row>
@@ -388,7 +388,7 @@ export function CustomQuestionsStep({
                       key={option}
                       gap={12}
                       align="center"
-                      padding={12}
+                      padding="sm"
                       borderRadius={16}
                       borderWidth={1}
                       borderColor={
@@ -417,7 +417,7 @@ export function CustomQuestionsStep({
                       >
                         {isSelected && <Text color="white">✓</Text>}
                       </Stack>
-                      <Text color="gray" flex={1}>
+                      <Text color="$gray11" flex={1}>
                         {option}
                       </Text>
                     </Row>
@@ -431,13 +431,13 @@ export function CustomQuestionsStep({
               <Row gap={16} align="center">
                 <ToggleSwitch
                   checked={(getAnswer(question.id) as boolean) || false}
-                  onCheckedChange={(checked) =>
+                  onChange={(checked) =>
                     updateAnswer(question.id, question.question, 'yes_no', checked)
                   }
                   disabled={isSubmitting}
                   aria-label={`${question.question} toggle`}
                 />
-                <Text color="gray">{(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}</Text>
+                <Text color="$gray11">{(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}</Text>
               </Row>
             )}
 
@@ -450,7 +450,7 @@ export function CustomQuestionsStep({
       {/* No Questions Message */}
       {questions.length === 0 && (
         <Stack
-          padding={24}
+          padding="xl"
           align="center"
           gap={8}
           backgroundColor="$background"
@@ -458,10 +458,10 @@ export function CustomQuestionsStep({
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text color="gray" textAlign="center">
+          <Text color="$gray11" textAlign="center">
             This position has no additional questions.
           </Text>
-          <Text color="gray" textAlign="center">
+          <Text color="$gray11" textAlign="center">
             You can proceed to the next step.
           </Text>
         </Stack>
@@ -470,7 +470,7 @@ export function CustomQuestionsStep({
       {/* Navigation Buttons */}
       <Row gap={12} justify="space-between" marginTop={16}>
         <Button
-          size={16}
+          size="md"
           variant="outline"
           icon={ArrowLeft}
           onPress={onPrevious}
@@ -479,7 +479,7 @@ export function CustomQuestionsStep({
           Previous
         </Button>
         <Button
-          size={16}
+          size="md"
           theme="info"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}

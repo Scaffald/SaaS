@@ -121,7 +121,7 @@ function AppIconPlaceholder({ name }: { name: string }) {
       align="center"
       justify="center"
     >
-      <Text color="gray">{initials}</Text>
+      <Text color="$gray11">{initials}</Text>
     </Stack>
   )
 }
@@ -140,7 +140,7 @@ function AppCard({
 }) {
   return (
     <Stack
-      padding={16}
+      padding="md"
       backgroundColor="$color2"
       borderRadius={12}
       borderWidth={1}
@@ -153,7 +153,7 @@ function AppCard({
         <Stack flex={1} gap={4}>
           <Text>{app.app_name}</Text>
           {app.description && (
-            <Text color="gray" numberOfLines={2}>
+            <Text color="$gray11" numberOfLines={2}>
               {app.description}
             </Text>
           )}
@@ -163,12 +163,12 @@ function AppCard({
       {/* Connection info */}
       <Row gap={16} flexWrap="wrap">
         <Stack gap={4}>
-          <Text color="gray">Connected</Text>
+          <Text color="$gray11">Connected</Text>
           <Text>{formatDate(app.connected_at)}</Text>
         </Stack>
         {app.last_accessed_at && (
           <Stack gap={4}>
-            <Text color="gray">Last Access</Text>
+            <Text color="$gray11">Last Access</Text>
             <Text>{formatRelativeTime(app.last_accessed_at)}</Text>
           </Stack>
         )}
@@ -176,7 +176,7 @@ function AppCard({
 
       {/* Permissions */}
       <Stack gap={8}>
-        <Text color="gray">Permissions</Text>
+        <Text color="$gray11">Permissions</Text>
         <Row gap={4} flexWrap="wrap">
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
@@ -188,7 +188,7 @@ function AppCard({
               paddingVertical={4}
               borderRadius={8}
             >
-              <Text color="gray">+{app.permissions.length - 5} more</Text>
+              <Text color="$gray11">+{app.permissions.length - 5} more</Text>
             </Row>
           )}
         </Row>
@@ -196,17 +196,17 @@ function AppCard({
 
       {/* Data categories */}
       <Stack gap={8}>
-        <Text color="gray">Data Categories Accessed</Text>
-        <Text color="gray">{app.data_categories.join(' • ')}</Text>
+        <Text color="$gray11">Data Categories Accessed</Text>
+        <Text color="$gray11">{app.data_categories.join(' • ')}</Text>
       </Stack>
 
       {/* Actions */}
       <Row gap={8} justify="flex-end" marginTop={4}>
-        <Button size={12} variant="outline" onPress={() => onViewDetails?.(app.id)}>
+        <Button size="sm" variant="outline" onPress={() => onViewDetails?.(app.id)}>
           View Details
         </Button>
         {app.can_revoke && (
-          <Button size={12} theme="red" onPress={() => onRevoke?.(app.id)}>
+          <Button size="sm" color="error" onPress={() => onRevoke?.(app.id)}>
             Revoke Access
           </Button>
         )}
@@ -221,7 +221,7 @@ function AppCard({
 function EmptyState() {
   return (
     <Stack
-      padding={24}
+      padding="xl"
       backgroundColor="$color2"
       borderRadius={12}
       borderWidth={1}
@@ -229,8 +229,8 @@ function EmptyState() {
       align="center"
       gap={8}
     >
-      <Text color="gray">No Connected Applications</Text>
-      <Text color="gray" textAlign="center">
+      <Text color="$gray11">No Connected Applications</Text>
+      <Text color="$gray11" textAlign="center">
         When you connect third-party applications to your account, they will appear here so you can
         manage their access to your data.
       </Text>
@@ -251,7 +251,7 @@ export function ConnectedAppsPanel({ apps, onRevoke, onViewDetails }: ConnectedA
   return (
     <Stack gap={12}>
       {/* Summary */}
-      <Row padding={12} backgroundColor="$orange2" borderRadius={12} gap={8} align="center">
+      <Row padding="sm" backgroundColor="$orange2" borderRadius={12} gap={8} align="center">
         <Text color="$orange11">
           {apps.length} application{apps.length === 1 ? '' : 's'} currently have access to your
           data. You can revoke access at any time.
@@ -264,7 +264,7 @@ export function ConnectedAppsPanel({ apps, onRevoke, onViewDetails }: ConnectedA
       ))}
 
       {/* Info text */}
-      <Text color="gray" marginTop={8}>
+      <Text color="$gray11" marginTop={8}>
         Revoking access will immediately prevent the application from accessing your data. Some
         applications may require you to re-authorize access to restore functionality.
       </Text>

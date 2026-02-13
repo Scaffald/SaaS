@@ -24,22 +24,22 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
 
   return (
     <Card elevate bordered>
-      <Stack gap={16} padding={20}>
+      <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
           <BadgeCheck size={24} color="$blue10" />
-          <Text color="gray">Certifications</Text>
+          <Text color="$gray11">Certifications</Text>
         </Row>
 
         <Stack gap={12}>
           {certifications.map((cert) => (
             <Card key={cert.id} bordered backgroundColor="$color2">
-              <Stack gap={8} padding={16}>
-                <Text color="gray">{cert.name}</Text>
-                {cert.issuing_organization && <Text color="gray">{cert.issuing_organization}</Text>}
+              <Stack gap={8} padding="md">
+                <Text color="$gray11">{cert.name}</Text>
+                {cert.issuing_organization && <Text color="$gray11">{cert.issuing_organization}</Text>}
                 {(cert.issue_date || cert.expiration_date) && (
                   <Row gap={8} align="center">
-                    <Calendar size={16} color="gray" />
-                    <Text color="gray">
+                    <Calendar size="md" color="$gray11" />
+                    <Text color="$gray11">
                       {cert.issue_date && `Issued ${formatDate(cert.issue_date)}`}
                       {cert.issue_date && cert.expiration_date && ' • '}
                       {cert.expiration_date && `Expires ${formatDate(cert.expiration_date)}`}

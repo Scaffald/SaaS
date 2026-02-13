@@ -21,13 +21,13 @@ export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: Milest
       opacity={milestone.achieved ? 1 : 0.7}
     >
       <Trophy
-        size={16}
+        size="md"
         color={milestone.achieved ? '$green10' : '$color10'}
         data-testid="trophy-icon"
       />
       <Stack>
         <Text color={milestone.achieved ? '$green11' : '$color11'}>{milestone.label}</Text>
-        <Text color="gray">{milestone.threshold}% milestone</Text>
+        <Text color="$gray11">{milestone.threshold}% milestone</Text>
       </Stack>
     </Row>
   )

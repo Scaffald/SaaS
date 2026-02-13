@@ -32,7 +32,7 @@ export function InquiryTab({
     <Stack gap={16}>
       {onEditInquiry && (
         <Stack align="flex-end">
-          <Button size={12} variant="outline" onPress={onEditInquiry}>
+          <Button size="sm" variant="outline" onPress={onEditInquiry}>
             {editLabel}
           </Button>
         </Stack>

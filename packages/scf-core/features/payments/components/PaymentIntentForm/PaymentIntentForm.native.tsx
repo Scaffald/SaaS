@@ -17,7 +17,7 @@ export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
   }).format(amountCents / 100)
 
   return (
-    <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+    <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
       <Stack gap={8}>
         <Text color="$yellow12">Web payment required</Text>
         <Text color="$yellow11">

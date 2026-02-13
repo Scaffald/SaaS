@@ -92,7 +92,7 @@ export function GeneralInfoStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Tell us about yourself</Text>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Add a friendly introduction. This helps employers quickly understand who you are and what
           you bring to the table.
         </Paragraph>
@@ -169,7 +169,7 @@ export function GeneralInfoStep({
             />
           )}
         />
-        <Text color="gray">Keep it short and friendly—1-2 sentences is perfect.</Text>
+        <Text color="$gray11">Keep it short and friendly—1-2 sentences is perfect.</Text>
       </Stack>
 
       <StepNavigation

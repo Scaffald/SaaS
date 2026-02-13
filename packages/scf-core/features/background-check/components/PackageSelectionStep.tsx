@@ -39,27 +39,27 @@ const PackageCard = memo(function PackageCard({
       borderColor={isSelected ? '$blue8' : '$borderColor'}
       borderWidth={2}
       borderRadius={16}
-      padding={16}
+      padding="md"
       gap={12}
       onPress={onSelect}
     >
       <Stack gap={8}>
-        <Text color="gray">{pkg.display_name}</Text>
-        <Text color="gray">{pkg.description}</Text>
+        <Text color="$gray11">{pkg.display_name}</Text>
+        <Text color="$gray11">{pkg.description}</Text>
         <Row gap={12} align="center">
-          <Text color="gray">{formatCurrency(pkg.retail_cost_cents)}</Text>
-          <Text color="gray">Platform cost: {formatCurrency(pkg.platform_cost_cents)}</Text>
+          <Text color="$gray11">{formatCurrency(pkg.retail_cost_cents)}</Text>
+          <Text color="$gray11">Platform cost: {formatCurrency(pkg.platform_cost_cents)}</Text>
         </Row>
         <Stack gap={4}>
-          <Text color="gray">Components</Text>
+          <Text color="$gray11">Components</Text>
           {pkg.components?.length ? (
             pkg.components.map((component: BackgroundCheckPackage['components'][number]) => (
-              <Text key={component.id} color="gray">
+              <Text key={component.id} color="$gray11">
                 • {component.display_name}
               </Text>
             ))
           ) : (
-            <Text color="gray">Component list coming soon</Text>
+            <Text color="$gray11">Component list coming soon</Text>
           )}
         </Stack>
       </Stack>
@@ -79,8 +79,8 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="gray">Choose a background check package</Text>
-        <Text color="gray">
+        <Text color="$gray11">Choose a background check package</Text>
+        <Text color="$gray11">
           Select the screening package that best fits your role. You can review the included
           components and pricing before continuing.
         </Text>
@@ -88,9 +88,9 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
 
       <ScrollView flex={1}>
         <Stack gap={12} paddingBottom={24}>
-          {isLoading && <Text color="gray">Loading packages…</Text>}
+          {isLoading && <Text color="$gray11">Loading packages…</Text>}
           {!isLoading && (!packages || packages.length === 0) && (
-            <Text color="gray">Packages will be available soon. Please check back later.</Text>
+            <Text color="$gray11">Packages will be available soon. Please check back later.</Text>
           )}
           {packages?.map((pkg) => (
             <PackageCard
@@ -103,7 +103,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
         </Stack>
       </ScrollView>
 
-      <Button size={16} theme="blue" disabled={!hasSelection} onPress={onContinue}>
+      <Button size="md" color="primary" disabled={!hasSelection} onPress={onContinue}>
         Continue
       </Button>
     </Stack>

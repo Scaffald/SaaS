@@ -20,18 +20,18 @@ export function IdVerificationWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Text color="gray">Identity verification</Text>
+        <Text color="$gray11">Identity verification</Text>
         <IdVerificationBadge
           status={status.badgeStatus}
           badgeExpiresAt={status.badgeExpiresAt}
           muted={status.muted}
           size="md"
         />
-        {status.caption && <Text color="gray">{status.caption}</Text>}
+        {status.caption && <Text color="$gray11">{status.caption}</Text>}
 
         <Button
-          size={12}
-          theme="blue"
+          size="sm"
+          color="primary"
           onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)}
         >
           Manage verification

@@ -67,7 +67,7 @@ export function FollowersList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
     ],
@@ -78,7 +78,7 @@ export function FollowersList() {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Loading followers…</Text>
+        <Text color="$gray11">Loading followers…</Text>
       </Stack>
     )
   }
@@ -89,7 +89,7 @@ export function FollowersList() {
         placeholder="Search followers..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size={16}
+        size="md"
       />
 
       {filteredFollowers.length === 0 ? (
@@ -98,14 +98,14 @@ export function FollowersList() {
           borderWidth={1}
           borderColor="$borderColor"
           borderRadius={16}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           align="center"
           justify="center"
           style={{ minHeight: 300 }}
         >
           <Text>No followers yet</Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No followers match your search.'
               : "You don't have any followers yet. Build your profile to attract followers."}

@@ -826,7 +826,7 @@ const MobileSearchHeader = ({
         <Stack
           flex={1}
           backgroundColor="$background"
-          padding={12}
+          padding="sm"
           borderRadius={16}
           borderWidth={1}
           borderColor="$red8"
@@ -834,12 +834,12 @@ const MobileSearchHeader = ({
           style={{ flexShrink: 1 }}
         >
           <Text color="$red10">Map Search Unavailable</Text>
-          <Text color="gray">{tokenValidation.error}</Text>
+          <Text color="$gray11">{tokenValidation.error}</Text>
         </Stack>
       )}
 
       <Button
-        size={16}
+        size="md"
         circular
         variant="outline"
         icon={SlidersHorizontal}
@@ -883,7 +883,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             paddingVertical={12}
           >
             <Row align="center" justify="center" gap={8}>
-              <MapIcon size={16} />
+              <MapIcon size="md" />
               <Text>Map</Text>
             </Row>
           </Tabs.Tab>
@@ -896,7 +896,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             paddingVertical={12}
           >
             <Row align="center" justify="center" gap={8}>
-              <ListIcon size={16} />
+              <ListIcon size="md" />
               <Text>List</Text>
             </Row>
           </Tabs.Tab>
@@ -928,11 +928,11 @@ const MobileFiltersContent = ({
   onReset,
 }: MobileFiltersContentProps) => {
   return (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
         <Text>Filters</Text>
         <Button
-          size={12}
+          size="sm"
           circular
           variant="outline"
           icon={X}
@@ -965,7 +965,7 @@ const MobileFiltersContent = ({
       </ScrollView>
 
       <Button
-        size={16}
+        size="md"
         variant="outline"
         icon={RotateCcw}
         scaleIcon={1.2}
@@ -989,16 +989,16 @@ const FilterToggle = ({ label, description, value, onValueChange }: FilterToggle
   <Stack
     gap={8}
     backgroundColor="$color2"
-    padding={12}
+    padding="sm"
     borderRadius={16}
     borderWidth={1}
     borderColor="$borderColor"
   >
     <Row justify="space-between" align="center" gap={8}>
       <Text>{label}</Text>
-      <ToggleSwitch checked={value} onCheckedChange={onValueChange} aria-label={label} />
+      <ToggleSwitch checked={value} onChange={onValueChange} aria-label={label} />
     </Row>
-    <Text color="gray">{description}</Text>
+    <Text color="$gray11">{description}</Text>
   </Stack>
 )
 

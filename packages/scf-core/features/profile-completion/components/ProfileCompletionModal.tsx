@@ -44,7 +44,7 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
             </Text>
           </Row>
 
-          <Paragraph color="gray" aria-live="polite">
+          <Paragraph color="$gray11" aria-live="polite">
             {isFirstTime
               ? 'We’ll walk you through six quick steps so employers can get to know you. Auto-save is enabled, and you can come back anytime.'
               : benefitMessage}
@@ -52,13 +52,13 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
         </Stack>
 
         <Stack gap={12}>
-          <Button size={20} themeInverse onPress={onStartWizard}>
+          <Button size="lg" themeInverse onPress={onStartWizard}>
             {isFirstTime ? 'Start Wizard' : 'Continue Profile'}
           </Button>
-          <Button size={20} icon={UploadCloud} onPress={onUploadResume}>
+          <Button size="lg" icon={UploadCloud} onPress={onUploadResume}>
             Upload Resume
           </Button>
-          <Button size={12} chromeless onPress={onDismiss}>
+          <Button size="sm" chromeless onPress={onDismiss}>
             {isFirstTime ? 'Skip and continue later' : 'Remind me later'}
           </Button>
         </Stack>

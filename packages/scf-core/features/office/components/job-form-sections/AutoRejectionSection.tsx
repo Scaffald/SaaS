@@ -45,7 +45,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
   }
 
   return (
-    <Stack gap={16} padding={16}>
+    <Stack gap={16} padding="md">
       <Stack gap={8}>
         <Text>Auto-Rejection</Text>
         <Text>Automatically reject applicants who don't meet minimum criteria</Text>
@@ -55,19 +55,19 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
       <Row gap={12} align="center" justify="space-between">
         <Row gap={8} align="center" flex={1}>
           <Label>Reject automatically</Label>
-          <HelpCircle size={16} color="gray" />
+          <HelpCircle size="md" color="$gray11" />
         </Row>
         <ToggleSwitch
           checked={localState.enabled}
-          onCheckedChange={handleToggle}
+          onChange={handleToggle}
           aria-label="Enable auto-rejection"
         />
       </Row>
-      <Text color="gray">Based on Elevate score, work authorization and required skills</Text>
+      <Text color="$gray11">Based on Elevate score, work authorization and required skills</Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
-        <Stack gap={12} padding={12}>
+        <Stack gap={12} padding="sm">
           <Text>Rejection Criteria</Text>
 
           {/* Work Authorization */}
@@ -78,7 +78,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_work_authorization || false}
-              onCheckedChange={(checked: boolean) =>
+              onChange={(checked: boolean) =>
                 handleCriteriaChange('require_work_authorization', checked)
               }
               aria-label="Work authorization required"
@@ -93,7 +93,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_skills || false}
-              onCheckedChange={(checked: boolean) =>
+              onChange={(checked: boolean) =>
                 handleCriteriaChange('require_all_skills', checked)
               }
               aria-label="All skills required"
@@ -108,14 +108,14 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_certifications || false}
-              onCheckedChange={(checked: boolean) =>
+              onChange={(checked: boolean) =>
                 handleCriteriaChange('require_all_certifications', checked)
               }
               aria-label="All certifications required"
             />
           </Row>
 
-          <Stack gap={8} padding={12}>
+          <Stack gap={8} padding="sm">
             <Text color="$yellow11">⚠️ Important</Text>
             <Text color="$yellow11">
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This

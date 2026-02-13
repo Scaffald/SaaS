@@ -88,7 +88,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -118,7 +118,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             {!showCompact && (
               <Button
                 variant="outline"
-                size={8}
+                size="xs"
                 icon={Download}
                 onPress={handleExport}
                 testID="soft-skills-export-button"
@@ -129,7 +129,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             {showEdit && (
               <Button
                 variant="outline"
-                size={8}
+                size="xs"
                 onPress={() => {
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }}
@@ -164,7 +164,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           size="lg"
           showCloseButton={true}
         >
-          <Stack gap={16} padding={16}>
+          <Stack gap={16} padding="md">
             {/* Category Tabs */}
             <SoftSkillsCategoryTabs
               activeCategory={selectedCategory}

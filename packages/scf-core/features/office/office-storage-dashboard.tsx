@@ -117,7 +117,7 @@ export function OfficeStorageDashboard() {
           return (
             <Stack gap={4}>
               <Text>{row.displayName}</Text>
-              <Text color="gray">{row.username ? `@${row.username}` : row.userId.slice(0, 8)}</Text>
+              <Text color="$gray11">{row.username ? `@${row.username}` : row.userId.slice(0, 8)}</Text>
             </Stack>
           )
         },
@@ -143,7 +143,7 @@ export function OfficeStorageDashboard() {
         cell: (info) => {
           const row = info.row.original
           if (!row.storageLimitBytes) {
-            return <Text color="gray">No limit</Text>
+            return <Text color="$gray11">No limit</Text>
           }
 
           const percent = row.usagePercentOfLimit ?? 0
@@ -157,7 +157,7 @@ export function OfficeStorageDashboard() {
                   backgroundColor={percent > 100 ? '$red10' : '$green10'}
                 />
               </Progress>
-              <Text color="gray">
+              <Text color="$gray11">
                 {formatPercent(percent)} of {formatBytes(row.storageLimitBytes)}
               </Text>
             </Stack>
@@ -223,16 +223,16 @@ export function OfficeStorageDashboard() {
   const isLoading = analyticsQuery.isLoading
 
   return (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Storage Analytics</Text>
-          <Paragraph color="gray">
+          <Paragraph color="$gray11">
             Monitor how workers consume storage across work logs, portfolios, and certifications.
           </Paragraph>
         </Stack>
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           icon={RefreshCw}
           onPress={() => analyticsQuery.refetch()}
@@ -245,7 +245,7 @@ export function OfficeStorageDashboard() {
       {isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="gray">Loading storage metrics…</Text>
+          <Text color="$gray11">Loading storage metrics…</Text>
         </Stack>
       ) : (
         <>
@@ -256,20 +256,20 @@ export function OfficeStorageDashboard() {
                 borderWidth={1}
                 borderColor="$color6"
                 backgroundColor="$color2"
-                padding={16}
+                padding="md"
                 width="100%"
                 maxWidth={320}
               >
                 <Stack gap={8}>
-                  <Text color="gray">{card.label}</Text>
+                  <Text color="$gray11">{card.label}</Text>
                   <Text>{card.value}</Text>
-                  {card.subtext ? <Text color="gray">{card.subtext}</Text> : null}
+                  {card.subtext ? <Text color="$gray11">{card.subtext}</Text> : null}
                 </Stack>
               </Card>
             ))}
           </Row>
 
-          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
             <Stack gap={12}>
               <Text>Usage breakdown</Text>
               <Stack gap={12}>
@@ -277,7 +277,7 @@ export function OfficeStorageDashboard() {
                   <Stack key={entry.label} gap={4}>
                     <Row justify="space-between" align="center">
                       <Text>{entry.label}</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
                     </Row>
@@ -290,12 +290,12 @@ export function OfficeStorageDashboard() {
             </Stack>
           </Card>
 
-          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
             <Stack gap={12}>
               <Row justify="space-between" align="center">
                 <Text>Top users by storage consumption</Text>
                 <Button
-                  size={8}
+                  size="xs"
                   variant="outline"
                   onPress={() => analyticsQuery.refetch()}
                   disabled={analyticsQuery.isRefetching}

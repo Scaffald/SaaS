@@ -82,7 +82,7 @@ export function OfficeNotificationsConsole() {
     <Stack gap={24}>
       <Stack gap={8}>
         <Text>Notification Operations</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Monitor delivery workers, inspect failures, and triage digest backlogs.
         </Text>
       </Stack>
@@ -91,7 +91,7 @@ export function OfficeNotificationsConsole() {
         <Row justify="space-between" align="center">
           <Text>Delivery Queue</Text>
           <Button
-            size={8}
+            size="xs"
             theme="info"
             icon={RefreshCw}
             onPress={() => deliveriesQuery.refetch()}
@@ -108,7 +108,7 @@ export function OfficeNotificationsConsole() {
             return (
               <Button
                 key={value}
-                size={8}
+                size="xs"
                 theme={isActive ? 'info' : 'gray'}
                 {...(!isActive ? { variant: 'outlined' as const } : {})}
                 onPress={() => {
@@ -124,17 +124,17 @@ export function OfficeNotificationsConsole() {
 
         {deliveriesQuery.isLoading ? (
           <Stack align="center" gap={12} marginTop={16}>
-            <Spinner size="lg" color="gray" />
-            <Text color="gray">Loading deliveries…</Text>
+            <Spinner size="lg" color="$gray11" />
+            <Text color="$gray11">Loading deliveries…</Text>
           </Stack>
         ) : deliveries.length === 0 ? (
           <Stack gap={12} align="center" marginTop={16}>
-            <AlertCircle size={32} color="gray" />
-            <Text color="gray">No deliveries match this filter.</Text>
+            <AlertCircle size={32} color="$gray11" />
+            <Text color="$gray11">No deliveries match this filter.</Text>
           </Stack>
         ) : (
           <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
-            <Row backgroundColor="$color2" padding={12} gap={12}>
+            <Row backgroundColor="$color2" padding="sm" gap={12}>
               <Text flex={2}>Notification</Text>
               <Text flex={1}>Channel</Text>
               <Text flex={1}>Status</Text>
@@ -152,23 +152,23 @@ export function OfficeNotificationsConsole() {
                 <Stack
                   key={delivery.id}
                   backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
-                  padding={12}
+                  padding="sm"
                 >
                   <Row gap={12} align="center">
                     <Stack flex={2} gap={4}>
                       <Row gap={8} align="center">
-                        <Text color="gray" numberOfLines={1}>
+                        <Text color="$gray11" numberOfLines={1}>
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
                         <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text color="gray" numberOfLines={2}>
+                      <Text color="$gray11" numberOfLines={2}>
                         {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
                     </Stack>
-                    <Text flex={1} color="gray">
+                    <Text flex={1} color="$gray11">
                       {formatChannel(delivery.channel)}
                     </Text>
                     <NotificationTag
@@ -180,13 +180,13 @@ export function OfficeNotificationsConsole() {
                     >
                       {delivery.status}
                     </NotificationTag>
-                    <Text flex={1} color="gray">
+                    <Text flex={1} color="$gray11">
                       {delivery.attempts}
                     </Text>
-                    <Text flex={2} color="gray" numberOfLines={1}>
+                    <Text flex={2} color="$gray11" numberOfLines={1}>
                       {delivery.last_error ?? '—'}
                     </Text>
-                    <Text flex={1} color="gray">
+                    <Text flex={1} color="$gray11">
                       {formatDate(delivery.updated_at)}
                     </Text>
                   </Row>
@@ -203,7 +203,7 @@ export function OfficeNotificationsConsole() {
         <Row justify="space-between" align="center">
           <Text>Digest Backlog</Text>
           <Button
-            size={8}
+            size="xs"
             theme="info"
             icon={RefreshCw}
             onPress={() => digestQuery.refetch()}
@@ -215,17 +215,17 @@ export function OfficeNotificationsConsole() {
 
         {digestQuery.isLoading ? (
           <Stack align="center" gap={12} marginTop={16}>
-            <Spinner size="lg" color="gray" />
-            <Text color="gray">Loading digest queue…</Text>
+            <Spinner size="lg" color="$gray11" />
+            <Text color="$gray11">Loading digest queue…</Text>
           </Stack>
         ) : digestItems.length === 0 ? (
           <Stack gap={12} align="center" marginTop={16}>
-            <AlertCircle size={32} color="gray" />
-            <Text color="gray">Digest queue is empty.</Text>
+            <AlertCircle size={32} color="$gray11" />
+            <Text color="$gray11">Digest queue is empty.</Text>
           </Stack>
         ) : (
           <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
-            <Row backgroundColor="$color2" padding={12} gap={12}>
+            <Row backgroundColor="$color2" padding="sm" gap={12}>
               <Text flex={1}>User ID</Text>
               <Text flex={1}>Type</Text>
               <Text flex={1}>Bucket</Text>
@@ -238,28 +238,28 @@ export function OfficeNotificationsConsole() {
               <Row
                 key={item.id}
                 gap={12}
-                padding={12}
+                padding="sm"
                 backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                 align="flex-start"
               >
-                <Text flex={1} color="gray" numberOfLines={1}>
+                <Text flex={1} color="$gray11" numberOfLines={1}>
                   {item.user_id}
                 </Text>
-                <Text flex={1} color="gray">
+                <Text flex={1} color="$gray11">
                   {item.type}
                 </Text>
-                <Text flex={1} color="gray">
+                <Text flex={1} color="$gray11">
                   {item.bucket}
                 </Text>
-                <Text flex={1} color="gray">
+                <Text flex={1} color="$gray11">
                   {item.count}
                 </Text>
-                <Text flex={2} color="gray">
+                <Text flex={2} color="$gray11">
                   {Array.isArray(item.channels) && item.channels.length > 0
                     ? item.channels.join(', ')
                     : '—'}
                 </Text>
-                <Text flex={1} color="gray">
+                <Text flex={1} color="$gray11">
                   {formatDate(item.last_event_at)}
                 </Text>
               </Row>

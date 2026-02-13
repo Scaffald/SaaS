@@ -91,7 +91,7 @@ export function InquiryComparisonView({
 
   if (isLoading) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading inquiries for comparison...</Text>
       </Stack>
     )
@@ -99,7 +99,7 @@ export function InquiryComparisonView({
 
   if (error || !inquiries || inquiries.length === 0) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load inquiries for comparison</Text>
         {onClose && (
           <Button variant="outline" onPress={onClose}>
@@ -111,16 +111,16 @@ export function InquiryComparisonView({
   }
 
   return (
-    <Stack gap={16} padding={16} flex={1}>
+    <Stack gap={16} padding="md" flex={1}>
       {/* Header */}
       <Row justify="space-between" align="center">
         <Stack gap={4}>
           <Text>Compare Inquiries</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
           {summary && summary.uniqueStatuses.size > 1 && (
-            <Text color="gray">Highlighted rows indicate differing terms between candidates.</Text>
+            <Text color="$gray11">Highlighted rows indicate differing terms between candidates.</Text>
           )}
         </Stack>
         {onClose && (

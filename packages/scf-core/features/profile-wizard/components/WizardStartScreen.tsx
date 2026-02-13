@@ -52,7 +52,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
     <Stack gap={20} testID="profile-wizard-start-screen">
       <Stack gap={12}>
         <H3>Complete Your Profile in Minutes</H3>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Unlock better job matches and visibility by finishing six quick steps. We&apos;ll guide
           you through the essentials and save your progress automatically.
         </Paragraph>
@@ -62,17 +62,17 @@ export const WizardStartScreen = memo(function WizardStartScreen({
         <Card.Header padded gap={16}>
           <Stack gap={12}>
             <Row gap={8} align="center">
-              <Zap size={20} color="$yellow10" />
-              <Text color="gray">Fast-Track Your Profile</Text>
+              <Zap size="lg" color="$yellow10" />
+              <Text color="$gray11">Fast-Track Your Profile</Text>
             </Row>
-            <Paragraph color="gray">
+            <Paragraph color="$gray11">
               You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile
               visibility, milestone badges, and curated job recommendations.
             </Paragraph>
           </Stack>
 
           <Stack gap={12}>
-            <Text color="gray">What you&apos;ll cover</Text>
+            <Text color="$gray11">What you&apos;ll cover</Text>
             <Stack gap={12}>
               {PROFILE_WIZARD_STEPS.map((stepId) => {
                 const meta = PROFILE_WIZARD_STEP_META[stepId]
@@ -89,13 +89,13 @@ export const WizardStartScreen = memo(function WizardStartScreen({
                       justify="center"
                       borderRadius={16}
                     >
-                      <StepIcon size={20} color="$blue10" />
+                      <StepIcon size="lg" color="$blue10" />
                     </Card>
                     <Stack flex={1}>
-                      <Text color="gray">{meta.title}</Text>
-                      <Text color="gray">{meta.description}</Text>
+                      <Text color="$gray11">{meta.title}</Text>
+                      <Text color="$gray11">{meta.description}</Text>
                     </Stack>
-                    <Text color="gray">{meta.estimatedTimeMinutes} min</Text>
+                    <Text color="$gray11">{meta.estimatedTimeMinutes} min</Text>
                   </Row>
                 )
               })}
@@ -105,13 +105,13 @@ export const WizardStartScreen = memo(function WizardStartScreen({
       </Card>
 
       <Stack gap={12}>
-        <Button size={20} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
+        <Button size="lg" themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
           Start Wizard
         </Button>
-        <Button size={20} icon={Upload} onPress={onUploadResume}>
+        <Button size="lg" icon={Upload} onPress={onUploadResume}>
           Upload Resume
         </Button>
-        <Button size={12} chromeless onPress={onSkip}>
+        <Button size="sm" chromeless onPress={onSkip}>
           Skip and Edit Later
         </Button>
       </Stack>
@@ -121,9 +121,9 @@ export const WizardStartScreen = memo(function WizardStartScreen({
           <Row gap={12} flexWrap="wrap">
             <Row gap={8} align="center">
               <Clock size={18} color="$blue10" />
-              <Text color="gray">{estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes</Text>
+              <Text color="$gray11">{estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes</Text>
             </Row>
-            <Text color="gray">6 guided steps • Auto-save enabled • Resume anytime</Text>
+            <Text color="$gray11">6 guided steps • Auto-save enabled • Resume anytime</Text>
           </Row>
         </Card.Header>
       </Card>

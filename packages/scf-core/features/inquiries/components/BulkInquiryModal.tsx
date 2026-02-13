@@ -150,11 +150,11 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
       <Sheet modal open={open} onOpenChange={handleClose}>
         <Sheet.Frame>
           <ScrollView>
-            <Stack gap={16} padding={16}>
+            <Stack gap={16} padding="md">
               <Text>Bulk Inquiry Results</Text>
 
               {/* Summary */}
-              <Stack gap={12} padding={16} backgroundColor="$color2" borderRadius={16}>
+              <Stack gap={12} padding="md" backgroundColor="$color2" borderRadius={16}>
                 <Row gap={8} align="center">
                   <Text color="$green10">✓ {bulkResults.successful} Successful</Text>
                 </Row>
@@ -163,7 +163,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     <Text color="$red10">✗ {bulkResults.failed} Failed</Text>
                   </Row>
                 )}
-                <Text color="gray">Total: {bulkResults.total} candidates</Text>
+                <Text color="$gray11">Total: {bulkResults.total} candidates</Text>
               </Stack>
 
               {/* Failed details */}
@@ -175,7 +175,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     .map((result) => (
                       <Stack
                         key={result.applicationId}
-                        padding={12}
+                        padding="sm"
                         backgroundColor="$red2"
                         borderRadius={12}
                         gap={4}
@@ -204,26 +204,26 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     <Sheet modal open={open} onOpenChange={handleClose}>
       <Sheet.Frame>
         <FormProvider {...form}>
-          <Stack padding={16} flex={1}>
+          <Stack padding="md" flex={1}>
             <Row gap={16} flex={1}>
               {/* Main Form */}
               <Stack flex={1} gap={16}>
                 <ScrollView>
-                  <Stack gap={24} padding={16}>
+                  <Stack gap={24} padding="md">
                     {/* Header */}
                     <Stack gap={8}>
                       <Text>Send Inquiry to {applicationIds.length} Candidates</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         The same inquiry will be sent to all selected candidates
                       </Text>
                     </Stack>
 
                     {/* Progress indicator */}
                     {isSubmitting && (
-                      <Stack gap={8} padding={16} backgroundColor="$blue2" borderRadius={16}>
+                      <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
                         <Text>Sending inquiries...</Text>
                         <Progress value={75} />
-                        <Text color="gray">
+                        <Text color="$gray11">
                           Please wait while we send inquiries to all candidates
                         </Text>
                       </Stack>
@@ -252,7 +252,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                                     theme={isSelected ? 'blue' : 'gray'}
                                     variant={isSelected ? undefined : 'outlined'}
                                     onPress={() => field.onChange(option.value)}
-                                    size={16}
+                                    size="md"
                                   >
                                     {option.label}
                                   </Button>
@@ -268,12 +268,12 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                             render={({ field }) => (
                               <CustomCheckbox
                                 checked={!field.value}
-                                onCheckedChange={(checked) => field.onChange(!checked)}
+                                onChange={(checked) => field.onChange(!checked)}
                                 size="md"
                               />
                             )}
                           />
-                          <Text color="gray">Non-negotiable</Text>
+                          <Text color="$gray11">Non-negotiable</Text>
                         </Row>
                       </Stack>
 
@@ -294,7 +294,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                                     theme={isSelected ? 'blue' : 'gray'}
                                     variant={isSelected ? undefined : 'outlined'}
                                     onPress={() => field.onChange(option.value)}
-                                    size={16}
+                                    size="md"
                                   >
                                     {option.label}
                                   </Button>
@@ -325,7 +325,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                                 theme={field.value === 'hourly' ? 'blue' : 'gray'}
                                 variant={field.value === 'hourly' ? undefined : 'outlined'}
                                 onPress={() => field.onChange('hourly')}
-                                size={16}
+                                size="md"
                               >
                                 Hourly
                               </Button>
@@ -334,7 +334,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                                 theme={field.value === 'salary' ? 'blue' : 'gray'}
                                 variant={field.value === 'salary' ? undefined : 'outlined'}
                                 onPress={() => field.onChange('salary')}
-                                size={16}
+                                size="md"
                               >
                                 Salary
                               </Button>
@@ -411,7 +411,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     {/* Form Actions */}
                     <Row
                       gap={12}
-                      padding={16}
+                      padding="md"
                       backgroundColor="$background"
                       borderTopWidth={1}
                       borderTopColor="$borderColor"
@@ -420,7 +420,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                       <Button variant="outline" onPress={handleClose} disabled={isSubmitting}>
                         Cancel
                       </Button>
-                      <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+                      <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
                         {isSubmitting
                           ? 'Sending...'
                           : `Send to ${applicationIds.length} Candidates`}
@@ -433,7 +433,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
               {/* Help Sidebar */}
               <Stack
                 width={300}
-                padding={16}
+                padding="md"
                 backgroundColor="$color2"
                 borderLeftWidth={1}
                 borderLeftColor="$borderColor"

@@ -131,7 +131,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <Stack flex={1} gap={12} padding={12} width="100%">
+        <Stack flex={1} gap={12} padding="sm" width="100%">
           <SkeletonList count={5} gap={8} variant="profile" />
         </Stack>
       )
@@ -139,7 +139,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (error) {
       return (
-        <Stack flex={1} padding={16} width="100%">
+        <Stack flex={1} padding="md" width="100%">
           <ErrorState
             title="Failed to load results"
             description="We encountered an error while loading workers. Please try again."
@@ -172,7 +172,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           <Stack gap={12} paddingBottom={24} width="100%">
             {allResults.length === 0 ? (
               <EmptyState
-                icon={<Search size={48} color="gray" />}
+                icon={<Search size={48} color="$gray11" />}
                 title="No results found"
                 description="Try adjusting your search filters or search terms to find more workers."
               />

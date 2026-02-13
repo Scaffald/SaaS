@@ -154,7 +154,7 @@ export function PhotoCard({
             left={0}
             backgroundColor="$color3"
           >
-            <Spinner color="gray" />
+            <Spinner color="$gray11" />
           </Stack>
         )}
         {(photo.isRefreshingUrl || isDeleting) && (
@@ -170,23 +170,23 @@ export function PhotoCard({
             gap={8}
           >
             <Spinner color="white" size="lg" />
-            <SizableText color="white" size={12}>
+            <SizableText color="white" size="sm">
               {isDeleting ? 'Removing…' : 'Refreshing…'}
             </SizableText>
           </Stack>
         )}
       </View>
 
-      <Stack gap={12} padding={12}>
+      <Stack gap={12} padding="sm">
         <Row align="center" justify="space-between" gap={12}>
           <Row gap={8} align="center">
-            <Tag size={16} color="gray" />
+            <Tag size="md" color="$gray11" />
             <Text>{typeOption?.label ?? 'Uncategorized'}</Text>
           </Row>
           <Row gap={8}>
             {canToggleVisibility ? (
               <Button
-                size={8}
+                size="xs"
                 variant="outline"
                 icon={photo.showOnProfile ? Eye : EyeOff}
                 disabled={disabled}
@@ -195,13 +195,13 @@ export function PhotoCard({
                 {photo.showOnProfile ? 'Public' : 'Private'}
               </Button>
             ) : (
-              <Text color="gray">
+              <Text color="$gray11">
                 {photo.showOnProfile ? 'Visible on profile' : 'Hidden from profile'}
               </Text>
             )}
             {canDelete ? (
               <Button
-                size={8}
+                size="xs"
                 variant="outline"
                 icon={Trash2}
                 disabled={disabled || isDeleting}
@@ -226,7 +226,7 @@ export function PhotoCard({
               />
               <Row gap={8}>
                 <Button
-                  size={8}
+                  size="xs"
                   icon={Check}
                   disabled={isSavingCaption}
                   onPress={handleSaveCaption}
@@ -234,7 +234,7 @@ export function PhotoCard({
                   Save
                 </Button>
                 <Button
-                  size={8}
+                  size="xs"
                   icon={X}
                   variant="outline"
                   disabled={isSavingCaption}
@@ -250,7 +250,7 @@ export function PhotoCard({
                 {photo.caption ?? 'No caption provided.'}
               </Text>
               <Button
-                size={8}
+                size="xs"
                 icon={Edit3}
                 variant="outline"
                 disabled={disabled}
@@ -283,7 +283,7 @@ export function PhotoCard({
               triggerProps={{ width: '100%' }}
             />
           ) : (
-            <Text color="gray">{typeOption?.label ?? 'Uncategorized'}</Text>
+            <Text color="$gray11">{typeOption?.label ?? 'Uncategorized'}</Text>
           )}
         </Stack>
 
@@ -291,12 +291,12 @@ export function PhotoCard({
 
         <Stack gap={4}>
           <Text>Details</Text>
-          <Text color="gray">Size: {formatBytes(photo.fileSizeBytes)}</Text>
+          <Text color="$gray11">Size: {formatBytes(photo.fileSizeBytes)}</Text>
           {photo.takenAt ? (
-            <Text color="gray">Taken: {formatDate(photo.takenAt) ?? 'Unknown'}</Text>
+            <Text color="$gray11">Taken: {formatDate(photo.takenAt) ?? 'Unknown'}</Text>
           ) : null}
           {photo.createdAt ? (
-            <Text color="gray">Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}</Text>
+            <Text color="$gray11">Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}</Text>
           ) : null}
         </Stack>
       </Stack>

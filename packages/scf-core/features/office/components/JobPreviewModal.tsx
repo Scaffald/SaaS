@@ -108,7 +108,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
           <Spinner size="lg" color="$blue10" />
-          <Text marginTop={16} color="gray">
+          <Text marginTop={16} color="$gray11">
             Loading job details...
           </Text>
         </Stack>
@@ -118,7 +118,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
         </Stack>
       ) : (
         <ScrollView style={{ maxHeight: 600 }}>
-          <Stack gap={16} padding={16}>
+          <Stack gap={16} padding="md">
             {/* Job Header */}
             <Stack gap={12} align="center">
               <Stack
@@ -133,11 +133,11 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               </Stack>
 
               <Stack gap={8} align="center">
-                <Text color="gray">{job.title}</Text>
+                <Text color="$gray11">{job.title}</Text>
                 {job.organization && (
                   <Row gap={8} align="center">
-                    <Building2 size={16} color="gray" />
-                    <Text color="gray">{job.organization.name}</Text>
+                    <Building2 size="md" color="$gray11" />
+                    <Text color="$gray11">{job.organization.name}</Text>
                   </Row>
                 )}
               </Stack>
@@ -179,8 +179,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             <Stack gap={12}>
               {job.location && (
                 <Row gap={8} align="center">
-                  <MapPin size={16} color="gray" />
-                  <Text color="gray">{job.location}</Text>
+                  <MapPin size="md" color="$gray11" />
+                  <Text color="$gray11">{job.location}</Text>
                 </Row>
               )}
 
@@ -190,8 +190,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 job.pay_range_type ?? null
               ) && (
                 <Row gap={8} align="center">
-                  <DollarSign size={16} color="gray" />
-                  <Text color="gray">
+                  <DollarSign size="md" color="$gray11" />
+                  <Text color="$gray11">
                     {formatPayRange(
                       job.pay_range_min_cents ?? null,
                       job.pay_range_max_cents ?? null,
@@ -203,8 +203,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
               {job.posted_at && (
                 <Row gap={8} align="center">
-                  <Calendar size={16} color="gray" />
-                  <Text color="gray">
+                  <Calendar size="md" color="$gray11" />
+                  <Text color="$gray11">
                     Posted{' '}
                     {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
                   </Text>
@@ -217,8 +217,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {/* Description */}
             {job.description && (
               <Stack gap={8}>
-                <Text color="gray">Job Description</Text>
-                <Text color="gray" lineHeight={4}>
+                <Text color="$gray11">Job Description</Text>
+                <Text color="$gray11" lineHeight={4}>
                   {typeof job.description === 'string'
                     ? job.description
                     : extractPlainText(job.description)}
@@ -230,8 +230,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.job_skills && job.job_skills.length > 0 && (
               <Stack gap={8}>
                 <Row gap={8} align="center">
-                  <Users size={16} color="gray" />
-                  <Text color="gray">Required Skills</Text>
+                  <Users size="md" color="$gray11" />
+                  <Text color="$gray11">Required Skills</Text>
                 </Row>
                 <Row gap={8} flexWrap="wrap">
                   {(job.job_skills || []).map((jobSkill, idx: number) => {
@@ -263,8 +263,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.job_certifications && job.job_certifications.length > 0 && (
               <Stack gap={8}>
                 <Row gap={8} align="center">
-                  <Award size={16} color="gray" />
-                  <Text color="gray">Required Certifications</Text>
+                  <Award size="md" color="$gray11" />
+                  <Text color="$gray11">Required Certifications</Text>
                 </Row>
                 <Stack gap={8}>
                   {job.job_certifications.map(
@@ -275,7 +275,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                         `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
                       return (
                         <Row key={certKey} gap={8} align="center">
-                          <Text color="gray">
+                          <Text color="$gray11">
                             {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
                           {jobCert.is_required && <Text color="$red10">(Required)</Text>}

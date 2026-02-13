@@ -91,7 +91,7 @@ export function TeamCommentThread({
       borderWidth={1}
       borderColor="$borderColor"
       backgroundColor="$color2"
-      padding={16}
+      padding="md"
       gap={16}
       paddingHorizontal={12}
     >
@@ -100,7 +100,7 @@ export function TeamCommentThread({
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
           <Text accessibilityRole="header">Team discussion</Text>
         </Row>
-        <Text color="gray">Share updates with your team. Mentions notify teammates instantly.</Text>
+        <Text color="$gray11">Share updates with your team. Mentions notify teammates instantly.</Text>
       </Stack>
 
       <Stack gap={12}>
@@ -120,7 +120,7 @@ export function TeamCommentThread({
             {mentionOptions.map((option) => (
               <Button
                 key={option.id}
-                size={8}
+                size="xs"
                 variant={selectedMentionId === option.id ? 'outlined' : undefined}
                 onPress={() =>
                   setSelectedMentionId((current) => (current === option.id ? null : option.id))
@@ -138,21 +138,21 @@ export function TeamCommentThread({
           </Row>
         ) : null}
 
-        {mentionLabel ? <Text color="gray">Mentioning @{mentionLabel}</Text> : null}
+        {mentionLabel ? <Text color="$gray11">Mentioning @{mentionLabel}</Text> : null}
 
         <Row justify="flex-end">
           <Button
-            size={12}
+            size="sm"
             icon={Send}
             backgroundColor="$color9"
-            color="gray"
+            color="$gray11"
             onPress={() => void handleSubmit()}
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"
             accessibilityHint="Shares this comment with the team"
             width="100%"
           >
-            {isSubmitting ? <Spinner size="sm" color="gray" /> : 'Post comment'}
+            {isSubmitting ? <Spinner size="sm" color="$gray11" /> : 'Post comment'}
           </Button>
         </Row>
       </Stack>
@@ -160,12 +160,12 @@ export function TeamCommentThread({
       {commentsQuery.isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
-          <Text color="gray">Loading discussion…</Text>
+          <Text color="$gray11">Loading discussion…</Text>
         </Stack>
       ) : comments.length === 0 ? (
         <Stack gap={4}>
           <Text>No comments yet</Text>
-          <Text color="gray">Start the conversation by leaving the first comment.</Text>
+          <Text color="$gray11">Start the conversation by leaving the first comment.</Text>
         </Stack>
       ) : (
         <Stack gap={12}>
@@ -198,10 +198,10 @@ export function TeamCommentThread({
                 width="100%"
               >
                 <Text>{actorName}</Text>
-                <Text color="gray">{occurredAt}</Text>
+                <Text color="$gray11">{occurredAt}</Text>
                 <Text>{comment.body}</Text>
                 {mentionNames.length ? (
-                  <Text color="gray">Mentions: {mentionNames.join(', ')}</Text>
+                  <Text color="$gray11">Mentions: {mentionNames.join(', ')}</Text>
                 ) : null}
               </Stack>
             )

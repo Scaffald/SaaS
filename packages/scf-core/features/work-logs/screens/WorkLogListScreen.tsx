@@ -65,17 +65,17 @@ export function WorkLogListScreen() {
         <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
       }
     >
-      <Stack gap={16} padding={16} flex={1}>
+      <Stack gap={16} padding="md" flex={1}>
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Text>Work Logs</Text>
-            <Paragraph color="gray">
+            <Paragraph color="$gray11">
               Track and review your daily work history, collaborate with teammates, and manage
               verification.
             </Paragraph>
           </Stack>
           <Button
-            size={16}
+            size="md"
             icon={Plus}
             onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
           >
@@ -85,7 +85,7 @@ export function WorkLogListScreen() {
 
         {hasOfflineQueue && (
           <Card backgroundColor="$yellow3" borderColor="$yellow7" borderWidth={1}>
-            <Stack gap={12} padding={12}>
+            <Stack gap={12} padding="sm">
               <Row gap={12} align="center">
                 <CloudOff color="#b45309" />
                 <Stack gap={4} flex={1}>
@@ -98,7 +98,7 @@ export function WorkLogListScreen() {
               </Row>
               <Row gap={12} justify="flex-end">
                 <Button
-                  size={12}
+                  size="sm"
                   variant="outline"
                   disabled={syncManager.isSyncing || isOfflineLoading}
                   onPress={() => syncManager.syncNow()}
@@ -122,7 +122,7 @@ export function WorkLogListScreen() {
         {listQuery.isLoading ? (
           <Stack flex={1} align="center" justify="center" gap={12}>
             <Spinner size="lg" />
-            <Text color="gray">Loading work logs…</Text>
+            <Text color="$gray11">Loading work logs…</Text>
           </Stack>
         ) : items.length === 0 ? (
           <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
@@ -139,11 +139,11 @@ export function WorkLogListScreen() {
                   router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))
                 }
               >
-                <Stack gap={12} padding={12}>
+                <Stack gap={12} padding="sm">
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
                       <Text>{item.project?.name ?? 'Unknown Project'}</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
                       </Text>
                     </Stack>
@@ -194,17 +194,17 @@ export function WorkLogListScreen() {
                   </Row>
 
                   {item.descriptionPreview && (
-                    <Paragraph numberOfLines={2} color="gray">
+                    <Paragraph numberOfLines={2} color="$gray11">
                       {item.descriptionPreview}
                     </Paragraph>
                   )}
 
                   <Row justify="space-between" align="center">
-                    <Text color="gray">
+                    <Text color="$gray11">
                       Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
                     </Text>
                     <Button
-                      size={12}
+                      size="sm"
                       variant="outline"
                       onPress={() =>
                         router.push(
@@ -245,12 +245,12 @@ function AnalyticsBanner({
 }: AnalyticsBannerProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <Stack gap={12} padding={12}>
+      <Stack gap={12} padding="sm">
         <Text>Quick summary</Text>
         {isLoading && !statusSummary ? (
           <Row gap={12} align="center">
             <Spinner size="sm" />
-            <Text color="gray">Calculating analytics…</Text>
+            <Text color="$gray11">Calculating analytics…</Text>
           </Row>
         ) : (
           <Stack gap={12}>
@@ -300,9 +300,9 @@ function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTile
       gap={4}
       flexShrink={0}
     >
-      <Text color="gray">{label}</Text>
+      <Text color="$gray11">{label}</Text>
       <Text color={color as never}>{value}</Text>
-      {subtitle && <Text color="gray">{subtitle}</Text>}
+      {subtitle && <Text color="$gray11">{subtitle}</Text>}
     </Stack>
   )
 }
@@ -323,9 +323,9 @@ function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
       gap={8}
       align="center"
     >
-      <IconComponent size={16} color="gray" />
+      <IconComponent size="md" color="$gray11" />
       <Text>{value}</Text>
-      <Text color="gray">{label}</Text>
+      <Text color="$gray11">{label}</Text>
     </Row>
   )
 }
@@ -339,11 +339,11 @@ function EmptyState({ onCreate }: EmptyStateProps) {
     <Card borderColor="$color6" borderWidth={1}>
       <Stack gap={12} align="center" paddingVertical={32} paddingHorizontal={16}>
         <Text>No work logs yet</Text>
-        <Paragraph color="gray" paddingHorizontal={24} style={{ textAlign: 'center' }}>
+        <Paragraph color="$gray11" paddingHorizontal={24} style={{ textAlign: 'center' }}>
           Create your first work log to start tracking hours, documenting tasks, and collaborating
           with your team.
         </Paragraph>
-        <Button size={16} icon={DownloadCloud} onPress={onCreate}>
+        <Button size="md" icon={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
       </Stack>

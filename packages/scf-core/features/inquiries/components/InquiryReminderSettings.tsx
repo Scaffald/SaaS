@@ -64,7 +64,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
   }
 
   return (
-    <Card bordered padding={16} gap={12}>
+    <Card bordered padding="md" gap={12}>
       <H4>Inquiry Reminders</H4>
       <Separator />
       {isLoading ? (
@@ -74,13 +74,13 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
           <Row align="center" justify="space-between" gap={12}>
             <Stack flex={1} gap={4}>
               <Text>Send automatic reminders</Text>
-              <Text color="gray">
+              <Text color="$gray11">
                 Automatically remind candidates to respond to pending inquiries
               </Text>
             </Stack>
             <Switch
               checked={reminderEnabled}
-              onCheckedChange={setReminderEnabled}
+              onChange={setReminderEnabled}
               disabled={updateMutation.isPending}
             />
           </Row>
@@ -100,7 +100,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
                 placeholder="3"
                 maxLength={2}
               />
-              <Text color="gray">
+              <Text color="$gray11">
                 Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
                 after an inquiry is sent if they haven't responded. Reminders are limited to once
                 every 3 days.
@@ -113,7 +113,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
             disabled={
               updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14
             }
-            theme="blue"
+            color="primary"
           >
             {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
           </Button>

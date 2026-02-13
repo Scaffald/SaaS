@@ -44,7 +44,7 @@ export function TeamJobsList({
         <Text accessibilityRole="header">Team jobs</Text>
         <Row gap={8} align="flex-start" flexDirection="column" width="100%">
           <Button
-            size={8}
+            size="xs"
             variant="outline"
             icon={RefreshCcw}
             onPress={() => onRefresh?.()}
@@ -55,7 +55,7 @@ export function TeamJobsList({
             Refresh
           </Button>
           <Button
-            size={8}
+            size="xs"
             icon={ArrowRight}
             onPress={() => {
               if (onCreateJob) {
@@ -78,24 +78,24 @@ export function TeamJobsList({
       {isLoading ? (
         <Stack align="center" justify="center" paddingVertical={24} gap={8}>
           <Spinner size="lg" />
-          <Text color="gray">Loading assigned jobs…</Text>
+          <Text color="$gray11">Loading assigned jobs…</Text>
         </Stack>
       ) : error ? (
         <Card
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          padding={16}
+          padding="md"
           gap={12}
         >
           <Row gap={8} align="center">
             <AlertTriangle size={18} color="$yellow10" />
             <Text>Unable to load jobs</Text>
           </Row>
-          <Text color="gray">
+          <Text color="$gray11">
             {error.message || 'Something went wrong while fetching jobs for this team.'}
           </Text>
-          <Button size={12} onPress={() => onRefresh?.()}>
+          <Button size="sm" onPress={() => onRefresh?.()}>
             Try again
           </Button>
         </Card>
@@ -104,7 +104,7 @@ export function TeamJobsList({
           {derivedJobs.map((job) => (
             <Card
               key={job.id}
-              padding={16}
+              padding="md"
               borderWidth={1}
               borderColor="$borderColor"
               backgroundColor="$color2"
@@ -123,7 +123,7 @@ export function TeamJobsList({
               >
                 <Stack gap={4} flex={1} width="100%">
                   <Text>{job.title}</Text>
-                  <Text color="gray">{job.organization?.name ?? 'No organization'}</Text>
+                  <Text color="$gray11">{job.organization?.name ?? 'No organization'}</Text>
                 </Stack>
                 <StatusChip status={job.status ?? 'draft'} />
               </Row>
@@ -139,14 +139,14 @@ export function TeamJobsList({
                 </Row>
               ) : null}
               <Row gap={8} flexDirection="column" align="stretch">
-                <Text color="gray">
+                <Text color="$gray11">
                   Updated{' '}
                   {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
               </Row>
               <Row width="100%">
                 <Button
-                  size={12}
+                  size="sm"
                   variant="outline"
                   onPress={() =>
                     router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
@@ -165,18 +165,18 @@ export function TeamJobsList({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          padding={16}
+          padding="md"
           gap={8}
           width="100%"
         >
           <Text>No jobs assigned yet</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
             team will appear here.
           </Text>
           <Button
             marginTop={8}
-            size={12}
+            size="sm"
             onPress={() => {
               if (onCreateJob) {
                 onCreateJob()

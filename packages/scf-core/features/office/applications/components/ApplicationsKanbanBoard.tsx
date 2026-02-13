@@ -215,7 +215,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       {selectedApplicationIds.size > 0 && (
         <Row
           gap={12}
-          padding={12}
+          padding="sm"
           backgroundColor="$blue2"
           align="center"
           justify="space-between"
@@ -228,15 +228,15 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             selected
           </Text>
           <Row gap={8} flexWrap="wrap">
-            <Button size={12} variant="outline" onPress={clearSelection}>
+            <Button size="sm" variant="outline" onPress={clearSelection}>
               Clear
             </Button>
             {selectedApplications.length >= 2 &&
               selectedApplications.length <= 5 &&
               comparisonInquiryIds.length >= 2 && (
                 <Button
-                  size={12}
-                  theme="blue"
+                  size="sm"
+                  color="primary"
                   variant="outline"
                   onPress={() => {
                     if (comparisonInquiryIds.length >= 2 && comparisonInquiryIds.length <= 5) {
@@ -247,7 +247,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   Compare {comparisonInquiryIds.length}
                 </Button>
               )}
-            <Button size={12} theme="blue" onPress={() => setShowBulkInquiry(true)}>
+            <Button size="sm" color="primary" onPress={() => setShowBulkInquiry(true)}>
               Send Inquiry to {selectedApplicationIds.size}
             </Button>
           </Row>
@@ -281,14 +281,14 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     borderRadius={8}
                     marginTop={4}
                   >
-                    <Text color="gray">{groupedApplications[status].length}</Text>
+                    <Text color="$gray11">{groupedApplications[status].length}</Text>
                   </Stack>
                 </Tabs.Tab>
               ))}
             </Tabs.List>
 
             {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status} padding={12}>
+              <Tabs.Content key={status} value={status} padding="sm">
                 <StatusColumn
                   status={status}
                   label={STATUS_LABELS[status]}

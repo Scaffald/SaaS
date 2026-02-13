@@ -79,14 +79,14 @@ export function OrganizationProjectPrivacySettings({
 
   if (isLoading) {
     return (
-      <Card padding={16} backgroundColor="$gray2">
+      <Card padding="md" backgroundColor="$gray2">
         <Spinner />
       </Card>
     )
   }
 
   return (
-    <Card padding={16} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+    <Card padding="md" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
       <Stack gap={16}>
         <Text>Project Location Privacy</Text>
         <Text color="$gray11">
@@ -107,7 +107,7 @@ export function OrganizationProjectPrivacySettings({
           />
         </Stack>
 
-        <Card padding={12} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Card padding="sm" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <Stack gap={8}>
             <Text>Project Override Statistics</Text>
             <Text color="$gray11">
@@ -115,7 +115,7 @@ export function OrganizationProjectPrivacySettings({
             </Text>
             {overrideCount > 0 && (
               <Button
-                size={8}
+                size="xs"
                 variant="outline"
                 icon={ExternalLink}
                 onPress={() => {
@@ -131,7 +131,7 @@ export function OrganizationProjectPrivacySettings({
 
         <Row justify="flex-end">
           <Button
-            theme="blue"
+            color="primary"
             onPress={handleSave}
             disabled={
               updateMutation.isPending ||

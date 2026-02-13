@@ -51,10 +51,10 @@ export function EducationWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load education</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
-            size={8}
+            size="xs"
             onPress={() => {
               void refetch()
             }}
@@ -79,7 +79,7 @@ export function EducationWidget({
           {showEdit && (
             <Button
               variant="outline"
-              size={8}
+              size="xs"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
             >
               Edit
@@ -115,14 +115,14 @@ export function EducationWidget({
                       {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text color="gray">{edu.institution_name || 'Institution'}</Text>
+                    <Text color="$gray11">{edu.institution_name || 'Institution'}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="gray">{formatDate(edu.start_date)}</Text>
-                    <Text color="gray">-</Text>
-                    <Text color="gray">
+                    <Text color="$gray11">{formatDate(edu.start_date)}</Text>
+                    <Text color="$gray11">-</Text>
+                    <Text color="$gray11">
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
@@ -140,11 +140,11 @@ export function EducationWidget({
                   </Row>
 
                   {/* Location */}
-                  {edu.location && <Text color="gray">📍 {edu.location}</Text>}
+                  {edu.location && <Text color="$gray11">📍 {edu.location}</Text>}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text color="gray" lineHeight={12}>
+                    <Text color="$gray11" lineHeight={12}>
                       {edu.description}
                     </Text>
                   )}

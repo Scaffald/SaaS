@@ -19,15 +19,15 @@ export function ReviewStepCategoryRating({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">{title}</Text>
-        <Text color="gray">{description}</Text>
+        <Text color="$gray11">{title}</Text>
+        <Text color="$gray11">{description}</Text>
       </Stack>
 
       {/* Category Rating */}
       <StarRating label={`Overall ${category}`} value={rating} onChange={onChange} />
 
       {/* Helper Text */}
-      <Text color="gray" fontStyle="italic">
+      <Text color="$gray11" fontStyle="italic">
         Rate from 1-5 stars based on your overall assessment
       </Text>
     </Stack>

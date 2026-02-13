@@ -86,7 +86,7 @@ export function EducationStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Highest education</Text>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Add your latest degree or training program. This section is optional but strengthens your
           profile.
         </Paragraph>
@@ -160,7 +160,7 @@ export function EducationStep({
           render={({ field }) => (
             <ToggleSwitch
               checked={Boolean(field.value)}
-              onCheckedChange={field.onChange}
+              onChange={field.onChange}
               aria-label="I am currently enrolled"
             />
           )}

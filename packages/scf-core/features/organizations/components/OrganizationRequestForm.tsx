@@ -83,7 +83,7 @@ export function OrganizationRequestForm({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Label htmlFor="organization-request-name" color="gray">
+        <Label htmlFor="organization-request-name" color="$gray11">
           Organization Name
         </Label>
         <Controller
@@ -110,7 +110,7 @@ export function OrganizationRequestForm({
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-slug" color="gray">
+        <Label htmlFor="organization-request-slug" color="$gray11">
           Preferred Slug
         </Label>
         <Controller
@@ -131,7 +131,7 @@ export function OrganizationRequestForm({
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-website" color="gray">
+        <Label htmlFor="organization-request-website" color="$gray11">
           Website (optional)
         </Label>
         <Controller
@@ -154,7 +154,7 @@ export function OrganizationRequestForm({
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-notes" color="gray">
+        <Label htmlFor="organization-request-notes" color="$gray11">
           Notes for the review team (optional)
         </Label>
         <Controller
@@ -176,7 +176,7 @@ export function OrganizationRequestForm({
       </Stack>
 
       <Button
-        size={16}
+        size="md"
         theme="info"
         icon={isSubmitting ? Loader2 : undefined}
         disabled={isSubmitting}
@@ -186,12 +186,12 @@ export function OrganizationRequestForm({
       </Button>
 
       {submissionSucceeded ? (
-        <Card bordered theme="success" padding={16} gap={12}>
+        <Card bordered theme="success" padding="md" gap={12}>
           <Row gap={12} align="center">
-            <CheckCircle2 size={20} color="$green10" />
+            <CheckCircle2 size="lg" color="$green10" />
             <Text color="$green10">Request submitted successfully</Text>
           </Row>
-          <Text color="gray">
+          <Text color="$gray11">
             We&apos;ve logged your request. Our team will review it and follow up if we need
             additional details.
           </Text>

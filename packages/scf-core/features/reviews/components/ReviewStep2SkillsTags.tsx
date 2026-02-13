@@ -27,8 +27,8 @@ export function ReviewStep2SkillsTags({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">Technical Skills - Details</Text>
-        <Text color="gray">Select their key strengths and areas to improve</Text>
+        <Text color="$gray11">Technical Skills - Details</Text>
+        <Text color="$gray11">Select their key strengths and areas to improve</Text>
       </Stack>
 
       {/* Strengths Section */}
@@ -54,9 +54,9 @@ export function ReviewStep2SkillsTags({
                 onPress={() => onToggleStrength(skill.id)}
               >
                 {isSelected ? (
-                  <CheckCircle2 size={16} color="$green11" />
+                  <CheckCircle2 size="md" color="$green11" />
                 ) : (
-                  <Circle size={16} color="gray" />
+                  <Circle size="md" color="$gray11" />
                 )}
                 <Text color={isSelected ? '$green11' : '$color11'}>{skill.name}</Text>
               </Row>
@@ -88,9 +88,9 @@ export function ReviewStep2SkillsTags({
                 onPress={() => onToggleImprovement(skill.id)}
               >
                 {isSelected ? (
-                  <CheckCircle2 size={16} color="$red11" />
+                  <CheckCircle2 size="md" color="$red11" />
                 ) : (
-                  <Circle size={16} color="gray" />
+                  <Circle size="md" color="$gray11" />
                 )}
                 <Text color={isSelected ? '$red11' : '$color11'}>{skill.name}</Text>
               </Row>
@@ -100,7 +100,7 @@ export function ReviewStep2SkillsTags({
       </Stack>
 
       {/* Helper Text */}
-      <Text color="gray" fontStyle="italic">
+      <Text color="$gray11" fontStyle="italic">
         Select multiple skills for each category. Skills can only be in one category.
       </Text>
     </Stack>

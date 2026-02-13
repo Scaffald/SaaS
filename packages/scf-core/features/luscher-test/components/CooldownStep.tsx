@@ -77,11 +77,11 @@ export function CooldownStep({
   )
 
   return (
-    <Stack gap={24} width="100%" alignSelf="center" padding={16} style={{ maxWidth: 800 }}>
+    <Stack gap={24} width="100%" alignSelf="center" padding="md" style={{ maxWidth: 800 }}>
       {/* Cooldown Timer */}
       <Stack
         gap={16}
-        padding={24}
+        padding="xl"
         backgroundColor="$color3"
         borderRadius={16}
         borderWidth={1}
@@ -89,20 +89,20 @@ export function CooldownStep({
       >
         <Stack gap={8} align="center">
           <Clock size={48} color="$blue10" />
-          <Text color="gray">Take a short pause</Text>
-          <Text color="gray">Please wait 60 seconds before taking the second color test</Text>
+          <Text color="$gray11">Take a short pause</Text>
+          <Text color="$gray11">Please wait 60 seconds before taking the second color test</Text>
           <Text color="$blue10">{formatTime(timeRemaining)}</Text>
         </Stack>
-        <Progress value={cooldownProgress} max={100} size={8}>
+        <Progress value={cooldownProgress} max={100} size="xs">
           <Progress.Indicator animation="quick" />
         </Progress>
       </Stack>
 
       {/* Diary Prompt Section */}
-      <Stack gap={16} padding={16} borderRadius={16} borderWidth={1} borderColor="$borderColor">
+      <Stack gap={16} padding="md" borderRadius={16} borderWidth={1} borderColor="$borderColor">
         <Stack gap={8}>
-          <Text color="gray">{selectedPrompt}</Text>
-          <Text color="gray">
+          <Text color="$gray11">{selectedPrompt}</Text>
+          <Text color="$gray11">
             Take a breather for 60 seconds or write for 60 seconds if you want (optional)
           </Text>
         </Stack>

@@ -22,7 +22,7 @@ export function OAuthAppList() {
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
         <SizableText size={24}>OAuth Applications</SizableText>
-        <SizableText size={8} color="gray">
+        <SizableText size="xs" color="$gray11">
           Manage and approve OAuth applications
         </SizableText>
       </Stack>
@@ -34,7 +34,7 @@ export function OAuthAppList() {
               key={status}
               variant={statusFilter === status ? 'default' : 'outlined'}
               onPress={() => setStatusFilter(status)}
-              size={8}
+              size="xs"
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </Button>
@@ -44,22 +44,22 @@ export function OAuthAppList() {
 
       <Stack gap={8}>
         {listApps.data?.apps.map((app) => (
-          <Card key={app.id} padding={12} data-testid={`oauth-app-${app.id}`}>
+          <Card key={app.id} padding="sm" data-testid={`oauth-app-${app.id}`}>
             <Row gap={12} align="center">
               <Stack flex={1} gap={4}>
-                <SizableText size={16} data-testid="oauth-app-name">
+                <SizableText size="md" data-testid="oauth-app-name">
                   {app.display_name}
                 </SizableText>
-                <SizableText size={8} color="gray" data-testid="oauth-app-description">
+                <SizableText size="xs" color="$gray11" data-testid="oauth-app-description">
                   {app.description}
                 </SizableText>
-                <SizableText size={4} color="gray" data-testid="oauth-app-metadata">
+                <SizableText size={4} color="$gray11" data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </SizableText>
               </Stack>
               <Button
                 href={`/office/oauth-apps/${app.id}`}
-                size={8}
+                size="xs"
                 data-testid="oauth-app-view-button"
               >
                 View

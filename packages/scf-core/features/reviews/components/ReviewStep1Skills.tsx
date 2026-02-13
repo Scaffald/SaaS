@@ -17,8 +17,8 @@ export function ReviewStep1Skills({ ratings, onChange }: ReviewStep1SkillsProps)
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">Technical Skills</Text>
-        <Text color="gray">How would you rate this person's technical skills?</Text>
+        <Text color="$gray11">Technical Skills</Text>
+        <Text color="$gray11">How would you rate this person's technical skills?</Text>
       </Stack>
 
       {/* Skills List */}
@@ -34,7 +34,7 @@ export function ReviewStep1Skills({ ratings, onChange }: ReviewStep1SkillsProps)
       </Stack>
 
       {/* Helper Text */}
-      <Text color="gray" fontStyle="italic">
+      <Text color="$gray11" fontStyle="italic">
         Rate each skill from 1-5 stars based on their proficiency level
       </Text>
     </Stack>

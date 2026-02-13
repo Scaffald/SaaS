@@ -10,7 +10,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
   return (
     <Stack gap={16}>
       {/* Screening Answers */}
-      <Card padding={16} backgroundColor="$color2">
+      <Card padding="md" backgroundColor="$color2">
         <Text marginBottom={12}>Screening Questions</Text>
         <Stack gap={12}>
           <Row justify="space-between">
@@ -38,7 +38,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
 
       {/* Custom Questions */}
       {application.customAnswers.length > 0 && (
-        <Card padding={16} backgroundColor="$color2">
+        <Card padding="md" backgroundColor="$color2">
           <Text marginBottom={12}>Custom Questions</Text>
           <Stack gap={16}>
             {application.customAnswers.map((qa, index) => (
@@ -55,14 +55,14 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       )}
 
       {/* Attachments */}
-      <Card padding={16} backgroundColor="$color2">
+      <Card padding="md" backgroundColor="$color2">
         <Text marginBottom={12}>Attachments</Text>
         <Stack gap={8}>
           {application.attachments.resume && (
             <Row
               justify="space-between"
               align="center"
-              padding={12}
+              padding="sm"
               backgroundColor="$color3"
               borderRadius={12}
             >
@@ -73,7 +73,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {(application.attachments.resume.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size={12} icon={Download} chromeless>
+              <Button size="sm" icon={Download} chromeless>
                 Download
               </Button>
             </Row>
@@ -82,7 +82,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
             <Row
               justify="space-between"
               align="center"
-              padding={12}
+              padding="sm"
               backgroundColor="$color3"
               borderRadius={12}
             >
@@ -93,7 +93,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {(application.attachments.coverLetter.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size={12} icon={Download} chromeless>
+              <Button size="sm" icon={Download} chromeless>
                 Download
               </Button>
             </Row>
@@ -102,7 +102,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
             <Row
               justify="space-between"
               align="center"
-              padding={12}
+              padding="sm"
               backgroundColor="$color3"
               borderRadius={12}
             >
@@ -113,7 +113,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   {(application.attachments.portfolio.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size={12} icon={Download} chromeless>
+              <Button size="sm" icon={Download} chromeless>
                 Download
               </Button>
             </Row>
@@ -122,7 +122,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       </Card>
 
       {/* Stage History */}
-      <Card padding={16} backgroundColor="$color2">
+      <Card padding="md" backgroundColor="$color2">
         <Text marginBottom={12}>Application Timeline</Text>
         <Stack gap={12}>
           {application.stageHistory.map((history, index) => (

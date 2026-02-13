@@ -82,7 +82,7 @@ export function UserProfilePanel({
       zIndex={1000}
       elevate
       bordered
-      padding={16}
+      padding="md"
       gap={12}
       minWidth={280}
       maxWidth={320}
@@ -94,7 +94,7 @@ export function UserProfilePanel({
       {/* Close button */}
       <Row justify="flex-end">
         <Button
-          size={8}
+          size="xs"
           circular
           chromeless
           icon={X}
@@ -107,7 +107,7 @@ export function UserProfilePanel({
       {isLoading ? (
         <Stack paddingVertical={16} align="center" gap={12}>
           <Spinner size="sm" color="$blue10" />
-          <Text color="gray">Loading...</Text>
+          <Text color="$gray11">Loading...</Text>
         </Stack>
       ) : !preview ? (
         <Stack paddingVertical={16} align="center">
@@ -119,32 +119,32 @@ export function UserProfilePanel({
           <Row gap={12} align="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
-              <Avatar circular size={16}>
+              <Avatar circular size="md">
                 <Avatar.Image source={{ uri: avatarUrl }} />
                 <Avatar.Fallback backgroundColor="$color3">
-                  <User size={24} color="gray" />
+                  <User size={24} color="$gray11" />
                 </Avatar.Fallback>
               </Avatar>
             ) : (
-              <Avatar circular size={16} backgroundColor="$color3">
-                <User size={24} color="gray" />
+              <Avatar circular size="md" backgroundColor="$color3">
+                <User size={24} color="$gray11" />
               </Avatar>
             )}
 
             {/* Name and Title */}
             <Stack flex={1} gap={4}>
-              <Text color="gray" numberOfLines={1}>
+              <Text color="$gray11" numberOfLines={1}>
                 {preview.displayName}
               </Text>
               {preview.headline && (
-                <Text color="gray" numberOfLines={2}>
+                <Text color="$gray11" numberOfLines={2}>
                   {preview.headline}
                 </Text>
               )}
               {preview.location && (
                 <Row gap={4} align="center" marginTop={4}>
-                  <MapPin size={14} color="gray" />
-                  <Text color="gray" numberOfLines={1}>
+                  <MapPin size={14} color="$gray11" />
+                  <Text color="$gray11" numberOfLines={1}>
                     {preview.location}
                   </Text>
                 </Row>
@@ -155,7 +155,7 @@ export function UserProfilePanel({
           {/* Top Skills */}
           {topSkills.length > 0 && (
             <Stack gap={8}>
-              <Text color="gray" textTransform="uppercase">
+              <Text color="$gray11" textTransform="uppercase">
                 Top Skills
               </Text>
               <Row gap={8} flexWrap="wrap">
@@ -169,7 +169,7 @@ export function UserProfilePanel({
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text color="gray">
+                    <Text color="$gray11">
                       Skill {skill.proficiency > 0 ? `(${skill.proficiency})` : ''}
                     </Text>
                   </Stack>
@@ -183,7 +183,7 @@ export function UserProfilePanel({
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text color="gray">+{topSkills.length - 3} more</Text>
+                    <Text color="$gray11">+{topSkills.length - 3} more</Text>
                   </Stack>
                 )}
               </Row>

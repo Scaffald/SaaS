@@ -99,8 +99,8 @@ export function DisputeStatusTracker({
   if (isLoading) {
     return (
       <Stack gap={8} align="center" paddingVertical={16}>
-        <Spinner size="sm" color="gray" />
-        <Text color="gray">Loading dispute history…</Text>
+        <Spinner size="sm" color="$gray11" />
+        <Text color="$gray11">Loading dispute history…</Text>
       </Stack>
     )
   }
@@ -112,11 +112,11 @@ export function DisputeStatusTracker({
         borderColor="$borderColor"
         borderWidth={1}
         borderRadius={16}
-        padding={12}
+        padding="sm"
         gap={8}
       >
-        <Text color="gray">No disputes filed yet</Text>
-        <Text color="gray">
+        <Text color="$gray11">No disputes filed yet</Text>
+        <Text color="$gray11">
           If you notice any inaccuracies in your results, you can submit a dispute for review.
         </Text>
       </Card>
@@ -129,9 +129,9 @@ export function DisputeStatusTracker({
   return (
     <Stack gap={12}>
       <Row justify="space-between" align="center">
-        <Text color="gray">Dispute status</Text>
+        <Text color="$gray11">Dispute status</Text>
         <Button
-          size={8}
+          size="xs"
           variant="outline"
           icon={RefreshCcw}
           onPress={onRefresh}
@@ -143,7 +143,7 @@ export function DisputeStatusTracker({
 
       <Stack
         gap={8}
-        padding={12}
+        padding="sm"
         backgroundColor={toneColors.background}
         borderColor={toneColors.border}
         borderWidth={1}
@@ -163,13 +163,13 @@ export function DisputeStatusTracker({
         borderColor="$borderColor"
         borderWidth={1}
         borderRadius={16}
-        padding={12}
+        padding="sm"
         gap={12}
       >
-        <Text color="gray">Dispute history</Text>
+        <Text color="$gray11">Dispute history</Text>
 
         {pendingCount > 0 ? (
-          <Text color="gray">
+          <Text color="$gray11">
             {pendingCount} dispute{pendingCount === 1 ? '' : 's'} currently awaiting review.
           </Text>
         ) : null}
@@ -192,16 +192,16 @@ export function DisputeStatusTracker({
                 gap={4}
               >
                 <Row gap={8} align="center" flexWrap="wrap">
-                  <Text color="gray">{meta.label}</Text>
+                  <Text color="$gray11">{meta.label}</Text>
                   <Text color={colors.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>
                 </Row>
-                <Text color="gray">Reason: {dispute.dispute_reason}</Text>
-                <Text color="gray">{dispute.dispute_details}</Text>
+                <Text color="$gray11">Reason: {dispute.dispute_reason}</Text>
+                <Text color="$gray11">{dispute.dispute_details}</Text>
                 {dispute.resolution ? (
-                  <Text color="gray">
+                  <Text color="$gray11">
                     Resolution: {dispute.resolution}
                     {dispute.resolution_notes ? ` — ${dispute.resolution_notes}` : ''}
                   </Text>

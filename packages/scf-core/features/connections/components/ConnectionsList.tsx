@@ -164,7 +164,7 @@ export function ConnectionsList() {
         header: 'Connected Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -174,7 +174,7 @@ export function ConnectionsList() {
           const conn = row.original
           return (
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               icon={Trash2}
               onPress={() => handleRemove(conn.id)}
@@ -193,7 +193,7 @@ export function ConnectionsList() {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Loading connections…</Text>
+        <Text color="$gray11">Loading connections…</Text>
       </Stack>
     )
   }
@@ -206,10 +206,10 @@ export function ConnectionsList() {
           placeholder="Search connections..."
           value={searchTerm}
           onChangeText={setSearchTerm}
-          size={16}
+          size="md"
         />
         {filteredConnections.length > 0 && (
-          <Button size={12} variant="outline" icon={Download} onPress={handleExportCSV}>
+          <Button size="sm" variant="outline" icon={Download} onPress={handleExportCSV}>
             Export CSV
           </Button>
         )}
@@ -221,14 +221,14 @@ export function ConnectionsList() {
           borderWidth={1}
           borderColor="$borderColor"
           borderRadius={16}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           align="center"
           justify="center"
           style={{ minHeight: 300 }}
         >
           <Text>No connections yet</Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No connections match your search.'
               : "You haven't connected with anyone yet. Send connection requests to build your network."}

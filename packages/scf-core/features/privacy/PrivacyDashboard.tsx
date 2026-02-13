@@ -56,9 +56,9 @@ export function PrivacyDashboard() {
 
   if (hasError) {
     return (
-      <Stack padding={16} gap={16} align="center" justify="center" flex={1}>
+      <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
         <Text color="$red10">Error Loading Privacy Dashboard</Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           {dataError?.message || historyError?.message || appsError?.message}
         </Text>
         <Button onPress={() => window.location.reload()} variant="outline">
@@ -70,11 +70,11 @@ export function PrivacyDashboard() {
 
   return (
     <ScrollView>
-      <Stack padding={16} gap={24} maxWidth={1200} marginHorizontal="auto">
+      <Stack padding="md" gap={24} maxWidth={1200} marginHorizontal="auto">
         {/* Page Header */}
         <Stack gap={8}>
           <Text>Privacy & Data</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Manage your privacy settings, view your data, and exercise your California Consumer
             Privacy Act (CCPA) rights.
           </Text>
@@ -83,7 +83,7 @@ export function PrivacyDashboard() {
         {/* Quick Actions */}
         <Stack
           gap={16}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           borderRadius={16}
           borderWidth={1}
@@ -91,18 +91,18 @@ export function PrivacyDashboard() {
         >
           <Text>Quick Actions</Text>
           <Row gap={12} flexWrap="wrap">
-            <Button onPress={() => setShowRequestForm(true)} icon={undefined} size={16}>
+            <Button onPress={() => setShowRequestForm(true)} icon={undefined} size="md">
               Request My Data
             </Button>
-            <Button onPress={() => setShowRequestForm(true)} variant="outline" size={16}>
+            <Button onPress={() => setShowRequestForm(true)} variant="outline" size="md">
               Delete My Data
             </Button>
-            <Button onPress={() => setShowOptOutManager(true)} variant="outline" size={16}>
+            <Button onPress={() => setShowOptOutManager(true)} variant="outline" size="md">
               Manage Opt-Outs
             </Button>
           </Row>
           {optOutStatus?.hasGPCOptOut && (
-            <Row gap={8} padding={12} backgroundColor="$blue2" borderRadius={8} align="center">
+            <Row gap={8} padding="sm" backgroundColor="$blue2" borderRadius={8} align="center">
               <Text color="$blue11">
                 Your browser&apos;s Global Privacy Control signal has been detected and honored. You
                 have been automatically opted out of the sale and sharing of your personal
@@ -115,9 +115,9 @@ export function PrivacyDashboard() {
         {/* Data Categories Summary */}
         <Stack gap={12}>
           <Text>Your Data Categories</Text>
-          <Text color="gray">Categories of personal information we collect about you</Text>
+          <Text color="$gray11">Categories of personal information we collect about you</Text>
           {isLoading ? (
-            <Row padding={24} justify="center">
+            <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
@@ -128,7 +128,7 @@ export function PrivacyDashboard() {
         {/* CCPA Rights */}
         <Stack gap={12}>
           <Text>Your Privacy Rights</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Under the California Consumer Privacy Act (CCPA), you have the following rights
           </Text>
           <PrivacyRightsList />
@@ -137,9 +137,9 @@ export function PrivacyDashboard() {
         {/* Request History */}
         <Stack gap={12}>
           <Text>Request History</Text>
-          <Text color="gray">Your privacy request history and their status</Text>
+          <Text color="$gray11">Your privacy request history and their status</Text>
           {isLoading ? (
-            <Row padding={24} justify="center">
+            <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
@@ -150,9 +150,9 @@ export function PrivacyDashboard() {
         {/* Connected Apps */}
         <Stack gap={12}>
           <Text>Connected Applications</Text>
-          <Text color="gray">Third-party applications that have access to your data</Text>
+          <Text color="$gray11">Third-party applications that have access to your data</Text>
           {isLoading ? (
-            <Row padding={24} justify="center">
+            <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
@@ -163,7 +163,7 @@ export function PrivacyDashboard() {
         {/* Footer Links */}
         <Stack
           gap={12}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
           borderRadius={16}
           borderWidth={1}
@@ -200,7 +200,7 @@ export function PrivacyDashboard() {
 
         {/* Contact Info */}
         <Stack gap={8} paddingBottom={24}>
-          <Text color="gray">
+          <Text color="$gray11">
             Questions about your privacy? Contact our Privacy Team at{' '}
             <Text
               color="$blue10"

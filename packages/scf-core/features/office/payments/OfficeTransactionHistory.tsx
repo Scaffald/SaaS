@@ -153,7 +153,7 @@ export function OfficeTransactionHistory() {
       columnHelper.accessor('stripePaymentIntentId', {
         header: 'Stripe ID',
         cell: (info) => (
-          <Text color="gray" style={{ fontFamily: 'monospace' }}>
+          <Text color="$gray11" style={{ fontFamily: 'monospace' }}>
             {info.getValue().slice(0, 20)}...
           </Text>
         ),
@@ -162,7 +162,7 @@ export function OfficeTransactionHistory() {
         header: 'Actions',
         cell: (info) => (
           <Button
-            size={8}
+            size="xs"
             variant="outline"
             icon={FileText}
             onPress={() => setSelectedTransactionId(info.getValue())}
@@ -176,15 +176,15 @@ export function OfficeTransactionHistory() {
   }, [])
 
   return (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Transaction History</Text>
-          <Text color="gray">View and export payment transaction records.</Text>
+          <Text color="$gray11">View and export payment transaction records.</Text>
         </Stack>
         <Row gap={8}>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={Download}
             onPress={handleExportCsv}
@@ -193,7 +193,7 @@ export function OfficeTransactionHistory() {
             Export CSV
           </Button>
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={RefreshCw}
             onPress={() => transactionsQuery.refetch()}
@@ -205,10 +205,10 @@ export function OfficeTransactionHistory() {
       </Row>
 
       {/* Filters */}
-      <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={12}>
+      <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="sm">
         <Row gap={12} flexWrap="wrap">
           <Stack gap={4} width={200}>
-            <Text color="gray">Status</Text>
+            <Text color="$gray11">Status</Text>
             <ResponsiveSelect
               value={statusFilter ?? ''}
               onValueChange={(value) => setStatusFilter(value || undefined)}
@@ -225,7 +225,7 @@ export function OfficeTransactionHistory() {
             />
           </Stack>
           <Stack gap={4} width={200}>
-            <Text color="gray">Type</Text>
+            <Text color="$gray11">Type</Text>
             <ResponsiveSelect
               value={transactionTypeFilter ?? ''}
               onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
@@ -249,10 +249,10 @@ export function OfficeTransactionHistory() {
       {transactionsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text color="gray">Loading transactions…</Text>
+          <Text color="$gray11">Loading transactions…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="md">
           <DataTable
             columns={transactionsColumns}
             data={transactionsQuery.data?.items ?? []}
@@ -261,7 +261,7 @@ export function OfficeTransactionHistory() {
             emptyMessage="No transactions found."
           />
           {transactionsQuery.data && transactionsQuery.data.totalCount > 0 && (
-            <Text color="gray" marginTop={12}>
+            <Text color="$gray11" marginTop={12}>
               Showing {transactionsQuery.data.items.length} of {transactionsQuery.data.totalCount}{' '}
               transactions
             </Text>

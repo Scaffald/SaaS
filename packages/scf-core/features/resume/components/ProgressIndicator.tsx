@@ -24,7 +24,7 @@ export function ProgressIndicator({
         return (
           <Button
             key={step.id}
-            size={12}
+            size="sm"
             variant="outline"
             theme={isActive ? 'blue' : undefined}
             onPress={() => onStepChange?.(index)}
@@ -35,11 +35,11 @@ export function ProgressIndicator({
                 size={18}
                 backgroundColor={isCompleted ? '$green4' : isActive ? '$blue4' : '$color4'}
               >
-                <Text color="gray">{index + 1}</Text>
+                <Text color="$gray11">{index + 1}</Text>
               </Circle>
               <Stack>
                 <Text>{step.label}</Text>
-                <Text color="gray">
+                <Text color="$gray11">
                   {isCompleted ? 'Completed' : isActive ? 'In Progress' : 'Pending'}
                 </Text>
               </Stack>

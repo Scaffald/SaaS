@@ -111,11 +111,11 @@ export function ScreeningStep({
   }
 
   return (
-    <Stack gap={24} width="100%" maxWidth={600} padding={16}>
+    <Stack gap={24} width="100%" maxWidth={600} padding="md">
       {/* Header */}
       <Stack gap={8}>
-        <Text color="gray">Basic Information</Text>
-        <Text color="gray">
+        <Text color="$gray11">Basic Information</Text>
+        <Text color="$gray11">
           Please provide some basic information to help us match you with this position.
         </Text>
       </Stack>
@@ -173,7 +173,7 @@ export function ScreeningStep({
         <Row gap={12}>
           <Button
             flex={1}
-            size={16}
+            size="md"
             theme={answers.willing_to_relocate ? 'info' : undefined}
             variant={answers.willing_to_relocate ? undefined : 'outlined'}
             onPress={() => {
@@ -185,7 +185,7 @@ export function ScreeningStep({
           </Button>
           <Button
             flex={1}
-            size={16}
+            size="md"
             theme={!answers.willing_to_relocate ? 'info' : undefined}
             variant={!answers.willing_to_relocate ? undefined : 'outlined'}
             onPress={() => {
@@ -218,7 +218,7 @@ export function ScreeningStep({
           }}
         />
         {errors.years_experience && <Text color="$red10">{errors.years_experience}</Text>}
-        <Text color="gray">
+        <Text color="$gray11">
           Include all relevant work experience, including internships and part-time roles
         </Text>
       </Stack>
@@ -228,13 +228,13 @@ export function ScreeningStep({
         <Stack gap={8}>
           <Label>Required skills</Label>
           <Stack
-            padding={12}
+            padding="sm"
             backgroundColor="$gray3"
             borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text color="gray">{requiredSkills.join(', ')}</Text>
+            <Text color="$gray11">{requiredSkills.join(', ')}</Text>
           </Stack>
         </Stack>
       )}
@@ -244,13 +244,13 @@ export function ScreeningStep({
         <Stack gap={8}>
           <Label>Optional skills</Label>
           <Stack
-            padding={12}
+            padding="sm"
             backgroundColor="$gray3"
             borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text color="gray">{optionalSkills.join(', ')}</Text>
+            <Text color="$gray11">{optionalSkills.join(', ')}</Text>
           </Stack>
         </Stack>
       )}
@@ -263,7 +263,7 @@ export function ScreeningStep({
         <Row gap={12}>
           <Button
             flex={1}
-            size={16}
+            size="md"
             theme={answers.is_authorized_to_work ? 'info' : undefined}
             variant={answers.is_authorized_to_work ? undefined : 'outlined'}
             onPress={() => {
@@ -278,7 +278,7 @@ export function ScreeningStep({
           </Button>
           <Button
             flex={1}
-            size={16}
+            size="md"
             theme={!answers.is_authorized_to_work ? 'info' : undefined}
             variant={!answers.is_authorized_to_work ? undefined : 'outlined'}
             onPress={() => {
@@ -319,7 +319,7 @@ export function ScreeningStep({
 
       {/* Continue Button */}
       <Button
-        size={20}
+        size="lg"
         theme="info"
         onPress={validateAndContinue}
         disabled={isSubmitting}

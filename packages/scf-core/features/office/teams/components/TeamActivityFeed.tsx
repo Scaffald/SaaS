@@ -131,9 +131,9 @@ export function TeamActivityFeed({
               <Text>{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
-                <Text color="gray">Mentions: {mentionNames.join(', ')}</Text>
+                <Text color="$gray11">Mentions: {mentionNames.join(', ')}</Text>
               ) : null}
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -148,7 +148,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} assigned this team to job {jobId}
               </Text>
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -163,7 +163,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} updated the job assignment for {jobId}
               </Text>
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -178,7 +178,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} removed this team from job {jobId}
               </Text>
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -193,7 +193,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} transferred ownership to {targetMember}
               </Text>
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -205,7 +205,7 @@ export function TeamActivityFeed({
           content: (
             <Stack gap={4}>
               <Text>{actor} left the team</Text>
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -220,7 +220,7 @@ export function TeamActivityFeed({
               <Text>
                 {actor} performed {normalizedEvent}
               </Text>
-              <Text color="gray">{occurredAt}</Text>
+              <Text color="$gray11">{occurredAt}</Text>
             </Stack>
           ),
         }
@@ -273,11 +273,11 @@ export function TeamActivityFeed({
         flexDirection="column"
       >
         <Row gap={8} align="center">
-          <MessageCircle size={20} accessibilityLabel="Team activity icon" />
+          <MessageCircle size="lg" accessibilityLabel="Team activity icon" />
           <Text accessibilityRole="header">Team activity</Text>
         </Row>
         <Button
-          size={8}
+          size="xs"
           variant="outline"
           onPress={() => void activityQuery.refetch()}
           disabled={activityQuery.isFetching}
@@ -304,12 +304,12 @@ export function TeamActivityFeed({
 
         {mentionOptions.length > 0 ? (
           <Stack gap={8}>
-            <Text color="gray">Mention a teammate (optional)</Text>
+            <Text color="$gray11">Mention a teammate (optional)</Text>
             <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}
-                  size={8}
+                  size="xs"
                   variant="outline"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
@@ -323,7 +323,7 @@ export function TeamActivityFeed({
                   value={mentionSelection}
                   onValueChange={(value) => handleMentionSelection(value)}
                   placeholder="Mention teammate"
-                  size={8}
+                  size="xs"
                   options={[
                     { value: 'none', label: 'Select teammate' },
                     ...availableMentionOptions.map((option) => ({
@@ -339,9 +339,9 @@ export function TeamActivityFeed({
 
         <Row justify="flex-end">
           <Button
-            size={12}
+            size="sm"
             backgroundColor="$color9"
-            color="gray"
+            color="$gray11"
             icon={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}
@@ -349,7 +349,7 @@ export function TeamActivityFeed({
             accessibilityHint="Shares your message with the team"
             width="100%"
           >
-            {isPosting ? <Spinner size="sm" color="gray" /> : 'Post update'}
+            {isPosting ? <Spinner size="sm" color="$gray11" /> : 'Post update'}
           </Button>
         </Row>
       </Stack>
@@ -359,12 +359,12 @@ export function TeamActivityFeed({
       {activityQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical={24}>
           <Spinner size="lg" />
-          <Text color="gray">Loading team activity…</Text>
+          <Text color="$gray11">Loading team activity…</Text>
         </Stack>
       ) : events.length === 0 ? (
         <Stack gap={8}>
           <Text>No activity yet</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Your team&apos;s collaboration history will appear here as members take action.
           </Text>
         </Stack>
@@ -391,7 +391,7 @@ export function TeamActivityFeed({
           {activityQuery.hasNextPage ? (
             <Row justify="center">
               <Button
-                size={12}
+                size="sm"
                 variant="outline"
                 onPress={() => void activityQuery.fetchNextPage()}
                 disabled={activityQuery.isFetchingNextPage}

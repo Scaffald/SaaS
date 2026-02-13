@@ -166,10 +166,10 @@ export function ProfileCertificationsRight() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingTop={32}>
-          <Award size={48} color="gray" />
+          <Award size={48} color="$gray11" />
           <Stack gap={8} align="center">
             <H4>Your Certifications</H4>
-            <Text color="gray">Search and add certifications on the left</Text>
+            <Text color="$gray11">Search and add certifications on the left</Text>
           </Stack>
         </Stack>
       </DashboardWidget>
@@ -192,7 +192,7 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      padding={12}
+                      padding="sm"
                       bordered
                       animation="quick"
                       backgroundColor={
@@ -225,7 +225,7 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text color="gray">{cert.catalog.description}</Text>
+                            <Text color="$gray11">{cert.catalog.description}</Text>
                           )}
                         </Stack>
                       </Row>
@@ -249,7 +249,7 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      padding={12}
+                      padding="sm"
                       bordered
                       animation="quick"
                       backgroundColor={
@@ -282,7 +282,7 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text color="gray">{cert.catalog.description}</Text>
+                            <Text color="$gray11">{cert.catalog.description}</Text>
                           )}
                         </Stack>
                       </Row>
@@ -329,7 +329,7 @@ export function ProfileCertificationsRight() {
                     >
                       {/* Header - Always Visible */}
                       <Row
-                        padding={12}
+                        padding="sm"
                         gap={12}
                         align="center"
                         pressStyle={{ backgroundColor: '$backgroundHover' }}
@@ -337,9 +337,9 @@ export function ProfileCertificationsRight() {
                         onPress={() => toggleExpand(cert.id)}
                       >
                         {isExpanded ? (
-                          <ChevronDown size={20} color="gray" />
+                          <ChevronDown size="lg" color="$gray11" />
                         ) : (
-                          <ChevronRight size={20} color="gray" />
+                          <ChevronRight size="lg" color="$gray11" />
                         )}
 
                         <Stack flex={1} gap={4}>
@@ -367,9 +367,9 @@ export function ProfileCertificationsRight() {
                         <Row gap={8}>
                           {hasProof && (
                             <Button
-                              size={8}
+                              size="xs"
                               chromeless
-                              icon={<ExternalLink size={16} />}
+                              icon={<ExternalLink size="md" />}
                               onPress={(e) => {
                                 e.stopPropagation()
                                 const url =
@@ -382,9 +382,9 @@ export function ProfileCertificationsRight() {
                             </Button>
                           )}
                           <Button
-                            size={8}
+                            size="xs"
                             chromeless
-                            icon={<Trash2 size={16} />}
+                            icon={<Trash2 size="md" />}
                             onPress={(e) => {
                               e.stopPropagation()
                               handleRemove(cert)
@@ -399,7 +399,7 @@ export function ProfileCertificationsRight() {
                       {/* Expanded Content - File Upload & URL */}
                       {isExpanded && (
                         <Stack
-                          padding={12}
+                          padding="sm"
                           paddingTop="$0"
                           gap={16}
                           borderTopWidth={1}
@@ -411,7 +411,7 @@ export function ProfileCertificationsRight() {
                             <Row gap={8} style={{ alignItems: 'center' }}>
                               <Button
                                 flex={1}
-                                icon={<Upload size={16} />}
+                                icon={<Upload size="md" />}
                                 onPress={() => {
                                   // Trigger file input
                                   const input = document.createElement('input')
@@ -431,7 +431,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                               {selectedFiles[cert.id] && (
                                 <Button
-                                  icon={<Upload size={16} />}
+                                  icon={<Upload size="md" />}
                                   onPress={() => handleSaveFile(cert.id)}
                                   disabled={updateProof.isPending}
                                 >
@@ -440,7 +440,7 @@ export function ProfileCertificationsRight() {
                               )}
                             </Row>
                             {cert.certificate_file_path && (
-                              <Text color="gray">
+                              <Text color="$gray11">
                                 Current: {cert.certificate_file_path.split('/').pop()}
                               </Text>
                             )}
@@ -460,7 +460,7 @@ export function ProfileCertificationsRight() {
                               />
                               <Button
                                 variant="primary"
-                                icon={<ExternalLink size={16} />}
+                                icon={<ExternalLink size="md" />}
                                 onPress={() => handleSaveUrl(cert.id)}
                                 disabled={!urlInputs[cert.id] || updateProof.isPending}
                               >
@@ -468,7 +468,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                             </Row>
                             {cert.credential_url && (
-                              <Text color="gray">Current: {cert.credential_url}</Text>
+                              <Text color="$gray11">Current: {cert.credential_url}</Text>
                             )}
                           </Stack>
                         </Stack>

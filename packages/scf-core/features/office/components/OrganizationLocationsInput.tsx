@@ -133,7 +133,7 @@ export function OrganizationLocationsInput({
       {/* Label and Help Text */}
       <Stack gap={8}>
         <Text>Locations *</Text>
-        <Text color="gray" lineHeight={4}>
+        <Text color="$gray11" lineHeight={4}>
           Add one or more locations for this organization
         </Text>
       </Stack>
@@ -145,7 +145,7 @@ export function OrganizationLocationsInput({
             <Stack
               key={locationIds[index]}
               gap={8}
-              padding={12}
+              padding="sm"
               backgroundColor="$background"
               borderWidth={1}
               borderColor="$borderColor"
@@ -182,14 +182,14 @@ export function OrganizationLocationsInput({
               <Row justify="flex-end">
                 <Button
                   variant="outline"
-                  size={12}
+                  size="sm"
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled || value.length === 1}
                   backgroundColor="transparent"
                   borderColor="$color8"
                 >
                   <Button.Icon>
-                    <X size={16} color="$red10" />
+                    <X size="md" color="$red10" />
                   </Button.Icon>
                   <Button.Text color="$red10">Remove Location</Button.Text>
                 </Button>
@@ -198,20 +198,20 @@ export function OrganizationLocationsInput({
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <Stack padding={16} borderWidth={1} borderColor="$borderColor" gap={8}>
-            <Text color="gray">No locations added yet</Text>
+          <Stack padding="md" borderWidth={1} borderColor="$borderColor" gap={8}>
+            <Text color="$gray11">No locations added yet</Text>
             <Button
               variant="outline"
-              size={12}
+              size="sm"
               onPress={handleAddLocation}
               disabled={disabled}
               backgroundColor="transparent"
               borderColor="$color8"
             >
               <Button.Icon>
-                <Plus size={16} color="gray" />
+                <Plus size="md" color="$gray11" />
               </Button.Icon>
-              <Button.Text color="gray">Add First Location</Button.Text>
+              <Button.Text color="$gray11">Add First Location</Button.Text>
             </Button>
           </Stack>
         )}
@@ -221,7 +221,7 @@ export function OrganizationLocationsInput({
       {value.length > 0 && (
         <Button
           variant="outline"
-          size={12}
+          size="sm"
           onPress={handleAddLocation}
           disabled={disabled}
           alignSelf="flex-start"
@@ -229,9 +229,9 @@ export function OrganizationLocationsInput({
           borderColor="$color8"
         >
           <Button.Icon>
-            <Plus size={16} color="gray" />
+            <Plus size="md" color="$gray11" />
           </Button.Icon>
-          <Button.Text color="gray">Add Another Location</Button.Text>
+          <Button.Text color="$gray11">Add Another Location</Button.Text>
         </Button>
       )}
 

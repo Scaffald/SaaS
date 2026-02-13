@@ -48,7 +48,7 @@ export function WorkLogVisibilitySettingsCard() {
     <DashboardWidget>
       <Stack gap={12}>
         <Text>Work log profile visibility</Text>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Choose which verified work logs appear on your public profile. Manage individual entries
           and jump directly to the detailed view for more options.
         </Paragraph>
@@ -56,10 +56,10 @@ export function WorkLogVisibilitySettingsCard() {
         {listQuery.isLoading ? (
           <Row gap={8} align="center">
             <Spinner size="sm" />
-            <Text color="gray">Loading work logs…</Text>
+            <Text color="$gray11">Loading work logs…</Text>
           </Row>
         ) : items.length === 0 ? (
-          <Paragraph color="gray">
+          <Paragraph color="$gray11">
             Create and verify a work log to manage its public visibility.
           </Paragraph>
         ) : (
@@ -81,7 +81,7 @@ export function WorkLogVisibilitySettingsCard() {
                   <Row justify="space-between" align="center">
                     <Stack gap={4} flex={1}>
                       <Text>{item.project?.name ?? 'Work Log'}</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {item.logDate ? formatDate(item.logDate) : 'Date not recorded'}
                       </Text>
                     </Stack>
@@ -91,14 +91,14 @@ export function WorkLogVisibilitySettingsCard() {
                   <Row justify="space-between" align="center" gap={16}>
                     <Stack gap={4} flex={1}>
                       <Text>Show on public profile</Text>
-                      <Paragraph color="gray">
+                      <Paragraph color="$gray11">
                         Only verified logs can be shown publicly. Disable to hide this entry.
                       </Paragraph>
                     </Stack>
                     <ToggleSwitch
                       checked={item.showOnProfile}
                       disabled={!isVerified || updateProfileVisibilityMutation.isPending}
-                      onCheckedChange={(checked) => {
+                      onChange={(checked) => {
                         if (!isVerified && checked) {
                           toast.show({
                             title: 'Pending verification',
@@ -120,14 +120,14 @@ export function WorkLogVisibilitySettingsCard() {
                   <Row justify="space-between" align="center" gap={16}>
                     <Stack gap={4} flex={1}>
                       <Text>Show date on profile</Text>
-                      <Paragraph color="gray">
+                      <Paragraph color="$gray11">
                         Display the logged date alongside this entry on your public profile.
                       </Paragraph>
                     </Stack>
                     <ToggleSwitch
                       checked={item.showDateRangeOnProfile}
                       disabled={!item.showOnProfile || updateProfileVisibilityMutation.isPending}
-                      onCheckedChange={(checked) => {
+                      onChange={(checked) => {
                         updateProfileVisibilityMutation.mutate({
                           workLogId: item.id,
                           showDateRangeOnProfile: checked,
@@ -139,7 +139,7 @@ export function WorkLogVisibilitySettingsCard() {
 
                   <Row justify="flex-end">
                     <Button
-                      size={12}
+                      size="sm"
                       variant="outline"
                       onPress={() =>
                         router.push(

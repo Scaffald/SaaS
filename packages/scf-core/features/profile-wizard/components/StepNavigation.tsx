@@ -35,11 +35,11 @@ export function StepNavigation({
   return (
     <Stack gap={12}>
       <Row gap={12} flexWrap="wrap">
-        <Button size={16} flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
+        <Button size="md" flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
           {isLastStep ? 'Finish' : nextLabel}
         </Button>
         <Button
-          size={16}
+          size="md"
           flex={1}
           onPress={onBack}
           disabled={!canGoBack || isSaving}
@@ -51,20 +51,20 @@ export function StepNavigation({
 
       <Row justify="space-between" flexWrap="wrap" gap={8}>
         {onSkip && (
-          <Button size={12} variant="outline" chromeless onPress={onSkip} disabled={isSaving}>
+          <Button size="sm" variant="outline" chromeless onPress={onSkip} disabled={isSaving}>
             {skipLabel}
           </Button>
         )}
 
         {onSaveForLater && (
-          <Button size={12} chromeless onPress={onSaveForLater} disabled={isSaving}>
+          <Button size="sm" chromeless onPress={onSaveForLater} disabled={isSaving}>
             {saveLabel}
           </Button>
         )}
       </Row>
 
       {isSaving && (
-        <Text color="gray" aria-live="polite">
+        <Text color="$gray11" aria-live="polite">
           Saving your progress...
         </Text>
       )}

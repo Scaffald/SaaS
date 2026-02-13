@@ -224,17 +224,17 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   }
 
   return (
-    <DiscoverCard onPress={handleCardPress} padding={16}>
+    <DiscoverCard onPress={handleCardPress} padding="md">
       <Stack gap={12}>
         {/* Header */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
             <Stack flex={1} gap={4}>
-              <Text color="gray">{job.title}</Text>
+              <Text color="$gray11">{job.title}</Text>
               {job.organization && (
                 <Row gap={8} align="center">
-                  <Building2 size={16} color="gray" />
-                  <Text color="gray">{job.organization.name}</Text>
+                  <Building2 size="md" color="$gray11" />
+                  <Text color="$gray11">{job.organization.name}</Text>
                 </Row>
               )}
             </Stack>
@@ -249,7 +249,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                   backgroundColor={
                     matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9'
                   }
-                  color="gray"
+                  color="$gray11"
                 >
                   {Math.round(matchData.score)}% Match
                 </Chip>
@@ -261,14 +261,14 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           <Row gap={12} flexWrap="wrap">
             {job.location && (
               <Row gap={6} align="center">
-                <MapPin size={14} color="gray" />
-                <Text color="gray">{job.location}</Text>
+                <MapPin size={14} color="$gray11" />
+                <Text color="$gray11">{job.location}</Text>
               </Row>
             )}
             {employmentType && (
               <Row gap={6} align="center">
-                <Briefcase size={14} color="gray" />
-                <Text color="gray">{employmentType}</Text>
+                <Briefcase size={14} color="$gray11" />
+                <Text color="$gray11">{employmentType}</Text>
               </Row>
             )}
             {remoteOption && (
@@ -286,7 +286,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
         {/* Description preview */}
         {descriptionText && (
-          <Text color="gray" numberOfLines={2}>
+          <Text color="$gray11" numberOfLines={2}>
             {descriptionText}
           </Text>
         )}
@@ -296,7 +296,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           <Row gap={12} align="center">
             {payRange && (
               <Row gap={6} align="center">
-                <DollarSign size={16} color="$green10" />
+                <DollarSign size="md" color="$green10" />
                 <Text color="$green10">{payRange}</Text>
               </Row>
             )}
@@ -304,8 +304,8 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
           {postedTime && (
             <Row gap={6} align="center">
-              <Clock size={14} color="gray" />
-              <Text color="gray">{postedTime}</Text>
+              <Clock size={14} color="$gray11" />
+              <Text color="$gray11">{postedTime}</Text>
             </Row>
           )}
         </Row>
@@ -318,7 +318,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               <Chip
                 key={cert.id}
                 backgroundColor="$red10"
-                color="gray"
+                color="$gray11"
                 paddingHorizontal={8}
                 paddingVertical={4}
               >
@@ -328,7 +328,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {job.certifications && job.certifications.length > 3 && (
               <Chip
                 backgroundColor="$color3"
-                color="gray"
+                color="$gray11"
                 paddingHorizontal={8}
                 paddingVertical={4}
               >
@@ -346,7 +346,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 <Chip
                   key={skill.id}
                   backgroundColor="$blue10"
-                  color="gray"
+                  color="$gray11"
                   paddingHorizontal={8}
                   paddingVertical={4}
                 >
@@ -357,7 +357,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {job.skills && job.skills.length > 2 && (
               <Chip
                 backgroundColor="$color3"
-                color="gray"
+                color="$gray11"
                 paddingHorizontal={8}
                 paddingVertical={4}
               >

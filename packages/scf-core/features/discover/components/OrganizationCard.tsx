@@ -23,8 +23,8 @@ export const OrganizationCard = memo(
         >
           <Row justify="space-between" align="center">
             <Row align="center" gap={8} flex={1}>
-              <Building size={20} color={isSelected ? '$color1' : '$blue11'} />
-              <SizableText size={20} color={isSelected ? '$color1' : '$color12'} flex={1}>
+              <Building size="lg" color={isSelected ? '$color1' : '$blue11'} />
+              <SizableText size="lg" color={isSelected ? '$color1' : '$color12'} flex={1}>
                 {organization.name}
               </SizableText>
             </Row>
@@ -50,7 +50,7 @@ export const OrganizationCard = memo(
           )}
 
           <Button
-            size={8}
+            size="xs"
             borderRadius={8}
             backgroundColor={isSelected ? '$color1' : '$blue9'}
             color={isSelected ? '$blue9' : '$color1'}

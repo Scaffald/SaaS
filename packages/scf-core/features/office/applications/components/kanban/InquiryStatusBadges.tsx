@@ -59,7 +59,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           align="center"
           gap={4}
         >
-          <MessageSquare size={12} color="$blue10" />
+          <MessageSquare size="sm" color="$blue10" />
           <Text color="$blue10">{unreadComments}</Text>
         </Row>
       )}
@@ -74,7 +74,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           align="center"
           gap={4}
         >
-          <Check size={12} color="white" />
+          <Check size="sm" color="white" />
           <Text color="white">Check completed</Text>
         </Row>
       )}

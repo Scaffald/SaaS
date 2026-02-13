@@ -37,7 +37,7 @@ export const DomainCard = memo(function DomainCard({
     return (
       <Stack
         gap={12}
-        padding={16}
+        padding="md"
         backgroundColor="$color2"
         borderRadius={16}
         borderWidth={1}
@@ -45,10 +45,10 @@ export const DomainCard = memo(function DomainCard({
         opacity={0.6}
       >
         <Row justify="space-between" align="center">
-          <Text color="gray">{domainName}</Text>
-          <Text color="gray">Incomplete</Text>
+          <Text color="$gray11">{domainName}</Text>
+          <Text color="$gray11">Incomplete</Text>
         </Row>
-        <Text color="gray">
+        <Text color="$gray11">
           Complete {domainName} questions to unlock your results for this domain.
         </Text>
       </Stack>
@@ -60,7 +60,7 @@ export const DomainCard = memo(function DomainCard({
   return (
     <Stack
       gap={12}
-      padding={16}
+      padding="md"
       backgroundColor="$color2"
       borderRadius={16}
       borderWidth={1}
@@ -69,8 +69,8 @@ export const DomainCard = memo(function DomainCard({
       {/* Domain Header */}
       <Row justify="space-between" align="center">
         <Stack gap={4} flex={1}>
-          <Text color="gray">{domainName}</Text>
-          <Text color="gray">{narrative?.summary || ''}</Text>
+          <Text color="$gray11">{domainName}</Text>
+          <Text color="$gray11">{narrative?.summary || ''}</Text>
         </Stack>
         <Stack align="flex-end" gap={4}>
           <Text
@@ -84,7 +84,7 @@ export const DomainCard = memo(function DomainCard({
           >
             {classification.toUpperCase()}
           </Text>
-          <Text color="gray">{Math.round(percentage)}%</Text>
+          <Text color="$gray11">{Math.round(percentage)}%</Text>
         </Stack>
       </Row>
 
@@ -94,12 +94,12 @@ export const DomainCard = memo(function DomainCard({
       </Progress>
 
       {/* Domain Result Text */}
-      {domainResult && <Text color="gray">{domainResult.text}</Text>}
+      {domainResult && <Text color="$gray11">{domainResult.text}</Text>}
 
       {/* Expand/Collapse Button */}
       {score?.facet && narrative?.facets && (
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           onPress={() => setIsExpanded(!isExpanded)}
           icon={isExpanded ? ChevronUp : ChevronDown}

@@ -168,10 +168,10 @@ export function IdVerificationRequestPanel({
   const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
-    <Stack gap={16} padding={16} borderWidth={1} borderColor="$borderColor" borderRadius={16}>
+    <Stack gap={16} padding="md" borderWidth={1} borderColor="$borderColor" borderRadius={16}>
       <Stack gap={4}>
-        <Text color="gray">Trigger Verification</Text>
-        <Text color="gray">
+        <Text color="$gray11">Trigger Verification</Text>
+        <Text color="$gray11">
           Collect payment and generate a Persona inquiry on behalf of an organization.
         </Text>
       </Stack>
@@ -249,8 +249,8 @@ export function IdVerificationRequestPanel({
 
       {!paymentSession ? (
         <Button
-          size={16}
-          theme="blue"
+          size="md"
+          color="primary"
           icon={CreditCard}
           disabled={!canSubmit || requestVerification.isPending}
           onPress={createPaymentSession}
@@ -278,7 +278,7 @@ export function IdVerificationRequestPanel({
 
       {paymentSession ? (
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           icon={RefreshCcw}
           disabled={confirmVerification.isPending}
@@ -288,12 +288,12 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
+      <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={16}>
         <Row gap={8} align="center">
-          <ShieldCheck size={16} color="gray" />
-          <Text color="gray">What happens next?</Text>
+          <ShieldCheck size="md" color="$gray11" />
+          <Text color="$gray11">What happens next?</Text>
         </Row>
-        <Text color="gray">
+        <Text color="$gray11">
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s
           profile details. They receive an email and in-app notification with a secure link to
           upload their government ID. Most verifications finish within minutes.

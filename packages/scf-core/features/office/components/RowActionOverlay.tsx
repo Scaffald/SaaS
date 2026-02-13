@@ -110,7 +110,7 @@ export function RowActionOverlay<TData>({
       borderWidth={1}
       borderColor="$borderColor"
       borderRadius={16}
-      padding={8}
+      padding="xs"
       gap={8}
       boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
       style={{
@@ -121,7 +121,7 @@ export function RowActionOverlay<TData>({
     >
       {onView && (
         <Button
-          size={8}
+          size="xs"
           variant="outline"
           icon={Eye}
           onPress={() => {
@@ -133,7 +133,7 @@ export function RowActionOverlay<TData>({
         </Button>
       )}
       <Button
-        size={8}
+        size="xs"
         variant="outline"
         icon={Pencil}
         onPress={() => {
@@ -148,7 +148,7 @@ export function RowActionOverlay<TData>({
           itemName={itemName}
           itemType={itemType}
           onDuplicate={handleDuplicate}
-          size={8}
+          size="xs"
           variant="outline"
         />
       )}
@@ -156,10 +156,10 @@ export function RowActionOverlay<TData>({
         itemName={itemName}
         itemType={itemType}
         onDelete={handleDelete}
-        size={8}
+        size="xs"
         variant="outline"
       />
-      <Button size={8} variant="outline" icon={X} onPress={onClose}>
+      <Button size="xs" variant="outline" icon={X} onPress={onClose}>
         Close
       </Button>
     </Row>

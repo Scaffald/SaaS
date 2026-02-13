@@ -86,7 +86,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
 
       return (
         <Row gap={8} align="center">
-          <Icon size={16} />
+          <Icon size="md" />
           <Text>{label}</Text>
           {hasOverride && <Text color="$yellow10">(Override)</Text>}
         </Row>
@@ -123,7 +123,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <Stack flex={1} padding={16} gap={16}>
+        <Stack flex={1} padding="md" gap={16}>
           {showHeader && (
             <Stack gap={8}>
               <H2>Projects</H2>
@@ -139,7 +139,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                       value={selectedOrg || ''}
                       onValueChange={setSelectedOrg}
                       placeholder="All Organizations"
-                      size={12}
+                      size="sm"
                       options={[
                         { value: '', label: 'All Organizations' },
                         ...(organizationsData?.organizations ?? []).map(
@@ -158,7 +158,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                     value={statusFilter || ''}
                     onValueChange={setStatusFilter}
                     placeholder="All Statuses"
-                    size={12}
+                    size="sm"
                     options={[
                       { value: '', label: 'All Statuses' },
                       { value: 'planning', label: 'Planning' },
@@ -188,7 +188,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                 {projects.map((project: (typeof projects)[0]) => (
                   <Row
                     key={project.id}
-                    padding={16}
+                    padding="md"
                     backgroundColor="$background"
                     borderRadius={16}
                     justify="space-between"
@@ -205,7 +205,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                     <Row gap={8} align="center">
                       {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                       <Button
-                        size={8}
+                        size="xs"
                         icon={Pencil}
                         onPress={() => {
                           router.push(

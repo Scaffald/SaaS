@@ -29,7 +29,7 @@ export function IPIPAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
           <Spinner size="lg" color="$blue7" />
-          <Text color="gray">Loading...</Text>
+          <Text color="$gray11">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -59,16 +59,16 @@ export function IPIPAssessmentWidget() {
             <Stack gap={spacing.xs} flex={1}>
               <Row align="center" gap={8}>
                 <CheckCircle2 size={4} color="$green10" />
-                <Text color="gray">Personality Assessment</Text>
+                <Text color="$gray11">Personality Assessment</Text>
               </Row>
-              <Text color="gray">Your Big Five personality profile is complete</Text>
+              <Text color="$gray11">Your Big Five personality profile is complete</Text>
             </Stack>
           </Row>
 
           {/* Results Preview */}
           <Stack
             gap={spacing.sm}
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderRadius={12}
             borderWidth={1}
@@ -76,10 +76,10 @@ export function IPIPAssessmentWidget() {
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
-                <Text color="gray">Your Archetype</Text>
+                <Text color="$gray11">Your Archetype</Text>
                 <Text color="$blue11">{results.archetype.name}</Text>
                 {results.archetype.confidence > 0 && (
-                  <Text color="gray">{results.archetype.confidence}% confidence</Text>
+                  <Text color="$gray11">{results.archetype.confidence}% confidence</Text>
                 )}
               </Stack>
             </Row>
@@ -87,7 +87,7 @@ export function IPIPAssessmentWidget() {
             {/* Top 3 Domain Scores Preview */}
             {results.normalizedScores && (
               <Stack gap={8} marginTop={8}>
-                <Text color="gray">Top Traits</Text>
+                <Text color="$gray11">Top Traits</Text>
                 {DOMAIN_ORDER.slice(0, 3).map((domain) => {
                   const normalized = results.normalizedScores?.[domain]
                   if (!normalized) return null
@@ -98,13 +98,13 @@ export function IPIPAssessmentWidget() {
 
                   return (
                     <Row key={domain} justify="space-between" align="center" gap={8}>
-                      <Text color="gray" flex={1}>
+                      <Text color="$gray11" flex={1}>
                         {domainName}
                       </Text>
                       <Progress value={percentage} max={100} size={4} width={100}>
                         <Progress.Indicator animation="bouncy" />
                       </Progress>
-                      <Text color="gray" style={{ minWidth: 45 }}>
+                      <Text color="$gray11" style={{ minWidth: 45 }}>
                         {percentage}%
                       </Text>
                       <Text
@@ -122,7 +122,7 @@ export function IPIPAssessmentWidget() {
             )}
           </Stack>
 
-          <Button variant="primary" onPress={handleViewResults} size={20}>
+          <Button variant="primary" onPress={handleViewResults} size="lg">
             <Button.Text>View Full Results</Button.Text>
             <ArrowRight size={4} />
           </Button>
@@ -136,8 +136,8 @@ export function IPIPAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="gray">Personality Assessment</Text>
-          <Text color="gray">
+          <Text color="$gray11">Personality Assessment</Text>
+          <Text color="$gray11">
             Answer 120 questions to discover your personality traits using the Big Five personality
             model.
           </Text>
@@ -147,8 +147,8 @@ export function IPIPAssessmentWidget() {
         {hasStarted && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text color="gray">Progress</Text>
-              <Text color="gray">
+              <Text color="$gray11">Progress</Text>
+              <Text color="$gray11">
                 {progress}/120 ({progressPercentage}%)
               </Text>
             </Row>
@@ -163,16 +163,16 @@ export function IPIPAssessmentWidget() {
               <Progress.Indicator animation="bouncy" />
             </Progress>
             {completedDomains > 0 && (
-              <Text color="gray">{completedDomains} of 5 domains completed</Text>
+              <Text color="$gray11">{completedDomains} of 5 domains completed</Text>
             )}
           </Stack>
         )}
 
-        <Button variant="primary" onPress={handleStart} size={20}>
+        <Button variant="primary" onPress={handleStart} size="lg">
           <Button.Text>{hasStarted ? 'Continue Questions' : 'Start Questions'}</Button.Text>
         </Button>
 
-        <Text color="gray">
+        <Text color="$gray11">
           {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}
         </Text>
       </Stack>

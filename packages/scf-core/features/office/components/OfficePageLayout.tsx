@@ -104,7 +104,7 @@ export function OfficePageLayout<TData>({
   children,
 }: OfficePageLayoutProps<TData>) {
   const content = (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack flex={1} padding="md" gap={16}>
       {beforeContent}
       {!hideHeader && (
         <Row justify="space-between" align="center">

@@ -93,7 +93,7 @@ function Checkbox({
 }) {
   return (
     <Row
-      padding={12}
+      padding="sm"
       backgroundColor={checked ? '$blue2' : '$color2'}
       borderRadius={8}
       borderWidth={1}
@@ -118,7 +118,7 @@ function Checkbox({
       </Stack>
       <Stack flex={1} gap={4}>
         <Text>{label}</Text>
-        {description && <Text color="gray">{description}</Text>}
+        {description && <Text color="$gray11">{description}</Text>}
       </Stack>
     </Row>
   )
@@ -140,7 +140,7 @@ function RadioButton({
 }) {
   return (
     <Row
-      padding={12}
+      padding="sm"
       backgroundColor={selected ? '$blue2' : '$color2'}
       borderRadius={8}
       borderWidth={1}
@@ -164,7 +164,7 @@ function RadioButton({
       </Stack>
       <Stack flex={1} gap={4}>
         <Text>{label}</Text>
-        {description && <Text color="gray">{description}</Text>}
+        {description && <Text color="$gray11">{description}</Text>}
       </Stack>
     </Row>
   )
@@ -215,7 +215,7 @@ export function DataRequestForm({
   // Submitted state
   if (step === 'submitted') {
     return (
-      <Stack padding={16} gap={16} align="center">
+      <Stack padding="md" gap={16} align="center">
         <Stack
           width={80}
           height={80}
@@ -227,7 +227,7 @@ export function DataRequestForm({
           <Text color="$green10">✓</Text>
         </Stack>
         <Text textAlign="center">Request Submitted</Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           Your{' '}
           {requestType === 'export'
             ? 'data export'
@@ -237,7 +237,7 @@ export function DataRequestForm({
           request has been submitted. We will process your request within 45 days as required by
           CCPA.
         </Text>
-        <Text color="gray" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           You will receive email updates about the status of your request.
         </Text>
         <Button onPress={onCancel} marginTop={16}>
@@ -248,11 +248,11 @@ export function DataRequestForm({
   }
 
   return (
-    <Stack gap={16} padding={16}>
+    <Stack gap={16} padding="md">
       {/* Header */}
       <Stack gap={8}>
         <Text>{typeInfo.title}</Text>
-        <Text color="gray">{typeInfo.description}</Text>
+        <Text color="$gray11">{typeInfo.description}</Text>
       </Stack>
 
       {/* Step 1: Select Request Type */}
@@ -297,7 +297,7 @@ export function DataRequestForm({
               {requestType === 'correction' ? 'Describe Correction' : 'Select Data Categories'}
             </Text>
             {requestType !== 'correction' && (
-              <Button size={8} variant="outline" onPress={selectAllCategories}>
+              <Button size="xs" variant="outline" onPress={selectAllCategories}>
                 Select All
               </Button>
             )}
@@ -305,14 +305,14 @@ export function DataRequestForm({
 
           {requestType === 'correction' ? (
             <Stack gap={8}>
-              <Text color="gray">
+              <Text color="$gray11">
                 Please describe what information is incorrect and what the correct information
                 should be:
               </Text>
               <Stack
                 as="textarea"
                 minHeight={150}
-                padding={12}
+                padding="sm"
                 backgroundColor="$color2"
                 borderRadius={8}
                 borderWidth={1}
@@ -360,10 +360,10 @@ export function DataRequestForm({
           <Text>Confirm Your Request</Text>
 
           {/* Summary */}
-          <Stack padding={12} backgroundColor="$color2" borderRadius={8} gap={8}>
+          <Stack padding="sm" backgroundColor="$color2" borderRadius={8} gap={8}>
             <Text>Request Type: {REQUEST_TYPE_INFO[requestType].title}</Text>
             {requestType !== 'correction' && (
-              <Text color="gray">
+              <Text color="$gray11">
                 Categories:{' '}
                 {selectedCategories.length === DATA_CATEGORIES.length
                   ? 'All categories'
@@ -377,7 +377,7 @@ export function DataRequestForm({
           {/* Warning for deletion */}
           {typeInfo.warning && (
             <Row
-              padding={12}
+              padding="sm"
               backgroundColor="$red2"
               borderRadius={8}
               borderWidth={1}
@@ -388,7 +388,7 @@ export function DataRequestForm({
           )}
 
           {/* Processing time info */}
-          <Row padding={12} backgroundColor="$blue2" borderRadius={8}>
+          <Row padding="sm" backgroundColor="$blue2" borderRadius={8}>
             <Text color="$blue11">
               Your request will be processed within 45 days as required by CCPA. You will receive
               email notifications about the status of your request.

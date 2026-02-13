@@ -87,12 +87,12 @@ export function AddTeamMemberModal({
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Add team member">
       <Stack gap={16}>
-        <Text color="gray">
+        <Text color="$gray11">
           Invite an existing organization member to collaborate on this team.
         </Text>
 
         <Stack gap={8}>
-          <Text color="gray">Member</Text>
+          <Text color="$gray11">Member</Text>
           <UserSearch
             value={selectedUserId}
             onUserSelect={(id, name) => {
@@ -107,11 +107,11 @@ export function AddTeamMemberModal({
         </Stack>
 
         <Stack gap={8}>
-          <Text color="gray">Role</Text>
+          <Text color="$gray11">Role</Text>
           {isLoadingRoles ? (
             <Row align="center" gap={8}>
               <Spinner size="sm" />
-              <Text color="gray">Loading roles...</Text>
+              <Text color="$gray11">Loading roles...</Text>
             </Row>
           ) : (
             <ResponsiveSelect
@@ -137,10 +137,10 @@ export function AddTeamMemberModal({
           <Button
             onPress={handleSubmit}
             backgroundColor="$color9"
-            color="gray"
+            color="$gray11"
             disabled={addMemberMutation.isPending}
           >
-            {addMemberMutation.isPending ? <Spinner size="sm" color="gray" /> : 'Add Member'}
+            {addMemberMutation.isPending ? <Spinner size="sm" color="$gray11" /> : 'Add Member'}
           </Button>
         </Row>
       </Stack>

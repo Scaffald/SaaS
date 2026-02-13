@@ -98,7 +98,7 @@ export function CertificationsStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Add certifications & licenses</Text>
-        <Paragraph id={guidanceId} color="gray" aria-live="polite">
+        <Paragraph id={guidanceId} color="$gray11" aria-live="polite">
           {helperCopy}
         </Paragraph>
       </Stack>
@@ -110,18 +110,18 @@ export function CertificationsStep({
               <Row justify="space-between" align="center">
                 <Stack gap={4}>
                   <Text>{cert.name}</Text>
-                  {cert.issuer && <Text color="gray">{cert.issuer}</Text>}
+                  {cert.issuer && <Text color="$gray11">{cert.issuer}</Text>}
                   <Row gap={8}>
                     {cert.issuedOn && (
-                      <Text color="gray">Issued {formatDisplayDate(cert.issuedOn)}</Text>
+                      <Text color="$gray11">Issued {formatDisplayDate(cert.issuedOn)}</Text>
                     )}
                     {cert.expiresOn && (
-                      <Text color="gray">• Expires {formatDisplayDate(cert.expiresOn)}</Text>
+                      <Text color="$gray11">• Expires {formatDisplayDate(cert.expiresOn)}</Text>
                     )}
                   </Row>
                 </Stack>
                 <Button
-                  size={8}
+                  size="xs"
                   variant="outline"
                   onPress={() => removeCertification(cert.id)}
                   aria-label={`Remove ${cert.name}`}

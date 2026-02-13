@@ -53,31 +53,31 @@ export const PaymentStep = memo(function PaymentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="gray">Payment & Authorization</Text>
-        <Text color="gray">
+        <Text color="$gray11">Payment & Authorization</Text>
+        <Text color="$gray11">
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
         </Text>
       </Stack>
 
-      <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
-        <Text color="gray">Total Due</Text>
-        <Text color="gray">{formatCurrency(payment.costCents)}</Text>
-        <Text color="gray">
+      <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
+        <Text color="$gray11">Total Due</Text>
+        <Text color="$gray11">{formatCurrency(payment.costCents)}</Text>
+        <Text color="$gray11">
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
       </Stack>
 
       {submitError && (
-        <Stack backgroundColor="$red3" padding={12} borderRadius={12}>
+        <Stack backgroundColor="$red3" padding="sm" borderRadius={12}>
           <Text color="$red11">{submitError.message}</Text>
         </Stack>
       )}
 
       {!paymentSession && (
         <Button
-          size={16}
-          theme="blue"
+          size="md"
+          color="primary"
           disabled={!canCreateSession || isCreatingSession || isConfirmingPayment}
           onPress={() => onCreatePaymentSession()}
         >

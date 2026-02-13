@@ -305,7 +305,7 @@ export function TeamForm({
               placeholder="field-ops-team"
               borderColor={errors.slug ? '$red8' : '$borderColor'}
             />
-            <Text color="gray">Lowercase, URL-friendly username for the team</Text>
+            <Text color="$gray11">Lowercase, URL-friendly username for the team</Text>
             {errors.slug && <Text color="$red10">{errors.slug.message}</Text>}
           </Stack>
         )}
@@ -449,7 +449,7 @@ export function TeamForm({
 
   if (isOptionsLoading && roles.length === 0) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={24}>
+      <Stack flex={1} align="center" justify="center" padding="xl">
         <Spinner size="lg" />
         <Text marginTop={16}>Loading team options…</Text>
       </Stack>
@@ -460,7 +460,7 @@ export function TeamForm({
     <ScrollView
       flex={1}
       backgroundColor="$color2"
-      padding={20}
+      padding="lg"
       showsVerticalScrollIndicator={false}
     >
       {renderContent()}

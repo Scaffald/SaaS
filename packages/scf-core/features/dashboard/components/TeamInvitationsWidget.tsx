@@ -31,12 +31,12 @@ export function TeamInvitationList({
         borderWidth={1}
         borderColor="$borderColor"
         borderRadius={16}
-        padding={16}
+        padding="md"
         backgroundColor="$color2"
       >
         <Text>No pending invitations</Text>
         {showEmptyStateDescription ? (
-          <Text color="gray">
+          <Text color="$gray11">
             You&apos;re all caught up. New invitations will appear here for quick review.
           </Text>
         ) : null}
@@ -59,7 +59,7 @@ export function TeamInvitationList({
         return (
           <Card
             key={invitation.id}
-            padding={16}
+            padding="md"
             borderWidth={1}
             borderColor="$borderColor"
             gap={12}
@@ -68,10 +68,10 @@ export function TeamInvitationList({
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
                 <Text>{teamName}</Text>
-                <Text color="gray">{organizationName}</Text>
+                <Text color="$gray11">{organizationName}</Text>
                 <Row gap={8} align="center" marginTop={8}>
-                  <Clock size={16} color="gray" />
-                  <Text color="gray">
+                  <Clock size="md" color="$gray11" />
+                  <Text color="$gray11">
                     Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}
                   </Text>
@@ -79,7 +79,7 @@ export function TeamInvitationList({
               </Stack>
               <Row gap={8} marginLeft={16} flexShrink={0} flexWrap="wrap" justify="flex-end">
                 <Button
-                  size={8}
+                  size="xs"
                   icon={XCircle}
                   variant="outline"
                   color="$red10"
@@ -96,10 +96,10 @@ export function TeamInvitationList({
                   Decline
                 </Button>
                 <Button
-                  size={8}
+                  size="xs"
                   icon={CheckCircle}
                   backgroundColor="$color9"
-                  color="gray"
+                  color="$gray11"
                   disabled={isProcessing}
                   onPress={async () => {
                     setPendingId(invitation.id)
@@ -110,7 +110,7 @@ export function TeamInvitationList({
                     }
                   }}
                 >
-                  {isPending ? <Spinner size="sm" color="gray" /> : 'Accept'}
+                  {isPending ? <Spinner size="sm" color="$gray11" /> : 'Accept'}
                 </Button>
               </Row>
             </Row>
@@ -175,7 +175,7 @@ export function TeamInvitationsWidget() {
 
   return (
     <Card
-      padding={16}
+      padding="md"
       borderColor="$borderColor"
       borderWidth={1}
       gap={16}
@@ -183,12 +183,12 @@ export function TeamInvitationsWidget() {
     >
       <Row justify="space-between" align="center">
         <Row gap={8} align="center">
-          <Users size={20} />
+          <Users size="lg" />
           <Text>Team invitations</Text>
         </Row>
         <Button
           variant="outline"
-          size={8}
+          size="xs"
           onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
         >
           Manage
@@ -198,7 +198,7 @@ export function TeamInvitationsWidget() {
       {invitationsQuery.isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
           <Spinner size="lg" />
-          <Text color="gray">Checking for invitations…</Text>
+          <Text color="$gray11">Checking for invitations…</Text>
         </Stack>
       ) : (
         <>
@@ -211,7 +211,7 @@ export function TeamInvitationsWidget() {
           {remainingCount > 0 ? (
             <>
               <Separator />
-              <Text color="gray">
+              <Text color="$gray11">
                 {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
                 inbox.
               </Text>

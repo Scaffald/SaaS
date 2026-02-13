@@ -345,7 +345,7 @@ export function AdminCheckReviewDialog({
             <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
               <Dialog.Title>Review background check</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size={8} variant="outline" disabled={isSubmitting}>
+                <Button size="xs" variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>
@@ -353,26 +353,26 @@ export function AdminCheckReviewDialog({
 
             {!checkId ? (
               <Stack gap={12} align="center" justify="center" paddingVertical={24}>
-                <Text color="gray">Select a background check to review the full details.</Text>
+                <Text color="$gray11">Select a background check to review the full details.</Text>
               </Stack>
             ) : detailQuery.isLoading || detailQuery.isFetching ? (
               <Stack gap={12} align="center" justify="center" paddingVertical={24}>
                 <Spinner size="lg" />
-                <Text color="gray">Loading background check…</Text>
+                <Text color="$gray11">Loading background check…</Text>
               </Stack>
             ) : detailQuery.isError ? (
               <Stack
                 gap={12}
-                padding={16}
+                padding="md"
                 backgroundColor="$color2"
                 borderRadius={16}
                 borderWidth={1}
                 borderColor="$borderColor"
               >
-                <Text color="gray">We couldn't load this background check. Please try again.</Text>
-                <Button size={12} variant="outline" onPress={() => detailQuery.refetch()}>
+                <Text color="$gray11">We couldn't load this background check. Please try again.</Text>
+                <Button size="sm" variant="outline" onPress={() => detailQuery.refetch()}>
                   <Row gap={8} align="center">
-                    <RefreshCcw size={16} />
+                    <RefreshCcw size="md" />
                     <Text>Retry</Text>
                   </Row>
                 </Button>
@@ -380,40 +380,40 @@ export function AdminCheckReviewDialog({
             ) : !detailedCheck ? (
               <Stack gap={12} align="center" justify="center" paddingVertical={24}>
                 <Spinner size="lg" />
-                <Text color="gray">Preparing detailed background check information…</Text>
+                <Text color="$gray11">Preparing detailed background check information…</Text>
               </Stack>
             ) : (
               <Stack gap={16}>
                 <Stack
                   gap={12}
-                  padding={12}
+                  padding="sm"
                   backgroundColor="$color2"
                   borderRadius={16}
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
                   <Stack gap={4}>
-                    <Text color="gray">{workerName}</Text>
-                    {workerEmail ? <Text color="gray">{workerEmail}</Text> : null}
+                    <Text color="$gray11">{workerName}</Text>
+                    {workerEmail ? <Text color="$gray11">{workerEmail}</Text> : null}
                     {organizationName ? (
-                      <Text color="gray">Organization: {organizationName}</Text>
+                      <Text color="$gray11">Organization: {organizationName}</Text>
                     ) : null}
                   </Stack>
                   <Row gap={12} flexWrap="wrap">
-                    <Text color="gray">
-                      Package: <Text color="gray">{packageLabel}</Text>
+                    <Text color="$gray11">
+                      Package: <Text color="$gray11">{packageLabel}</Text>
                     </Text>
-                    <Text color="gray">Created: {formatDateTime(detailedCheck.created_at)}</Text>
+                    <Text color="$gray11">Created: {formatDateTime(detailedCheck.created_at)}</Text>
                     {(() => {
                       const checkWithCompletedAt = detailedCheck as typeof detailedCheck & {
                         completed_at?: string | null
                       }
                       const completedAt = checkWithCompletedAt.completed_at
                       if (!completedAt) return null
-                      return <Text color="gray">Completed: {formatDateTime(completedAt)}</Text>
+                      return <Text color="$gray11">Completed: {formatDateTime(completedAt)}</Text>
                     })()}
                     {detailedCheck.expires_at ? (
-                      <Text color="gray">Expires: {formatDateTime(detailedCheck.expires_at)}</Text>
+                      <Text color="$gray11">Expires: {formatDateTime(detailedCheck.expires_at)}</Text>
                     ) : null}
                   </Row>
                   {statusMeta && statusColors ? (
@@ -428,7 +428,7 @@ export function AdminCheckReviewDialog({
                       gap={8}
                       style={{ alignSelf: 'flex-start' }}
                     >
-                      <CheckCircle2 size={16} color={statusColors.text} />
+                      <CheckCircle2 size="md" color={statusColors.text} />
                       <Text color={statusColors.text}>{statusMeta.label}</Text>
                     </Row>
                   ) : null}
@@ -497,21 +497,21 @@ export function AdminCheckReviewDialog({
                       value={expiresAt}
                       onChangeText={setExpiresAt}
                     />
-                    <Text color="gray">Leave blank to clear expiration.</Text>
+                    <Text color="$gray11">Leave blank to clear expiration.</Text>
                   </Stack>
                 </Stack>
 
                 <Separator />
 
                 <Stack gap={12}>
-                  <Text color="gray">Provider summary</Text>
+                  <Text color="$gray11">Provider summary</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.summary)}
                     editable={false}
                     backgroundColor="$color2"
                   />
-                  <Text color="gray">Provider findings</Text>
+                  <Text color="$gray11">Provider findings</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.findings)}
@@ -524,14 +524,14 @@ export function AdminCheckReviewDialog({
 
                 <Stack gap={12}>
                   <Row justify="space-between" align="center">
-                    <Text color="gray">Supporting documents</Text>
-                    <Text color="gray">
+                    <Text color="$gray11">Supporting documents</Text>
+                    <Text color="$gray11">
                       {documents.length} {documents.length === 1 ? 'document' : 'documents'}
                     </Text>
                   </Row>
 
                   {documents.length === 0 ? (
-                    <Text color="gray">No documents uploaded for this background check.</Text>
+                    <Text color="$gray11">No documents uploaded for this background check.</Text>
                   ) : (
                     <Stack gap={8}>
                       {documents.map((document) => {
@@ -542,7 +542,7 @@ export function AdminCheckReviewDialog({
                             key={document.id}
                             justify="space-between"
                             align="center"
-                            padding={12}
+                            padding="sm"
                             backgroundColor="$color2"
                             borderRadius={12}
                             borderWidth={1}
@@ -550,15 +550,15 @@ export function AdminCheckReviewDialog({
                             gap={12}
                           >
                             <Stack gap={4} flex={1}>
-                              <Text color="gray">
+                              <Text color="$gray11">
                                 {document.file_name ?? document.document_type ?? 'Document'}
                               </Text>
-                              <Text color="gray">
+                              <Text color="$gray11">
                                 Uploaded {formatDateTime(document.uploaded_at)}
                               </Text>
                             </Stack>
                             <Button
-                              size={8}
+                              size="xs"
                               variant="outline"
                               disabled={isDocumentLoading}
                               onPress={() => handleDownloadDocument(document.id)}
@@ -567,7 +567,7 @@ export function AdminCheckReviewDialog({
                                 {isDocumentLoading ? (
                                   <Spinner size="sm" />
                                 ) : (
-                                  <DownloadCloud size={16} />
+                                  <DownloadCloud size="md" />
                                 )}
                                 <Text>{isDocumentLoading ? 'Preparing…' : 'View'}</Text>
                               </Row>
@@ -582,11 +582,11 @@ export function AdminCheckReviewDialog({
                 <Separator />
 
                 <Stack gap={12}>
-                  <Text color="gray">Privacy controls</Text>
+                  <Text color="$gray11">Privacy controls</Text>
 
                   <Stack
                     gap={12}
-                    padding={12}
+                    padding="sm"
                     backgroundColor="$color2"
                     borderRadius={16}
                     borderWidth={1}
@@ -594,15 +594,15 @@ export function AdminCheckReviewDialog({
                   >
                     <Row justify="space-between" align="center">
                       <Stack gap={4} flex={1} paddingRight={12}>
-                        <Text color="gray">Show verified badge</Text>
-                        <Text color="gray">
+                        <Text color="$gray11">Show verified badge</Text>
+                        <Text color="$gray11">
                           Allow organizations to see that this worker's background check is current.
                         </Text>
                       </Stack>
                       <Switch
-                        size={12}
+                        size="sm"
                         checked={sharePublicly}
-                        onCheckedChange={(value) =>
+                        onChange={(value) =>
                           handlePrivacyUpdate(Boolean(value), sharedOrganizations)
                         }
                         disabled={isPrivacySaving}
@@ -613,16 +613,16 @@ export function AdminCheckReviewDialog({
                   </Stack>
 
                   <Stack gap={8}>
-                    <Text color="gray">Shared with organizations</Text>
+                    <Text color="$gray11">Shared with organizations</Text>
                     {sharedOrganizations.length === 0 ? (
                       <Stack
-                        padding={12}
+                        padding="sm"
                         backgroundColor="$color2"
                         borderRadius={12}
                         borderWidth={1}
                         borderColor="$borderColor"
                       >
-                        <Text color="gray">
+                        <Text color="$gray11">
                           No organizations currently have access to this background check.
                         </Text>
                       </Stack>
@@ -633,15 +633,15 @@ export function AdminCheckReviewDialog({
                             key={organizationId}
                             justify="space-between"
                             align="center"
-                            padding={12}
+                            padding="sm"
                             backgroundColor="$color2"
                             borderRadius={12}
                             borderWidth={1}
                             borderColor="$borderColor"
                           >
-                            <Text color="gray">{organizationId}</Text>
+                            <Text color="$gray11">{organizationId}</Text>
                             <Button
-                              size={8}
+                              size="xs"
                               variant="outline"
                               disabled={isPrivacySaving}
                               onPress={() =>
@@ -664,30 +664,30 @@ export function AdminCheckReviewDialog({
                   <>
                     <Separator />
                     <Stack gap={8}>
-                      <Text color="gray">Disputes</Text>
+                      <Text color="$gray11">Disputes</Text>
                       <Stack gap={8}>
                         {disputes.map((dispute) => (
                           <Stack
                             key={dispute.id}
                             gap={4}
-                            padding={12}
+                            padding="sm"
                             backgroundColor="$color2"
                             borderRadius={12}
                             borderWidth={1}
                             borderColor="$borderColor"
                           >
-                            <Text color="gray">{dispute.status}</Text>
-                            <Text color="gray">Submitted {formatDateTime(dispute.created_at)}</Text>
+                            <Text color="$gray11">{dispute.status}</Text>
+                            <Text color="$gray11">Submitted {formatDateTime(dispute.created_at)}</Text>
                             {dispute.resolved_at ? (
-                              <Text color="gray">
+                              <Text color="$gray11">
                                 Resolved {formatDateTime(dispute.resolved_at)}
                               </Text>
                             ) : null}
                             {dispute.dispute_reason ? (
-                              <Text color="gray">Reason: {dispute.dispute_reason}</Text>
+                              <Text color="$gray11">Reason: {dispute.dispute_reason}</Text>
                             ) : null}
                             {dispute.dispute_details ? (
-                              <Text color="gray">Details: {dispute.dispute_details}</Text>
+                              <Text color="$gray11">Details: {dispute.dispute_details}</Text>
                             ) : null}
                           </Stack>
                         ))}
@@ -700,7 +700,7 @@ export function AdminCheckReviewDialog({
                   <>
                     <Separator />
                     <Stack gap={8}>
-                      <Text color="gray">Status history</Text>
+                      <Text color="$gray11">Status history</Text>
                       <Stack gap={8} overflow="scroll" style={{ maxHeight: 200 }}>
                         {statusHistory
                           .slice()
@@ -715,20 +715,20 @@ export function AdminCheckReviewDialog({
                                 borderWidth={1}
                                 borderColor="$borderColor"
                                 borderRadius={16}
-                                padding={12}
+                                padding="sm"
                                 gap={4}
                                 backgroundColor="$color2"
                               >
-                                <Text color="gray">
+                                <Text color="$gray11">
                                   {meta?.label ?? entry?.status ?? 'Status update'}
                                 </Text>
-                                <Text color="gray">
+                                <Text color="$gray11">
                                   {entry?.occurred_at
                                     ? new Date(entry.occurred_at).toLocaleString()
                                     : '—'}
                                 </Text>
                                 {entry?.notes ? (
-                                  <Text color="gray">Notes: {entry.notes}</Text>
+                                  <Text color="$gray11">Notes: {entry.notes}</Text>
                                 ) : null}
                               </Stack>
                             )
@@ -744,15 +744,15 @@ export function AdminCheckReviewDialog({
 
             <Row gap={8} justify="flex-end">
               <Dialog.Close asChild>
-                <Button size={12} variant="outline" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Cancel
                 </Button>
               </Dialog.Close>
-              <Button size={12} onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
+              <Button size="sm" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
                 {isSubmitting ? (
                   <Row gap={8} align="center">
-                    <Spinner size="sm" color="gray" />
-                    <Text color="gray">Saving…</Text>
+                    <Spinner size="sm" color="$gray11" />
+                    <Text color="$gray11">Saving…</Text>
                   </Row>
                 ) : (
                   'Save changes'

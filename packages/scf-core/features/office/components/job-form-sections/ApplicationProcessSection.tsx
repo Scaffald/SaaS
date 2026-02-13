@@ -119,24 +119,24 @@ export function ApplicationProcessSection({
   return (
     <Stack
       gap={16}
-      padding={16}
+      padding="md"
       backgroundColor="$background"
       borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text>Application Process</Text>
-      <Text color="gray">Configure the application process and requirements</Text>
+      <Text color="$gray11">Configure the application process and requirements</Text>
 
       {/* Requires Assessment */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Requires assessment</Label>
-          <Text color="gray">Skills or aptitude test required</Text>
+          <Text color="$gray11">Skills or aptitude test required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.requires_assessment || false}
-          onCheckedChange={(checked) => handleChange('requires_assessment', checked)}
+          onChange={(checked) => handleChange('requires_assessment', checked)}
           aria-label="Requires assessment"
         />
       </Row>
@@ -156,11 +156,11 @@ export function ApplicationProcessSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Requires video interview</Label>
-          <Text color="gray">Pre-recorded video interview required</Text>
+          <Text color="$gray11">Pre-recorded video interview required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.requires_video_interview || false}
-          onCheckedChange={(checked) => handleChange('requires_video_interview', checked)}
+          onChange={(checked) => handleChange('requires_video_interview', checked)}
           aria-label="Requires video interview"
         />
       </Row>
@@ -177,7 +177,7 @@ export function ApplicationProcessSection({
             handleChange('estimated_application_time_minutes', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text color="gray">How long it takes to complete the application</Text>
+        <Text color="$gray11">How long it takes to complete the application</Text>
       </Stack>
 
       {/* Application Expiry */}
@@ -192,7 +192,7 @@ export function ApplicationProcessSection({
             handleChange('application_expiry_days', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text color="gray">Days after which started applications expire</Text>
+        <Text color="$gray11">Days after which started applications expire</Text>
       </Stack>
 
       {/* Inquiry Capability Questions */}
@@ -205,7 +205,7 @@ export function ApplicationProcessSection({
       >
         <Stack gap={4}>
           <Text>Inquiry Capability Questions</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Define capability questions that will be asked during the inquiry phase
           </Text>
         </Stack>
@@ -215,18 +215,18 @@ export function ApplicationProcessSection({
           localState.inquiry_capability_questions.length > 0 && (
             <Stack gap={8}>
               {localState.inquiry_capability_questions.map((question, index) => (
-                <Card key={question.name} padding={12} gap={8} backgroundColor="$color2">
+                <Card key={question.name} padding="sm" gap={8} backgroundColor="$color2">
                   <Row justify="space-between" align="center">
                     <Stack flex={1} gap={4}>
                       <Text>{question.label}</Text>
                       <Row gap={8}>
-                        <Text color="gray">Type: {question.type}</Text>
-                        {question.unit && <Text color="gray">Unit: {question.unit}</Text>}
+                        <Text color="$gray11">Type: {question.type}</Text>
+                        {question.unit && <Text color="$gray11">Unit: {question.unit}</Text>}
                         {question.required && <Text color="$blue10">Required</Text>}
                       </Row>
                     </Stack>
                     <Button
-                      size={8}
+                      size="xs"
                       variant="outline"
                       icon={X}
                       onPress={() => handleRemoveQuestion(index)}
@@ -254,7 +254,7 @@ export function ApplicationProcessSection({
             }
           }}
         >
-          <Sheet.Frame padding={16} gap={16}>
+          <Sheet.Frame padding="md" gap={16}>
             <Stack gap={12}>
               <Text>Add Capability Question</Text>
 
@@ -313,7 +313,7 @@ export function ApplicationProcessSection({
               <Row gap={8} align="center">
                 <Switch
                   checked={newQuestion.required || false}
-                  onCheckedChange={(checked) =>
+                  onChange={(checked) =>
                     setNewQuestion({ ...newQuestion, required: checked })
                   }
                 />
@@ -338,7 +338,7 @@ export function ApplicationProcessSection({
                   Cancel
                 </Button>
                 <Button
-                  theme="blue"
+                  color="primary"
                   onPress={handleAddQuestion}
                   disabled={!newQuestion.label || !newQuestion.type}
                 >

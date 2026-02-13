@@ -69,7 +69,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text color="gray">Loading education data...</Text>
+          <Text color="$gray11">Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -90,7 +90,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
     <DashboardWidget>
       <H4>Saved Education</H4>
 
-      <Text color="gray" marginBottom={16}>
+      <Text color="$gray11" marginBottom={16}>
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
@@ -109,7 +109,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
             return (
               <Stack
                 key={edu.id}
-                padding={16}
+                padding="md"
                 gap={12}
                 backgroundColor="$background"
                 borderWidth={1}
@@ -123,7 +123,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                 {/* Institution Name with Verification Badge */}
                 <Stack gap={4}>
                   <Row gap={8} align="center" flexWrap="wrap">
-                    <Text color="gray">{edu.institution_name}</Text>
+                    <Text color="$gray11">{edu.institution_name}</Text>
                     {!edu.is_verified && (
                       <Row gap={4} align="center">
                         <AlertCircle size={14} color="$orange10" />
@@ -140,13 +140,13 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   )}
 
                   {/* Degree Type */}
-                  {edu.degree_type && <Text color="gray">{edu.degree_type}</Text>}
+                  {edu.degree_type && <Text color="$gray11">{edu.degree_type}</Text>}
 
                   {/* Field of Study */}
-                  {edu.field_of_study && <Text color="gray">{edu.field_of_study}</Text>}
+                  {edu.field_of_study && <Text color="$gray11">{edu.field_of_study}</Text>}
 
                   {/* GPA */}
-                  {hasValidGpa && <Text color="gray">GPA: {normalizedGpa.toFixed(1)}/4.0</Text>}
+                  {hasValidGpa && <Text color="$gray11">GPA: {normalizedGpa.toFixed(1)}/4.0</Text>}
                 </Stack>
 
                 {/* Delete Confirmation Dialog */}
@@ -183,8 +183,8 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   <Row align="center" flexWrap="wrap" gap={12}>
                     {(edu.start_date || edu.end_date || edu.is_current) && (
                       <Row gap={8} align="center">
-                        <Calendar size={16} color="gray" />
-                        <Text color="gray">
+                        <Calendar size="md" color="$gray11" />
+                        <Text color="$gray11">
                           {formatDateRange(
                             edu.start_date,
                             edu.end_date,
@@ -197,7 +197,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                     <Row gap={8} marginLeft="auto">
                       <Button
-                        size={8}
+                        size="xs"
                         variant="outline"
                         circular
                         icon={Pencil}
@@ -216,7 +216,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         }}
                       />
                       <Button
-                        size={8}
+                        size="xs"
                         variant="outline"
                         circular
                         icon={Trash2}
@@ -230,16 +230,16 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {/* Location */}
                   {edu.location && (
                     <Row gap={8} align="center">
-                      <MapPin size={16} color="gray" />
-                      <Text color="gray">{edu.location}</Text>
+                      <MapPin size="md" color="$gray11" />
+                      <Text color="$gray11">{edu.location}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {edu.description && (
                     <Stack gap={4}>
-                      <Text color="gray">Description:</Text>
-                      <Text color="gray">{edu.description}</Text>
+                      <Text color="$gray11">Description:</Text>
+                      <Text color="$gray11">{edu.description}</Text>
                     </Stack>
                   )}
                 </Stack>

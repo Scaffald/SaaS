@@ -192,8 +192,8 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text color="gray">{row.original.workerName}</Text>
-            {row.original.workerEmail ? <Text color="gray">{row.original.workerEmail}</Text> : null}
+            <Text color="$gray11">{row.original.workerName}</Text>
+            {row.original.workerEmail ? <Text color="$gray11">{row.original.workerEmail}</Text> : null}
           </Stack>
         ),
       },
@@ -227,7 +227,7 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size={8}
+            size="xs"
             variant="outline"
             icon={ClipboardList}
             onPress={() => setSelectedCheck(row.original.raw)}
@@ -247,8 +247,8 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text color="gray">{row.original.workerName}</Text>
-            {row.original.workerEmail ? <Text color="gray">{row.original.workerEmail}</Text> : null}
+            <Text color="$gray11">{row.original.workerName}</Text>
+            {row.original.workerEmail ? <Text color="$gray11">{row.original.workerEmail}</Text> : null}
           </Stack>
         ),
       },
@@ -272,7 +272,7 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size={8}
+            size="xs"
             variant="outline"
             icon={AlertTriangle}
             onPress={() => setSelectedDispute(row.original.raw)}
@@ -305,7 +305,7 @@ export function AdminBackgroundChecksPage() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Verifying admin access…</Text>
+        <Text color="$gray11">Verifying admin access…</Text>
       </Stack>
     )
   }
@@ -313,13 +313,13 @@ export function AdminBackgroundChecksPage() {
   if (!isAdmin) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="gray">Admin access required</Text>
-        <Text color="gray" style={{ textAlign: 'center' }}>
+        <Text color="$gray11">Admin access required</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Background check review tools are restricted to compliance administrators. Contact an
           administrator if you believe this is an error.
         </Text>
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
         >
@@ -331,47 +331,47 @@ export function AdminBackgroundChecksPage() {
 
   return (
     <Stack flex={1} backgroundColor="$background">
-      <Stack padding={16} gap={16}>
+      <Stack padding="md" gap={16}>
         <Stack gap={8}>
-          <Text color="gray">Background check administration</Text>
-          <Text color="gray">
+          <Text color="$gray11">Background check administration</Text>
+          <Text color="$gray11">
             Review in-progress screenings, resolve disputes, and keep results compliant.
           </Text>
         </Stack>
 
         <Row gap={12} flexWrap="wrap">
           <Card
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text color="gray">Active reviews</Text>
-            <Text color="gray">{summaryStats.underReview}</Text>
+            <Text color="$gray11">Active reviews</Text>
+            <Text color="$gray11">{summaryStats.underReview}</Text>
           </Card>
           <Card
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text color="gray">Pending disputes</Text>
-            <Text color="gray">{summaryStats.pendingDisputes}</Text>
+            <Text color="$gray11">Pending disputes</Text>
+            <Text color="$gray11">{summaryStats.pendingDisputes}</Text>
           </Card>
           <Card
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text color="gray">Total checks in view</Text>
-            <Text color="gray">{summaryStats.total}</Text>
+            <Text color="$gray11">Total checks in view</Text>
+            <Text color="$gray11">{summaryStats.total}</Text>
           </Card>
         </Row>
 
@@ -450,7 +450,7 @@ export function AdminBackgroundChecksPage() {
                 }))}
               />
               <Button
-                size={12}
+                size="sm"
                 variant="outline"
                 icon={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
@@ -460,7 +460,7 @@ export function AdminBackgroundChecksPage() {
               </Button>
             </Row>
             <Button
-              size={12}
+              size="sm"
               variant="outline"
               onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
             >
@@ -472,7 +472,7 @@ export function AdminBackgroundChecksPage() {
         {activeTab === 'disputes' ? (
           <Row gap={8}>
             <Button
-              size={12}
+              size="sm"
               variant="outline"
               icon={RefreshCcw}
               onPress={() => disputesQuery.refetch()}

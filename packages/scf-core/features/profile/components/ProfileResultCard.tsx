@@ -33,7 +33,7 @@ interface ProfileResultCardProps extends CardProps {
  * >
  *   <Stack gap={8}>
  *     <Text>{item.name}</Text>
- *     <Text color="gray">{item.description}</Text>
+ *     <Text color="$gray11">{item.description}</Text>
  *   </Stack>
  * </ProfileResultCard>
  * ```
@@ -52,7 +52,7 @@ export function ProfileResultCard({
   return (
     <Card
       bordered={bordered}
-      size={16}
+      size="md"
       backgroundColor={isNew ? '$green2' : undefined}
       borderColor={isNew ? '$green9' : undefined}
       borderWidth={isNew ? 2 : undefined}
@@ -70,7 +70,7 @@ export function ProfileResultCard({
             {actions}
             {onRemove && (
               <Button
-                size={8}
+                size="xs"
                 variant="outline"
                 icon={isLoading ? undefined : X}
                 onPress={onRemove}

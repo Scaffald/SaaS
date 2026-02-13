@@ -128,7 +128,7 @@ export function ComparisonColumn({
       width={width}
       gap={12}
       backgroundColor="$background"
-      padding={16}
+      padding="md"
       borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
@@ -136,7 +136,7 @@ export function ComparisonColumn({
       {/* Candidate Header */}
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Avatar circular size={16}>
+          <Avatar circular size="md">
             <Avatar.Image src={candidateAvatar || undefined} />
             <Avatar.Fallback backgroundColor="$blue9">
               <Text color="white">{candidateName.charAt(0).toUpperCase()}</Text>
@@ -144,11 +144,11 @@ export function ComparisonColumn({
           </Avatar>
           <Stack flex={1}>
             <Text>{candidateName}</Text>
-            {jobTitle && <Text color="gray">{jobTitle}</Text>}
+            {jobTitle && <Text color="$gray11">{jobTitle}</Text>}
           </Stack>
           {canRemove && onRemove && (
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               color="$red11"
               borderColor="$red8"
@@ -180,7 +180,7 @@ export function ComparisonColumn({
                 gap={4}
               >
                 {status.accepted ? (
-                  <Check size={12} color="$green11" />
+                  <Check size="sm" color="$green11" />
                 ) : (
                   <Text color="$gray11">○</Text>
                 )}
@@ -200,7 +200,7 @@ export function ComparisonColumn({
       <Separator />
 
       {/* Employment Section */}
-      <Card padding={12} gap={8}>
+      <Card padding="sm" gap={8}>
         <Text>Employment</Text>
         <ComparisonField
           label="Type"
@@ -267,7 +267,7 @@ export function ComparisonColumn({
       </Card>
 
       {/* Compensation Section */}
-      <Card padding={12} gap={8}>
+      <Card padding="sm" gap={8}>
         <Text>Compensation</Text>
         <ComparisonField
           label="Rate"
@@ -298,7 +298,7 @@ export function ComparisonColumn({
 
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
-        <Card padding={12} gap={8}>
+        <Card padding="sm" gap={8}>
           <Text>Capabilities</Text>
           {capabilityResponses.map((response: CapabilityResponseRecord) => (
             <ComparisonField
@@ -330,7 +330,7 @@ export function ComparisonColumn({
         </Card>
       )}
 
-      <Card padding={12} gap={8}>
+      <Card padding="sm" gap={8}>
         <Text>Other Terms</Text>
         <ComparisonField
           label="Travel"
@@ -373,7 +373,7 @@ export function ComparisonColumn({
 
       {/* View Full Inquiry Button */}
       <Button
-        size={12}
+        size="sm"
         variant="outline"
         onPress={() =>
           router.push(
@@ -420,7 +420,7 @@ function StatusBadge({ label }: { label: string }) {
 function SubtleBadge({ label }: { label: string }) {
   return (
     <Row paddingHorizontal={8} paddingVertical={4} backgroundColor="$color2" borderRadius={12}>
-      <Text color="gray">{label}</Text>
+      <Text color="$gray11">{label}</Text>
     </Row>
   )
 }

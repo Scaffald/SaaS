@@ -165,7 +165,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -204,11 +204,11 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
           </Row>
           <Stack gap={16}>
             <Stack gap={8}>
-              <Text color="gray">
+              <Text color="$gray11">
                 Complete your soft skills assessment to showcase your strengths and improve job
                 matching.
               </Text>
-              <Text color="gray">{completionCount} of 25 skills rated</Text>
+              <Text color="$gray11">{completionCount} of 25 skills rated</Text>
             </Stack>
             <Button variant="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
@@ -232,7 +232,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
           {showEdit && (
             <Button
               variant="outline"
-              size={8}
+              size="xs"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -256,7 +256,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         {/* Chart Comparison */}
         {categoryChartData && categoryChartData.length > 0 && (
           <Stack gap={16}>
-            <Text color="gray" style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               {categoryLabels[activeCategory]} Skills
             </Text>
 
@@ -282,16 +282,16 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               <Row gap={16} align="center" justify="center" paddingVertical={8}>
                 <Row gap={8} align="center">
                   <Stack width={20} height={3} backgroundColor="$blue9" />
-                  <Text color="gray">Self Assessment</Text>
+                  <Text color="$gray11">Self Assessment</Text>
                 </Row>
                 <Row gap={8} align="center">
                   <Stack width={20} height={3} backgroundColor="$green9" />
-                  <Text color="gray">Peer Average</Text>
+                  <Text color="$gray11">Peer Average</Text>
                 </Row>
               </Row>
             )}
 
-            <Text color="gray" style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
           </Stack>

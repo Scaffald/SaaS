@@ -357,7 +357,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       {showLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
           <Spinner size="lg" color="$blue10" />
-          <Text marginTop={16} color="gray">
+          <Text marginTop={16} color="$gray11">
             Loading profile...
           </Text>
         </Stack>
@@ -397,8 +397,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             )}
 
             <Stack gap={8} align="center">
-              <Text color="gray">{profile.name}</Text>
-              {profile.headline && <Text color="gray">{profile.headline}</Text>}
+              <Text color="$gray11">{profile.name}</Text>
+              {profile.headline && <Text color="$gray11">{profile.headline}</Text>}
             </Stack>
 
             {/* Scaffald Score Badge */}
@@ -413,7 +413,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 borderWidth={1}
                 borderColor="$blue5"
               >
-                <Star size={20} color="$blue10" fill="$blue10" />
+                <Star size="lg" color="$blue10" fill="$blue10" />
                 <Text color="$blue11">{profile.gamified_score}</Text>
                 <Text color="$blue10">Scaffald Score</Text>
               </Row>
@@ -426,15 +426,15 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           <Stack gap={8}>
             {profile.location && (
               <Row gap={8} align="center">
-                <MapPin size={18} color="gray" />
-                <Text color="gray">{profile.location}</Text>
+                <MapPin size={18} color="$gray11" />
+                <Text color="$gray11">{profile.location}</Text>
               </Row>
             )}
 
             {profile.hourly_rate_cents && (
               <Row gap={8} align="center">
-                <DollarSign size={18} color="gray" />
-                <Text color="gray">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+                <DollarSign size={18} color="$gray11" />
+                <Text color="$gray11">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
               </Row>
             )}
 
@@ -444,8 +444,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 : (profile.years_of_experience ?? null)
             ) !== null && (
               <Row gap={8} align="center">
-                <Award size={18} color="gray" />
-                <Text color="gray">
+                <Award size={18} color="$gray11" />
+                <Text color="$gray11">
                   {resolveYearsOfExperience(
                     typeof profile?.calculatedYearsOfExperience === 'number'
                       ? profile.calculatedYearsOfExperience
@@ -473,8 +473,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             <>
               <Separator />
               <Stack gap={8}>
-                <Text color="gray">About</Text>
-                <Text color="gray" lineHeight={4} numberOfLines={4}>
+                <Text color="$gray11">About</Text>
+                <Text color="$gray11" lineHeight={4} numberOfLines={4}>
                   {profile.bio}
                 </Text>
               </Stack>
@@ -488,11 +488,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Stack gap={8}>
                 <Row align="center" gap={8} justify="space-between">
                   <Row align="center" gap={8}>
-                    <Award size={18} color="gray" />
-                    <Text color="gray">Top Skills</Text>
+                    <Award size={18} color="$gray11" />
+                    <Text color="$gray11">Top Skills</Text>
                   </Row>
                   {skills.length > 10 && (
-                    <Button size={8} variant="outline" onPress={handleViewFullProfile}>
+                    <Button size="xs" variant="outline" onPress={handleViewFullProfile}>
                       View All ({skills.length})
                     </Button>
                   )}
@@ -507,7 +507,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           : skill.name
                     return (
                       <Row key={skill.id} justify="space-between" align="center">
-                        <Text color="gray">{label}</Text>
+                        <Text color="$gray11">{label}</Text>
                         <Row gap={8} align="center">
                           <Stack
                             width={100}
@@ -523,7 +523,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                             />
                           </Stack>
                           <Stack minWidth={30}>
-                            <Text color="gray">{skill.proficiency}%</Text>
+                            <Text color="$gray11">{skill.proficiency}%</Text>
                           </Stack>
                         </Row>
                       </Row>
@@ -541,11 +541,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Stack gap={8}>
                 <Row align="center" gap={8} justify="space-between">
                   <Row align="center" gap={8}>
-                    <BadgeCheck size={18} color="gray" />
-                    <Text color="gray">Certifications</Text>
+                    <BadgeCheck size={18} color="$gray11" />
+                    <Text color="$gray11">Certifications</Text>
                   </Row>
                   {certifications.length > 5 && (
-                    <Button size={8} variant="outline" onPress={handleViewFullProfile}>
+                    <Button size="xs" variant="outline" onPress={handleViewFullProfile}>
                       View All ({certifications.length})
                     </Button>
                   )}
@@ -553,8 +553,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Stack gap={8}>
                   {topCertifications.map((cert: Certification) => (
                     <Stack key={cert.id} gap={4}>
-                      <Text color="gray">{cert.name}</Text>
-                      <Text color="gray">
+                      <Text color="$gray11">{cert.name}</Text>
+                      <Text color="$gray11">
                         {cert.issuing_organization}
                         {cert.issue_date &&
                           ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
@@ -573,11 +573,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Stack gap={8}>
                 <Row align="center" gap={8} justify="space-between">
                   <Row align="center" gap={8}>
-                    <Briefcase size={18} color="gray" />
-                    <Text color="gray">Recent Experience</Text>
+                    <Briefcase size={18} color="$gray11" />
+                    <Text color="$gray11">Recent Experience</Text>
                   </Row>
                   {experience.length > 3 && (
-                    <Button size={8} variant="outline" onPress={handleViewFullProfile}>
+                    <Button size="xs" variant="outline" onPress={handleViewFullProfile}>
                       View All ({experience.length})
                     </Button>
                   )}
@@ -585,10 +585,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 <Stack gap={8}>
                   {recentExperience.map((exp: ExperienceEntry) => (
                     <Stack key={exp.id} gap={4}>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {exp.job_title} at {exp.company_name}
                       </Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current ?? false)}
                       </Text>
                     </Stack>
@@ -604,16 +604,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Separator />
               <Stack gap={8}>
                 <Row align="center" gap={8}>
-                  <GraduationCap size={18} color="gray" />
-                  <Text color="gray">Education</Text>
+                  <GraduationCap size={18} color="$gray11" />
+                  <Text color="$gray11">Education</Text>
                 </Row>
                 <Stack gap={8}>
                   {topEducation.map((edu: EducationEntry) => (
                     <Stack key={edu.id} gap={4}>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {edu.degree_type} {edu.degree_name}
                       </Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {edu.university_name}
                         {edu.graduation_year && ` • ${edu.graduation_year}`}
                       </Text>
@@ -635,7 +635,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   <>
                     {connectionButtonState.type === 'none' && (
                       <Button
-                        size={16}
+                        size="md"
                         theme="info"
                         icon={isConnectionMutating ? Loader2 : UserPlus}
                         onPress={handleConnect}
@@ -646,7 +646,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {connectionButtonState.type === 'pending_sent' && (
-                      <Button size={16} variant="outline" icon={Loader2} disabled>
+                      <Button size="md" variant="outline" icon={Loader2} disabled>
                         Pending
                       </Button>
                     )}
@@ -654,7 +654,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     {connectionButtonState.type === 'pending_received' && (
                       <>
                         <Button
-                          size={16}
+                          size="md"
                           theme="info"
                           icon={CheckCircle2}
                           onPress={handleAccept}
@@ -663,7 +663,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           {isConnectionMutating ? 'Accepting...' : 'Accept'}
                         </Button>
                         <Button
-                          size={16}
+                          size="md"
                           variant="outline"
                           icon={X}
                           onPress={handleDecline}
@@ -675,7 +675,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {connectionButtonState.type === 'connected' && (
-                      <Button size={16} variant="outline" icon={UserCheck} disabled>
+                      <Button size="md" variant="outline" icon={UserCheck} disabled>
                         Connected
                       </Button>
                     )}
@@ -686,7 +686,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 {!followStatus.isLoading &&
                   (!followStatus.isFollowing ? (
                     <Button
-                      size={16}
+                      size="md"
                       variant="outline"
                       icon={isFollowMutating ? Loader2 : UserPlus}
                       onPress={handleFollow}
@@ -696,7 +696,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     </Button>
                   ) : (
                     <Button
-                      size={16}
+                      size="md"
                       variant="outline"
                       icon={isFollowMutating ? Loader2 : UserMinus}
                       onPress={handleUnfollow}
@@ -714,8 +714,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           <Stack gap={12}>
             {typeof window !== 'undefined' && (
               <Button
-                size={20}
-                theme="blue"
+                size="lg"
+                color="primary"
                 variant="outline"
                 iconAfter={<ExternalLink size={18} />}
                 onPress={handleOpenInNewTab}
@@ -724,7 +724,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               </Button>
             )}
             <Button
-              size={20}
+              size="lg"
               theme="info"
               iconAfter={<ExternalLink size={18} />}
               onPress={handleViewFullProfile}

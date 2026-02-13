@@ -98,7 +98,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const displayEmail = email ?? t('auth.verify.fallbackEmail')
 
   return (
-    <Box flex={1} align="center" justify="center" padding={16} style={{ width: '100%' }}>
+    <Box flex={1} align="center" justify="center" padding="md" style={{ width: '100%' }}>
       <Box
         style={{
           borderWidth: 1,

@@ -86,7 +86,7 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
       {xpAwarded > 0 && (
         <Stack
           gap={12}
-          padding={16}
+          padding="md"
           backgroundColor="$green2"
           borderRadius={16}
           borderWidth={1}
@@ -102,7 +102,7 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
 
       <Stack
         gap={16}
-        padding={24}
+        padding="xl"
         backgroundColor="$blue2"
         borderRadius={16}
         borderWidth={1}
@@ -110,13 +110,13 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
       >
         <Row gap={12} align="center">
           <Clock size={24} color="$blue10" />
-          <Text color="gray">Test Availability</Text>
+          <Text color="$gray11">Test Availability</Text>
         </Row>
         <Stack gap={8}>
-          <Text color="gray">This test can be taken once every 7 days.</Text>
+          <Text color="$gray11">This test can be taken once every 7 days.</Text>
           {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
             <>
-              <Text color="gray" marginTop={8}>
+              <Text color="$gray11" marginTop={8}>
                 You can take the test again on:
               </Text>
               <Text color="$blue11">{formatDate(nextAvailableAt)}</Text>

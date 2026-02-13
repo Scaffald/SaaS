@@ -116,8 +116,8 @@ export function FeedbackWidget() {
           circular
           icon={MessageCircle}
           backgroundColor="$blue9"
-          color="gray"
-          elevation={16}
+          color="$gray11"
+          elevation="lg"
           pressStyle={{ scale: 0.97 }}
           hoverStyle={{ backgroundColor: '$blue10' }}
           focusStyle={{ outlineColor: '$blue8' }}
@@ -153,7 +153,7 @@ export function FeedbackWidget() {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
           <Stack gap={16} paddingHorizontal={8} paddingVertical={8}>
-            <Paragraph color="gray">{INSTRUCTIONS}</Paragraph>
+            <Paragraph color="$gray11">{INSTRUCTIONS}</Paragraph>
 
             <Stack gap={8}>
               <Text>Feedback Type</Text>
@@ -167,7 +167,7 @@ export function FeedbackWidget() {
                       return (
                         <Button
                           key={type}
-                          size={12}
+                          size="sm"
                           theme={isActive ? 'blue' : undefined}
                           variant={isActive ? undefined : 'outlined'}
                           onPress={() => onChange(type)}
@@ -250,8 +250,8 @@ export function FeedbackWidget() {
                   >
                     <input {...getInputProps()} />
                     <Text>{isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}</Text>
-                    <Text color="gray">Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)</Text>
-                    <Button size={8} marginTop={8} onPress={open}>
+                    <Text color="$gray11">Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)</Text>
+                    <Button size="xs" marginTop={8} onPress={open}>
                       Choose File
                     </Button>
                   </Stack>
@@ -286,13 +286,13 @@ export function FeedbackWidget() {
                       <Text numberOfLines={1}>
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         {screenshot.kind === 'web'
                           ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
                       </Text>
                     </Stack>
-                    <Button size={8} variant="outline" onPress={handleRemoveScreenshot}>
+                    <Button size="xs" variant="outline" onPress={handleRemoveScreenshot}>
                       Remove
                     </Button>
                   </Row>
@@ -304,9 +304,9 @@ export function FeedbackWidget() {
 
             <Row align="center" justify="space-between" gap={12}>
               <Stack gap={4}>
-                <Text color="gray">Captured context:</Text>
-                <Text color="gray">{context.pageUrl}</Text>
-                <Text color="gray">
+                <Text color="$gray11">Captured context:</Text>
+                <Text color="$gray11">{context.pageUrl}</Text>
+                <Text color="$gray11">
                   {context.browserName
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}
@@ -314,7 +314,7 @@ export function FeedbackWidget() {
               </Stack>
 
               <Button
-                size={8}
+                size="xs"
                 variant="outline"
                 onPress={() => {
                   void processQueue()
@@ -326,7 +326,7 @@ export function FeedbackWidget() {
             </Row>
 
             <Button
-              size={16}
+              size="md"
               disabled={isSubmitting || isBelowMinimum || !form.formState.isValid}
               onPress={form.handleSubmit(handleSubmit)}
             >

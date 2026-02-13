@@ -75,7 +75,7 @@ export function OrganizationPreviewModal({
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
           <Spinner size="lg" color="$blue10" />
-          <Text marginTop={16} color="gray">
+          <Text marginTop={16} color="$gray11">
             Loading organization details...
           </Text>
         </Stack>
@@ -99,8 +99,8 @@ export function OrganizationPreviewModal({
             </Stack>
 
             <Stack gap={8} align="center">
-              <Text color="gray">{organization.name}</Text>
-              {organization.industry_name && <Text color="gray">{organization.industry_name}</Text>}
+              <Text color="$gray11">{organization.name}</Text>
+              {organization.industry_name && <Text color="$gray11">{organization.industry_name}</Text>}
             </Stack>
 
             {/* Open Jobs Badge */}
@@ -115,7 +115,7 @@ export function OrganizationPreviewModal({
                 borderWidth={1}
                 borderColor="$green5"
               >
-                <Briefcase size={16} color="$green10" />
+                <Briefcase size="md" color="$green10" />
                 <Text color="$green11">
                   {jobsCount} Open {jobsCount === 1 ? 'Position' : 'Positions'}
                 </Text>
@@ -129,15 +129,15 @@ export function OrganizationPreviewModal({
           <Stack gap={12}>
             {formatAddress(organization.address) && (
               <Row gap={8} align="center">
-                <MapPin size={18} color="gray" />
-                <Text color="gray">{formatAddress(organization.address)}</Text>
+                <MapPin size={18} color="$gray11" />
+                <Text color="$gray11">{formatAddress(organization.address)}</Text>
               </Row>
             )}
 
             {organization.employee_count_range && (
               <Row gap={8} align="center">
-                <Users size={18} color="gray" />
-                <Text color="gray">{organization.employee_count_range} employees</Text>
+                <Users size={18} color="$gray11" />
+                <Text color="$gray11">{organization.employee_count_range} employees</Text>
               </Row>
             )}
 
@@ -158,8 +158,8 @@ export function OrganizationPreviewModal({
             <>
               <Separator />
               <Stack gap={8}>
-                <Text color="gray">About</Text>
-                <Text color="gray" lineHeight={4} numberOfLines={4}>
+                <Text color="$gray11">About</Text>
+                <Text color="$gray11" lineHeight={4} numberOfLines={4}>
                   {typeof organization.description === 'string'
                     ? organization.description
                     : extractPlainText(organization.description as JSONContent)}
@@ -173,7 +173,7 @@ export function OrganizationPreviewModal({
             <>
               <Separator />
               <Row gap={8} align="center">
-                <ExternalLink size={16} color="$blue10" />
+                <ExternalLink size="md" color="$blue10" />
                 <Text
                   color="$blue10"
                   textDecorationLine="underline"
@@ -199,8 +199,8 @@ export function OrganizationPreviewModal({
           <Stack gap={12}>
             {typeof window !== 'undefined' && (
               <Button
-                size={20}
-                theme="blue"
+                size="lg"
+                color="primary"
                 variant="outline"
                 iconAfter={<ExternalLink size={18} />}
                 onPress={handleOpenInNewTab}
@@ -210,7 +210,7 @@ export function OrganizationPreviewModal({
             )}
             {jobsCount > 0 ? (
               <Button
-                size={20}
+                size="lg"
                 theme="info"
                 iconAfter={<Briefcase size={18} />}
                 onPress={handleViewJobs}
@@ -218,8 +218,8 @@ export function OrganizationPreviewModal({
                 View Open Positions ({jobsCount})
               </Button>
             ) : (
-              <Stack backgroundColor="$color3" padding={12} borderRadius={12} align="center">
-                <Text color="gray">No open positions at this time</Text>
+              <Stack backgroundColor="$color3" padding="sm" borderRadius={12} align="center">
+                <Text color="$gray11">No open positions at this time</Text>
               </Stack>
             )}
           </Stack>

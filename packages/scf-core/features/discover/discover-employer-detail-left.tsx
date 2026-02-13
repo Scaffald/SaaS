@@ -27,7 +27,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={12}>
-          <Text color="gray">Employer not specified</Text>
+          <Text color="$gray11">Employer not specified</Text>
           <Button
             onPress={() => {
               // Try to go back, fallback to employers list if no history
@@ -50,7 +50,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={12}>
           <Spinner size="lg" color="$blue10" />
-          <Text color="gray">Loading employer details...</Text>
+          <Text color="$gray11">Loading employer details...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -89,7 +89,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {/* Header with Back Button */}
       <Row align="center" gap={12}>
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           icon={ArrowLeft}
           onPress={() => {
@@ -116,8 +116,8 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
         <Stack gap={8}>
           <Text>Industry</Text>
           <Row align="center" gap={8}>
-            <Users size={16} color="gray" />
-            <Text color="gray">{employer.industries.name}</Text>
+            <Users size="md" color="$gray11" />
+            <Text color="$gray11">{employer.industries.name}</Text>
           </Row>
         </Stack>
       )}
@@ -126,7 +126,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {employer.description && (
         <Stack gap={8}>
           <Text>About</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
@@ -138,10 +138,10 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {employer.address && (
         <Stack gap={8}>
           <Row align="center" gap={8}>
-            <MapPin size={18} color="gray" />
+            <MapPin size={18} color="$gray11" />
             <Text>Location</Text>
           </Row>
-          <Text color="gray">
+          <Text color="$gray11">
             {employer.address.street || employer.address.zipCode || 'Not specified'}
           </Text>
         </Stack>
@@ -151,7 +151,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {websiteUrl && (
         <Stack gap={8}>
           <Button
-            size={16}
+            size="md"
             variant="outline"
             icon={ExternalLink}
             onPress={() => {
@@ -167,7 +167,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
 
       {/* Additional Info */}
       <Stack gap={8}>
-        <Text color="gray">Created: {new Date(employer.created_at).toLocaleDateString()}</Text>
+        <Text color="$gray11">Created: {new Date(employer.created_at).toLocaleDateString()}</Text>
       </Stack>
     </DashboardWidget>
   )

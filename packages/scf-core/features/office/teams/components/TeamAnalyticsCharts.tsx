@@ -148,7 +148,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     return (
       <Stack gap={12} align="center" justify="center" paddingVertical={16}>
         <Spinner size="lg" />
-        <Text color="gray">Loading analytics data…</Text>
+        <Text color="$gray11">Loading analytics data…</Text>
       </Stack>
     )
   }
@@ -159,11 +159,11 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color2"
-        padding={16}
+        padding="md"
         gap={8}
       >
         <Text>Insights unavailable</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           We&apos;ll start charting metrics once your team begins reviewing applications and
           recording activity.
         </Text>
@@ -239,7 +239,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         summary={workloadSummary ?? undefined}
       >
         {workloadBreakdown.length === 0 ? (
-          <Text color="gray">No workload snapshots available.</Text>
+          <Text color="$gray11">No workload snapshots available.</Text>
         ) : (
           <ScrollView
             horizontal={isSmallScreen}
@@ -265,7 +265,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
               />
               <Stack gap={4}>
                 {workloadBreakdown.map((entry) => (
-                  <Text key={entry.text} color="gray">
+                  <Text key={entry.text} color="$gray11">
                     {entry.text}: {entry.value} assignments
                   </Text>
                 ))}
@@ -296,15 +296,15 @@ function AnalyticsCard({
       borderWidth={1}
       borderColor="$borderColor"
       backgroundColor="$color2"
-      padding={16}
+      padding="md"
       gap={12}
     >
       <Stack gap={4}>
         <Text accessibilityRole="header">{title}</Text>
-        {description ? <Text color="gray">{description}</Text> : null}
-        {summary ? <Text color="gray">{summary}</Text> : null}
+        {description ? <Text color="$gray11">{description}</Text> : null}
+        {summary ? <Text color="$gray11">{summary}</Text> : null}
       </Stack>
-      {emptyMessage ? <Text color="gray">{emptyMessage}</Text> : null}
+      {emptyMessage ? <Text color="$gray11">{emptyMessage}</Text> : null}
       {children}
     </Card>
   )

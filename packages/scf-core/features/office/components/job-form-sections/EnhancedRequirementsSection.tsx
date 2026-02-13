@@ -70,14 +70,14 @@ export function EnhancedRequirementsSection({
   return (
     <Stack
       gap={16}
-      padding={16}
+      padding="md"
       backgroundColor="$background"
       borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text>Enhanced Requirements</Text>
-      <Text color="gray">Additional job requirements and qualifications</Text>
+      <Text color="$gray11">Additional job requirements and qualifications</Text>
 
       {/* Minimum Education Level */}
       <Stack gap={8}>
@@ -98,11 +98,11 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require background check</Label>
-          <Text color="gray">Background screening required for this position</Text>
+          <Text color="$gray11">Background screening required for this position</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_background_check || false}
-          onCheckedChange={(checked) => handleChange('require_background_check', checked)}
+          onChange={(checked) => handleChange('require_background_check', checked)}
           aria-label="Require background check"
         />
       </Row>
@@ -122,11 +122,11 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require drug test</Label>
-          <Text color="gray">Pre-employment drug screening required</Text>
+          <Text color="$gray11">Pre-employment drug screening required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_drug_test || false}
-          onCheckedChange={(checked) => handleChange('require_drug_test', checked)}
+          onChange={(checked) => handleChange('require_drug_test', checked)}
           aria-label="Require drug test"
         />
       </Row>
@@ -135,11 +135,11 @@ export function EnhancedRequirementsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Require driver's license</Label>
-          <Text color="gray">Valid driver's license required</Text>
+          <Text color="$gray11">Valid driver's license required</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.require_drivers_license || false}
-          onCheckedChange={(checked) => handleChange('require_drivers_license', checked)}
+          onChange={(checked) => handleChange('require_drivers_license', checked)}
           aria-label="Require driver's license"
         />
       </Row>
@@ -179,7 +179,7 @@ export function EnhancedRequirementsSection({
             }
           }}
         />
-        <Text color="gray">Percentage of time spent traveling for work</Text>
+        <Text color="$gray11">Percentage of time spent traveling for work</Text>
       </Stack>
 
       {/* Shift Requirements */}

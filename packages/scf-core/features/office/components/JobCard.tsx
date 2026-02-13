@@ -64,7 +64,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
-    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding={16} gap={12}>
+    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="md" gap={12}>
       {/* Header: Title and Status */}
       <Row justify="space-between" align="flex-start" gap={12}>
         <Stack gap={8} flex={1}>
@@ -76,8 +76,8 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           </Row>
           {job.organization && (
             <Row align="center" gap={6} marginLeft="$7">
-              <Building2 size={14} color="gray" />
-              <Text color="gray" numberOfLines={1}>
+              <Building2 size={14} color="$gray11" />
+              <Text color="$gray11" numberOfLines={1}>
                 {job.organization.name}
               </Text>
             </Row>
@@ -123,15 +123,15 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} flexWrap="wrap">
         {job.location && (
           <Row align="center" gap={6}>
-            <MapPin size={14} color="gray" />
-            <Text color="gray" numberOfLines={1}>
+            <MapPin size={14} color="$gray11" />
+            <Text color="$gray11" numberOfLines={1}>
               {job.location}
             </Text>
           </Row>
         )}
         {job.remote_option && (
           <Text
-            color="gray"
+            color="$gray11"
             backgroundColor="$color3"
             paddingHorizontal={8}
             paddingVertical={4}
@@ -142,7 +142,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         )}
         {job.employment_type && (
           <Text
-            color="gray"
+            color="$gray11"
             backgroundColor="$color3"
             paddingHorizontal={8}
             paddingVertical={4}
@@ -164,8 +164,8 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
         <Row align="center" gap={6}>
-          <Calendar size={12} color="gray" />
-          <Text color="gray">Created {createdDate}</Text>
+          <Calendar size="sm" color="$gray11" />
+          <Text color="$gray11">Created {createdDate}</Text>
         </Row>
       )}
     </DiscoverCard>
@@ -186,10 +186,10 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
     >
       {icon}
       <Stack gap={0}>
-        <Text color="gray" textTransform="uppercase">
+        <Text color="$gray11" textTransform="uppercase">
           {label}
         </Text>
-        <Text color="gray">{value}</Text>
+        <Text color="$gray11">{value}</Text>
       </Stack>
     </Row>
   )

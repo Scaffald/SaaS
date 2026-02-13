@@ -29,8 +29,8 @@ export function ReviewStepCategoryTags({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">{title}</Text>
-        <Text color="gray">{description}</Text>
+        <Text color="$gray11">{title}</Text>
+        <Text color="$gray11">{description}</Text>
       </Stack>
 
       {/* Strengths Section */}
@@ -56,9 +56,9 @@ export function ReviewStepCategoryTags({
                 onPress={() => onToggleStrength(skill.id)}
               >
                 {isSelected ? (
-                  <CheckCircle2 size={16} color="$green11" />
+                  <CheckCircle2 size="md" color="$green11" />
                 ) : (
-                  <Circle size={16} color="gray" />
+                  <Circle size="md" color="$gray11" />
                 )}
                 <Text color={isSelected ? '$green11' : '$color11'}>{skill.name}</Text>
               </Row>
@@ -90,9 +90,9 @@ export function ReviewStepCategoryTags({
                 onPress={() => onToggleImprovement(skill.id)}
               >
                 {isSelected ? (
-                  <CheckCircle2 size={16} color="$red11" />
+                  <CheckCircle2 size="md" color="$red11" />
                 ) : (
-                  <Circle size={16} color="gray" />
+                  <Circle size="md" color="$gray11" />
                 )}
                 <Text color={isSelected ? '$red11' : '$color11'}>{skill.name}</Text>
               </Row>
@@ -102,7 +102,7 @@ export function ReviewStepCategoryTags({
       </Stack>
 
       {/* Helper Text */}
-      <Text color="gray" fontStyle="italic">
+      <Text color="$gray11" fontStyle="italic">
         Select multiple items for each category. Items can only be in one category.
       </Text>
     </Stack>

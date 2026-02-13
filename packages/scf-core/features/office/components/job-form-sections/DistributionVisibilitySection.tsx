@@ -41,24 +41,24 @@ export function DistributionVisibilitySection({
   return (
     <Stack
       gap={16}
-      padding={16}
+      padding="md"
       backgroundColor="$background"
       borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text>Distribution & Visibility</Text>
-      <Text color="gray">Control job posting visibility and distribution</Text>
+      <Text color="$gray11">Control job posting visibility and distribution</Text>
 
       {/* Is Featured */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Featured job</Label>
-          <Text color="gray">Highlight this job in listings</Text>
+          <Text color="$gray11">Highlight this job in listings</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_featured || false}
-          onCheckedChange={(checked) => handleChange('is_featured', checked)}
+          onChange={(checked) => handleChange('is_featured', checked)}
           aria-label="Featured job"
         />
       </Row>
@@ -71,7 +71,7 @@ export function DistributionVisibilitySection({
             value={localState.featured_until || ''}
             onChangeText={(text) => handleChange('featured_until', text || undefined)}
           />
-          <Text color="gray">Date when featured status expires</Text>
+          <Text color="$gray11">Date when featured status expires</Text>
         </Stack>
       )}
 
@@ -89,7 +89,7 @@ export function DistributionVisibilitySection({
             handleChange('seo_keywords', keywords.length > 0 ? keywords : undefined)
           }}
         />
-        <Text color="gray">Comma-separated keywords for search optimization</Text>
+        <Text color="$gray11">Comma-separated keywords for search optimization</Text>
       </Stack>
 
       {/* External Application URL */}
@@ -100,7 +100,7 @@ export function DistributionVisibilitySection({
           value={localState.external_application_url || ''}
           onChangeText={(text) => handleChange('external_application_url', text || undefined)}
         />
-        <Text color="gray">Redirect to external ATS for applications</Text>
+        <Text color="$gray11">Redirect to external ATS for applications</Text>
       </Stack>
     </Stack>
   )

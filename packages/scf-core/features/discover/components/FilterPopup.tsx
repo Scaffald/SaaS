@@ -138,7 +138,7 @@ export const FilterPopup = ({
             >
               <Text>Filters</Text>
               <Button
-                size={8}
+                size="xs"
                 circular
                 variant="outline"
                 onPress={onClose}
@@ -149,7 +149,7 @@ export const FilterPopup = ({
 
             {/* Scrollable Content */}
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-              <Stack padding={12} gap={8}>
+              <Stack padding="sm" gap={8}>
                 {/* Show Section */}
                 <Stack>
                   <Button
@@ -164,9 +164,9 @@ export const FilterPopup = ({
                     <Row justify="space-between" align="center" flex={1}>
                       <Text>{getSectionHeaderText()}</Text>
                       {openSections.has('show') ? (
-                        <ChevronDown size={16} />
+                        <ChevronDown size="md" />
                       ) : (
-                        <ChevronRight size={16} />
+                        <ChevronRight size="md" />
                       )}
                     </Row>
                   </Button>
@@ -179,13 +179,13 @@ export const FilterPopup = ({
                           <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
                           <ToggleSwitch
                             checked={showWorkers}
-                            onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
+                            onChange={(checked) => onShowWorkersChange?.(checked)}
                             aria-label={
                               showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
                             }
                           />
                         </Row>
-                        <Text color="gray" paddingLeft={4}>
+                        <Text color="$gray11" paddingLeft={4}>
                           Show worker profiles on the map
                         </Text>
                       </Stack>
@@ -198,7 +198,7 @@ export const FilterPopup = ({
                           </Label>
                           <ToggleSwitch
                             checked={showOrganizations}
-                            onCheckedChange={(checked) => onShowOrganizationsChange?.(checked)}
+                            onChange={(checked) => onShowOrganizationsChange?.(checked)}
                             aria-label={
                               showOrganizations
                                 ? 'Showing employers on map'
@@ -206,7 +206,7 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text color="gray" paddingLeft={4}>
+                        <Text color="$gray11" paddingLeft={4}>
                           Show employer organizations on the map
                         </Text>
                       </Stack>
@@ -217,11 +217,11 @@ export const FilterPopup = ({
                           <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
                           <ToggleSwitch
                             checked={showJobs}
-                            onCheckedChange={(checked) => onShowJobsChange?.(checked)}
+                            onChange={(checked) => onShowJobsChange?.(checked)}
                             aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
                         </Row>
-                        <Text color="gray" paddingLeft={4}>
+                        <Text color="$gray11" paddingLeft={4}>
                           Show job openings on the map
                         </Text>
                       </Stack>
@@ -240,10 +240,10 @@ export const FilterPopup = ({
               borderTopWidth={1}
               borderTopColor="$borderColor"
             >
-              <Button size={12} variant="outline" onPress={onClose}>
+              <Button size="sm" variant="outline" onPress={onClose}>
                 <Text>Close</Text>
               </Button>
-              <Button size={12} onPress={onClose}>
+              <Button size="sm" onPress={onClose}>
                 <Text>Apply</Text>
               </Button>
             </Row>

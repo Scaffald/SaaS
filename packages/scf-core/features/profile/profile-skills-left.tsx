@@ -62,12 +62,12 @@ export function ProfileSkillsLeft() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <Stack gap={16}>
           <DashboardWidget>
-            <Stack gap={16} padding={16}>
+            <Stack gap={16} padding="md">
               <SkeletonForm fields={4} />
             </Stack>
           </DashboardWidget>
           <DashboardWidget>
-            <Stack gap={16} padding={16}>
+            <Stack gap={16} padding="md">
               <SkeletonForm fields={6} />
             </Stack>
           </DashboardWidget>
@@ -103,7 +103,7 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text color="gray">Select your industry to search for relevant skills</Text>
+              <Text color="$gray11">Select your industry to search for relevant skills</Text>
             </Stack>
 
             <Separator />
@@ -111,13 +111,13 @@ export function ProfileSkillsLeft() {
             {/* Inline Skill Search */}
             {!selectedIndustryId ? (
               <Stack
-                padding={16}
+                padding="md"
                 align="center"
                 gap={8}
                 backgroundColor="$color3"
                 borderRadius={16}
               >
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   Please select an industry above to search for skills
                 </Text>
               </Stack>
@@ -139,7 +139,7 @@ export function ProfileSkillsLeft() {
             {/* Save Button */}
             <Row justify="flex-end" paddingTop={8}>
               <Button
-                size={16}
+                size="md"
                 themeInverse
                 onPress={handleForceSave}
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}

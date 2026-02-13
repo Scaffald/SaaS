@@ -124,10 +124,10 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
   return (
     <FormProvider {...form}>
       <ScrollView>
-        <Stack gap={20} padding={16} paddingBottom={32}>
+        <Stack gap={20} padding="md" paddingBottom={32}>
           <Stack gap={8}>
             <Text>Work Log Details</Text>
-            <Text color="gray">
+            <Text color="$gray11">
               Provide information about the work performed, including project, schedule, and skills.
             </Text>
           </Stack>
@@ -172,7 +172,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           <Stack gap={12}>
             <Row justify="space-between" align="center">
               <Text>Time Entries</Text>
-              <Button size={12} icon={Plus} onPress={addTimeEntry} variant="outline">
+              <Button size="sm" icon={Plus} onPress={addTimeEntry} variant="outline">
                 Add Entry
               </Button>
             </Row>
@@ -223,13 +223,13 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 placeholder="Add a task and press the plus icon"
                 flex={1}
               />
-              <Button size={12} icon={Plus} onPress={addTask}>
+              <Button size="sm" icon={Plus} onPress={addTask}>
                 Add
               </Button>
             </Row>
 
             <Stack gap={8}>
-              {tasksWithKeys.length === 0 && <Text color="gray">No tasks added yet.</Text>}
+              {tasksWithKeys.length === 0 && <Text color="$gray11">No tasks added yet.</Text>}
 
               {tasksWithKeys.map(({ task, key, index }) => (
                 <Row
@@ -244,7 +244,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   gap={12}
                 >
                   <Text flex={1}>{task}</Text>
-                  <Button size={8} variant="outline" onPress={() => removeTask(index)}>
+                  <Button size="xs" variant="outline" onPress={() => removeTask(index)}>
                     Remove
                   </Button>
                 </Row>
@@ -266,7 +266,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             {skillsQuery.error && <Text color="$red10">Unable to load skills at this time.</Text>}
 
             {skillOptions.length === 0 && !skillsQuery.isLoading && (
-              <Text color="gray">You do not have any skills associated with your profile yet.</Text>
+              <Text color="$gray11">You do not have any skills associated with your profile yet.</Text>
             )}
 
             <Stack gap={8}>
@@ -274,7 +274,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 <Row key={skill.id} gap={8} align="center">
                   <Checkbox
                     checked={selectedSkills.includes(skill.id)}
-                    onCheckedChange={(next) => toggleSkill(skill.id, next === true)}
+                    onChange={(next) => toggleSkill(skill.id, next === true)}
                   />
                   <Text>{skill.name}</Text>
                 </Row>
@@ -290,7 +290,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               <Button
                 icon={MapPin}
                 onPress={captureLocation}
-                size={12}
+                size="sm"
                 variant="outline"
                 disabled={location.isLoading}
               >
@@ -328,7 +328,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
           <Stack gap={8}>
             <Text>Draft Status</Text>
-            {autoSaveStatus.state === 'saving' && <Text color="gray">Saving draft…</Text>}
+            {autoSaveStatus.state === 'saving' && <Text color="$gray11">Saving draft…</Text>}
             {autoSaveStatus.state === 'saved' && (
               <Text color="$green10">
                 {autoSaveStatus.message ?? 'Draft saved'}{' '}
@@ -355,7 +355,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             )}
           </Stack>
 
-          <Button icon={Save} size={20} onPress={() => submit()} disabled={isSubmitting}>
+          <Button icon={Save} size="lg" onPress={() => submit()} disabled={isSubmitting}>
             {isSubmitting ? 'Saving…' : submitLabel}
           </Button>
         </Stack>

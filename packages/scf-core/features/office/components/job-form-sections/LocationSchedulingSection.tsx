@@ -38,24 +38,24 @@ export function LocationSchedulingSection({
   return (
     <Stack
       gap={16}
-      padding={16}
+      padding="md"
       backgroundColor="$background"
       borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text>Location & Scheduling</Text>
-      <Text color="gray">Work location and schedule information</Text>
+      <Text color="$gray11">Work location and schedule information</Text>
 
       {/* Relocation Assistance */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Relocation assistance offered</Label>
-          <Text color="gray">Company provides relocation support</Text>
+          <Text color="$gray11">Company provides relocation support</Text>
         </Stack>
         <ToggleSwitch
           checked={localState.relocation_assistance_offered || false}
-          onCheckedChange={(checked) => handleChange('relocation_assistance_offered', checked)}
+          onChange={(checked) => handleChange('relocation_assistance_offered', checked)}
           aria-label="Relocation assistance offered"
         />
       </Row>

@@ -131,9 +131,9 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Worker',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Stack>
-              <Text color="gray">{row.original.workerName}</Text>
+              <Text color="$gray11">{row.original.workerName}</Text>
               {row.original.workerEmail ? (
-                <Text color="gray">{row.original.workerEmail}</Text>
+                <Text color="$gray11">{row.original.workerEmail}</Text>
               ) : null}
             </Stack>
           ),
@@ -177,7 +177,7 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Actions',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Button
-              size={8}
+              size="xs"
               variant="outline"
               icon={Eye}
               onPress={() => setSelectedCheckId(row.original.id)}
@@ -194,7 +194,7 @@ export function OrganizationBackgroundChecksPage() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Loading organizations…</Text>
+        <Text color="$gray11">Loading organizations…</Text>
       </Stack>
     )
   }
@@ -202,8 +202,8 @@ export function OrganizationBackgroundChecksPage() {
   if (!organizations.length) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="gray">No organizations available</Text>
-        <Text color="gray" style={{ textAlign: 'center' }}>
+        <Text color="$gray11">No organizations available</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Create an organization before managing background checks.
         </Text>
       </Stack>
@@ -212,7 +212,7 @@ export function OrganizationBackgroundChecksPage() {
 
   return (
     <Stack flex={1}>
-      <Stack padding={16} gap={12}>
+      <Stack padding="md" gap={12}>
         <Stack gap={8}>
           <Label htmlFor="office-background-checks-organization">Organization</Label>
           <ResponsiveSelect
@@ -237,7 +237,7 @@ export function OrganizationBackgroundChecksPage() {
 
         <Row gap={8} justify="flex-end">
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             icon={RefreshCcw}
             onPress={() => checksQuery.refetch()}
@@ -246,8 +246,8 @@ export function OrganizationBackgroundChecksPage() {
             Refresh
           </Button>
           <Button
-            size={12}
-            theme="blue"
+            size="sm"
+            color="primary"
             icon={ExternalLink}
             onPress={handleNavigateToRequest}
             disabled={!selectedOrganizationId}
@@ -277,9 +277,9 @@ export function OrganizationBackgroundChecksPage() {
           onRowView={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
-        <Stack flex={1} padding={16} gap={12} align="center" justify="center">
-          <Text color="gray">Select an organization to view background checks</Text>
-          <Text color="gray">
+        <Stack flex={1} padding="md" gap={12} align="center" justify="center">
+          <Text color="$gray11">Select an organization to view background checks</Text>
+          <Text color="$gray11">
             Choose an organization above to manage screening requests and results.
           </Text>
         </Stack>

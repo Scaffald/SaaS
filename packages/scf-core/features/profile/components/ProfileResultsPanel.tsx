@@ -55,12 +55,12 @@ export function ProfileResultsPanel({
           {isLoading ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
               <Spinner size="lg" />
-              <Text color="gray">Loading...</Text>
+              <Text color="$gray11">Loading...</Text>
             </Stack>
           ) : isEmpty ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
-              {EmptyIcon && <EmptyIcon size={48} color="gray" />}
-              <Text color="gray" textAlign="center">
+              {EmptyIcon && <EmptyIcon size={48} color="$gray11" />}
+              <Text color="$gray11" textAlign="center">
                 {emptyMessage || 'No items added yet'}
               </Text>
             </Stack>

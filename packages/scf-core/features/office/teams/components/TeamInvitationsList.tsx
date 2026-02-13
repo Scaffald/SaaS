@@ -166,7 +166,7 @@ export function TeamInvitationsList({
       {invitationsQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical={24}>
           <Spinner size="lg" />
-          <Text color="gray">Loading invitations…</Text>
+          <Text color="$gray11">Loading invitations…</Text>
         </Stack>
       ) : invitations.length === 0 ? (
         <Stack
@@ -174,11 +174,11 @@ export function TeamInvitationsList({
           borderWidth={1}
           borderColor="$borderColor"
           borderRadius={16}
-          padding={16}
+          padding="md"
           backgroundColor="$color2"
         >
           <Text>No invitations yet</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Invite teammates to collaborate on hiring. Invitations will appear here with their
             status.
           </Text>
@@ -222,7 +222,7 @@ export function TeamInvitationsList({
             return (
               <Card
                 key={invitation.id}
-                padding={16}
+                padding="md"
                 borderWidth={1}
                 borderColor="$borderColor"
                 gap={12}
@@ -241,8 +241,8 @@ export function TeamInvitationsList({
                           : 'Invitation'}
                     </Text>
                     <Row gap={8} align="center">
-                      <Clock size={16} color="gray" />
-                      <Text color="gray">
+                      <Clock size="md" color="$gray11" />
+                      <Text color="$gray11">
                         Sent {sentAt ?? 'recently'}
                         {expiresAt ? ` · Expires ${expiresAt}` : null}
                       </Text>
@@ -252,18 +252,18 @@ export function TeamInvitationsList({
                 </Row>
 
                 <Row gap={8} flexDirection="column" align="stretch">
-                  <Text color="gray">Role:</Text>
+                  <Text color="$gray11">Role:</Text>
                   <Text>{invitation.role?.name ?? 'Member'}</Text>
                 </Row>
 
                 {lastDeliveryStatus ? (
                   <Stack gap={4}>
-                    <Text color="gray">
-                      Delivery status: <Text color="gray">{lastDeliveryStatus}</Text>
+                    <Text color="$gray11">
+                      Delivery status: <Text color="$gray11">{lastDeliveryStatus}</Text>
                       {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
                     </Text>
                     {deliveryChannels && deliveryChannels.length > 0 ? (
-                      <Text color="gray">Channels: {deliveryChannels.join(', ')}</Text>
+                      <Text color="$gray11">Channels: {deliveryChannels.join(', ')}</Text>
                     ) : null}
                     {lastDeliveryError ? (
                       <Text color="$red10">Last error: {lastDeliveryError}</Text>
@@ -272,7 +272,7 @@ export function TeamInvitationsList({
                 ) : null}
 
                 <Row gap={8} flexDirection="column" align="stretch">
-                  <Text color="gray">Type:</Text>
+                  <Text color="$gray11">Type:</Text>
                   <Text>{invitation.email ? 'Email invitation' : 'Existing member'}</Text>
                 </Row>
 
@@ -284,7 +284,7 @@ export function TeamInvitationsList({
                   align="stretch"
                 >
                   <Button
-                    size={8}
+                    size="xs"
                     variant="outline"
                     icon={RefreshCw}
                     disabled={!isPending || isLoading}
@@ -295,7 +295,7 @@ export function TeamInvitationsList({
                     Resend
                   </Button>
                   <Button
-                    size={8}
+                    size="xs"
                     variant="outline"
                     color="$red10"
                     icon={XCircle}

@@ -268,18 +268,18 @@ export function QuickApplyModal({
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Stack flex={1} gap={4}>
-                <Text color="gray">Apply to {organizationName}</Text>
-                <Text color="gray">{jobTitle}</Text>
+                <Text color="$gray11">Apply to {organizationName}</Text>
+                <Text color="$gray11">{jobTitle}</Text>
               </Stack>
               <Dialog.Close asChild>
-                <Button size={12} circular icon={X} chromeless />
+                <Button size="sm" circular icon={X} chromeless />
               </Dialog.Close>
             </Row>
           </Stack>
 
           {/* Success State */}
           {showSuccess ? (
-            <Stack gap={16} padding={24} align="center" justify="center" flex={1}>
+            <Stack gap={16} padding="xl" align="center" justify="center" flex={1}>
               <Stack
                 width={80}
                 height={80}
@@ -293,10 +293,10 @@ export function QuickApplyModal({
                 <CheckCircle2 size={48} color="$green10" />
               </Stack>
               <Stack gap={8} align="center">
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   Application Submitted!
                 </Text>
-                <Text color="gray" textAlign="center">
+                <Text color="$gray11" textAlign="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
               </Stack>
@@ -304,7 +304,7 @@ export function QuickApplyModal({
           ) : (
             /* Form Content */
             <ScrollView showsVerticalScrollIndicator={false} flex={1}>
-              <Stack gap={16} padding={16}>
+              <Stack gap={16} padding="md">
                 {/* Current Location */}
                 <Stack gap={8}>
                   <Label htmlFor="current_location">
@@ -327,7 +327,7 @@ export function QuickApplyModal({
                       <Text color="$red10">
                         Location search is unavailable. Please enter your location manually.
                       </Text>
-                      <Text color="gray">
+                      <Text color="$gray11">
                         Location search requires Mapbox API key configuration.
                       </Text>
                     </Stack>
@@ -343,7 +343,7 @@ export function QuickApplyModal({
                   <Row gap={12}>
                     <Button
                       flex={1}
-                      size={16}
+                      size="md"
                       theme={formData.willing_to_relocate ? 'info' : undefined}
                       variant={formData.willing_to_relocate ? undefined : 'outlined'}
                       onPress={() => {
@@ -355,7 +355,7 @@ export function QuickApplyModal({
                     </Button>
                     <Button
                       flex={1}
-                      size={16}
+                      size="md"
                       theme={!formData.willing_to_relocate ? 'info' : undefined}
                       variant={!formData.willing_to_relocate ? undefined : 'outlined'}
                       onPress={() => {
@@ -394,13 +394,13 @@ export function QuickApplyModal({
                   <Stack gap={8}>
                     <Label>Required skills</Label>
                     <Stack
-                      padding={12}
+                      padding="sm"
                       backgroundColor="$gray3"
                       borderRadius={12}
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text color="gray">{requiredSkills.join(', ')}</Text>
+                      <Text color="$gray11">{requiredSkills.join(', ')}</Text>
                     </Stack>
                   </Stack>
                 )}
@@ -410,13 +410,13 @@ export function QuickApplyModal({
                   <Stack gap={8}>
                     <Label>Optional skills</Label>
                     <Stack
-                      padding={12}
+                      padding="sm"
                       backgroundColor="$gray3"
                       borderRadius={12}
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text color="gray">{optionalSkills.join(', ')}</Text>
+                      <Text color="$gray11">{optionalSkills.join(', ')}</Text>
                     </Stack>
                   </Stack>
                 )}
@@ -429,7 +429,7 @@ export function QuickApplyModal({
                   <Row gap={12}>
                     <Button
                       flex={1}
-                      size={16}
+                      size="md"
                       theme={formData.is_authorized_to_work ? 'info' : undefined}
                       variant={formData.is_authorized_to_work ? undefined : 'outlined'}
                       onPress={() => {
@@ -442,7 +442,7 @@ export function QuickApplyModal({
                     </Button>
                     <Button
                       flex={1}
-                      size={16}
+                      size="md"
                       theme={!formData.is_authorized_to_work ? 'info' : undefined}
                       variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
                       onPress={() => {
@@ -492,11 +492,11 @@ export function QuickApplyModal({
               borderTopWidth={1}
               borderTopColor="$borderColor"
             >
-              <Button size={16} variant="outline" onPress={handleClose} disabled={isSubmitting}>
+              <Button size="md" variant="outline" onPress={handleClose} disabled={isSubmitting}>
                 Cancel
               </Button>
               <Button
-                size={16}
+                size="md"
                 theme="info"
                 onPress={handleSubmit}
                 disabled={

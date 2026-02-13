@@ -95,7 +95,7 @@ export function ProfileHoverCard({
       borderColor="$color6"
       borderWidth={1}
       borderRadius={16}
-      padding={12}
+      padding="sm"
       minWidth={240}
       maxWidth={300}
       style={{
@@ -112,7 +112,7 @@ export function ProfileHoverCard({
       {isLoading ? (
         <Stack align="center" paddingVertical={16} gap={8}>
           <Spinner size="sm" color="$blue10" />
-          <Text color="gray">Loading...</Text>
+          <Text color="$gray11">Loading...</Text>
         </Stack>
       ) : pinType === 'worker' && workerPreview ? (
         <Stack gap={8}>
@@ -145,18 +145,18 @@ export function ProfileHoverCard({
               </View>
             )}
             <Stack flex={1} gap={4}>
-              <Text color="gray" numberOfLines={1}>
+              <Text color="$gray11" numberOfLines={1}>
                 {workerPreview.displayName}
               </Text>
               {workerPreview.headline && (
-                <Text color="gray" numberOfLines={1}>
+                <Text color="$gray11" numberOfLines={1}>
                   {workerPreview.headline}
                 </Text>
               )}
             </Stack>
             {profileUrl ? (
               <Button
-                size={8}
+                size="xs"
                 circular
                 variant="outline"
                 icon={ExternalLink}
@@ -169,8 +169,8 @@ export function ProfileHoverCard({
           {/* Location */}
           {workerPreview.location && (
             <Row gap={8} align="center">
-              <MapPin size={14} color="gray" />
-              <Text color="gray" numberOfLines={1}>
+              <MapPin size={14} color="$gray11" />
+              <Text color="$gray11" numberOfLines={1}>
                 {workerPreview.location}
               </Text>
             </Row>
@@ -200,7 +200,7 @@ export function ProfileHoverCard({
                   )
                 })}
               {workerPreview.topSkills.length > 3 && (
-                <Text color="gray">+{workerPreview.topSkills.length - 3} more</Text>
+                <Text color="$gray11">+{workerPreview.topSkills.length - 3} more</Text>
               )}
             </Row>
           )}
@@ -220,18 +220,18 @@ export function ProfileHoverCard({
               <Building2 size={24} color="$blue10" />
             </View>
             <Stack flex={1} gap={4}>
-              <Text color="gray" numberOfLines={1}>
+              <Text color="$gray11" numberOfLines={1}>
                 {organization.name}
               </Text>
               {organization.industry_name && (
-                <Text color="gray" numberOfLines={1}>
+                <Text color="$gray11" numberOfLines={1}>
                   {organization.industry_name}
                 </Text>
               )}
             </Stack>
             {profileUrl ? (
               <Button
-                size={8}
+                size="xs"
                 circular
                 variant="outline"
                 icon={ExternalLink}
@@ -246,8 +246,8 @@ export function ProfileHoverCard({
             typeof organization.address === 'object' &&
             'city' in organization.address && (
               <Row gap={8} align="center">
-                <MapPin size={14} color="gray" />
-                <Text color="gray" numberOfLines={1}>
+                <MapPin size={14} color="$gray11" />
+                <Text color="$gray11" numberOfLines={1}>
                   {[
                     (organization.address as { city?: string }).city,
                     (organization.address as { state?: string }).state,
@@ -263,14 +263,14 @@ export function ProfileHoverCard({
             {jobsCount > 0 && (
               <Row gap={4} align="center">
                 <Briefcase size={14} color="$green10" />
-                <Text color="gray">
+                <Text color="$gray11">
                   {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
                 </Text>
               </Row>
             )}
             {organization.employee_count_range && (
               <Row gap={4} align="center">
-                <Text color="gray">{organization.employee_count_range}</Text>
+                <Text color="$gray11">{organization.employee_count_range}</Text>
               </Row>
             )}
           </Row>

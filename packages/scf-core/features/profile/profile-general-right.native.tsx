@@ -10,7 +10,7 @@ export function ProfileGeneralRight() {
     <Stack gap={16}>
       <DashboardWidget>
         <H3>General Information</H3>
-        <Text color="gray">
+        <Text color="$gray11">
           Update your basic profile information including your name, photo, and contact details.
         </Text>
       </DashboardWidget>

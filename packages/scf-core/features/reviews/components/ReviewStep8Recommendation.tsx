@@ -13,8 +13,8 @@ export function ReviewStep8Recommendation({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">Final Recommendation</Text>
-        <Text color="gray">Would you recommend working with this person?</Text>
+        <Text color="$gray11">Final Recommendation</Text>
+        <Text color="$gray11">Would you recommend working with this person?</Text>
       </Stack>
 
       {/* Recommendation Buttons */}
@@ -48,7 +48,7 @@ export function ReviewStep8Recommendation({
       {recommendation !== null && (
         <Stack
           gap={12}
-          padding={16}
+          padding="md"
           backgroundColor={recommendation ? '$green3' : '$red3'}
           borderRadius={16}
         >
@@ -76,7 +76,7 @@ export function ReviewStep8Recommendation({
       )}
 
       {/* Helper Text */}
-      <Text color="gray" fontStyle="italic">
+      <Text color="$gray11" fontStyle="italic">
         This is your final assessment. Please be honest and fair in your recommendation.
       </Text>
     </Stack>

@@ -26,8 +26,8 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <Stack gap={16} padding={16} align="center" aria-live="polite">
-        <Text color="gray">
+      <Stack gap={16} padding="md" align="center" aria-live="polite">
+        <Text color="$gray11">
           No results available yet. Complete at least one domain to see results.
         </Text>
       </Stack>
@@ -43,7 +43,7 @@ export function NarrativeView({
       {overallSummary && (
         <Stack
           gap={12}
-          padding={20}
+          padding="lg"
           backgroundColor="$blue2"
           borderRadius={16}
           borderWidth={1}
@@ -60,7 +60,7 @@ export function NarrativeView({
       {!overallSummary && completedDomains > 0 && (
         <Stack
           gap={8}
-          padding={16}
+          padding="md"
           backgroundColor="$blue2"
           borderRadius={16}
           borderWidth={1}
@@ -100,7 +100,7 @@ export function NarrativeView({
       {!isComplete && completedDomains > 0 && (
         <Stack
           gap={8}
-          padding={16}
+          padding="md"
           backgroundColor="$yellow2"
           borderRadius={16}
           borderWidth={1}

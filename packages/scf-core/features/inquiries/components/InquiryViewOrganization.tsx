@@ -59,7 +59,7 @@ export function InquiryViewOrganization({
 
   if (isLoading) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading inquiry...</Text>
       </Stack>
     )
@@ -67,7 +67,7 @@ export function InquiryViewOrganization({
 
   if (error || !data || !data.inquiry) {
     return (
-      <Stack padding={16} align="center" gap={16}>
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load inquiry</Text>
       </Stack>
     )
@@ -140,7 +140,7 @@ export function InquiryViewOrganization({
     negotiable: boolean
   }) => (
     <Row justify="space-between" align="center">
-      <Text color="gray">{label}</Text>
+      <Text color="$gray11">{label}</Text>
       <Row align="center" gap={8}>
         <Text>{value || 'Not specified'}</Text>
         {!negotiable && <NonNegotiableBadge />}
@@ -163,7 +163,7 @@ export function InquiryViewOrganization({
     const sectionComments = commentsBySection[sectionName] || []
 
     return (
-      <Card padding={16} gap={12}>
+      <Card padding="md" gap={12}>
         {/* Section Header */}
         <Row justify="space-between" align="center">
           <Text>{title}</Text>
@@ -190,12 +190,12 @@ export function InquiryViewOrganization({
 
   return (
     <ScrollView>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         {/* Header with Edit button */}
         <Row justify="space-between" align="center">
           <Text>Inquiry</Text>
         </Row>
-        <Text color="gray">
+        <Text color="$gray11">
           {candidateName} - {jobTitle}
         </Text>
 
@@ -300,8 +300,8 @@ export function InquiryViewOrganization({
           )}
           {inquiry.additional_notes && (
             <Stack gap={8}>
-              <Text color="gray">Additional notes</Text>
-              <Text color="gray">{inquiry.additional_notes}</Text>
+              <Text color="$gray11">Additional notes</Text>
+              <Text color="$gray11">{inquiry.additional_notes}</Text>
             </Stack>
           )}
         </InquirySection>

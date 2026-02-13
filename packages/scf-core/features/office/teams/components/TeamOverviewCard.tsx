@@ -50,7 +50,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
 
   return (
     <Card
-      padding={16}
+      padding="md"
       borderWidth={1}
       borderColor="$borderColor"
       gap={16}
@@ -62,7 +62,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
             <Text>{team.name || 'Untitled team'}</Text>
             {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
           </Row>
-          <Text color="gray">
+          <Text color="$gray11">
             {team.description?.trim() ||
               'No description provided. Add context to help team members understand the focus of this team.'}
           </Text>
@@ -82,23 +82,23 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
 
       <Row gap={16} flexWrap="wrap">
         <StatItem
-          icon={<Users size={16} />}
+          icon={<Users size="md" />}
           label="Members"
           value={memberCount !== undefined ? memberCount.toString() : '—'}
         />
         <StatItem
-          icon={<Briefcase size={16} />}
+          icon={<Briefcase size="md" />}
           label="Active jobs"
           value={jobCount !== undefined ? jobCount.toString() : '—'}
         />
         <StatItem
-          icon={<Mail size={16} />}
+          icon={<Mail size="md" />}
           label="Pending invites"
           value={pendingInvitations !== undefined ? pendingInvitations.toString() : '—'}
         />
         {team.defaultRole?.name ? (
           <StatItem
-            icon={<Shield size={16} />}
+            icon={<Shield size="md" />}
             label="Default role"
             value={team.defaultRole.name}
           />
@@ -106,10 +106,10 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
       </Row>
 
       <Stack gap={4}>
-        <Text color="gray" textTransform="uppercase">
+        <Text color="$gray11" textTransform="uppercase">
           Team slug
         </Text>
-        <Text color="gray">{team.slug || 'Not configured'}</Text>
+        <Text color="$gray11">{team.slug || 'Not configured'}</Text>
       </Stack>
     </Card>
   )
@@ -129,7 +129,7 @@ function StatItem({ icon, label, value }: { icon: ReactNode; label: string; valu
     >
       {icon}
       <Stack>
-        <Text color="gray" textTransform="uppercase">
+        <Text color="$gray11" textTransform="uppercase">
           {label}
         </Text>
         <Text>{value}</Text>

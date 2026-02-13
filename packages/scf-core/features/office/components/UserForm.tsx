@@ -98,7 +98,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <Stack padding={16} gap={16}>
+      <Stack padding="md" gap={16}>
         <Row align="center" justify="space-between">
           <Text>Edit User</Text>
           <Row gap={8}>
@@ -117,7 +117,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Row>
 
         {/* Profile Information */}
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={12}>
             <Text marginBottom={8}>Profile Information</Text>
 
@@ -166,7 +166,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Private Information */}
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={12}>
             <Text marginBottom={8}>Private Information</Text>
 
@@ -216,7 +216,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Employment Information */}
-        <Card padding={16}>
+        <Card padding="md">
           <Stack gap={12}>
             <Text marginBottom={8}>Employment Information</Text>
 

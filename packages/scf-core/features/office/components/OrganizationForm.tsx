@@ -254,7 +254,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     <ScrollView
       flex={1}
       backgroundColor="$color2"
-      padding={20}
+      padding="lg"
       showsVerticalScrollIndicator={false}
     >
       {/* Name */}
@@ -305,7 +305,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
             {slugStatus.state === 'checking' && slugNeedsValidation && (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
-                <Text color="gray">Checking availability...</Text>
+                <Text color="$gray11">Checking availability...</Text>
               </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
@@ -320,7 +320,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                     {slugStatus.suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
-                        size={8}
+                        size="xs"
                         variant="outline"
                         onPress={() => setValue('slug', suggestion, { shouldValidate: true })}
                       >

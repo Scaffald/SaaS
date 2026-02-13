@@ -76,13 +76,13 @@ export function DisputeBackgroundCheckContent({
       <Row justify="space-between" align="center">
         <Stack gap={4}>
           <Text>Dispute background check</Text>
-          <Text color="gray">
+          <Text color="$gray11">
             Flag inaccurate information so our compliance team can investigate.
           </Text>
         </Stack>
         {(renderHeaderAction?.({ isSubmitting, isUploading }) as ReactNode) ?? (
           <Button
-            size={8}
+            size="xs"
             variant="outline"
             disabled={isSubmitting || isUploading}
             onPress={onClose}
@@ -94,17 +94,17 @@ export function DisputeBackgroundCheckContent({
 
       {check ? (
         <>
-          <Stack gap={8} backgroundColor="$color3" padding={12} borderRadius={16}>
+          <Stack gap={8} backgroundColor="$color3" padding="sm" borderRadius={16}>
             <Row gap={8} align="center">
               <AlertTriangle size={18} color="$yellow10" />
-              <Text color="gray">{statusMeta?.label ?? 'Background check'}</Text>
+              <Text color="$gray11">{statusMeta?.label ?? 'Background check'}</Text>
             </Row>
-            <Text color="gray">
-              Package: <Text color="gray">{summaryPackage}</Text>
+            <Text color="$gray11">
+              Package: <Text color="$gray11">{summaryPackage}</Text>
             </Text>
-            <Text color="gray">Completed: {formatDate(check.completed_at)}</Text>
-            <Text color="gray">Expires: {formatDate(check.expires_at)}</Text>
-            <Text color="gray">
+            <Text color="$gray11">Completed: {formatDate(check.completed_at)}</Text>
+            <Text color="$gray11">Expires: {formatDate(check.expires_at)}</Text>
+            <Text color="$gray11">
               Disputes should focus on factual inaccuracies, missing context, or mismatched records.
             </Text>
           </Stack>
@@ -133,7 +133,7 @@ export function DisputeBackgroundCheckContent({
         </>
       ) : (
         <Stack gap={12} align="center" paddingVertical={24}>
-          <Text color="gray">Select a background check to review dispute information.</Text>
+          <Text color="$gray11">Select a background check to review dispute information.</Text>
         </Stack>
       )}
     </Stack>

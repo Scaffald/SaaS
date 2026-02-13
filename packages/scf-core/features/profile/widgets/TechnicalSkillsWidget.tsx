@@ -53,10 +53,10 @@ export function TechnicalSkillsWidget({
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load skills</Text>
-          <Text color="gray">{error.message}</Text>
+          <Text color="$gray11">{error.message}</Text>
           <Button
             variant="primary"
-            size={8}
+            size="xs"
             onPress={() => {
               void refetch()
             }}
@@ -104,7 +104,7 @@ export function TechnicalSkillsWidget({
           {showEdit && (
             <Button
               variant="outline"
-              size={8}
+              size="xs"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -135,7 +135,7 @@ export function TechnicalSkillsWidget({
             {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
               <Stack key={taxonomy} gap={8}>
                 {/* Taxonomy Header */}
-                <Text color="gray" textTransform="uppercase">
+                <Text color="$gray11" textTransform="uppercase">
                   {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                 </Text>
 

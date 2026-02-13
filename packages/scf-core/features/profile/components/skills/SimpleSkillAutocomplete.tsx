@@ -118,7 +118,7 @@ export function SimpleSkillAutocomplete({
           }}
           placeholder={placeholder}
           paddingRight={40}
-          size={16}
+          size="md"
           borderColor="$borderColor"
           focusStyle={{ borderColor: '$blue9' }}
         />
@@ -129,7 +129,7 @@ export function SimpleSkillAutocomplete({
             right={4}
             top={4}
             bottom={4}
-            size={8}
+            size="xs"
             circular
             chromeless
             onPress={() => {
@@ -158,9 +158,9 @@ export function SimpleSkillAutocomplete({
           <ScrollView>
             <Stack>
               {isLoading || isSearching ? (
-                <Stack padding={16} align="center" justify="center">
+                <Stack padding="md" align="center" justify="center">
                   <Spinner size="sm" />
-                  <Text color="gray" marginTop={8}>
+                  <Text color="$gray11" marginTop={8}>
                     Searching...
                   </Text>
                 </Stack>
@@ -170,7 +170,7 @@ export function SimpleSkillAutocomplete({
                   return (
                     <Stack
                       key={skill.id}
-                      padding={12}
+                      padding="sm"
                       pressStyle={{ backgroundColor: '$backgroundHover' }}
                       onPress={() => handleSelect(skill)}
                       borderBottomWidth={1}
@@ -180,7 +180,7 @@ export function SimpleSkillAutocomplete({
                       <Row justify="space-between" align="center">
                         <Stack flex={1}>
                           <Text>{skill.name}</Text>
-                          {skill.code && <Text color="gray">{skill.code}</Text>}
+                          {skill.code && <Text color="$gray11">{skill.code}</Text>}
                         </Stack>
                         {isExisting && <Text color="$blue9">Added</Text>}
                       </Row>
@@ -188,8 +188,8 @@ export function SimpleSkillAutocomplete({
                   )
                 })
               ) : (
-                <Stack padding={16} align="center">
-                  <Text color="gray">No skills found</Text>
+                <Stack padding="md" align="center">
+                  <Text color="$gray11">No skills found</Text>
                 </Stack>
               )}
             </Stack>

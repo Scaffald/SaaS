@@ -63,15 +63,15 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (config.isLoading || !stripePromise) {
     return (
-      <Card padding={12} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text color="gray">Preparing secure payment form…</Text>
+      <Card padding="sm" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+        <Text color="$gray11">Preparing secure payment form…</Text>
       </Card>
     )
   }
 
   if (!config.publishableKey) {
     return (
-      <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+      <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
         <Text color="$red11">
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -83,14 +83,14 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
     return (
       <Stack gap={12}>
         <Text>Add Payment Method</Text>
-        <Text color="gray">
+        <Text color="$gray11">
           Click the button below to securely add a payment method for this organization.
         </Text>
         {config.testMode && (
           <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
         )}
         <Row gap={8}>
-          <Button size={16} theme="blue" onPress={handleInitialize} disabled={isInitializing}>
+          <Button size="md" color="primary" onPress={handleInitialize} disabled={isInitializing}>
             {isInitializing ? (
               <Row gap={8} align="center">
                 <Spinner size="sm" color="white" />
@@ -100,7 +100,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
               'Continue'
             )}
           </Button>
-          <Button size={16} variant="outline" onPress={onCancel}>
+          <Button size="md" variant="outline" onPress={onCancel}>
             Cancel
           </Button>
         </Row>
@@ -174,7 +174,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
   }
 
   return (
-    <Card padding={16} borderColor="$borderColor" borderWidth={1} gap={12}>
+    <Card padding="md" borderColor="$borderColor" borderWidth={1} gap={12}>
       <Stack gap={4}>
         <Text>Add Payment Method</Text>
         {testMode && (
@@ -185,7 +185,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+        <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
           <Row gap={8} align="center">
             <Text color="$red11" flex={1}>
               {errorMessage}
@@ -196,8 +196,8 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
 
       <Row gap={8}>
         <Button
-          size={16}
-          theme="blue"
+          size="md"
+          color="primary"
           disabled={isSubmitting || !stripe || !elements}
           onPress={handleSubmit}
           flex={1}
@@ -211,7 +211,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
             'Save Payment Method'
           )}
         </Button>
-        <Button size={16} variant="outline" onPress={onCancel}>
+        <Button size="md" variant="outline" onPress={onCancel}>
           Cancel
         </Button>
       </Row>

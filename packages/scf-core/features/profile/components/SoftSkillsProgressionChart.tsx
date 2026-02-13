@@ -109,27 +109,27 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (isLoading) {
     return (
-      <Stack gap={16} align="center" justify="center" padding={16}>
+      <Stack gap={16} align="center" justify="center" padding="md">
         <Spinner size="lg" color="$blue10" />
-        <Text color="gray">Loading progression data...</Text>
+        <Text color="$gray11">Loading progression data...</Text>
       </Stack>
     )
   }
 
   if (error) {
     return (
-      <Stack gap={8} padding={16}>
+      <Stack gap={8} padding="md">
         <Text color="$red11">Error loading progression</Text>
-        <Text color="gray">{error.message || 'Failed to load progression data'}</Text>
+        <Text color="$gray11">{error.message || 'Failed to load progression data'}</Text>
       </Stack>
     )
   }
 
   if (versions.length < 2) {
     return (
-      <Stack gap={8} padding={16} align="center">
-        <Text color="gray">Progression Tracking</Text>
-        <Text color="gray" style={{ textAlign: 'center' }}>
+      <Stack gap={8} padding="md" align="center">
+        <Text color="$gray11">Progression Tracking</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Complete at least two assessments to see skill progression trends.
         </Text>
       </Stack>
@@ -155,11 +155,11 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const getTrendIcon = (trend: SkillProgression['trend']) => {
     switch (trend) {
       case 'improved':
-        return <ArrowUp size={16} color="$green10" />
+        return <ArrowUp size="md" color="$green10" />
       case 'declined':
-        return <ArrowDown size={16} color="$red10" />
+        return <ArrowDown size="md" color="$red10" />
       case 'stable':
-        return <ArrowRight size={16} color="gray" />
+        return <ArrowRight size="md" color="$gray11" />
       default:
         return null
     }
@@ -184,17 +184,17 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <Stack gap={8}>
-          <Text color="gray">Skill Progression</Text>
-          <Text color="gray">Track how your soft skills have changed over time.</Text>
+          <Text color="$gray11">Skill Progression</Text>
+          <Text color="$gray11">Track how your soft skills have changed over time.</Text>
         </Stack>
 
         {/* Summary Stats */}
         <Row gap={12} flexWrap="wrap">
           <Stack
             gap={4}
-            padding={12}
+            padding="sm"
             backgroundColor="$green2"
             borderRadius={12}
             borderWidth={1}
@@ -206,7 +206,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
           </Stack>
           <Stack
             gap={4}
-            padding={12}
+            padding="sm"
             backgroundColor="$red2"
             borderRadius={12}
             borderWidth={1}
@@ -218,15 +218,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
           </Stack>
           <Stack
             gap={4}
-            padding={12}
+            padding="sm"
             backgroundColor="$color2"
             borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text color="gray">Stable</Text>
-            <Text color="gray">{stableSkills}</Text>
+            <Text color="$gray11">Stable</Text>
+            <Text color="$gray11">{stableSkills}</Text>
           </Stack>
         </Row>
 
@@ -236,13 +236,13 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
           return (
             <Stack key={category} gap={12}>
-              <Text color="gray">{categoryLabels[category as SoftSkillCategory]}</Text>
+              <Text color="$gray11">{categoryLabels[category as SoftSkillCategory]}</Text>
               <Stack gap={8}>
                 {skills.map((skill) => (
                   <Stack
                     key={skill.skillId}
                     gap={8}
-                    padding={12}
+                    padding="sm"
                     backgroundColor="$color2"
                     borderRadius={12}
                     borderWidth={1}
@@ -250,13 +250,13 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
                   >
                     <Row align="center" justify="space-between" flexWrap="wrap" gap={8}>
                       <Stack gap={4} flex={1}>
-                        <Text color="gray">{skill.skillName}</Text>
+                        <Text color="$gray11">{skill.skillName}</Text>
                         <Row gap={12} align="center">
                           {skill.previousRating !== null && (
-                            <Text color="gray">Previous: {skill.previousRating.toFixed(1)}/5</Text>
+                            <Text color="$gray11">Previous: {skill.previousRating.toFixed(1)}/5</Text>
                           )}
                           {skill.currentRating !== null && (
-                            <Text color="gray">Current: {skill.currentRating.toFixed(1)}/5</Text>
+                            <Text color="$gray11">Current: {skill.currentRating.toFixed(1)}/5</Text>
                           )}
                         </Row>
                       </Stack>

@@ -184,11 +184,11 @@ export function OfficeCertificationsLeft({
 
   return (
     <DashboardWidget>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <Row justify="space-between" align="center">
           <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
           {isEditing && (
-            <Button size={8} variant="outline" onPress={onCancel} icon={X}>
+            <Button size="xs" variant="outline" onPress={onCancel} icon={X}>
               Cancel
             </Button>
           )}
@@ -220,7 +220,7 @@ export function OfficeCertificationsLeft({
             <Text>
               Vanity URL <Text color="$red10">*</Text>
             </Text>
-            <Text color="gray">URL-friendly username (auto-generated from name)</Text>
+            <Text color="$gray11">URL-friendly username (auto-generated from name)</Text>
             <Controller
               name="slug"
               control={control}
@@ -294,7 +294,7 @@ export function OfficeCertificationsLeft({
           {/* Typical Duration */}
           <Stack gap={8}>
             <Text>Typical Duration (days)</Text>
-            <Text color="gray">
+            <Text color="$gray11">
               How many days it typically takes to complete this certification
             </Text>
             <Controller
@@ -324,7 +324,7 @@ export function OfficeCertificationsLeft({
                   <Row gap={12} align="center">
                     <CustomCheckbox
                       checked={isChecked}
-                      onCheckedChange={field.onChange}
+                      onChange={field.onChange}
                       aria-label="Requires renewal"
                       testID="requires-renewal"
                     />
@@ -341,7 +341,7 @@ export function OfficeCertificationsLeft({
           {requiresRenewal && (
             <Stack gap={8}>
               <Text>Renewal Period (months)</Text>
-              <Text color="gray">How often this certification must be renewed</Text>
+              <Text color="$gray11">How often this certification must be renewed</Text>
               <Controller
                 name="renewal_period_months"
                 control={control}

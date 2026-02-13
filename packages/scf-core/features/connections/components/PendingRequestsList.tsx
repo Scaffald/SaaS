@@ -151,7 +151,7 @@ export function PendingRequestsList() {
               </Avatar>
               <Stack gap={4}>
                 <Text>{name}</Text>
-                <Text color="gray">{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
+                <Text color="$gray11">{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
               </Stack>
             </Row>
           )
@@ -162,7 +162,7 @@ export function PendingRequestsList() {
         header: 'Date',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="gray">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -176,7 +176,7 @@ export function PendingRequestsList() {
           if (request.type === 'sent') {
             return (
               <Button
-                size={8}
+                size="xs"
                 variant="outline"
                 icon={X}
                 onPress={() => handleCancel(request.id)}
@@ -190,7 +190,7 @@ export function PendingRequestsList() {
           return (
             <Row gap={4}>
               <Button
-                size={8}
+                size="xs"
                 circular
                 icon={CheckCircle2}
                 theme="success"
@@ -198,7 +198,7 @@ export function PendingRequestsList() {
                 disabled={isLoading}
               />
               <Button
-                size={8}
+                size="xs"
                 circular
                 icon={X}
                 variant="outline"
@@ -224,7 +224,7 @@ export function PendingRequestsList() {
     return (
       <Stack align="center" justify="center" paddingVertical={24} gap={8}>
         <Spinner size="lg" />
-        <Text color="gray">Loading pending requests…</Text>
+        <Text color="$gray11">Loading pending requests…</Text>
       </Stack>
     )
   }
@@ -239,14 +239,14 @@ export function PendingRequestsList() {
         borderWidth={1}
         borderColor="$borderColor"
         borderRadius={16}
-        padding={16}
+        padding="md"
         backgroundColor="$color2"
         align="center"
         justify="center"
         style={{ minHeight: 300 }}
       >
         <Text>No pending requests</Text>
-        <Text color="gray" style={{ textAlign: 'center' }}>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           You don't have any pending connection requests. Send connection requests to build your
           network.
         </Text>

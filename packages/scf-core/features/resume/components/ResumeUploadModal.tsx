@@ -331,7 +331,7 @@ export function ResumeUploadModal({
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Import Resume" size="md">
       <Stack gap={spacing.md}>
-        <Paragraph color="gray">
+        <Paragraph color="$gray11">
           Upload a PDF or Word document under 1MB. We’ll extract your experience, education, skills,
           and preferences so you can confirm the details before saving them to your profile.
         </Paragraph>
@@ -358,7 +358,7 @@ export function ResumeUploadModal({
         ) : (
           <Stack gap={spacing.sm}>
             <Button
-              size={16}
+              size="md"
               icon={UploadCloud}
               disabled={status === 'uploading' || status === 'parsing'}
               onPress={handleNativePick}
@@ -366,9 +366,9 @@ export function ResumeUploadModal({
               Choose File
             </Button>
             {fileName ? (
-              <Text color="gray">Selected file: {fileName}</Text>
+              <Text color="$gray11">Selected file: {fileName}</Text>
             ) : (
-              <Text color="gray">Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
+              <Text color="$gray11">Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
             )}
             {status === 'error' && errorMessage ? (
               <Row gap={8} align="center">
@@ -380,7 +380,7 @@ export function ResumeUploadModal({
         )}
 
         {shouldShowProgressIndicators && progressValue > 0 && (
-          <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={12}>
+          <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={12}>
             <Stack height={8} backgroundColor="$color4" borderRadius={16} overflow="hidden">
               <Stack
                 height="100%"
@@ -404,22 +404,22 @@ export function ResumeUploadModal({
         )}
 
         {status === 'success' && (
-          <Row gap={12} align="center" backgroundColor="$green3" padding={12} borderRadius={12}>
-            <CheckCircle2 color="$green10" size={20} />
+          <Row gap={12} align="center" backgroundColor="$green3" padding="sm" borderRadius={12}>
+            <CheckCircle2 color="$green10" size="lg" />
             <Text color="$green11">Resume uploaded successfully. Redirecting...</Text>
           </Row>
         )}
 
         {status === 'error' && errorMessage && (
-          <Row gap={12} align="center" backgroundColor="$red3" padding={12} borderRadius={12}>
-            <AlertCircle color="$red10" size={20} />
+          <Row gap={12} align="center" backgroundColor="$red3" padding="sm" borderRadius={12}>
+            <AlertCircle color="$red10" size="lg" />
             <Text color="$red11">{errorMessage}</Text>
           </Row>
         )}
 
         <Row gap={8} justify="flex-end">
           <Button
-            size={12}
+            size="sm"
             variant="outline"
             disabled={showProgress}
             onPress={() => onOpenChange(false)}
@@ -427,7 +427,7 @@ export function ResumeUploadModal({
             Cancel
           </Button>
           <Button
-            size={12}
+            size="sm"
             disabled
             icon={showProgress ? Loader2 : undefined}
             backgroundColor={status === 'error' ? '$red4' : '$blue4'}

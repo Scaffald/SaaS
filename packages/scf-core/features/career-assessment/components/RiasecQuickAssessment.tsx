@@ -32,8 +32,8 @@ export function RiasecQuickAssessment({
   return (
     <Stack gap={16} width="100%">
       <Stack gap={8}>
-        <Text color="gray">Rate Your Interests</Text>
-        <Text color="gray">
+        <Text color="$gray11">Rate Your Interests</Text>
+        <Text color="$gray11">
           Move the sliders to indicate how much you agree with each statement (1 = Disagree, 5 =
           Strongly Agree)
         </Text>
@@ -44,7 +44,7 @@ export function RiasecQuickAssessment({
           <Row gap={12} align="center">
             <Stack flex={1} gap={4}>
               <Text>{dimension.label}</Text>
-              <Text color="gray">{dimension.description}</Text>
+              <Text color="$gray11">{dimension.description}</Text>
             </Stack>
             <Row
               width={60}
@@ -59,7 +59,7 @@ export function RiasecQuickAssessment({
           </Row>
 
           <Row align="center" gap={12}>
-            <Text color="gray" width={20}>
+            <Text color="$gray11" width={20}>
               1
             </Text>
             <Stack flex={1}>
@@ -77,14 +77,14 @@ export function RiasecQuickAssessment({
                 <Slider.Thumb index={0} circular size={24} />
               </Slider>
             </Stack>
-            <Text color="gray" width={20}>
+            <Text color="$gray11" width={20}>
               5
             </Text>
           </Row>
         </Stack>
       ))}
 
-      <Stack gap={8} padding={12} borderWidth={1} borderColor="$blue6">
+      <Stack gap={8} padding="sm" borderWidth={1} borderColor="$blue6">
         <Text color="$blue11">💡 What is RIASEC?</Text>
         <Text color="$blue11">
           RIASEC (Holland Codes) is a career interest model that helps match your personality to

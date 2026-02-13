@@ -341,7 +341,7 @@ export function OfficeOrganizationsList() {
               <Row justify="space-between" align="center">
                 <Text>Moderation Summary</Text>
                 <Button
-                  size={8}
+                  size="xs"
                   variant="outline"
                   icon={RefreshCw}
                   disabled={isRequestsLoading || isRequestsRefetching}
@@ -352,15 +352,15 @@ export function OfficeOrganizationsList() {
               </Row>
               <Row gap={16}>
                 <Stack gap={4}>
-                  <Text color="gray">Pending</Text>
+                  <Text color="$gray11">Pending</Text>
                   <Text>{moderationCounts.pending}</Text>
                 </Stack>
                 <Stack gap={4}>
-                  <Text color="gray">Approved</Text>
+                  <Text color="$gray11">Approved</Text>
                   <Text color="$green10">{moderationCounts.approved}</Text>
                 </Stack>
                 <Stack gap={4}>
-                  <Text color="gray">Rejected</Text>
+                  <Text color="$gray11">Rejected</Text>
                   <Text color="$red10">{moderationCounts.rejected}</Text>
                 </Stack>
               </Row>
@@ -373,31 +373,31 @@ export function OfficeOrganizationsList() {
                   <Spinner size="lg" />
                 </Row>
               ) : pendingRequests.length === 0 ? (
-                <Text color="gray">No pending organization requests. Check back soon!</Text>
+                <Text color="$gray11">No pending organization requests. Check back soon!</Text>
               ) : (
                 <Stack gap={16}>
                   {pendingRequests.map((request, index) => (
                     <Stack key={request.id} gap={12}>
                       <Stack gap={6}>
                         <Text>{request.name}</Text>
-                        <Text color="gray">Vanity URL: {request.slug}</Text>
+                        <Text color="$gray11">Vanity URL: {request.slug}</Text>
                         {request.website ? <Text color="$blue10">{request.website}</Text> : null}
-                        <Text color="gray">
+                        <Text color="$gray11">
                           Submitted {new Date(request.created_at).toLocaleString()}
                         </Text>
                         {request.notes ? (
-                          <Paragraph color="gray">Notes: {request.notes}</Paragraph>
+                          <Paragraph color="$gray11">Notes: {request.notes}</Paragraph>
                         ) : null}
                         {request.message ? (
-                          <Paragraph color="gray">Message: {request.message}</Paragraph>
+                          <Paragraph color="$gray11">Message: {request.message}</Paragraph>
                         ) : null}
                         {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
-                          <Text color="gray">Resent {request.resent_count} time(s)</Text>
+                          <Text color="$gray11">Resent {request.resent_count} time(s)</Text>
                         ) : null}
                       </Stack>
                       <Row gap={8}>
                         <Button
-                          size={8}
+                          size="xs"
                           theme="success"
                           icon={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isPending}
@@ -406,7 +406,7 @@ export function OfficeOrganizationsList() {
                           Approve
                         </Button>
                         <Button
-                          size={8}
+                          size="xs"
                           variant="outline"
                           theme="error"
                           icon={XIcon}

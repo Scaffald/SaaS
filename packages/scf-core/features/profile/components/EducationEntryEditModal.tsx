@@ -175,7 +175,7 @@ export function EducationEntryEditModal({
         title="Edit Education Entry"
         size="lg"
       >
-        <Stack gap={16} padding={16}>
+        <Stack gap={16} padding="md">
           {/* Institution */}
           <Stack gap={8}>
             <Text>Institution *</Text>
@@ -210,7 +210,7 @@ export function EducationEntryEditModal({
                               }
                             />
                             <Button
-                              size={8}
+                              size="xs"
                               variant="outline"
                               onPress={() => {
                                 setManualEntryMode(true)
@@ -233,7 +233,7 @@ export function EducationEntryEditModal({
                             />
                             <FieldError message={errors.institution_name?.message} />
                             <Button
-                              size={8}
+                              size="xs"
                               variant="outline"
                               onPress={() => {
                                 setManualEntryMode(false)
@@ -456,7 +456,7 @@ export function EducationEntryEditModal({
                   <Row gap={8} align="center">
                     <CustomCheckbox
                       checked={isCurrent}
-                      onCheckedChange={handleChange}
+                      onChange={handleChange}
                       testID="education-modal-current"
                       aria-label="Currently enrolled"
                     />

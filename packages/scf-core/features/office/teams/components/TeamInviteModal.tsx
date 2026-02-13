@@ -160,7 +160,7 @@ export function TeamInviteModal({
     >
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="gray">{inviteTypeDescription}</Text>
+          <Text color="$gray11">{inviteTypeDescription}</Text>
           <RadioGroup
             value={inviteType}
             onValueChange={(next) => setInviteType(next as InviteType)}
@@ -168,11 +168,11 @@ export function TeamInviteModal({
             gap={12}
           >
             <Row gap={8} align="center">
-              <RadioGroup.Item value="email" id="invite-email" size={12} />
+              <RadioGroup.Item value="email" id="invite-email" size="sm" />
               <Label htmlFor="invite-email">Email invite</Label>
             </Row>
             <Row gap={8} align="center">
-              <RadioGroup.Item value="user" id="invite-user" size={12} />
+              <RadioGroup.Item value="user" id="invite-user" size="sm" />
               <Label htmlFor="invite-user">Existing member</Label>
             </Row>
           </RadioGroup>
@@ -226,10 +226,10 @@ export function TeamInviteModal({
           {isLoadingRoles ? (
             <Row gap={8} align="center">
               <Spinner size="sm" />
-              <Text color="gray">Loading roles…</Text>
+              <Text color="$gray11">Loading roles…</Text>
             </Row>
           ) : roleOptions.length === 0 ? (
-            <Text color="gray">No roles are configured for this organization.</Text>
+            <Text color="$gray11">No roles are configured for this organization.</Text>
           ) : (
             <ResponsiveSelect
               value={selectedRoleId || defaultRoleId || roleOptions[0]?.id || ''}
@@ -272,7 +272,7 @@ export function TeamInviteModal({
             }}
             disabled={inviteMutation.isPending}
           />
-          <Text color="gray">
+          <Text color="$gray11">
             Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN},
             maximum {TEAM_INVITATION_TTL_MAX}.
           </Text>
@@ -292,12 +292,12 @@ export function TeamInviteModal({
           </Button>
           <Button
             backgroundColor="$color9"
-            color="gray"
+            color="$gray11"
             icon={inviteType === 'email' ? Mail : UserPlus}
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >
-            {inviteMutation.isPending ? <Spinner size="sm" color="gray" /> : 'Send Invitation'}
+            {inviteMutation.isPending ? <Spinner size="sm" color="$gray11" /> : 'Send Invitation'}
           </Button>
         </Row>
       </Stack>

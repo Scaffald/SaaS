@@ -90,25 +90,25 @@ export function DiscoverWorkersRight({
     <Stack gap={8}>
       {searchQuery && (
         <Row gap={8} align="center">
-          <Text color="gray">Search:</Text>
+          <Text color="$gray11">Search:</Text>
           <Text color="$blue10">{searchQuery}</Text>
         </Row>
       )}
       {minScore > 0 && (
         <Row gap={8} align="center">
-          <Text color="gray">Min Score:</Text>
+          <Text color="$gray11">Min Score:</Text>
           <Text color="$blue10">{minScore}</Text>
         </Row>
       )}
       {selectedSkills.length > 0 && (
         <Row gap={8} align="center" flexWrap="wrap">
-          <Text color="gray">Skills:</Text>
+          <Text color="$gray11">Skills:</Text>
           <Text color="$blue10">{selectedSkills.length}</Text>
         </Row>
       )}
       {selectedCertifications.length > 0 && (
         <Row gap={8} align="center" flexWrap="wrap">
-          <Text color="gray">Certs:</Text>
+          <Text color="$gray11">Certs:</Text>
           <Text color="$green10">{selectedCertifications.length}</Text>
         </Row>
       )}
@@ -117,7 +117,7 @@ export function DiscoverWorkersRight({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap={16} padding={16}>
+      <Stack gap={16} padding="md">
         <SearchFilterWidget
           title="Search & Filter"
           subtitle="Find skilled workers for your projects"
@@ -125,7 +125,7 @@ export function DiscoverWorkersRight({
           onSearchChange={handleSearchChange}
           searchLabel={
             <Row align="center" gap={8}>
-              <Search size={16} />
+              <Search size="md" />
               <Text>Search</Text>
             </Row>
           }
@@ -140,7 +140,7 @@ export function DiscoverWorkersRight({
           {/* Scaffald Score Filter */}
           <Stack gap={12}>
             <Row justify="space-between" align="center">
-              <Text color="gray">Scaffald Score</Text>
+              <Text color="$gray11">Scaffald Score</Text>
               <Text color="$blue10">{minScore}</Text>
             </Row>
             <Slider
@@ -163,8 +163,8 @@ export function DiscoverWorkersRight({
           {/* Skills Filter */}
           <Stack gap={12}>
             <Row align="center" gap={8}>
-              <Award size={16} color="gray" />
-              <Text color="gray">Skills</Text>
+              <Award size="md" color="$gray11" />
+              <Text color="$gray11">Skills</Text>
             </Row>
 
             <Row gap={8}>
@@ -174,9 +174,9 @@ export function DiscoverWorkersRight({
                 value={skillInput}
                 onChangeText={setSkillInput}
                 onSubmitEditing={handleAddSkill}
-                size={12}
+                size="sm"
               />
-              <Button size={12} onPress={handleAddSkill} disabled={!skillInput.trim()}>
+              <Button size="sm" onPress={handleAddSkill} disabled={!skillInput.trim()}>
                 Add
               </Button>
             </Row>
@@ -195,7 +195,7 @@ export function DiscoverWorkersRight({
                   >
                     <Text color="$blue11">{skill}</Text>
                     <Button size={4} circular unstyled onPress={() => handleRemoveSkill(skill)}>
-                      <X size={12} color="$blue11" />
+                      <X size="sm" color="$blue11" />
                     </Button>
                   </Row>
                 ))}
@@ -208,8 +208,8 @@ export function DiscoverWorkersRight({
           {/* Certifications Filter */}
           <Stack gap={12}>
             <Row align="center" gap={8}>
-              <BadgeCheck size={16} color="gray" />
-              <Text color="gray">Certifications</Text>
+              <BadgeCheck size="md" color="$gray11" />
+              <Text color="$gray11">Certifications</Text>
             </Row>
 
             <Row gap={8}>
@@ -219,10 +219,10 @@ export function DiscoverWorkersRight({
                 value={certificationInput}
                 onChangeText={setCertificationInput}
                 onSubmitEditing={handleAddCertification}
-                size={12}
+                size="sm"
               />
               <Button
-                size={12}
+                size="sm"
                 onPress={handleAddCertification}
                 disabled={!certificationInput.trim()}
               >
@@ -249,7 +249,7 @@ export function DiscoverWorkersRight({
                       unstyled
                       onPress={() => handleRemoveCertification(cert)}
                     >
-                      <X size={12} color="$green11" />
+                      <X size="sm" color="$green11" />
                     </Button>
                   </Row>
                 ))}

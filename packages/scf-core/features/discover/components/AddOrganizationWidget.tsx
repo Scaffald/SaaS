@@ -110,17 +110,17 @@ export function AddOrganizationWidget() {
     <DashboardWidget gap={16}>
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Building2 size={20} color="$blue10" />
-          <Text color="gray">Add an Organization</Text>
+          <Building2 size="lg" color="$blue10" />
+          <Text color="$gray11">Add an Organization</Text>
         </Row>
-        <Text color="gray">
+        <Text color="$gray11">
           Enter the organization name to check if we already have it. You can continue to the
           creation flow once we confirm it&apos;s new.
         </Text>
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="add-organization-name" color="gray">
+        <Label htmlFor="add-organization-name" color="$gray11">
           Organization Name
         </Label>
         <Input
@@ -149,8 +149,8 @@ export function AddOrganizationWidget() {
         />
       ) : isFetching || isLoading ? (
         <Row gap={8} align="center">
-          <Loader2 size={16} color="$blue10" />
-          <Text color="gray">Checking for existing organizations...</Text>
+          <Loader2 size="md" color="$blue10" />
+          <Text color="$gray11">Checking for existing organizations...</Text>
         </Row>
       ) : (
         <StatusSummary
@@ -162,7 +162,7 @@ export function AddOrganizationWidget() {
       )}
 
       <Button
-        size={16}
+        size="md"
         theme="info"
         iconAfter={!isSubmitting ? ArrowRight : undefined}
         disabled={isSubmitDisabled || isSubmitting}
@@ -170,8 +170,8 @@ export function AddOrganizationWidget() {
       >
         {isSubmitting ? (
           <Row gap={8} align="center">
-            <Loader2 size={16} color="gray" />
-            <Text color="gray">Submitting...</Text>
+            <Loader2 size="md" color="$gray11" />
+            <Text color="$gray11">Submitting...</Text>
           </Row>
         ) : submittedRequest ? (
           'Request Submitted'
@@ -198,7 +198,7 @@ function StatusSummary({
 }: StatusSummaryProps) {
   if (!isQueryReady) {
     return (
-      <Text color="gray">
+      <Text color="$gray11">
         Enter at least {MIN_QUERY_LENGTH} characters to check for duplicates.
       </Text>
     )
@@ -208,7 +208,7 @@ function StatusSummary({
     return (
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <AlertTriangle size={16} color="$yellow10" />
+          <AlertTriangle size="md" color="$yellow10" />
           <Text color="$yellow10">We found existing organizations that match your search.</Text>
         </Row>
         <Stack gap={8}>
@@ -216,7 +216,7 @@ function StatusSummary({
             <DuplicateLink key={employer.id} id={employer.id} name={employer.name || 'Unknown'} />
           ))}
         </Stack>
-        <Text color="gray">Review the existing organization before creating a new one.</Text>
+        <Text color="$gray11">Review the existing organization before creating a new one.</Text>
       </Stack>
     )
   }
@@ -224,10 +224,10 @@ function StatusSummary({
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size={16} color="$green10" />
+        <CheckCircle2 size="md" color="$green10" />
         <Text color="$green10">This name looks available.</Text>
       </Row>
-      <Text color="gray">
+      <Text color="$gray11">
         We&apos;ll use the slug <Text>{candidateSlug}</Text> when you create the organization.
       </Text>
     </Stack>
@@ -245,13 +245,13 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
   return (
     <Button
       variant="outline"
-      size={12}
+      size="sm"
       onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id }))}
       iconAfter={ArrowRight}
       justify="space-between"
     >
       <Stack flex={1}>
-        <Text color="gray" numberOfLines={1}>
+        <Text color="$gray11" numberOfLines={1}>
           {name}
         </Text>
       </Stack>
@@ -273,16 +273,16 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size={16} color="$green10" />
+        <CheckCircle2 size="md" color="$green10" />
         <Text color="$green10">Request submitted for {request.name}</Text>
       </Row>
-      <Text color="gray">
+      <Text color="$gray11">
         We&apos;ll review <Text>{request.slug}</Text> and notify you once it&apos;s approved. You
         can keep browsing employers while we take a look.
       </Text>
       {onAddDetails ? (
         <Button
-          size={12}
+          size="sm"
           variant="outline"
           icon={Pencil}
           onPress={onAddDetails}

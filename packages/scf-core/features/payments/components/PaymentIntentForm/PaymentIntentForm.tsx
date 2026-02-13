@@ -43,15 +43,15 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (config.isLoading || !options || !stripePromise) {
     return (
-      <Card padding={12} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text color="gray">Preparing secure payment form…</Text>
+      <Card padding="sm" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+        <Text color="$gray11">Preparing secure payment form…</Text>
       </Card>
     )
   }
 
   if (!config.publishableKey) {
     return (
-      <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+      <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
         <Text color="$red11">
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -123,13 +123,13 @@ function PaymentIntentFormInner({
   const amountLabel = currencyFormatter.format(amountCents / 100)
 
   return (
-    <Card padding={16} borderColor="$borderColor" borderWidth={1} gap={12}>
+    <Card padding="md" borderColor="$borderColor" borderWidth={1} gap={12}>
       <Stack gap={4}>
         <Row justify="space-between" align="center">
           <Text>Charge amount</Text>
           <Text>{amountLabel}</Text>
         </Row>
-        {description ? <Text color="gray">{description}</Text> : null}
+        {description ? <Text color="$gray11">{description}</Text> : null}
         {testMode && (
           <Text color="$orange11">Stripe test mode is active. Use test card numbers only.</Text>
         )}
@@ -138,7 +138,7 @@ function PaymentIntentFormInner({
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+        <Card padding="sm" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
           <Row gap={8} align="center">
             <Text color="$red11" flex={1}>
               {errorMessage}
@@ -148,8 +148,8 @@ function PaymentIntentFormInner({
       ) : null}
 
       <Button
-        size={16}
-        theme="blue"
+        size="md"
+        color="primary"
         disabled={disabled || isSubmitting || !stripe || !elements}
         onPress={handleSubmit}
       >
