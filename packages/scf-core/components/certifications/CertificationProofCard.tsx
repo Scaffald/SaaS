@@ -59,29 +59,31 @@ export function CertificationProofCard({
   }
 
   return (
-    <Card padding={16} bordered>
+    <Card padding="md" elevation="sm" style={{ borderWidth: 1, borderColor: '$gray6' }}>
       <Stack gap={16}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Add Proof</Text>
-          <Button size={8} circular chromeless icon={X} onPress={onClose} />
+          <Button size="xs" circular chromeless onPress={onClose}>
+            <X size={16} />
+          </Button>
         </Row>
 
-        <Text color="gray">{certificationTitle}</Text>
+        <Text color="$gray11">{certificationTitle}</Text>
 
         <Row gap={8}>
           <Button
-            flex={1}
+            style={{ flex: 1 }}
             variant="outline"
             onPress={() => setMode('url')}
-            theme={mode === 'url' ? 'blue' : undefined}
+            color={mode === 'url' ? 'primary' : undefined}
           >
             Link URL
           </Button>
           <Button
-            flex={1}
+            style={{ flex: 1 }}
             variant="outline"
             onPress={() => setMode('file')}
-            theme={mode === 'file' ? 'blue' : undefined}
+            color={mode === 'file' ? 'primary' : undefined}
           >
             Upload File
           </Button>
@@ -97,9 +99,11 @@ export function CertificationProofCard({
             <Button
               onPress={handleUrlSave}
               disabled={!urlInput.trim() || uploading}
-              icon={LinkIcon}
             >
-              {uploading ? 'Saving...' : 'Save Link'}
+              <Row gap={8} align="center">
+                <LinkIcon size={16} />
+                <Text>{uploading ? 'Saving...' : 'Save Link'}</Text>
+              </Row>
             </Button>
           </Stack>
         ) : (
@@ -107,9 +111,11 @@ export function CertificationProofCard({
             <Button
               onPress={() => document.getElementById('cert-file-input')?.click()}
               disabled={uploading}
-              icon={Upload}
             >
-              {uploading ? 'Uploading...' : 'Choose File'}
+              <Row gap={8} align="center">
+                <Upload size={16} />
+                <Text>{uploading ? 'Uploading...' : 'Choose File'}</Text>
+              </Row>
             </Button>
             <input
               id="cert-file-input"
@@ -118,30 +124,32 @@ export function CertificationProofCard({
               style={{ display: 'none' }}
               onChange={handleFileSelect}
             />
-            <Text color="gray" style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Accepted formats: PDF, JPG, PNG
             </Text>
           </Stack>
         )}
 
         {proofValue && (
-          <Stack gap={8} paddingTop={12} borderTopWidth={1} borderColor="$borderColor">
+          <Stack gap={8} style={{ paddingTop: 12, borderTopWidth: 1, borderColor: '$gray6' }}>
             <Text>Current Proof</Text>
             <Row gap={8} style={{ alignItems: 'center' }}>
               <Button
-                size={8}
-                flex={1}
+                size="sm"
+                style={{ flex: 1 }}
                 variant="outline"
-                icon={ExternalLink}
                 onPress={() => proofType === 'url' && window.open(proofValue, '_blank')}
               >
-                {proofType === 'url' ? 'View Link' : 'View File'}
+                <Row gap={8} align="center">
+                  <ExternalLink size={16} />
+                  <Text size="sm">{proofType === 'url' ? 'View Link' : 'View File'}</Text>
+                </Row>
               </Button>
               {onRemoveProof && (
                 <Button
-                  size={8}
+                  size="sm"
                   variant="outline"
-                  theme="error"
+                  color="error"
                   onPress={onRemoveProof}
                   disabled={uploading}
                 >

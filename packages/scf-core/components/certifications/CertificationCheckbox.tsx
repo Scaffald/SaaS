@@ -1,4 +1,4 @@
-import { Check, Link } from 'lucide-react-native'
+import { Link } from 'lucide-react-native'
 import { Button, Checkbox, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 interface Certification {
@@ -31,20 +31,24 @@ export function CertificationCheckbox({
   return (
     <Stack gap={8}>
       <Row gap={12} style={{ alignItems: 'flex-start' }}>
-        <Checkbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} size={16}>
-          <Checkbox.Indicator>
-            <Check />
-          </Checkbox.Indicator>
-        </Checkbox>
+        <Checkbox
+          checked={checked}
+          onChange={onCheckedChange}
+          disabled={disabled}
+          size="md"
+        />
 
-        <Stack flex={1} gap={4}>
+        <Stack style={{ flex: 1 }} gap={4}>
           <Text>{certification.title}</Text>
-          {certification.description && <Text color="gray">{certification.description}</Text>}
+          {certification.description && <Text color="$gray11">{certification.description}</Text>}
         </Stack>
 
         {checked && onAddProof && (
-          <Button size={8} variant="outline" icon={Link} onPress={onAddProof} disabled={disabled}>
-            {hasProof ? 'View Proof' : 'Add Proof'}
+          <Button size="xs" variant="outline" onPress={onAddProof} disabled={disabled}>
+            <Row gap={4} align="center">
+              <Link size={14} />
+              <Text size="xs">{hasProof ? 'View Proof' : 'Add Proof'}</Text>
+            </Row>
           </Button>
         )}
       </Row>

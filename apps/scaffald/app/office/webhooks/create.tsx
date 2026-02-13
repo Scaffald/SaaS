@@ -182,7 +182,7 @@ export default function CreateWebhookPage() {
         <Card padding={20} gap={20}>
           <Text>Event Subscriptions *</Text>
           <Text color="$gray11">
-            Select the events you want to receive notifications for
+            ResponsiveSelect the events you want to receive notifications for
           </Text>
 
           <Stack gap={24}>

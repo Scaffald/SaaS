@@ -17,7 +17,7 @@ export default function DashboardOrganizationsPage() {
     </Stack>
   ) : (
     <Paragraph color="$color11">
-      Select an organization to manage from the sidebar. Once selected, you can invite members,
+      ResponsiveSelect an organization to manage from the sidebar. Once selected, you can invite members,
       upload documents, and update compliance settings from this page.
     </Paragraph>
   )

@@ -34,14 +34,15 @@ export function CertificationChip({
     >
       <Text color="$blue11">{certification.title}</Text>
       <Button
-        size={8}
+        size="xs"
         circular
         chromeless
-        icon={X}
         onPress={() => !disabled && onRemove(certification.id)}
         disabled={disabled}
-        opacity={disabled ? 0.5 : 1}
-      />
+        style={{ opacity: disabled ? 0.5 : 1 }}
+      >
+        <X size={16} />
+      </Button>
     </Row>
   )
 }
