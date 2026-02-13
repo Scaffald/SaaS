@@ -27,12 +27,12 @@ const STATUS_LABELS: Record<JobStatus, string> = {
   closed: 'Closed',
 }
 
-const STATUS_COLORS: Record<JobStatus, GetThemeValueForKey<'backgroundColor'>> = {
+const getStatusColors = (theme: 'light' | 'dark'): Record<JobStatus, string> => ({
   draft: colors.bg[theme].muted,
   open: colors.bg[theme].success,
   paused: colors.bg[theme].warning,
   closed: colors.bg[theme].error,
-}
+})
 
 interface JobsKanbanBoardProps {
   jobs: Job[]
@@ -132,7 +132,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
               key={status}
               status={status}
               label={STATUS_LABELS[status]}
-              color={STATUS_COLORS[status]}
+              color={getStatusColors(theme)[status]}
               jobs={groupedJobs[status]}
               onJobPress={handleJobPress}
               isUpdating={updatingJobId !== null}
