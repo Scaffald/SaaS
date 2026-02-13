@@ -3,12 +3,12 @@
 ## Summary Statistics
 
 **Total Routers**: 49
-**SDK Resources**: 31 (63%)
-**tRPC-Only Routers**: 18 (37%)
+**SDK Resources**: 34 (69%)
+**tRPC-Only Routers**: 15 (31%)
 
 **Migration Status**:
-- ✅ **Migrated to SDK**: 31 routers
-- ⏭️ **Staying in tRPC**: 18 routers (by design)
+- ✅ **Migrated to SDK**: 34 routers
+- ⏭️ **Staying in tRPC**: 15 routers (by design)
 
 **Coverage by Category**:
 - **Core Data**: 8/8 (100%)
@@ -16,11 +16,12 @@
 - **Social/Engagement**: 4/4 (100%)
 - **Supporting**: 7/7 (100%)
 - **Operations**: 4/4 (100%)
+- **Discovery & Assessments**: 2/2 (100%)
 - **File Operations**: 0/5 (0% - staying in tRPC)
 - **Provider Integration**: 0/4 (0% - staying in tRPC)
 - **Compliance**: 0/3 (0% - staying in tRPC)
 - **Admin Tools**: 0/4 (0% - staying in tRPC)
-- **Low Usage**: 0/2 (0% - staying in tRPC)
+- **Low Usage**: 0/3 (0% - staying in tRPC)
 
 ## Complete Router Coverage
 
@@ -62,6 +63,9 @@
 | profile/widgets | profile-widgets | ✅ Migrated | Low | Operations | Profile widget configurations |
 | webhooks | webhooks-management | ✅ Migrated | Low | Operations | Webhook subscriptions |
 | background-checks | background-checks | ✅ Migrated | Medium | Operations | Background check metadata (non-file) |
+| **DISCOVERY & ASSESSMENTS (2)** |
+| workers | workers | ✅ Migrated | 2 | Discovery | Worker search and discovery |
+| personality-assessment | personality-assessments | ✅ Migrated (partial) | 24 | Assessments | User-facing assessment procedures (14 of 18 migrated) |
 | **FILE OPERATIONS (5)** |
 | work-logs | - | ⏭️ Staying in tRPC | Medium | File Operations | Photo uploads, GPS data, PDF exports |
 | documents | - | ⏭️ Staying in tRPC | 2 | File Operations | Multi-file uploads, document management |
@@ -82,14 +86,12 @@
 | auth | - | ⏭️ Staying in tRPC | 3 | Admin Tools | Session management, server-side auth |
 | map | - | ⏭️ Staying in tRPC | 2 | Admin Tools | Specialized geocoding utilities |
 | legal-agreements | - | ⏭️ Staying in tRPC | 0 | Admin Tools | Legal document management |
-| **LOW USAGE (4)** |
+| **LOW USAGE (3)** |
 | feedback | - | ⏭️ Staying in tRPC | 2 | Low Usage | User feedback (minimal usage) |
 | news | - | ⏭️ Staying in tRPC | 1 | Low Usage | News feed (minimal usage) |
 | sites | - | ⏭️ Staying in tRPC | 0 | Low Usage | Site management (not exposed) |
-| workers | - | ⏭️ Staying in tRPC | 2 | Low Usage | Background job workers |
-| **NOT EXPOSED (3)** |
+| **NOT EXPOSED (2)** |
 | addresses | - | ⏭️ Staying in tRPC | 0 | Not Exposed | Not exposed in router, internal only |
-| personality-assessment | - | ⏭️ Staying in tRPC | 0 | Not Exposed | Not exposed in router, feature disabled |
 | profile/avatar | - | ⏭️ Staying in tRPC | Low | File Operations | Avatar uploads (file operation) |
 
 ## Migration Reasoning
@@ -141,16 +143,16 @@
 - Not suitable for public API
 - Examples: office admin, auth utilities, geocoding
 
-**Low Usage (4 routers)**:
+**Low Usage (3 routers)**:
 - Less than 5 uses in codebase
 - Not public API candidates
 - Not worth migration effort
-- Examples: feedback (2 uses), news (1 use), workers (2 uses)
+- Examples: feedback (2 uses), news (1 use), sites (0 uses)
 
-**Not Exposed (3 routers)**:
+**Not Exposed (2 routers)**:
 - Internal-only routers not exposed in main router
 - Features disabled or deprecated
-- Examples: addresses, personality-assessment, avatar
+- Examples: addresses, avatar
 
 ## Decision Framework
 
