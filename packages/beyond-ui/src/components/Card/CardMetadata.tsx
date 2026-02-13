@@ -58,7 +58,7 @@ export function CardMetadata({
             size="sm"
             style={{
               color: item.color || (isSelected
-                ? colors.text[theme].onPrimary
+                ? colors.text[theme].quaternary
                 : colors.text[theme].secondary),
             }}
           >

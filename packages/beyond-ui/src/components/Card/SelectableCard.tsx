@@ -63,8 +63,8 @@ export const SelectableCard = forwardRef<
     // Build selection styles
     const selectionStyles = isSelected && selection?.enabled
       ? {
-          borderColor: selection.selectedBorderColor || colors.border[theme].primary,
-          backgroundColor: selection.selectedBgColor || colors.bg[theme].primarySubtle,
+          borderColor: selection.selectedBorderColor || colors.border[theme].default,
+          backgroundColor: selection.selectedBgColor || colors.bg[theme].selected,
         }
       : {}
 

@@ -114,8 +114,8 @@ async function setupTestUser() {
   const orgResp = await request('POST', `${SUPABASE_URL}/rest/v1/organizations`, {
     apikey: SERVICE_ROLE_KEY,
     Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-    'Accept-Profile': 'core',
-    'Content-Profile': 'core',
+    'Accept-Profile': 'forsured',
+    'Content-Profile': 'forsured',
     Prefer: 'return=representation',
   }, {
     name: 'Integration Test Org',
@@ -134,8 +134,8 @@ async function setupTestUser() {
   const teamResp = await request('POST', `${SUPABASE_URL}/rest/v1/teams`, {
     apikey: SERVICE_ROLE_KEY,
     Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-    'Accept-Profile': 'core',
-    'Content-Profile': 'core',
+    'Accept-Profile': 'forsured',
+    'Content-Profile': 'forsured',
     Prefer: 'return=representation',
   }, {
     organization_id: testOrganization.id,
@@ -153,8 +153,8 @@ async function setupTestUser() {
   const memberResp = await request('POST', `${SUPABASE_URL}/rest/v1/team_members`, {
     apikey: SERVICE_ROLE_KEY,
     Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-    'Accept-Profile': 'core',
-    'Content-Profile': 'core',
+    'Accept-Profile': 'forsured',
+    'Content-Profile': 'forsured',
     Prefer: 'return=representation',
   }, {
     team_id: testTeam.id,

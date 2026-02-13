@@ -65,7 +65,7 @@ export function CardBadges({
           gap={4}
           align="center"
           style={{
-            backgroundColor: badge.backgroundColor || colors.bg[theme].primary,
+            backgroundColor: badge.backgroundColor || colors.bg[theme].emphasis,
           }}
         >
           {badge.icon}
@@ -73,7 +73,7 @@ export function CardBadges({
             size="sm"
             weight="medium"
             style={{
-              color: badge.color || colors.text[theme].onPrimary,
+              color: badge.color || colors.text[theme].primary,
             }}
           >
             {badge.label}
