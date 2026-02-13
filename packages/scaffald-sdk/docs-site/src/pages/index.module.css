@@ -1,5 +1,5 @@
 /* ============================================
-   HERO SECTION
+   HERO SECTION - Earth-Tone Theme
    ============================================ */
 .heroBanner {
   padding: 6rem 0 4rem;
@@ -7,17 +7,17 @@
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg,
-    rgba(0, 102, 204, 0.05) 0%,
-    rgba(0, 102, 204, 0.02) 50%,
-    rgba(0, 102, 204, 0.05) 100%
+    rgba(251, 97, 42, 0.05) 0%,
+    rgba(251, 240, 236, 0.5) 50%,
+    rgba(251, 97, 42, 0.05) 100%
   );
 }
 
 [data-theme='dark'] .heroBanner {
   background: linear-gradient(135deg,
-    rgba(77, 163, 255, 0.08) 0%,
-    rgba(77, 163, 255, 0.03) 50%,
-    rgba(77, 163, 255, 0.08) 100%
+    rgba(255, 122, 79, 0.08) 0%,
+    rgba(255, 122, 79, 0.03) 50%,
+    rgba(255, 122, 79, 0.08) 100%
   );
 }
 
@@ -29,8 +29,8 @@
   right: 0;
   bottom: 0;
   background-image:
-    radial-gradient(circle at 20% 50%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.08) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(251, 97, 42, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(200, 182, 161, 0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -43,7 +43,7 @@
   font-size: 3.5rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #0066cc 0%, #004d99 100%);
+  background: linear-gradient(135deg, #fb612a 0%, #d54e21 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -51,7 +51,7 @@
 }
 
 [data-theme='dark'] .heroBanner h1 {
-  background: linear-gradient(135deg, #4da3ff 0%, #70b5ff 100%);
+  background: linear-gradient(135deg, #ff7a4f 0%, #ffc4a8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -59,11 +59,15 @@
 
 .heroBanner p {
   font-size: 1.5rem;
-  color: var(--ifm-color-secondary);
+  color: #6b6055;
   max-width: 600px;
   margin: 0 auto 2rem;
   line-height: 1.6;
   font-weight: 400;
+}
+
+[data-theme='dark'] .heroBanner p {
+  color: #c8b6a1;
 }
 
 /* ============================================
@@ -82,7 +86,7 @@
 }
 
 /* ============================================
-   NPM INSTALL
+   NPM INSTALL - Earth Tones
    ============================================ */
 .npmInstall {
   margin-top: 3rem;
@@ -91,13 +95,13 @@
 }
 
 .npmInstall code {
-  background: rgba(0, 0, 0, 0.05);
-  border: 2px solid rgba(0, 102, 204, 0.2);
+  background: rgba(247, 242, 235, 0.8);
+  border: 2px solid rgba(251, 97, 42, 0.3);
   border-radius: 0.5rem;
   padding: 1rem 2rem;
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--ifm-color-primary);
+  color: #d54e21;
   display: inline-block;
   font-family: var(--ifm-font-family-monospace);
   transition: all 0.2s ease;
@@ -106,21 +110,21 @@
 }
 
 .npmInstall code:hover {
-  border-color: var(--ifm-color-primary);
-  background: rgba(0, 102, 204, 0.08);
+  border-color: #fb612a;
+  background: rgba(251, 97, 42, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+  box-shadow: 0 4px 12px rgba(251, 97, 42, 0.2);
 }
 
 [data-theme='dark'] .npmInstall code {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(77, 163, 255, 0.3);
-  color: var(--ifm-color-primary);
+  background: rgba(255, 122, 79, 0.08);
+  border-color: rgba(255, 122, 79, 0.4);
+  color: #ffc4a8;
 }
 
 [data-theme='dark'] .npmInstall code:hover {
-  border-color: var(--ifm-color-primary);
-  background: rgba(77, 163, 255, 0.1);
+  border-color: #ff7a4f;
+  background: rgba(255, 122, 79, 0.15);
 }
 
 /* ============================================
@@ -128,7 +132,11 @@
    ============================================ */
 .features {
   padding: 6rem 0;
-  background: var(--ifm-background-color);
+  background: #ffffff;
+}
+
+[data-theme='dark'] .features {
+  background: #1a232d;
 }
 
 .feature {
@@ -147,20 +155,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 8px rgba(251, 97, 42, 0.15));
 }
 
 .feature h3 {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: var(--ifm-heading-color);
+  color: #3a342f;
+}
+
+[data-theme='dark'] .feature h3 {
+  color: #f9fafb;
 }
 
 .feature p {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--ifm-color-secondary);
+  color: #6b6055;
+}
+
+[data-theme='dark'] .feature p {
+  color: #97a1af;
 }
 
 /* ============================================
@@ -168,68 +184,86 @@
    ============================================ */
 .codeExample {
   padding: 6rem 0;
-  background: var(--ifm-background-surface-color);
+  background: #fbf8f3;
+}
+
+[data-theme='dark'] .codeExample {
+  background: #27313f;
 }
 
 .codeExample h2 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  color: #3a342f;
+}
+
+[data-theme='dark'] .codeExample h2 {
+  color: #f9fafb;
 }
 
 .codeExample p {
   font-size: 1.125rem;
-  color: var(--ifm-color-secondary);
+  color: #6b6055;
   line-height: 1.7;
   margin-bottom: 2rem;
 }
 
+[data-theme='dark'] .codeExample p {
+  color: #97a1af;
+}
+
 .codeBlock {
-  background: var(--ifm-code-background);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f7f2eb;
+  border: 1px solid rgba(251, 97, 42, 0.15);
   border-radius: 0.75rem;
   padding: 1.5rem;
   overflow-x: auto;
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 4px 6px -1px rgba(251, 97, 42, 0.1),
+    0 2px 4px -1px rgba(251, 97, 42, 0.06);
   transition: all 0.3s ease;
 }
 
 .codeBlock:hover {
   box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    0 10px 15px -3px rgba(251, 97, 42, 0.15),
+    0 4px 6px -2px rgba(251, 97, 42, 0.1);
   transform: translateY(-2px);
+  border-color: #fb612a;
 }
 
 [data-theme='dark'] .codeBlock {
-  background: var(--ifm-code-background);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #344051;
+  border: 1px solid rgba(255, 122, 79, 0.2);
+}
+
+[data-theme='dark'] .codeBlock:hover {
+  border-color: #ff7a4f;
 }
 
 .codeBlock code {
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.95rem;
   line-height: 1.7;
-  color: var(--ifm-color-emphasis-800);
+  color: #a63c17;
   background: none;
   border: none;
   padding: 0;
 }
 
 [data-theme='dark'] .codeBlock code {
-  color: var(--ifm-color-emphasis-800);
+  color: #ffc4a8;
 }
 
 /* ============================================
-   STATS SECTION
+   STATS SECTION - Earth-Tone Gradient
    ============================================ */
 .stats {
   padding: 6rem 0;
   background: linear-gradient(135deg,
-    var(--ifm-color-primary) 0%,
-    var(--ifm-color-primary-dark) 100%
+    #fb612a 0%,
+    #d54e21 100%
   );
   color: white;
 }
@@ -256,7 +290,7 @@
 .stat p {
   font-size: 1.125rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -266,23 +300,35 @@
    ============================================ */
 .getStarted {
   padding: 6rem 0;
-  background: var(--ifm-background-color);
+  background: #ffffff;
+}
+
+[data-theme='dark'] .getStarted {
+  background: #1a232d;
 }
 
 .getStarted h2 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: var(--ifm-heading-color);
+  color: #3a342f;
+}
+
+[data-theme='dark'] .getStarted h2 {
+  color: #f9fafb;
 }
 
 .getStarted p {
   font-size: 1.25rem;
-  color: var(--ifm-color-secondary);
+  color: #6b6055;
   margin-bottom: 2.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+}
+
+[data-theme='dark'] .getStarted p {
+  color: #97a1af;
 }
 
 /* ============================================

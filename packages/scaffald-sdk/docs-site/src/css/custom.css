@@ -1,31 +1,37 @@
 /**
  * Scaffald SDK Documentation - Custom Styles
- * Professional theme inspired by modern documentation sites
+ * Earth-tone theme matching the Scaffald app
  */
 
 /* ============================================
-   COLOR SYSTEM - Scaffald Brand Colors
+   COLOR SYSTEM - Scaffald Earth-Tone Brand Colors
    ============================================ */
 :root {
-  /* Primary Brand Color - Professional Blue */
-  --ifm-color-primary: #0066cc;
-  --ifm-color-primary-dark: #005bb8;
-  --ifm-color-primary-darker: #0056ad;
-  --ifm-color-primary-darkest: #00478f;
-  --ifm-color-primary-light: #0070e0;
-  --ifm-color-primary-lighter: #0075eb;
-  --ifm-color-primary-lightest: #1a85ff;
+  /* Primary Brand Color - Warm Terracotta/Orange */
+  --ifm-color-primary: #fb612a;
+  --ifm-color-primary-dark: #d54e21;
+  --ifm-color-primary-darker: #a63c17;
+  --ifm-color-primary-darkest: #6a260f;
+  --ifm-color-primary-light: #ff7a4f;
+  --ifm-color-primary-lighter: #ff9c78;
+  --ifm-color-primary-lightest: #ffc4a8;
 
-  /* Secondary Colors */
-  --ifm-color-secondary: #6c757d;
-  --ifm-color-success: #10b981;
+  /* Neutral Earth Tones - Warm Beige/Tan */
+  --ifm-color-secondary: #6b6055;
+  --ifm-color-secondary-light: #9a8b7a;
+  --ifm-color-secondary-lighter: #c8b6a1;
+  --ifm-color-secondary-lightest: #d9c9b6;
+
+  /* Semantic Colors - Earthy palette */
+  --ifm-color-success: #10b978;
   --ifm-color-warning: #f59e0b;
-  --ifm-color-danger: #ef4444;
-  --ifm-color-info: #3b82f6;
+  --ifm-color-danger: #f62c2c;
+  --ifm-color-info: #0ba5ec;
 
-  /* Background Colors */
+  /* Background Colors - Warm neutrals */
   --ifm-background-color: #ffffff;
-  --ifm-background-surface-color: #f8f9fa;
+  --ifm-background-surface-color: #fbf8f3;
+  --ifm-background-surface-secondary: #f7f2eb;
 
   /* Typography */
   --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -33,36 +39,37 @@
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.65;
   --ifm-heading-font-weight: 700;
+  --ifm-heading-color: #3a342f;
 
   /* Spacing */
   --ifm-spacing-horizontal: 1.5rem;
   --ifm-spacing-vertical: 1.5rem;
   --ifm-global-radius: 0.5rem;
 
-  /* Code */
+  /* Code - Warm tones */
   --ifm-code-font-size: 0.875rem;
-  --ifm-code-background: #f6f8fa;
+  --ifm-code-background: #f7f2eb;
   --ifm-code-border-radius: 0.375rem;
   --ifm-code-padding-horizontal: 0.4rem;
   --ifm-code-padding-vertical: 0.2rem;
 
-  /* Navbar */
+  /* Navbar - Warm earth tones */
   --ifm-navbar-height: 70px;
   --ifm-navbar-background-color: rgba(255, 255, 255, 0.98);
-  --ifm-navbar-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --ifm-navbar-shadow: 0 1px 3px 0 rgba(251, 97, 42, 0.1), 0 1px 2px 0 rgba(251, 97, 42, 0.06);
   --ifm-navbar-link-hover-color: var(--ifm-color-primary);
 
-  /* Sidebar */
-  --ifm-menu-color-background-active: rgba(0, 102, 204, 0.08);
-  --ifm-menu-color-background-hover: rgba(0, 102, 204, 0.04);
+  /* Sidebar - Earth tones */
+  --ifm-menu-color-background-active: rgba(251, 97, 42, 0.08);
+  --ifm-menu-color-background-hover: rgba(251, 97, 42, 0.04);
 
   /* Cards & Containers */
   --ifm-card-border-radius: 0.75rem;
-  --ifm-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --ifm-card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --ifm-card-shadow: 0 1px 3px 0 rgba(58, 52, 47, 0.1), 0 1px 2px 0 rgba(58, 52, 47, 0.06);
+  --ifm-card-shadow-hover: 0 10px 15px -3px rgba(58, 52, 47, 0.1), 0 4px 6px -2px rgba(58, 52, 47, 0.05);
 
-  /* Syntax Highlighting */
-  --docusaurus-highlighted-code-line-bg: rgba(0, 102, 204, 0.1);
+  /* Syntax Highlighting - Warm accents */
+  --docusaurus-highlighted-code-line-bg: rgba(251, 97, 42, 0.08);
 
   /* Link Colors */
   --ifm-link-color: var(--ifm-color-primary);
@@ -71,27 +78,30 @@
   --ifm-link-hover-decoration: underline;
 }
 
-/* Dark Mode Theme */
+/* Dark Mode Theme - Warm dark earth tones */
 [data-theme='dark'] {
-  --ifm-color-primary: #4da3ff;
-  --ifm-color-primary-dark: #2691ff;
-  --ifm-color-primary-darker: #1a85ff;
-  --ifm-color-primary-darkest: #006edb;
-  --ifm-color-primary-light: #70b5ff;
-  --ifm-color-primary-lighter: #85c2ff;
-  --ifm-color-primary-lightest: #b8d9ff;
+  --ifm-color-primary: #ff7a4f;
+  --ifm-color-primary-dark: #ff612a;
+  --ifm-color-primary-darker: #fb612a;
+  --ifm-color-primary-darkest: #d54e21;
+  --ifm-color-primary-light: #ff9c78;
+  --ifm-color-primary-lighter: #ffc4a8;
+  --ifm-color-primary-lightest: #ffe3d4;
 
-  --ifm-background-color: #0d1117;
-  --ifm-background-surface-color: #161b22;
+  --ifm-background-color: #1a232d;
+  --ifm-background-surface-color: #27313f;
+  --ifm-background-surface-secondary: #344051;
 
-  --ifm-navbar-background-color: rgba(13, 17, 23, 0.98);
+  --ifm-heading-color: #f9fafb;
+
+  --ifm-navbar-background-color: rgba(26, 35, 45, 0.98);
   --ifm-navbar-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 
-  --ifm-code-background: #1c2128;
-  --docusaurus-highlighted-code-line-bg: rgba(77, 163, 255, 0.15);
+  --ifm-code-background: #344051;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 122, 79, 0.15);
 
-  --ifm-menu-color-background-active: rgba(77, 163, 255, 0.15);
-  --ifm-menu-color-background-hover: rgba(77, 163, 255, 0.08);
+  --ifm-menu-color-background-active: rgba(255, 122, 79, 0.15);
+  --ifm-menu-color-background-hover: rgba(255, 122, 79, 0.08);
 
   --ifm-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --ifm-card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
@@ -108,6 +118,7 @@ html {
 h1, h2, h3, h4, h5, h6 {
   font-weight: var(--ifm-heading-font-weight);
   letter-spacing: -0.02em;
+  color: var(--ifm-heading-color);
 }
 
 h1 {
@@ -133,17 +144,22 @@ h3 {
    ============================================ */
 .navbar {
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(251, 97, 42, 0.1);
   padding: 0.75rem 0;
 }
 
 [data-theme='dark'] .navbar {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 122, 79, 0.15);
 }
 
 .navbar__brand {
   font-weight: 700;
   font-size: 1.25rem;
+}
+
+.navbar__logo {
+  border-radius: 0.375rem;
+  margin-right: 0.75rem;
 }
 
 .navbar__link {
@@ -184,11 +200,13 @@ code {
   border-radius: var(--ifm-code-border-radius);
   padding: var(--ifm-code-padding-vertical) var(--ifm-code-padding-horizontal);
   font-size: var(--ifm-code-font-size);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(251, 97, 42, 0.1);
+  color: var(--ifm-color-primary-darker);
 }
 
 [data-theme='dark'] code {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 122, 79, 0.15);
+  color: var(--ifm-color-primary-light);
 }
 
 pre code {
@@ -204,15 +222,15 @@ pre code {
 
 /* Code block header */
 div[class*='codeBlockTitle'] {
-  background-color: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(251, 97, 42, 0.05);
+  border-bottom: 1px solid rgba(251, 97, 42, 0.15);
   font-weight: 600;
   font-size: 0.875rem;
 }
 
 [data-theme='dark'] div[class*='codeBlockTitle'] {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 122, 79, 0.08);
+  border-bottom: 1px solid rgba(255, 122, 79, 0.15);
 }
 
 /* Copy button */
@@ -234,20 +252,27 @@ button[class*='copyButton']:hover {
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(58, 52, 47, 0.05);
 }
 
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(58, 52, 47, 0.15), 0 2px 4px -1px rgba(58, 52, 47, 0.1);
 }
 
 .button--primary {
-  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%);
+  background: linear-gradient(135deg, #fb612a 0%, #d54e21 100%);
+  border: none;
 }
 
 .button--secondary {
-  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  background: linear-gradient(135deg, #c8b6a1 0%, #9a8b7a 100%);
+  border: none;
+}
+
+.button--outline {
+  border: 2px solid var(--ifm-color-primary);
+  background: transparent;
 }
 
 .button--lg {
@@ -278,11 +303,11 @@ button[class*='copyButton']:hover {
 }
 
 .markdown thead {
-  background-color: rgba(0, 102, 204, 0.08);
+  background-color: rgba(251, 97, 42, 0.08);
 }
 
 [data-theme='dark'] .markdown thead {
-  background-color: rgba(77, 163, 255, 0.15);
+  background-color: rgba(255, 122, 79, 0.15);
 }
 
 /* Admonitions (alerts) */
@@ -308,22 +333,22 @@ button[class*='copyButton']:hover {
 }
 
 .tabs__item:hover {
-  background-color: rgba(0, 102, 204, 0.04);
+  background-color: rgba(251, 97, 42, 0.04);
 }
 
 .tabs__item--active {
-  background-color: rgba(0, 102, 204, 0.1);
+  background-color: rgba(251, 97, 42, 0.1);
   border-bottom-color: var(--ifm-color-primary);
   color: var(--ifm-color-primary);
   font-weight: 600;
 }
 
 [data-theme='dark'] .tabs__item:hover {
-  background-color: rgba(77, 163, 255, 0.08);
+  background-color: rgba(255, 122, 79, 0.08);
 }
 
 [data-theme='dark'] .tabs__item--active {
-  background-color: rgba(77, 163, 255, 0.15);
+  background-color: rgba(255, 122, 79, 0.15);
 }
 
 /* ============================================
@@ -332,11 +357,11 @@ button[class*='copyButton']:hover {
 .footer {
   background: linear-gradient(180deg, var(--ifm-background-surface-color) 0%, var(--ifm-background-color) 100%);
   padding: 3rem 0 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(251, 97, 42, 0.1);
 }
 
 [data-theme='dark'] .footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 122, 79, 0.15);
 }
 
 .footer__title {
@@ -344,6 +369,7 @@ button[class*='copyButton']:hover {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--ifm-color-primary);
 }
 
 .footer__link-item {
@@ -356,14 +382,14 @@ button[class*='copyButton']:hover {
    ============================================ */
 .navbar__search-input {
   border-radius: var(--ifm-global-radius);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(251, 97, 42, 0.2);
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
 }
 
 [data-theme='dark'] .navbar__search-input {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 122, 79, 0.3);
+  background-color: rgba(255, 122, 79, 0.05);
 }
 
 /* ============================================
@@ -371,7 +397,7 @@ button[class*='copyButton']:hover {
    ============================================ */
 .pagination-nav__link {
   border-radius: var(--ifm-card-border-radius);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(251, 97, 42, 0.15);
   box-shadow: var(--ifm-card-shadow);
   transition: all 0.2s ease;
 }
@@ -383,7 +409,7 @@ button[class*='copyButton']:hover {
 }
 
 [data-theme='dark'] .pagination-nav__link {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 122, 79, 0.2);
 }
 
 /* ============================================
