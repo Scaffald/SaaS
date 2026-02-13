@@ -62,14 +62,30 @@ const sidebars: SidebarsConfig = {
     'api/overview',
     {
       type: 'category',
-      label: 'Resources',
+      label: 'Core API',
       items: [
+        'api/client',
         'api/jobs',
         'api/applications',
         'api/profiles',
+        'api/oauth',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Additional Resources',
+      items: [
         'api/teams',
         'api/connections',
         'api/analytics',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Utilities',
+      items: [
+        'api/rate-limiting',
+        'api/types',
       ],
     },
   ],

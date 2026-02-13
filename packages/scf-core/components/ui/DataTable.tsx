@@ -1,3 +1,32 @@
+/**
+ * DEPRECATED: This DataTable component is incompatible with @scaffald/ui Table API
+ *
+ * This component was built using compound components (Table.Head, Table.Body, Table.Row, etc.)
+ * which don't exist in @scaffald/ui. The @scaffald/ui Table is a complete component that
+ * takes columns and data props instead.
+ *
+ * TODO: Rewrite this component to use @scaffald/ui Table API
+ * See: /Users/clay/Development/UNI-Construct/packages/scaffald-ui/src/components/Table/Table.tsx
+ *
+ * The new Table API requires:
+ * - columns: TableColumn[] - array of column definitions with id, title, width, etc.
+ * - data: TableRowData[] - array of row data objects
+ * - No compound components - just <Table columns={...} data={...} />
+ *
+ * Files using this component that need migration:
+ * - packages/scf-core/features/office/payments/office-payment-analytics.tsx
+ * - packages/scf-core/features/office/payments/OfficeTransactionHistory.tsx
+ * - packages/scf-core/features/office/components/OfficePageLayout.tsx
+ * - packages/scf-core/features/office/office-storage-dashboard.tsx
+ * - packages/scf-core/features/office/legal/OfficeViolationReports.tsx
+ * - packages/scf-core/features/connections/components/PendingRequestsList.tsx
+ * - packages/scf-core/features/connections/components/ConnectionsList.tsx
+ * - packages/scf-core/features/connections/components/FollowingList.tsx
+ * - packages/scf-core/features/connections/components/FollowersList.tsx
+ */
+
+/* COMMENTED OUT - INCOMPATIBLE WITH @scaffald/ui
+
 import { RowActionOverlay } from '@scf/core/features/office/components/RowActionOverlay'
 import {
   ChevronDown,
@@ -28,17 +57,11 @@ const HEADER_ROW_HEIGHT = 48
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
-  /** View action handler (opens overlay on row click) */
   onRowView?: (row: TData) => void
-  /** Edit action handler (opens overlay on row click) */
   onRowEdit?: (row: TData) => void
-  /** Delete action handler (opens overlay on row click) */
   onRowDelete?: (row: TData) => Promise<void>
-  /** Duplicate action handler (opens overlay on row click) */
   onRowDuplicate?: (row: TData) => Promise<void>
-  /** Function to get item name from row data (for delete confirmation) */
   getItemName?: (row: TData) => string
-  /** Type of item (for delete confirmation) */
   itemType?: string
   pageSize?: number
   isLoading?: boolean
@@ -74,8 +97,6 @@ export function DataTable<TData>({
   const [overlayPosition, setOverlayPosition] = useState<{ x: number; y: number } | null>(null)
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
 
-  // Determine if we should use overlay (new props) or old onRowClick behavior
-  // Note: Overlay only works on web due to RowActionOverlay using DOM APIs
   const useOverlay = isWeb && Boolean(onRowView || onRowEdit || onRowDelete || onRowDuplicate)
   const table = useReactTable({
     data,
@@ -103,10 +124,8 @@ export function DataTable<TData>({
   const headerGroups = table.getHeaderGroups()
   const tableRows = table.getRowModel().rows
 
-  // Find active row data
   const activeRow = activeRowId ? tableRows.find((row) => row.id === activeRowId)?.original : null
 
-  // Handle row click - calculate position and open overlay
   const handleRowClick = (
     _row: TData,
     rowId: string,
@@ -118,13 +137,10 @@ export function DataTable<TData>({
     }
   ) => {
     if (useOverlay && isWeb) {
-      // Calculate position relative to table container
-      // Try to get position from event or from row element
       let x = 0
       let y = 0
 
       if (event) {
-        // Try to get position from mouse/touch event
         const clientX = event.nativeEvent?.clientX ?? event.clientX
         const clientY = event.nativeEvent?.clientY ?? event.clientY
 
@@ -137,7 +153,6 @@ export function DataTable<TData>({
         }
       }
 
-      // Fallback: position at row center if we couldn't get event position
       if (x === 0 && y === 0 && event?.currentTarget) {
         const rowElement = event.currentTarget as HTMLElement
         const rect = rowElement.getBoundingClientRect()
@@ -155,13 +170,11 @@ export function DataTable<TData>({
     }
   }
 
-  // Close overlay handler
   const handleCloseOverlay = () => {
     setActiveRowId(null)
     setOverlayPosition(null)
   }
 
-  // Handle overlay actions
   const handleEdit = (row: TData) => {
     onRowEdit?.(row)
     handleCloseOverlay()
@@ -183,7 +196,7 @@ export function DataTable<TData>({
 
   if (isLoading) {
     return (
-      <View flex={1} align="center" justify="center">
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text>Loading...</Text>
       </View>
     )
@@ -191,18 +204,18 @@ export function DataTable<TData>({
 
   if (tableRows.length === 0) {
     return (
-      <View flex={1} align="center" justify="center">
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text>{emptyMessage}</Text>
       </View>
     )
   }
 
   return (
-    <View flex={1} flexDirection="column" position="relative">
-      <View ref={tableContainerRef} position="relative" flex={1}>
-        <ScrollView flex={1} showsVerticalScrollIndicator showsHorizontalScrollIndicator>
+    <View style={{ flex: 1, flexDirection: "column", position: "relative" }}>
+      <View ref={tableContainerRef} style={{ position: "relative", flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator showsHorizontalScrollIndicator>
           <ScrollView horizontal>
-            <View width="100%">
+            <View style={{ width: "100%" }}>
               <Table
                 data-testid={testID}
                 alignCells={{ x: 'left', y: 'center' }}
@@ -215,7 +228,6 @@ export function DataTable<TData>({
                 borderBottomLeftRadius={8}
                 borderBottomRightRadius={8}
               >
-                {/* Header */}
                 <Table.Head position="absolute" top={0} zIndex={5} backgroundColor="$background">
                   {headerGroups.map((headerGroup, groupIndex) => (
                     <Table.Row
@@ -290,7 +302,6 @@ export function DataTable<TData>({
                   ))}
                 </Table.Head>
 
-                {/* Body */}
                 <Table.Body>
                   {tableRows.map((row, rowIdx) => (
                     <Table.Row
@@ -300,7 +311,6 @@ export function DataTable<TData>({
                       cursor={useOverlay ? 'pointer' : 'default'}
                       onPress={(event) => {
                         if (useOverlay) {
-                          // Convert native event to web-compatible format
                           const webEvent = isWeb
                             ? (event as unknown as {
                                 nativeEvent?: { clientX?: number; clientY?: number }
@@ -347,7 +357,6 @@ export function DataTable<TData>({
           </ScrollView>
         </ScrollView>
 
-        {/* Row Action Overlay */}
         {useOverlay && activeRow && overlayPosition && onRowEdit && (
           <RowActionOverlay
             row={activeRow}
@@ -378,17 +387,18 @@ export function DataTable<TData>({
         )}
       </View>
 
-      {/* Pagination Footer */}
       {!hidePagination && (
         <View
-          flexDirection="row"
-          align="center"
-          justify="space-between"
-          paddingHorizontal={16}
-          paddingVertical={12}
-          borderTopWidth={1}
-          borderColor="$borderColor"
-          gap={16}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            borderTopWidth: 1,
+            borderColor: "$borderColor",
+            gap: 16,
+          }}
         >
           <XGroup>
             <XGroup.Item>
@@ -438,7 +448,7 @@ export function DataTable<TData>({
           </Text>
 
           {isWeb && (
-            <View flexDirection="row" gap={8} align="center">
+            <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
               <Text>Go to:</Text>
               <Input
                 size="sm"
@@ -455,5 +465,36 @@ export function DataTable<TData>({
         </View>
       )}
     </View>
+  )
+}
+
+*/
+
+// Temporary export to prevent import errors
+import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
+
+export interface DataTableProps<TData> {
+  columns: ColumnDef<TData, unknown>[]
+  data: TData[]
+  onRowView?: (row: TData) => void
+  onRowEdit?: (row: TData) => void
+  onRowDelete?: (row: TData) => Promise<void>
+  onRowDuplicate?: (row: TData) => Promise<void>
+  getItemName?: (row: TData) => string
+  itemType?: string
+  pageSize?: number
+  isLoading?: boolean
+  emptyMessage?: string
+  cellWidth?: string
+  cellHeight?: string
+  hidePagination?: boolean
+  testID?: string
+  columnVisibility?: VisibilityState
+  onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
+}
+
+export function DataTable<TData>(_props: DataTableProps<TData>): never {
+  throw new Error(
+    'DataTable is deprecated and incompatible with @scaffald/ui. Please migrate to use @scaffald/ui Table component directly.'
   )
 }

@@ -12,7 +12,8 @@ import {
   Stack,
   type BreadcrumbItemData,
 } from '@scaffald/ui'
-import { DataTable } from '@scf/core/components/ui/DataTable'
+// TODO: DataTable is deprecated - migrate to @scaffald/ui Table API
+// import { DataTable } from '@scf/core/components/ui/DataTable'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import { Plus } from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
@@ -78,21 +79,21 @@ export function OfficePageLayout<TData>({
   onSearchChange,
   createButtonLabel,
   onCreateClick,
-  columns,
-  data,
-  isLoading = false,
-  onRowView,
-  onRowEdit,
-  onRowDelete,
-  onRowDuplicate,
-  getItemName,
-  itemType = 'item',
-  pageSize = 50,
-  emptyMessage = 'No data found',
+  columns: _columns,
+  data: _data,
+  isLoading: _isLoading = false,
+  onRowView: _onRowView,
+  onRowEdit: _onRowEdit,
+  onRowDelete: _onRowDelete,
+  onRowDuplicate: _onRowDuplicate,
+  getItemName: _getItemName,
+  itemType: _itemType = 'item',
+  pageSize: _pageSize = 50,
+  emptyMessage: _emptyMessage = 'No data found',
   hideCreateButton = false,
   actionBarConfig,
-  columnVisibility,
-  onColumnVisibilityChange,
+  columnVisibility: _columnVisibility,
+  onColumnVisibilityChange: _onColumnVisibilityChange,
   hideHeader = false,
   wrapWithOfficeLayout = false,
   rightContent,
@@ -133,6 +134,7 @@ export function OfficePageLayout<TData>({
 
       {children}
 
+      {/* TODO: DataTable is deprecated - migrate to @scaffald/ui Table API
       <DataTable
         columns={columns}
         data={data}
@@ -148,6 +150,7 @@ export function OfficePageLayout<TData>({
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={onColumnVisibilityChange}
       />
+      */}
 
       {afterContent}
     </Stack>

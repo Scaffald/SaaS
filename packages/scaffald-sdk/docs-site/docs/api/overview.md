@@ -1,107 +1,177 @@
 # API Reference
 
-Complete reference for all Scaffald SDK methods and types.
+Complete reference for the Scaffald SDK - explore documentation by resource type.
 
-## Table of Contents
+## Quick Navigation
 
-- [Client Configuration](#client-configuration)
-- [Jobs](#jobs)
-- [Applications](#applications)
-- [Profiles](#profiles)
-- [OAuth](#oauth)
-- [Rate Limiting](#rate-limiting)
-- [Types](#types)
+Browse the API documentation organized by resource:
 
-## Client Configuration
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', margin: '2rem 0'}}>
 
-### `new Scaffald(config)`
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
 
-Creates a new Scaffald API client.
+### 🔧 [Client Configuration](/docs/api/client)
+
+Configure the SDK client with API keys, OAuth tokens, retry settings, and custom headers.
+
+**Topics:**
+- Authentication methods
+- Base URL configuration
+- Retry and timeout settings
+- Custom HTTP headers
+
+[View Documentation →](/docs/api/client)
+
+</div>
+
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
+
+### 💼 [Jobs API](/docs/api/jobs)
+
+Search, retrieve, and filter job listings with advanced querying capabilities.
+
+**Methods:**
+- `list()` - Search and filter jobs
+- `retrieve()` - Get job details
+- `similar()` - Find similar jobs
+- `filterOptions()` - Get filter values
+
+[View Documentation →](/docs/api/jobs)
+
+</div>
+
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
+
+### 📝 [Applications API](/docs/api/applications)
+
+Submit quick or full applications and manage application lifecycle.
+
+**Methods:**
+- `create()` / `createQuick()` - Quick apply
+- `createFull()` - Full application
+- `retrieve()` - Get application status
+- `update()` - Update application
+- `withdraw()` - Withdraw application
+
+[View Documentation →](/docs/api/applications)
+
+</div>
+
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
+
+### 👤 [Profiles API](/docs/api/profiles)
+
+Retrieve public user, organization, and employer profiles.
+
+**Methods:**
+- `user()` - Get user profile
+- `organization()` - Get organization
+- `employer()` - Get employer profile
+
+**Rate Limit:** 100 requests / 15 min
+
+[View Documentation →](/docs/api/profiles)
+
+</div>
+
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
+
+### 🔐 [OAuth API](/docs/api/oauth)
+
+Implement OAuth 2.0 with PKCE for secure user authentication.
+
+**Methods:**
+- `getAuthorizationUrl()` - Start OAuth
+- `exchangeCode()` - Get access token
+- `refreshToken()` - Refresh tokens
+
+**Flow:** Authorization Code + PKCE
+
+[View Documentation →](/docs/api/oauth)
+
+</div>
+
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
+
+### ⏱️ [Rate Limiting](/docs/api/rate-limiting)
+
+Monitor and manage API rate limits to ensure optimal usage.
+
+**Methods:**
+- `getRateLimitInfo()` - Check status
+- `isRateLimitApproaching()` - Monitor
+- `getSecondsUntilReset()` - Time to reset
+- `onRateLimitUpdate()` - Subscribe
+
+[View Documentation →](/docs/api/rate-limiting)
+
+</div>
+
+<div style={{padding: '1.5rem', borderRadius: '12px', border: '2px solid rgba(251, 97, 42, 0.15)', background: 'rgba(251, 97, 42, 0.03)'}}>
+
+### 📘 [Type Definitions](/docs/api/types)
+
+Complete TypeScript type reference for all SDK interfaces and types.
+
+**Types:**
+- Job, Application, Profile
+- Request/Response interfaces
+- OAuth types
+- Error types
+
+[View Documentation →](/docs/api/types)
+
+</div>
+
+</div>
+
+## Getting Started
+
+### 1. Install the SDK
+
+```bash
+npm install @scaffald/sdk
+```
+
+### 2. Initialize Client
 
 ```typescript
+import Scaffald from '@scaffald/sdk'
+
+// Server-side (API key)
 const client = new Scaffald({
-  apiKey?: string
-  accessToken?: string
-  baseUrl?: string
-  maxRetries?: number
-  timeout?: number
-  headers?: Record<string, string>
+  apiKey: process.env.SCAFFALD_API_KEY
+})
+
+// Client-side (OAuth)
+const client = new Scaffald({
+  accessToken: userAccessToken
 })
 ```
 
-**Parameters:**
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `apiKey` | `string` | Yes* | - | API key for server-side authentication |
-| `accessToken` | `string` | Yes* | - | OAuth access token for client-side auth |
-| `baseUrl` | `string` | No | `https://api.scaffald.com` | Base API URL |
-| `maxRetries` | `number` | No | `3` | Max retry attempts (0-10) |
-| `timeout` | `number` | No | `30000` | Request timeout in ms (1000-300000) |
-| `headers` | `object` | No | `{}` | Additional HTTP headers |
-
-\* Either `apiKey` or `accessToken` is required
-
-**Example:**
+### 3. Make Your First Request
 
 ```typescript
-const client = new Scaffald({
-  apiKey: process.env.SCAFFALD_API_KEY,
-  maxRetries: 5,
-  timeout: 60000
-})
-```
-
----
-
-## Jobs
-
-### `client.jobs.list(params?)`
-
-List and filter jobs.
-
-```typescript
+// Search for jobs
 const jobs = await client.jobs.list({
-  status?: 'published' | 'draft' | 'archived'
-  limit?: number
-  offset?: number
-  organizationId?: string
-  location?: string
-  employmentType?: 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern'
-  remoteOption?: 'on_site' | 'hybrid' | 'remote'
+  employmentType: 'full_time',
+  remoteOption: 'remote',
+  limit: 20
+})
+
+// Submit a quick application
+const application = await client.applications.create({
+  jobId: jobs.data[0].id,
+  currentLocation: 'San Francisco, CA'
 })
 ```
 
-**Parameters:**
+## Common Use Cases
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `status` | `string` | Filter by job status (default: `published`) |
-| `limit` | `number` | Results per page (1-100, default: 20) |
-| `offset` | `number` | Pagination offset (default: 0) |
-| `organizationId` | `string` | Filter by organization ID |
-| `location` | `string` | Filter by location (partial match) |
-| `employmentType` | `string` | Filter by employment type |
-| `remoteOption` | `string` | Filter by remote work option |
-
-**Returns:**
+### Search and Filter Jobs
 
 ```typescript
-{
-  data: Job[]
-  pagination: {
-    total: number
-    limit: number
-    offset: number
-    has_more: boolean
-  }
-}
-```
-
-**Example:**
-
-```typescript
-// Get remote full-time jobs
+// Get remote full-time jobs in tech
 const jobs = await client.jobs.list({
   status: 'published',
   employmentType: 'full_time',
@@ -109,740 +179,181 @@ const jobs = await client.jobs.list({
   limit: 50
 })
 
-// Paginate through all jobs
-let offset = 0
-while (true) {
-  const response = await client.jobs.list({ limit: 100, offset })
-  // Process response.data
-  if (!response.pagination.has_more) break
-  offset += 100
-}
+console.log(`Found ${jobs.pagination.total} jobs`)
 ```
+
+[Full Jobs API Documentation →](/docs/api/jobs)
 
 ---
 
-### `client.jobs.retrieve(id)`
-
-Get a single job by ID.
+### Submit an Application
 
 ```typescript
-const job = await client.jobs.retrieve(id: string)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | `string` | Job ID |
-
-**Returns:** `{ data: Job }`
-
-**Example:**
-
-```typescript
-const job = await client.jobs.retrieve('job_abc123')
-console.log(job.data.title)
-console.log(job.data.description)
-console.log(job.data.requirements)
-```
-
----
-
-### `client.jobs.similar(id, params?)`
-
-Get jobs similar to a given job.
-
-```typescript
-const similar = await client.jobs.similar(
-  id: string,
-  params?: {
-    limit?: number
-    offset?: number
-  }
-)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | `string` | Job ID to find similar jobs for |
-| `limit` | `number` | Results per page (1-100, default: 10) |
-| `offset` | `number` | Pagination offset (default: 0) |
-
-**Returns:**
-
-```typescript
-{
-  data: Job[]
-  pagination: {
-    total: number
-    limit: number
-    offset: number
-    has_more: boolean
-  }
-}
-```
-
-**Example:**
-
-```typescript
-// Get 5 similar jobs
-const similar = await client.jobs.similar('job_abc123', { limit: 5 })
-```
-
----
-
-### `client.jobs.filterOptions()`
-
-Get available filter values for job search.
-
-```typescript
-const options = await client.jobs.filterOptions()
-```
-
-**Returns:**
-
-```typescript
-{
-  data: {
-    employmentTypes: string[]
-    remoteOptions: string[]
-    locations: string[]
-    organizations: Array<{ id: string; name: string }>
-  }
-}
-```
-
-**Example:**
-
-```typescript
-const options = await client.jobs.filterOptions()
-console.log('Available employment types:', options.data.employmentTypes)
-console.log('Available locations:', options.data.locations)
-```
-
----
-
-## Applications
-
-### `client.applications.create(input)` / `client.applications.createQuick(input)`
-
-Submit a quick job application.
-
-```typescript
+// Quick application
 const app = await client.applications.create({
-  jobId: string
-  currentLocation: string
-  availableStartDate?: string
-})
-```
-
-**Parameters:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `jobId` | `string` | Yes | Job ID to apply for |
-| `currentLocation` | `string` | Yes | Current location |
-| `availableStartDate` | `string` | No | Availability (ISO 8601 date) |
-
-**Returns:** `{ data: Application }`
-
-**Example:**
-
-```typescript
-const application = await client.applications.create({
   jobId: 'job_abc123',
   currentLocation: 'San Francisco, CA',
   availableStartDate: '2025-03-01'
 })
-```
 
----
-
-### `client.applications.createFull(input)`
-
-Submit a full job application with detailed information.
-
-```typescript
-const app = await client.applications.createFull({
-  jobId: string
-  currentLocation: string
-  availableStartDate?: string
-  coverLetter?: string
-  resumeUrl?: string
-  linkedinUrl?: string
-  portfolioUrl?: string
-  yearsExperience?: number
-  salaryExpectationMinCents?: number
-  salaryExpectationMaxCents?: number
-  willingToRelocate?: boolean
-  requiresSponsorship?: boolean
-  customResponses?: Record<string, unknown>
-})
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `jobId` | `string` | **Required.** Job ID to apply for |
-| `currentLocation` | `string` | **Required.** Current location |
-| `availableStartDate` | `string` | Availability (ISO 8601 date) |
-| `coverLetter` | `string` | Cover letter text |
-| `resumeUrl` | `string` | URL to resume PDF |
-| `linkedinUrl` | `string` | LinkedIn profile URL |
-| `portfolioUrl` | `string` | Portfolio website URL |
-| `yearsExperience` | `number` | Years of relevant experience |
-| `salaryExpectationMinCents` | `number` | Minimum salary in cents (e.g., 12000000 = $120k) |
-| `salaryExpectationMaxCents` | `number` | Maximum salary in cents |
-| `willingToRelocate` | `boolean` | Willing to relocate |
-| `requiresSponsorship` | `boolean` | Requires visa sponsorship |
-| `customResponses` | `object` | Custom application questions responses |
-
-**Returns:** `{ data: Application }`
-
-**Example:**
-
-```typescript
-const application = await client.applications.createFull({
+// Full application with details
+const fullApp = await client.applications.createFull({
   jobId: 'job_abc123',
   currentLocation: 'San Francisco, CA',
-  availableStartDate: '2025-03-01',
-  coverLetter: 'I am excited to apply for this position...',
+  coverLetter: 'I am excited...',
   resumeUrl: 'https://example.com/resume.pdf',
-  linkedinUrl: 'https://linkedin.com/in/johndoe',
-  portfolioUrl: 'https://johndoe.com',
-  yearsExperience: 5,
-  salaryExpectationMinCents: 12000000, // $120,000
-  salaryExpectationMaxCents: 15000000, // $150,000
-  willingToRelocate: true,
-  requiresSponsorship: false
+  yearsExperience: 5
 })
 ```
 
----
-
-### `client.applications.retrieve(id)`
-
-Get application details by ID.
-
-```typescript
-const app = await client.applications.retrieve(id: string)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | `string` | Application ID |
-
-**Returns:** `{ data: Application }`
-
-**Example:**
-
-```typescript
-const app = await client.applications.retrieve('app_abc123')
-console.log(`Status: ${app.data.status}`)
-console.log(`Applied: ${new Date(app.data.created_at).toLocaleDateString()}`)
-```
+[Full Applications API Documentation →](/docs/api/applications)
 
 ---
 
-### `client.applications.update(id, input)`
-
-Update an application (only works for `pending` or `reviewing` status).
+### Implement OAuth
 
 ```typescript
-const app = await client.applications.update(id: string, {
-  coverLetter?: string
-  resumeUrl?: string
-  linkedinUrl?: string
-  portfolioUrl?: string
-  yearsExperience?: number
-  salaryExpectationMinCents?: number
-  salaryExpectationMaxCents?: number
-  willingToRelocate?: boolean
-  requiresSponsorship?: boolean
-  customResponses?: Record<string, unknown>
-})
-```
-
-**Parameters:** Same as `createFull` (excluding `jobId` and `currentLocation`)
-
-**Returns:** `{ data: Application }`
-
-**Example:**
-
-```typescript
-const updated = await client.applications.update('app_abc123', {
-  coverLetter: 'Updated cover letter...',
-  resumeUrl: 'https://example.com/new-resume.pdf'
-})
-```
-
----
-
-### `client.applications.withdraw(id, input?)`
-
-Withdraw an application.
-
-```typescript
-const app = await client.applications.withdraw(
-  id: string,
-  input?: { reason?: string }
-)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | `string` | Application ID |
-| `reason` | `string` | Optional reason for withdrawal |
-
-**Returns:** `{ data: Application }`
-
-**Example:**
-
-```typescript
-await client.applications.withdraw('app_abc123', {
-  reason: 'Accepted another offer'
-})
-```
-
----
-
-## Profiles
-
-All profile endpoints are rate-limited to **100 requests per 15 minutes**.
-
-### `client.profiles.user(username)` / `client.profiles.getUser(username)`
-
-Get public user profile by username.
-
-```typescript
-const profile = await client.profiles.user(username: string)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `username` | `string` | Username |
-
-**Returns:** `{ data: PublicProfile }`
-
-**Example:**
-
-```typescript
-const profile = await client.profiles.user('johndoe')
-console.log(profile.data.full_name)
-console.log(profile.data.bio)
-console.log(profile.data.skills)
-```
-
----
-
-### `client.profiles.organization(slug)` / `client.profiles.getOrganization(slug)`
-
-Get organization profile by slug.
-
-```typescript
-const org = await client.profiles.organization(slug: string)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `slug` | `string` | Organization slug |
-
-**Returns:** `{ data: OrganizationProfile }`
-
-**Example:**
-
-```typescript
-const org = await client.profiles.organization('acme-corp')
-console.log(`${org.data.name} has ${org.data.job_count} open positions`)
-```
-
----
-
-### `client.profiles.employer(slug)` / `client.profiles.getEmployer(slug)`
-
-Get employer profile by slug.
-
-```typescript
-const employer = await client.profiles.employer(slug: string)
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `slug` | `string` | Employer slug |
-
-**Returns:** `{ data: EmployerProfile }`
-
-**Example:**
-
-```typescript
-const employer = await client.profiles.employer('tech-startup')
-console.log(`${employer.data.active_jobs_count} active jobs`)
-```
-
----
-
-## OAuth
-
-### `client.oauth.getAuthorizationUrl(options)`
-
-Generate OAuth authorization URL with PKCE.
-
-```typescript
-const { url, codeVerifier, state } = await client.oauth.getAuthorizationUrl({
-  clientId: string
-  redirectUri: string
-  scope: string[]
-  state?: string
-})
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `clientId` | `string` | OAuth client ID |
-| `redirectUri` | `string` | Callback URL |
-| `scope` | `string[]` | Permissions to request |
-| `state` | `string` | Optional CSRF protection state |
-
-**Returns:**
-
-```typescript
-{
-  url: string          // Authorization URL to redirect to
-  codeVerifier: string // PKCE code verifier (store securely!)
-  state: string        // CSRF state (verify on callback)
-}
-```
-
-**Example:**
-
-```typescript
+// Step 1: Get authorization URL
 const { url, codeVerifier, state } = await client.oauth.getAuthorizationUrl({
   clientId: 'your_client_id',
   redirectUri: 'https://yourapp.com/callback',
   scope: ['read:jobs', 'write:applications']
 })
 
+// Store and redirect
 sessionStorage.setItem('pkce_verifier', codeVerifier)
-sessionStorage.setItem('oauth_state', state)
 window.location.href = url
-```
 
----
-
-### `client.oauth.exchangeCode(options)`
-
-Exchange authorization code for access token.
-
-```typescript
-const tokens = await client.oauth.exchangeCode({
-  code: string
-  codeVerifier: string
-  clientId: string
-  clientSecret?: string
-  redirectUri: string
-})
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `code` | `string` | Authorization code from callback |
-| `codeVerifier` | `string` | PKCE code verifier from step 1 |
-| `clientId` | `string` | OAuth client ID |
-| `clientSecret` | `string` | Client secret (server-side only) |
-| `redirectUri` | `string` | Must match authorization redirect URI |
-
-**Returns:**
-
-```typescript
-{
-  access_token: string
-  refresh_token: string
-  expires_in: number
-  token_type: 'Bearer'
-}
-```
-
-**Example:**
-
-```typescript
-const code = new URL(window.location.href).searchParams.get('code')
+// Step 2: Exchange code for token (in callback)
 const tokens = await client.oauth.exchangeCode({
   code,
   codeVerifier: sessionStorage.getItem('pkce_verifier'),
   clientId: 'your_client_id',
   redirectUri: 'https://yourapp.com/callback'
 })
-
-localStorage.setItem('access_token', tokens.access_token)
-localStorage.setItem('refresh_token', tokens.refresh_token)
 ```
+
+[Full OAuth API Documentation →](/docs/api/oauth)
 
 ---
 
-### `client.oauth.refreshToken(refreshToken, clientId?)`
-
-Refresh an expired access token.
+### Monitor Rate Limits
 
 ```typescript
-const tokens = await client.oauth.refreshToken(
-  refreshToken: string,
-  clientId?: string
-)
-```
+// Subscribe to rate limit updates
+client.onRateLimitUpdate((info) => {
+  console.log(`${info.remaining}/${info.limit} requests remaining`)
 
-**Returns:** Same as `exchangeCode`
-
-**Example:**
-
-```typescript
-const newTokens = await client.oauth.refreshToken(
-  localStorage.getItem('refresh_token')
-)
-
-localStorage.setItem('access_token', newTokens.access_token)
-```
-
----
-
-## Rate Limiting
-
-### `client.getRateLimitInfo()`
-
-Get current rate limit information.
-
-```typescript
-const info = client.getRateLimitInfo()
-```
-
-**Returns:**
-
-```typescript
-{
-  limit: number      // Total requests allowed
-  remaining: number  // Requests remaining
-  reset: number      // Unix timestamp when limit resets
-  resetAt: Date      // Date object of reset time
-}
-```
-
-**Example:**
-
-```typescript
-const info = client.getRateLimitInfo()
-console.log(`${info.remaining}/${info.limit} requests remaining`)
-console.log(`Resets at: ${info.resetAt}`)
-```
-
----
-
-### `client.isRateLimitApproaching(threshold?)`
-
-Check if rate limit is approaching.
-
-```typescript
-const isClose = client.isRateLimitApproaching(threshold?: number)
-```
-
-**Parameters:**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `threshold` | `number` | `0.2` | Warning threshold (0.2 = 20% remaining) |
-
-**Returns:** `boolean`
-
-**Example:**
-
-```typescript
-if (client.isRateLimitApproaching()) {
-  console.warn('Slow down! Less than 20% of rate limit remaining')
-}
-
-if (client.isRateLimitApproaching(0.1)) {
-  console.error('Critical! Less than 10% remaining')
-}
-```
-
----
-
-### `client.getSecondsUntilRateLimitReset()`
-
-Get seconds until rate limit resets.
-
-```typescript
-const seconds = client.getSecondsUntilRateLimitReset()
-```
-
-**Returns:** `number` (seconds until reset, or 0 if already reset)
-
-**Example:**
-
-```typescript
-const seconds = client.getSecondsUntilRateLimitReset()
-console.log(`Rate limit resets in ${seconds} seconds`)
-```
-
----
-
-### `client.onRateLimitUpdate(callback)`
-
-Subscribe to rate limit updates.
-
-```typescript
-const unsubscribe = client.onRateLimitUpdate(
-  callback: (info: RateLimitInfo) => void
-)
-```
-
-**Returns:** `() => void` (unsubscribe function)
-
-**Example:**
-
-```typescript
-const unsubscribe = client.onRateLimitUpdate((info) => {
-  console.log(`Rate limit updated: ${info.remaining}/${info.limit}`)
-
-  if (info.remaining === 0) {
-    console.error('Rate limit exceeded!')
+  if (client.isRateLimitApproaching(0.1)) {
+    console.warn('Less than 10% remaining - slow down!')
   }
 })
 
-// Clean up when done
-unsubscribe()
+// Make requests
+await client.jobs.list()
 ```
+
+[Full Rate Limiting Documentation →](/docs/api/rate-limiting)
 
 ---
 
-## Types
+## API Resources
 
-### Job
+| Resource | Endpoint | Description |
+|----------|----------|-------------|
+| [Client](/docs/api/client) | - | SDK configuration and initialization |
+| [Jobs](/docs/api/jobs) | `/api/v1/jobs` | Search and retrieve job listings |
+| [Applications](/docs/api/applications) | `/api/v1/applications` | Submit and manage applications |
+| [Profiles](/docs/api/profiles) | `/api/v1/profiles` | User and organization profiles |
+| [OAuth](/docs/api/oauth) | `/oauth` | OAuth 2.0 authentication |
+| [Types](/docs/api/types) | - | TypeScript type definitions |
+
+## Rate Limits
+
+| Endpoint Type | Limit |
+|---------------|-------|
+| Standard endpoints | 1000 requests / hour |
+| Profile endpoints | 100 requests / 15 min |
+| OAuth endpoints | 20 requests / min |
+
+[Learn more about rate limiting →](/docs/api/rate-limiting)
+
+## Authentication
+
+The SDK supports two authentication methods:
+
+**API Key (Server-side)**
+```typescript
+const client = new Scaffald({
+  apiKey: process.env.SCAFFALD_API_KEY
+})
+```
+
+**OAuth Token (Client-side)**
+```typescript
+const client = new Scaffald({
+  accessToken: userAccessToken
+})
+```
+
+[View full authentication guide →](/docs/guide/authentication)
+
+## Error Handling
+
+The SDK throws typed errors for easy handling:
 
 ```typescript
-interface Job {
-  id: string
-  title: string
-  organization_id: string
-  organization_name: string
-  description: string
-  requirements: string
-  location: string | null
-  employment_type: 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern'
-  remote_option: 'on_site' | 'hybrid' | 'remote'
-  salary_min_cents: number | null
-  salary_max_cents: number | null
-  status: 'published' | 'draft' | 'archived'
-  created_at: string
-  updated_at: string
+import { APIError } from '@scaffald/sdk'
+
+try {
+  const jobs = await client.jobs.list()
+} catch (error) {
+  if (error instanceof APIError) {
+    if (error.status === 429) {
+      console.log('Rate limited')
+    } else if (error.status === 401) {
+      console.log('Unauthorized')
+    }
+  }
 }
 ```
 
-### Application
+[View error handling guide →](/docs/guide/error-handling)
+
+## TypeScript Support
+
+The SDK is written in TypeScript with full type definitions:
 
 ```typescript
-interface Application {
-  id: string
-  job_id: string
-  applicant_id: string
-  status: 'pending' | 'reviewing' | 'inquired' | 'interviewing' | 'offered' | 'accepted' | 'rejected' | 'withdrawn'
-  application_type: 'quick' | 'full'
-  current_location: string
-  available_start_date: string | null
-  cover_letter: string | null
-  resume_url: string | null
-  linkedin_url: string | null
-  portfolio_url: string | null
-  years_experience: number | null
-  salary_expectation_min_cents: number | null
-  salary_expectation_max_cents: number | null
-  willing_to_relocate: boolean | null
-  requires_sponsorship: boolean | null
-  custom_responses: Record<string, unknown> | null
-  withdrawal_reason: string | null
-  created_at: string
-  updated_at: string
+import type {
+  Job,
+  Application,
+  JobsListParams,
+  JobsListResponse
+} from '@scaffald/sdk'
+
+const params: JobsListParams = {
+  employmentType: 'full_time',
+  limit: 20
 }
+
+const response: JobsListResponse = await client.jobs.list(params)
+const jobs: Job[] = response.data
 ```
 
-### PublicProfile
-
-```typescript
-interface PublicProfile {
-  id: string
-  username: string
-  full_name: string | null
-  bio: string | null
-  avatar_url: string | null
-  location: string | null
-  website: string | null
-  linkedin_url: string | null
-  github_url: string | null
-  years_experience: number | null
-  current_position: string | null
-  skills: string[]
-  certifications: UserCertification[]
-  created_at: string
-}
-```
-
-### OrganizationProfile
-
-```typescript
-interface OrganizationProfile {
-  id: string
-  slug: string
-  name: string
-  description: string | null
-  logo_url: string | null
-  website: string | null
-  industry: string | null
-  size: string | null
-  location: string | null
-  founded_year: number | null
-  created_at: string
-  job_count: number
-}
-```
-
-### EmployerProfile
-
-```typescript
-interface EmployerProfile {
-  id: string
-  slug: string
-  name: string
-  description: string | null
-  logo_url: string | null
-  website: string | null
-  industry: string | null
-  location: string | null
-  created_at: string
-  active_jobs_count: number
-}
-```
-
----
+[View all type definitions →](/docs/api/types)
 
 ## Next Steps
 
-- [Getting Started Guide](/docs/guide/installation)
-- [React Hooks Reference](/docs/guide/react-integration)
-- [Webhooks Guide](/docs/advanced/webhooks)
-- [OAuth Guide](/docs/guide/authentication)
-- [Error Handling](/docs/guide/error-handling)
+- 📖 [Getting Started Guide](/docs/intro) - Complete SDK tutorial
+- ⚛️ [React Integration](/docs/guide/react-integration) - Use with React hooks
+- 🔐 [Authentication Guide](/docs/guide/authentication) - OAuth setup
+- 📝 [Examples](/docs/examples) - Code examples and recipes
+- 🏗️ [Architecture](/docs/advanced/architecture) - SDK internals
+
+## Need Help?
+
+- 💬 [GitHub Discussions](https://github.com/Scaffald/sdk/discussions) - Ask questions
+- 🐛 [Report Issues](https://github.com/Scaffald/sdk/issues) - Bug reports
+- 📚 [View on GitHub](https://github.com/Scaffald/sdk) - Source code
+- 📦 [npm Package](https://www.npmjs.com/package/@scaffald/sdk) - Package page
