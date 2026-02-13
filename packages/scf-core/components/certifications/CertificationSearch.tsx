@@ -204,7 +204,7 @@ export function CertificationSearch({
                       gap={8}
                       testID="cert-search-section-depth0"
                     >
-                      <Award size={16} color="gray" />
+                      <Award size="lg" color="gray" />
                       <Text color="gray">Top Level Categories</Text>
                     </Row>
                     {groupedResults.depth0.map((cert) => (
@@ -228,7 +228,7 @@ export function CertificationSearch({
                             <DepthBadge depth={cert.depth} />
                           </Row>
                           {cert.description && (
-                            <Text color="gray" numberOfLines={2}>
+                            <Text color="gray" >
                               {cert.description}
                             </Text>
                           )}
@@ -252,7 +252,7 @@ export function CertificationSearch({
                       gap={8}
                       testID="cert-search-section-depth1"
                     >
-                      <Award size={16} color="gray" />
+                      <Award size="lg" color="gray" />
                       <Text color="gray">
                         {parentId === 'none'
                           ? 'Categories'
@@ -280,7 +280,7 @@ export function CertificationSearch({
                             <DepthBadge depth={cert.depth} />
                           </Row>
                           {cert.description && (
-                            <Text color="gray" numberOfLines={2}>
+                            <Text color="gray" >
                               {cert.description}
                             </Text>
                           )}
@@ -304,7 +304,7 @@ export function CertificationSearch({
                       gap={8}
                       testID="cert-search-section-depth2"
                     >
-                      <Award size={16} color="gray" />
+                      <Award size="lg" color="gray" />
                       <Text color="gray">
                         {parentId === 'none'
                           ? 'Specific Certifications'
@@ -341,7 +341,7 @@ export function CertificationSearch({
                               <DepthBadge depth={cert.depth} />
                             </Row>
                             {cert.description && (
-                              <Text color="gray" numberOfLines={2}>
+                              <Text color="gray" >
                                 {cert.description}
                               </Text>
                             )}

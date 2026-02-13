@@ -1175,7 +1175,7 @@ export function InquiryCreateForm({
               placeholder="Describe when to use this template..."
               value={templateDescription}
               onChangeText={setTemplateDescription}
-              numberOfLines={4}
+              
             />
           </Stack>
           <Row gap={12} justify="flex-end">

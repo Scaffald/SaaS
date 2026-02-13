@@ -25,7 +25,7 @@ export function EmailHeader({ email }: EmailHeaderProps) {
             color: colors.gray[900],
             maxWidth: '100%',
           }}
-          numberOfLines={1}
+          
           ellipsizeMode="middle"
         >
           {email}

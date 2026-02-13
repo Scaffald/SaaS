@@ -99,11 +99,11 @@ export function UniversityAutocomplete({
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
       <Stack gap={4} flex={1} align="flex-start">
-        <SizableText color="gray" numberOfLines={1}>
+        <SizableText color="gray" >
           {option.raw.name}
         </SizableText>
         {option.raw.country && (
-          <SizableText color="gray" numberOfLines={1}>
+          <SizableText color="gray" >
             {option.raw.country}
           </SizableText>
         )}

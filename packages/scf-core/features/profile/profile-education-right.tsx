@@ -126,7 +126,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                     <Text color="$gray11">{edu.institution_name}</Text>
                     {!edu.is_verified && (
                       <Row gap={4} align="center">
-                        <AlertCircle size={14} color="$orange10" />
+                        <AlertCircle size="md" color="$orange10" />
                         <Text color="$orange10">Pending verification</Text>
                       </Row>
                     )}

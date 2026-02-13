@@ -372,7 +372,7 @@ export function ImageUpload({
 
             <Row gap={8}>
               <Button
-                size={12}
+                size="sm"
                 variant="outline"
                 onPress={triggerFilePicker}
                 disabled={disabled || isUploading}
@@ -381,7 +381,7 @@ export function ImageUpload({
                 Change Image
               </Button>
               <Button
-                size={12}
+                size="sm"
                 variant="outline"
                 color="$red10"
                 onPress={handleDelete}
@@ -419,7 +419,7 @@ export function ImageUpload({
 
             {/* Button */}
             <Button
-              size={12}
+              size="sm"
               disabled={disabled || isUploading}
               onPress={triggerFilePicker}
               icon={Upload}
@@ -454,7 +454,7 @@ export function ImageUpload({
       {/* Error Message */}
       {error && (
         <Row gap={8} align="center" padding={8} backgroundColor="$red2" borderRadius={12}>
-          <AlertCircle size={16} color="$red10" />
+          <AlertCircle size="lg" color="$red10" />
           <Text color="$red10" flex={1}>
             {error}
           </Text>

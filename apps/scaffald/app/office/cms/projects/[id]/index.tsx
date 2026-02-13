@@ -181,7 +181,7 @@ export default function ProjectDetailPage() {
               <Text>
                 Location
               </Text>
-              <Button size={8} icon={Plus}>
+              <Button size="md" icon={Plus}>
                 Add Site
               </Button>
             </Row>
@@ -245,7 +245,7 @@ export default function ProjectDetailPage() {
               <Text>
                 Workers
               </Text>
-              <Button size={8} icon={Plus}>
+              <Button size="md" icon={Plus}>
                 Add Worker
               </Button>
             </Row>
@@ -263,7 +263,7 @@ export default function ProjectDetailPage() {
                       <Row justify="space-between" align="center">
                         <Stack gap={4}>
                           <Row gap={8} align="center">
-                            <StatusIcon size={16} color={statusColor} />
+                            <StatusIcon size="lg" color={statusColor} />
                             <Text>Worker {worker.user_id?.slice(0, 8)}</Text>
                           </Row>
                           {worker.role_on_project && (
@@ -282,7 +282,7 @@ export default function ProjectDetailPage() {
                             </Text>
                           )}
                           {worker.assigned_by_manager && (
-                            <Text color="$green10">
+                            <Text color="green">
                               Assigned by manager
                             </Text>
                           )}
@@ -290,7 +290,7 @@ export default function ProjectDetailPage() {
                         {worker.status === 'pending' && (
                           <Row gap={8}>
                             <Button
-                              size={8}
+                              size="md"
                              
                               color="$green12"
                               onPress={async () => {
@@ -299,7 +299,7 @@ export default function ProjectDetailPage() {
                               }}
                             >Approve</Button>
                             <Button
-                              size={8}
+                              size="md"
                              
                               color="$red12"
                               onPress={async () => {

@@ -667,7 +667,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           <Text>Summary</Text>
           <Input
             multiline
-            numberOfLines={4}
+            
             value={generalForm.summary}
             onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, summary: value }))}
           />

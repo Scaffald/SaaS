@@ -390,7 +390,7 @@ export function DataTable<TData>({
           <XGroup>
             <XGroup.Item>
               <Button
-                size={12}
+                size="sm"
                 onPress={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -401,7 +401,7 @@ export function DataTable<TData>({
             </XGroup.Item>
             <XGroup.Item>
               <Button
-                size={12}
+                size="sm"
                 onPress={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -411,7 +411,7 @@ export function DataTable<TData>({
               </Button>
             </XGroup.Item>
             <XGroup.Item>
-              <Button size={12} onPress={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+              <Button size="sm" onPress={() => table.nextPage()} disabled={!table.getCanNextPage()}>
                 <Button.Icon>
                   <ChevronRight />
                 </Button.Icon>
@@ -419,7 +419,7 @@ export function DataTable<TData>({
             </XGroup.Item>
             <XGroup.Item>
               <Button
-                size={12}
+                size="sm"
                 onPress={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
@@ -438,7 +438,7 @@ export function DataTable<TData>({
             <View flexDirection="row" gap={8} align="center">
               <Text>Go to:</Text>
               <Input
-                size={12}
+                size="sm"
                 width={20}
                 keyboardType="numeric"
                 defaultValue={String(table.getState().pagination.pageIndex + 1)}

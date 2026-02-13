@@ -159,7 +159,7 @@ export const JobCard = memo(
       if (location) {
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: location,
         })
       }
@@ -167,7 +167,7 @@ export const JobCard = memo(
       if (employment) {
         metadataItems.push({
           key: 'employment',
-          icon: <Briefcase size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Briefcase size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: employment,
         })
       }
@@ -175,7 +175,7 @@ export const JobCard = memo(
       if (postedTime) {
         metadataItems.push({
           key: 'posted',
-          icon: <Clock size={14} color={isSelected ? '$color1' : '$color9'} />,
+          icon: <Clock size="md" color={isSelected ? '$color1' : '$color9'} />,
           label: postedTime,
         })
       }
@@ -220,7 +220,7 @@ export const JobCard = memo(
               subtitle={
                 organization ? (
                   <Row gap={8} align="center">
-                    <Building2 size={16} color={isSelected ? '$color1' : '$color11'} />
+                    <Building2 size="lg" color={isSelected ? '$color1' : '$color11'} />
                     <Text color={isSelected ? '$color1' : '$color11'}>{organization.name}</Text>
                   </Row>
                 ) : undefined
@@ -263,7 +263,7 @@ export const JobCard = memo(
 
           {/* Description */}
           {description && (
-            <Paragraph size={12} color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+            <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'} >
               {description}
             </Paragraph>
           )}
@@ -276,7 +276,7 @@ export const JobCard = memo(
           {/* Pay range */}
           {payRange && (
             <Row gap={6} align="center">
-              <DollarSign size={16} color="$green10" />
+              <DollarSign size="lg" color="$green10" />
               <Text color="$green10">{payRange}</Text>
             </Row>
           )}

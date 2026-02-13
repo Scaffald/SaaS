@@ -273,7 +273,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             >
               {STATUSES.map((status) => (
                 <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
-                  <Text numberOfLines={1}>{STATUS_LABELS[status]}</Text>
+                  <Text >{STATUS_LABELS[status]}</Text>
                   <Stack
                     backgroundColor="$color5"
                     paddingHorizontal={8}

@@ -67,7 +67,7 @@ export const OrganizationCard = memo(
         const location = [address.city, address.state].filter(Boolean).join(', ')
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: location,
         })
       }
@@ -75,7 +75,7 @@ export const OrganizationCard = memo(
       if (employeeCount) {
         metadataItems.push({
           key: 'employees',
-          icon: <Users size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Users size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: `${employeeCount} employees`,
         })
       }

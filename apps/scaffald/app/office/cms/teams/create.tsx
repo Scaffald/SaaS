@@ -39,7 +39,7 @@ export default function CreateTeamPage() {
         <Text>
           No organizations available
         </Text>
-        <Text color="$color11">Create an organization before adding teams.</Text>
+        <Text color="gray">Create an organization before adding teams.</Text>
         <Button onPress={() => router.back()} variant="outline">Go Back</Button>
       </Stack>
     )
@@ -76,7 +76,7 @@ export default function CreateTeamPage() {
                       {(org.name as string) ?? 'Untitled Organization'}
                     </Select.ItemText>
                     <Select.ItemIndicator>
-                      <Check size={16} />
+                      <Check size="lg" />
                     </Select.ItemIndicator>
                   </Select.Item>
                 ))}
@@ -104,7 +104,7 @@ export default function CreateTeamPage() {
           <Text>
             Choose an organization to continue
           </Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             Teams belong to a single organization. Select one above to configure the team.
           </Text>
         </Stack>

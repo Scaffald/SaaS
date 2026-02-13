@@ -145,11 +145,11 @@ export function ProfileHoverCard({
               </View>
             )}
             <Stack flex={1} gap={4}>
-              <Text color="$gray11" numberOfLines={1}>
+              <Text color="$gray11" >
                 {workerPreview.displayName}
               </Text>
               {workerPreview.headline && (
-                <Text color="$gray11" numberOfLines={1}>
+                <Text color="$gray11" >
                   {workerPreview.headline}
                 </Text>
               )}
@@ -169,8 +169,8 @@ export function ProfileHoverCard({
           {/* Location */}
           {workerPreview.location && (
             <Row gap={8} align="center">
-              <MapPin size={14} color="$gray11" />
-              <Text color="$gray11" numberOfLines={1}>
+              <MapPin size="md" color="$gray11" />
+              <Text color="$gray11" >
                 {workerPreview.location}
               </Text>
             </Row>
@@ -220,11 +220,11 @@ export function ProfileHoverCard({
               <Building2 size={24} color="$blue10" />
             </View>
             <Stack flex={1} gap={4}>
-              <Text color="$gray11" numberOfLines={1}>
+              <Text color="$gray11" >
                 {organization.name}
               </Text>
               {organization.industry_name && (
-                <Text color="$gray11" numberOfLines={1}>
+                <Text color="$gray11" >
                   {organization.industry_name}
                 </Text>
               )}
@@ -246,8 +246,8 @@ export function ProfileHoverCard({
             typeof organization.address === 'object' &&
             'city' in organization.address && (
               <Row gap={8} align="center">
-                <MapPin size={14} color="$gray11" />
-                <Text color="$gray11" numberOfLines={1}>
+                <MapPin size="md" color="$gray11" />
+                <Text color="$gray11" >
                   {[
                     (organization.address as { city?: string }).city,
                     (organization.address as { state?: string }).state,
@@ -262,7 +262,7 @@ export function ProfileHoverCard({
           <Row gap={12} flexWrap="wrap">
             {jobsCount > 0 && (
               <Row gap={4} align="center">
-                <Briefcase size={14} color="$green10" />
+                <Briefcase size="md" color="$green10" />
                 <Text color="$gray11">
                   {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
                 </Text>

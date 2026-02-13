@@ -27,7 +27,7 @@ const createColumns = () => [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => (
-      <Text numberOfLines={1} ellipsizeMode="tail">
+      <Text  ellipsizeMode="tail">
         {info.getValue()}
       </Text>
     ),

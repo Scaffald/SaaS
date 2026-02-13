@@ -159,7 +159,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setBio}
                 placeholder="Bio"
                 multiline
-                numberOfLines={4}
+                
               />
             </Stack>
           </Stack>

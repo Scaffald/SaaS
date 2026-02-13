@@ -336,7 +336,7 @@ export const ApplicationStatusChangeModal = ({
             value={reason}
             onChangeText={setReason}
             height={120}
-            numberOfLines={4}
+            
           />
           {isRejection && !reason.trim() && (
             <Text data-testid="reason-error" color="$red10">

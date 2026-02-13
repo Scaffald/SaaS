@@ -37,14 +37,14 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       <Stack gap={4}>
         <Row align="center" gap={8}>
           <Briefcase size="md" color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color={isSelected ? '$yellow11' : '$color12'} numberOfLines={2}>
+          <Text color={isSelected ? '$yellow11' : '$color12'} >
             {job.title}
           </Text>
         </Row>
         {job.organization_name && (
           <Row align="center" gap={6} marginLeft={24}>
-            <Building2 size={14} color="$gray11" />
-            <Text color="$gray11" numberOfLines={1}>
+            <Building2 size="md" color="$gray11" />
+            <Text color="$gray11" >
               {job.organization_name}
             </Text>
           </Row>
@@ -54,8 +54,8 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {/* Location */}
       {job.location && (
         <Row align="center" gap={6}>
-          <MapPin size={14} color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color="$gray11" numberOfLines={1}>
+          <MapPin size="md" color={isSelected ? '$yellow10' : '$color10'} />
+          <Text color="$gray11" >
             {job.location}
           </Text>
         </Row>
@@ -101,7 +101,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {/* Salary Range */}
       {salaryRange && (
         <Row align="center" gap={6}>
-          <DollarSign size={14} color={isSelected ? '$yellow10' : '$green10'} />
+          <DollarSign size="md" color={isSelected ? '$yellow10' : '$green10'} />
           <Text color="$green10">{salaryRange}</Text>
         </Row>
       )}

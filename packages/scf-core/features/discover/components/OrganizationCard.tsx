@@ -32,7 +32,7 @@ export const OrganizationCard = memo(
 
           {organization.address && (
             <Row align="center" gap={4}>
-              <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />
+              <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.address.city}
                 {organization.address.state && `, ${organization.address.state}`}
@@ -42,7 +42,7 @@ export const OrganizationCard = memo(
 
           {organization.employeeCount && (
             <Row align="center" gap={4}>
-              <Users size={14} color={isSelected ? '$color1' : '$color10'} />
+              <Users size="md" color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.employeeCount} employees
               </Text>

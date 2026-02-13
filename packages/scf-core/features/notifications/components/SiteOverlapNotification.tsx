@@ -64,13 +64,13 @@ export function SiteOverlapNotification({
             <Row gap={8} flexWrap="wrap">
               <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
                 <Row gap={8} align="center">
-                  <MapPin size={14} />
+                  <MapPin size="md" />
                   <Text>Site 1: {siteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
               <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
                 <Row gap={8} align="center">
-                  <MapPin size={14} />
+                  <MapPin size="md" />
                   <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>

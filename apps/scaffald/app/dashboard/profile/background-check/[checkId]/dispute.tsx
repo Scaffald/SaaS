@@ -47,8 +47,8 @@ export default function BackgroundCheckDisputeScreen() {
           <Stack gap={16} padding={16}>
             {checksQuery.isLoading && (
               <Stack gap={12} align="center">
-                <Spinner size="lg" color="$color11" />
-                <Text size="sm" color="$color11">
+                <Spinner size="lg" color="gray" />
+                <Text size="sm" color="gray">
                   Loading background checks…
                 </Text>
               </Stack>
@@ -62,7 +62,7 @@ export default function BackgroundCheckDisputeScreen() {
                
                 style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
-                <Text size="sm" color="$color11">
+                <Text size="sm" color="gray">
                   We couldn't load your background checks. Please try again.
                 </Text>
                 <Button
@@ -72,7 +72,7 @@ export default function BackgroundCheckDisputeScreen() {
                   onPress={() => checksQuery.refetch()}
                 >
                   <Row gap={8} align="center">
-                    <RefreshCcw size={16} />
+                    <RefreshCcw size="lg" />
                     <Text size="sm">Retry</Text>
                   </Row>
                 </Button>
@@ -87,7 +87,7 @@ export default function BackgroundCheckDisputeScreen() {
                
                 style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
-                <Text size="sm" color="$color11">
+                <Text size="sm" color="gray">
                   We couldn't find that background check or your access has expired.
                 </Text>
                 <Row gap={8}>
@@ -101,7 +101,7 @@ export default function BackgroundCheckDisputeScreen() {
                     onPress={() => checksQuery.refetch()}
                   >
                     <Row gap={8} align="center">
-                      <RefreshCcw size={16} />
+                      <RefreshCcw size="lg" />
                       <Text size="sm">Refresh</Text>
                     </Row>
                   </Button>

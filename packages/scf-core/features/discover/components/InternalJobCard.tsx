@@ -261,13 +261,13 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           <Row gap={12} flexWrap="wrap">
             {job.location && (
               <Row gap={6} align="center">
-                <MapPin size={14} color="$gray11" />
+                <MapPin size="md" color="$gray11" />
                 <Text color="$gray11">{job.location}</Text>
               </Row>
             )}
             {employmentType && (
               <Row gap={6} align="center">
-                <Briefcase size={14} color="$gray11" />
+                <Briefcase size="md" color="$gray11" />
                 <Text color="$gray11">{employmentType}</Text>
               </Row>
             )}
@@ -286,7 +286,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
         {/* Description preview */}
         {descriptionText && (
-          <Text color="$gray11" numberOfLines={2}>
+          <Text color="$gray11" >
             {descriptionText}
           </Text>
         )}
@@ -304,7 +304,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
           {postedTime && (
             <Row gap={6} align="center">
-              <Clock size={14} color="$gray11" />
+              <Clock size="md" color="$gray11" />
               <Text color="$gray11">{postedTime}</Text>
             </Row>
           )}

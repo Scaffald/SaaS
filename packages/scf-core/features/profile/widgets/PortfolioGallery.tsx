@@ -88,9 +88,9 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                       />
                     )}
                     <Stack gap={8} padding="sm">
-                      <Text numberOfLines={2}>{item.title}</Text>
+                      <Text >{item.title}</Text>
                       {item.description && variant === 'full' && (
-                        <Text color="$gray11" numberOfLines={3}>
+                        <Text color="$gray11" >
                           {/* Render rich text description - simplified for now */}
                           {typeof item.description === 'string'
                             ? item.description
@@ -99,7 +99,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                       )}
                       {imageUrl && (
                         <Row gap={8} align="center" marginTop={8}>
-                          <Eye size={14} color="$gray11" />
+                          <Eye size="md" color="$gray11" />
                           <Text color="$gray11">Click to view</Text>
                         </Row>
                       )}

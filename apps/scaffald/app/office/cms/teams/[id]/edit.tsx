@@ -38,7 +38,7 @@ export default function EditTeamPage() {
         <Text>
           Missing team identifier
         </Text>
-        <Text color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           We couldn&apos;t determine which team you want to edit.
         </Text>
         <Button onPress={() => router.back()} variant="outline">Go Back</Button>
@@ -61,7 +61,7 @@ export default function EditTeamPage() {
         <Text>
           Unable to load team
         </Text>
-        <Text color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           {error?.message ?? 'We ran into a problem retrieving this team. Please try again.'}
         </Text>
         <Row gap={8}>
@@ -128,7 +128,7 @@ export default function EditTeamPage() {
           <Button
            
             color="$color1"
-            size={12}
+            size="md"
             onPress={() => setIsInviteModalOpen(true)}
           >Invite member</Button>
         }

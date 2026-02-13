@@ -153,7 +153,7 @@ function AppCard({
         <Stack flex={1} gap={4}>
           <Text>{app.app_name}</Text>
           {app.description && (
-            <Text color="$gray11" numberOfLines={2}>
+            <Text color="$gray11" >
               {app.description}
             </Text>
           )}

@@ -51,7 +51,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
         {/* Description */}
         {employer.description && (
-          <Text color="$gray11" numberOfLines={3}>
+          <Text color="$gray11" >
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
@@ -77,7 +77,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
           {employer.website_url && (
             <Row align="center" gap={8}>
               <ExternalLink size="md" color="$gray11" />
-              <Text color="$blue10" numberOfLines={1}>
+              <Text color="$blue10" >
                 {employer.website_url.replace(/^https?:\/\//, '')}
               </Text>
             </Row>

@@ -142,7 +142,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           placeholder="Type your message..."
           value={newMessage}
           onChangeText={setNewMessage}
-          numberOfLines={4}
+          
           marginBottom={12}
         />
 

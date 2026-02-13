@@ -531,7 +531,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   <Stack gap={8}>
                     <Text>{item.title}</Text>
                     {item.description && (
-                      <Text color="$gray11" numberOfLines={3}>
+                      <Text color="$gray11" >
                         {getDescriptionPreview(item.description)}
                       </Text>
                     )}

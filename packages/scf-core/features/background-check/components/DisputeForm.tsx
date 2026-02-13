@@ -229,7 +229,7 @@ export function DisputeForm({
                   justify="space-between"
                 >
                   <Stack flex={1} gap={4}>
-                    <Text color="$gray11" numberOfLines={1}>
+                    <Text color="$gray11" >
                       {attachment.name}
                     </Text>
                     <Text color="$gray11">

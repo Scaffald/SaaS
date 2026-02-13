@@ -72,7 +72,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
             onChangeText={setDescription}
             placeholder="Enter slide description"
             disabled={isLoading}
-            numberOfLines={4}
+            
           />
         </Stack>
 

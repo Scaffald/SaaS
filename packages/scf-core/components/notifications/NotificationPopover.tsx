@@ -352,7 +352,7 @@ export function NotificationPopover({
                               <IconComponent size={18} color={iconColor} />
                               <Stack flex={1} gap={8}>
                                 <Row justify="space-between" align="flex-start" gap={8}>
-                                  <Text color="gray" flex={1} numberOfLines={1}>
+                                  <Text color="gray" flex={1} >
                                     {notification.title}
                                   </Text>
                                   <Stack
@@ -363,7 +363,7 @@ export function NotificationPopover({
                                     marginTop={4}
                                   />
                                 </Row>
-                                <Text color="gray" lineHeight={12} numberOfLines={2}>
+                                <Text color="gray" lineHeight={12} >
                                   {notification.preview}
                                 </Text>
                                 <Row gap={8} align="center" marginTop={4}>
@@ -449,10 +449,10 @@ export function NotificationPopover({
                             <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
                               <Stack flex={1} gap={8}>
-                                <Text color="gray" numberOfLines={1}>
+                                <Text color="gray" >
                                   {notification.title}
                                 </Text>
-                                <Text color="gray" lineHeight={12} numberOfLines={2}>
+                                <Text color="gray" lineHeight={12} >
                                   {notification.preview}
                                 </Text>
                                 <Row gap={8} align="center" marginTop={4}>

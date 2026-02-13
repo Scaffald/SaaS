@@ -42,7 +42,7 @@ export default function OfficeTeamSettingsPage() {
     return (
       <Stack align="center" justify="center" gap={12}>
         <Spinner size="lg" />
-        <Text color="$color11">Loading team settings…</Text>
+        <Text color="gray">Loading team settings…</Text>
       </Stack>
     )
   }
@@ -72,7 +72,7 @@ export default function OfficeTeamSettingsPage() {
       <Stack gap={24} padding={16}>
         <Row>
           <Button
-            size={8}
+            size="md"
             variant="outline"
             icon={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
@@ -88,7 +88,7 @@ export default function OfficeTeamSettingsPage() {
             gap={8}
           >
             <Text>Archived team</Text>
-            <Text color="$color11">
+            <Text color="gray">
               This team has been archived. Update its settings after restoring the team.
             </Text>
           </Card>
@@ -129,7 +129,7 @@ function CenteredMessage({
         <Text>
           {title}
         </Text>
-        <Text color="$color11">{description}</Text>
+        <Text color="gray">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
     </Stack>

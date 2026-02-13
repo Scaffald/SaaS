@@ -153,7 +153,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     gap={8}
                     align="center"
                   >
-                    <Briefcase size={14} color="$blue10" />
+                    <Briefcase size="md" color="$blue10" />
                     <Text color="$blue11">{formatEmploymentType(job.employment_type ?? null)}</Text>
                   </Row>
                 )}
@@ -166,7 +166,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     gap={8}
                     align="center"
                   >
-                    <MapPin size={14} color="$green10" />
+                    <MapPin size="md" color="$green10" />
                     <Text color="$green11">{formatRemoteOption(job.remote_option ?? null)}</Text>
                   </Row>
                 )}

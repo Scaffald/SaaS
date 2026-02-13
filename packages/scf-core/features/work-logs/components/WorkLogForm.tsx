@@ -204,7 +204,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   {...field}
                   placeholder="Describe the work that was completed during this period"
                   multiline
-                  numberOfLines={4}
+                  
                   textAlignVertical="top"
                 />
               )}

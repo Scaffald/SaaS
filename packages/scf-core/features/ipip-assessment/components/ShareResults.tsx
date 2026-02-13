@@ -287,7 +287,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
               flex={1}
               style={{ fontFamily: 'monospace' }}
               color="$gray11"
-              numberOfLines={1}
+              
               data-testid="share-link-url"
             >
               {shareLink}

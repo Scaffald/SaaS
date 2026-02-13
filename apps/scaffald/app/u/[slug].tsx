@@ -103,7 +103,7 @@ export default function PublicUserProfilePage() {
         leftContent={
           <Stack align="center" justify="center" style={{ minHeight: 400 }}>
             <Spinner size="lg" />
-            <Text color="$color10">
+            <Text color="gray">
               Loading profile...
             </Text>
           </Stack>
@@ -120,10 +120,10 @@ export default function PublicUserProfilePage() {
         breadcrumbItems={breadcrumbItems}
         leftContent={
           <Stack align="center" justify="center" style={{ minHeight: 400 }} gap={16}>
-            <Text color="$color11">
+            <Text color="gray">
               Profile Not Found
             </Text>
-            <Text color="$color10" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               The profile you're looking for doesn't exist or has been removed.
             </Text>
           </Stack>

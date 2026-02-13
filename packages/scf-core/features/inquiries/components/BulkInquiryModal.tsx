@@ -401,7 +401,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                             placeholder="Add any additional information or requirements..."
                             value={field.value || ''}
                             onChangeText={field.onChange}
-                            numberOfLines={4}
+                            
                             height={120}
                           />
                         )}

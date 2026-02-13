@@ -474,7 +474,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Separator />
               <Stack gap={8}>
                 <Text color="$gray11">About</Text>
-                <Text color="$gray11" lineHeight={4} numberOfLines={4}>
+                <Text color="$gray11" lineHeight={4} >
                   {profile.bio}
                 </Text>
               </Stack>

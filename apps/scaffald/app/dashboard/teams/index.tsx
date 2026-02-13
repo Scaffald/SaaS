@@ -24,13 +24,13 @@ export default function DashboardTeamsIndexPage() {
           <Text>
             Teams
           </Text>
-          <Text color="$color11">
+          <Text color="gray">
             View the teams you collaborate with and access shared hiring workspaces.
           </Text>
         </Stack>
         <Button
           variant="outline"
-          size={12}
+          size="md"
           onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
         >
           Manage invitations
@@ -40,7 +40,7 @@ export default function DashboardTeamsIndexPage() {
       {isLoading || isRefetching ? (
         <Stack align="center" justify="center" gap={8}>
           <Spinner size="lg" />
-          <Text color="$color11">Loading your teams…</Text>
+          <Text color="gray">Loading your teams…</Text>
         </Stack>
       ) : error ? (
         <Stack
@@ -51,13 +51,13 @@ export default function DashboardTeamsIndexPage() {
           padding={16}
          
         >
-          <Text color="$red11">
+          <Text color="red">
             Unable to load teams
           </Text>
-          <Text color="$red10">
+          <Text color="red">
             {error.message ?? 'An unexpected error occurred while loading your teams.'}
           </Text>
-          <Button size={12} onPress={() => refetch()}>
+          <Button size="md" onPress={() => refetch()}>
             Try again
           </Button>
         </Stack>
@@ -71,12 +71,12 @@ export default function DashboardTeamsIndexPage() {
          
         >
           <Text>No teams yet</Text>
-          <Text color="$color11">
+          <Text color="gray">
             You&apos;re not part of any teams yet. Accept invitations from your inbox or reach out
             to an administrator to be added.
           </Text>
           <Button
-            size={12}
+            size="md"
             variant="outline"
             onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
           >
@@ -99,27 +99,27 @@ export default function DashboardTeamsIndexPage() {
                   </Text>
                 </Row>
                 {team.description ? (
-                  <Text color="$color11">{team.description}</Text>
+                  <Text color="gray">{team.description}</Text>
                 ) : (
-                  <Text color="$color11">No description provided for this team.</Text>
+                  <Text color="gray">No description provided for this team.</Text>
                 )}
                 <Row gap={12} align="center">
-                  <Text color="$color10">
+                  <Text color="gray">
                     {formattedPurpose}
                   </Text>
-                  <Text color="$color10">
+                  <Text color="gray">
                     Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
                   </Text>
                 </Row>
                 <Row gap={8}>
                   <Button
-                    size={12}
+                    size="md"
                     onPress={() => router.push(RouteBuilder.dashboardTeamDetail(team.id))}
                   >
                     Open team
                   </Button>
                   <Button
-                    size={12}
+                    size="md"
                     variant="outline"
                     onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
                   >

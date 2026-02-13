@@ -257,7 +257,7 @@ export function VanityUrlSection() {
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text flex={1} style={{ fontFamily: 'monospace' }} color="$gray11" numberOfLines={1}>
+              <Text flex={1} style={{ fontFamily: 'monospace' }} color="$gray11" >
                 {typeof window !== 'undefined' && window.location
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}

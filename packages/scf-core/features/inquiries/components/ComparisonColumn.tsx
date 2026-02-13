@@ -251,13 +251,13 @@ export function ComparisonColumn({
         />
         {getSectionStatus('employment').accepted && (
           <Row align="center" gap={4} marginTop={4}>
-            <Check size={14} color="$green11" />
+            <Check size="md" color="$green11" />
             <Text color="$green11">Accepted</Text>
           </Row>
         )}
         {getCommentCount('employment') > 0 && (
           <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size={14} color="$blue11" />
+            <MessageSquare size="md" color="$blue11" />
             <Text color="$blue11">
               {getCommentCount('employment')} comment
               {getCommentCount('employment') !== 1 ? 's' : ''}
@@ -281,13 +281,13 @@ export function ComparisonColumn({
         />
         {getSectionStatus('compensation').accepted && (
           <Row align="center" gap={4} marginTop={4}>
-            <Check size={14} color="$green11" />
+            <Check size="md" color="$green11" />
             <Text color="$green11">Accepted</Text>
           </Row>
         )}
         {getCommentCount('compensation') > 0 && (
           <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size={14} color="$blue11" />
+            <MessageSquare size="md" color="$blue11" />
             <Text color="$blue11">
               {getCommentCount('compensation')} comment
               {getCommentCount('compensation') !== 1 ? 's' : ''}
@@ -314,13 +314,13 @@ export function ComparisonColumn({
           ))}
           {getSectionStatus('capabilities').accepted && (
             <Row align="center" gap={4} marginTop={4}>
-              <Check size={14} color="$green11" />
+              <Check size="md" color="$green11" />
               <Text color="$green11">Accepted</Text>
             </Row>
           )}
           {getCommentCount('capabilities') > 0 && (
             <Row align="center" gap={4} marginTop={4}>
-              <MessageSquare size={14} color="$blue11" />
+              <MessageSquare size="md" color="$blue11" />
               <Text color="$blue11">
                 {getCommentCount('capabilities')} comment
                 {getCommentCount('capabilities') !== 1 ? 's' : ''}

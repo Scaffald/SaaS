@@ -41,7 +41,7 @@ function ResumeImportContent() {
         <Text size="xl" weight="bold">
           Import Your Resume
         </Text>
-        <Paragraph size="md" color="$color11">
+        <Paragraph size="md" color="gray">
           Upload a PDF or Word document (max 1MB) to automatically populate your experience,
           education, skills, and preferences. You'll confirm everything before it's saved to your
           profile.
@@ -51,7 +51,7 @@ function ResumeImportContent() {
       {isLoading ? (
         <Stack gap={8} align="center">
           <Spinner size="lg" />
-          <Text color="$color11">Checking for existing uploads...</Text>
+          <Text color="gray">Checking for existing uploads...</Text>
         </Stack>
       ) : hasUploaded ? (
         <Stack gap={12} padding={16}>
@@ -81,7 +81,7 @@ function ResumeImportContent() {
       ) : (
         <Stack gap={12}>
           <ResumeUploadButton onPress={() => setModalOpen(true)} size="md" />
-          <Text color="$color11">Or use the dashboard widget to import from your home screen:</Text>
+          <Text color="gray">Or use the dashboard widget to import from your home screen:</Text>
           <ResumeImportWidget />
         </Stack>
       )}

@@ -104,9 +104,9 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 {syncStatus === 'syncing' ? (
                   <Spinner size="sm" color="$blue10" />
                 ) : syncStatus === 'error' ? (
-                  <AlertTriangle size={14} color="$red10" />
+                  <AlertTriangle size="md" color="$red10" />
                 ) : (
-                  <CheckCircle size={14} color="$green10" />
+                  <CheckCircle size="md" color="$green10" />
                 )}
                 <Text
                   color={

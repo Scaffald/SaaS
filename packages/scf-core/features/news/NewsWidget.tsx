@@ -501,7 +501,7 @@ export function NewsWidget({
                   style={{ borderRadius: 12 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text color="$gray11" flex={1} numberOfLines={2}>
+                    <Text color="$gray11" flex={1} >
                       {item.title}
                     </Text>
                     <ExternalLink size="md" color="$gray11" />

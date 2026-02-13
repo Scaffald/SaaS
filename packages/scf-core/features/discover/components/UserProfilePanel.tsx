@@ -133,18 +133,18 @@ export function UserProfilePanel({
 
             {/* Name and Title */}
             <Stack flex={1} gap={4}>
-              <Text color="$gray11" numberOfLines={1}>
+              <Text color="$gray11" >
                 {preview.displayName}
               </Text>
               {preview.headline && (
-                <Text color="$gray11" numberOfLines={2}>
+                <Text color="$gray11" >
                   {preview.headline}
                 </Text>
               )}
               {preview.location && (
                 <Row gap={4} align="center" marginTop={4}>
-                  <MapPin size={14} color="$gray11" />
-                  <Text color="$gray11" numberOfLines={1}>
+                  <MapPin size="md" color="$gray11" />
+                  <Text color="$gray11" >
                     {preview.location}
                   </Text>
                 </Row>

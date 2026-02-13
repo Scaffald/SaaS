@@ -29,7 +29,7 @@ export default function EditUserPage() {
             <H2>Edit User Profile</H2>
             <Button onPress={() => router.back()} variant="outline">Back to Users</Button>
           </Row>
-          <Text color="$color11">
+          <Text color="gray">
             Comprehensive user profile management with all profile sections.
           </Text>
           <Separator />

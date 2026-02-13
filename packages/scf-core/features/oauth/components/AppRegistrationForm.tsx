@@ -137,7 +137,7 @@ export function AppRegistrationForm() {
                 onChangeText={setDescription}
                 placeholder="Brief description of your application"
                 multiline
-                numberOfLines={3}
+                
                 maxLength={500}
               />
             </Stack>

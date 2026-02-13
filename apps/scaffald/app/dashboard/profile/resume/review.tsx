@@ -30,7 +30,7 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
         <Text size="lg" weight="bold">
           Resume not found
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           We couldn't locate a resume session. Upload a resume to begin the review process.
         </Text>
         <Button

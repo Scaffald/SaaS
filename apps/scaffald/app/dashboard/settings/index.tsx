@@ -291,7 +291,7 @@ export default function NotificationsCenterScreen() {
           <Text>
             Notifications
           </Text>
-          <Text color="$color10">
+          <Text color="gray">
             Stay up to date with applications, opportunities, and platform updates.
           </Text>
         </Stack>
@@ -309,13 +309,13 @@ export default function NotificationsCenterScreen() {
               <Text>
                 Preferences
               </Text>
-              <Text color="$color10">
+              <Text color="gray">
                 Control how and when we reach you.
               </Text>
             </Stack>
             <Button
               variant="filled"
-              size={8}
+              size="md"
               disabled={savePreferencesMutation.isPending}
               onPress={handleSavePreferences}
             >
@@ -328,7 +328,7 @@ export default function NotificationsCenterScreen() {
           <Stack gap={12}>
             <Row align="center" justify="space-between">
               <Label
-                color="$color12"
+                color="gray"
                
                 onPress={() =>
                   setPreferences((prev) => ({
@@ -359,7 +359,7 @@ export default function NotificationsCenterScreen() {
               ).map(({ key, label }) => (
                 <Row key={key} align="center" justify="space-between">
                   <Label
-                    color="$color11"
+                    color="gray"
                     onPress={() =>
                       setPreferences((prev) => ({
                         ...prev,
@@ -389,10 +389,10 @@ export default function NotificationsCenterScreen() {
             <Separator />
 
             <Stack gap={8}>
-              <Text color="$color12">
+              <Text color="gray">
                 Quiet hours
               </Text>
-              <Text color="$color10">
+              <Text color="gray">
                 We’ll queue non-critical alerts during these hours.
               </Text>
               <Row gap={8} align="center">
@@ -407,7 +407,7 @@ export default function NotificationsCenterScreen() {
                   }
                  
                 />
-                <Text color="$color11">to</Text>
+                <Text color="gray">to</Text>
                 <Input
                   placeholder="07:00"
                   value={preferences.quietHours?.end ?? ''}
@@ -420,7 +420,7 @@ export default function NotificationsCenterScreen() {
                  
                 />
                 <Button
-                  size={8}
+                  size="md"
                   onPress={() => setPreferences((prev) => ({ ...prev, quietHours: null }))}
                 >
                   Clear
@@ -431,7 +431,7 @@ export default function NotificationsCenterScreen() {
             <Separator />
 
             <Stack gap={8}>
-              <Text color="$color12">
+              <Text color="gray">
                 Digest frequency
               </Text>
               <Row gap={8}>
@@ -448,7 +448,7 @@ export default function NotificationsCenterScreen() {
                   return (
                     <Button
                       key={option.value}
-                      size={8}
+                      size="md"
                       color={isSelected ? 'blue' : 'gray'}
                       {...(!isSelected ? { variant: 'outlined' as const } : {})}
                       onPress={() =>
@@ -466,12 +466,12 @@ export default function NotificationsCenterScreen() {
             </Stack>
 
             {savePreferencesMutation.isSuccess && (
-              <Text color="$green10">
+              <Text color="green">
                 Preferences saved.
               </Text>
             )}
             {savePreferencesMutation.isError && (
-              <Text color="$red10">
+              <Text color="red">
                 Failed to save preferences.
               </Text>
             )}
@@ -480,18 +480,18 @@ export default function NotificationsCenterScreen() {
           <Separator />
 
           <Stack gap={8}>
-            <Text color="$color12">
+            <Text color="gray">
               Registered devices
             </Text>
             {devicesQuery.isLoading ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" color="$color10" />
-                <Text color="$color10">
+                <Spinner size="sm" color="gray" />
+                <Text color="gray">
                   Checking devices…
                 </Text>
               </Row>
             ) : deviceRows.length === 0 ? (
-              <Text color="$color10">
+              <Text color="gray">
                 No devices registered yet.
               </Text>
             ) : (
@@ -519,13 +519,13 @@ export default function NotificationsCenterScreen() {
                    
                     gap={8}
                   >
-                    <Text color="$color11">
+                    <Text color="gray">
                       {device.token}
                     </Text>
-                    <Text color="$color11">
+                    <Text color="gray">
                       {device.platform}
                     </Text>
-                    <Text color="$color10">
+                    <Text color="gray">
                       {formatDate(
                         device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
                       )}
@@ -564,16 +564,16 @@ export default function NotificationsCenterScreen() {
 
         {notificationsQuery.isLoading ? (
           <Stack gap={12} align="center">
-            <Spinner size="lg" color="$color10" />
-            <Text color="$color11">Loading notifications…</Text>
+            <Spinner size="lg" color="gray" />
+            <Text color="gray">Loading notifications…</Text>
           </Stack>
         ) : isEmpty ? (
           <Stack gap={12} align="center">
             <Info size={48} color="$color8" />
-            <Text color="$color12">
+            <Text color="gray">
               You're all caught up!
             </Text>
-            <Text color="$color10">
+            <Text color="gray">
               New alerts will show up here when there's something you need to review.
             </Text>
           </Stack>
@@ -598,7 +598,7 @@ export default function NotificationsCenterScreen() {
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
                     <Stack gap={8}>
                       <Row justify="space-between" align="center">
-                        <Text color="$color12">
+                        <Text color="gray">
                           {notification.title}
                         </Text>
                         <NotificationTag
@@ -609,11 +609,11 @@ export default function NotificationsCenterScreen() {
                           {notification.severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text color="$color11">
+                      <Text color="gray">
                         {notification.preview}
                       </Text>
                       <Row gap={12} align="center">
-                        <Text color="$color10">
+                        <Text color="gray">
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
                         {notification.channels.length > 0 && (
@@ -647,7 +647,7 @@ export default function NotificationsCenterScreen() {
                     <Row padding={12} gap={12} justify="flex-end">
                       {!notification.read ? (
                         <Button
-                          size={8}
+                          size="md"
                           theme="info"
                           onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
                         >
@@ -655,7 +655,7 @@ export default function NotificationsCenterScreen() {
                         </Button>
                       ) : (
                         <Button
-                          size={8}
+                          size="md"
                           theme="gray"
                           onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
                         >
@@ -665,7 +665,7 @@ export default function NotificationsCenterScreen() {
 
                       {filter === 'archived' ? (
                         <Button
-                          size={8}
+                          size="md"
                           theme="success"
                           onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
                         >
@@ -673,7 +673,7 @@ export default function NotificationsCenterScreen() {
                         </Button>
                       ) : (
                         <Button
-                          size={8}
+                          size="md"
                           theme="gray"
                           onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
                         >
@@ -682,12 +682,12 @@ export default function NotificationsCenterScreen() {
                       )}
 
                       {notification.ctaUrl && (
-                        <Button size={8} theme="info" onPress={() => handleNavigate(notification)}>
+                        <Button size="md" theme="info" onPress={() => handleNavigate(notification)}>
                           <Row gap={8} align="center">
-                            <Text color="$color12">
+                            <Text color="gray">
                               {notification.ctaLabel ?? 'Open'}
                             </Text>
-                            <ExternalLink size={16} color="#ffffff" />
+                            <ExternalLink size="lg" color="#ffffff" />
                           </Row>
                         </Button>
                       )}

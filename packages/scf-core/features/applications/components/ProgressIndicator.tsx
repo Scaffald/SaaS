@@ -118,7 +118,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 }
                 textAlign="center"
                 maxWidth={100}
-                numberOfLines={1}
+                
                 ellipsizeMode="tail"
               >
                 {step.label}

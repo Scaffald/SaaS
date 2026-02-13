@@ -163,18 +163,18 @@ export default function OnboardingPage() {
          
         >
           <Stack gap={spacing.xs}>
-            <Text color="$color12">
+            <Text color="gray">
               Complete Your Profile
             </Text>
-            <Text color="$color11">
+            <Text color="gray">
               Please complete these required fields to continue using Scaffald
             </Text>
           </Stack>
 
           {isCheckingStatus ? (
             <Stack gap={spacing.sm} align="center">
-              <Spinner size="lg" color="$blue7" />
-              <Text color="$color11">Loading...</Text>
+              <Spinner size="lg" color="blue" />
+              <Text color="gray">Loading...</Text>
             </Stack>
           ) : (
             <>
@@ -196,7 +196,7 @@ export default function OnboardingPage() {
                       )}
                     />
                     {errors.first_name && (
-                      <Text color="$red10">
+                      <Text color="red">
                         {errors.first_name.message}
                       </Text>
                     )}
@@ -217,7 +217,7 @@ export default function OnboardingPage() {
                       )}
                     />
                     {errors.last_name && (
-                      <Text color="$red10">
+                      <Text color="red">
                         {errors.last_name.message}
                       </Text>
                     )}
@@ -230,7 +230,7 @@ export default function OnboardingPage() {
               {/* 2. Address */}
               <Stack gap={12}>
                 <Text>Address *</Text>
-                <Text color="$color11">
+                <Text color="gray">
                   Search and select your home address
                 </Text>
                 <ControlledAddressForm
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
                   error={errors.address?.street?.message || errors.address?.city?.message}
                 />
                 {errors.address && (
-                  <Text color="$red10">
+                  <Text color="red">
                     {errors.address.street?.message ||
                       errors.address.city?.message ||
                       errors.address.state?.message ||
@@ -302,7 +302,7 @@ export default function OnboardingPage() {
                   )}
                 />
                 {errors.user_types && (
-                  <Text color="$red10">
+                  <Text color="red">
                     {errors.user_types.message}
                   </Text>
                 )}
@@ -321,7 +321,7 @@ export default function OnboardingPage() {
                       {isLoadingIndustries ? (
                         <Row gap={8} align="center">
                           <Spinner size="sm" />
-                          <Text color="$color11">Loading industries...</Text>
+                          <Text color="gray">Loading industries...</Text>
                         </Row>
                       ) : industriesData?.data && industriesData.data.length > 0 ? (
                         <ResponsiveSelect
@@ -336,7 +336,7 @@ export default function OnboardingPage() {
                           )}
                         />
                       ) : (
-                        <Text color="$color11">
+                        <Text color="gray">
                           No industries available
                         </Text>
                       )}
@@ -344,7 +344,7 @@ export default function OnboardingPage() {
                   )}
                 />
                 {errors.industry_id && (
-                  <Text color="$red10">
+                  <Text color="red">
                     {errors.industry_id.message}
                   </Text>
                 )}
@@ -385,7 +385,7 @@ export default function OnboardingPage() {
                           <Text nativeID="checkbox-legal-privacy-policy-label">
                             I accept the{' '}
                             <Text
-                              color="$blue7"
+                              color="blue"
                              
                               onPress={(event) => {
                                 event.stopPropagation?.()
@@ -400,7 +400,7 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_privacy_policy && (
-                        <Text color="$red10">
+                        <Text color="red">
                           {errors.accepts_privacy_policy.message}
                         </Text>
                       )}
@@ -437,7 +437,7 @@ export default function OnboardingPage() {
                           <Text nativeID="checkbox-legal-terms-of-service-label">
                             I accept the{' '}
                             <Text
-                              color="$blue7"
+                              color="blue"
                              
                               onPress={(event) => {
                                 event.stopPropagation?.()
@@ -452,7 +452,7 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_terms_of_service && (
-                        <Text color="$red10">
+                        <Text color="red">
                           {errors.accepts_terms_of_service.message}
                         </Text>
                       )}

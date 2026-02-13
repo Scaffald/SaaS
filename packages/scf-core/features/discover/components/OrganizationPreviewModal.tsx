@@ -159,7 +159,7 @@ export function OrganizationPreviewModal({
               <Separator />
               <Stack gap={8}>
                 <Text color="$gray11">About</Text>
-                <Text color="$gray11" lineHeight={4} numberOfLines={4}>
+                <Text color="$gray11" lineHeight={4} >
                   {typeof organization.description === 'string'
                     ? organization.description
                     : extractPlainText(organization.description as JSONContent)}

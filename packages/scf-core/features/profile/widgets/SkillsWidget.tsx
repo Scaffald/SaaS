@@ -276,7 +276,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                           gap={8}
                           align="center"
                         >
-                          {skill.verified && <CheckCircle size={14} color="$blue11" />}
+                          {skill.verified && <CheckCircle size="md" color="$blue11" />}
                           <Stack gap={2}>
                             <Text color="$blue11">{skill.name}</Text>
                             {!showCompact && (

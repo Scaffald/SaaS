@@ -384,7 +384,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           )}
           {commentCount > 0 && (
             <Row align="center" gap={4}>
-              <MessageSquare size={14} color="$gray11" />
+              <MessageSquare size="md" color="$gray11" />
               <Text color="$gray11">{commentCount}</Text>
             </Row>
           )}

@@ -78,7 +78,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             </Row>
             {check.expires_at && (
               <Row align="center" gap={8}>
-                {expirationWarning && <AlertTriangle size={14} color="$yellow10" />}
+                {expirationWarning && <AlertTriangle size="md" color="$yellow10" />}
                 <Text color={expirationWarning ? '$yellow10' : '$color10'}>
                   {expired
                     ? `Expired ${formatDate(check.expires_at)}`

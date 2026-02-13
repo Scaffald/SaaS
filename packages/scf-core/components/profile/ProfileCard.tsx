@@ -90,7 +90,7 @@ export const ProfileCard = memo(
       if (experienceYears) {
         metadataItems.push({
           key: 'experience',
-          icon: <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Clock3 size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: `${experienceYears} years`,
         })
       }
@@ -98,7 +98,7 @@ export const ProfileCard = memo(
       if (hourlyRate) {
         metadataItems.push({
           key: 'rate',
-          icon: <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <DollarSign size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: `$${hourlyRate}/hr`,
         })
       }
@@ -106,7 +106,7 @@ export const ProfileCard = memo(
       if (locationLabel) {
         metadataItems.push({
           key: 'location',
-          icon: <Award size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Award size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: locationLabel,
         })
       }
@@ -120,9 +120,9 @@ export const ProfileCard = memo(
           badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
         icon:
           badge.tone === 'success' ? (
-            <BadgeCheck size={12} color="$green11" />
+            <BadgeCheck size="sm" color="$green11" />
           ) : (
-            <Award size={12} color={badge.tone === 'warning' ? '$yellow11' : '$red11'} />
+            <Award size="sm" color={badge.tone === 'warning' ? '$yellow11' : '$red11'} />
           ),
       }))
 
@@ -188,7 +188,7 @@ export const ProfileCard = memo(
                 paddingHorizontal={8}
                 paddingVertical={4}
               >
-                <Star size={12} color="$blue11" />
+                <Star size="sm" color="$blue11" />
                 <Text color="$blue11">{score}</Text>
               </Row>
             )}
@@ -196,7 +196,7 @@ export const ProfileCard = memo(
 
           {/* Title/Role */}
           <Paragraph
-            size={12}
+            size="sm"
             color={isSelected ? '$color1' : '$color11'}
             numberOfLines={titleNumberOfLines}
           >

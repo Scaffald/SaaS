@@ -80,7 +80,7 @@ export function OfficeViolationReports() {
       }),
       columnHelper.accessor('description', {
         header: 'Description',
-        cell: (info) => <Text numberOfLines={2}>{info.getValue()}</Text>,
+        cell: (info) => <Text >{info.getValue()}</Text>,
       }),
       columnHelper.accessor('status', {
         header: 'Status',

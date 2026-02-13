@@ -83,7 +83,7 @@ export default function TeamAnalyticsPage() {
     return (
       <Stack align="center" justify="center" gap={12}>
         <Spinner size="lg" />
-        <Text color="$color11">Loading team analytics…</Text>
+        <Text color="gray">Loading team analytics…</Text>
       </Stack>
     )
   }
@@ -109,7 +109,7 @@ export default function TeamAnalyticsPage() {
         <Row justify="space-between" align="center" gap={12}>
           <Row gap={8} align="center">
             <Button
-              size={8}
+              size="md"
               variant="outline"
               icon={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
@@ -120,7 +120,7 @@ export default function TeamAnalyticsPage() {
                 <Text>
                   {team.name ?? 'Team analytics'}
                 </Text>
-                <Text color="$color10">
+                <Text color="gray">
                   Insights for collaboration, hiring throughput, and workload.
                 </Text>
               </Stack>
@@ -128,7 +128,7 @@ export default function TeamAnalyticsPage() {
           </Row>
 
           <Button
-            size={8}
+            size="md"
             variant="outline"
             onPress={() => router.push(RouteBuilder.officeTeamsSettings(team.id))}
           >Team settings</Button>
@@ -171,7 +171,7 @@ function FallbackCard({
         <Text>
           {title}
         </Text>
-        <Text color="$color11">{description}</Text>
+        <Text color="gray">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
     </Stack>

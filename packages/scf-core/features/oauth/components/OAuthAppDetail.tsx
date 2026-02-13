@@ -405,7 +405,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                   onChangeText={setRejectReason}
                   placeholder="e.g., Does not meet security requirements"
                   multiline
-                  numberOfLines={3}
+                  
                 />
               </Stack>
 

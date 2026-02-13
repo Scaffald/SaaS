@@ -16,7 +16,7 @@ export default function DashboardOrganizationsPage() {
       <OrganizationSettingsPanel organizationId={organizationId} />
     </Stack>
   ) : (
-    <Paragraph color="$color11">
+    <Paragraph color="gray">
       ResponsiveSelect an organization to manage from the sidebar. Once selected, you can invite members,
       upload documents, and update compliance settings from this page.
     </Paragraph>
@@ -28,11 +28,11 @@ export default function DashboardOrganizationsPage() {
       leftContent={mainContent}
       rightContent={
         <Stack gap={12}>
-          <Paragraph color="$color11">
+          <Paragraph color="gray">
             Use the organization menu to switch between teams you manage. The members panel shows
             current collaborators and pending invitations.
           </Paragraph>
-          <Paragraph color="$color11">
+          <Paragraph color="gray">
             Document uploads respect storage limits—check the storage widget in settings for usage
             details.
           </Paragraph>

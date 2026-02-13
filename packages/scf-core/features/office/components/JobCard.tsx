@@ -70,14 +70,14 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         <Stack gap={8} flex={1}>
           <Row align="center" gap={8} flexWrap="wrap">
             <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
-            <Text color={isSelected ? '$yellow11' : '$color12'} numberOfLines={2} flex={1}>
+            <Text color={isSelected ? '$yellow11' : '$color12'}  flex={1}>
               {job.title}
             </Text>
           </Row>
           {job.organization && (
             <Row align="center" gap={6} marginLeft="$7">
-              <Building2 size={14} color="$gray11" />
-              <Text color="$gray11" numberOfLines={1}>
+              <Building2 size="md" color="$gray11" />
+              <Text color="$gray11" >
                 {job.organization.name}
               </Text>
             </Row>
@@ -101,18 +101,18 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} flexWrap="wrap">
         {applicationCount !== undefined && (
           <MetricItem
-            icon={<Users size={14} />}
+            icon={<Users size="md" />}
             label="Applications"
             value={applicationCount.toString()}
           />
         )}
-        {teamName && <MetricItem icon={<Briefcase size={14} />} label="Team" value={teamName} />}
+        {teamName && <MetricItem icon={<Briefcase size="md" />} label="Team" value={teamName} />}
         {postedDate && (
-          <MetricItem icon={<Calendar size={14} />} label="Posted" value={postedDate} />
+          <MetricItem icon={<Calendar size="md" />} label="Posted" value={postedDate} />
         )}
         {job.created_by && (
           <MetricItem
-            icon={<User size={14} />}
+            icon={<User size="md" />}
             label="Created by"
             value={job.created_by.display_name || job.created_by.username || 'Unknown'}
           />
@@ -123,8 +123,8 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} flexWrap="wrap">
         {job.location && (
           <Row align="center" gap={6}>
-            <MapPin size={14} color="$gray11" />
-            <Text color="$gray11" numberOfLines={1}>
+            <MapPin size="md" color="$gray11" />
+            <Text color="$gray11" >
               {job.location}
             </Text>
           </Row>
@@ -156,7 +156,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Pay Range */}
       {payRange && (
         <Row align="center" gap={6}>
-          <DollarSign size={14} color="$green10" />
+          <DollarSign size="md" color="$green10" />
           <Text color="$green10">{payRange}</Text>
         </Row>
       )}

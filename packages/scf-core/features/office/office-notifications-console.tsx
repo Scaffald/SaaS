@@ -157,14 +157,14 @@ export function OfficeNotificationsConsole() {
                   <Row gap={12} align="center">
                     <Stack flex={2} gap={4}>
                       <Row gap={8} align="center">
-                        <Text color="$gray11" numberOfLines={1}>
+                        <Text color="$gray11" >
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
                         <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text color="$gray11" numberOfLines={2}>
+                      <Text color="$gray11" >
                         {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
                     </Stack>
@@ -183,7 +183,7 @@ export function OfficeNotificationsConsole() {
                     <Text flex={1} color="$gray11">
                       {delivery.attempts}
                     </Text>
-                    <Text flex={2} color="$gray11" numberOfLines={1}>
+                    <Text flex={2} color="$gray11" >
                       {delivery.last_error ?? '—'}
                     </Text>
                     <Text flex={1} color="$gray11">
@@ -242,7 +242,7 @@ export function OfficeNotificationsConsole() {
                 backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                 align="flex-start"
               >
-                <Text flex={1} color="$gray11" numberOfLines={1}>
+                <Text flex={1} color="$gray11" >
                   {item.user_id}
                 </Text>
                 <Text flex={1} color="$gray11">

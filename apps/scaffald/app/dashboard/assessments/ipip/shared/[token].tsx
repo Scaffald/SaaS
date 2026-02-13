@@ -55,7 +55,7 @@ export default function SharedIPIPResultsRoute() {
   if (isLoading) {
     return (
       <Stack gap={16} padding={32} align="center">
-        <Text color="$color11">
+        <Text color="gray">
           Loading shared results...
         </Text>
       </Stack>
@@ -65,10 +65,10 @@ export default function SharedIPIPResultsRoute() {
   if (error || !sharedResults) {
     return (
       <Stack gap={16} padding={32} align="center">
-        <Text color="$red10" style={{ fontWeight: '600' }}>
+        <Text color="red" style={{ fontWeight: '600' }}>
           {error?.message || 'Results Not Found'}
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           This share link may be invalid, expired, or revoked.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
@@ -80,10 +80,10 @@ export default function SharedIPIPResultsRoute() {
     <Stack gap={24} width="100%" padding={16} style={{ alignSelf: 'center', maxWidth: 1000 }}>
       {/* Header */}
       <Stack gap={8}>
-        <Text style={{ fontWeight: 'bold' }} color="$color12">
+        <Text style={{ fontWeight: 'bold' }} color="gray">
           Shared Personality Results
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Viewing shared Big Five personality assessment results.
         </Text>
       </Stack>
@@ -130,7 +130,7 @@ export default function SharedIPIPResultsRoute() {
               />
             ) : (
               <Stack align="center" padding={16}>
-                <Text color="$color11">
+                <Text color="gray">
                   Processing results...
                 </Text>
               </Stack>
@@ -164,7 +164,7 @@ export default function SharedIPIPResultsRoute() {
               />
             ) : (
               <Stack align="center" padding={16}>
-                <Text color="$color11">
+                <Text color="gray">
                   Processing results...
                 </Text>
               </Stack>

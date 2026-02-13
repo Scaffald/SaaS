@@ -718,7 +718,7 @@ export function WorkLogDetailScreen() {
               <Text>Add message</Text>
               <Input
                 multiline
-                numberOfLines={4}
+                
                 value={commentDraft}
                 onChangeText={setCommentDraft}
                 placeholder="Share an update or ask a question…"

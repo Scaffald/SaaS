@@ -251,7 +251,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           </Row>
                           {version.selfAssessedAt && (
                             <Row gap={8} align="center">
-                              <Calendar size={14} color="$gray11" />
+                              <Calendar size="md" color="$gray11" />
                               <Text color="$gray11">
                                 {formatDate(version.selfAssessedAt)}
                                 {daysAgo && ` • ${daysAgo}`}

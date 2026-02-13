@@ -149,7 +149,7 @@ export default function DashboardTeamDetailPage() {
   const overviewActions = (
     <Row gap={8}>
       <Button
-        size={8}
+        size="md"
         variant="outline"
         icon={RefreshCw}
         onPress={handleRefresh}
@@ -158,7 +158,7 @@ export default function DashboardTeamDetailPage() {
         Refresh
       </Button>
       <Button
-        size={8}
+        size="md"
        
         color="$color1"
         icon={UserPlus}
@@ -172,7 +172,7 @@ export default function DashboardTeamDetailPage() {
   const mainContent = isLoading ? (
     <Stack align="center" justify="center" gap={8}>
       <Spinner size="lg" />
-      <Text color="$color11">Loading team details…</Text>
+      <Text color="gray">Loading team details…</Text>
     </Stack>
   ) : hasError ? (
     <ErrorCard
@@ -249,7 +249,7 @@ export default function DashboardTeamDetailPage() {
           refreshKey={invitationRefreshKey}
           headerAction={
             <Button
-              size={8}
+              size="md"
              
               color="$color1"
               icon={UserPlus}
@@ -320,8 +320,8 @@ function ErrorCard({
           {title}
         </Text>
       </Row>
-      <Text color="$color11">{message}</Text>
-      <Button size={12} onPress={onAction}>
+      <Text color="gray">{message}</Text>
+      <Button size="md" onPress={onAction}>
         {actionLabel}
       </Button>
     </Card>

@@ -15,7 +15,7 @@ export default function OfficeApplicationInquiryRoute() {
   if (!enabled) {
     return (
       <Stack align="center" justify="center" padding={16}>
-        <Text color="$color11">Missing application ID</Text>
+        <Text color="gray">Missing application ID</Text>
       </Stack>
     )
   }
@@ -32,7 +32,7 @@ export default function OfficeApplicationInquiryRoute() {
   if (error || !data || !data.inquiry) {
     return (
       <Stack align="center" justify="center" padding={16} gap={8}>
-        <Text color="$red10">Unable to load inquiry</Text>
+        <Text color="red">Unable to load inquiry</Text>
       </Stack>
     )
   }

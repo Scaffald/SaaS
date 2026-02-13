@@ -64,7 +64,7 @@ export function CertificationProofCard({
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Add Proof</Text>
           <Button size="xs" circular chromeless onPress={onClose}>
-            <X size={16} />
+            <X size="lg" />
           </Button>
         </Row>
 
@@ -101,7 +101,7 @@ export function CertificationProofCard({
               disabled={!urlInput.trim() || uploading}
             >
               <Row gap={8} align="center">
-                <LinkIcon size={16} />
+                <LinkIcon size="lg" />
                 <Text>{uploading ? 'Saving...' : 'Save Link'}</Text>
               </Row>
             </Button>
@@ -113,7 +113,7 @@ export function CertificationProofCard({
               disabled={uploading}
             >
               <Row gap={8} align="center">
-                <Upload size={16} />
+                <Upload size="lg" />
                 <Text>{uploading ? 'Uploading...' : 'Choose File'}</Text>
               </Row>
             </Button>
@@ -141,7 +141,7 @@ export function CertificationProofCard({
                 onPress={() => proofType === 'url' && window.open(proofValue, '_blank')}
               >
                 <Row gap={8} align="center">
-                  <ExternalLink size={16} />
+                  <ExternalLink size="lg" />
                   <Text size="sm">{proofType === 'url' ? 'View Link' : 'View File'}</Text>
                 </Row>
               </Button>

@@ -27,7 +27,7 @@ export default function DashboardOrganizationCreatePage() {
             What happens next
           </Text>
         </Row>
-        <Text size="sm" color="$color11">
+        <Text size="sm" color="gray">
           Share a few details that help our moderators validate your organization. We&apos;ll
           confirm there are no duplicates and publish it once approved.
         </Text>

@@ -7,7 +7,7 @@ import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Stack, Row } from '@unicornlove/beyond-ui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -120,9 +120,9 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" padding="md">
+      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md">
         <Spinner size="lg" color="$blue10" />
-        <Text marginTop={8} color="$gray11">
+        <Text color="$gray11" style={{ marginTop: 8 }}>
           Loading...
         </Text>
       </Stack>
@@ -131,7 +131,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (!job) {
     return (
-      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={8}>
         <Text color="$gray11">Job not found</Text>
       </Stack>
     )
@@ -142,10 +142,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (
-        <Stack flex={1} padding="md" gap={16}>
+        <Stack style={{ flex: 1 }} padding="md" gap={16}>
           <Stack gap={12}>
             <Text color="$gray11">Apply to {job.title}</Text>
-            <Text color="$gray11" lineHeight={20}>
+            <Text color="$gray11" style={{ lineHeight: 20 }}>
               This is a quick application. You'll answer a few screening questions and submit your
               application.
             </Text>
@@ -224,7 +224,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
     // Full wizard flow
     return (
-      <Stack flex={1} height="100%">
+      <Stack style={{ flex: 1, height: '100%' }}>
         <ApplicationWizard
           jobId={job.id}
           jobTitle={job.title}
@@ -264,10 +264,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job - show external link button
   if (isExternal && 'company_name' in job && job.url) {
     return (
-      <Stack flex={1} padding="md" gap={16}>
+      <Stack style={{ flex: 1 }} padding="md" gap={16}>
         <Stack gap={12}>
           <Text color="$gray11">Apply to this Position</Text>
-          <Text color="$gray11" lineHeight={20}>
+          <Text color="$gray11" style={{ lineHeight: 20 }}>
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.
           </Text>
@@ -276,7 +276,6 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         <Button
           size="lg"
           theme="info"
-          icon={ExternalLink}
           onPress={() => {
             captureEvent('job_external_link_clicked', {
               job_id: job.id,
@@ -290,7 +289,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             }
           }}
         >
-          Apply on External Site
+          <Row gap={8} align="center">
+            <ExternalLink size={20} />
+            <Text>Apply on External Site</Text>
+          </Row>
         </Button>
 
         <Button
@@ -309,8 +311,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job without URL
   if (isExternal) {
     return (
-      <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
-        <Text color="$gray11" textAlign="center">
+      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={12}>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Application link not available
         </Text>
         <Button

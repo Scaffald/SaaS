@@ -194,7 +194,7 @@ export function FeedbackWidget() {
                 render={({ field: { value, onBlur, onChange } }) => (
                   <Input
                     multiline
-                    numberOfLines={6}
+                    
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -283,7 +283,7 @@ export function FeedbackWidget() {
                     gap={8}
                   >
                     <Stack flex={1}>
-                      <Text numberOfLines={1}>
+                      <Text >
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
                       <Text color="$gray11">

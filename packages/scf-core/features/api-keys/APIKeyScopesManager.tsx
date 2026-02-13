@@ -350,7 +350,7 @@ export function APIKeyScopesManager({
                                 padding="xs"
                               >
                                 <Row ai="flex-start" gap={8}>
-                                  <AlertCircle size={14} color="$orange11" mt={2} />
+                                  <AlertCircle size="md" color="$orange11" mt={2} />
                                   <Paragraph size="xs" color="$orange11" f={1}>
                                     {scope.warning}
                                   </Paragraph>

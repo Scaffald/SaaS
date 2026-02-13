@@ -64,25 +64,25 @@ export const ResultCard = memo(
             </Row>
           </Row>
 
-          <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+          <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'} >
             {profile.title}
           </Paragraph>
 
           <Row flexWrap="wrap" gap={8}>
             <Row align="center" gap={4}>
-              <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />
+              <Clock3 size="md" color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>
                 {profile.experienceYears} years
               </Text>
             </Row>
             {profile.hourlyRate ? (
               <Row align="center" gap={4}>
-                <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />
+                <DollarSign size="md" color={isSelected ? '$color1' : '$color10'} />
                 <Text color={isSelected ? '$color1' : '$color11'}>${profile.hourlyRate}/hr</Text>
               </Row>
             ) : null}
             <Row align="center" gap={4}>
-              <Award size={14} color={isSelected ? '$color1' : '$color10'} />
+              <Award size="md" color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>{profile.locationLabel}</Text>
             </Row>
           </Row>

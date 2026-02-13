@@ -101,7 +101,7 @@ export default function OfficeTeamDetailPage() {
     return (
       <Stack align="center" justify="center" gap={12}>
         <Spinner size="lg" />
-        <Text color="$color11">Loading team details…</Text>
+        <Text color="gray">Loading team details…</Text>
       </Stack>
     )
   }
@@ -140,22 +140,22 @@ export default function OfficeTeamDetailPage() {
     ? [
         <Button
           key="edit"
-          size={8}
+          size="md"
           variant="outline"
           icon={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
         >Edit team</Button>,
         <Button
           key="analytics"
-          size={8}
+          size="md"
           variant="outline"
           icon={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
         >View analytics</Button>,
-        <Button key="invite" size={8} icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
+        <Button key="invite" size="md" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
         <Button
           key="assign"
-          size={8}
+          size="md"
           icon={Briefcase}
           onPress={() =>
             router.push({
@@ -175,7 +175,7 @@ export default function OfficeTeamDetailPage() {
         <Stack gap={24} padding={16}>
           <Row>
             <Button
-              size={8}
+              size="md"
               variant="outline"
               icon={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
@@ -199,7 +199,7 @@ export default function OfficeTeamDetailPage() {
           />
 
           <Button
-            size={12}
+            size="md"
             variant="outline"
             icon={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
@@ -229,7 +229,7 @@ export default function OfficeTeamDetailPage() {
               refreshKey={inviteRefreshKey}
               headerAction={
                 canManageTeam ? (
-                  <Button size={8} icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
+                  <Button size="md" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
                 ) : null
               }
             />
@@ -259,7 +259,7 @@ export default function OfficeTeamDetailPage() {
               padding={12}
             >
               <Spinner size="sm" />
-              <Text color="$color11">Updating invitation statistics…</Text>
+              <Text color="gray">Updating invitation statistics…</Text>
             </Stack>
           )}
         </Stack>
@@ -304,7 +304,7 @@ function CenteredMessageCard({
         <Text>
           {title}
         </Text>
-        <Text color="$color11">{description}</Text>
+        <Text color="gray">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
     </Stack>
@@ -336,8 +336,8 @@ function InfoBanner({
           {title}
         </Text>
       </Row>
-      <Text color="$color11">{message}</Text>
-      <Button size={12} onPress={onAction}>Refresh</Button>
+      <Text color="gray">{message}</Text>
+      <Button size="md" onPress={onAction}>Refresh</Button>
     </Card>
   )
 }

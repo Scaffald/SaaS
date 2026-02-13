@@ -47,7 +47,7 @@ export default function DashboardTeamInvitationsScreen() {
         <Text>
           Team invitations
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Review pending invitations from team administrators. Accept to join collaborative hiring
           spaces or decline to keep your dashboard focused.
         </Text>
@@ -56,7 +56,7 @@ export default function DashboardTeamInvitationsScreen() {
       <Row gap={8} justify="flex-end">
         <Button
           variant="outline"
-          size={8}
+          size="md"
           icon={RefreshCw}
           onPress={() => invitationsQuery.refetch()}
           disabled={invitationsQuery.isFetching}
@@ -68,7 +68,7 @@ export default function DashboardTeamInvitationsScreen() {
       {invitationsQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical="$10">
           <Spinner size="lg" />
-          <Text color="$color11">Loading invitations…</Text>
+          <Text color="gray">Loading invitations…</Text>
         </Stack>
       ) : (
         <TeamInvitationList

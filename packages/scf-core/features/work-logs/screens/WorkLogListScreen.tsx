@@ -194,7 +194,7 @@ export function WorkLogListScreen() {
                   </Row>
 
                   {item.descriptionPreview && (
-                    <Paragraph numberOfLines={2} color="$gray11">
+                    <Paragraph  color="$gray11">
                       {item.descriptionPreview}
                     </Paragraph>
                   )}

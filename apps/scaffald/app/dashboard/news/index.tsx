@@ -183,10 +183,10 @@ export default function NewsPage() {
   const content = (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="$color12">
+        <Text color="gray">
           Industry News
         </Text>
-        <Paragraph size={16} color="$color10">
+        <Paragraph size="lg" color="gray">
           Curated headlines across construction, safety, technology, and workforce development.
         </Paragraph>
       </Stack>
@@ -211,8 +211,8 @@ export default function NewsPage() {
 
       {isLoading && newsItems.length === 0 ? (
         <Stack align="center" gap={12}>
-          <Spinner size="lg" color="$blue7" />
-          <Text color="$color11">
+          <Spinner size="lg" color="blue" />
+          <Text color="gray">
             Loading latest news…
           </Text>
         </Stack>
@@ -220,11 +220,11 @@ export default function NewsPage() {
 
       {isError ? (
         <Stack align="center" gap={12}>
-          <AlertCircle size={32} color="$red10" />
-          <Text color="$red11" style={{ textAlign: 'center' }}>
+          <AlertCircle size={32} color="red" />
+          <Text color="red" style={{ textAlign: 'center' }}>
             Unable to load news at the moment.
           </Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
           <Button
@@ -242,10 +242,10 @@ export default function NewsPage() {
 
       {!isLoading && !isError && newsItems.length === 0 ? (
         <Stack align="center" gap={12}>
-          <Text color="$color11">
+          <Text color="gray">
             No articles found
           </Text>
-          <Text color="$color10" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             Please check again soon for more industry updates.
           </Text>
         </Stack>
@@ -263,30 +263,30 @@ export default function NewsPage() {
             minHeight={220}
             footer={
               <Row gap={12} align="center">
-                <Text color="$color11">
+                <Text color="gray">
                   {formatTimeAgo(item.pubDate)}
                 </Text>
                 {item.readTime && (
                   <>
-                    <Text color="$color11">
+                    <Text color="gray">
                       •
                     </Text>
-                    <Text color="$color11">
+                    <Text color="gray">
                       {item.readTime}
                     </Text>
                   </>
                 )}
                 {item.author && (
                   <>
-                    <Text color="$color11">
+                    <Text color="gray">
                       •
                     </Text>
-                    <Text color="$color11">
+                    <Text color="gray">
                       {item.author}
                     </Text>
                   </>
                 )}
-                <ExternalLink size={16} color="$color11" />
+                <ExternalLink size="lg" color="gray" />
               </Row>
             }
           />

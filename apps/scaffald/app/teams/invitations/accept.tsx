@@ -88,7 +88,7 @@ export default function AcceptTeamInvitationScreen() {
       return (
         <Stack gap={12} align="center">
           <Spinner size="lg" />
-          <Text color="$color11">Preparing secure invitation…</Text>
+          <Text color="gray">Preparing secure invitation…</Text>
         </Stack>
       )
     }
@@ -99,14 +99,14 @@ export default function AcceptTeamInvitationScreen() {
           <Text>
             Sign in to continue
           </Text>
-          <Text color="$color11">
+          <Text color="gray">
             You&apos;ll need to sign in so we can confirm your identity and add you to the team.
           </Text>
           <Link
             href={`${ROUTES.AUTH.LOGIN.path}?redirect_to=${encodeURIComponent(redirectPath)}`}
             asChild
           >
-            <Button icon={LogIn} size={16}>
+            <Button icon={LogIn} size="lg">
               Sign in or create an account
             </Button>
           </Link>
@@ -122,11 +122,11 @@ export default function AcceptTeamInvitationScreen() {
             <Text>
               You&apos;re in!
             </Text>
-            <Text color="$color11">
+            <Text color="gray">
               You now have access to the team workspace. We&apos;ve added it to your dashboard.
             </Text>
           </Stack>
-          <Button size={16} onPress={handleViewTeam}>
+          <Button size="lg" onPress={handleViewTeam}>
             Go to team
           </Button>
         </Stack>
@@ -141,11 +141,11 @@ export default function AcceptTeamInvitationScreen() {
             <Text>
               Invitation declined
             </Text>
-            <Text color="$color11">
+            <Text color="gray">
               You can always accept later from your dashboard if you change your mind.
             </Text>
           </Stack>
-          <Button size={16} onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
+          <Button size="lg" onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
             Return to dashboard
           </Button>
         </Stack>
@@ -162,14 +162,14 @@ export default function AcceptTeamInvitationScreen() {
           <Text>
             Join this team
           </Text>
-          <Text color="$color11">
+          <Text color="gray">
             Accepting will give you access to the team workspace, shared jobs, and collaborative
             tools.
           </Text>
         </Stack>
         <Stack gap={12}>
           <Button
-            size={16}
+            size="lg"
             icon={CheckCircle}
             disabled={isProcessing}
             onPress={() => handleRespond('accept')}
@@ -177,7 +177,7 @@ export default function AcceptTeamInvitationScreen() {
             Accept invitation
           </Button>
           <Button
-            size={16}
+            size="lg"
             variant="outline"
             icon={XCircle}
             disabled={isProcessing}
@@ -189,7 +189,7 @@ export default function AcceptTeamInvitationScreen() {
         {isProcessing ? (
           <Stack gap={8} align="center">
             <Spinner size="lg" />
-            <Text color="$color11">Processing your response…</Text>
+            <Text color="gray">Processing your response…</Text>
           </Stack>
         ) : null}
       </Stack>
@@ -226,7 +226,7 @@ function ErrorState({ title, message }: { title: string; message: string }) {
         <Text>
           {title}
         </Text>
-        <Text color="$color11">{message}</Text>
+        <Text color="gray">{message}</Text>
       </Stack>
     </Stack>
   )
