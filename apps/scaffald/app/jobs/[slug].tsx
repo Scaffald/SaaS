@@ -2,7 +2,7 @@ import { DashboardLayout } from '@scf/core/components/layouts'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
 import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
-import type { BreadcrumbItem } from '@scaffald/ui'
+import type { BreadcrumbItemData } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { Spinner, Text, Stack } from '@scaffald/ui'
 
@@ -24,7 +24,7 @@ export default function PublicJobDetailPage() {
   })
 
   // Build breadcrumb items
-  const breadcrumbItems: BreadcrumbItem[] = [
+  const breadcrumbItems: BreadcrumbItemData[] = [
     { href: '/', label: 'Home' },
     { href: ROUTES.DASHBOARD.DISCOVER.JOBS.path, label: 'Jobs' },
     {

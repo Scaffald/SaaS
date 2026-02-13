@@ -168,7 +168,7 @@ function WebhookCard({
         </Row>
 
         <Row>
-          <Button variant="ghost" size="sm" onPress={onViewDetails}>
+          <Button variant="text" size="sm" onPress={onViewDetails}>
             View Details
           </Button>
         </Row>

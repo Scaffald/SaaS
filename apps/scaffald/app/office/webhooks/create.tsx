@@ -100,8 +100,8 @@ export default function CreateWebhookPage() {
           { label: 'Created', href: ROUTES.OFFICE.WEBHOOKS.CREATE.path },
         ]}
       >
-        <ScrollView padding={16}>
-          <Card padding={32} gap={20} align="center">
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
+          <Card padding="lg" gap={20} align="center">
             <Text>⚠️ Save Your Webhook Secret</Text>
             <Text color="$gray11" maxWidth={400}>
               This is the only time you will see this secret. Store it securely.
@@ -138,7 +138,7 @@ export default function CreateWebhookPage() {
       actions={
         <Row gap={12}>
           <Button
-            variant="ghost"
+            variant="text"
             size="md"
             onPress={() => router.back()}
             disabled={createWebhook.isPending}
@@ -156,7 +156,7 @@ export default function CreateWebhookPage() {
         </Row>
       }
     >
-      <ScrollView padding={16}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
         {/* Endpoint Configuration */}
         <Card padding="lg" gap={20}>
           <Text>Endpoint Configuration</Text>
