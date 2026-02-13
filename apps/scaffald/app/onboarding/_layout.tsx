@@ -25,7 +25,7 @@ export default function OnboardingLayout() {
   // Show loading state while checking auth or prerequisites
   if (isLoading || isCheckingPrereqs) {
     return (
-      <UIStack flex={1} justify="center" align="center">
+      <UIStack justify="center" align="center">
         <Spinner size="lg" />
         <Text>Loading...</Text>
       </UIStack>

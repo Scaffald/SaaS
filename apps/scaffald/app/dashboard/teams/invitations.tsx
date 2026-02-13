@@ -42,7 +42,7 @@ export default function DashboardTeamInvitationsScreen() {
   }
 
   const content = (
-    <Stack flex={1} padding={16} gap={20}>
+    <Stack padding={16} gap={20}>
       <Stack gap={8}>
         <Text>
           Team invitations

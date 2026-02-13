@@ -502,13 +502,13 @@ export default function NotificationsCenterScreen() {
                
               >
                 <Row backgroundColor="$color2" padding={8}>
-                  <Text flex={2}>
+                  <Text>
                     Token
                   </Text>
-                  <Text flex={1}>
+                  <Text>
                     Platform
                   </Text>
-                  <Text flex={1}>
+                  <Text>
                     Last seen
                   </Text>
                 </Row>
@@ -519,13 +519,13 @@ export default function NotificationsCenterScreen() {
                     backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                     gap={8}
                   >
-                    <Text flex={2} color="$color11" numberOfLines={1}>
+                    <Text color="$color11" numberOfLines={1}>
                       {device.token}
                     </Text>
-                    <Text flex={1} color="$color11">
+                    <Text color="$color11">
                       {device.platform}
                     </Text>
-                    <Text flex={1} color="$color10">
+                    <Text color="$color10">
                       {formatDate(
                         device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
                       )}
@@ -596,7 +596,7 @@ export default function NotificationsCenterScreen() {
                 >
                   <Row padding={16} gap={12} align="flex-start">
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
-                    <Stack flex={1} gap={8}>
+                    <Stack gap={8}>
                       <Row justify="space-between" align="center">
                         <Text color="$color12">
                           {notification.title}

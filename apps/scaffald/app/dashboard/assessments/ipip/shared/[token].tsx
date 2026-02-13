@@ -100,12 +100,12 @@ export default function SharedIPIPResultsRoute() {
           disablePassBorderRadius="bottom"
           aria-label="Manage your personality results view"
         >
-          <Tabs.Tab flex={1} value="narrative">
+          <Tabs.Tab value="narrative">
             <Text>
               Narrative View
             </Text>
           </Tabs.Tab>
-          <Tabs.Tab flex={1} value="chart">
+          <Tabs.Tab value="chart">
             <Text>
               Chart View
             </Text>

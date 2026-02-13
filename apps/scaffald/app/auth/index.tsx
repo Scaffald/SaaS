@@ -52,15 +52,15 @@ export default function Screen() {
           headerRight: () => <AuthHeaderThemeToggle />,
         }}
       />
-      <Row flex={1}>
-        <Stack flex={2} justify="center">
+      <Row>
+        <Stack justify="center">
           <Stack paddingHorizontal={spacing[16]}>
             <LoginScreen />
           </Stack>
         </Stack>
 
         {!isSmallScreen && (
-          <Stack flex={3}>
+          <Stack>
             <WelcomeScreen />
           </Stack>
         )}

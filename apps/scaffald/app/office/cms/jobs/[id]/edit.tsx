@@ -8,7 +8,7 @@ export default function EditJobPage() {
 
   if (!id) {
     return (
-      <Stack flex={1} align="center" justify="center">
+      <Stack align="center" justify="center">
         <Stack>Invalid job ID</Stack>
       </Stack>
     )
@@ -18,7 +18,7 @@ export default function EditJobPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center">
+      <Stack align="center" justify="center">
         <Spinner size="lg" />
       </Stack>
     )
@@ -26,7 +26,7 @@ export default function EditJobPage() {
 
   if (!data?.job) {
     return (
-      <Stack flex={1} align="center" justify="center">
+      <Stack align="center" justify="center">
         <Stack>Job not found</Stack>
       </Stack>
     )

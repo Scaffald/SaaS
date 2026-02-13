@@ -85,7 +85,7 @@ export default function GeographicSettingsPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding={16} gap={16} align="center" justify="center">
+      <Stack padding={16} gap={16} align="center" justify="center">
         <Text>
           Geographic Settings
         </Text>
@@ -95,7 +95,7 @@ export default function GeographicSettingsPage() {
   }
 
   return (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack padding={16} gap={16}>
       <Stack gap={8}>
         <Text>
           Geographic Settings
@@ -126,7 +126,7 @@ export default function GeographicSettingsPage() {
                   onChangeText={setThreshold}
                   placeholder="2.0"
                   keyboardType="numeric"
-                  flex={1}
+                 
                   maxLength={5}
                 />
                 <Text>%</Text>

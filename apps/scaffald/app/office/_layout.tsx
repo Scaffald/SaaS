@@ -12,7 +12,7 @@ export default function OfficeLayout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <Stack flex={1} justify="center" align="center">
+      <Stack justify="center" align="center">
         <Spinner size="lg" />
         <Text>Loading...</Text>
       </Stack>

@@ -46,7 +46,7 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
   }
 
   return (
-    <Stack padding={16} flex={1}>
+    <Stack padding={16}>
       <ResumeWizard resumeId={resumeId} />
     </Stack>
   )

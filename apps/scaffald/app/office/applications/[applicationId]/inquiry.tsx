@@ -14,7 +14,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (!enabled) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16}>
+      <Stack align="center" justify="center" padding={16}>
         <Text color="$color11">Missing application ID</Text>
       </Stack>
     )
@@ -22,7 +22,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
+      <Stack align="center" justify="center" padding={16} gap={8}>
         <Spinner size="lg" />
         <Text>Loading inquiry...</Text>
       </Stack>
@@ -31,7 +31,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (error || !data || !data.inquiry) {
     return (
-      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
+      <Stack align="center" justify="center" padding={16} gap={8}>
         <Text color="$red10">Unable to load inquiry</Text>
       </Stack>
     )
@@ -42,7 +42,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   return (
     <ScrollView>
-      <Stack gap={16} padding={16} flex={1}>
+      <Stack gap={16} padding={16}>
         <InquiryViewOrganization
           applicationId={applicationParam}
           inquiryId={data.inquiry.id}

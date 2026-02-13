@@ -14,14 +14,14 @@ export default function EditUserPage() {
 
   if (!id) {
     return (
-      <Stack flex={1} align="center" justify="center">
+      <Stack align="center" justify="center">
         <Text>Invalid user ID</Text>
       </Stack>
     )
   }
 
   return (
-    <ScrollView flex={1} backgroundColor="$background">
+    <ScrollView backgroundColor="$background">
       <Stack padding={16} gap={16}>
         {/* Header */}
         <Stack gap={12}>

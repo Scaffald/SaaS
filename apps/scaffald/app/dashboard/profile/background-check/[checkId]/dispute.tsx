@@ -44,7 +44,7 @@ export default function BackgroundCheckDisputeScreen() {
       />
       <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
         <ScrollView style={{ flex: 1 }}>
-          <Stack flex={1} gap={16} padding={16}>
+          <Stack gap={16} padding={16}>
             {checksQuery.isLoading && (
               <Stack gap={12} align="center" paddingVertical={24}>
                 <Spinner size="lg" color="$color11" />

@@ -100,7 +100,7 @@ export default function CreateWebhookPage() {
           { label: 'Created', href: ROUTES.OFFICE.WEBHOOKS.CREATE.path },
         ]}
       >
-        <ScrollView flex={1} padding={16}>
+        <ScrollView padding={16}>
           <Card padding={32} gap={20} align="center" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
             <Text>
               ⚠️ Save Your Webhook Secret
@@ -148,7 +148,7 @@ export default function CreateWebhookPage() {
         </Row>
       }
     >
-      <ScrollView flex={1} padding={16}>
+      <ScrollView padding={16}>
         {/* Endpoint Configuration */}
         <Card padding={20} gap={20}>
           <Text>Endpoint Configuration</Text>
@@ -210,7 +210,7 @@ export default function CreateWebhookPage() {
                         checked={selectedEvents.has(event.value as WebhookEventType)}
                         onChange={() => handleToggleEvent(event.value as WebhookEventType)}
                       />
-                      <Stack flex={1} gap={4}>
+                      <Stack gap={4}>
                         <Text fontFamily="monospace">{event.value}</Text>
                         <Text color="$gray11">{event.label}</Text>
                       </Stack>

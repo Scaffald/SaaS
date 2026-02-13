@@ -99,7 +99,7 @@ export default function OfficeTeamDetailPage() {
 
   if ((isTeamLoading || isTeamFetching) && !team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap={12}>
+      <Stack align="center" justify="center" gap={12}>
         <Spinner size="lg" />
         <Text color="$color11">Loading team details…</Text>
       </Stack>
@@ -172,7 +172,7 @@ export default function OfficeTeamDetailPage() {
   return (
     <>
       <ScrollView>
-        <Stack flex={1} gap={24} padding={16}>
+        <Stack gap={24} padding={16}>
           <Row>
             <Button
               size={8}
@@ -293,7 +293,7 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
+    <Stack align="center" justify="center" gap={12} paddingHorizontal={16}>
       <Card
         padding={16}
         borderWidth={1}

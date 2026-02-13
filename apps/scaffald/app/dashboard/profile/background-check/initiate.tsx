@@ -14,7 +14,7 @@ export default function BackgroundCheckInitiateScreen() {
         }}
       />
       <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
-        <Stack flex={1}>
+        <Stack>
           <BackgroundCheckWizard />
         </Stack>
       </SafeAreaView>

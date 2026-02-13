@@ -34,7 +34,7 @@ export default function EditTeamPage() {
 
   if (!teamId) {
     return (
-      <Stack flex={1} align="center" justify="center" gap={16} padding={24}>
+      <Stack align="center" justify="center" gap={16} padding={24}>
         <Text>
           Missing team identifier
         </Text>
@@ -48,7 +48,7 @@ export default function EditTeamPage() {
 
   if (isLoading || isFetching) {
     return (
-      <Stack flex={1} align="center" justify="center">
+      <Stack align="center" justify="center">
         <Spinner size="lg" />
         <Text>Loading team details…</Text>
       </Stack>
@@ -57,7 +57,7 @@ export default function EditTeamPage() {
 
   if (error || !data?.team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap={12} padding={24}>
+      <Stack align="center" justify="center" gap={12} padding={24}>
         <Text>
           Unable to load team
         </Text>
@@ -94,7 +94,7 @@ export default function EditTeamPage() {
     : undefined
 
   return (
-    <Stack flex={1} gap={24} padding={16}>
+    <Stack gap={24} padding={16}>
       <TeamForm
         mode="edit"
         organizationId={team.organizationId}

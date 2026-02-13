@@ -11,7 +11,7 @@ export default function ProjectDetailPage() {
 
   if (!id) {
     return (
-      <Stack flex={1} padding={16} gap={16}>
+      <Stack padding={16} gap={16}>
         <Text>
           Project Not Found
         </Text>
@@ -22,7 +22,7 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding={16} gap={16} align="center" justify="center">
+      <Stack padding={16} gap={16} align="center" justify="center">
         <Text>
           Loading Project...
         </Text>
@@ -33,7 +33,7 @@ export default function ProjectDetailPage() {
 
   if (!data) {
     return (
-      <Stack flex={1} padding={16} gap={16}>
+      <Stack padding={16} gap={16}>
         <Text>
           Project Not Found
         </Text>
@@ -99,7 +99,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <Stack flex={1} padding={16} gap={16}>
+    <Stack padding={16} gap={16}>
       <Stack gap={8}>
         <Text>
           {project.name}
@@ -261,7 +261,7 @@ export default function ProjectDetailPage() {
                   return (
                     <Card key={worker.id} padding={12} backgroundColor="$gray2">
                       <Row justify="space-between" align="center">
-                        <Stack gap={4} flex={1}>
+                        <Stack gap={4}>
                           <Row gap={8} align="center">
                             <StatusIcon size={16} color={statusColor} />
                             <Text>Worker {worker.user_id?.slice(0, 8)}</Text>

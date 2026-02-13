@@ -81,7 +81,7 @@ export default function TeamAnalyticsPage() {
 
   if (teamQuery.isLoading && !team) {
     return (
-      <Stack flex={1} align="center" justify="center" gap={12}>
+      <Stack align="center" justify="center" gap={12}>
         <Spinner size="lg" />
         <Text color="$color11">Loading team analytics…</Text>
       </Stack>
@@ -160,7 +160,7 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <Stack flex={1} align="center" justify="center" paddingHorizontal={16}>
+    <Stack align="center" justify="center" paddingHorizontal={16}>
       <Card
         borderWidth={1}
         borderColor="$borderColor"

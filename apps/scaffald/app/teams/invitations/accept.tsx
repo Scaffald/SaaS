@@ -198,7 +198,7 @@ export default function AcceptTeamInvitationScreen() {
 
   return (
     <Stack
-      flex={1}
+     
       padding={16}
       backgroundColor="$color2"
       justify="center"

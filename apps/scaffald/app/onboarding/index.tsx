@@ -145,7 +145,7 @@ export default function OnboardingPage() {
   return (
     <ScrollView>
       <Stack
-        flex={1}
+       
         justify="center"
         align="center"
         padding={16}
@@ -181,7 +181,7 @@ export default function OnboardingPage() {
               {/* 1. Name Fields */}
               <Stack gap={12}>
                 <Row gap={12}>
-                  <Stack gap={8} flex={1}>
+                  <Stack gap={8}>
                     <Text>First Name *</Text>
                     <Controller
                       name="first_name"
@@ -202,7 +202,7 @@ export default function OnboardingPage() {
                     )}
                   </Stack>
 
-                  <Stack gap={8} flex={1}>
+                  <Stack gap={8}>
                     <Text>Last Name *</Text>
                     <Controller
                       name="last_name"

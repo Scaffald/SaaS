@@ -35,7 +35,7 @@ export default function WebhooksPage() {
         </Link>
       }
     >
-      <ScrollView flex={1} padding={16}>
+      <ScrollView padding={16}>
         {/* Documentation Banner */}
         <Card padding={20}>
           <Stack gap={12}>
@@ -126,7 +126,7 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
       <Stack gap={16}>
         <Stack gap={8}>
           <Row gap={12} align="center" justify="space-between">
-            <Text flex={1}>{webhook.url}</Text>
+            <Text>{webhook.url}</Text>
             <Badge
               variant={webhook.is_active ? 'success' : 'neutral'}
               label={webhook.is_active ? 'Active' : 'Inactive'}

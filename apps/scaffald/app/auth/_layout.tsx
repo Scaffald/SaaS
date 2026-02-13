@@ -14,7 +14,7 @@ export default function Layout() {
   if (isLoading) {
     return (
       <ThemeProvider>
-        <Box flex={1} align="center" justify="center">
+        <Box align="center" justify="center">
           <Text>Loading...</Text>
         </Box>
       </ThemeProvider>
