@@ -61,4 +61,5 @@ export {
   useWebhookEventTypes,
   useScaffaldAuth,
   usePrerequisites,
+  useCompletePrerequisites,
 } from './hooks.js'

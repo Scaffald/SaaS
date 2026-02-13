@@ -276,6 +276,44 @@ describe('HTTP Client', () => {
     }, 10000)
   })
 
+  describe('URL construction with baseUrl path', () => {
+    it('should preserve baseUrl path when constructing request URLs', async () => {
+      const baseUrlWithPath = 'http://127.0.0.1:54321/functions/v1/api'
+
+      server.use(
+        http.get(`${baseUrlWithPath}/v1/prerequisites/check`, () =>
+          HttpResponse.json({
+            isComplete: false,
+            hasName: false,
+            hasAddress: false,
+            hasUserTypes: false,
+            hasIndustry: false,
+            hasAcceptedPrivacy: false,
+            hasAcceptedTerms: false,
+            completedAt: null,
+            data: {
+              first_name: '',
+              last_name: '',
+              address: null,
+              user_types: [],
+              industry_id: '',
+            },
+          })
+        )
+      )
+
+      const clientWithPathBase = new Scaffald({
+        apiKey: 'sk_test_123',
+        baseUrl: baseUrlWithPath,
+      })
+
+      const result = await clientWithPathBase.prerequisites.check()
+
+      expect(result).toBeDefined()
+      expect(result.isComplete).toBe(false)
+    })
+  })
+
   describe('Custom Headers', () => {
     it('should include custom headers in requests', async () => {
       let receivedHeaders: Headers | undefined

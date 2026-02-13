@@ -32,7 +32,10 @@ export class HttpClient {
 
   async request<T = any>(options: RequestOptions, attempt = 0): Promise<T> {
     const { method, path, query, body, headers = {}, idempotencyKey } = options
-    const url = new URL(path, this.config.baseUrl)
+    // Combine baseUrl with path - new URL(path, base) drops base's path when path is absolute
+    const base = this.config.baseUrl.replace(/\/$/, '')
+    const pathSegment = path.startsWith('/') ? path : `/${path}`
+    const url = new URL(`${base}${pathSegment}`)
 
     if (query) {
       Object.entries(query).forEach(([key, value]) => {

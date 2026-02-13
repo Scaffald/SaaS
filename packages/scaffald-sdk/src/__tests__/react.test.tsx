@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+import { http, HttpResponse } from 'msw'
 import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
 import type * as React from 'react'
 import { ScaffaldProvider, useScaffald } from '../react/provider'
+import { server } from './mocks/server'
 import {
   useJobs,
   useJob,
@@ -18,6 +20,9 @@ import {
   useUserProfile,
   useOrganizationProfile,
   useEmployerProfile,
+  usePrerequisites,
+  useCompletePrerequisites,
+  useIndustries,
 } from '../react/hooks'
 
 describe('React Hooks', () => {
@@ -314,6 +319,93 @@ describe('React Hooks', () => {
         expect(result.current.data).toBeDefined()
         expect(result.current.data?.slug).toBe('tech-startup')
         expect(result.current.data?.name).toBe('Tech Startup Inc')
+      })
+    })
+  })
+
+  describe('Prerequisites Hooks', () => {
+    beforeEach(() => {
+      server.use(
+        http.get('https://api.scaffald.com/v1/prerequisites/check', () =>
+          HttpResponse.json({
+            isComplete: true,
+            hasName: true,
+            hasAddress: true,
+            hasUserTypes: true,
+            hasIndustry: true,
+            hasAcceptedPrivacy: true,
+            hasAcceptedTerms: true,
+            completedAt: null,
+            data: {
+              first_name: 'John',
+              last_name: 'Doe',
+              address: {
+                street: '123 Main St',
+                city: 'San Francisco',
+                state: 'CA',
+                zip: '94102',
+                country: 'US',
+              },
+              user_types: ['worker'],
+              industry_id: 'ind_tech',
+            },
+          })
+        ),
+        http.post('https://api.scaffald.com/v1/prerequisites/complete', () =>
+          HttpResponse.json({ success: true })
+        )
+      )
+    })
+
+    describe('usePrerequisites', () => {
+      it('should fetch prerequisites status', async () => {
+        const { result } = renderHook(() => usePrerequisites(), { wrapper: createWrapper() })
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+        expect(result.current.data).toBeDefined()
+        expect(result.current.data?.isComplete).toBe(true)
+        expect(result.current.data?.hasName).toBe(true)
+      })
+    })
+
+    describe('useCompletePrerequisites', () => {
+      it('should complete prerequisites', async () => {
+        const { result } = renderHook(() => useCompletePrerequisites(), { wrapper: createWrapper() })
+
+        result.current.mutate({
+          first_name: 'Jane',
+          last_name: 'Doe',
+          address: {
+            street: '456 Oak Ave',
+            city: 'San Francisco',
+            state: 'CA',
+            zip: '94103',
+            country: 'US',
+          },
+          user_types: ['worker'],
+          industry_id: 'ind_tech',
+          accepts_privacy_policy: true,
+          accepts_terms_of_service: true,
+        })
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+        expect(result.current.data).toBeDefined()
+        expect(result.current.data?.success).toBe(true)
+      })
+    })
+  })
+
+  describe('Industries Hooks', () => {
+    describe('useIndustries', () => {
+      it('should fetch industries list', async () => {
+        const { result } = renderHook(() => useIndustries(), { wrapper: createWrapper() })
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+        expect(result.current.data).toBeDefined()
+        expect(result.current.data?.data).toBeInstanceOf(Array)
       })
     })
   })
