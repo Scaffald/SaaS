@@ -202,7 +202,7 @@ export function FileUploadDropZone({
         onDragOver: handleDragOver,
         onDragLeave: handleDragLeave,
         onDrop: handleDrop,
-      } as any)}
+      } as Partial<Record<string, unknown>>)}
       accessibilityRole="button"
       accessibilityLabel={message}
     >

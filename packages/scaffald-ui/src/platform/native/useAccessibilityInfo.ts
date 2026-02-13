@@ -145,7 +145,9 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
     ]
 
     return () => {
-      subscriptions.forEach((subscription) => subscription.remove())
+      for (const subscription of subscriptions) {
+        subscription.remove()
+      }
     }
   }, [])
 

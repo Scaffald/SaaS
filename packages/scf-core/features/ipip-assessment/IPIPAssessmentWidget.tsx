@@ -15,7 +15,7 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/do
  * IPIPAssessmentWidget - Dashboard widget with CTA and results preview
  */
 export function IPIPAssessmentWidget() {
-  const { theme } = useThemeContext()
+  useThemeContext()
   const router = useRouter()
 
   const { data: statusData, isLoading } = useIPIPStatus()

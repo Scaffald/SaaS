@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { View, Pressable, Text } from 'react-native'
+import { View, Text } from 'react-native'
 import { Stack } from '../Layout'
 import { Button } from '../Button'
 import { Input } from '../Input'

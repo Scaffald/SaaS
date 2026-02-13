@@ -120,7 +120,7 @@ export function OfficeViolationReports() {
       }),
     ]
     return defs as ColumnDef<ViolationReport, unknown>[]
-  }, [updateMutation])
+  }, [updateMutation, theme])
 
   return (
     <Stack flex={1} padding="md" gap={16}>

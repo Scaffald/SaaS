@@ -54,7 +54,7 @@ export function getLeftSectionStyles(): ViewStyle {
  * Get featured icon container styles
  * Matches Figma: gradient from bg-50 to bg-100 with double border effect
  */
-export function getFeaturedIconStyles(theme: ThemeMode = 'light'): ViewStyle {
+export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
   // Figma uses gradient from bg-50 (#f9fafb) to bg-100 (#f2f4f7)
   // With double border: 2px white, 3px gray-100
   return {

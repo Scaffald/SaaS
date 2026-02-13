@@ -59,7 +59,7 @@ export function Show({ above, below, at, children }: ShowProps) {
     shouldShow = true
   }
 
-  return shouldShow ? <>{children}</> : null
+  return shouldShow ? children : null
 }
 
 export type { ShowProps } from './Responsive.types'

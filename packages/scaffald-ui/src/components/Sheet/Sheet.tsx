@@ -30,7 +30,6 @@ import {
 } from 'react-native'
 import type { SheetProps, SheetHeaderProps, SheetContentProps, SheetFooterProps, SheetHeight } from './Sheet.types'
 import { useThemeContext } from '../../theme'
-import { colors } from '../../tokens/colors'
 import { Text, H4 } from '../Typography'
 import { Button } from '../Button'
 import {

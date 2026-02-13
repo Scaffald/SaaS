@@ -8,7 +8,7 @@ import { Spinner, Text, Stack } from '@scaffald/ui'
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
  */
 export function OccupationAssessmentWidget() {
-  const { theme } = useThemeContext()
+  useThemeContext()
   const router = useRouter()
 
   const { data: status, isLoading } = useOccupationStatus()

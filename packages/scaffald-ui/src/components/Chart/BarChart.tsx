@@ -108,7 +108,7 @@ export function BarChart({
 
           return (
             <Rect
-              key={index}
+              key={`bar-${x}-${y}`}
               x={x}
               y={y}
               width={barWidth}

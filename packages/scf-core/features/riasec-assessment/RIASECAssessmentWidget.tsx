@@ -8,7 +8,7 @@ import { Spinner, Text, Stack } from '@scaffald/ui'
  * RIASECAssessmentWidget - Dashboard widget CTA for RIASEC Career Interests
  */
 export function RIASECAssessmentWidget() {
-  const { theme } = useThemeContext()
+  useThemeContext()
   const router = useRouter()
 
   const { data: status, isLoading } = useRIASECStatus()

@@ -22,7 +22,6 @@ import type {
   BulkIdsParams,
   SuccessResponse,
   MarkAllAsReadResponse,
-  NotificationPreferences,
   PreferencesResponse,
   SavePreferencesParams,
   NotificationDevice,

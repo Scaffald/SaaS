@@ -22,7 +22,7 @@
  */
 
 import { View, Text, ScrollView, Pressable } from 'react-native'
-import type { SettingsTeamTableProps, TeamMember } from './SettingsTeamTable.types'
+import type { SettingsTeamTableProps, } from './SettingsTeamTable.types'
 import { useThemeContext } from '../../theme'
 import { Checkbox } from '../Checkbox'
 import { Avatar } from '../Avatar'

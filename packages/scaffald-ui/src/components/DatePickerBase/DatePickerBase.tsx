@@ -175,7 +175,9 @@ export function DatePickerBase({
                 <DatePickerDay
                   key={`${date.year}-${date.month}-${date.day}-${dayIndex}`}
                   day={date.day}
-                  state={dayState as any}
+                  state={
+                    dayState as import('../DatePickerDay/DatePickerDay.types').DatePickerDayState
+                  }
                   disabled={!isCurrentMonth || dayState === 'empty'}
                   showIndicator={showIndicator}
                   onPress={() => handleDatePress(date)}

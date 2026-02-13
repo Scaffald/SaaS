@@ -215,7 +215,7 @@ app.openapi(updateRoute, async (c) => {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
-  const updates: any = {}
+  const updates: Record<string, unknown> = {}
   if (body.title !== undefined) updates.title = body.title
   if (body.description !== undefined) updates.description = body.description
   if (body.imageUrl !== undefined) updates.image_url = body.imageUrl

@@ -13,7 +13,7 @@ app.use('*', authMiddleware)
 // Schemas
 // ============================================================================
 
-const errorResponseSchema = z.object({
+const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
 }).openapi('ErrorResponse')
@@ -194,7 +194,7 @@ app.openapi(getProfileViewsRoute, async (c) => {
     .eq('viewed_user_id', user.id)
 
   return c.json({
-    views: (data || []).map((view: any) => ({
+    views: (data || []).map((view: Record<string, unknown>) => ({
       id: view.id,
       viewed_at: view.viewed_at,
       viewer: view.viewer,

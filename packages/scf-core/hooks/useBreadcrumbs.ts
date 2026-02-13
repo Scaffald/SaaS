@@ -281,7 +281,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
           return
         }
 
-        const isLast = index === segments.length - 1
+        const _isLast = index === segments.length - 1
 
         // Capitalize first letter and replace hyphens with spaces
         const label = segment
@@ -317,7 +317,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
         visitedPaths.add(currentPath)
 
         const route = findMatchingRoute(currentPath)
-        const isLast = currentPath === path
+        const _isLast = currentPath === path
 
         if (route) {
           // Find parent route
@@ -350,7 +350,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
                     // Find siblings at this intermediate level
                     const siblingRoutes = findRoutesAtPath(intermediatePath)
-                    const siblings: BreadcrumbSibling[] = siblingRoutes.map((r) => ({
+                    const _siblings: BreadcrumbSibling[] = siblingRoutes.map((r) => ({
                       label: translateRoute(r),
                       href: r.path,
                     }))

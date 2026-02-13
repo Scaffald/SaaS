@@ -245,8 +245,8 @@ app.openapi(getPendingRequestsRoute, async (c) => {
   }
 
   return c.json({
-    sent: (sent || []) as any[],
-    received: (received || []) as any[],
+    sent: (sent || []) as Record<string, unknown>[],
+    received: (received || []) as Record<string, unknown>[],
   })
 })
 

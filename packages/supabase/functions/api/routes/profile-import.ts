@@ -195,7 +195,7 @@ app.openapi(saveImportDataRoute, async (c) => {
     .eq('user_id', user.id)
 
   // Insert new import data
-  const { data, error } = await supabase
+  const { error } = await supabase
     .schema('core')
     .from('profile_import_data')
     .insert({

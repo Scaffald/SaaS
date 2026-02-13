@@ -55,9 +55,9 @@ export function DonutChart({
   return (
     <View style={[{ width, height }, style]}>
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        {angles.map((angle, index) => (
+        {angles.map((angle) => (
           <Path
-            key={index}
+            key={`angle-${angle.startAngle}-${angle.endAngle}-${angle.color}`}
             d={getArcPath(
               centerX,
               centerY,
@@ -76,7 +76,7 @@ export function DonutChart({
       {/* Labels */}
       {showLabel && (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-          {angles.map((angle, index) => {
+          {angles.map((angle) => {
             const midAngle = (angle.startAngle + angle.endAngle) / 2
             const labelRadius = (outerRadius + innerRadius) / 2
             const labelX = centerX + labelRadius * Math.cos((midAngle * Math.PI) / 180)
@@ -84,7 +84,7 @@ export function DonutChart({
 
             return (
               <Text
-                key={index}
+                key={`label-${angle.startAngle}-${angle.endAngle}-${angle.color}`}
                 style={[
                   {
                     fontFamily: typography.caption.fontFamily,

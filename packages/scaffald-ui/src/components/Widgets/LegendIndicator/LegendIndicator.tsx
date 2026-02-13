@@ -19,7 +19,7 @@ import Svg, { Circle } from 'react-native-svg'
 import type { LegendIndicatorProps } from './LegendIndicator.types'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { typographyVariants, fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
+import { fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
 
 export function LegendIndicator({
   items,

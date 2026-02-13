@@ -27,9 +27,8 @@ import Svg, { Rect, Defs, LinearGradient, Stop } from 'react-native-svg'
 import type { BalanceWidgetProps } from './FinanceWidget.types'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { typographyVariants, fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
+import { fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
 import { borderRadius } from '../../../tokens/borders'
-import { gradients } from '../../../tokens/gradients'
 
 export function BalanceWidget({
   variant = 'Balance 01',

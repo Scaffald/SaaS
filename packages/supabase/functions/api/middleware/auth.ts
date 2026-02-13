@@ -121,7 +121,7 @@ export async function authMiddleware(c: Context, next: Next) {
     }
 
     // Update last_used_at timestamp (fire and forget)
-    serviceClient
+    void serviceClient
       .schema('core')
       .from('api_keys')
       .update({ last_used_at: new Date().toISOString() })
@@ -129,7 +129,7 @@ export async function authMiddleware(c: Context, next: Next) {
       .then(() => {
         // Success - no action needed
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error('Failed to update API key last_used_at:', error)
       })
 

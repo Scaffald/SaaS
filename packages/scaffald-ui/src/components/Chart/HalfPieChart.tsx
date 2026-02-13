@@ -62,12 +62,12 @@ export function HalfPieChart({
   return (
     <View style={[{ width, height }, style]}>
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        {halfAngles.map((angle, index) => {
+        {halfAngles.map((angle) => {
           if (angle.startAngle >= angle.endAngle) return null
 
           return (
             <Path
-              key={index}
+              key={`angle-${angle.startAngle}-${angle.endAngle}-${angle.color}`}
               d={getArcPath(
                 centerX,
                 centerY,
@@ -87,7 +87,7 @@ export function HalfPieChart({
       {/* Labels */}
       {showLabel && (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-          {halfAngles.map((angle, index) => {
+          {halfAngles.map((angle) => {
             if (angle.startAngle >= angle.endAngle) return null
 
             const midAngle = (angle.startAngle + angle.endAngle) / 2
@@ -97,7 +97,7 @@ export function HalfPieChart({
 
             return (
               <Text
-                key={index}
+                key={`label-${angle.startAngle}-${angle.endAngle}-${angle.color}`}
                 style={[
                   {
                     fontFamily: typography.caption.fontFamily,

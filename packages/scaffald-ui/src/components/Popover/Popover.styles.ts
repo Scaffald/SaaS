@@ -4,7 +4,7 @@
  */
 
 import { Platform } from 'react-native'
-import type { ViewStyle, TextStyle } from 'react-native'
+import type { ViewStyle, } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { shadows, boxShadows } from '../../tokens/shadows'

@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { DatePicker } from '../../../components/DatePicker'
 import type { DatePickerPresetOption } from '../../../components/DatePicker'
-import { dateToSimple, simpleToDate, type DateObject } from '../../../components/DatePickerBase/DatePickerBase.utils'
+import { dateToSimple, type DateObject } from '../../../components/DatePickerBase/DatePickerBase.utils'
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Components/DatePicker',

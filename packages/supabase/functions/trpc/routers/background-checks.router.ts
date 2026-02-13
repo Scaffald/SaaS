@@ -1811,11 +1811,11 @@ export const backgroundChecksRouter = t.router({
 
       const query = ctx.dbAdmin.core('background_check_packages')
 
-      let data: any
-      let error: any
+      let data: unknown
+      let error: unknown
 
       if (input.id) {
-        // @ts-ignore - Complex Supabase query builder types cause "excessively deep" TypeScript error
+        // @ts-expect-error - Complex Supabase query builder types cause "excessively deep" TypeScript error
         const result = await query
           .update(payload)
           .eq('id', input.id)
@@ -1826,7 +1826,7 @@ export const backgroundChecksRouter = t.router({
         data = result.data
         error = result.error
       } else {
-        // @ts-ignore - Complex Supabase query builder types cause "excessively deep" TypeScript error
+        // @ts-expect-error - Complex Supabase query builder types cause "excessively deep" TypeScript error
         const result = await query
           .insert(payload)
           .select(

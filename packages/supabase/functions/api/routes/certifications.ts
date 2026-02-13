@@ -14,7 +14,7 @@ app.use('*', authMiddleware)
 // Schemas
 // ============================================================================
 
-const errorResponseSchema = z.object({
+const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
 }).openapi('ErrorResponse')
@@ -218,12 +218,13 @@ app.openapi(getUserTreeRoute, async (c) => {
   }
 
   // Organize by depth
-  const depth0: any[] = []
-  const depth1ByParent: Record<string, any[]> = {}
-  const depth2ByParent: Record<string, any[]> = {}
+  type CertWithCatalog = { catalog?: { depth: number; parent_id?: string | null } }
+  const depth0: CertWithCatalog[] = []
+  const depth1ByParent: Record<string, CertWithCatalog[]> = {}
+  const depth2ByParent: Record<string, CertWithCatalog[]> = {}
 
-  for (const cert of data || []) {
-    const catalog = (cert as any).catalog
+  for (const cert of (data || []) as CertWithCatalog[]) {
+    const catalog = cert.catalog
     if (!catalog) continue
 
     if (catalog.depth === 0) {

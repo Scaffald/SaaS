@@ -132,14 +132,12 @@ export function AnnouncerProvider({
         <View
           style={styles.visuallyHidden}
           accessibilityRole="none"
-          // biome-ignore lint/suspicious/noExplicitAny: ARIA props not typed in React Native
-          {...({ 'aria-live': 'polite', 'aria-atomic': 'true' } as any)}
+          {...({ 'aria-live': 'polite', 'aria-atomic': 'true' } as Record<string, unknown>)}
         >
           {announcements.map((announcement) => (
             <Text
               key={announcement.id}
-              // biome-ignore lint/suspicious/noExplicitAny: ARIA props not typed in React Native
-              {...({ 'aria-live': announcement.priority } as any)}
+              {...({ 'aria-live': announcement.priority } as Record<string, unknown>)}
             >
               {announcement.message}
             </Text>
@@ -151,8 +149,7 @@ export function AnnouncerProvider({
         <View
           style={styles.visuallyHidden}
           accessibilityRole="none"
-          // biome-ignore lint/suspicious/noExplicitAny: ARIA props not typed in React Native
-          {...({ 'aria-live': 'assertive', 'aria-atomic': 'true' } as any)}
+          {...({ 'aria-live': 'assertive', 'aria-atomic': 'true' } as Record<string, unknown>)}
         >
           {announcements
             .filter((a) => a.priority === 'assertive')

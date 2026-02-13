@@ -18,7 +18,6 @@
 import { View, Text, ScrollView } from 'react-native'
 import type { SettingsNotificationTableProps, NotificationPreference } from './SettingsNotificationTable.types'
 import { useThemeContext } from '../../theme'
-import { Table, TableColumnHeader, TableCell } from '../Table'
 import { Toggle } from '../Toggle'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'

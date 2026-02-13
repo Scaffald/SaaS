@@ -47,7 +47,7 @@ export function BarChartBase({
 
           return (
             <Rect
-              key={index}
+              key={`bar-${x}-${y}`}
               x={x}
               y={y}
               width={barActualWidth}

@@ -237,7 +237,7 @@ function getInteractiveCellStyles(
   type: TableCellType,
   state: TableCellState,
   baseContainer: ViewStyle,
-  baseText: TextStyle,
+  _baseText: TextStyle,
   theme: ThemeMode
 ): TableCellStyleConfig {
   // Determine state from type if not explicitly provided

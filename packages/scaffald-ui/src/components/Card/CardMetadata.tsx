@@ -4,7 +4,6 @@
  */
 
 import type React from 'react'
-import type { LucideIcon } from 'lucide-react-native'
 import { Row } from '../Layout'
 import { Text } from '../Typography'
 import { useThemeContext } from '../../theme'

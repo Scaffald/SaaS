@@ -69,9 +69,9 @@ export function Chart({
               bottom: spacing[24], // Space for x-axis labels
             }}
           >
-            {gridLines.map((gridLine, index) => (
+            {gridLines.map((gridLine) => (
               <View
-                key={index}
+                key={`grid-${gridLine.y}-${gridLine.label}`}
                 style={{
                   position: 'absolute',
                   top: gridLine.y,
@@ -100,9 +100,9 @@ export function Chart({
             paddingRight: spacing[10],
           }}
         >
-          {gridLines.map((gridLine, index) => (
+          {gridLines.map((gridLine) => (
             <Text
-              key={index}
+              key={`grid-label-${gridLine.y}-${gridLine.label}`}
               style={[styles.axisLabel, { textAlign: 'right' }]}
             >
               {gridLine.label}
@@ -138,8 +138,8 @@ export function Chart({
               paddingHorizontal: spacing[40],
             }}
           >
-            {xAxisLabels.map((label, index) => (
-              <Text key={index} style={styles.axisLabel}>
+            {xAxisLabels.map((label) => (
+              <Text key={label} style={styles.axisLabel}>
                 {label}
               </Text>
             ))}

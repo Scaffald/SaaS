@@ -16,13 +16,13 @@
  * ```
  */
 
-import { View, Text, StyleSheet, Platform } from 'react-native'
+import { View, Text, StyleSheet, } from 'react-native'
 import { ArrowUp, ArrowDown } from 'lucide-react-native'
 import type { MetricWidgetProps } from './MetricWidget.types'
 import { MiniLinearChart } from '../../Chart'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { typographyVariants, fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
+import { fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
 
 export function MetricWidget({
   type = 'Chart 01',

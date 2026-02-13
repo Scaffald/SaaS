@@ -27,7 +27,14 @@
  */
 
 import { useState } from 'react'
-import { View, Text, Pressable, Platform, type ViewStyle } from 'react-native'
+import {
+  View,
+  Text,
+  Pressable,
+  Platform,
+  type ViewStyle,
+  type GestureResponderEvent,
+} from 'react-native'
 import type { CommandMenuItemProps, CommandMenuItemState } from './CommandMenuItem.types'
 import { Avatar } from '../../Avatar'
 import { CommandShortcut } from '../CommandShortcut'
@@ -79,12 +86,12 @@ export function CommandMenuItem({
   const backgroundColor = getBackgroundColor(currentState)
 
   // Handle press events for hover/focus states
-  const handlePressIn = (event: any) => {
+  const handlePressIn = (event: GestureResponderEvent) => {
     setPressedState(true)
     onPressIn?.(event)
   }
 
-  const handlePressOut = (event: any) => {
+  const handlePressOut = (event: GestureResponderEvent) => {
     setPressedState(false)
     onPressOut?.(event)
   }

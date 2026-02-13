@@ -43,7 +43,7 @@ export function getFileUploadStyles(
   const label: TextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.body.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight as any,
+    fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
     lineHeight: typography.body.lineHeight,
     color: labelColor,
   }

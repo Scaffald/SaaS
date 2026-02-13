@@ -104,7 +104,7 @@ const getWorkersRoute = createRoute({
 
 app.openapi(getWorkersRoute, async (c) => {
   const supabase = c.get('supabase')
-  const { search, industryIds, skillIds, limit = 50 } = c.req.valid('query')
+  const { limit = 50 } = c.req.valid('query')
 
   let dbQuery = supabase
     .schema('core')

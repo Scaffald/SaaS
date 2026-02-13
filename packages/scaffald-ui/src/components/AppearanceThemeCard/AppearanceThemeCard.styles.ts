@@ -4,7 +4,6 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { AppearanceThemeCardStyleConfig, AppearanceThemeCardVariant } from './AppearanceThemeCard.types'
@@ -12,7 +11,7 @@ import type { ThemeMode } from '../../tokens/colors'
 
 export function getAppearanceThemeCardStyles(
   theme: ThemeMode,
-  variant: AppearanceThemeCardVariant,
+  _variant: AppearanceThemeCardVariant,
   selected: boolean
 ): AppearanceThemeCardStyleConfig {
   const isLight = theme === 'light'

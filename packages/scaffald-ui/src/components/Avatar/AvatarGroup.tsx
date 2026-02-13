@@ -40,7 +40,7 @@ export function AvatarGroup({
             ]}
           >
             {React.isValidElement(child)
-              ? React.cloneElement(child, { size, showRing: true } as any)
+              ? React.cloneElement(child, { size, showRing: true } as { size?: number; showRing?: boolean })
               : child}
           </View>
         )

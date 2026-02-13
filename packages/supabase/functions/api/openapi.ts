@@ -77,16 +77,6 @@ Error responses follow this format:
       description: "Production API",
     },
   ],
-  components: {
-    securitySchemes: {
-      bearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-        description: "Supabase JWT token obtained via authentication or OAuth",
-      },
-    },
-  },
   tags: [
     { name: "Jobs", description: "Job listing and search endpoints" },
     {

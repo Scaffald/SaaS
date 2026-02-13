@@ -20,7 +20,6 @@ import { getAppearanceThemeCardStyles } from './AppearanceThemeCard.styles'
 import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 
 export function AppearanceThemeCard({

@@ -1,5 +1,4 @@
 import { ScrollView } from 'react-native'
-import { Row } from '../Layout'
 import { spacing } from '../../tokens/spacing'
 import type { KanbanBoardProps } from './Kanban.types'
 

@@ -90,7 +90,7 @@ export function rateLimiter(config: RateLimiterConfig) {
           message,
           retryAfter: resetSeconds,
         },
-        statusCode
+        statusCode as 429
       )
     }
 

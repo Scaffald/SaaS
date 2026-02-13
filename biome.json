@@ -159,6 +159,25 @@
           }
         }
       }
+    },
+    {
+      "includes": [
+        "packages/scaffald-ui/src/**/*.ts",
+        "packages/scaffald-ui/src/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noArrayIndexKey": "off"
+          },
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedFunctionParameters": "off",
+            "useHookAtTopLevel": "warn"
+          }
+        }
+      }
     }
   ]
 }

@@ -20,7 +20,7 @@
 import { View } from 'react-native'
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg'
 import type { LinearChartProps } from './Chart.types'
-import { generateLinePath, normalizeData } from './Chart.utils'
+import { generateLinePath, } from './Chart.utils'
 import { colors } from '../../tokens/colors'
 
 export function LinearChart({
@@ -95,9 +95,9 @@ export function LinearChart({
     <View style={[{ width: width as number, height }, style]}>
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Defs>
-          {showShadow && seriesPaths.map((_, index) => (
+          {showShadow && seriesPaths.map((seriesPath, index) => (
             <LinearGradient
-              key={`shadow-${index}`}
+              key={`shadow-${seriesPath.color}-${seriesPath.path.slice(0, 50)}`}
               id={`linearShadowGradient-${index}`}
               x1="0%"
               y1="0%"
@@ -113,16 +113,16 @@ export function LinearChart({
         {/* Shadow areas for each series */}
         {showShadow && seriesPaths.map((seriesPath, index) => (
           <Path
-            key={`shadow-${index}`}
+            key={`shadow-path-${seriesPath.color}-${seriesPath.path.slice(0, 50)}`}
             d={`${seriesPath.path} L ${width} ${height} L 0 ${height} Z`}
             fill={`url(#linearShadowGradient-${index})`}
           />
         ))}
 
         {/* Lines for each series */}
-        {seriesPaths.map((seriesPath, index) => (
+        {seriesPaths.map((seriesPath) => (
           <Path
-            key={`line-${index}`}
+            key={`line-${seriesPath.color}-${seriesPath.path.slice(0, 50)}`}
             d={seriesPath.path}
             fill="none"
             stroke={seriesPath.color}

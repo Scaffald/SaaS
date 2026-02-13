@@ -77,7 +77,7 @@ const getIndustriesResponseSchema = z
   })
   .openapi('GetIndustriesResponse')
 
-const searchParentSkillsSchema = z.object({
+const _searchParentSkillsSchema = z.object({
   query: z.string(),
   industryId: z.string().uuid().optional(),
   limit: z.number().int().positive().optional(),
@@ -89,7 +89,7 @@ const parentSkillSchema = z.object({
   code: z.string().optional(),
 })
 
-const searchParentSkillsResponseSchema = z
+const _searchParentSkillsResponseSchema = z
   .object({
     skills: z.array(parentSkillSchema),
   })
@@ -118,7 +118,7 @@ const addUserSkillSchema = z.object({
   proficiency: z.number().min(1).max(10),
 })
 
-const updateUserSkillSchema = z.object({
+const _updateUserSkillSchema = z.object({
   skillId: z.string().uuid(),
   proficiency: z.number().min(1).max(10).optional(),
 })
@@ -161,7 +161,7 @@ const addSkillMTSchema = z.object({
   notes: z.string().optional(),
 })
 
-const updateSkillMTSchema = z.object({
+const _updateSkillMTSchema = z.object({
   userSkillId: z.string().uuid(),
   proficiencyLevel: z.number().min(1).max(10).optional(),
   yearsExperience: z.number().optional(),
@@ -289,8 +289,10 @@ app.openapi(getSoftSkillsRoute, async (c) => {
   }
 
   // Merge catalog with ratings
-  const skills = catalog.map((skill: any) => {
-    const rating = ratings?.find((r: any) => r.skill_id === skill.id)
+  type CatalogSkill = { id: string; name: string; category: string; description?: string; order_index?: number }
+  type RatingRow = { skill_id: string; rating: number; self_assessed_at?: string }
+  const skills = catalog.map((skill: CatalogSkill) => {
+    const rating = ratings?.find((r: RatingRow) => r.skill_id === skill.id)
     if (rating) {
       categoryAverages[skill.category] += rating.rating
       categoryCounts[skill.category] += 1
@@ -416,7 +418,7 @@ app.openapi(updateSoftSkillsRoute, async (c) => {
   const categoryCounts: Record<string, number> = {}
 
   skills.forEach((skill) => {
-    const catalogEntry = catalog?.find((c: any) => c.id === skill.skill_id)
+    const catalogEntry = catalog?.find((c: { id: string }) => c.id === skill.skill_id)
     if (catalogEntry) {
       const category = catalogEntry.category
       categoryAverages[category] = (categoryAverages[category] || 0) + skill.rating
@@ -518,8 +520,8 @@ app.openapi(getUserSkillsRoute, async (c) => {
     return c.json({ error: 'Failed to fetch user skills', message: error.message }, 500)
   }
 
-  const explicitSkills = skills?.filter((s: any) => s.is_explicit) || []
-  const impliedSkills = skills?.filter((s: any) => !s.is_explicit) || []
+  const explicitSkills = skills?.filter((s: { is_explicit?: boolean }) => s.is_explicit) || []
+  const impliedSkills = skills?.filter((s: { is_explicit?: boolean }) => !s.is_explicit) || []
 
   return c.json({
     explicitSkills,
@@ -752,7 +754,7 @@ app.openapi(addSkillMTRoute, async (c) => {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
-  const insertData: any = {
+  const insertData: Record<string, unknown> = {
     user_id: user.id,
     skill_taxonomy: taxonomy,
     proficiency_level: proficiencyLevel,

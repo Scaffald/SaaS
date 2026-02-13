@@ -56,7 +56,7 @@ export const SelectableCard = forwardRef<
       children,
       ...props
     },
-    ref
+    _ref
   ): React.ReactElement => {
     const { theme } = useThemeContext()
 

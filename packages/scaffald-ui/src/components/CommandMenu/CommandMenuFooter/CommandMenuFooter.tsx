@@ -89,8 +89,8 @@ export function CommandMenuFooter({
 
   return (
     <View style={containerStyle}>
-      {hints.map((hint, index) => (
-        <View key={index} style={hintGroupStyle}>
+      {hints.map((hint) => (
+        <View key={`hint-${hint.variant}-${hint.keys.join(',')}-${hint.label}`} style={hintGroupStyle}>
           {hint.variant === 'Arrow' && hint.keys.length >= 2 ? (
             // For navigation, show both arrows
             <View style={{ flexDirection: 'row', gap: spacing[4] }}>

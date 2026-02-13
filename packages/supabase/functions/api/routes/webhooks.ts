@@ -9,7 +9,7 @@ import { authMiddleware } from '../middleware/auth.ts'
 const app = new OpenAPIHono()
 app.use('*', authMiddleware)
 
-const errorResponseSchema = z.object({
+const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
 })

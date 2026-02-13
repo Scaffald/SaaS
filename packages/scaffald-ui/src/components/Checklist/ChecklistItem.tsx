@@ -3,7 +3,6 @@ import { Row } from '../Layout'
 import { Stack } from '../Layout'
 import { Paragraph } from '../Typography'
 import { colors } from '../../tokens/colors'
-import { borderRadius } from '../../tokens/borders'
 import { spacing } from '../../tokens/spacing'
 import type { ChecklistItemProps } from './Checklist.types'
 

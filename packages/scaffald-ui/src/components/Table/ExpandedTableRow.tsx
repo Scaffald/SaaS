@@ -35,7 +35,6 @@ import { useThemeContext } from '../../theme'
 import { Input } from '../Input'
 import { TableCell } from './TableCell'
 import { spacing } from '../../tokens/spacing'
-import { colors } from '../../tokens/colors'
 
 /**
  * ExpandedTableRow component

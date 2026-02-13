@@ -56,7 +56,7 @@ export function Hide({ above, below, at, children }: HideProps) {
     shouldHide = width < belowValue
   }
 
-  return !shouldHide ? <>{children}</> : null
+  return !shouldHide ? children : null
 }
 
 export type { HideProps } from './Responsive.types'

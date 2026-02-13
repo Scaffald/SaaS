@@ -14,7 +14,7 @@ app.use('*', authMiddleware)
 // Schemas
 // ============================================================================
 
-const errorResponseSchema = z.object({
+const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
 }).openapi('ErrorResponse')

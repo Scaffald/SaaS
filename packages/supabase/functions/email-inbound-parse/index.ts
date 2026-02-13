@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       subject,
       text,
       html,
-      attachments: attachments ? parseInt(attachments) : 0,
+      attachments: attachments ? parseInt(attachments, 10) : 0,
     };
 
     console.log('Parsed email:', {

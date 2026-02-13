@@ -2,7 +2,6 @@
  * NotificationTag – small badge/tag for notification counts or labels.
  */
 
-import { View } from 'react-native'
 import { Row } from '../Layout'
 import { Text } from '../Typography'
 import { colors } from '../../tokens/colors'

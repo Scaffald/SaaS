@@ -77,7 +77,7 @@ export const OfficeLayout = ({
   const pathname = usePathname()
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
-  const isSmallScreen = width <= 800
+  const _isSmallScreen = width <= 800
   const { t } = useTranslation()
 
   // Auto-generate breadcrumbs if enabled and no manual override

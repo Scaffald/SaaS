@@ -23,7 +23,7 @@
  */
 
 import { useState, useEffect, useCallback, forwardRef, useRef, useMemo } from 'react'
-import { View, Modal as RNModal, Platform, type ViewStyle } from 'react-native'
+import { View, Modal as RNModal, Platform, } from 'react-native'
 import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../theme'

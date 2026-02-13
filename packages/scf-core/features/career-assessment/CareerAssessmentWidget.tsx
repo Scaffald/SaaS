@@ -27,7 +27,7 @@ import {
  * @returns JSX element
  */
 export function CareerAssessmentWidget() {
-  const { theme } = useThemeContext()
+  useThemeContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToast()
 
