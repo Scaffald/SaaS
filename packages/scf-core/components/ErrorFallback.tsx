@@ -21,13 +21,13 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
 
   return (
     <Stack
-      flex={1}
       justify="center"
       align="center"
       gap={spacing[8]}
       paddingHorizontal={spacing[6]}
       paddingVertical={spacing[10]}
       style={{
+        flex: 1,
         backgroundColor: colors.bg[theme].default,
       }}
     >

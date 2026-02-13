@@ -92,7 +92,7 @@ export function SiteBoundaryDrawer({
         <Stack gap={16}>
           <Row justify="space-between" align="center">
             <Text>Site Boundary</Text>
-            <Button size={8} iconStart={Plus} onPress={handleAddPoint}>
+            <Button size="sm" iconStart={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
           </Row>
@@ -135,16 +135,16 @@ export function SiteBoundaryDrawer({
                 {coordinates.map((coord, index) => (
                   <Card
                     key={`${coord[0]}-${coord[1]}-${index}`}
-                    padding={8}
+                    padding="sm"
                     backgroundColor="$gray2"
                   >
                     <Row gap={8} align="center" justify="space-between">
-                      <Row gap={8} flex={1}>
+                      <Row gap={8} style={{ flex: 1 }}>
                         <Text color="$gray10">Point {index + 1}:</Text>
                         {editingIndex === index ? (
-                          <Row gap={8} flex={1}>
+                          <Row gap={8} style={{ flex: 1 }}>
                             <Input
-                              size={8}
+                              size="sm"
                               value={coord[0].toString()}
                               onChangeText={(value) => {
                                 const lng = Number.parseFloat(value) || 0
@@ -154,7 +154,7 @@ export function SiteBoundaryDrawer({
                               keyboardType="numeric"
                             />
                             <Input
-                              size={8}
+                              size="sm"
                               value={coord[1].toString()}
                               onChangeText={(value) => {
                                 const lat = Number.parseFloat(value) || 0
@@ -163,26 +163,26 @@ export function SiteBoundaryDrawer({
                               placeholder="Latitude"
                               keyboardType="numeric"
                             />
-                            <Button size={8} onPress={() => setEditingIndex(null)}>
+                            <Button size="sm" onPress={() => setEditingIndex(null)}>
                               Save
                             </Button>
                           </Row>
                         ) : (
-                          <Text flex={1}>
+                          <Text style={{ flex: 1 }}>
                             [{coord[0].toFixed(6)}, {coord[1].toFixed(6)}]
                           </Text>
                         )}
                       </Row>
                       <Row gap={8}>
                         <Button
-                          size={8}
+                          size="sm"
                           variant="outline"
                           iconStart={Edit3}
                           onPress={() => setEditingIndex(index)}
                           disabled={editingIndex !== null}
                         />
                         <Button
-                          size={8}
+                          size="sm"
                           variant="outline"
                           iconStart={Trash2}
                           onPress={() => handleRemovePoint(index)}

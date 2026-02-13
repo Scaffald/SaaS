@@ -11,13 +11,13 @@
     "oauth",
     "typescript"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Scaffald/sdk.git"
-  },
   "homepage": "https://scaffald.github.io/sdk/",
   "bugs": {
     "url": "https://github.com/Scaffald/sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scaffald/sdk.git"
   },
   "license": "MIT",
   "author": "Scaffald <dev@scaffald.com>",

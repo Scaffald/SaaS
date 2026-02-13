@@ -1,11 +1,12 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { useWindowDimensions, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { StackProps } from '@scaffald/ui'
 import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
@@ -188,16 +189,16 @@ export const OfficeLayout = ({
   const hasRightContent = Boolean(rightContent)
   const _hasBothColumns = hasLeftContent && hasRightContent
 
-  const { $md: contentMdProps, ...restContentProps } = contentProps ?? {}
-  const { $md: leftMdProps, ...restLeftContainerProps } = leftContainerProps ?? {}
-  const { $md: rightMdProps, ...restRightContainerProps } = rightContainerProps ?? {}
+  const restContentProps = contentProps ?? {}
+  const restLeftContainerProps = leftContainerProps ?? {}
+  const restRightContainerProps = rightContainerProps ?? {}
 
   const handleTabChange = () => {
     // Navigation is handled by Link components in Tab
   }
 
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
       <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
@@ -259,3 +260,7 @@ export const OfficeLayout = ({
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+})

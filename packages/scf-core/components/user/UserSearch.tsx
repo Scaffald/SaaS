@@ -156,7 +156,7 @@ export function UserSearch({
         }}
       >
         <Input
-          flex={1}
+          style={{ flex: 1 }}
           placeholder={placeholder}
           value={searchTerm}
           onChangeText={handleInputChange}
@@ -209,7 +209,7 @@ export function UserSearch({
                   cursor="pointer"
                   onPress={() => handleSelect(user)}
                 >
-                  <Stack flex={1} gap={4}>
+                  <Stack style={{ flex: 1 }} gap={4}>
                     <Text>
                       {user.first_name || user.last_name
                         ? `${user.first_name || ''} ${user.last_name || ''}`.trim()

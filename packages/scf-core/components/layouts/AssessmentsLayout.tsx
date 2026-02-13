@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import { Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 
@@ -20,7 +21,7 @@ export const AssessmentsLayout = ({
   const _hasBothColumns = hasLeftContent && hasRightContent
 
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
       <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop={12} />}
 
@@ -32,3 +33,10 @@ export const AssessmentsLayout = ({
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+    backgroundColor: colors.gray[50],
+  },
+})

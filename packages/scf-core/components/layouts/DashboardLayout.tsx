@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import { Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -37,7 +38,7 @@ export const DashboardLayout = ({
   const _hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
       <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
@@ -55,3 +56,7 @@ export const DashboardLayout = ({
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+})

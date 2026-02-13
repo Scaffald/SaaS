@@ -30,13 +30,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@scaffald/ui": "workspace:*",
     "@scf/supabase": "workspace:*",
     "@supabase/supabase-js": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/react-query": "catalog:",
     "@trpc/server": "catalog:",
-    "@scaffald/ui": "workspace:*",
     "@unicornlove/compliance": "workspace:*",
     "@unicornlove/forsured": "workspace:*",
     "@unicornlove/insurance": "workspace:*",

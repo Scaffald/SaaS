@@ -62,8 +62,8 @@ function getCategoryForComponent(componentName: string): string {
 }
 
 function generateComponentDoc(componentName: string): string {
-  const category = getCategoryForComponent(componentName);
-  const kebabName = componentName
+  const _category = getCategoryForComponent(componentName);
+  const _kebabName = componentName
     .replace(/([a-z])([A-Z])/g, '$1-$2')
     .toLowerCase();
 
@@ -277,11 +277,11 @@ function main() {
     generated++;
   }
 
-  console.log(`\n📊 Summary:`);
+  console.log('\n📊 Summary:');
   console.log(`   Generated: ${generated}`);
   console.log(`   Skipped: ${skipped}`);
   console.log(`   Total: ${components.length}`);
-  console.log(`\n✨ Documentation generation complete!`);
+  console.log('\n✨ Documentation generation complete!');
 }
 
 main();

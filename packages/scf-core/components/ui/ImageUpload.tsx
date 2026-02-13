@@ -455,7 +455,7 @@ export function ImageUpload({
       {error && (
         <Row gap={8} align="center" padding={8} backgroundColor="$red2" borderRadius={12}>
           <AlertCircle size="lg" color="$red10" />
-          <Text color="$red10" flex={1}>
+          <Text color="$red10" style={{ flex: 1 }}>
             {error}
           </Text>
         </Row>

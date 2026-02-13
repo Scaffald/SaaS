@@ -98,7 +98,7 @@ export function UniversityAutocomplete({
   // Custom render function for university results
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
-      <Stack gap={4} flex={1} align="flex-start">
+      <Stack gap={4} style={{ flex: 1 }} align="flex-start">
         <SizableText color="gray">{option.raw.name}</SizableText>
         {option.raw.country && <SizableText color="gray">{option.raw.country}</SizableText>}
       </Stack>
