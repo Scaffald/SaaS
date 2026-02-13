@@ -48,32 +48,27 @@ jobs:
 
       - name: Typecheck (affected)
         run: pnpm affected:typecheck
-        continue-on-error: true
 
       - name: Lint (affected)
         run: pnpm affected:lint
-        continue-on-error: true
 
       - name: Test (affected)
         run: pnpm affected:test
-        continue-on-error: true
 
       - name: Test Health
         run: pnpm test:health
         if: always()
-        continue-on-error: true
 
       - uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
+        continue-on-error: true
         with:
           files: tests/reports/coverage/junit.xml
           check_name: Test Results
-        continue-on-error: true
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-reports
           path: tests/reports/coverage/
           retention-days: 30
-        continue-on-error: true

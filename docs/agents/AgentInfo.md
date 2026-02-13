@@ -150,7 +150,7 @@ pnpm test:deps        # Dependency consistency and circular dependency checks
 
 # Development & debugging
 pnpm test:watch       # Watch mode for unit tests
-pnpm test:vitest:ui   # Vitest UI dashboard
+pnpm test:ui   # Vitest UI dashboard
 pnpm test:playwright  # Run Playwright E2E tests
 pnpm test:deno:types  # Type check Deno Edge Functions
 

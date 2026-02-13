@@ -197,7 +197,7 @@ The session data stored in localStorage:
 
 Run unit tests for auth setup utilities:
 ```bash
-pnpm test:vitest tests/infrastructure/playwright/setup/auth.setup.test.ts
+pnpm test:unit tests/infrastructure/playwright/setup/auth.setup.test.ts
 ```
 
 ### Integration Tests

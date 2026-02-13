@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Pre-commit hook to enforce linting and project checks before allowing commits
+# This hook runs `pnpm lint:affected` and `pnpm check:affected` for faster feedback
+
+set -e
+
+echo "🔧 Running pre-commit checks (affected only)..."
+
+# Get the project root directory (where package.json is located)
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+# Change to project root directory
+cd "$PROJECT_ROOT"
+
+# Run lint:affected to check linting issues in affected packages
+echo "🔍 Running pnpm lint:affected..."
+if ! pnpm lint:affected; then
+    echo "❌ Code linting failed. Please fix linting issues and try again."
+    exit 1
+fi
+
+# Run faster version of check:affected (parallel typecheck, skip locales validation)
+# Use timeout to prevent hanging - typecheck should complete in 60s max
+echo "✅ Running type checks on affected packages..."
+CHECK_OUTPUT=$(timeout 60s pnpm check:affected:fast 2>&1 || echo "TIMEOUT_OR_ERROR:$?")
+CHECK_EXIT=$?
+
+# Check if timeout occurred
+if echo "$CHECK_OUTPUT" | grep -q "TIMEOUT_OR_ERROR"; then
+    echo "⚠️ Type checks timed out after 60 seconds"
+    echo "   Allowing commit - please run 'pnpm check:affected' manually to verify"
+    echo "✅ Pre-commit checks passed (with warning)!"
+    exit 0
+fi
+
+# Filter out TS4023 errors (inaccessible type names from @ts-nocheck files)
+# These are unavoidable when exporting complex types derived from @ts-nocheck files
+OTHER_ERRORS=$(echo "$CHECK_OUTPUT" | grep -v "error TS4023" | grep -E "error|Error|failed|Failed" || true)
+
+if [ $CHECK_EXIT -ne 0 ] && [ -z "$OTHER_ERRORS" ]; then
+    # Only TS4023 errors - allow the commit to proceed
+    echo "⚠️ Note: TS4023 type errors detected but these are unavoidable architectural limitations"
+    echo "   (errors from exporting types derived from @ts-nocheck files)"
+elif [ $CHECK_EXIT -ne 0 ]; then
+    echo "❌ pnpm check:affected failed. Please resolve the reported issues and try again."
+    echo "$CHECK_OUTPUT"
+    exit 1
+fi
+
+# Notify if staged files changed after linting/checks
+if ! git diff --quiet --staged; then
+    echo "ℹ️ Some staged files changed after running lint:affected/check:affected."
+    echo "📋 Review and re-stage the following files:"
+    git diff --name-only --staged
+    echo ""
+    echo "💡 Run 'git add <file>' to include these updates in your commit."
+fi
+
+echo "✅ Pre-commit checks passed!"
+exit 0

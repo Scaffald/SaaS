@@ -51,7 +51,7 @@ pnpm test
 
 This runs:
 - Code quality checks (`pnpm check`)
-- Vitest unit tests (`pnpm test:vitest`)
+- Vitest unit tests (`pnpm test:unit`)
 - API tests (`pnpm test:api`)
 
 ### Deno Edge Functions Type Check
@@ -62,7 +62,7 @@ See `packages/supabase/functions/DENO_TYPE_CHECKING.md` for setup and current st
 
 ### Unit Tests Only
 ```bash
-pnpm test:vitest
+pnpm test:unit
 # or
 pnpm test:unit
 ```
@@ -83,7 +83,7 @@ pnpm test:coverage
 ```bash
 pnpm test:watch
 # or
-pnpm test:vitest:watch
+pnpm test:watch
 ```
 
 ## Writing Tests

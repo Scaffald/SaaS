@@ -9,6 +9,7 @@
 
 ## Guides
 
+- [Testing guide](TESTING.md) — Test commands, hooks, hand-run scripts, CI
 - [API testing guide](API_TESTING_GUIDE.md) — REST API local testing with curl, health checks, auth
 
 ## Agents
