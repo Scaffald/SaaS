@@ -66,12 +66,12 @@ export function DisputeForm({
 
   return (
     <FormProvider {...form}>
-      <Stack gap="$4">
-        <Stack gap="$2">
-          <Text fontSize="$5" fontWeight="700" color="$color12">
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Text color="gray">
             Submit a dispute
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Share what needs review and, if helpful, include supporting documents so our compliance
             team can investigate quickly.
           </Text>
@@ -82,26 +82,26 @@ export function DisputeForm({
             backgroundColor="$yellow3"
             borderColor="$yellow8"
             borderWidth={1}
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            gap="$2"
-            borderRadius="$4"
+            paddingHorizontal={12}
+            paddingVertical={8}
+            gap={8}
+            borderRadius={16}
           >
-            <Text fontSize="$3" fontWeight="600" color="$yellow11">
+            <Text color="$yellow11">
               Dispute already in review
             </Text>
-            <Text fontSize="$2" color="$yellow11">
+            <Text color="$yellow11">
               You have a dispute awaiting review. We’ll notify you when the team has an update.
             </Text>
           </Card>
         ) : null}
 
-        <Fieldset gap="$3">
+        <Fieldset gap={12}>
           <Controller
             control={form.control}
             name="reason"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <Stack gap="$1">
+              <Stack gap={4}>
                 <Label htmlFor="dispute-reason">What needs review?</Label>
                 <ResponsiveSelect
                   value={value || ''}
@@ -123,7 +123,7 @@ export function DisputeForm({
               control={form.control}
               name="otherReason"
               render={({ field: { value, onChange }, fieldState: { error } }) => (
-                <Stack gap="$1">
+                <Stack gap={4}>
                   <Label htmlFor="dispute-other-reason">Describe the issue</Label>
                   <Input
                     id="dispute-other-reason"
@@ -133,7 +133,7 @@ export function DisputeForm({
                     borderColor={error ? '$red8' : '$borderColor'}
                   />
                   {error ? (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       {error.message}
                     </Text>
                   ) : null}
@@ -146,7 +146,7 @@ export function DisputeForm({
             control={form.control}
             name="details"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <Stack gap="$1">
+              <Stack gap={4}>
                 <Label htmlFor="dispute-details">Explain what’s incorrect</Label>
                 <TextArea
                   id="dispute-details"
@@ -156,11 +156,11 @@ export function DisputeForm({
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
                   borderColor={error ? '$red8' : '$borderColor'}
                 />
-                <Text fontSize="$1" color="$color9">
+                <Text color="gray">
                   Minimum 20 characters. Max 2000 characters.
                 </Text>
                 {error ? (
-                  <Text fontSize="$2" color="$red10">
+                  <Text color="$red10">
                     {error.message}
                   </Text>
                 ) : null}
@@ -169,11 +169,11 @@ export function DisputeForm({
           />
         </Fieldset>
 
-        <Stack gap="$2">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Supporting documents (optional)
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Upload up to five files (PDF, JPG, or PNG, 10MB each) to help us verify your dispute.
           </Text>
 
@@ -192,29 +192,29 @@ export function DisputeForm({
                 borderWidth={1}
                 borderColor={isDragActive ? '$blue8' : '$borderColor'}
                 borderStyle="dashed"
-                borderRadius="$4"
-                paddingHorizontal="$4"
-                paddingVertical="$5"
-                gap="$2"
+                borderRadius={16}
+                paddingHorizontal={16}
+                paddingVertical={20}
+                gap={8}
                 backgroundColor="$color2"
-                alignItems="center"
-                justifyContent="center"
+                align="center"
+                justify="center"
               >
                 <input {...getInputProps()} />
                 <Upload size={24} color="$blue10" />
-                <Text fontWeight="600" color="$color12">
+                <Text color="gray">
                   {isProcessing ? 'Processing…' : 'Drag a file here'}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   or{' '}
-                  <Text fontWeight="600" color="$blue11">
+                  <Text color="$blue11">
                     browse your device
                   </Text>
                 </Text>
-                <Button size="$2" variant="outlined" onPress={open} icon={Upload}>
+                <Button size={8} variant="outline" onPress={open} icon={Upload}>
                   Choose file
                 </Button>
-                <Text fontSize="$1" color="$color9">
+                <Text color="gray">
                   Accepted: PDF, PNG, JPG • Max 10MB each
                 </Text>
               </Stack>
@@ -223,22 +223,22 @@ export function DisputeForm({
 
           {attachmentError ? (
             <Row
-              gap="$2"
-              alignItems="center"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
+              gap={8}
+              align="center"
+              paddingHorizontal={12}
+              paddingVertical={8}
               backgroundColor="$red3"
-              borderRadius="$3"
+              borderRadius={12}
             >
               <AlertCircle size={16} color="$red10" />
-              <Text fontSize="$2" color="$red10">
+              <Text color="$red10">
                 {attachmentError}
               </Text>
             </Row>
           ) : null}
 
           {attachments.length > 0 ? (
-            <Stack gap="$2">
+            <Stack gap={8}>
               <Separator />
               {attachments.map((attachment) => (
                 <Row
@@ -246,24 +246,24 @@ export function DisputeForm({
                   backgroundColor="$color2"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  borderRadius="$3"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  gap="$3"
-                  alignItems="center"
-                  justifyContent="space-between"
+                  borderRadius={12}
+                  paddingHorizontal={12}
+                  paddingVertical={8}
+                  gap={12}
+                  align="center"
+                  justify="space-between"
                 >
-                  <Stack flex={1} gap="$1">
-                    <Text fontSize="$3" fontWeight="600" color="$color12" numberOfLines={1}>
+                  <Stack flex={1} gap={4}>
+                    <Text color="gray" numberOfLines={1}>
                       {attachment.name}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       {attachment.mimeType.toUpperCase()} • {formatFileSize(attachment.size)}
                     </Text>
                   </Stack>
                   <Button
-                    size="$2"
-                    variant="outlined"
+                    size={8}
+                    variant="outline"
                     icon={X}
                     onPress={() => onRemoveAttachment(attachment.id)}
                   >
@@ -277,23 +277,23 @@ export function DisputeForm({
 
         {submissionError ? (
           <Row
-            gap="$2"
-            alignItems="center"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
+            gap={8}
+            align="center"
+            paddingHorizontal={12}
+            paddingVertical={8}
             backgroundColor="$red3"
-            borderRadius="$3"
+            borderRadius={12}
           >
             <AlertCircle size={16} color="$red10" />
-            <Text fontSize="$2" color="$red10">
+            <Text color="$red10">
               {submissionError}
             </Text>
           </Row>
         ) : null}
 
-        <Row gap="$2" justifyContent="flex-end">
+        <Row gap={8} justify="flex-end">
           <Button
-            size="$3"
+            size={12}
             theme="blue"
             disabled={disableSubmit}
             onPress={async () => {

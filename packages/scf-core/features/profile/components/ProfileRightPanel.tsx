@@ -16,11 +16,11 @@ export function ProfileRightPanel({ title, description, stats }: ProfileRightPan
     <DashboardWidget>
       <H3>{title}</H3>
       {stats && (
-        <Text color="$color11" fontSize="$3">
+        <Text color="gray">
           {stats}
         </Text>
       )}
-      <Text color="$color11" fontSize="$3">
+      <Text color="gray">
         {description}
       </Text>
     </DashboardWidget>

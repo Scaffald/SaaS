@@ -173,44 +173,44 @@ export function SkillsStep({
   const guidanceId = useId()
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Spotlight your strengths
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Add 3-5 core skills that best represent your expertise. Recruiters use these to match you
           with opportunities.
         </Paragraph>
       </Stack>
 
-      <Stack gap="$3">
-        <Text fontWeight="600">
+      <Stack gap={12}>
+        <Text>
           Selected Skills ({skills.length}/{MAX_SKILLS})
         </Text>
         {skills.length === 0 ? (
           <Card bordered backgroundColor="$color2">
             <Card.Header>
-              <Paragraph color="$color11">
+              <Paragraph color="gray">
                 Start by selecting your signature skills. We recommend adding at least three.
               </Paragraph>
             </Card.Header>
           </Card>
         ) : (
-          <Stack gap="$2">
+          <Stack gap={8}>
             {skills.map((skill) => (
               <Card key={skill.id} bordered backgroundColor="$color2">
-                <Card.Header gap="$2">
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Stack gap="$1">
-                      <Text fontWeight="600">{skill.name}</Text>
-                      <Text fontSize="$2" color="$color11">
+                <Card.Header gap={8}>
+                  <Row justify="space-between" align="center">
+                    <Stack gap={4}>
+                      <Text>{skill.name}</Text>
+                      <Text color="gray">
                         {skill.taxonomy.toUpperCase()} • Proficiency {skill.proficiency}/5
                       </Text>
                     </Stack>
                     <Button
-                      size="$2"
-                      variant="outlined"
+                      size={8}
+                      variant="outline"
                       onPress={() => handleRemoveSkill(skill.id)}
                       aria-label={`Remove ${skill.name}`}
                     >
@@ -222,12 +222,12 @@ export function SkillsStep({
             ))}
           </Stack>
         )}
-        <Paragraph id={guidanceId} fontSize="$2" color="$color10" aria-live="polite">
+        <Paragraph id={guidanceId} color="gray" aria-live="polite">
           {guidance}
         </Paragraph>
       </Stack>
 
-      <Stack gap="$3">
+      <Stack gap={12}>
         <InlineSkillSearch
           onSearchSkills={handleSearchSkills}
           onSelectSkill={handleSelectSkill}
@@ -235,7 +235,7 @@ export function SkillsStep({
           isSearching={searchParentSkillsMutation.isPending}
         />
         {skills.length >= MAX_SKILLS && (
-          <Paragraph fontSize="$2" color="$color11" aria-live="polite">
+          <Paragraph color="gray" aria-live="polite">
             You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick wizard. You can add
             more later from your full profile.
           </Paragraph>

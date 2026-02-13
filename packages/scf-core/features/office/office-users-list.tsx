@@ -205,8 +205,8 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
             router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)
           },
           children: (
-            <Stack gap="$3">
-              <Paragraph size="$4" color="$color11">
+            <Stack gap={12}>
+              <Paragraph size={16} color="gray">
                 This modal will collect user details in an upcoming iteration. Until then, use the
                 primary action below to launch the full create page.
               </Paragraph>

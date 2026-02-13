@@ -21,11 +21,11 @@ export function CapabilityQuestionInput({
   }
 
   return (
-    <Stack gap="$2">
-      <Text fontSize="$3" fontWeight="600">
+    <Stack gap={8}>
+      <Text>
         {question}
       </Text>
-      <Row gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Button
           flex={1}
           theme={localValue === true ? 'success' : undefined}
@@ -46,8 +46,8 @@ export function CapabilityQuestionInput({
         </Button>
       </Row>
       {/* Alternative: Toggle Switch */}
-      <Row justifyContent="space-between" alignItems="center" marginTop="$2">
-        <Text fontSize="$3" color="$color11">
+      <Row justify="space-between" align="center" marginTop={8}>
+        <Text color="gray">
           Toggle answer
         </Text>
         <ToggleSwitch checked={localValue ?? false} onCheckedChange={handleValueChange} />

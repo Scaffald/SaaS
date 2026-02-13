@@ -37,25 +37,25 @@ export function LocationSchedulingSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Location & Scheduling
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Work location and schedule information
       </Text>
 
       {/* Relocation Assistance */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Relocation assistance offered</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Company provides relocation support
           </Text>
         </Stack>
@@ -67,7 +67,7 @@ export function LocationSchedulingSection({
       </Row>
 
       {localState.relocation_assistance_offered && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Relocation assistance details</Label>
           <TextArea
             placeholder="Describe relocation assistance provided"
@@ -81,7 +81,7 @@ export function LocationSchedulingSection({
       )}
 
       {/* Work Schedule Details */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Work schedule details</Label>
         <TextArea
           placeholder="e.g. Monday-Friday 8am-5pm, flexible hours, compressed workweek"
@@ -92,7 +92,7 @@ export function LocationSchedulingSection({
       </Stack>
 
       {/* Timezone */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Timezone</Label>
         <Input
           placeholder="e.g. America/New_York, Pacific Time"

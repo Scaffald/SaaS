@@ -110,14 +110,14 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <Stack position="absolute" bottom="$4" right="$4" style={{ zIndex: 1000 }}>
+      <Stack position="absolute" bottom={16} right={16} style={{ zIndex: 1000 }}>
         <Button
-          size="$6"
+          size={24}
           circular
           icon={MessageCircle}
           backgroundColor="$blue9"
-          color="$color1"
-          elevation="$4"
+          color="gray"
+          elevation={16}
           pressStyle={{ scale: 0.97 }}
           hoverStyle={{ backgroundColor: '$blue10' }}
           focusStyle={{ outlineColor: '$blue8' }}
@@ -127,16 +127,16 @@ export function FeedbackWidget() {
         </Button>
         {pendingCount > 0 ? (
           <Stack
-            marginTop="$2"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
+            marginTop={8}
+            paddingHorizontal={12}
+            paddingVertical={8}
             backgroundColor="$yellow4"
             borderWidth={1}
             borderColor="$yellow6"
-            borderRadius="$3"
+            borderRadius={12}
             style={{ maxWidth: 220 }}
           >
-            <Text fontSize="$2" color="$yellow10">
+            <Text color="$yellow10">
               {pendingCount === 1
                 ? "1 submission will sync when you're online."
                 : `${pendingCount} submissions will sync when you're online.`}
@@ -149,25 +149,25 @@ export function FeedbackWidget() {
         open={isModalOpen}
         onOpenChange={handleOpenChange}
         title="Submit Feedback"
-        size="medium"
+        size="md"
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Stack gap="$4" paddingHorizontal="$2" paddingVertical="$2">
-            <Paragraph color="$color11">{INSTRUCTIONS}</Paragraph>
+          <Stack gap={16} paddingHorizontal={8} paddingVertical={8}>
+            <Paragraph color="gray">{INSTRUCTIONS}</Paragraph>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Feedback Type</Text>
+            <Stack gap={8}>
+              <Text>Feedback Type</Text>
               <Controller
                 control={form.control}
                 name="feedbackType"
                 render={({ field: { value, onChange } }) => (
-                  <Row gap="$2">
+                  <Row gap={8}>
                     {(['bug', 'feature', 'comment'] as const).map((type) => {
                       const isActive = value === type
                       return (
                         <Button
                           key={type}
-                          size="$3"
+                          size={12}
                           theme={isActive ? 'blue' : undefined}
                           variant={isActive ? undefined : 'outlined'}
                           onPress={() => onChange(type)}
@@ -186,8 +186,8 @@ export function FeedbackWidget() {
               <FieldError message={form.formState.errors.feedbackType?.message} />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Feedback Details</Text>
+            <Stack gap={8}>
+              <Text>Feedback Details</Text>
               <Controller
                 control={form.control}
                 name="feedbackText"
@@ -209,7 +209,7 @@ export function FeedbackWidget() {
                   />
                 )}
               />
-              <Row justifyContent="space-between" alignItems="center">
+              <Row justify="space-between" align="center">
                 <FieldError
                   message={
                     form.formState.errors.feedbackText?.message ??
@@ -218,14 +218,14 @@ export function FeedbackWidget() {
                       : undefined)
                   }
                 />
-                <Text color={isBelowMinimum ? '$red9' : '$color9'} fontSize="$2">
+                <Text color={isBelowMinimum ? '$red9' : '$color9'}>
                   {formatCharacterCounter(characterCount)}
                 </Text>
               </Row>
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Screenshot (optional)</Text>
+            <Stack gap={8}>
+              <Text>Screenshot (optional)</Text>
               <UploadSurface
                 accept={ACCEPT_TYPES}
                 maxSizeBytes={5 * 1024 * 1024}
@@ -239,23 +239,23 @@ export function FeedbackWidget() {
                     {...getRootProps()}
                     borderWidth={1}
                     borderStyle="dashed"
-                    paddingHorizontal="$4"
-                    paddingVertical="$6"
-                    alignItems="center"
-                    justifyContent="center"
-                    gap="$2"
+                    paddingHorizontal={16}
+                    paddingVertical={24}
+                    align="center"
+                    justify="center"
+                    gap={8}
                     backgroundColor="$color2"
                     borderColor={isDragActive ? '$blue7' : '$color6'}
-                    borderRadius="$4"
+                    borderRadius={16}
                   >
                     <input {...getInputProps()} />
-                    <Text fontWeight="600">
+                    <Text>
                       {isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}
                     </Text>
-                    <Text fontSize="$2" color="$color9">
+                    <Text color="gray">
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
                     </Text>
-                    <Button size="$2" marginTop="$2" onPress={open}>
+                    <Button size={8} marginTop={8} onPress={open}>
                       Choose File
                     </Button>
                   </Stack>
@@ -264,11 +264,11 @@ export function FeedbackWidget() {
 
               {screenshot ? (
                 <Stack
-                  marginTop="$3"
+                  marginTop={12}
                   borderWidth={1}
                   borderColor="$color6"
                   overflow="hidden"
-                  borderRadius="$4"
+                  borderRadius={16}
                 >
                   {screenshotPreview ? (
                     <Image
@@ -279,24 +279,24 @@ export function FeedbackWidget() {
                     />
                   ) : null}
                   <Row
-                    paddingHorizontal="$3"
-                    paddingVertical="$2"
-                    alignItems="center"
-                    justifyContent="space-between"
+                    paddingHorizontal={12}
+                    paddingVertical={8}
+                    align="center"
+                    justify="space-between"
                     backgroundColor="$color2"
-                    gap="$2"
+                    gap={8}
                   >
                     <Stack flex={1}>
-                      <Text numberOfLines={1} fontWeight="600">
+                      <Text numberOfLines={1}>
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
-                      <Text fontSize="$2" color="$color9">
+                      <Text color="gray">
                         {screenshot.kind === 'web'
                           ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
                       </Text>
                     </Stack>
-                    <Button size="$2" variant="outlined" onPress={handleRemoveScreenshot}>
+                    <Button size={8} variant="outline" onPress={handleRemoveScreenshot}>
                       Remove
                     </Button>
                   </Row>
@@ -306,15 +306,15 @@ export function FeedbackWidget() {
 
             <Separator />
 
-            <Row alignItems="center" justifyContent="space-between" gap="$3">
-              <Stack gap="$1">
-                <Text fontSize="$2" color="$color9">
+            <Row align="center" justify="space-between" gap={12}>
+              <Stack gap={4}>
+                <Text color="gray">
                   Captured context:
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   {context.pageUrl}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   {context.browserName
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}
@@ -322,8 +322,8 @@ export function FeedbackWidget() {
               </Stack>
 
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 onPress={() => {
                   void processQueue()
                 }}
@@ -334,7 +334,7 @@ export function FeedbackWidget() {
             </Row>
 
             <Button
-              size="$4"
+              size={16}
               disabled={isSubmitting || isBelowMinimum || !form.formState.isValid}
               onPress={form.handleSubmit(handleSubmit)}
             >

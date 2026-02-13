@@ -88,11 +88,11 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
   return (
     <Row
       backgroundColor={colors.bg}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$2"
+      paddingHorizontal={8}
+      paddingVertical={4}
+      borderRadius={8}
     >
-      <Text fontSize="$2" color={colors.text} fontWeight="500" textTransform="capitalize">
+      <Text color={colors.text} textTransform="capitalize">
         {status}
       </Text>
     </Row>
@@ -107,11 +107,11 @@ function PriorityBadge({ priority }: { priority: string }) {
   return (
     <Row
       backgroundColor={colors.bg}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$2"
+      paddingHorizontal={8}
+      paddingVertical={4}
+      borderRadius={8}
     >
-      <Text fontSize="$2" color={colors.text} fontWeight="500" textTransform="capitalize">
+      <Text color={colors.text} textTransform="capitalize">
         {priority}
       </Text>
     </Row>
@@ -136,23 +136,23 @@ function MetricCard({
 
   return (
     <Stack
-      padding="$4"
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
       flex={1}
       minWidth={150}
-      gap="$1"
+      gap={4}
     >
-      <Text fontSize="$3" color="$color10">
+      <Text color="gray">
         {label}
       </Text>
-      <Text fontSize="$7" fontWeight="700" color={color}>
+      <Text color={color}>
         {value}
       </Text>
       {trend && (
-        <Text fontSize="$2" color={trendColor}>
+        <Text color={trendColor}>
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} vs last month
         </Text>
       )}
@@ -176,51 +176,51 @@ function RequestRow({
 }) {
   return (
     <Row
-      padding="$3"
+      padding={12}
       backgroundColor={request.is_overdue ? '$red2' : '$color2'}
-      borderRadius="$2"
+      borderRadius={8}
       borderWidth={1}
       borderColor={request.is_overdue ? '$red6' : '$borderColor'}
-      alignItems="center"
-      gap="$3"
+      align="center"
+      gap={12}
       flexWrap="wrap"
     >
       {/* Request ID */}
       <Stack minWidth={100}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Request ID
         </Text>
-        <Text fontSize="$3" fontWeight="500">
+        <Text>
           {request.id.slice(0, 8)}...
         </Text>
       </Stack>
 
       {/* User */}
       <Stack flex={1} minWidth={140}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           User
         </Text>
-        <Text fontSize="$3" fontWeight="500">
+        <Text>
           {request.user_name}
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {request.user_email}
         </Text>
       </Stack>
 
       {/* Type */}
       <Stack minWidth={100}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Type
         </Text>
-        <Text fontSize="$3" textTransform="capitalize">
+        <Text textTransform="capitalize">
           {request.type.replace('_', ' ')}
         </Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Status
         </Text>
         <StatusBadge status={request.status} />
@@ -228,7 +228,7 @@ function RequestRow({
 
       {/* Priority */}
       <Stack minWidth={80}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Priority
         </Text>
         <PriorityBadge priority={request.priority} />
@@ -236,12 +236,10 @@ function RequestRow({
 
       {/* Days Elapsed */}
       <Stack minWidth={80}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Days
         </Text>
         <Text
-          fontSize="$3"
-          fontWeight="600"
           color={request.is_overdue ? '$red10' : request.days_elapsed > 30 ? '$orange10' : '$color12'}
         >
           {request.days_elapsed}
@@ -251,26 +249,26 @@ function RequestRow({
 
       {/* Submitted */}
       <Stack flex={1} minWidth={120}>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Submitted
         </Text>
-        <Text fontSize="$3">
+        <Text>
           {formatDate(request.created_at)}
         </Text>
       </Stack>
 
       {/* Actions */}
-      <Row gap="$2" minWidth={200} justifyContent="flex-end">
-        <Button size="$2" variant="outlined" onPress={() => onView?.(request.id)}>
+      <Row gap={8} minWidth={200} justify="flex-end">
+        <Button size={8} variant="outline" onPress={() => onView?.(request.id)}>
           View
         </Button>
         {request.status === 'pending' && (
-          <Button size="$2" variant="outlined" onPress={() => onAssign?.(request.id)}>
+          <Button size={8} variant="outline" onPress={() => onAssign?.(request.id)}>
             Assign
           </Button>
         )}
         {(request.status === 'pending' || request.status === 'processing') && (
-          <Button size="$2" onPress={() => onProcess?.(request.id)}>
+          <Button size={8} onPress={() => onProcess?.(request.id)}>
             Process
           </Button>
         )}
@@ -298,16 +296,16 @@ function FilterBar({
   onPriorityChange: (priority: string) => void
 }) {
   return (
-    <Row gap="$3" flexWrap="wrap" alignItems="center">
-      <Stack gap="$1">
-        <Text fontSize="$2" color="$color10">
+    <Row gap={12} flexWrap="wrap" align="center">
+      <Stack gap={4}>
+        <Text color="gray">
           Status
         </Text>
-        <Row gap="$2">
+        <Row gap={8}>
           {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <Button
               key={status}
-              size="$2"
+              size={8}
               variant={statusFilter === status ? undefined : 'outlined'}
               onPress={() => onStatusChange(status)}
             >
@@ -317,15 +315,15 @@ function FilterBar({
         </Row>
       </Stack>
 
-      <Stack gap="$1">
-        <Text fontSize="$2" color="$color10">
+      <Stack gap={4}>
+        <Text color="gray">
           Type
         </Text>
-        <Row gap="$2">
+        <Row gap={8}>
           {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
             <Button
               key={type}
-              size="$2"
+              size={8}
               variant={typeFilter === type ? undefined : 'outlined'}
               onPress={() => onTypeChange(type)}
             >
@@ -335,15 +333,15 @@ function FilterBar({
         </Row>
       </Stack>
 
-      <Stack gap="$1">
-        <Text fontSize="$2" color="$color10">
+      <Stack gap={4}>
+        <Text color="gray">
           Priority
         </Text>
-        <Row gap="$2">
+        <Row gap={8}>
           {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
               key={priority}
-              size="$2"
+              size={8}
               variant={priorityFilter === priority ? undefined : 'outlined'}
               onPress={() => onPriorityChange(priority)}
             >
@@ -397,14 +395,14 @@ export function CCPAAdminDashboard() {
 
   if (hasError) {
     return (
-      <Stack padding="$4" gap="$4" alignItems="center" justifyContent="center" flex={1}>
-        <Text color="$red10" fontSize="$5" fontWeight="600">
+      <Stack padding={16} gap={16} align="center" justify="center" flex={1}>
+        <Text color="$red10">
           Error Loading CCPA Dashboard
         </Text>
-        <Text color="$color11" textAlign="center">
+        <Text color="gray" textAlign="center">
           {metricsError?.message || requestsError?.message}
         </Text>
-        <Button onPress={() => window.location.reload()} variant="outlined">
+        <Button onPress={() => window.location.reload()} variant="outline">
           Retry
         </Button>
       </Stack>
@@ -426,28 +424,28 @@ export function CCPAAdminDashboard() {
 
   return (
     <ScrollView>
-      <Stack padding="$4" gap="$6" maxWidth={1400} marginHorizontal="auto">
+      <Stack padding={16} gap={24} maxWidth={1400} marginHorizontal="auto">
         {/* Page Header */}
-        <Stack gap="$2">
-          <Text fontSize="$8" fontWeight="700">
+        <Stack gap={8}>
+          <Text>
             CCPA Compliance Dashboard
           </Text>
-          <Text color="$color11" fontSize="$4">
+          <Text color="gray">
             Manage CCPA requests, monitor compliance metrics, and ensure regulatory compliance.
           </Text>
         </Stack>
 
         {/* Compliance Metrics */}
-        <Stack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Compliance Metrics
           </Text>
           {isLoading ? (
-            <Row padding="$6" justifyContent="center">
-              <Spinner size="large" />
+            <Row padding={24} justify="center">
+              <Spinner size="lg" />
             </Row>
           ) : (
-            <Row gap="$3" flexWrap="wrap">
+            <Row gap={12} flexWrap="wrap">
               <MetricCard
                 label="Total Requests"
                 value={metrics?.total_requests || 0}
@@ -501,15 +499,15 @@ export function CCPAAdminDashboard() {
         {/* 45-Day Deadline Warning */}
         {(metrics?.overdue_count || 0) > 0 && (
           <Row
-            padding="$4"
+            padding={16}
             backgroundColor="$red2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$red6"
-            gap="$2"
-            alignItems="center"
+            gap={8}
+            align="center"
           >
-            <Text fontSize="$4" color="$red11" fontWeight="600">
+            <Text color="$red11">
               ATTENTION: {metrics?.overdue_count} request(s) have exceeded the 45-day CCPA deadline.
               Immediate action required.
             </Text>
@@ -517,8 +515,8 @@ export function CCPAAdminDashboard() {
         )}
 
         {/* Request Filters */}
-        <Stack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Request Management
           </Text>
           <FilterBar
@@ -532,22 +530,22 @@ export function CCPAAdminDashboard() {
         </Stack>
 
         {/* Request List */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           {isLoading ? (
-            <Row padding="$6" justifyContent="center">
-              <Spinner size="large" />
+            <Row padding={24} justify="center">
+              <Spinner size="lg" />
             </Row>
           ) : requests?.requests?.length === 0 ? (
             <Stack
-              padding="$6"
+              padding={24}
               backgroundColor="$color2"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
-              alignItems="center"
-              gap="$2"
+              align="center"
+              gap={8}
             >
-              <Text fontSize="$4" color="$color11">
+              <Text color="gray">
                 No requests match the current filters
               </Text>
             </Stack>
@@ -565,21 +563,21 @@ export function CCPAAdminDashboard() {
         </Stack>
 
         {/* Quick Actions */}
-        <Stack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Quick Actions
           </Text>
-          <Row gap="$3" flexWrap="wrap">
-            <Button size="$4">
+          <Row gap={12} flexWrap="wrap">
+            <Button size={16}>
               Generate Compliance Report
             </Button>
-            <Button size="$4" variant="outlined">
+            <Button size={16} variant="outline">
               Export All Requests
             </Button>
-            <Button size="$4" variant="outlined">
+            <Button size={16} variant="outline">
               View Breach Notifications
             </Button>
-            <Button size="$4" variant="outlined">
+            <Button size={16} variant="outline">
               Audit Log
             </Button>
           </Row>
@@ -587,39 +585,39 @@ export function CCPAAdminDashboard() {
 
         {/* CCPA Timeline Requirements */}
         <Stack
-          gap="$3"
-          padding="$4"
+          gap={12}
+          padding={16}
           backgroundColor="$color2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontSize="$5" fontWeight="600">
+          <Text>
             CCPA Timeline Requirements
           </Text>
-          <Stack gap="$2">
-            <Row gap="$2" alignItems="center">
+          <Stack gap={8}>
+            <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
-              <Text fontSize="$3" color="$color11">
-                <Text fontWeight="600">10 days</Text> - Acknowledge receipt of request
+              <Text color="gray">
+                <Text>10 days</Text> - Acknowledge receipt of request
               </Text>
             </Row>
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$orange10" />
-              <Text fontSize="$3" color="$color11">
-                <Text fontWeight="600">45 days</Text> - Complete request (with possible 45-day extension)
+              <Text color="gray">
+                <Text>45 days</Text> - Complete request (with possible 45-day extension)
               </Text>
             </Row>
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
-              <Text fontSize="$3" color="$color11">
-                <Text fontWeight="600">12 months</Text> - Retain request records
+              <Text color="gray">
+                <Text>12 months</Text> - Retain request records
               </Text>
             </Row>
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <Stack width={8} height={8} borderRadius={4} backgroundColor="$red10" />
-              <Text fontSize="$3" color="$color11">
-                <Text fontWeight="600">72 hours</Text> - Notify users of data breaches
+              <Text color="gray">
+                <Text>72 hours</Text> - Notify users of data breaches
               </Text>
             </Row>
           </Stack>

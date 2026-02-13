@@ -85,9 +85,9 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
         </Stack>
@@ -113,13 +113,13 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <Heading variant="h4">Soft Skills</Heading>
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             {!showCompact && (
               <Button
-                variant="outlined"
-                size="$2"
+                variant="outline"
+                size={8}
                 icon={Download}
                 onPress={handleExport}
                 testID="soft-skills-export-button"
@@ -129,8 +129,8 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             )}
             {showEdit && (
               <Button
-                variant="outlined"
-                size="$2"
+                variant="outline"
+                size={8}
                 onPress={() => {
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }}
@@ -162,10 +162,10 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           open={drillDownOpen}
           onOpenChange={setDrillDownOpen}
           title="Soft Skills Details"
-          size="large"
+          size="lg"
           showCloseButton={true}
         >
-          <Stack gap="$4" padding="$4">
+          <Stack gap={16} padding={16}>
             {/* Category Tabs */}
             <SoftSkillsCategoryTabs
               activeCategory={selectedCategory}

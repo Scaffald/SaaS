@@ -95,44 +95,44 @@ export function CertificationsStep({
   }, [hasMinimum])
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Add certifications & licenses
         </Text>
-        <Paragraph id={guidanceId} color="$color11" aria-live="polite">
+        <Paragraph id={guidanceId} color="gray" aria-live="polite">
           {helperCopy}
         </Paragraph>
       </Stack>
 
-      <Stack gap="$3">
+      <Stack gap={12}>
         {certifications.map((cert) => (
           <Card key={cert.id ?? cert.name} bordered backgroundColor="$color2">
-            <Card.Header padded gap="$2">
-              <Row justifyContent="space-between" alignItems="center">
-                <Stack gap="$1">
-                  <Text fontWeight="600">{cert.name}</Text>
+            <Card.Header padded gap={8}>
+              <Row justify="space-between" align="center">
+                <Stack gap={4}>
+                  <Text>{cert.name}</Text>
                   {cert.issuer && (
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       {cert.issuer}
                     </Text>
                   )}
-                  <Row gap="$2">
+                  <Row gap={8}>
                     {cert.issuedOn && (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         Issued {formatDisplayDate(cert.issuedOn)}
                       </Text>
                     )}
                     {cert.expiresOn && (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         • Expires {formatDisplayDate(cert.expiresOn)}
                       </Text>
                     )}
                   </Row>
                 </Stack>
                 <Button
-                  size="$2"
-                  variant="outlined"
+                  size={8}
+                  variant="outline"
                   onPress={() => removeCertification(cert.id)}
                   aria-label={`Remove ${cert.name}`}
                 >
@@ -144,9 +144,9 @@ export function CertificationsStep({
         ))}
       </Stack>
 
-      <Stack gap="$3">
-        <Stack gap="$2">
-          <Label htmlFor={certNameId} fontWeight="600">
+      <Stack gap={12}>
+        <Stack gap={8}>
+          <Label htmlFor={certNameId}>
             Certification name
           </Label>
           <Input
@@ -156,8 +156,8 @@ export function CertificationsStep({
             onChangeText={setName}
           />
         </Stack>
-        <Stack gap="$2">
-          <Label htmlFor={issuerId} fontWeight="600">
+        <Stack gap={8}>
+          <Label htmlFor={issuerId}>
             Issuing organization
           </Label>
           <Input
@@ -167,11 +167,11 @@ export function CertificationsStep({
             onChangeText={setIssuer}
           />
         </Stack>
-        <Row gap="$3">
-          <Stack flex={1} gap="$2">
+        <Row gap={12}>
+          <Stack flex={1} gap={8}>
             <MonthYearPicker label="Issued on" value={issuedOn} onChange={setIssuedOn} />
           </Stack>
-          <Stack flex={1} gap="$2">
+          <Stack flex={1} gap={8}>
             <MonthYearPicker label="Expires on" value={expiresOn} onChange={setExpiresOn} />
           </Stack>
         </Row>

@@ -10,11 +10,11 @@ interface NotesTabProps {
 export const NotesTab = ({ applicationId, teamId, mentionOptions = [] }: NotesTabProps) => {
   if (!teamId) {
     return (
-      <Stack gap="$3">
-        <Text fontSize="$5" fontWeight="600">
+      <Stack gap={12}>
+        <Text>
           Team discussion unavailable
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Assign this job to a team to enable collaborative comments and mentions.
         </Text>
       </Stack>

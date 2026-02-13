@@ -557,8 +557,8 @@ export function ProfileCertificationsLeft({
   if (isLoadingTree) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" style={{ alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
-          <Spinner size="large" />
+        <Stack gap={16} style={{ alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+          <Spinner size="lg" />
           <Text>Loading certifications...</Text>
         </Stack>
       </DashboardWidget>
@@ -567,7 +567,7 @@ export function ProfileCertificationsLeft({
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
+      <Stack gap={16}>
         <H4>Certifications & Credentials</H4>
 
         {/* Search for depth 0 certifications */}
@@ -581,11 +581,11 @@ export function ProfileCertificationsLeft({
 
         {/* Selected top-level certifications as chips */}
         {certTree?.depth0 && certTree.depth0.length > 0 && (
-          <Stack gap="$3">
-            <Text fontWeight="600" fontSize="$4">
+          <Stack gap={12}>
+            <Text>
               Selected Categories
             </Text>
-            <Row gap="$2" flexWrap="wrap">
+            <Row gap={8} flexWrap="wrap">
               {(certTree.depth0 as unknown as UserCertification[]).map(
                 (item: UserCertification) => (
                   <CertificationChip
@@ -605,13 +605,13 @@ export function ProfileCertificationsLeft({
 
         <Separator />
 
-        <Stack gap="$3">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontWeight="600" fontSize="$4">
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Text>
               Custom Certifications
             </Text>
             <Button
-              size="$3"
+              size={12}
               icon={PlusCircle}
               variant={showCustomForm ? 'outlined' : undefined}
               theme={showCustomForm ? undefined : 'accent'}
@@ -630,14 +630,14 @@ export function ProfileCertificationsLeft({
 
           {showCustomForm && (
             <Card bordered backgroundColor="$color2">
-              <Stack gap="$3" padding="$4">
-                <Text fontSize="$2" color="$color11">
+              <Stack gap={12} padding={16}>
+                <Text color="gray">
                   Add certifications that are not in our catalog. These appear alongside saved
                   certifications on the right panel.
                 </Text>
 
-                <Stack gap="$2">
-                  <Text fontWeight="600">Certification Name *</Text>
+                <Stack gap={8}>
+                  <Text>Certification Name *</Text>
                   <Input
                     placeholder="e.g. OSHA 30-Hour Construction"
                     value={customForm.name}
@@ -645,14 +645,14 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.name && (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       {customErrors.name}
                     </Text>
                   )}
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontWeight="600">Issuing Organization *</Text>
+                <Stack gap={8}>
+                  <Text>Issuing Organization *</Text>
                   <Input
                     placeholder="Issuing organization"
                     value={customForm.organization}
@@ -662,15 +662,15 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       {customErrors.organization}
                     </Text>
                   )}
                 </Stack>
 
-                <Row gap="$3" flexWrap="wrap">
-                  <Stack flex={1} gap="$2" style={{ minWidth: 200 }}>
-                    <Text fontWeight="600">Issue Date</Text>
+                <Row gap={12} flexWrap="wrap">
+                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                    <Text>Issue Date</Text>
                     <MonthYearPicker
                       value={customForm.issueDate}
                       onChange={(date) => setCustomForm((prev) => ({ ...prev, issueDate: date }))}
@@ -678,8 +678,8 @@ export function ProfileCertificationsLeft({
                       error={customErrors.issueDate}
                     />
                   </Stack>
-                  <Stack flex={1} gap="$2" style={{ minWidth: 200 }}>
-                    <Text fontWeight="600">Expiration Date</Text>
+                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                    <Text>Expiration Date</Text>
                     <MonthYearPicker
                       value={customForm.expirationDate}
                       onChange={(date) =>
@@ -691,9 +691,9 @@ export function ProfileCertificationsLeft({
                   </Stack>
                 </Row>
 
-                <Row gap="$3" flexWrap="wrap">
-                  <Stack flex={1} gap="$2" style={{ minWidth: 200 }}>
-                    <Text fontWeight="600">Credential ID</Text>
+                <Row gap={12} flexWrap="wrap">
+                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                    <Text>Credential ID</Text>
                     <Input
                       placeholder="Credential ID or number"
                       value={customForm.credentialId}
@@ -703,8 +703,8 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                   </Stack>
-                  <Stack flex={1} gap="$2" style={{ minWidth: 200 }}>
-                    <Text fontWeight="600">Credential URL</Text>
+                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                    <Text>Credential URL</Text>
                     <Input
                       placeholder="https://..."
                       value={customForm.credentialUrl}
@@ -716,15 +716,15 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                     {customErrors.credentialUrl && (
-                      <Text fontSize="$2" color="$red10">
+                      <Text color="$red10">
                         {customErrors.credentialUrl}
                       </Text>
                     )}
                   </Stack>
                 </Row>
 
-                <Stack gap="$2">
-                  <Text fontWeight="600">Description</Text>
+                <Stack gap={8}>
+                  <Text>Description</Text>
                   <TextArea
                     rows={3}
                     placeholder="Add notes about this certification"
@@ -736,13 +736,13 @@ export function ProfileCertificationsLeft({
                   />
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontWeight="600">Proof (optional)</Text>
-                  <Row gap="$2" flexWrap="wrap" alignItems="center">
+                <Stack gap={8}>
+                  <Text>Proof (optional)</Text>
+                  <Row gap={8} flexWrap="wrap" align="center">
                     <Button
-                      size="$3"
+                      size={12}
                       icon={UploadCloud}
-                      variant="outlined"
+                      variant="outline"
                       onPress={handleCustomFileSelect}
                       disabled={isSavingCustom}
                     >
@@ -750,8 +750,8 @@ export function ProfileCertificationsLeft({
                     </Button>
                     {customForm.file && (
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         onPress={handleClearCustomFile}
                         disabled={isSavingCustom}
                       >
@@ -761,9 +761,9 @@ export function ProfileCertificationsLeft({
                   </Row>
                 </Stack>
 
-                <Row gap="$3" justifyContent="flex-end">
+                <Row gap={12} justify="flex-end">
                   <Button
-                    variant="outlined"
+                    variant="outline"
                     onPress={() => {
                       resetCustomForm()
                       setShowCustomForm(false)
@@ -799,13 +799,13 @@ export function ProfileCertificationsLeft({
         </Stack>
 
         {/* Depth 1 categories and depth 2 certifications */}
-        <Stack gap="$3">
+        <Stack gap={12}>
           {certTree?.depth0 && certTree.depth0.length > 0 ? (
             (certTree.depth0 as unknown as UserCertification[]).map(
               (topLevel: UserCertification) => {
                 return (
-                  <Stack key={topLevel.id} gap="$2">
-                    <Text fontWeight="600" fontSize="$5" color="$blue11">
+                  <Stack key={topLevel.id} gap={8}>
+                    <Text color="$blue11">
                       {topLevel.catalog.title}
                     </Text>
 
@@ -872,14 +872,14 @@ function Depth1Categories({
 
   if (depth1Categories.length === 0) {
     return (
-      <Text fontSize="$2" color="$color11">
+      <Text color="gray">
         No sub-categories available
       </Text>
     )
   }
 
   return (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {depth1Categories.map((category: CertificationWithParent) => {
         const isExpanded = expandedCategories.has(category.id)
         const depth2Items = typedTree.depth2ByParent[category.id] || []
@@ -944,7 +944,7 @@ function Depth2Certifications({
 
   if (depth2Certs.length === 0) {
     return (
-      <Text fontSize="$2" color="$color11">
+      <Text color="gray">
         No specific certifications available
       </Text>
     )
@@ -956,7 +956,7 @@ function Depth2Certifications({
   )
 
   return (
-    <Stack gap="$2" paddingTop="$2">
+    <Stack gap={8} paddingTop={8}>
       {depth2Certs.map((cert: CertificationWithParent) => {
         const userCert = savedMap.get(cert.id)
         const isChecked = !!userCert
@@ -970,8 +970,8 @@ function Depth2Certifications({
         return (
           <Stack
             key={cert.id}
-            padding="$3"
-            borderRadius="$4"
+            padding={12}
+            borderRadius={16}
             borderWidth={1}
             animation="quick"
             backgroundColor={
@@ -1004,12 +1004,12 @@ function Depth2Certifications({
               disabled={toggleMutation.isPending}
             />
             {changeStatus === 'added' && (
-              <Text marginTop="$2" fontSize="$2" color="$green11">
+              <Text marginTop={8} color="$green11">
                 ✓ Added to profile
               </Text>
             )}
             {changeStatus === 'removed' && (
-              <Text marginTop="$2" fontSize="$2" color="$red11">
+              <Text marginTop={8} color="$red11">
                 Removed from profile
               </Text>
             )}

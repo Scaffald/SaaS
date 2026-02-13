@@ -109,25 +109,25 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       : null
 
   return (
-    <Stack gap="$3">
-      <Row gap="$2" alignItems="center" justifyContent="space-between" flexWrap="wrap">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={12}>
+      <Row gap={8} align="center" justify="space-between" flexWrap="wrap">
+        <Text>
           Analytics summary
         </Text>
-        <Row gap="$2" alignItems="center" flexWrap="wrap">
+        <Row gap={8} align="center" flexWrap="wrap">
           <ResponsiveSelect
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
             placeholder="Select range"
-            size="$2"
+            size={8}
             options={RANGE_OPTIONS.map((option) => ({
               value: String(option.value),
               label: option.label,
             }))}
           />
           <Button
-            size="$2"
-            variant="outlined"
+            size={8}
+            variant="outline"
             icon={RefreshCw}
             onPress={() => void analyticsQuery.refetch()}
             disabled={analyticsQuery.isFetching}
@@ -138,20 +138,20 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       </Row>
 
       {analyticsQuery.isLoading ? (
-        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading analytics…</Text>
+        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading analytics…</Text>
         </Stack>
       ) : metrics.length === 0 ? (
-        <Stack gap="$2">
-          <Text fontWeight="600">No analytics yet</Text>
-          <Text color="$color11">
+        <Stack gap={8}>
+          <Text>No analytics yet</Text>
+          <Text color="gray">
             Metrics will appear once the team starts reviewing invitations and applications.
           </Text>
         </Stack>
       ) : (
-        <Stack gap="$3">
-          <Row gap="$3" flexWrap="wrap">
+        <Stack gap={12}>
+          <Row gap={12} flexWrap="wrap">
             <StatTile label="Active members (avg)">{formatNumber(membersActiveAvg)}</StatTile>
             <StatTile label="Active jobs (latest)">{formatNumber(jobsActiveLatest)}</StatTile>
             <StatTile label="Applications reviewed">
@@ -170,7 +170,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
             </StatTile>
           </Row>
           {trendDescription ? (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               {trendDescription}
             </Text>
           ) : null}
@@ -183,19 +183,19 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
 function StatTile({ label, children }: { label: string; children: ReactNode }) {
   return (
     <Stack
-      gap="$1"
+      gap={4}
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$4"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      borderRadius={16}
+      paddingHorizontal={12}
+      paddingVertical={8}
       backgroundColor="$color2"
       style={{ minWidth: 140 }}
     >
-      <Text fontSize="$2" color="$color10" textTransform="uppercase">
+      <Text color="gray" textTransform="uppercase">
         {label}
       </Text>
-      <Text fontSize="$5" fontWeight="700">
+      <Text>
         {children}
       </Text>
     </Stack>

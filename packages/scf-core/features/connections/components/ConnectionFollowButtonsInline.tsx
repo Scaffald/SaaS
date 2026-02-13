@@ -237,9 +237,9 @@ export function ConnectionFollowButtonsInline({
 
   if (isLoading) {
     return (
-      <Row gap="$2" alignItems="center">
-        <Loader2 size={16} color="$color10" />
-        <Text fontSize="$2" color="$color10">
+      <Row gap={8} align="center">
+        <Loader2 size={16} color="gray" />
+        <Text color="gray">
           Loading...
         </Text>
       </Row>
@@ -247,7 +247,7 @@ export function ConnectionFollowButtonsInline({
   }
 
   return (
-    <Row gap="$2" flexWrap="wrap">
+    <Row gap={8} flexWrap="wrap">
       {/* Connection Button */}
       {connectionButtonState.type === 'connected' && (
         <>
@@ -255,7 +255,7 @@ export function ConnectionFollowButtonsInline({
             size={size}
             icon={UserCheck}
             theme="success"
-            variant="outlined"
+            variant="outline"
             disabled={isConnectionMutating}
           >
             <Text>Connected</Text>
@@ -263,7 +263,7 @@ export function ConnectionFollowButtonsInline({
           <Button
             size={size}
             icon={UserMinus}
-            variant="outlined"
+            variant="outline"
             theme="error"
             onPress={handleRemoveConnection}
             disabled={isConnectionMutating}
@@ -274,7 +274,7 @@ export function ConnectionFollowButtonsInline({
       )}
 
       {connectionButtonState.type === 'pending_sent' && (
-        <Button size={size} icon={Loader2} variant="outlined" disabled={isConnectionMutating}>
+        <Button size={size} icon={Loader2} variant="outline" disabled={isConnectionMutating}>
           <Text>Pending</Text>
         </Button>
       )}
@@ -293,7 +293,7 @@ export function ConnectionFollowButtonsInline({
           <Button
             size={size}
             icon={X}
-            variant="outlined"
+            variant="outline"
             theme="error"
             onPress={handleDeclineRequest}
             disabled={isConnectionMutating}
@@ -320,7 +320,7 @@ export function ConnectionFollowButtonsInline({
         <Button
           size={size}
           icon={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
-          variant="outlined"
+          variant="outline"
           theme={followStatus.isFollowing ? 'error' : 'blue'}
           onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}
           disabled={isFollowMutating || followStatus.isLoading}

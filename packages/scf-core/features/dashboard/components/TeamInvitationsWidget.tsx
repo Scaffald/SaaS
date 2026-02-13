@@ -27,16 +27,16 @@ export function TeamInvitationList({
   if (!invitations.length) {
     return (
       <Stack
-        gap="$2"
+        gap={8}
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
+        borderRadius={16}
+        padding={16}
         backgroundColor="$color2"
       >
-        <Text fontWeight="600">No pending invitations</Text>
+        <Text>No pending invitations</Text>
         {showEmptyStateDescription ? (
-          <Text color="$color11">
+          <Text color="gray">
             You&apos;re all caught up. New invitations will appear here for quick review.
           </Text>
         ) : null}
@@ -45,7 +45,7 @@ export function TeamInvitationList({
   }
 
   return (
-    <Stack gap="$3">
+    <Stack gap={12}>
       {invitations.map((invitation) => {
         const teamName = invitation.team?.name ?? 'Team'
         const organizationName = invitation.team?.organizationName ?? 'Organization'
@@ -59,37 +59,37 @@ export function TeamInvitationList({
         return (
           <Card
             key={invitation.id}
-            padding="$4"
+            padding={16}
             borderWidth={1}
             borderColor="$borderColor"
-            gap="$3"
+            gap={12}
             backgroundColor="$color1"
           >
-            <Row justifyContent="space-between" alignItems="center">
-              <Stack gap="$1" flex={1}>
-                <Text fontWeight="700">{teamName}</Text>
-                <Text fontSize="$3" color="$color11">
+            <Row justify="space-between" align="center">
+              <Stack gap={4} flex={1}>
+                <Text>{teamName}</Text>
+                <Text color="gray">
                   {organizationName}
                 </Text>
-                <Row gap="$2" alignItems="center" marginTop="$2">
-                  <Clock size={16} color="$color11" />
-                  <Text fontSize="$3" color="$color11">
+                <Row gap={8} align="center" marginTop={8}>
+                  <Clock size={16} color="gray" />
+                  <Text color="gray">
                     Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}
                   </Text>
                 </Row>
               </Stack>
               <Row
-                gap="$2"
-                marginLeft="$4"
+                gap={8}
+                marginLeft={16}
                 flexShrink={0}
                 flexWrap="wrap"
-                justifyContent="flex-end"
+                justify="flex-end"
               >
                 <Button
-                  size="$2"
+                  size={8}
                   icon={XCircle}
-                  variant="outlined"
+                  variant="outline"
                   color="$red10"
                   disabled={isProcessing}
                   onPress={async () => {
@@ -104,10 +104,10 @@ export function TeamInvitationList({
                   Decline
                 </Button>
                 <Button
-                  size="$2"
+                  size={8}
                   icon={CheckCircle}
                   backgroundColor="$color9"
-                  color="$color1"
+                  color="gray"
                   disabled={isProcessing}
                   onPress={async () => {
                     setPendingId(invitation.id)
@@ -118,7 +118,7 @@ export function TeamInvitationList({
                     }
                   }}
                 >
-                  {isPending ? <Spinner size="small" color="$color1" /> : 'Accept'}
+                  {isPending ? <Spinner size="sm" color="gray" /> : 'Accept'}
                 </Button>
               </Row>
             </Row>
@@ -183,20 +183,20 @@ export function TeamInvitationsWidget() {
 
   return (
     <Card
-      padding="$4"
+      padding={16}
       borderColor="$borderColor"
       borderWidth={1}
-      gap="$4"
+      gap={16}
       backgroundColor="$color1"
     >
-      <Row justifyContent="space-between" alignItems="center">
-        <Row gap="$2" alignItems="center">
+      <Row justify="space-between" align="center">
+        <Row gap={8} align="center">
           <Users size={20} />
-          <Text fontWeight="700">Team invitations</Text>
+          <Text>Team invitations</Text>
         </Row>
         <Button
-          variant="outlined"
-          size="$2"
+          variant="outline"
+          size={8}
           onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
         >
           Manage
@@ -204,9 +204,9 @@ export function TeamInvitationsWidget() {
       </Row>
 
       {invitationsQuery.isLoading ? (
-        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Checking for invitations…</Text>
+        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Checking for invitations…</Text>
         </Stack>
       ) : (
         <>
@@ -219,7 +219,7 @@ export function TeamInvitationsWidget() {
           {remainingCount > 0 ? (
             <>
               <Separator />
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
                 inbox.
               </Text>

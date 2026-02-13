@@ -57,11 +57,11 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
   })
 
   return (
-    <Card bordered padding="$4" gap="$3">
-      <Row justifyContent="space-between" alignItems="center">
+    <Card bordered padding={16} gap={12}>
+      <Row justify="space-between" align="center">
         <H4>Organization Settings</H4>
         {usage.data ? (
-          <Text color="$color10">
+          <Text color="gray">
             {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used ({usage.data.documentCount}{' '}
             docs)
           </Text>
@@ -71,13 +71,13 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
       {isLoading || !settings ? (
         <Spinner />
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           <Controller
             control={form.control}
             name="timezone"
             render={({ field }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Timezone</Text>
+              <Stack gap={4}>
+                <Text>Timezone</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
               </Stack>
             )}
@@ -86,8 +86,8 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             control={form.control}
             name="locale"
             render={({ field }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Locale</Text>
+              <Stack gap={4}>
+                <Text>Locale</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
               </Stack>
             )}
@@ -96,8 +96,8 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             control={form.control}
             name="defaultCurrency"
             render={({ field }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Default currency</Text>
+              <Stack gap={4}>
+                <Text>Default currency</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
               </Stack>
             )}
@@ -106,8 +106,8 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             control={form.control}
             name="enforceMfa"
             render={({ field }) => (
-              <Row justifyContent="space-between" alignItems="center">
-                <Text fontWeight="600">Require MFA for members</Text>
+              <Row justify="space-between" align="center">
+                <Text>Require MFA for members</Text>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
               </Row>
             )}
@@ -116,8 +116,8 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             control={form.control}
             name="sessionTimeoutMinutes"
             render={({ field }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Session timeout (minutes)</Text>
+              <Stack gap={4}>
+                <Text>Session timeout (minutes)</Text>
                 <Input
                   keyboardType="numeric"
                   value={String(field.value)}

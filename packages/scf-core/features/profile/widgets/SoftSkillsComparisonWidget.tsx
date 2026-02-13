@@ -165,9 +165,9 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
         </Stack>
@@ -180,7 +180,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={spacing.md}>
-          <Row justifyContent="space-between" alignItems="center">
+          <Row justify="space-between" align="center">
             <Heading variant="h4">Soft Skills Analysis</Heading>
           </Row>
           <EmptyState
@@ -203,16 +203,16 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={spacing.md}>
-          <Row justifyContent="space-between" alignItems="center">
+          <Row justify="space-between" align="center">
             <Heading variant="h4">Soft Skills Analysis</Heading>
           </Row>
-          <Stack gap="$4">
-            <Stack gap="$2">
-              <Text fontSize="$3" color="$color11">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text color="gray">
                 Complete your soft skills assessment to showcase your strengths and improve job
                 matching.
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {completionCount} of 25 skills rated
               </Text>
             </Stack>
@@ -233,12 +233,12 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <Heading variant="h4">Soft Skills Analysis</Heading>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
+              variant="outline"
+              size={8}
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -261,13 +261,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
         {/* Chart Comparison */}
         {categoryChartData && categoryChartData.length > 0 && (
-          <Stack gap="$4">
-            <Text fontSize="$4" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
+          <Stack gap={16}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               {categoryLabels[activeCategory]} Skills
             </Text>
 
             {/* Main Skills Chart */}
-            <Stack alignItems="center" paddingVertical="$4">
+            <Stack align="center" paddingVertical={16}>
               <SkillsChart
                 datasets={categoryChartData}
                 height={chartHeight}
@@ -285,23 +285,23 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
             {/* Legend */}
             {categoryChartData.length > 1 && (
-              <Row gap="$4" alignItems="center" justifyContent="center" paddingVertical="$2">
-                <Row gap="$2" alignItems="center">
+              <Row gap={16} align="center" justify="center" paddingVertical={8}>
+                <Row gap={8} align="center">
                   <Stack width={20} height={3} backgroundColor="$blue9" />
-                  <Text fontSize="$2" color="$color11">
+                  <Text color="gray">
                     Self Assessment
                   </Text>
                 </Row>
-                <Row gap="$2" alignItems="center">
+                <Row gap={8} align="center">
                   <Stack width={20} height={3} backgroundColor="$green9" />
-                  <Text fontSize="$2" color="$color11">
+                  <Text color="gray">
                     Peer Average
                   </Text>
                 </Row>
               </Row>
             )}
 
-            <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
           </Stack>
@@ -309,7 +309,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
         {/* CTA button for completed assessments when showCTA is true */}
         {isCompleted && showCTA && (
-          <Button variant="outlined" onPress={handleNavigateToAssessment}>
+          <Button variant="outline" onPress={handleNavigateToAssessment}>
             Update Assessment
           </Button>
         )}

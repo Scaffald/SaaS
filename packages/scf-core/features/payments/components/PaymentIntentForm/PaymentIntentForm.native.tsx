@@ -17,12 +17,12 @@ export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
   }).format(amountCents / 100)
 
   return (
-    <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-      <Stack gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$yellow12">
+    <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+      <Stack gap={8}>
+        <Text color="$yellow12">
           Web payment required
         </Text>
-        <Text color="$yellow11" fontSize="$3">
+        <Text color="$yellow11">
           Payments must currently be completed in the web experience. Please switch to the browser
           to pay {amount}.
         </Text>

@@ -143,7 +143,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (isLoading) {
     return (
-      <Stack padding="$4" alignItems="center" gap="$4">
+      <Stack padding={16} align="center" gap={16}>
         <Text>Loading history...</Text>
       </Stack>
     )
@@ -151,7 +151,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (error) {
     return (
-      <Stack padding="$4" alignItems="center" gap="$4">
+      <Stack padding={16} align="center" gap={16}>
         <Text color="$red10">Failed to load history</Text>
       </Stack>
     )
@@ -159,8 +159,8 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (!sortedHistory || sortedHistory.length === 0) {
     return (
-      <Stack padding="$4" alignItems="center" gap="$4">
-        <Text color="$color11">No history available</Text>
+      <Stack padding={16} align="center" gap={16}>
+        <Text color="gray">No history available</Text>
       </Stack>
     )
   }
@@ -171,28 +171,28 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   }
 
   return (
-    <Stack gap="$3" padding="$4">
-      <Text fontSize="$6" fontWeight="600">
+    <Stack gap={12} padding={16}>
+      <Text>
         History
       </Text>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         {sortedHistory.map((event, index) => {
           const EventIcon = getEventIcon(event.event_type as EventType)
           const eventColor = getEventColor(event.event_type as EventType)
           const isLast = index === sortedHistory.length - 1
 
           return (
-            <Row key={event.id} gap="$3" alignItems="flex-start">
+            <Row key={event.id} gap={12} align="flex-start">
               {/* Timeline dot and line */}
-              <Stack alignItems="center" width={24}>
+              <Stack align="center" width={24}>
                 <Stack
                   width={12}
                   height={12}
                   borderRadius="$10"
                   backgroundColor={eventColor as GetThemeValueForKey<'backgroundColor'>}
-                  alignItems="center"
-                  justifyContent="center"
+                  align="center"
+                  justify="center"
                 >
                   <EventIcon size={8} color="white" />
                 </Stack>
@@ -200,31 +200,31 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
               </Stack>
 
               {/* Event details */}
-              <Stack flex={1} gap="$1">
-                <Row gap="$2" alignItems="center">
-                  <Avatar size="$2" circular>
+              <Stack flex={1} gap={4}>
+                <Row gap={8} align="center">
+                  <Avatar size={8} circular>
                     <Avatar.Image src={event.actor?.avatar_path || undefined} />
                     <Avatar.Fallback backgroundColor="$blue9">
-                      <Text color="white" fontWeight="600" fontSize="$1">
+                      <Text color="white">
                         {actorDisplayName(event.actor).charAt(0).toUpperCase()}
                       </Text>
                     </Avatar.Fallback>
                   </Avatar>
-                  <Text fontSize="$4" fontWeight="600">
+                  <Text>
                     {actorDisplayName(event.actor)}
                   </Text>
-                  <Text fontSize="$3" color="$color11">
+                  <Text color="gray">
                     {formatEventType(event.event_type as EventType)}
                   </Text>
                 </Row>
 
-                <Text fontSize="$2" color="$color11">
+                <Text color="gray">
                   {formatTimestamp(event.created_at)}
                 </Text>
 
                 {/* Event-specific details */}
                 {event.event_data && (
-                  <Text fontSize="$3" color="$color11" marginTop="$1">
+                  <Text color="gray" marginTop={4}>
                     {formatEventData(event.event_type as EventType, event.event_data)}
                   </Text>
                 )}

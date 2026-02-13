@@ -51,14 +51,14 @@ export function TechnicalSkillsWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load skills</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
           <Button
             variant="primary"
-            size="$2"
+            size={8}
             onPress={() => {
               void refetch()
             }}
@@ -101,12 +101,12 @@ export function TechnicalSkillsWidget({
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <Heading variant="h4">Technical Skills</Heading>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
+              variant="outline"
+              size={8}
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -133,44 +133,44 @@ export function TechnicalSkillsWidget({
             }
           />
         ) : (
-          <Stack gap="$4">
+          <Stack gap={16}>
             {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
-              <Stack key={taxonomy} gap="$2">
+              <Stack key={taxonomy} gap={8}>
                 {/* Taxonomy Header */}
-                <Text fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase">
+                <Text color="gray" textTransform="uppercase">
                   {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                 </Text>
 
                 {/* Skills in this taxonomy */}
-                <Row gap="$2" flexWrap="wrap">
+                <Row gap={8} flexWrap="wrap">
                   {groupedSkills[taxonomy]
                     .slice(0, showCompact ? 5 : undefined)
                     .map((skill: EnrichedUserSkill) => (
                       <Row
                         key={skill.id}
                         backgroundColor="$blue2"
-                        paddingHorizontal="$3"
-                        paddingVertical="$2"
-                        borderRadius="$3"
+                        paddingHorizontal={12}
+                        paddingVertical={8}
+                        borderRadius={12}
                         borderWidth={1}
                         borderColor={skill.verified ? '$blue7' : '$blue5'}
-                        gap="$2"
-                        alignItems="center"
+                        gap={8}
+                        align="center"
                       >
                         {skill.verified && <CheckCircle size={14} color="$blue11" />}
-                        <Stack gap="$0.5">
-                          <Text fontSize="$2" fontWeight="500" color="$blue11">
+                        <Stack gap={2}>
+                          <Text color="$blue11">
                             {skill.name}
                           </Text>
                           {!showCompact && (
-                            <Row gap="$2">
+                            <Row gap={8}>
                               {skill.proficiency > 0 && (
-                                <Text fontSize="$1" color="$blue10">
+                                <Text color="$blue10">
                                   {getProficiencyLabel(skill.proficiency)}
                                 </Text>
                               )}
                               {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                <Text fontSize="$1" color="$blue10">
+                                <Text color="$blue10">
                                   • {skill.yearsExperience}y
                                 </Text>
                               )}
@@ -187,8 +187,6 @@ export function TechnicalSkillsWidget({
             {showCompact && skills.length > 5 && (
               <Text
                 color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}

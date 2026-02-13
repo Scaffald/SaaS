@@ -48,16 +48,16 @@ export function SentryTestButtons() {
   }
 
   return (
-    <Stack gap="$3" padding="$4">
-      <Text fontSize="$6" fontWeight="bold">
+    <Stack gap={12} padding={16}>
+      <Text>
         Sentry Integration Tests
       </Text>
-      <Text fontSize="$3" color="$gray11">
+      <Text color="$gray11">
         Use these buttons to verify Sentry is capturing errors correctly.
         Check your Sentry dashboard after clicking.
       </Text>
 
-      <Stack gap="$2" marginTop="$3">
+      <Stack gap={8} marginTop={12}>
         <Button onPress={testJSError} theme="blue">
           Test JS Error (Handled)
         </Button>
@@ -79,7 +79,7 @@ export function SentryTestButtons() {
         </Button>
       </Stack>
 
-      <Text fontSize="$2" color="$gray10" marginTop="$3">
+      <Text color="$gray10" marginTop={12}>
         ⚠️ Remove these test buttons before production deployment
       </Text>
     </Stack>

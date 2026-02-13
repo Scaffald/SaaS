@@ -21,37 +21,37 @@ export function SkillCompletionProgress({
 }: SkillCompletionProgressProps) {
   return (
     <Stack
-      padding="$4"
-      gap="$3"
+      padding={16}
+      gap={12}
       backgroundColor="$blue2"
       borderWidth={1}
       borderColor="$blue5"
-      borderRadius="$4"
+      borderRadius={16}
     >
-      <Row gap="$3" alignItems="center">
+      <Row gap={12} align="center">
         <Sparkles size={20} color="$blue10" />
-        <Stack gap="$1" flex={1}>
-          <Text fontWeight="600" color="$blue11">
+        <Stack gap={4} flex={1}>
+          <Text color="$blue11">
             {hasMinimumSkills
               ? `Great! You've added ${skillCount} skill${skillCount === 1 ? '' : 's'}.`
               : 'Experts recommend adding at least 5 skills to your profile.'}
           </Text>
-          <Text fontSize="$2" color="$blue11">
+          <Text color="$blue11">
             Add role-specific, safety, and leadership skills to improve your match rate.
           </Text>
         </Stack>
       </Row>
 
-      <Stack gap="$2">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$2" color="$blue11">
+      <Stack gap={8}>
+        <Row justify="space-between" align="center">
+          <Text color="$blue11">
             Skill section completeness
           </Text>
-          <Text fontSize="$2" fontWeight="600" color="$blue11">
+          <Text color="$blue11">
             {completionPercent}%
           </Text>
         </Row>
-        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="$2">
+        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size={8}>
           <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />
         </Progress>
       </Stack>

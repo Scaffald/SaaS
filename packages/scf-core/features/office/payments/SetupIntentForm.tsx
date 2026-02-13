@@ -63,8 +63,8 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (config.isLoading || !stripePromise) {
     return (
-      <Card padding="$3" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text fontSize="$3" color="$color11">
+      <Card padding={12} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+        <Text color="gray">
           Preparing secure payment form…
         </Text>
       </Card>
@@ -73,7 +73,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (!config.publishableKey) {
     return (
-      <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+      <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
         <Text color="$red11">
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -83,30 +83,30 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (!clientSecret) {
     return (
-      <Stack gap="$3">
-        <Text fontSize="$4" fontWeight="600">
+      <Stack gap={12}>
+        <Text>
           Add Payment Method
         </Text>
-        <Text color="$color11" fontSize="$3">
+        <Text color="gray">
           Click the button below to securely add a payment method for this organization.
         </Text>
         {config.testMode && (
-          <Text fontSize="$2" color="$orange11">
+          <Text color="$orange11">
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
-        <Row gap="$2">
-          <Button size="$4" theme="blue" onPress={handleInitialize} disabled={isInitializing}>
+        <Row gap={8}>
+          <Button size={16} theme="blue" onPress={handleInitialize} disabled={isInitializing}>
             {isInitializing ? (
-              <Row gap="$2" alignItems="center">
-                <Spinner size="small" color="white" />
+              <Row gap={8} align="center">
+                <Spinner size="sm" color="white" />
                 <Text>Initializing…</Text>
               </Row>
             ) : (
               'Continue'
             )}
           </Button>
-          <Button size="$4" variant="outlined" onPress={onCancel}>
+          <Button size={16} variant="outline" onPress={onCancel}>
             Cancel
           </Button>
         </Row>
@@ -180,13 +180,13 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
   }
 
   return (
-    <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
-      <Stack gap="$1">
-        <Text fontSize="$4" fontWeight="600">
+    <Card padding={16} borderColor="$borderColor" borderWidth={1} gap={12}>
+      <Stack gap={4}>
+        <Text>
           Add Payment Method
         </Text>
         {testMode && (
-          <Text fontSize="$2" color="$orange11">
+          <Text color="$orange11">
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
@@ -195,33 +195,33 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-          <Row gap="$2" alignItems="center">
-            <Text color="$red11" fontSize="$3" flex={1}>
+        <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+          <Row gap={8} align="center">
+            <Text color="$red11" flex={1}>
               {errorMessage}
             </Text>
           </Row>
         </Card>
       ) : null}
 
-      <Row gap="$2">
+      <Row gap={8}>
         <Button
-          size="$4"
+          size={16}
           theme="blue"
           disabled={isSubmitting || !stripe || !elements}
           onPress={handleSubmit}
           flex={1}
         >
           {isSubmitting ? (
-            <Row gap="$2" alignItems="center">
-              <Spinner size="small" color="white" />
+            <Row gap={8} align="center">
+              <Spinner size="sm" color="white" />
               <Text>Saving…</Text>
             </Row>
           ) : (
             'Save Payment Method'
           )}
         </Button>
-        <Button size="$4" variant="outlined" onPress={onCancel}>
+        <Button size={16} variant="outline" onPress={onCancel}>
           Cancel
         </Button>
       </Row>

@@ -32,11 +32,11 @@ export function CertificationChip({
         alignItems: 'center',
       }}
     >
-      <Text fontSize="$3" fontWeight="500" color="$blue11">
+      <Text color="$blue11">
         {certification.title}
       </Text>
       <Button
-        size="$2"
+        size={8}
         circular
         chromeless
         icon={X}

@@ -99,10 +99,10 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
 
   return (
     <ScrollView>
-      <Stack gap="$4" padding="$4">
+      <Stack gap={16} padding={16}>
         {/* Title */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Job Title *</Text>
+        <Stack gap={8}>
+          <Text>Job Title *</Text>
           <Input
             placeholder="e.g. Senior Construction Manager"
             value={formData.title}
@@ -112,8 +112,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Description */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Description *</Text>
+        <Stack gap={8}>
+          <Text>Description *</Text>
           <TextArea
             placeholder="Describe the job role, responsibilities, and requirements..."
             value={formData.description}
@@ -124,8 +124,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Employment Type */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Employment Type</Text>
+        <Stack gap={8}>
+          <Text>Employment Type</Text>
           <Input
             placeholder="e.g. full_time, part_time, contract"
             value={formData.employment_type}
@@ -135,8 +135,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Remote Option */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Work Location</Text>
+        <Stack gap={8}>
+          <Text>Work Location</Text>
           <Input
             placeholder="e.g. on_site, hybrid, remote"
             value={formData.remote_option}
@@ -146,8 +146,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Location */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Location *</Text>
+        <Stack gap={8}>
+          <Text>Location *</Text>
           <Input
             placeholder="e.g. San Francisco, CA"
             value={formData.location}
@@ -157,11 +157,11 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Pay Range */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Pay Range</Text>
-          <Row gap="$2">
-            <Stack gap="$2" flex={1}>
-              <Text fontSize="$2">Min ($)</Text>
+        <Stack gap={8}>
+          <Text>Pay Range</Text>
+          <Row gap={8}>
+            <Stack gap={8} flex={1}>
+              <Text>Min ($)</Text>
               <Input
                 placeholder="Min"
                 keyboardType="numeric"
@@ -177,8 +177,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
                 disabled={isLoading}
               />
             </Stack>
-            <Stack gap="$2" flex={1}>
-              <Text fontSize="$2">Max ($)</Text>
+            <Stack gap={8} flex={1}>
+              <Text>Max ($)</Text>
               <Input
                 placeholder="Max"
                 keyboardType="numeric"
@@ -194,8 +194,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
                 disabled={isLoading}
               />
             </Stack>
-            <Stack gap="$2" flex={1}>
-              <Text fontSize="$2">Type</Text>
+            <Stack gap={8} flex={1}>
+              <Text>Type</Text>
               <Input
                 placeholder="hourly/salary"
                 value={formData.pay_range_type}
@@ -207,8 +207,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Position Level */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Position Level</Text>
+        <Stack gap={8}>
+          <Text>Position Level</Text>
           <Input
             placeholder="e.g. Senior, Mid-Level, Entry Level"
             value={formData.position_level}
@@ -218,8 +218,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </Stack>
 
         {/* Actions */}
-        <Row gap="$3" paddingTop="$4">
-          <Button flex={1} variant="outlined" onPress={() => router.back()} disabled={isLoading}>
+        <Row gap={12} paddingTop={16}>
+          <Button flex={1} variant="outline" onPress={() => router.back()} disabled={isLoading}>
             Cancel
           </Button>
           <Button

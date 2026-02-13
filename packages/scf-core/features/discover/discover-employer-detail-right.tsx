@@ -340,15 +340,15 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   }
 
   return (
-    <DashboardWidget gap="$4">
-      <Stack gap="$2">
-        <Row gap="$2" alignItems="center">
+    <DashboardWidget gap={16}>
+      <Stack gap={8}>
+        <Row gap={8} align="center">
           <Network size={18} color="$blue10" />
-          <Text fontSize="$5" fontWeight="700" color="$color12">
+          <Text color="gray">
             Stay Connected
           </Text>
         </Row>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Follow {organizationName} to get updates or claim your role to link your profile to the
           team.
         </Text>
@@ -357,9 +357,9 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Separator />
 
       {isLoading ? (
-        <Row gap="$2" alignItems="center">
+        <Row gap={8} align="center">
           <Loader2 size={16} color="$blue10" />
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Loading organization context...
           </Text>
         </Row>
@@ -374,9 +374,9 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Separator />
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Button
-          size="$4"
+          size={16}
           icon={followButtonIcon}
           onPress={handleFollow}
           disabled={isFollowButtonDisabled}
@@ -384,7 +384,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
           {followButtonLabel}
         </Button>
         <Button
-          size="$4"
+          size={16}
           theme="success"
           icon={employmentButtonIcon}
           onPress={handleWorkHere}
@@ -396,14 +396,14 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Separator />
 
-      <Stack gap="$2">
-        <Row gap="$2" alignItems="center">
-          <BellPlus size={16} color="$color10" />
-          <Text fontSize="$3" fontWeight="600" color="$color10">
+      <Stack gap={8}>
+        <Row gap={8} align="center">
+          <BellPlus size={16} color="gray" />
+          <Text color="gray">
             What happens next?
           </Text>
         </Row>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Following keeps you updated as teams post new opportunities or updates. Linking your
           employment adds the organization to your profile immediately so recruiters can see your
           affiliation right away.
@@ -427,19 +427,19 @@ function OrganizationSnapshot({
   jobsLoading,
 }: OrganizationSnapshotProps) {
   return (
-    <Stack gap="$2">
-      <Row gap="$2" alignItems="center">
+    <Stack gap={8}>
+      <Row gap={8} align="center">
         <CheckCircle2 size={16} color="$green10" />
-        <Text fontSize="$3" fontWeight="600" color="$green10">
+        <Text color="$green10">
           {name}
         </Text>
       </Row>
       {createdAt && (
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Onboarded {createdAt}
         </Text>
       )}
-      <Text fontSize="$3" color="$color11">
+      <Text color="gray">
         {jobsLoading
           ? 'Checking open roles...'
           : typeof openJobs === 'number'

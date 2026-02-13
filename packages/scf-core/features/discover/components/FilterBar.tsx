@@ -30,24 +30,22 @@ export const FilterBar = ({
   return (
     <Row
       position="absolute"
-      bottom="$4"
+      bottom={16}
       left={0}
-      $sm={{ right: 0 }}
-      $md={{ right: railVisible ? 440 : 0 }}
       zIndex={50}
-      alignItems="center"
-      justifyContent="center"
+      align="center"
+      justify="center"
       animation="quick"
     >
       <Row
         backgroundColor="$background"
         opacity={0.95}
-        paddingHorizontal="$3"
-        paddingVertical="$2"
+        paddingHorizontal={12}
+        paddingVertical={8}
         borderRadius="$12"
-        gap="$2"
-        alignItems="center"
-        justifyContent="center"
+        gap={8}
+        align="center"
+        justify="center"
         borderWidth={2}
         borderColor="$borderColor"
         shadowColor="$shadowColor"
@@ -62,10 +60,10 @@ export const FilterBar = ({
         }
       >
         <Button
-          size="$4"
+          size={16}
           circular
           onPress={onResultsPress}
-          variant="outlined"
+          variant="outline"
           backgroundColor="$background"
           hoverStyle={{ backgroundColor: '$backgroundHover' }}
           pressStyle={{ backgroundColor: '$backgroundPress' }}
@@ -73,36 +71,36 @@ export const FilterBar = ({
           {resultsCount > 0 ? resultsCount : <List size={22} />}
         </Button>
         <Button
-          size="$4"
+          size={16}
           circular
           icon={Search}
           scaleIcon={1.4}
           onPress={onSearchPress}
-          variant="outlined"
+          variant="outline"
           backgroundColor={searchActive ? '$blue9' : '$background'}
           color={searchActive ? 'white' : '$color'}
           hoverStyle={{ backgroundColor: searchActive ? '$blue10' : '$backgroundHover' }}
           pressStyle={{ backgroundColor: searchActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
-          size="$4"
+          size={16}
           circular
           icon={SlidersHorizontal}
           scaleIcon={1.4}
           onPress={onFilterPress}
-          variant="outlined"
+          variant="outline"
           backgroundColor={filterActive ? '$blue9' : '$background'}
           color={filterActive ? 'white' : '$color'}
           hoverStyle={{ backgroundColor: filterActive ? '$blue10' : '$backgroundHover' }}
           pressStyle={{ backgroundColor: filterActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
-          size="$4"
+          size={16}
           circular
           icon={RotateCcw}
           scaleIcon={1.4}
           onPress={onResetPress}
-          variant="outlined"
+          variant="outline"
           backgroundColor="$background"
           hoverStyle={{ backgroundColor: '$backgroundHover' }}
           pressStyle={{ backgroundColor: '$backgroundPress' }}

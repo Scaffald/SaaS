@@ -176,17 +176,17 @@ export function TeamAutomationSettings({
   const statusLabel = updateMutation.isPending ? 'Saving changes…' : 'Settings up to date'
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Automation & workload
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Configure how the team auto-assigns work and balances workloads across members.
         </Text>
       </Stack>
 
-      <Stack gap="$3" opacity={canEdit ? 1 : 0.6}>
+      <Stack gap={12} opacity={canEdit ? 1 : 0.6}>
         <SettingsToggle
           label="Allow members to join without an invite"
           description="Let anyone with the link join the team without approval."
@@ -203,8 +203,8 @@ export function TeamAutomationSettings({
           disabled={!canEdit || updateMutation.isPending}
         />
 
-        <Stack gap="$2">
-          <Text fontSize="$4" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             Invitation expiration (days)
           </Text>
           <Input
@@ -223,13 +223,13 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             Invitations expire automatically after this number of days.
           </Text>
         </Stack>
 
-        <Stack gap="$2">
-          <Text fontSize="$4" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             Workload strategy
           </Text>
           <ResponsiveSelect
@@ -244,16 +244,16 @@ export function TeamAutomationSettings({
               label: option.label,
             }))}
           />
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             Choose how work should be distributed when new applications arrive.
           </Text>
         </Stack>
 
         {formState.workloadStrategy === 'load_balance' ? (
-          <Stack gap="$3" paddingLeft="$2" borderLeftWidth={2} borderColor="$borderColor">
-            <Text fontWeight="600">Load balance settings</Text>
-            <Stack gap="$2">
-              <Text fontSize="$3" color="$color11">
+          <Stack gap={12} paddingLeft={8} borderLeftWidth={2} borderColor="$borderColor">
+            <Text>Load balance settings</Text>
+            <Stack gap={8}>
+              <Text color="gray">
                 Maximum active assignments
               </Text>
               <Input
@@ -269,8 +269,8 @@ export function TeamAutomationSettings({
                 }
               />
             </Stack>
-            <Stack gap="$2">
-              <Text fontSize="$3" color="$color11">
+            <Stack gap={8}>
+              <Text color="gray">
                 Maximum pending assignments
               </Text>
               <Input
@@ -286,14 +286,14 @@ export function TeamAutomationSettings({
                 }
               />
             </Stack>
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               When a member reaches these limits, assignments roll to the next available teammate.
             </Text>
           </Stack>
         ) : null}
 
-        <Stack gap="$2">
-          <Text fontSize="$4" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             Analytics refresh interval (minutes)
           </Text>
           <Input
@@ -312,19 +312,19 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             Controls how often analytics snapshots should refresh for this team.
           </Text>
         </Stack>
       </Stack>
 
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$3" color="$color10">
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           {statusLabel}
         </Text>
         <Button
-          size="$2"
-          variant="outlined"
+          size={8}
+          variant="outline"
           disabled={!canEdit || updateMutation.isPending}
           onPress={() => setFormState(DEFAULT_FORM_STATE)}
         >
@@ -349,15 +349,15 @@ function SettingsToggle({
   disabled: boolean
 }) {
   return (
-    <Row justifyContent="space-between" gap="$3" alignItems="center" flexWrap="wrap">
-      <Stack gap="$1" flex={1} style={{ minWidth: 200 }}>
-        <Text fontWeight="600">{label}</Text>
-        <Text fontSize="$3" color="$color10">
+    <Row justify="space-between" gap={12} align="center" flexWrap="wrap">
+      <Stack gap={4} flex={1} style={{ minWidth: 200 }}>
+        <Text>{label}</Text>
+        <Text color="gray">
           {description}
         </Text>
       </Stack>
       <Switch
-        size="$2"
+        size={8}
         checked={value}
         disabled={disabled}
         onCheckedChange={(checked) => onValueChange(Boolean(checked))}

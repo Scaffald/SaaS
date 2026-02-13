@@ -1811,20 +1811,31 @@ export const backgroundChecksRouter = t.router({
 
       const query = ctx.dbAdmin.core('background_check_packages')
 
-      const { data, error } = input.id
-        ? await query
-            .update(payload)
-            .eq('id', input.id)
-            .select(
-              'id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at'
-            )
-            .maybeSingle()
-        : await query
-            .insert(payload)
-            .select(
-              'id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at'
-            )
-            .maybeSingle()
+      let data: any
+      let error: any
+
+      if (input.id) {
+        // @ts-ignore - Complex Supabase query builder types cause "excessively deep" TypeScript error
+        const result = await query
+          .update(payload)
+          .eq('id', input.id)
+          .select(
+            'id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at'
+          )
+          .maybeSingle()
+        data = result.data
+        error = result.error
+      } else {
+        // @ts-ignore - Complex Supabase query builder types cause "excessively deep" TypeScript error
+        const result = await query
+          .insert(payload)
+          .select(
+            'id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at'
+          )
+          .maybeSingle()
+        data = result.data
+        error = result.error
+      }
 
       if (error || !data) {
         throw new TRPCError({

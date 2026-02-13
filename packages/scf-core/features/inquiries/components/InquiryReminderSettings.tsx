@@ -62,19 +62,19 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
   }
 
   return (
-    <Card bordered padding="$4" gap="$3">
+    <Card bordered padding={16} gap={12}>
       <H4>Inquiry Reminders</H4>
       <Separator />
       {isLoading ? (
         <Spinner />
       ) : (
-        <Stack gap="$4">
-          <Row alignItems="center" justifyContent="space-between" gap="$3">
-            <Stack flex={1} gap="$1">
-              <Text fontSize="$4" fontWeight="600">
+        <Stack gap={16}>
+          <Row align="center" justify="space-between" gap={12}>
+            <Stack flex={1} gap={4}>
+              <Text>
                 Send automatic reminders
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Automatically remind candidates to respond to pending inquiries
               </Text>
             </Stack>
@@ -86,8 +86,8 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
           </Row>
 
           {reminderEnabled && (
-            <Stack gap="$2">
-              <Text fontSize="$4" fontWeight="600">
+            <Stack gap={8}>
+              <Text>
                 Remind after (days)
               </Text>
               <Input
@@ -102,7 +102,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
                 placeholder="3"
                 maxLength={2}
               />
-              <Text fontSize="$2" color="$color11">
+              <Text color="gray">
                 Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
                 after an inquiry is sent if they haven't responded. Reminders are limited to once
                 every 3 days.

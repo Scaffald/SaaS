@@ -69,22 +69,22 @@ export function EnhancedRequirementsSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Enhanced Requirements
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Additional job requirements and qualifications
       </Text>
 
       {/* Minimum Education Level */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Minimum education level</Label>
         <ResponsiveSelect
           value={localState.minimum_education_level || ''}
@@ -99,10 +99,10 @@ export function EnhancedRequirementsSection({
       </Stack>
 
       {/* Background Check */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Require background check</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Background screening required for this position
           </Text>
         </Stack>
@@ -114,7 +114,7 @@ export function EnhancedRequirementsSection({
       </Row>
 
       {localState.require_background_check && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Background check type</Label>
           <Input
             placeholder="e.g. Criminal, Credit, Employment history"
@@ -125,10 +125,10 @@ export function EnhancedRequirementsSection({
       )}
 
       {/* Drug Test */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Require drug test</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Pre-employment drug screening required
           </Text>
         </Stack>
@@ -140,10 +140,10 @@ export function EnhancedRequirementsSection({
       </Row>
 
       {/* Driver's License */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Require driver's license</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Valid driver's license required
           </Text>
         </Stack>
@@ -155,7 +155,7 @@ export function EnhancedRequirementsSection({
       </Row>
 
       {localState.require_drivers_license && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>License type</Label>
           <Input
             placeholder="e.g. Class A CDL, Standard"
@@ -166,7 +166,7 @@ export function EnhancedRequirementsSection({
       )}
 
       {/* Security Clearance */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Security clearance required</Label>
         <Input
           placeholder="e.g. Secret, Top Secret, Confidential"
@@ -176,7 +176,7 @@ export function EnhancedRequirementsSection({
       </Stack>
 
       {/* Travel Percentage */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Travel percentage (%)</Label>
         <Input
           placeholder="0-100"
@@ -189,13 +189,13 @@ export function EnhancedRequirementsSection({
             }
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Percentage of time spent traveling for work
         </Text>
       </Stack>
 
       {/* Shift Requirements */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Shift requirements</Label>
         <Input
           placeholder="e.g. Day shift, Night shift, Rotating shifts"

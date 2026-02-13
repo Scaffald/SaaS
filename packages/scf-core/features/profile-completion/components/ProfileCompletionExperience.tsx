@@ -125,7 +125,7 @@ export function ProfileCompletionExperience() {
   }, [router])
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <ProfileCompletionExperienceWidgetSection
         status={status}
         isStatusLoading={isLoading}
@@ -263,12 +263,12 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
       <Sheet.Overlay />
       <Sheet.Frame backgroundColor="$background" aria-label="Profile completion wizard">
         <Sheet.Handle />
-        <Stack padding="$4" gap="$4" flex={1}>
-          <Stack gap="$2">
-            <Text fontSize="$6" fontWeight="700">
+        <Stack padding={16} gap={16} flex={1}>
+          <Stack gap={8}>
+            <Text>
               Complete Your Profile
             </Text>
-            <Text color="$color11">We’ll auto-save as you go. You can exit anytime.</Text>
+            <Text color="gray">We’ll auto-save as you go. You can exit anytime.</Text>
           </Stack>
           {open ? (
             <ProfileWizard
@@ -278,7 +278,7 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
               onViewProfile={onViewProfile}
             />
           ) : null}
-          <Button size="$4" variant="outlined" onPress={onClose}>
+          <Button size={16} variant="outline" onPress={onClose}>
             Close
           </Button>
         </Stack>

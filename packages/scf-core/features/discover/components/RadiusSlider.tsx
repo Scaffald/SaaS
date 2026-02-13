@@ -24,12 +24,12 @@ export const RadiusSlider = ({
   step = 1000,
 }: RadiusSliderProps) => {
   return (
-    <Stack gap="$2" flex={1}>
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$3" fontWeight="600" color="$color11">
+    <Stack gap={8} flex={1}>
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           Search Radius
         </Text>
-        <Text fontSize="$3" fontWeight="600" color="$blue10">
+        <Text color="$blue10">
           {formatRadius(value)}
         </Text>
       </Row>
@@ -46,7 +46,7 @@ export const RadiusSlider = ({
         flex={1}
         height={20}
         backgroundColor="$color3"
-        borderRadius="$2"
+        borderRadius={8}
       >
         <Slider.Track>
           <Slider.TrackActive backgroundColor="$blue9" />
@@ -63,11 +63,11 @@ export const RadiusSlider = ({
         />
       </Slider>
 
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$2" color="$color10">
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           {formatRadius(min)}
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {formatRadius(max)}
         </Text>
       </Row>

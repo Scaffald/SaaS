@@ -88,10 +88,10 @@ export const MapFilterBar = ({
   return (
     <Row
       width="100%"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
-      gap="$3"
-      alignItems="center"
+      paddingHorizontal={16}
+      paddingVertical={12}
+      gap={12}
+      align="center"
       backgroundColor="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
@@ -125,18 +125,18 @@ export const MapFilterBar = ({
           flex={1}
           minWidth={200}
           backgroundColor="$background"
-          padding="$3"
-          borderRadius="$4"
+          padding={12}
+          borderRadius={16}
           borderWidth={1}
           borderColor="$red8"
-          gap="$2"
+          gap={8}
         >
-          <Row alignItems="center" gap="$2">
-            <Text fontSize="$3" color="$red10" fontWeight="600">
+          <Row align="center" gap={8}>
+            <Text color="$red10">
               Map Search Unavailable
             </Text>
           </Row>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {tokenValidation.error}
           </Text>
         </Stack>
@@ -154,8 +154,8 @@ export const MapFilterBar = ({
 
       {/* Results Count */}
       <Button
-        size="$4"
-        variant="outlined"
+        size={16}
+        variant="outline"
         onPress={onResultsPress}
         backgroundColor="$background"
         hoverStyle={{ backgroundColor: '$backgroundHover' }}
@@ -163,18 +163,18 @@ export const MapFilterBar = ({
         icon={resultsCount > 0 ? undefined : List}
       >
         {resultsCount > 0 ? (
-          <Text fontSize="$4" fontWeight="600">
+          <Text>
             {resultsCount} {resultsCount === 1 ? 'result' : 'results'}
           </Text>
         ) : (
-          <Text fontSize="$4">Results</Text>
+          <Text>Results</Text>
         )}
       </Button>
 
       {/* Reset Button */}
       <Button
-        size="$4"
-        variant="outlined"
+        size={16}
+        variant="outline"
         icon={RotateCcw}
         scaleIcon={1.2}
         onPress={onReset}

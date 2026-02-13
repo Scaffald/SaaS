@@ -32,20 +32,20 @@ export function SkillProficiencySelector({
   const currentLevel = getProficiencyLevel(proficiency)
 
   return (
-    <Stack gap="$4">
-      <Text fontWeight="600" fontSize="$4">
+    <Stack gap={16}>
+      <Text>
         Set Proficiency Level
       </Text>
 
       {/* Selected Skill */}
       <Card bordered backgroundColor="$color3">
         <Card.Header>
-          <Stack gap="$1">
-            <Text fontSize="$4" fontWeight="600">
+          <Stack gap={4}>
+            <Text>
               {skill.name}
             </Text>
             {skill.code && (
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
@@ -56,8 +56,8 @@ export function SkillProficiencySelector({
       <Separator />
 
       {/* Proficiency Slider */}
-      <Stack gap="$3">
-        <Text fontWeight="600">Proficiency</Text>
+      <Stack gap={12}>
+        <Text>Proficiency</Text>
 
         <Slider
           value={[proficiency]}
@@ -65,27 +65,27 @@ export function SkillProficiencySelector({
           min={1}
           max={5}
           step={1}
-          size="$3"
+          size={12}
         >
           <Slider.Track backgroundColor="$color4" height={6}>
             <Slider.TrackActive backgroundColor="$green9" />
           </Slider.Track>
-          <Slider.Thumb index={0} circular size="$1" />
+          <Slider.Thumb index={0} circular size={4} />
         </Slider>
 
         {/* Current Level Display */}
         <Card bordered backgroundColor="$color3">
           <Card.Header>
-            <Row justifyContent="space-between" alignItems="center">
+            <Row justify="space-between" align="center">
               <Stack>
-                <Text fontWeight="600" fontSize="$4" color="$green9">
+                <Text color="$green9">
                   {currentLevel?.label}
                 </Text>
-                <Text fontSize="$2" color="$color11">
+                <Text color="gray">
                   {currentLevel?.description}
                 </Text>
               </Stack>
-              <Text fontSize="$8" fontWeight="bold" color="$green9">
+              <Text color="$green9">
                 {proficiency}
               </Text>
             </Row>
@@ -93,18 +93,18 @@ export function SkillProficiencySelector({
         </Card>
 
         {/* Level Guide */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           {PROFICIENCY_LEVELS.map((level) => (
             <Row
               key={level.value}
-              gap="$2"
-              alignItems="center"
+              gap={8}
+              align="center"
               opacity={proficiency === level.value ? 1 : 0.5}
             >
-              <Text fontWeight="600" minWidth={30}>
+              <Text minWidth={30}>
                 {level.value}
               </Text>
-              <Text flex={1} fontSize="$2">
+              <Text flex={1}>
                 {level.label} - {level.description}
               </Text>
             </Row>
@@ -113,8 +113,8 @@ export function SkillProficiencySelector({
       </Stack>
 
       {/* Actions */}
-      <Row gap="$3">
-        <Button flex={1} variant="outlined" onPress={onCancel}>
+      <Row gap={12}>
+        <Button flex={1} variant="outline" onPress={onCancel}>
           Cancel
         </Button>
         <Button flex={1} themeInverse onPress={onAdd}>

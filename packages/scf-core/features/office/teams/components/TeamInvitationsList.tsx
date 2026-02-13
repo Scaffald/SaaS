@@ -121,35 +121,26 @@ export function TeamInvitationsList({
   }
 
   return (
-    <Stack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+    <Stack gap={16} paddingHorizontal={12}>
       <Row
-        justifyContent="space-between"
-        alignItems="flex-start"
+        justify="space-between"
+        align="flex-start"
         flexWrap="wrap"
-        gap="$3"
+        gap={12}
         flexDirection="column"
         width="100%"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
       >
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
+        <Text accessibilityRole="header">
           Invitations
         </Text>
         <Row
-          gap="$2"
-          alignItems="flex-start"
+          gap={8}
+          align="flex-start"
           flexDirection="column"
           width="100%"
-          $md={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            width: undefined,
-          }}
         >
           {headerAction}
-          <Stack width="100%" $md={{ width: undefined }}>
+          <Stack width="100%"}>
             <ResponsiveSelect
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
@@ -176,27 +167,27 @@ export function TeamInvitationsList({
       </Row>
 
       {invitationsQuery.isLoading ? (
-        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
-          <Spinner size="large" />
-          <Text color="$color11">Loading invitations…</Text>
+        <Stack align="center" justify="center" gap={8} paddingVertical={24}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading invitations…</Text>
         </Stack>
       ) : invitations.length === 0 ? (
         <Stack
-          gap="$2"
+          gap={8}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$color2"
         >
-          <Text fontWeight="600">No invitations yet</Text>
-          <Text color="$color11">
+          <Text>No invitations yet</Text>
+          <Text color="gray">
             Invite teammates to collaborate on hiring. Invitations will appear here with their
             status.
           </Text>
         </Stack>
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {invitations.map((invitation) => {
             const statusLabel =
               STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status
@@ -234,70 +225,66 @@ export function TeamInvitationsList({
             return (
               <Card
                 key={invitation.id}
-                padding="$4"
+                padding={16}
                 borderWidth={1}
                 borderColor="$borderColor"
-                gap="$3"
+                gap={12}
                 backgroundColor="$color1"
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={`Invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'} · Status ${statusLabel}${invitation.role?.name ? ` · Role ${invitation.role.name}` : ''}`}
               >
-                <Row justifyContent="space-between" alignItems="center">
-                  <Stack gap="$1">
-                    <Text fontWeight="600">
+                <Row justify="space-between" align="center">
+                  <Stack gap={4}>
+                    <Text>
                       {invitation.email
                         ? invitation.email
                         : invitation.invitedUserId
                           ? `Existing member (${invitation.invitedUserId})`
                           : 'Invitation'}
                     </Text>
-                    <Row gap="$2" alignItems="center">
-                      <Clock size={16} color="$color11" />
-                      <Text fontSize="$3" color="$color11">
+                    <Row gap={8} align="center">
+                      <Clock size={16} color="gray" />
+                      <Text color="gray">
                         Sent {sentAt ?? 'recently'}
                         {expiresAt ? ` · Expires ${expiresAt}` : null}
                       </Text>
                     </Row>
                   </Stack>
-                  <Text fontSize="$3" fontWeight="600" color={statusColor}>
+                  <Text color={statusColor}>
                     {statusLabel}
                   </Text>
                 </Row>
 
                 <Row
-                  gap="$2"
+                  gap={8}
                   flexDirection="column"
-                  alignItems="stretch"
-                  $md={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
+                  align="stretch"
                 >
-                  <Text fontSize="$3" color="$color11">
+                  <Text color="gray">
                     Role:
                   </Text>
-                  <Text fontSize="$3" fontWeight="500">
+                  <Text>
                     {invitation.role?.name ?? 'Member'}
                   </Text>
                 </Row>
 
                 {lastDeliveryStatus ? (
-                  <Stack gap="$1">
-                    <Text fontSize="$3" color="$color11">
+                  <Stack gap={4}>
+                    <Text color="gray">
                       Delivery status:{' '}
-                      <Text fontWeight="600" color="$color12">
+                      <Text color="gray">
                         {lastDeliveryStatus}
                       </Text>
                       {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
                     </Text>
                     {deliveryChannels && deliveryChannels.length > 0 ? (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         Channels: {deliveryChannels.join(', ')}
                       </Text>
                     ) : null}
                     {lastDeliveryError ? (
-                      <Text fontSize="$2" color="$red10">
+                      <Text color="$red10">
                         Last error: {lastDeliveryError}
                       </Text>
                     ) : null}
@@ -305,56 +292,45 @@ export function TeamInvitationsList({
                 ) : null}
 
                 <Row
-                  gap="$2"
+                  gap={8}
                   flexDirection="column"
-                  alignItems="stretch"
-                  $md={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
+                  align="stretch"
                 >
-                  <Text fontSize="$3" color="$color11">
+                  <Text color="gray">
                     Type:
                   </Text>
-                  <Text fontSize="$3">
+                  <Text>
                     {invitation.email ? 'Email invitation' : 'Existing member'}
                   </Text>
                 </Row>
 
                 <Row
-                  gap="$2"
-                  justifyContent="flex-start"
+                  gap={8}
+                  justify="flex-start"
                   flexWrap="wrap"
                   flexDirection="column"
-                  alignItems="stretch"
-                  $md={{
-                    justify: 'flex-end',
-                    flexDirection: 'row',
-                    items: 'center',
-                  }}
+                  align="stretch"
                 >
                   <Button
-                    size="$2"
-                    variant="outlined"
+                    size={8}
+                    variant="outline"
                     icon={RefreshCw}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
                     accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
                     width="100%"
-                    $md={{ width: undefined }}
                   >
                     Resend
                   </Button>
                   <Button
-                    size="$2"
-                    variant="outlined"
+                    size={8}
+                    variant="outline"
                     color="$red10"
                     icon={XCircle}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
                     accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
                     width="100%"
-                    $md={{ width: undefined }}
                   >
                     Cancel
                   </Button>

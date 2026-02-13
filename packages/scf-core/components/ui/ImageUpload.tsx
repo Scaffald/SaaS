@@ -324,9 +324,9 @@ export function ImageUpload({
   const hasImage = !!value
 
   return (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {label && (
-        <Text fontSize="$4" fontWeight="600">
+        <Text>
           {label}
         </Text>
       )}
@@ -338,8 +338,8 @@ export function ImageUpload({
           isDragActive ? '$blue8' : error ? '$red8' : hasImage ? '$borderColor' : '$borderColor'
         }
         borderStyle={isDragActive ? 'solid' : 'dashed'}
-        borderRadius="$4"
-        padding="$4"
+        borderRadius={16}
+        padding={16}
         backgroundColor={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
         opacity={disabled ? 0.5 : 1}
         {...(Platform.OS === 'web' && getRootProps
@@ -348,14 +348,14 @@ export function ImageUpload({
       >
         {hasImage ? (
           // Image Preview Mode
-          <Stack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             <Stack position="relative">
               <Image
                 source={{ uri: value }}
                 width={200}
                 height={200}
                 resizeMode="contain"
-                borderRadius="$4"
+                borderRadius={16}
                 borderWidth={1}
                 borderColor="$borderColor"
               />
@@ -364,20 +364,20 @@ export function ImageUpload({
                   position="absolute"
                   backgroundColor="$background"
                   opacity={0.8}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="$4"
+                  align="center"
+                  justify="center"
+                  borderRadius={16}
                   style={{ top: 0, left: 0, right: 0, bottom: 0 }}
                 >
-                  <Spinner size="large" />
+                  <Spinner size="lg" />
                 </Stack>
               )}
             </Stack>
 
-            <Row gap="$2">
+            <Row gap={8}>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 onPress={triggerFilePicker}
                 disabled={disabled || isUploading}
                 icon={Upload}
@@ -385,8 +385,8 @@ export function ImageUpload({
                 Change Image
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 color="$red10"
                 onPress={handleDelete}
                 disabled={disabled || isUploading}
@@ -398,25 +398,25 @@ export function ImageUpload({
           </Stack>
         ) : (
           // Upload Mode
-          <Stack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             {/* Icon */}
             <Stack
               width={64}
               height={64}
-              alignItems="center"
-              justifyContent="center"
-              borderRadius="$4"
+              align="center"
+              justify="center"
+              borderRadius={16}
               backgroundColor="$blue3"
             >
-              {isUploading ? <Spinner size="large" /> : <ImageIcon size={32} color="$blue10" />}
+              {isUploading ? <Spinner size="lg" /> : <ImageIcon size={32} color="$blue10" />}
             </Stack>
 
             {/* Text */}
-            <Stack gap="$1" alignItems="center">
-              <Text fontWeight="600" fontSize="$5">
+            <Stack gap={4} align="center">
+              <Text>
                 {isDragActive ? 'Drop image here' : 'Upload Image'}
               </Text>
-              <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+              <Text color="gray" style={{ textAlign: 'center' }}>
                 {isUploading
                   ? `Uploading... ${uploadProgress > 0 ? `${uploadProgress}%` : ''}`
                   : 'Drag & drop or click to browse'}
@@ -425,7 +425,7 @@ export function ImageUpload({
 
             {/* Button */}
             <Button
-              size="$3"
+              size={12}
               disabled={disabled || isUploading}
               onPress={triggerFilePicker}
               icon={Upload}
@@ -434,7 +434,7 @@ export function ImageUpload({
             </Button>
 
             {/* File Type Info */}
-            <Text fontSize="$1" color="$color10" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               Supported: {accept.replace(/image\//g, '').replace(/,/g, ', ')} (Max {maxSizeMB}MB)
             </Text>
           </Stack>
@@ -456,16 +456,16 @@ export function ImageUpload({
 
       {/* Helper Text */}
       {helperText && !error && (
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {helperText}
         </Text>
       )}
 
       {/* Error Message */}
       {error && (
-        <Row gap="$2" alignItems="center" padding="$2" backgroundColor="$red2" borderRadius="$3">
+        <Row gap={8} align="center" padding={8} backgroundColor="$red2" borderRadius={12}>
           <AlertCircle size={16} color="$red10" />
-          <Text fontSize="$2" color="$red10" flex={1}>
+          <Text color="$red10" flex={1}>
             {error}
           </Text>
         </Row>

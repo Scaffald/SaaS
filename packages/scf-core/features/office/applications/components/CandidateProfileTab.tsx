@@ -33,50 +33,50 @@ export const CandidateProfileTab = ({
     lockReason ?? 'Pay the upfront success fee to unlock email and phone details.'
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {/* Contact Info */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Contact Information
         </Text>
         {isContactLocked ? (
-          <Stack gap="$2">
-            <Text color="$orange11" fontWeight="600">
+          <Stack gap={8}>
+            <Text color="$orange11">
               Contact details locked
             </Text>
-            <Text color="$color11">{lockedMessage}</Text>
+            <Text color="gray">{lockedMessage}</Text>
           </Stack>
         ) : (
-          <Stack gap="$2">
-            <Row justifyContent="space-between">
+          <Stack gap={8}>
+            <Row justify="space-between">
               <Text opacity={0.7}>Email</Text>
-              <Text fontWeight="600">{resolvedEmail}</Text>
+              <Text>{resolvedEmail}</Text>
             </Row>
-            <Row justifyContent="space-between">
+            <Row justify="space-between">
               <Text opacity={0.7}>Phone</Text>
-              <Text fontWeight="600">{resolvedPhone}</Text>
+              <Text>{resolvedPhone}</Text>
             </Row>
-            <Row justifyContent="space-between">
+            <Row justify="space-between">
               <Text opacity={0.7}>Location</Text>
-              <Text fontWeight="600">{resolvedLocation}</Text>
+              <Text>{resolvedLocation}</Text>
             </Row>
           </Stack>
         )}
       </Card>
 
       {/* Skills */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Skills
         </Text>
-        <Stack gap="$3">
+        <Stack gap={12}>
           {candidate.skills.map((skill, index) => (
             <Row
               key={`skill-${skill.name}-${index}`}
-              justifyContent="space-between"
-              alignItems="center"
+              justify="space-between"
+              align="center"
             >
-              <Text fontWeight="600">{skill.name}</Text>
+              <Text>{skill.name}</Text>
               <Stack
                 backgroundColor={
                   skill.proficiency === 'expert'
@@ -87,13 +87,11 @@ export const CandidateProfileTab = ({
                         ? '$yellow3'
                         : '$color3'
                 }
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                borderRadius="$2"
+                paddingHorizontal={12}
+                paddingVertical={4}
+                borderRadius={8}
               >
                 <Text
-                  fontSize="$2"
-                  fontWeight="600"
                   color={
                     skill.proficiency === 'expert'
                       ? '$green10'
@@ -114,22 +112,22 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Certifications */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Certifications
         </Text>
-        <Stack gap="$3">
+        <Stack gap={12}>
           {candidate.certifications.map((cert, index) => (
-            <Stack key={`cert-${cert.name}-${index}`} gap="$1">
-              <Text fontWeight="600">{cert.name}</Text>
-              <Row gap="$2">
+            <Stack key={`cert-${cert.name}-${index}`} gap={4}>
+              <Text>{cert.name}</Text>
+              <Row gap={8}>
                 {cert.state && (
-                  <Text fontSize="$2" opacity={0.7}>
+                  <Text opacity={0.7}>
                     State: {cert.state}
                   </Text>
                 )}
                 {cert.issueDate && (
-                  <Text fontSize="$2" opacity={0.7}>
+                  <Text opacity={0.7}>
                     Issued: {new Date(cert.issueDate).toLocaleDateString()}
                   </Text>
                 )}
@@ -140,27 +138,27 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Experience */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Work Experience
         </Text>
-        <Stack gap="$4">
+        <Stack gap={16}>
           {candidate.experience.map((exp, index) => (
-            <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap="$2">
-              <Text fontSize="$4" fontWeight="600">
+            <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap={8}>
+              <Text>
                 {exp.title}
               </Text>
-              <Text fontSize="$3" opacity={0.8}>
+              <Text opacity={0.8}>
                 {exp.company}
               </Text>
-              <Text fontSize="$2" opacity={0.6}>
+              <Text opacity={0.6}>
                 {exp.duration}
               </Text>
-              <Text fontSize="$3" marginTop="$1">
+              <Text marginTop={4}>
                 {exp.description}
               </Text>
               {index < candidate.experience.length - 1 && (
-                <Stack height={1} backgroundColor="$color5" marginTop="$2" />
+                <Stack height={1} backgroundColor="$color5" marginTop={8} />
               )}
             </Stack>
           ))}

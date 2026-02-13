@@ -83,19 +83,19 @@ export function EducationStep({
   }
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Highest education
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Add your latest degree or training program. This section is optional but strengthens your
           profile.
         </Paragraph>
       </Stack>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Degree or credential</Text>
+      <Stack gap={8}>
+        <Text>Degree or credential</Text>
         <Controller
           control={control}
           name="degreeType"
@@ -109,8 +109,8 @@ export function EducationStep({
         />
       </Stack>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Institution</Text>
+      <Stack gap={8}>
+        <Text>Institution</Text>
         <Controller
           control={control}
           name="institutionName"
@@ -124,8 +124,8 @@ export function EducationStep({
         />
       </Stack>
 
-      <Row gap="$3">
-        <Stack flex={1} gap="$2">
+      <Row gap={12}>
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="startDate"
@@ -139,7 +139,7 @@ export function EducationStep({
           />
         </Stack>
 
-        <Stack flex={1} gap="$2">
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="endDate"
@@ -155,7 +155,7 @@ export function EducationStep({
         </Stack>
       </Row>
 
-      <Row gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Controller
           control={control}
           name="isCurrent"
@@ -167,7 +167,7 @@ export function EducationStep({
             />
           )}
         />
-        <Text fontSize="$3">I am currently enrolled</Text>
+        <Text>I am currently enrolled</Text>
       </Row>
 
       <StepNavigation

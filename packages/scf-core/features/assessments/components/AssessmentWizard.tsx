@@ -125,9 +125,9 @@ export function AssessmentWizard({
   // Loading state
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
-        <Spinner size="large" />
-        <Text color="$color11">Loading assessment...</Text>
+      <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading assessment...</Text>
       </Stack>
     )
   }
@@ -135,13 +135,13 @@ export function AssessmentWizard({
   // Error state
   if (error) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
+      <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
         <AlertCircle size={48} color="$red10" />
-        <Text fontSize="$5" fontWeight="600" color="$red11">
+        <Text color="$red11">
           Error loading assessment
         </Text>
-        <Stack alignItems="center">
-          <Text fontSize="$3" color="$color11">
+        <Stack align="center">
+          <Text color="gray">
             {error.message || 'An unexpected error occurred'}
           </Text>
         </Stack>
@@ -153,17 +153,17 @@ export function AssessmentWizard({
     <Stack flex={1}>
       {/* Header */}
       {shouldRenderHeader && (
-        <Stack padding="$4" gap="$3">
+        <Stack padding={16} gap={12}>
           {(title || description) && (
-            <Stack gap="$1">
+            <Stack gap={4}>
               {title && (
-                <Text fontSize="$7" fontWeight="bold" color="$color12">
+                <Text color="gray">
                   {title}
                 </Text>
               )}
               {description && (
-                <Stack alignItems="center">
-                  <Text fontSize="$3" color="$color11">
+                <Stack align="center">
+                  <Text color="gray">
                     {description}
                   </Text>
                 </Stack>
@@ -186,23 +186,23 @@ export function AssessmentWizard({
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <Stack padding="$4" gap="$4">
+        <Stack padding={16} gap={16}>
           {children}
         </Stack>
       </ScrollView>
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <Stack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <Row gap="$3" justifyContent="space-between">
+        <Stack padding={16} borderTopWidth={1} borderTopColor="$borderColor">
+          <Row gap={12} justify="space-between">
             {showPrevious && (
-              <Button size="$4" variant="outlined" icon={ChevronLeft} onPress={onPrevious}>
+              <Button size={16} variant="outline" icon={ChevronLeft} onPress={onPrevious}>
                 Previous
               </Button>
             )}
 
             {showNext && (
-              <Button size="$4" iconAfter={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
+              <Button size={16} iconAfter={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
                 Next
               </Button>
             )}

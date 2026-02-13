@@ -79,23 +79,23 @@ export function OfficeNotificationsConsole() {
   const digestItems = (digestQuery.data ?? []) as DigestQueueItem[]
 
   return (
-    <Stack gap="$6">
-      <Stack gap="$2">
-        <Text fontSize="$9" fontWeight="700">
+    <Stack gap={24}>
+      <Stack gap={8}>
+        <Text>
           Notification Operations
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           Monitor delivery workers, inspect failures, and triage digest backlogs.
         </Text>
       </Stack>
 
-      <Stack gap="$3">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$7" fontWeight="600">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text>
             Delivery Queue
           </Text>
           <Button
-            size="$2"
+            size={8}
             theme="info"
             icon={RefreshCw}
             onPress={() => deliveriesQuery.refetch()}
@@ -105,14 +105,14 @@ export function OfficeNotificationsConsole() {
           </Button>
         </Row>
 
-        <Row gap="$2" flexWrap="wrap">
+        <Row gap={8} flexWrap="wrap">
           {DELIVERY_STATUSES.map((value) => {
             const isActive = status === value
 
             return (
               <Button
                 key={value}
-                size="$2"
+                size={8}
                 theme={isActive ? 'info' : 'gray'}
                 {...(!isActive ? { variant: 'outlined' as const } : {})}
                 onPress={() => {
@@ -127,34 +127,34 @@ export function OfficeNotificationsConsole() {
         </Row>
 
         {deliveriesQuery.isLoading ? (
-          <Stack alignItems="center" gap="$3" marginTop="$4">
-            <Spinner size="large" color="$color10" />
-            <Text color="$color10">Loading deliveries…</Text>
+          <Stack align="center" gap={12} marginTop={16}>
+            <Spinner size="lg" color="gray" />
+            <Text color="gray">Loading deliveries…</Text>
           </Stack>
         ) : deliveries.length === 0 ? (
-          <Stack gap="$3" alignItems="center" marginTop="$4">
-            <AlertCircle size={32} color="$color8" />
-            <Text color="$color10">No deliveries match this filter.</Text>
+          <Stack gap={12} align="center" marginTop={16}>
+            <AlertCircle size={32} color="gray" />
+            <Text color="gray">No deliveries match this filter.</Text>
           </Stack>
         ) : (
-          <Stack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-            <Row backgroundColor="$color2" padding="$3" gap="$3">
-              <Text flex={2} fontWeight="600">
+          <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
+            <Row backgroundColor="$color2" padding={12} gap={12}>
+              <Text flex={2}>
                 Notification
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Channel
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Status
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Attempts
               </Text>
-              <Text flex={2} fontWeight="600">
+              <Text flex={2}>
                 Last error
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Updated
               </Text>
             </Row>
@@ -168,41 +168,41 @@ export function OfficeNotificationsConsole() {
                 <Stack
                   key={delivery.id}
                   backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
-                  padding="$3"
+                  padding={12}
                 >
-                  <Row gap="$3" alignItems="center">
-                    <Stack flex={2} gap="$1">
-                      <Row gap="$2" alignItems="center">
-                        <Text fontWeight="600" color="$color12" numberOfLines={1}>
+                  <Row gap={12} align="center">
+                    <Stack flex={2} gap={4}>
+                      <Row gap={8} align="center">
+                        <Text color="gray" numberOfLines={1}>
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
                         <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text fontSize="$2" color="$color10" numberOfLines={2}>
+                      <Text color="gray" numberOfLines={2}>
                         {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
                     </Stack>
-                    <Text flex={1} color="$color11">
+                    <Text flex={1} color="gray">
                       {formatChannel(delivery.channel)}
                     </Text>
                     <NotificationTag
                       size="md"
                       themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                       flex={1}
-                      justifyContent="center"
+                      justify="center"
                       textColorToken="$color12"
                     >
                       {delivery.status}
                     </NotificationTag>
-                    <Text flex={1} color="$color11">
+                    <Text flex={1} color="gray">
                       {delivery.attempts}
                     </Text>
-                    <Text flex={2} color="$color10" numberOfLines={1}>
+                    <Text flex={2} color="gray" numberOfLines={1}>
                       {delivery.last_error ?? '—'}
                     </Text>
-                    <Text flex={1} color="$color10">
+                    <Text flex={1} color="gray">
                       {formatDate(delivery.updated_at)}
                     </Text>
                   </Row>
@@ -215,13 +215,13 @@ export function OfficeNotificationsConsole() {
 
       <Separator backgroundColor="$color3" />
 
-      <Stack gap="$3">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$7" fontWeight="600">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text>
             Digest Backlog
           </Text>
           <Button
-            size="$2"
+            size={8}
             theme="info"
             icon={RefreshCw}
             onPress={() => digestQuery.refetch()}
@@ -232,34 +232,34 @@ export function OfficeNotificationsConsole() {
         </Row>
 
         {digestQuery.isLoading ? (
-          <Stack alignItems="center" gap="$3" marginTop="$4">
-            <Spinner size="large" color="$color10" />
-            <Text color="$color10">Loading digest queue…</Text>
+          <Stack align="center" gap={12} marginTop={16}>
+            <Spinner size="lg" color="gray" />
+            <Text color="gray">Loading digest queue…</Text>
           </Stack>
         ) : digestItems.length === 0 ? (
-          <Stack gap="$3" alignItems="center" marginTop="$4">
-            <AlertCircle size={32} color="$color8" />
-            <Text color="$color10">Digest queue is empty.</Text>
+          <Stack gap={12} align="center" marginTop={16}>
+            <AlertCircle size={32} color="gray" />
+            <Text color="gray">Digest queue is empty.</Text>
           </Stack>
         ) : (
-          <Stack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-            <Row backgroundColor="$color2" padding="$3" gap="$3">
-              <Text flex={1} fontWeight="600">
+          <Stack borderWidth={1} borderColor="$borderColor" borderRadius={16} overflow="hidden">
+            <Row backgroundColor="$color2" padding={12} gap={12}>
+              <Text flex={1}>
                 User ID
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Type
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Bucket
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Count
               </Text>
-              <Text flex={2} fontWeight="600">
+              <Text flex={2}>
                 Channels
               </Text>
-              <Text flex={1} fontWeight="600">
+              <Text flex={1}>
                 Last event
               </Text>
             </Row>
@@ -267,29 +267,29 @@ export function OfficeNotificationsConsole() {
             {digestItems.map((item, index) => (
               <Row
                 key={item.id}
-                gap="$3"
-                padding="$3"
+                gap={12}
+                padding={12}
                 backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
-                alignItems="flex-start"
+                align="flex-start"
               >
-                <Text flex={1} color="$color11" numberOfLines={1}>
+                <Text flex={1} color="gray" numberOfLines={1}>
                   {item.user_id}
                 </Text>
-                <Text flex={1} color="$color11">
+                <Text flex={1} color="gray">
                   {item.type}
                 </Text>
-                <Text flex={1} color="$color11">
+                <Text flex={1} color="gray">
                   {item.bucket}
                 </Text>
-                <Text flex={1} color="$color11">
+                <Text flex={1} color="gray">
                   {item.count}
                 </Text>
-                <Text flex={2} color="$color11">
+                <Text flex={2} color="gray">
                   {Array.isArray(item.channels) && item.channels.length > 0
                     ? item.channels.join(', ')
                     : '—'}
                 </Text>
-                <Text flex={1} color="$color10">
+                <Text flex={1} color="gray">
                   {formatDate(item.last_event_at)}
                 </Text>
               </Row>
@@ -303,7 +303,7 @@ export function OfficeNotificationsConsole() {
 
 export function OfficeNotificationsConsoleScrollWrapper() {
   return (
-    <ScrollView paddingHorizontal="$6" paddingVertical="$6">
+    <ScrollView paddingHorizontal={24} paddingVertical={24}>
       <OfficeNotificationsConsole />
     </ScrollView>
   )

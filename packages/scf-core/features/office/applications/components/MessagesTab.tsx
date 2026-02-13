@@ -68,9 +68,9 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
-        <Text fontSize="$3" opacity={0.7}>
+      <Stack flex={1} align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
+        <Text opacity={0.7}>
           Loading messages...
         </Text>
       </Stack>
@@ -79,12 +79,12 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
   if (error) {
     return (
-      <Stack gap="$3" padding="$4">
-        <Card padding="$4" backgroundColor="$red3">
-          <Text fontSize="$3" color="$red10" fontWeight="600">
+      <Stack gap={12} padding={16}>
+        <Card padding={16} backgroundColor="$red3">
+          <Text color="$red10">
             Error loading messages
           </Text>
-          <Text fontSize="$2" color="$red10" marginTop="$2">
+          <Text color="$red10" marginTop={8}>
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
@@ -93,12 +93,12 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {/* Message Thread */}
-      <Stack gap="$3">
+      <Stack gap={12}>
         {transformedMessages.length === 0 ? (
-          <Card padding="$4" backgroundColor="$color2">
-            <Text fontSize="$3" opacity={0.7} textAlign="center">
+          <Card padding={16} backgroundColor="$color2">
+            <Text opacity={0.7} textAlign="center">
               No messages yet. Start the conversation below!
             </Text>
           </Card>
@@ -106,16 +106,16 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           transformedMessages.map((message) => (
             <Card
               key={message.id}
-              padding="$4"
+              padding={16}
               backgroundColor={message.sender === 'recruiter' ? '$blue3' : '$color2'}
               alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
             >
-              <Row justifyContent="space-between" alignItems="center" marginBottom="$2" gap="$3">
-                <Text fontWeight="600" fontSize="$3">
+              <Row justify="space-between" align="center" marginBottom={8} gap={12}>
+                <Text>
                   {message.senderName}
                 </Text>
-                <Text fontSize="$1" opacity={0.7}>
+                <Text opacity={0.7}>
                   {new Date(message.sentAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -125,11 +125,11 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
                 </Text>
               </Row>
 
-              <Text fontSize="$3">{message.content}</Text>
+              <Text>{message.content}</Text>
 
               {!message.isRead && message.sender === 'candidate' && (
-                <Stack marginTop="$2">
-                  <Text fontSize="$2" color="$red10" fontWeight="600">
+                <Stack marginTop={8}>
+                  <Text color="$red10">
                     Unread
                   </Text>
                 </Stack>
@@ -140,8 +140,8 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       </Stack>
 
       {/* Send Message */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Send Message
         </Text>
 
@@ -150,7 +150,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           value={newMessage}
           onChangeText={setNewMessage}
           numberOfLines={4}
-          marginBottom="$3"
+          marginBottom={12}
         />
 
         <Button

@@ -81,7 +81,7 @@ export function OfficeViolationReports() {
       columnHelper.accessor('description', {
         header: 'Description',
         cell: (info) => (
-          <Text fontSize="$2" numberOfLines={2}>
+          <Text numberOfLines={2}>
             {info.getValue()}
           </Text>
         ),
@@ -91,7 +91,7 @@ export function OfficeViolationReports() {
         cell: (info) => {
           const status = info.getValue()
           return (
-            <Text color={getStatusColor(status)} fontWeight="600">
+            <Text color={getStatusColor(status)}>
               {formatStatus(status)}
             </Text>
           )
@@ -103,10 +103,10 @@ export function OfficeViolationReports() {
           const row = info.row.original
           if (row.status === 'pending') {
             return (
-              <Row gap="$1">
+              <Row gap={4}>
                 <Button
-                  size="$2"
-                  variant="outlined"
+                  size={8}
+                  variant="outline"
                   theme="blue"
                   onPress={() => {
                     updateMutation.mutate({
@@ -129,19 +129,19 @@ export function OfficeViolationReports() {
   }, [updateMutation])
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Row justifyContent="space-between" alignItems="center">
+    <Stack flex={1} padding={16} gap={16}>
+      <Row justify="space-between" align="center">
         <Stack>
-          <Text fontSize="$7" fontWeight="700">
+          <Text>
             Anti-Circumvention Violation Reports
           </Text>
-          <Text color="$color10">
+          <Text color="gray">
             Review and manage reports of off-platform hires and fee avoidance.
           </Text>
         </Stack>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           icon={RefreshCw}
           onPress={() => reportsQuery.refetch()}
           disabled={reportsQuery.isRefetching}
@@ -151,12 +151,12 @@ export function OfficeViolationReports() {
       </Row>
 
       {reportsQuery.isLoading ? (
-        <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-          <Spinner size="large" />
-          <Text color="$color10">Loading violation reports…</Text>
+        <Stack flex={1} align="center" justify="center" gap={12}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading violation reports…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
+        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
           <DataTable
             columns={reportsColumns}
             data={reportsQuery.data?.items ?? []}
@@ -165,7 +165,7 @@ export function OfficeViolationReports() {
             emptyMessage="No violation reports found."
           />
           {reportsQuery.data && reportsQuery.data.totalCount > 0 && (
-            <Text fontSize="$2" color="$color10" marginTop="$3">
+            <Text color="gray" marginTop={12}>
               Showing {reportsQuery.data.items.length} of {reportsQuery.data.totalCount} reports
             </Text>
           )}

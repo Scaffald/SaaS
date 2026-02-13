@@ -22,7 +22,7 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
   meetsRequirement,
 }) => {
   return (
-    <Row gap="$3" alignItems="center" paddingVertical="$2">
+    <Row gap={12} align="center" paddingVertical={8}>
       {/* Indicator Icon */}
       {meetsRequirement ? (
         <CheckCircle2 size={18} color="$green10" />
@@ -33,21 +33,21 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
       )}
 
       {/* Skill Info */}
-      <Stack flex={1} gap="$1">
-        <Text fontSize="$3" fontWeight="600" color="$color12">
+      <Stack flex={1} gap={4}>
+        <Text color="gray">
           {skillName}
         </Text>
-        <Row gap="$3" alignItems="center">
+        <Row gap={12} align="center">
           {userRating !== null && userRating > 0 ? (
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               Your rating: {userRating}/5
             </Text>
           ) : (
-            <Text fontSize="$2" color="$color10" fontStyle="italic">
+            <Text color="gray" fontStyle="italic">
               Not assessed
             </Text>
           )}
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Required: {requiredImportance}/5
           </Text>
         </Row>

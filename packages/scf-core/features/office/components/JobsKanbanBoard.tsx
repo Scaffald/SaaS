@@ -124,7 +124,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       onDragCancel={handleDragCancel}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <Row gap="$3" paddingBottom="$4" paddingHorizontal="$4">
+        <Row gap={12} paddingBottom={16} paddingHorizontal={16}>
           {STATUSES.map((status) => (
             <StatusColumn
               key={status}
@@ -161,48 +161,48 @@ interface StatusColumnProps {
 
 function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: StatusColumnProps) {
   return (
-    <DroppableColumn id={status} alignItems={jobs.map((job) => job.id)}>
+    <DroppableColumn id={status} align={jobs.map((job) => job.id)}>
       <Stack
         data-testid={`kanban-column-${status}`}
         width={320}
         backgroundColor="$color2"
-        borderRadius="$4"
-        padding="$3"
+        borderRadius={16}
+        padding={12}
         borderWidth={1}
         borderColor="$borderColor"
       >
         {/* Column Header */}
-        <Row justifyContent="space-between" alignItems="center" marginBottom="$3">
-          <Row gap="$2" alignItems="center">
+        <Row justify="space-between" align="center" marginBottom={12}>
+          <Row gap={8} align="center">
             <Stack width={8} height={8} borderRadius="$10" backgroundColor={color} />
-            <Text fontWeight="600" fontSize="$4">
+            <Text>
               {label}
             </Text>
           </Row>
           <Stack
             backgroundColor="$color5"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
-            <Text fontSize="$2" fontWeight="600">
+            <Text>
               {jobs.length}
             </Text>
           </Stack>
         </Row>
 
         {/* Job Cards */}
-        <Stack gap="$3" flex={1}>
+        <Stack gap={12} flex={1}>
           {jobs.length === 0 ? (
             <Stack
-              padding="$4"
+              padding={16}
               backgroundColor="$color3"
-              borderRadius="$3"
-              alignItems="center"
-              justifyContent="center"
+              borderRadius={12}
+              align="center"
+              justify="center"
               style={{ minHeight: 100 }}
             >
-              <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+              <Text color="gray" style={{ textAlign: 'center' }}>
                 No jobs
               </Text>
             </Stack>

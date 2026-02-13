@@ -91,19 +91,19 @@ export function DeleteButton({
           <Dialog.Content key="content" width={500}>
             <Dialog.Title>Confirm Delete</Dialog.Title>
             <Dialog.Description>
-              Are you sure you want to delete <Text fontWeight="600">"{itemName}"</Text>?
+              Are you sure you want to delete <Text>"{itemName}"</Text>?
             </Dialog.Description>
 
-            <Stack gap="$2">
-              <Text color="$red10" fontSize="$3">
+            <Stack gap={8}>
+              <Text color="$red10">
                 This action cannot be undone. This will permanently delete the {itemType} and all
                 associated data.
               </Text>
             </Stack>
 
-            <Row gap="$3" alignItems="center" justifyContent="flex-end">
+            <Row gap={12} align="center" justify="flex-end">
               <Dialog.Close asChild>
-                <Button variant="outlined" disabled={isDeleting}>
+                <Button variant="outline" disabled={isDeleting}>
                   Cancel
                 </Button>
               </Dialog.Close>

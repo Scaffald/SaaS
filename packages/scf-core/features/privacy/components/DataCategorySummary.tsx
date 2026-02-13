@@ -83,53 +83,53 @@ const CATEGORY_METADATA: Record<CCPACategory, Omit<CategoryInfo, 'hasData' | 're
 function CategoryCard({ info }: { info: CategoryInfo }) {
   return (
     <Stack
-      padding="$4"
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor={info.hasData ? '$green6' : '$borderColor'}
-      gap="$2"
+      gap={8}
       flex={1}
       minWidth={280}
     >
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$4" fontWeight="600">
+      <Row justify="space-between" align="center">
+        <Text>
           {info.name}
         </Text>
         {info.hasData ? (
           <Row
             backgroundColor="$green3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
-            <Text fontSize="$2" color="$green11" fontWeight="500">
+            <Text color="$green11">
               {info.recordCount || 0} records
             </Text>
           </Row>
         ) : (
           <Row
             backgroundColor="$color4"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
-            <Text fontSize="$2" color="$color11" fontWeight="500">
+            <Text color="gray">
               No data
             </Text>
           </Row>
         )}
       </Row>
 
-      <Text fontSize="$3" color="$color11">
+      <Text color="gray">
         {info.description}
       </Text>
 
-      <Stack gap="$1" marginTop="$1">
-        <Text fontSize="$2" color="$color10" fontWeight="500">
+      <Stack gap={4} marginTop={4}>
+        <Text color="gray">
           Examples:
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {info.examples.join(' • ')}
         </Text>
       </Stack>
@@ -162,22 +162,22 @@ export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
   const categoriesWithData = categoryInfos.filter((c) => c.hasData).length
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {/* Summary banner */}
       <Row
-        padding="$3"
+        padding={12}
         backgroundColor="$blue2"
-        borderRadius="$3"
-        gap="$2"
-        alignItems="center"
+        borderRadius={12}
+        gap={8}
+        align="center"
       >
-        <Text fontSize="$3" color="$blue11">
+        <Text color="$blue11">
           We collect data in {categoriesWithData} of 6 CCPA categories. View details below.
         </Text>
       </Row>
 
       {/* Category cards grid */}
-      <Row flexWrap="wrap" gap="$3">
+      <Row flexWrap="wrap" gap={12}>
         {categoryInfos.map((info) => (
           <CategoryCard key={info.name} info={info} />
         ))}

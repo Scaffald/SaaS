@@ -27,35 +27,35 @@ export function ReviewStepCategoryTags({
   onToggleImprovement,
 }: ReviewStepCategoryTagsProps) {
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="gray">
           {title}
         </Text>
-        <Text fontSize="$5" color="$color11">
+        <Text color="gray">
           {description}
         </Text>
       </Stack>
 
       {/* Strengths Section */}
-      <Stack gap="$3">
-        <Text fontSize="$6" fontWeight="600" color="$green11">
+      <Stack gap={12}>
+        <Text color="$green11">
           ✓ Strengths
         </Text>
-        <Row gap="$2" flexWrap="wrap">
+        <Row gap={8} flexWrap="wrap">
           {skills.map((skill) => {
             const isSelected = strengths.includes(skill.id)
             return (
               <Row
                 key={`strength-${skill.id}`}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
                 backgroundColor={isSelected ? '$green3' : '$color3'}
                 borderWidth={2}
                 borderColor={isSelected ? '$green8' : '$color5'}
-                borderRadius="$3"
-                gap="$2"
-                alignItems="center"
+                borderRadius={12}
+                gap={8}
+                align="center"
                 cursor="pointer"
                 hoverStyle={{ backgroundColor: isSelected ? '$green4' : '$color4' }}
                 pressStyle={{ scale: 0.97 }}
@@ -64,11 +64,9 @@ export function ReviewStepCategoryTags({
                 {isSelected ? (
                   <CheckCircle2 size={16} color="$green11" />
                 ) : (
-                  <Circle size={16} color="$color10" />
+                  <Circle size={16} color="gray" />
                 )}
                 <Text
-                  fontSize="$4"
-                  fontWeight={isSelected ? '600' : '400'}
                   color={isSelected ? '$green11' : '$color11'}
                 >
                   {skill.name}
@@ -80,24 +78,24 @@ export function ReviewStepCategoryTags({
       </Stack>
 
       {/* Areas to Improve Section */}
-      <Stack gap="$3">
-        <Text fontSize="$6" fontWeight="600" color="$red11">
+      <Stack gap={12}>
+        <Text color="$red11">
           → Areas to Improve
         </Text>
-        <Row gap="$2" flexWrap="wrap">
+        <Row gap={8} flexWrap="wrap">
           {skills.map((skill) => {
             const isSelected = improvements.includes(skill.id)
             return (
               <Row
                 key={`improvement-${skill.id}`}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
                 backgroundColor={isSelected ? '$red3' : '$color3'}
                 borderWidth={2}
                 borderColor={isSelected ? '$red8' : '$color5'}
-                borderRadius="$3"
-                gap="$2"
-                alignItems="center"
+                borderRadius={12}
+                gap={8}
+                align="center"
                 cursor="pointer"
                 hoverStyle={{ backgroundColor: isSelected ? '$red4' : '$color4' }}
                 pressStyle={{ scale: 0.97 }}
@@ -106,11 +104,9 @@ export function ReviewStepCategoryTags({
                 {isSelected ? (
                   <CheckCircle2 size={16} color="$red11" />
                 ) : (
-                  <Circle size={16} color="$color10" />
+                  <Circle size={16} color="gray" />
                 )}
                 <Text
-                  fontSize="$4"
-                  fontWeight={isSelected ? '600' : '400'}
                   color={isSelected ? '$red11' : '$color11'}
                 >
                   {skill.name}
@@ -122,7 +118,7 @@ export function ReviewStepCategoryTags({
       </Stack>
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text color="gray" fontStyle="italic">
         Select multiple items for each category. Items can only be in one category.
       </Text>
     </Stack>

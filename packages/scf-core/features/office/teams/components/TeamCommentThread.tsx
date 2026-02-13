@@ -91,24 +91,23 @@ export function TeamCommentThread({
       borderWidth={1}
       borderColor="$borderColor"
       backgroundColor="$color2"
-      padding="$4"
-      gap="$4"
-      paddingHorizontal="$3"
-      $md={{ paddingHorizontal: undefined }}
+      padding={16}
+      gap={16}
+      paddingHorizontal={12}
     >
-      <Stack gap="$2">
-        <Row gap="$2" alignItems="center">
+      <Stack gap={8}>
+        <Row gap={8} align="center">
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
-          <Text fontSize="$5" fontWeight="700" accessibilityRole="header">
+          <Text accessibilityRole="header">
             Team discussion
           </Text>
         </Row>
-        <Text color="$color11" fontSize="$3">
+        <Text color="gray">
           Share updates with your team. Mentions notify teammates instantly.
         </Text>
       </Stack>
 
-      <Stack gap="$3">
+      <Stack gap={12}>
         <TextArea
           value={commentBody}
           onChangeText={setCommentBody}
@@ -122,19 +121,15 @@ export function TeamCommentThread({
 
         {mentionOptions.length > 0 ? (
           <Row
-            gap="$2"
+            gap={8}
             flexWrap="wrap"
             flexDirection="column"
-            alignItems="stretch"
-            $md={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
+            align="stretch"
           >
             {mentionOptions.map((option) => (
               <Button
                 key={option.id}
-                size="$2"
+                size={8}
                 variant={selectedMentionId === option.id ? 'outlined' : undefined}
                 onPress={() =>
                   setSelectedMentionId((current) => (current === option.id ? null : option.id))
@@ -145,7 +140,6 @@ export function TeamCommentThread({
                     : `Mention ${option.label}`
                 }
                 width="100%"
-                $md={{ width: undefined }}
               >
                 @{option.label}
               </Button>
@@ -154,41 +148,40 @@ export function TeamCommentThread({
         ) : null}
 
         {mentionLabel ? (
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Mentioning @{mentionLabel}
           </Text>
         ) : null}
 
-        <Row justifyContent="flex-end">
+        <Row justify="flex-end">
           <Button
-            size="$3"
+            size={12}
             icon={Send}
             backgroundColor="$color9"
-            color="$color1"
+            color="gray"
             onPress={() => void handleSubmit()}
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"
             accessibilityHint="Shares this comment with the team"
             width="100%"
-            $md={{ width: undefined }}
           >
-            {isSubmitting ? <Spinner size="small" color="$color1" /> : 'Post comment'}
+            {isSubmitting ? <Spinner size="sm" color="gray" /> : 'Post comment'}
           </Button>
         </Row>
       </Stack>
 
       {commentsQuery.isLoading ? (
-        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading discussion…</Text>
+        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading discussion…</Text>
         </Stack>
       ) : comments.length === 0 ? (
-        <Stack gap="$1">
-          <Text fontWeight="600">No comments yet</Text>
-          <Text color="$color11">Start the conversation by leaving the first comment.</Text>
+        <Stack gap={4}>
+          <Text>No comments yet</Text>
+          <Text color="gray">Start the conversation by leaving the first comment.</Text>
         </Stack>
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {comments.map((comment) => {
             const actorName =
               comment.actorDisplayName ?? comment.actorUserId?.slice(0, 6) ?? 'Team member'
@@ -208,22 +201,22 @@ export function TeamCommentThread({
             return (
               <Stack
                 key={comment.id}
-                gap="$1"
+                gap={4}
                 borderBottomWidth={1}
                 borderColor="$borderColor"
-                paddingBottom="$3"
+                paddingBottom={12}
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={commentAccessibilityLabel}
                 width="100%"
               >
-                <Text fontWeight="600">{actorName}</Text>
-                <Text color="$color10" fontSize="$2">
+                <Text>{actorName}</Text>
+                <Text color="gray">
                   {occurredAt}
                 </Text>
                 <Text>{comment.body}</Text>
                 {mentionNames.length ? (
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     Mentions: {mentionNames.join(', ')}
                   </Text>
                 ) : null}

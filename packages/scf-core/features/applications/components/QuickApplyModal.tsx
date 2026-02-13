@@ -263,27 +263,27 @@ export function QuickApplyModal({
     <Dialog modal open={open} onOpenChange={handleClose}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" />
-        <Dialog.Content key="content" gap="$4" width="90%" maxWidth={600} maxHeight="90%">
+        <Dialog.Content key="content" gap={16} width="90%" maxWidth={600} maxHeight="90%">
           {/* Header */}
-          <Stack gap="$2">
-            <Row justifyContent="space-between" alignItems="center">
-              <Stack flex={1} gap="$1">
-                <Text fontSize="$6" fontWeight="700" color="$color12">
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Stack flex={1} gap={4}>
+                <Text color="gray">
                   Apply to {organizationName}
                 </Text>
-                <Text fontSize="$4" color="$color11">
+                <Text color="gray">
                   {jobTitle}
                 </Text>
               </Stack>
               <Dialog.Close asChild>
-                <Button size="$3" circular icon={X} chromeless />
+                <Button size={12} circular icon={X} chromeless />
               </Dialog.Close>
             </Row>
           </Stack>
 
           {/* Success State */}
           {showSuccess ? (
-            <Stack gap="$4" padding="$6" alignItems="center" justifyContent="center" flex={1}>
+            <Stack gap={16} padding={24} align="center" justify="center" flex={1}>
               <Stack
                 width={80}
                 height={80}
@@ -291,16 +291,16 @@ export function QuickApplyModal({
                 backgroundColor="$green2"
                 borderWidth={2}
                 borderColor="$green9"
-                alignItems="center"
-                justifyContent="center"
+                align="center"
+                justify="center"
               >
                 <CheckCircle2 size={48} color="$green10" />
               </Stack>
-              <Stack gap="$2" alignItems="center">
-                <Text fontSize="$7" fontWeight="bold" color="$color12" textAlign="center">
+              <Stack gap={8} align="center">
+                <Text color="gray" textAlign="center">
                   Application Submitted!
                 </Text>
-                <Text fontSize="$4" color="$color11" textAlign="center">
+                <Text color="gray" textAlign="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
               </Stack>
@@ -308,10 +308,10 @@ export function QuickApplyModal({
           ) : (
             /* Form Content */
             <ScrollView showsVerticalScrollIndicator={false} flex={1}>
-              <Stack gap="$4" padding="$4">
+              <Stack gap={16} padding={16}>
                 {/* Current Location */}
-                <Stack gap="$2">
-                  <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Label htmlFor="current_location">
                     You current location <Text color="$red10">*</Text>
                   </Label>
                   {mapboxToken ? (
@@ -327,31 +327,31 @@ export function QuickApplyModal({
                       disabled={isSubmitting}
                     />
                   ) : (
-                    <Stack gap="$2">
-                      <Text fontSize="$3" color="$red10">
+                    <Stack gap={8}>
+                      <Text color="$red10">
                         Location search is unavailable. Please enter your location manually.
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         Location search requires Mapbox API key configuration.
                       </Text>
                     </Stack>
                   )}
                   {errors.current_location && (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       {errors.current_location}
                     </Text>
                   )}
                 </Stack>
 
                 {/* Willing to Relocate */}
-                <Stack gap="$2">
-                  <Label fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Label>
                     Are you willing to relocate? <Text color="$red10">*</Text>
                   </Label>
-                  <Row gap="$3">
+                  <Row gap={12}>
                     <Button
                       flex={1}
-                      size="$4"
+                      size={16}
                       theme={formData.willing_to_relocate ? 'info' : undefined}
                       variant={formData.willing_to_relocate ? undefined : 'outlined'}
                       onPress={() => {
@@ -363,7 +363,7 @@ export function QuickApplyModal({
                     </Button>
                     <Button
                       flex={1}
-                      size="$4"
+                      size={16}
                       theme={!formData.willing_to_relocate ? 'info' : undefined}
                       variant={!formData.willing_to_relocate ? undefined : 'outlined'}
                       onPress={() => {
@@ -377,8 +377,8 @@ export function QuickApplyModal({
                 </Stack>
 
                 {/* Years of Experience */}
-                <Stack gap="$2">
-                  <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Label htmlFor="years_experience">
                     Years of experience <Text color="$red10">*</Text>
                   </Label>
                   <ResponsiveSelect
@@ -399,18 +399,18 @@ export function QuickApplyModal({
 
                 {/* Required Skills (Display Only) */}
                 {requiredSkills.length > 0 && (
-                  <Stack gap="$2">
-                    <Label fontSize="$4" fontWeight="600">
+                  <Stack gap={8}>
+                    <Label>
                       Required skills
                     </Label>
                     <Stack
-                      padding="$3"
+                      padding={12}
                       backgroundColor="$gray3"
-                      borderRadius="$3"
+                      borderRadius={12}
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {requiredSkills.join(', ')}
                       </Text>
                     </Stack>
@@ -419,18 +419,18 @@ export function QuickApplyModal({
 
                 {/* Optional Skills (Display Only) */}
                 {optionalSkills.length > 0 && (
-                  <Stack gap="$2">
-                    <Label fontSize="$4" fontWeight="600">
+                  <Stack gap={8}>
+                    <Label>
                       Optional skills
                     </Label>
                     <Stack
-                      padding="$3"
+                      padding={12}
                       backgroundColor="$gray3"
-                      borderRadius="$3"
+                      borderRadius={12}
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {optionalSkills.join(', ')}
                       </Text>
                     </Stack>
@@ -438,14 +438,14 @@ export function QuickApplyModal({
                 )}
 
                 {/* Work Authorization */}
-                <Stack gap="$2">
-                  <Label fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Label>
                     Are you authorized to work legally in the US? <Text color="$red10">*</Text>
                   </Label>
-                  <Row gap="$3">
+                  <Row gap={12}>
                     <Button
                       flex={1}
-                      size="$4"
+                      size={16}
                       theme={formData.is_authorized_to_work ? 'info' : undefined}
                       variant={formData.is_authorized_to_work ? undefined : 'outlined'}
                       onPress={() => {
@@ -458,7 +458,7 @@ export function QuickApplyModal({
                     </Button>
                     <Button
                       flex={1}
-                      size="$4"
+                      size={16}
                       theme={!formData.is_authorized_to_work ? 'info' : undefined}
                       variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
                       onPress={() => {
@@ -471,15 +471,15 @@ export function QuickApplyModal({
                     </Button>
                   </Row>
                   {errors.is_authorized_to_work && (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       {errors.is_authorized_to_work}
                     </Text>
                   )}
                 </Stack>
 
                 {/* Earliest Start Date */}
-                <Stack gap="$2">
-                  <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Label htmlFor="earliest_start_date">
                     Earliest start date <Text color="$red10">*</Text>
                   </Label>
                   <ResponsiveSelect
@@ -504,17 +504,17 @@ export function QuickApplyModal({
           {/* Footer */}
           {!showSuccess && (
             <Row
-              gap="$3"
-              justifyContent="flex-end"
-              paddingTop="$4"
+              gap={12}
+              justify="flex-end"
+              paddingTop={16}
               borderTopWidth={1}
               borderTopColor="$borderColor"
             >
-              <Button size="$4" variant="outlined" onPress={handleClose} disabled={isSubmitting}>
+              <Button size={16} variant="outline" onPress={handleClose} disabled={isSubmitting}>
                 Cancel
               </Button>
               <Button
-                size="$4"
+                size={16}
                 theme="info"
                 onPress={handleSubmit}
                 disabled={

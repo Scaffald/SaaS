@@ -23,27 +23,27 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   const currentIndex = steps.indexOf(currentStep)
 
   return (
-    <Row gap="$3" alignItems="center">
+    <Row gap={12} align="center">
       {steps.map((step, index) => {
         const isCompleted = index < currentIndex
         const isActive = index === currentIndex
         const variant = isActive ? '$color10' : isCompleted ? '$green9' : '$color6'
 
         return (
-          <Stack key={step} alignItems="center" gap="$1">
+          <Stack key={step} align="center" gap={4}>
             <Circle
               size={36}
               backgroundColor={variant}
               borderWidth={2}
               borderColor={isActive ? '$color12' : '$color7'}
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
             >
-              <Text color="$color1" fontWeight="bold">
+              <Text color="gray">
                 {index + 1}
               </Text>
             </Circle>
-            <Text fontSize="$2" color={isActive ? '$color12' : '$color10'}>
+            <Text color={isActive ? '$color12' : '$color10'}>
               {STEP_LABELS[step]}
             </Text>
           </Stack>

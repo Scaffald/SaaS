@@ -30,14 +30,14 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
   }
 
   return (
-    <Stack gap="$3" width="100%">
+    <Stack gap={12} width="100%">
       {/* Completion Percentage */}
-      <Stack gap="$1">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+      <Stack gap={4}>
+        <Row justify="space-between" align="center">
+          <Text color="gray">
             Progress
           </Text>
-          <Text fontSize="$5" fontWeight="bold" color="$blue10">
+          <Text color="$blue10">
             {completionScore}%
           </Text>
         </Row>
@@ -52,16 +52,16 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
       </Stack>
 
       {/* Step Indicators */}
-      <Row gap="$2" alignItems="center" flexWrap="wrap">
+      <Row gap={8} align="center" flexWrap="wrap">
         {steps.map((step, index) => {
           const status = getStepStatus(step)
           const isLast = index === steps.length - 1
           const stepInfo = STEP_INFO[step]
 
           return (
-            <Row key={step} gap="$2" alignItems="center">
+            <Row key={step} gap={8} align="center">
               {/* Step Circle */}
-              <Stack gap="$1" alignItems="center">
+              <Stack gap={4} align="center">
                 <Circle
                   size={40}
                   backgroundColor={
@@ -75,17 +75,15 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                         ? '$blue10'
                         : '$color7'
                   }
-                  justifyContent="center"
-                  alignItems="center"
+                  justify="center"
+                  align="center"
                 >
                   {status === 'completed' ? (
-                    <Text fontSize="$6" fontWeight="bold" color="$color12">
+                    <Text color="gray">
                       ✓
                     </Text>
                   ) : (
                     <Text
-                      fontSize="$4"
-                      fontWeight="bold"
                       color={status === 'current' ? '$color12' : '$color10'}
                     >
                       {index + 1}
@@ -95,8 +93,6 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
 
                 {/* Step Label */}
                 <Text
-                  fontSize="$2"
-                  fontWeight={status === 'current' ? 'bold' : 'normal'}
                   color={status === 'completed' || status === 'current' ? '$color12' : '$color10'}
                   textAlign="center"
                   maxWidth={80}

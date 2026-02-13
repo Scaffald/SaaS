@@ -74,23 +74,23 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
   }, [activity])
 
   return (
-    <Stack gap="$4">
-      <Card bordered padding="$4" gap="$4">
+    <Stack gap={16}>
+      <Card bordered padding={16} gap={16}>
         <H4>Invite a member</H4>
-        <Stack gap="$3">
+        <Stack gap={12}>
           <Controller
             control={form.control}
             name="email"
             render={({ field, fieldState }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Email</Text>
+              <Stack gap={4}>
+                <Text>Email</Text>
                 <Input
                   value={field.value}
                   onChangeText={(value) => field.onChange(value)}
                   placeholder="teammate@example.com"
                 />
                 {fieldState.error ? (
-                  <Text color="$red10" fontSize="$2">
+                  <Text color="$red10">
                     {fieldState.error?.message}
                   </Text>
                 ) : null}
@@ -101,8 +101,8 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
             control={form.control}
             name="roleName"
             render={({ field }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Role</Text>
+              <Stack gap={4}>
+                <Text>Role</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
               </Stack>
             )}
@@ -111,8 +111,8 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
             control={form.control}
             name="message"
             render={({ field }) => (
-              <Stack gap="$1">
-                <Text fontWeight="600">Message (optional)</Text>
+              <Stack gap={4}>
+                <Text>Message (optional)</Text>
                 <TextArea
                   value={field.value ?? ''}
                   onChangeText={(value) => field.onChange(value ?? '')}
@@ -126,13 +126,13 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         </Stack>
       </Card>
 
-      <Card bordered padding="$4" gap="$3">
-        <Row justifyContent="space-between" alignItems="center">
+      <Card bordered padding={16} gap={12}>
+        <Row justify="space-between" align="center">
           <H4>Members</H4>
           {membersLoading ? (
             <Spinner />
           ) : (
-            <Text color="$color10">{activeMembers.length} total</Text>
+            <Text color="gray">{activeMembers.length} total</Text>
           )}
         </Row>
         <Separator />
@@ -164,14 +164,14 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                   return (
                     <Table.Row key={member.userId}>
                       <Table.Cell>
-                        <Text fontWeight="600">{member.profile?.display_name ?? 'Unknown'}</Text>
-                        <Paragraph color="$color10">{member.profile?.headline}</Paragraph>
+                        <Text>{member.profile?.display_name ?? 'Unknown'}</Text>
+                        <Paragraph color="gray">{member.profile?.headline}</Paragraph>
                       </Table.Cell>
                       <Table.Cell>{member.roles.join(', ') || 'Member'}</Table.Cell>
                       <Table.Cell>
                         {activitySummary ? `${activitySummary.actions} actions` : '—'}
                         {activitySummary?.lastActionAt ? (
-                          <Paragraph color="$color10">
+                          <Paragraph color="gray">
                             {new Date(activitySummary.lastActionAt).toLocaleDateString()}
                           </Paragraph>
                         ) : null}
@@ -185,22 +185,22 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         )}
       </Card>
 
-      <Card bordered padding="$4" gap="$3">
-        <Row justifyContent="space-between" alignItems="center">
+      <Card bordered padding={16} gap={12}>
+        <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? (
             <Spinner />
           ) : (
-            <Text color="$color10">{pendingInvites.length} pending</Text>
+            <Text color="gray">{pendingInvites.length} pending</Text>
           )}
         </Row>
         <Separator />
         {invitesLoading ? (
           <Paragraph>Loading invitations…</Paragraph>
         ) : pendingInvites.length === 0 ? (
-          <Paragraph color="$color10">No pending invitations</Paragraph>
+          <Paragraph color="gray">No pending invitations</Paragraph>
         ) : (
-          <Stack gap="$2">
+          <Stack gap={8}>
             {pendingInvites.map(
               (invite: {
                 id: string
@@ -208,12 +208,12 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 role_name?: string | null
                 status: string
               }) => (
-                <Row key={invite.id} justifyContent="space-between" alignItems="center">
+                <Row key={invite.id} justify="space-between" align="center">
                   <Stack>
-                    <Text fontWeight="600">{invite.invitee_email}</Text>
-                    <Paragraph color="$color10">{invite.role_name ?? 'member'}</Paragraph>
+                    <Text>{invite.invitee_email}</Text>
+                    <Paragraph color="gray">{invite.role_name ?? 'member'}</Paragraph>
                   </Stack>
-                  <Text color="$color10">{invite.status}</Text>
+                  <Text color="gray">{invite.status}</Text>
                 </Row>
               )
             )}

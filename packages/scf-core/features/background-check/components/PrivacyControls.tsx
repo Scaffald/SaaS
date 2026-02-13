@@ -98,36 +98,36 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
   const isSaving = updatePrivacyMutation.isPending
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="gray">
           Privacy controls
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Manage who can see your background check results. These settings apply across the
           platform.
         </Text>
       </Stack>
 
       <Stack
-        gap="$3"
-        padding="$3"
+        gap={12}
+        padding={12}
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Row justifyContent="space-between" alignItems="center">
-          <Stack flex={1} gap="$1" paddingRight="$3">
-            <Text fontSize="$3" fontWeight="500" color="$color12">
+        <Row justify="space-between" align="center">
+          <Stack flex={1} gap={4} paddingRight={12}>
+            <Text color="gray">
               Show verified badge
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Allow organizations to see a verified badge that your background check is current.
             </Text>
           </Stack>
           <Switch
-            size="$3"
+            size={12}
             checked={sharePublicly}
             onCheckedChange={handleToggleSharePublicly}
             disabled={isSaving}
@@ -137,14 +137,14 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
         </Row>
       </Stack>
 
-      <Stack gap="$3">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$3" fontWeight="500" color="$color12">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text color="gray">
             Shared with organizations
           </Text>
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={Share2}
             disabled
             onPress={() =>
@@ -158,17 +158,17 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           </Button>
         </Row>
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           {organizationIds.length === 0 && (
             <Stack
-              gap="$1"
-              padding="$3"
+              gap={4}
+              padding={12}
               backgroundColor="$color2"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 No organizations currently have access to view your results.
               </Text>
             </Stack>
@@ -177,20 +177,20 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           {organizationIds.map((organizationId) => (
             <Row
               key={organizationId}
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
+              justify="space-between"
+              align="center"
+              padding={12}
               backgroundColor="$color2"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$2" color="$color12">
+              <Text color="gray">
                 {organizationId}
               </Text>
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 theme="error"
                 onPress={() => handleRevokeAccess(organizationId)}
                 disabled={isSaving}
@@ -204,7 +204,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
 
       <Separator />
 
-      <Text fontSize="$2" color="$color9">
+      <Text color="gray">
         Tip: Only share your results with trusted organizations. You can revoke access at any time.
       </Text>
     </Stack>

@@ -68,11 +68,11 @@ export function SuccessStep({
 
   return (
     <Stack
-      gap="$6"
+      gap={24}
       width="100%"
       maxWidth={600}
-      padding="$6"
-      alignItems="center"
+      padding={24}
+      align="center"
       aria-live="polite"
       aria-label="Application submitted successfully"
     >
@@ -84,52 +84,52 @@ export function SuccessStep({
         backgroundColor="$green2"
         borderWidth={2}
         borderColor="$green9"
-        alignItems="center"
-        justifyContent="center"
+        align="center"
+        justify="center"
         aria-hidden={true}
       >
         <Check size={48} color="$green10" />
       </Stack>
 
       {/* Success Message */}
-      <Stack gap="$2" alignItems="center">
-        <Text fontSize="$9" fontWeight="700" color="$color12" textAlign="center">
+      <Stack gap={8} align="center">
+        <Text color="gray" textAlign="center">
           Application Submitted Successfully!
         </Text>
-        <Text fontSize="$4" color="$gray11" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
-        <Text fontSize="$4" color="$gray11" textAlign="center" marginTop="$2">
+        <Text color="$gray11" textAlign="center" marginTop={8}>
           Your application has been received and is under review
         </Text>
       </Stack>
 
       {/* Application ID */}
-      <Stack gap="$2" alignItems="center" marginTop="$4">
-        <Text fontSize="$3" fontWeight="600" color="$blue10">
+      <Stack gap={8} align="center" marginTop={16}>
+        <Text color="$blue10">
           Application ID: {formattedId}
         </Text>
-        <Text fontSize="$2" color="$gray11" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           You will receive an email confirmation shortly
         </Text>
       </Stack>
 
       {/* What Happens Next */}
       <Stack
-        gap="$3"
-        padding="$4"
+        gap={12}
+        padding={16}
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
         width="100%"
-        marginTop="$8"
+        marginTop={32}
       >
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Text color="gray">
           What happens next:
         </Text>
 
-        <Stack gap="$3" marginTop="$2">
+        <Stack gap={12} marginTop={8}>
           <NextStepItem text="Our team will review your application within 3-5 business days" />
           <NextStepItem text="You'll receive an email update on your application status" />
           <NextStepItem text="If selected, we'll contact you to schedule an interview" />
@@ -138,22 +138,20 @@ export function SuccessStep({
 
       {/* Action Buttons */}
       <Row
-        gap="$3"
+        gap={12}
         width="100%"
-        marginTop="$8"
+        marginTop={32}
         flexWrap="wrap"
-        justifyContent="center"
-        $sm={{ flexDirection: 'column' }}
+        justify="center"
       >
         {onViewApplication && (
           <Button
-            size="$5"
+            size={20}
             theme="info"
             icon={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
             flex={1}
             minWidth={200}
-            $sm={{ width: '100%' }}
           >
             View Application Status
           </Button>
@@ -161,25 +159,23 @@ export function SuccessStep({
 
         {onReturnToJobs && (
           <Button
-            size="$5"
-            variant="outlined"
+            size={20}
+            variant="outline"
             onPress={onReturnToJobs}
             flex={1}
             minWidth={200}
-            $sm={{ width: '100%' }}
           >
             Browse More Jobs
           </Button>
         )}
 
         <Button
-          size="$5"
-          variant="outlined"
+          size={20}
+          variant="outline"
           icon={Home}
           onPress={handleReturnToDashboard}
           flex={1}
           minWidth={200}
-          $sm={{ width: '100%' }}
         >
           Return to Dashboard
         </Button>
@@ -193,11 +189,11 @@ export function SuccessStep({
  */
 function NextStepItem({ text }: { text: string }) {
   return (
-    <Row gap="$3" alignItems="flex-start">
-      <Text fontSize="$3" color="$gray11" marginTop="$1">
+    <Row gap={12} align="flex-start">
+      <Text color="$gray11" marginTop={4}>
         •
       </Text>
-      <Text fontSize="$3" color="$gray11" flex={1} lineHeight="$1">
+      <Text color="$gray11" flex={1} lineHeight={4}>
         {text}
       </Text>
     </Row>

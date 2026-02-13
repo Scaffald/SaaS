@@ -72,22 +72,22 @@ export function CompensationBenefitsSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Compensation & Benefits
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Detailed compensation information and benefits package
       </Text>
 
       {/* Benefits Summary */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Benefits summary</Label>
         <TextArea
           placeholder="Describe health insurance, PTO, retirement plans, etc."
@@ -98,10 +98,10 @@ export function CompensationBenefitsSection({
       </Stack>
 
       {/* Bonus Structure */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Has bonus structure</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Performance or other bonus opportunities
           </Text>
         </Stack>
@@ -113,7 +113,7 @@ export function CompensationBenefitsSection({
       </Row>
 
       {localState.has_bonus_structure && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Bonus details</Label>
           <TextArea
             placeholder="Describe bonus structure, eligibility, and potential amounts"
@@ -125,10 +125,10 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Equity */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Has equity compensation</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Stock options, RSUs, or other equity
           </Text>
         </Stack>
@@ -140,7 +140,7 @@ export function CompensationBenefitsSection({
       </Row>
 
       {localState.has_equity && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Equity details</Label>
           <TextArea
             placeholder="Describe equity compensation structure"
@@ -152,7 +152,7 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Sign-on Bonus */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Sign-on bonus ($)</Label>
         <Input
           placeholder="0.00"
@@ -168,10 +168,10 @@ export function CompensationBenefitsSection({
       </Stack>
 
       {/* Relocation Package */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Has relocation package</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Relocation assistance available
           </Text>
         </Stack>
@@ -183,7 +183,7 @@ export function CompensationBenefitsSection({
       </Row>
 
       {localState.has_relocation_package && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Relocation package details</Label>
           <TextArea
             placeholder="Describe relocation assistance offered"
@@ -195,10 +195,10 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Overtime Eligible */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Overtime eligible</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Position eligible for overtime pay
           </Text>
         </Stack>
@@ -210,7 +210,7 @@ export function CompensationBenefitsSection({
       </Row>
 
       {/* Pay Frequency */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Pay frequency</Label>
         <ResponsiveSelect
           value={localState.pay_frequency || ''}

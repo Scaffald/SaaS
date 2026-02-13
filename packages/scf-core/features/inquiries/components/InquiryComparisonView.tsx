@@ -91,7 +91,7 @@ export function InquiryComparisonView({
 
   if (isLoading) {
     return (
-      <Stack padding="$4" alignItems="center" gap="$4">
+      <Stack padding={16} align="center" gap={16}>
         <Text>Loading inquiries for comparison...</Text>
       </Stack>
     )
@@ -99,10 +99,10 @@ export function InquiryComparisonView({
 
   if (error || !inquiries || inquiries.length === 0) {
     return (
-      <Stack padding="$4" alignItems="center" gap="$4">
+      <Stack padding={16} align="center" gap={16}>
         <Text color="$red10">Failed to load inquiries for comparison</Text>
         {onClose && (
-          <Button variant="outlined" onPress={onClose}>
+          <Button variant="outline" onPress={onClose}>
             Close
           </Button>
         )}
@@ -111,24 +111,24 @@ export function InquiryComparisonView({
   }
 
   return (
-    <Stack gap="$4" padding="$4" flex={1}>
+    <Stack gap={16} padding={16} flex={1}>
       {/* Header */}
-      <Row justifyContent="space-between" alignItems="center">
-        <Stack gap="$1">
-          <Text fontSize="$8" fontWeight="600">
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text>
             Compare Inquiries
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
           {summary && summary.uniqueStatuses.size > 1 && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Highlighted rows indicate differing terms between candidates.
             </Text>
           )}
         </Stack>
         {onClose && (
-          <Button variant="outlined" onPress={onClose}>
+          <Button variant="outline" onPress={onClose}>
             Close
           </Button>
         )}
@@ -136,7 +136,7 @@ export function InquiryComparisonView({
 
       {/* Comparison Grid */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <Row gap="$4" paddingBottom="$4" style={{ minWidth: '100%' }}>
+        <Row gap={16} paddingBottom={16} style={{ minWidth: '100%' }}>
           {inquiries.map((inquiryData) => (
             <ComparisonColumn
               key={inquiryData.inquiry.id}

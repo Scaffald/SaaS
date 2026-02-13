@@ -64,9 +64,9 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
-        <Spinner size="large" color="$blue10" />
-        <Text marginTop="$4" color="$color11">
+      <Stack flex={1} align="center" justify="center" paddingVertical="$10">
+        <Spinner size="lg" color="$blue10" />
+        <Text marginTop={16} color="gray">
           Loading profile...
         </Text>
       </Stack>
@@ -75,8 +75,8 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
 
   if (!profile) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
-        <Text color="$red10" fontSize="$6" fontWeight="600">
+      <Stack flex={1} align="center" justify="center" paddingVertical="$10">
+        <Text color="$red10">
           Profile not found
         </Text>
       </Stack>
@@ -86,12 +86,12 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   return (
     <>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Stack gap="$6" padding="$4" paddingBottom="$8">
-          <Row justifyContent="flex-end">
+        <Stack gap={24} padding={16} paddingBottom={32}>
+          <Row justify="flex-end">
             <Stack
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              borderRadius="$4"
+              paddingHorizontal={12}
+              paddingVertical={8}
+              borderRadius={16}
               borderWidth={1}
               backgroundColor={
                 syncStatus === 'syncing' ? '$blue3' : syncStatus === 'error' ? '$red3' : '$green3'
@@ -99,20 +99,18 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
               borderColor={
                 syncStatus === 'syncing' ? '$blue6' : syncStatus === 'error' ? '$red7' : '$green6'
               }
-              gap="$1"
+              gap={4}
               style={{ maxWidth: 200 }}
             >
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 {syncStatus === 'syncing' ? (
-                  <Spinner size="small" color="$blue10" />
+                  <Spinner size="sm" color="$blue10" />
                 ) : syncStatus === 'error' ? (
                   <AlertTriangle size={14} color="$red10" />
                 ) : (
                   <CheckCircle size={14} color="$green10" />
                 )}
                 <Text
-                  fontSize="$2"
-                  fontWeight="600"
                   color={
                     syncStatus === 'syncing'
                       ? '$blue11'
@@ -129,7 +127,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 </Text>
               </Row>
               {syncStatus === 'error' && (
-                <Button size="$2" variant="outlined" onPress={resetProfileSyncError} marginTop="$2">
+                <Button size={8} variant="outline" onPress={resetProfileSyncError} marginTop={8}>
                   Dismiss
                 </Button>
               )}
@@ -167,7 +165,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
         open={showReviewModal}
         onOpenChange={setShowReviewModal}
         title={`Review ${profile?.name || 'User'}`}
-        size="large"
+        size="lg"
       >
         <ReviewWizard
           subjectId={userId}

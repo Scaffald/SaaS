@@ -100,33 +100,33 @@ export function BackgroundCheckWizard() {
         )
       case 'confirmation':
         return (
-          <Stack gap="$4" flex={1}>
-            <Stack gap="$2">
-              <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Stack gap={16} flex={1}>
+            <Stack gap={8}>
+              <Text color="gray">
                 Background Check Submitted
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 We’ve started your background check request. We’ll notify you when results are
                 ready.
               </Text>
             </Stack>
 
-            <Stack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
-              <Text fontSize="$4" fontWeight="bold" color="$color12">
+            <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
+              <Text color="gray">
                 Summary
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Package: {selectedPackage?.display_name ?? 'Pending'}
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Cost: ${state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : '—'}
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Payment: {state.payment.paidBy}
               </Text>
             </Stack>
 
-            <Button size="$4" theme="blue" onPress={() => goToStep('packages')}>
+            <Button size={16} theme="blue" onPress={() => goToStep('packages')}>
               Start another background check
             </Button>
           </Stack>
@@ -139,17 +139,17 @@ export function BackgroundCheckWizard() {
   return (
     <Stack flex={1} backgroundColor="$background">
       <Stack
-        padding="$4"
-        gap="$3"
+        padding={16}
+        gap={12}
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
         backgroundColor="$background"
       >
-        <Stack gap="$1">
-          <Text fontSize="$7" fontWeight="bold" color="$color12">
+        <Stack gap={4}>
+          <Text color="gray">
             Initiate Background Check
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Complete the steps below to start your background check.
           </Text>
         </Stack>
@@ -160,7 +160,7 @@ export function BackgroundCheckWizard() {
       {submitError && (
         <Stack
           backgroundColor="$red3"
-          padding="$3"
+          padding={12}
           borderBottomWidth={1}
           borderBottomColor="$red7"
         >
@@ -171,23 +171,23 @@ export function BackgroundCheckWizard() {
       )}
 
       <ScrollView flex={1}>
-        <Stack gap="$4" flex={1} paddingHorizontal="$4" paddingBottom="$6">
+        <Stack gap={16} flex={1} paddingHorizontal={16} paddingBottom={24}>
           {renderStepContent()}
         </Stack>
       </ScrollView>
 
       <Separator />
 
-      <Row padding="$4" justifyContent="space-between" backgroundColor="$background">
+      <Row padding={16} justify="space-between" backgroundColor="$background">
         <Button
-          size="$4"
+          size={16}
           disabled={currentStepIndex === 0 || currentStep === 'confirmation'}
           onPress={previousStep}
         >
           Back
         </Button>
         {currentStep !== 'confirmation' && (
-          <Text fontSize="$2" color="$color9">
+          <Text color="gray">
             Step {currentStepIndex + 1} of {steps.length}
           </Text>
         )}

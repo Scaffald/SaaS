@@ -33,32 +33,32 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
         if (!value) onDismiss()
       }}
       title={isFirstTime ? 'Welcome! Let’s build your profile' : 'Keep going — you’re close!'}
-      size="medium"
+      size="md"
     >
-      <Stack gap="$4">
-        <Stack gap="$2">
-          <Row gap="$2" alignItems="center">
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Row gap={8} align="center">
             <PartyPopper size={24} color="$blue10" />
-            <Text fontSize="$5" fontWeight="700">
+            <Text>
               {isFirstTime ? 'Finish in 5 minutes' : `You’re ${completionPercentage}% complete`}
             </Text>
           </Row>
 
-          <Paragraph color="$color11" aria-live="polite">
+          <Paragraph color="gray" aria-live="polite">
             {isFirstTime
               ? 'We’ll walk you through six quick steps so employers can get to know you. Auto-save is enabled, and you can come back anytime.'
               : benefitMessage}
           </Paragraph>
         </Stack>
 
-        <Stack gap="$3">
-          <Button size="$5" themeInverse onPress={onStartWizard}>
+        <Stack gap={12}>
+          <Button size={20} themeInverse onPress={onStartWizard}>
             {isFirstTime ? 'Start Wizard' : 'Continue Profile'}
           </Button>
-          <Button size="$5" icon={UploadCloud} onPress={onUploadResume}>
+          <Button size={20} icon={UploadCloud} onPress={onUploadResume}>
             Upload Resume
           </Button>
-          <Button size="$3" chromeless onPress={onDismiss}>
+          <Button size={12} chromeless onPress={onDismiss}>
             {isFirstTime ? 'Skip and continue later' : 'Remind me later'}
           </Button>
         </Stack>

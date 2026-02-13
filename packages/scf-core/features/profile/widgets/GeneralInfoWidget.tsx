@@ -54,14 +54,14 @@ export function GeneralInfoWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load profile information</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
           <Button
             variant="primary"
-            size="$2"
+            size={8}
             onPress={() => {
               void refetch()
             }}
@@ -77,8 +77,8 @@ export function GeneralInfoWidget({
   if (!data) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$color11">No profile data available</Text>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text color="gray">No profile data available</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -119,16 +119,16 @@ export function GeneralInfoWidget({
         <Stack gap={spacing.md}>
           {/* Header with Action Buttons */}
           {showButtons && (
-            <Row justifyContent="flex-end" alignItems="center" marginBottom="$2">
-              <Row gap="$2" flexWrap="wrap" justifyContent="flex-end">
+            <Row justify="flex-end" align="center" marginBottom={8}>
+              <Row gap={8} flexWrap="wrap" justify="flex-end">
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ''}
                   isOwnProfile={isOwnProfile}
-                  size="$3"
+                  size={12}
                 />
                 {canLeaveReview && (
                   <Button
-                    size="$3"
+                    size={12}
                     theme="info"
                     icon={MessageSquarePlus}
                     onPress={handleLeaveReview}
@@ -141,7 +141,7 @@ export function GeneralInfoWidget({
           )}
 
           {/* Avatar & Name Section */}
-          <Stack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             <Avatar circular size="$10">
               <Avatar.Image
                 source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
@@ -149,19 +149,19 @@ export function GeneralInfoWidget({
               <Avatar.Fallback backgroundColor="$color6" />
             </Avatar>
 
-            <Stack gap="$1" alignItems="center">
-              <Text fontSize="$6" fontWeight="600">
+            <Stack gap={4} align="center">
+              <Text>
                 {displayName}
               </Text>
               {data.headline && (
-                <Stack alignItems="center" maxWidth="100%">
-                  <Text color="$color11" fontSize="$3">
+                <Stack align="center" maxWidth="100%">
+                  <Text color="gray">
                     {data.headline}
                   </Text>
                 </Stack>
               )}
               {data.username && (
-                <Text color="$color10" fontSize="$2">
+                <Text color="gray">
                   @{data.username}
                 </Text>
               )}
@@ -179,13 +179,13 @@ export function GeneralInfoWidget({
             {data.open_to_work && (
               <Row
                 backgroundColor="$blue2"
-                paddingHorizontal="$3"
-                paddingVertical="$1.5"
+                paddingHorizontal={12}
+                paddingVertical={6}
                 borderRadius="$10"
                 borderWidth={1}
                 borderColor="$blue7"
               >
-                <Text color="$blue11" fontSize="$2" fontWeight="600">
+                <Text color="$blue11">
                   Open to Work
                 </Text>
               </Row>
@@ -194,11 +194,11 @@ export function GeneralInfoWidget({
 
           {/* About Section */}
           {data.about && variant === 'full' && (
-            <Stack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
+            <Stack gap={8}>
+              <Text>
                 About
               </Text>
-              <Text color="$color11" fontSize="$3" lineHeight="$3">
+              <Text color="gray" lineHeight={12}>
                 {data.about}
               </Text>
             </Stack>
@@ -206,35 +206,35 @@ export function GeneralInfoWidget({
 
           {/* Contact Information (Private - only for own profile) */}
           {showPrivateInfo && data.privateData && variant === 'full' && (
-            <Stack gap="$3">
-              <Text fontWeight="600" fontSize="$3">
+            <Stack gap={12}>
+              <Text>
                 Contact Information
               </Text>
 
               {data.privateData.email && (
-                <Stack gap="$1">
-                  <Text fontSize="$2" color="$color10">
+                <Stack gap={4}>
+                  <Text color="gray">
                     Email
                   </Text>
-                  <Text fontSize="$3">{data.privateData.email}</Text>
+                  <Text>{data.privateData.email}</Text>
                 </Stack>
               )}
 
               {data.privateData.phone && (
-                <Stack gap="$1">
-                  <Text fontSize="$2" color="$color10">
+                <Stack gap={4}>
+                  <Text color="gray">
                     Phone
                   </Text>
-                  <Text fontSize="$3">{data.privateData.phone}</Text>
+                  <Text>{data.privateData.phone}</Text>
                 </Stack>
               )}
 
               {data.privateData.location && (
-                <Stack gap="$1">
-                  <Text fontSize="$2" color="$color10">
+                <Stack gap={4}>
+                  <Text color="gray">
                     Location
                   </Text>
-                  <Text fontSize="$3">{data.privateData.location}</Text>
+                  <Text>{data.privateData.location}</Text>
                 </Stack>
               )}
             </Stack>
@@ -242,12 +242,12 @@ export function GeneralInfoWidget({
 
           {/* Professional Details */}
           {variant === 'full' && (
-            <Stack gap="$3">
-              <Text fontWeight="600" fontSize="$3">
+            <Stack gap={12}>
+              <Text>
                 Professional Details
               </Text>
 
-              <Row gap="$4" flexWrap="wrap">
+              <Row gap={16} flexWrap="wrap">
                 {(() => {
                   const yearsValue =
                     typeof data.calculatedYearsOfExperience === 'number'
@@ -261,11 +261,11 @@ export function GeneralInfoWidget({
                       : null
                   if (formattedYears === null) return null
                   return (
-                    <Stack gap="$1" flex={1} minWidth={120}>
-                      <Text fontSize="$2" color="$color10">
+                    <Stack gap={4} flex={1} minWidth={120}>
+                      <Text color="gray">
                         Experience
                       </Text>
-                      <Text fontSize="$3">
+                      <Text>
                         {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
                     </Stack>
@@ -273,11 +273,11 @@ export function GeneralInfoWidget({
                 })()}
 
                 {data.industries && (
-                  <Stack gap="$1" flex={1} minWidth={120}>
-                    <Text fontSize="$2" color="$color10">
+                  <Stack gap={4} flex={1} minWidth={120}>
+                    <Text color="gray">
                       Industry
                     </Text>
-                    <Text fontSize="$3">{data.industries.name}</Text>
+                    <Text>{data.industries.name}</Text>
                   </Stack>
                 )}
               </Row>
@@ -292,7 +292,7 @@ export function GeneralInfoWidget({
           open={showReviewModal}
           onOpenChange={setShowReviewModal}
           title={`Review ${profile?.name || 'User'}`}
-          size="large"
+          size="lg"
         >
           <ReviewWizard
             subjectId={userId || ''}

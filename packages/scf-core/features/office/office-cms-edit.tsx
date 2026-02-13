@@ -24,8 +24,8 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <Stack alignItems="center" justifyContent="center" flex={1}>
-            <Spinner size="large" />
+          <Stack align="center" justify="center" flex={1}>
+            <Spinner size="lg" />
           </Stack>
         }
         rightContent={null}
@@ -38,7 +38,7 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <Stack gap="$4">
+          <Stack gap={16}>
             <Text>Slide not found</Text>
           </Stack>
         }
@@ -51,7 +51,7 @@ export function OfficeCMSEdit() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <Stack gap="$4">
+        <Stack gap={16}>
           <CMSSlideForm
             initialData={data.slide}
             onSubmit={handleSubmit}
@@ -60,8 +60,8 @@ export function OfficeCMSEdit() {
         </Stack>
       }
       rightContent={
-        <Stack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
+        <Stack gap={16}>
+          <Text>
             Edit Slide
           </Text>
           <Text>

@@ -63,12 +63,12 @@ function Pill({ label, backgroundColor, color }: PillProps) {
   return (
     <Row
       backgroundColor={backgroundColor}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$3"
-      alignItems="center"
+      paddingHorizontal={8}
+      paddingVertical={4}
+      borderRadius={12}
+      align="center"
     >
-      <Text fontSize="$1" fontWeight="600" color={color}>
+      <Text color={color}>
         {label}
       </Text>
     </Row>
@@ -251,14 +251,14 @@ export function NotificationPopover({
               right={-4}
               backgroundColor="$red9"
               borderRadius="$10"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
+              paddingHorizontal={8}
+              paddingVertical={4}
               minWidth={20}
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
               style={{ zIndex: 1 }}
             >
-              <Text fontSize="$1" fontWeight="600" color="white">
+              <Text color="white">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </Text>
             </Stack>
@@ -275,21 +275,21 @@ export function NotificationPopover({
       >
         {/* Header */}
         <Row
-          justifyContent="space-between"
-          alignItems="center"
-          padding="$4"
+          justify="space-between"
+          align="center"
+          padding={16}
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
         >
-          <Row alignItems="center" gap="$3">
-            <Bell size={20} color="$color11" />
-            <Text id="notifications-title" fontSize="$5" fontWeight="700" color="$color12">
+          <Row align="center" gap={12}>
+            <Bell size={20} color="gray" />
+            <Text id="notifications-title" color="gray">
               Notifications
             </Text>
           </Row>
           <Row>
             <Button
-              size="$2"
+              size={8}
               circular
               icon={X}
               onPress={() => handleOpenChange(false)}
@@ -302,17 +302,17 @@ export function NotificationPopover({
 
         {/* Content */}
         {isLoading ? (
-          <Stack padding="$4" alignItems="center" gap="$3">
-            <Spinner size="small" color="$color10" />
-            <Text color="$color11">Loading notifications...</Text>
+          <Stack padding={16} align="center" gap={12}>
+            <Spinner size="sm" color="gray" />
+            <Text color="gray">Loading notifications...</Text>
           </Stack>
         ) : notifications.length === 0 ? (
-          <Stack padding="$4" alignItems="center" gap="$3">
-            <Bell size={32} color="$color8" opacity={0.5} />
-            <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Stack padding={16} align="center" gap={12}>
+            <Bell size={32} color="gray" opacity={0.5} />
+            <Text color="gray" style={{ textAlign: 'center' }}>
               No notifications
             </Text>
-            <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               You're all caught up!
             </Text>
           </Stack>
@@ -323,13 +323,13 @@ export function NotificationPopover({
               {unreadNotifications.length > 0 && (
                 <>
                   <Row
-                    padding="$3"
-                    paddingHorizontal="$4"
+                    padding={12}
+                    paddingHorizontal={16}
                     backgroundColor="$color2"
                     borderBottomWidth={1}
                     borderBottomColor="$borderColor"
                   >
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Text color="gray">
                       Unread ({unreadNotifications.length})
                     </Text>
                   </Row>
@@ -343,7 +343,7 @@ export function NotificationPopover({
                           <Card
                             role="menuitem"
                             tabIndex={0}
-                            padding="$3"
+                            padding={12}
                             backgroundColor="$color3"
                             borderWidth={1}
                             borderColor="$color5"
@@ -354,18 +354,16 @@ export function NotificationPopover({
                             cursor="pointer"
                             aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <Row gap="$3" alignItems="flex-start">
+                            <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
-                              <Stack flex={1} gap="$2">
+                              <Stack flex={1} gap={8}>
                                 <Row
-                                  justifyContent="space-between"
-                                  alignItems="flex-start"
-                                  gap="$2"
+                                  justify="space-between"
+                                  align="flex-start"
+                                  gap={8}
                                 >
                                   <Text
-                                    fontSize="$3"
-                                    fontWeight="600"
-                                    color="$color12"
+                                    color="gray"
                                     flex={1}
                                     numberOfLines={1}
                                   >
@@ -376,19 +374,18 @@ export function NotificationPopover({
                                     height={6}
                                     backgroundColor="$blue9"
                                     borderRadius="$10"
-                                    marginTop="$1"
+                                    marginTop={4}
                                   />
                                 </Row>
                                 <Text
-                                  fontSize="$2"
-                                  color="$color11"
-                                  lineHeight="$3"
+                                  color="gray"
+                                  lineHeight={12}
                                   numberOfLines={2}
                                 >
                                   {notification.preview}
                                 </Text>
-                                <Row gap="$2" alignItems="center" marginTop="$1">
-                                  <Text fontSize="$1" color="$color10">
+                                <Row gap={8} align="center" marginTop={4}>
+                                  <Text color="gray">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
                                   <Pill
@@ -408,8 +405,8 @@ export function NotificationPopover({
                                 </Row>
                                 {notification.ctaLabel && (
                                   <Button
-                                    size="$2"
-                                    marginTop="$2"
+                                    size={8}
+                                    marginTop={8}
                                     theme="info"
                                     onPress={() => handleNotificationClick(notification)}
                                   >
@@ -438,13 +435,13 @@ export function NotificationPopover({
               {readNotifications.length > 0 && (
                 <>
                   <Row
-                    padding="$3"
-                    paddingHorizontal="$4"
+                    padding={12}
+                    paddingHorizontal={16}
                     backgroundColor="$color2"
                     borderBottomWidth={1}
                     borderBottomColor="$borderColor"
                   >
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Text color="gray">
                       Read
                     </Text>
                   </Row>
@@ -458,7 +455,7 @@ export function NotificationPopover({
                           <Card
                             role="menuitem"
                             tabIndex={0}
-                            padding="$3"
+                            padding={12}
                             backgroundColor="$color2"
                             borderWidth={0}
                             borderRadius={0}
@@ -469,27 +466,24 @@ export function NotificationPopover({
                             cursor="pointer"
                             aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <Row gap="$3" alignItems="flex-start">
+                            <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
-                              <Stack flex={1} gap="$2">
+                              <Stack flex={1} gap={8}>
                                 <Text
-                                  fontSize="$3"
-                                  fontWeight="normal"
-                                  color="$color12"
+                                  color="gray"
                                   numberOfLines={1}
                                 >
                                   {notification.title}
                                 </Text>
                                 <Text
-                                  fontSize="$2"
-                                  color="$color11"
-                                  lineHeight="$3"
+                                  color="gray"
+                                  lineHeight={12}
                                   numberOfLines={2}
                                 >
                                   {notification.preview}
                                 </Text>
-                                <Row gap="$2" alignItems="center" marginTop="$1">
-                                  <Text fontSize="$1" color="$color10">
+                                <Row gap={8} align="center" marginTop={4}>
+                                  <Text color="gray">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
                                   <Pill
@@ -509,8 +503,8 @@ export function NotificationPopover({
                                 </Row>
                                 {notification.ctaLabel && (
                                   <Button
-                                    size="$2"
-                                    marginTop="$2"
+                                    size={8}
+                                    marginTop={8}
                                     theme="info"
                                     onPress={() => handleNotificationClick(notification)}
                                   >

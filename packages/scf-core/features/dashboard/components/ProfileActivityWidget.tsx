@@ -81,46 +81,44 @@ export function ProfileActivityWidget() {
 
   return (
     <Card>
-      <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Text color="gray">
         Profile Activity
       </Text>
       {isLoading ? (
-        <Stack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading activity...</Text>
+        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading activity...</Text>
         </Stack>
       ) : (
-        <Stack gap="$4">
+        <Stack gap={16}>
           {/* 30-Day View Trend */}
           {viewAnalytics && (
             <Stack
-              gap="$2"
+              gap={8}
               backgroundColor="$blue2"
-              padding="$3"
-              borderRadius="$4"
+              padding={12}
+              borderRadius={16}
               borderWidth={1}
               borderColor="$blue6"
             >
-              <Row alignItems="center" gap="$2">
+              <Row align="center" gap={8}>
                 <Eye size={18} color="$blue10" />
-                <Text fontSize="$4" fontWeight="600" color="$blue11">
+                <Text color="$blue11">
                   Profile Views (30 days)
                 </Text>
               </Row>
-              <Row alignItems="baseline" gap="$2">
-                <Text fontSize="$7" fontWeight="700" color="$blue11">
+              <Row align="baseline" gap={8}>
+                <Text color="$blue11">
                   {viewAnalytics.views30d}
                 </Text>
                 {viewAnalytics.trend !== 0 && (
-                  <Row alignItems="center" gap="$1">
+                  <Row align="center" gap={4}>
                     {viewAnalytics.trend > 0 ? (
                       <ArrowUp size={16} color="$green10" />
                     ) : (
                       <ArrowDown size={16} color="$red10" />
                     )}
                     <Text
-                      fontSize="$3"
-                      fontWeight="600"
                       color={viewAnalytics.trend > 0 ? '$green11' : '$red11'}
                     >
                       {Math.abs(viewAnalytics.trend).toFixed(1)}%
@@ -129,7 +127,7 @@ export function ProfileActivityWidget() {
                 )}
               </Row>
               {viewAnalytics.viewsTotal > 0 && (
-                <Text fontSize="$2" color="$blue10">
+                <Text color="$blue10">
                   {viewAnalytics.viewsTotal} total views
                 </Text>
               )}
@@ -137,27 +135,27 @@ export function ProfileActivityWidget() {
           )}
 
           {/* Recent Profile Views */}
-          <Stack gap="$2">
-            <Row justifyContent="space-between" alignItems="center">
-              <Row alignItems="center" gap="$2">
-                <Eye size={18} color="$color12" />
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Row align="center" gap={8}>
+                <Eye size={18} color="gray" />
+                <Text color="gray">
                   Recent Views
                 </Text>
               </Row>
               {profileViews && profileViews.total > 0 && (
-                <Button size="$2" variant="outlined" onPress={handleViewAllProfileViews}>
+                <Button size={8} variant="outline" onPress={handleViewAllProfileViews}>
                   View All
                 </Button>
               )}
             </Row>
 
             {!profileViews || profileViews.views.length === 0 ? (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+              <Text color="gray" fontStyle="italic">
                 No profile views yet
               </Text>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {profileViews.views.slice(0, 5).map(
                   (view: {
                     id: string
@@ -168,13 +166,13 @@ export function ProfileActivityWidget() {
                     } | null
                     viewed_at?: string
                   }) => (
-                    <Row key={view.id} alignItems="center" gap="$2">
+                    <Row key={view.id} align="center" gap={8}>
                       <Avatar circular size={32}>
                         {view.viewer?.avatar_url ? (
                           <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
                         ) : (
                           <Avatar.Fallback backgroundColor="$blue4">
-                            <Text fontSize="$3" fontWeight="600" color="$blue10">
+                            <Text color="$blue10">
                               {view.viewer?.display_name?.charAt(0) ||
                                 view.viewer?.username?.charAt(0) ||
                                 '?'}
@@ -182,12 +180,12 @@ export function ProfileActivityWidget() {
                           </Avatar.Fallback>
                         )}
                       </Avatar>
-                      <Stack flex={1} gap="$1">
-                        <Text fontSize="$3" fontWeight="600" color="$color12">
+                      <Stack flex={1} gap={4}>
+                        <Text color="gray">
                           {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
                         </Text>
                         {view.viewed_at && (
-                          <Text fontSize="$2" color="$color10">
+                          <Text color="gray">
                             {new Date(view.viewed_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -205,22 +203,22 @@ export function ProfileActivityWidget() {
           <Separator />
 
           {/* New Followers */}
-          <Stack gap="$2">
-            <Row justifyContent="space-between" alignItems="center">
-              <Row alignItems="center" gap="$2">
-                <UserPlus size={18} color="$color12" />
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Row align="center" gap={8}>
+                <UserPlus size={18} color="gray" />
+                <Text color="gray">
                   New Followers
                 </Text>
               </Row>
             </Row>
 
             {!followers || followers.length === 0 ? (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+              <Text color="gray" fontStyle="italic">
                 No followers yet
               </Text>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {followers.slice(0, 5).map(
                   (follow: {
                     id: string
@@ -231,13 +229,13 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <Row key={follow.id} alignItems="center" gap="$2">
+                    <Row key={follow.id} align="center" gap={8}>
                       <Avatar circular size={32}>
                         {follow.user?.avatar_url ? (
                           <Avatar.Image source={{ uri: follow.user.avatar_url }} />
                         ) : (
                           <Avatar.Fallback backgroundColor="$green4">
-                            <Text fontSize="$3" fontWeight="600" color="$green10">
+                            <Text color="$green10">
                               {follow.user?.display_name?.charAt(0) ||
                                 follow.user?.username?.charAt(0) ||
                                 '?'}
@@ -245,12 +243,12 @@ export function ProfileActivityWidget() {
                           </Avatar.Fallback>
                         )}
                       </Avatar>
-                      <Stack flex={1} gap="$1">
-                        <Text fontSize="$3" fontWeight="600" color="$color12">
+                      <Stack flex={1} gap={4}>
+                        <Text color="gray">
                           {follow.user?.display_name || follow.user?.username || 'User'}
                         </Text>
                         {follow.created_at && (
-                          <Text fontSize="$2" color="$color10">
+                          <Text color="gray">
                             {new Date(follow.created_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -268,39 +266,39 @@ export function ProfileActivityWidget() {
           <Separator />
 
           {/* Pending Connection Requests */}
-          <Stack gap="$2">
-            <Row justifyContent="space-between" alignItems="center">
-              <Row alignItems="center" gap="$2">
-                <Users size={18} color="$color12" />
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Row align="center" gap={8}>
+                <Users size={18} color="gray" />
+                <Text color="gray">
                   Pending Requests
                 </Text>
                 {pendingRequests && pendingRequests.received.length > 0 && (
                   <Row
                     backgroundColor="$orange3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$0.5"
+                    paddingHorizontal={8}
+                    paddingVertical={2}
                     borderRadius="$10"
-                    alignItems="center"
-                    justifyContent="center"
+                    align="center"
+                    justify="center"
                   >
-                    <Text fontSize="$2" fontWeight="700" color="$orange11">
+                    <Text color="$orange11">
                       {pendingRequests.received.length}
                     </Text>
                   </Row>
                 )}
               </Row>
-              <Button size="$2" variant="outlined" onPress={handleManageConnections}>
+              <Button size={8} variant="outline" onPress={handleManageConnections}>
                 Manage
               </Button>
             </Row>
 
             {!pendingRequests || pendingRequests.received.length === 0 ? (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+              <Text color="gray" fontStyle="italic">
                 No pending requests
               </Text>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {pendingRequests.received.slice(0, 3).map(
                   (request: {
                     id: string
@@ -313,17 +311,17 @@ export function ProfileActivityWidget() {
                   }) => (
                     <Row
                       key={request.id}
-                      alignItems="center"
-                      gap="$2"
-                      justifyContent="space-between"
+                      align="center"
+                      gap={8}
+                      justify="space-between"
                     >
-                      <Row alignItems="center" gap="$2" flex={1}>
+                      <Row align="center" gap={8} flex={1}>
                         <Avatar circular size={32}>
                           {request.user?.avatar_url ? (
                             <Avatar.Image source={{ uri: request.user.avatar_url }} />
                           ) : (
                             <Avatar.Fallback backgroundColor="$purple4">
-                              <Text fontSize="$3" fontWeight="600" color="$purple10">
+                              <Text color="$purple10">
                                 {request.user?.display_name?.charAt(0) ||
                                   request.user?.username?.charAt(0) ||
                                   '?'}
@@ -331,12 +329,12 @@ export function ProfileActivityWidget() {
                             </Avatar.Fallback>
                           )}
                         </Avatar>
-                        <Stack flex={1} gap="$1">
-                          <Text fontSize="$3" fontWeight="600" color="$color12">
+                        <Stack flex={1} gap={4}>
+                          <Text color="gray">
                             {request.user?.display_name || request.user?.username || 'User'}
                           </Text>
                           {request.created_at && (
-                            <Text fontSize="$2" color="$color10">
+                            <Text color="gray">
                               {new Date(request.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
@@ -345,9 +343,9 @@ export function ProfileActivityWidget() {
                           )}
                         </Stack>
                       </Row>
-                      <Row gap="$1">
+                      <Row gap={4}>
                         <Button
-                          size="$2"
+                          size={8}
                           circular
                           icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
                           theme="success"
@@ -357,10 +355,10 @@ export function ProfileActivityWidget() {
                           }
                         />
                         <Button
-                          size="$2"
+                          size={8}
                           circular
                           icon={declineRequestMutation.isPending ? Loader2 : X}
-                          variant="outlined"
+                          variant="outline"
                           onPress={() => handleDeclineRequest(request.id)}
                           disabled={
                             acceptRequestMutation.isPending || declineRequestMutation.isPending
@@ -373,7 +371,7 @@ export function ProfileActivityWidget() {
                 {pendingRequests.received.length > 3 && (
                   <>
                     <Separator />
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       {pendingRequests.received.length - 3} more request
                       {pendingRequests.received.length - 3 === 1 ? '' : 's'}
                     </Text>

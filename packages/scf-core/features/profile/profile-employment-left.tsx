@@ -115,12 +115,12 @@ function MultiSelectToggleField({
       onCheckedChange={(checked) => handleToggleChange(Boolean(checked))}
       testID={testID}
       expandedContent={
-        <Stack gap="$2" paddingTop="$2">
+        <Stack gap={8} paddingTop={8}>
           {options.map((option) => {
             const checkboxId = `${name}-${option.replace(/\s+/g, '-').toLowerCase()}`
             const isChecked = selectedValues.includes(option)
             return (
-              <Row key={option} gap="$3" alignItems="center">
+              <Row key={option} gap={12} align="center">
                 <CustomCheckbox
                   aria-label={option}
                   checked={isChecked}
@@ -349,7 +349,7 @@ export function ProfileEmploymentLeft() {
 
   if (isLoadingEmployment) {
     return (
-      <Stack gap="$4" padding="$4">
+      <Stack gap={16} padding={16}>
         <SkeletonForm fields={5} />
       </Stack>
     )
@@ -358,36 +358,36 @@ export function ProfileEmploymentLeft() {
   return (
     <Stack>
       <DashboardWidget>
-        <Stack gap="$4" padding="$4" flex={1}>
+        <Stack gap={16} padding={16} flex={1}>
           {/* Debug: Show validation errors */}
           {Object.keys(errors).length > 0 && (
             <Stack
               backgroundColor="$red2"
-              padding="$3"
-              borderRadius="$4"
+              padding={12}
+              borderRadius={16}
               borderWidth={1}
               borderColor="$red8"
             >
-              <Text fontWeight="600" color="$red11" marginBottom="$2">
+              <Text color="$red11" marginBottom={8}>
                 Validation Errors:
               </Text>
               {Object.entries(errors).map(([key, error]) => (
-                <Text key={key} color="$red11" fontSize="$2">
+                <Text key={key} color="$red11">
                   • {key}: {error?.message?.toString() || 'Invalid value'}
                 </Text>
               ))}
             </Stack>
           )}
 
-          <Stack gap="$4">
+          <Stack gap={16}>
             {/* Hourly Rate */}
-            <Stack gap="$2">
-              <Text fontWeight="600">Hourly Rate ($)</Text>
+            <Stack gap={8}>
+              <Text>Hourly Rate ($)</Text>
               <Controller
                 name="hourly_rate"
                 control={control}
                 render={({ field }) => (
-                  <Row gap="$3" alignItems="center">
+                  <Row gap={12} align="center">
                     <Input
                       flex={1}
                       placeholder="Enter your hourly rate"
@@ -403,15 +403,15 @@ export function ProfileEmploymentLeft() {
                 )}
               />
               {errors.hourly_rate && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.hourly_rate.message}
                 </Text>
               )}
             </Stack>
 
             {/* Preferred Work Locations */}
-            <Stack gap="$3" paddingVertical="$3">
-              <Text fontWeight="600">Preferred Work Locations</Text>
+            <Stack gap={12} paddingVertical={12}>
+              <Text>Preferred Work Locations</Text>
               <Controller
                 name="preferred_work_locations"
                 control={control}
@@ -430,8 +430,8 @@ export function ProfileEmploymentLeft() {
             </Stack>
 
             {/* Travel Preferences */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Travel Preferences</Text>
+            <Stack gap={12}>
+              <Text>Travel Preferences</Text>
               <Controller
                 name="open_to_travel"
                 control={control}
@@ -448,15 +448,15 @@ export function ProfileEmploymentLeft() {
               />
               <Controller name="travel_distance_miles" control={control} render={() => <></>} />
               {errors.travel_distance_miles && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.travel_distance_miles.message?.toString()}
                 </Text>
               )}
             </Stack>
 
             {/* Residency */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Residency</Text>
+            <Stack gap={12}>
+              <Text>Residency</Text>
               <Controller
                 name="us_resident"
                 control={control}
@@ -479,18 +479,18 @@ export function ProfileEmploymentLeft() {
               />
             </Stack>
             {errors.us_resident && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.us_resident.message?.toString()}
               </Text>
             )}
 
             {/* Drivers License */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Driver's License</Text>
+            <Stack gap={12}>
+              <Text>Driver's License</Text>
               <MultiSelectToggleField
                 control={control}
                 name="drivers_license_classes"
-                icon={<Car size="$2" color="$color11" />}
+                icon={<Car size={8} color="gray" />}
                 title="I have a valid driver's license"
                 description="Select all license classes that apply"
                 options={DRIVERS_LICENSE_OPTIONS}
@@ -500,19 +500,19 @@ export function ProfileEmploymentLeft() {
                 }}
               />
               {errors.drivers_license_classes && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.drivers_license_classes.message?.toString()}
                 </Text>
               )}
             </Stack>
 
             {/* Military Status */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Military Status</Text>
+            <Stack gap={12}>
+              <Text>Military Status</Text>
               <MultiSelectToggleField
                 control={control}
                 name="military_status"
-                icon={<Shield size="$2" color="$color11" />}
+                icon={<Shield size={8} color="gray" />}
                 title="Former/Current Military"
                 description="Select all that apply"
                 options={MILITARY_STATUS_OPTIONS}
@@ -521,12 +521,12 @@ export function ProfileEmploymentLeft() {
             </Stack>
 
             {/* Availability */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Availability</Text>
+            <Stack gap={12}>
+              <Text>Availability</Text>
               <MultiSelectToggleField
                 control={control}
                 name="availability"
-                icon={<Calendar size="$2" color="$color11" />}
+                icon={<Calendar size={8} color="gray" />}
                 title="I'm available for work"
                 description="Select all that apply"
                 options={AVAILABILITY_OPTIONS}
@@ -535,9 +535,9 @@ export function ProfileEmploymentLeft() {
             </Stack>
 
             {/* Action Buttons */}
-            <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
+            <Row justify="flex-end" gap={12} paddingTop={16}>
               <Button
-                variant="outlined"
+                variant="outline"
                 disabled={!isDirty}
                 onPress={() => setShowCancelDialog(true)}
                 opacity={!isDirty ? 0.5 : 1}

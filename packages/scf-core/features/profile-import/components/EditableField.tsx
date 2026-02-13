@@ -30,9 +30,9 @@ export const EditableField = memo(function EditableField({
   const inputValue = value ?? ''
 
   return (
-    <Stack gap="$2">
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontWeight="600">
+    <Stack gap={8}>
+      <Row justify="space-between" align="center">
+        <Text>
           {label}
           {required ? ' *' : ''}
         </Text>
@@ -51,7 +51,7 @@ export const EditableField = memo(function EditableField({
       )}
 
       {error && (
-        <Text color="$red10" fontSize="$2">
+        <Text color="$red10">
           {error}
         </Text>
       )}

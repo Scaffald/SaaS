@@ -169,53 +169,53 @@ export function ResultsStep({
   }, [canViewResults, interpretation, isLoadingInterpretation, loadError, loadInterpretation])
 
   return (
-    <Stack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
+    <Stack gap={24} width="100%" alignSelf="center" padding={16} style={{ maxWidth: 800 }}>
       {/* Feedback Message */}
       <Stack
-        gap="$4"
-        padding="$6"
+        gap={16}
+        padding={24}
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
+        <Text color="gray">
           Test Complete
         </Text>
-        <Text fontSize="$4" color="$color11" lineHeight="$5">
+        <Text color="gray" lineHeight={20}>
           {feedbackMessage}
         </Text>
       </Stack>
 
       {/* Results Content */}
       <Stack
-        gap="$4"
-        padding="$6"
+        gap={16}
+        padding={24}
         backgroundColor="$color1"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
         {!canViewResults && (
-          <Text fontSize="$4" color="$color11">
+          <Text color="gray">
             Results will appear here once both selections are complete.
           </Text>
         )}
 
         {isLoadingInterpretation && (
-          <Text fontSize="$4" color="$color11">
+          <Text color="gray">
             Loading results...
           </Text>
         )}
 
         {loadError && (
-          <Text fontSize="$4" color="$red10">
+          <Text color="$red10">
             {loadError}
           </Text>
         )}
 
         {interpretation && !isLoadingInterpretation && !loadError && (
-          <Stack gap="$3">
+          <Stack gap={12}>
             {interpretation.split('\n\n').map((paragraph, index) => {
               const paragraphKey = `${paragraph.slice(0, 50)}-${index}`
 
@@ -223,9 +223,7 @@ export function ResultsStep({
                 return (
                   <Text
                     key={paragraphKey}
-                    fontSize="$6"
-                    fontWeight="bold"
-                    color="$color12"
+                    color="gray"
                     marginTop={index > 0 ? '$4' : '$0'}
                   >
                     {paragraph.replace('## ', '')}
@@ -236,9 +234,7 @@ export function ResultsStep({
                 return (
                   <Text
                     key={paragraphKey}
-                    fontSize="$5"
-                    fontWeight="600"
-                    color="$color12"
+                    color="gray"
                     marginTop={index > 0 ? '$3' : '$0'}
                   >
                     {paragraph.replace('### ', '')}
@@ -246,7 +242,7 @@ export function ResultsStep({
                 )
               }
               return (
-                <Text key={paragraphKey} fontSize="$4" color="$color11" lineHeight="$5">
+                <Text key={paragraphKey} color="gray" lineHeight={20}>
                   {paragraph}
                 </Text>
               )

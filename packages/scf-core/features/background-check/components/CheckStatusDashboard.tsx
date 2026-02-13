@@ -86,32 +86,32 @@ export function CheckStatusDashboard() {
   return (
     <Stack flex={1} backgroundColor="$background">
       <ScrollView flex={1}>
-        <Stack gap="$4" paddingHorizontal="$4" paddingBottom="$6">
+        <Stack gap={16} paddingHorizontal={16} paddingBottom={24}>
           <Stack
-            gap="$3"
-            padding="$4"
+            gap={12}
+            padding={16}
             backgroundColor="$background"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
           >
-            <Row gap="$3" alignItems="center">
+            <Row gap={12} align="center">
               <ShieldCheck size={28} color="$blue10" />
-              <Stack gap="$1">
-                <Text fontSize="$6" fontWeight="700" color="$color12">
+              <Stack gap={4}>
+                <Text color="gray">
                   Background check dashboard
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   Track your screenings, monitor progress, and manage who can see your results.
                 </Text>
               </Stack>
             </Row>
-            <Row gap="$2" flexWrap="wrap">
+            <Row gap={8} flexWrap="wrap">
               {FILTER_DEFINITIONS.map((filter) => {
                 const isActive = activeFilter === filter.value
                 return (
                   <Button
                     key={filter.value}
-                    size="$3"
+                    size={12}
                     theme={isActive ? 'blue' : undefined}
                     variant={isActive ? undefined : 'outlined'}
                     onPress={() => setActiveFilter(filter.value)}
@@ -128,9 +128,9 @@ export function CheckStatusDashboard() {
           </Stack>
 
           {checksQuery.isLoading && (
-            <Stack gap="$2" alignItems="center" paddingVertical="$6">
-              <Spinner size="large" color="$color11" />
-              <Text fontSize="$3" color="$color10">
+            <Stack gap={8} align="center" paddingVertical={24}>
+              <Spinner size="lg" color="gray" />
+              <Text color="gray">
                 Loading your background checks…
               </Text>
             </Stack>
@@ -138,19 +138,19 @@ export function CheckStatusDashboard() {
 
           {checksQuery.isError && (
             <Stack
-              gap="$3"
-              padding="$4"
+              gap={12}
+              padding={16}
               backgroundColor="$color2"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 We couldn’t load your background checks. Please try again.
               </Text>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 icon={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
               >
@@ -161,17 +161,17 @@ export function CheckStatusDashboard() {
 
           {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
             <Stack
-              gap="$3"
-              padding="$4"
+              gap={12}
+              padding={16}
               backgroundColor="$color2"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 No background checks found for this filter.
               </Text>
-              <Button size="$3" theme="blue" onPress={handleStartNewCheck}>
+              <Button size={12} theme="blue" onPress={handleStartNewCheck}>
                 Start a background check
               </Button>
             </Stack>
@@ -194,26 +194,26 @@ export function CheckStatusDashboard() {
           ))}
 
           <Stack
-            gap="$2"
-            padding="$3"
+            gap={8}
+            padding={12}
             backgroundColor="$color2"
-            borderRadius="$4"
+            borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text fontSize="$3" fontWeight="600" color="$color12">
+            <Text color="gray">
               Need a new screening?
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Start a new background check whenever you need to refresh your credentials.
             </Text>
-            <Button size="$3" theme="blue" onPress={handleStartNewCheck}>
+            <Button size={12} theme="blue" onPress={handleStartNewCheck}>
               Start background check
             </Button>
           </Stack>
 
           {selectedCheckId && (
-            <Stack gap="$3">
+            <Stack gap={12}>
               <Separator />
               <ResultsViewer
                 checkId={selectedCheckId}

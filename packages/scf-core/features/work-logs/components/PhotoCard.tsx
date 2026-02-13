@@ -135,7 +135,7 @@ export function PhotoCard({
     <Stack
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$4"
+      borderRadius={16}
       overflow="hidden"
       backgroundColor="$color2"
       width="100%"
@@ -146,15 +146,15 @@ export function PhotoCard({
         ) : (
           <Stack
             position="absolute"
-            justifyContent="center"
-            alignItems="center"
+            justify="center"
+            align="center"
             top={0}
             right={0}
             bottom={0}
             left={0}
             backgroundColor="$color3"
           >
-            <Spinner color="$color10" />
+            <Spinner color="gray" />
           </Stack>
         )}
         {(photo.isRefreshingUrl || isDeleting) && (
@@ -165,31 +165,31 @@ export function PhotoCard({
             bottom={0}
             left={0}
             backgroundColor="rgba(0,0,0,0.35)"
-            alignItems="center"
-            justifyContent="center"
-            gap="$2"
+            align="center"
+            justify="center"
+            gap={8}
           >
-            <Spinner color="white" size="large" />
-            <SizableText color="white" size="$3">
+            <Spinner color="white" size="lg" />
+            <SizableText color="white" size={12}>
               {isDeleting ? 'Removing…' : 'Refreshing…'}
             </SizableText>
           </Stack>
         )}
       </View>
 
-      <Stack gap="$3" padding="$3">
-        <Row alignItems="center" justifyContent="space-between" gap="$3">
-          <Row gap="$2" alignItems="center">
-            <Tag size={16} color="$color10" />
-            <Text fontWeight="600" fontSize="$3">
+      <Stack gap={12} padding={12}>
+        <Row align="center" justify="space-between" gap={12}>
+          <Row gap={8} align="center">
+            <Tag size={16} color="gray" />
+            <Text>
               {typeOption?.label ?? 'Uncategorized'}
             </Text>
           </Row>
-          <Row gap="$2">
+          <Row gap={8}>
             {canToggleVisibility ? (
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 icon={photo.showOnProfile ? Eye : EyeOff}
                 disabled={disabled}
                 onPress={handleToggleVisibility}
@@ -197,14 +197,14 @@ export function PhotoCard({
                 {photo.showOnProfile ? 'Public' : 'Private'}
               </Button>
             ) : (
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {photo.showOnProfile ? 'Visible on profile' : 'Hidden from profile'}
               </Text>
             )}
             {canDelete ? (
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 icon={Trash2}
                 disabled={disabled || isDeleting}
                 onPress={handleDelete}
@@ -215,12 +215,12 @@ export function PhotoCard({
           </Row>
         </Row>
 
-        <Stack gap="$2">
-          <Text fontWeight="600" fontSize="$3">
+        <Stack gap={8}>
+          <Text>
             Caption
           </Text>
           {canEditCaption && isEditingCaption ? (
-            <Stack gap="$2">
+            <Stack gap={8}>
               <Input
                 value={captionDraft}
                 onChangeText={setCaptionDraft}
@@ -228,9 +228,9 @@ export function PhotoCard({
                 multiline
                 numberOfLines={Platform.select({ web: undefined, default: 3 })}
               />
-              <Row gap="$2">
+              <Row gap={8}>
                 <Button
-                  size="$2"
+                  size={8}
                   icon={Check}
                   disabled={isSavingCaption}
                   onPress={handleSaveCaption}
@@ -238,9 +238,9 @@ export function PhotoCard({
                   Save
                 </Button>
                 <Button
-                  size="$2"
+                  size={8}
                   icon={X}
-                  variant="outlined"
+                  variant="outline"
                   disabled={isSavingCaption}
                   onPress={handleCancelCaption}
                 >
@@ -249,14 +249,14 @@ export function PhotoCard({
               </Row>
             </Stack>
           ) : canEditCaption ? (
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
                 {photo.caption ?? 'No caption provided.'}
               </Text>
               <Button
-                size="$2"
+                size={8}
                 icon={Edit3}
-                variant="outlined"
+                variant="outline"
                 disabled={disabled}
                 onPress={() => setIsEditingCaption(true)}
               >
@@ -272,8 +272,8 @@ export function PhotoCard({
 
         <Separator />
 
-        <Stack gap="$2">
-          <Text fontWeight="600" fontSize="$3">
+        <Stack gap={8}>
+          <Text>
             Photo Type
           </Text>
           {canChangeType ? (
@@ -289,26 +289,26 @@ export function PhotoCard({
               triggerProps={{ width: '100%' }}
             />
           ) : (
-            <Text color="$color10">{typeOption?.label ?? 'Uncategorized'}</Text>
+            <Text color="gray">{typeOption?.label ?? 'Uncategorized'}</Text>
           )}
         </Stack>
 
         <Separator />
 
-        <Stack gap="$1">
-          <Text fontWeight="600" fontSize="$3">
+        <Stack gap={4}>
+          <Text>
             Details
           </Text>
-          <Text fontSize="$2" color="$color11">
+          <Text color="gray">
             Size: {formatBytes(photo.fileSizeBytes)}
           </Text>
           {photo.takenAt ? (
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               Taken: {formatDate(photo.takenAt) ?? 'Unknown'}
             </Text>
           ) : null}
           {photo.createdAt ? (
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}
             </Text>
           ) : null}

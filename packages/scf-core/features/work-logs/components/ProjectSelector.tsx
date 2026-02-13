@@ -57,14 +57,14 @@ export const ProjectSelector = memo(function ProjectSelector({
   const hasMultipleOrganizations = organizations.length > 1
 
   return (
-    <Stack gap="$2">
-      <Text fontWeight="600" fontSize="$4">
+    <Stack gap={8}>
+      <Text>
         Project
       </Text>
 
       {hasMultipleOrganizations && (
-        <Stack gap="$1">
-          <Text fontSize="$3" color="$color10">
+        <Stack gap={4}>
+          <Text color="gray">
             Organization
           </Text>
           <ResponsiveSelect
@@ -77,7 +77,7 @@ export const ProjectSelector = memo(function ProjectSelector({
               }
             }}
             placeholder="All organizations"
-            size="$4"
+            size={16}
             options={[
               { value: 'all', label: 'All organizations' },
               ...organizations.map((organization) => ({
@@ -89,15 +89,15 @@ export const ProjectSelector = memo(function ProjectSelector({
         </Stack>
       )}
 
-      <Stack gap="$1">
-        <Text fontSize="$3" color="$color10">
+      <Stack gap={4}>
+        <Text color="gray">
           Select a project to associate with this work log.
         </Text>
         <ResponsiveSelect
           value={value}
           onValueChange={onChange}
           placeholder={isLoading ? 'Loading projects...' : 'Select a project'}
-          size="$4"
+          size={16}
           disabled={disabled || isLoading || filteredProjects.length === 0}
           options={filteredProjects.map((project) => ({
             value: project.id,
@@ -107,31 +107,31 @@ export const ProjectSelector = memo(function ProjectSelector({
       </Stack>
 
       {isLoading && (
-        <Row gap="$2" alignItems="center">
-          <Spinner size="small" />
-          <Text fontSize="$3">Loading projects…</Text>
+        <Row gap={8} align="center">
+          <Spinner size="sm" />
+          <Text>Loading projects…</Text>
         </Row>
       )}
 
       {error && (
         <Row
-          gap="$2"
-          alignItems="center"
+          gap={8}
+          align="center"
           backgroundColor="$red3"
           borderColor="$red6"
           borderWidth={1}
-          borderRadius="$3"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
+          borderRadius={12}
+          paddingHorizontal={12}
+          paddingVertical={8}
         >
           <AlertCircle size={16} color="$red10" />
-          <Text flex={1} fontSize="$3" color="$red10">
+          <Text flex={1} color="$red10">
             {error}
           </Text>
           {onRetry && (
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               icon={RefreshCw}
               onPress={onRetry}
               aria-label="Retry loading projects"
@@ -141,13 +141,13 @@ export const ProjectSelector = memo(function ProjectSelector({
       )}
 
       {helperText && (
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {helperText}
         </Text>
       )}
 
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           No projects available for the selected organization.
         </Text>
       )}

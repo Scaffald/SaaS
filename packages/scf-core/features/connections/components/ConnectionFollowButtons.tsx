@@ -237,10 +237,10 @@ export function ConnectionFollowButtons({
   if (isLoading) {
     return (
       <Card>
-        <Stack gap="$3" alignItems="center" paddingVertical="$3">
-          <Row gap="$2" alignItems="center">
-            <Loader2 size={16} color="$color10" />
-            <Text fontSize="$3" color="$color10">
+        <Stack gap={12} align="center" paddingVertical={12}>
+          <Row gap={8} align="center">
+            <Loader2 size={16} color="gray" />
+            <Text color="gray">
               Loading connection status...
             </Text>
           </Row>
@@ -251,24 +251,24 @@ export function ConnectionFollowButtons({
 
   return (
     <Card>
-      <Stack gap="$3" paddingVertical="$3">
+      <Stack gap={12} paddingVertical={12}>
         {/* Connection Button */}
         {connectionButtonState.type === 'connected' && (
-          <Row gap="$2" flexWrap="wrap">
+          <Row gap={8} flexWrap="wrap">
             <Button
-              size="$4"
+              size={16}
               icon={UserCheck}
               theme="success"
-              variant="outlined"
+              variant="outline"
               disabled={isConnectionMutating}
               flex={1}
             >
               <Text>Connected</Text>
             </Button>
             <Button
-              size="$4"
+              size={16}
               icon={UserMinus}
-              variant="outlined"
+              variant="outline"
               theme="error"
               onPress={handleRemoveConnection}
               disabled={isConnectionMutating}
@@ -280,9 +280,9 @@ export function ConnectionFollowButtons({
 
         {connectionButtonState.type === 'pending_sent' && (
           <Button
-            size="$4"
+            size={16}
             icon={Loader2}
-            variant="outlined"
+            variant="outline"
             disabled={isConnectionMutating}
             flex={1}
           >
@@ -291,9 +291,9 @@ export function ConnectionFollowButtons({
         )}
 
         {connectionButtonState.type === 'pending_received' && (
-          <Row gap="$2" flexWrap="wrap">
+          <Row gap={8} flexWrap="wrap">
             <Button
-              size="$4"
+              size={16}
               icon={CheckCircle2}
               theme="success"
               onPress={handleAcceptRequest}
@@ -303,9 +303,9 @@ export function ConnectionFollowButtons({
               <Text>Accept</Text>
             </Button>
             <Button
-              size="$4"
+              size={16}
               icon={X}
-              variant="outlined"
+              variant="outline"
               theme="error"
               onPress={handleDeclineRequest}
               disabled={isConnectionMutating}
@@ -317,7 +317,7 @@ export function ConnectionFollowButtons({
 
         {connectionButtonState.type === 'none' && (
           <Button
-            size="$4"
+            size={16}
             icon={isConnectionMutating ? Loader2 : UserPlus}
             theme="blue"
             onPress={handleConnect}
@@ -331,7 +331,7 @@ export function ConnectionFollowButtons({
         {/* Follow Button */}
         {!connectionStatus.isConnected && (
           <Button
-            size="$4"
+            size={16}
             icon={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
             variant={followStatus.isFollowing ? 'outlined' : 'outlined'}
             theme={followStatus.isFollowing ? 'error' : 'blue'}

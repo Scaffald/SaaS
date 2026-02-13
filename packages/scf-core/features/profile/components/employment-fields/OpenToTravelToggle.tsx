@@ -18,7 +18,7 @@ export function OpenToTravelToggle({
 }: OpenToTravelToggleProps) {
   return (
     <ToggleCard
-      icon={<Plane size="$2" color="$color11" />}
+      icon={<Plane size={8} color="gray" />}
       title="Open to travel"
       description={description}
       {...toggleCardProps}

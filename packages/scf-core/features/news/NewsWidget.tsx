@@ -435,47 +435,47 @@ export function NewsWidget({
 
   return (
     <Stack gap={spacing.md}>
-      <Row justifyContent="space-between" alignItems="center" paddingTop={spacing.sm}>
-        <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Row justify="space-between" align="center" paddingTop={spacing.sm}>
+        <Text color="gray">
           News
         </Text>
 
-        <Row gap={spacing.xs} alignItems="center">
+        <Row gap={spacing.xs} align="center">
           {/* TODO: Implement and refine filter button functionality later */}
           {/* <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={<Settings2 size={16} />}
             onPress={() => setPreferencesOpen(true)}
           /> */}
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             onPress={() => {
               void refetch()
             }}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="small" /> : <RefreshCw size={16} />}
+            icon={isLoading ? <Spinner size="sm" /> : <RefreshCw size={16} />}
           />
         </Row>
       </Row>
 
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
-        <Stack alignItems="center" gap={spacing.sm}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11" fontSize="$4">
+        <Stack align="center" gap={spacing.sm}>
+          <Spinner size="lg" color="$blue7" />
+          <Text color="gray">
             Loading personalised news...
           </Text>
         </Stack>
       ) : null}
 
       {isError && displayNews.length === 0 ? (
-        <Stack alignItems="center" gap={spacing.sm}>
+        <Stack align="center" gap={spacing.sm}>
           <AlertCircle size={24} color="$red10" />
-          <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
+          <Text color="$red11" style={{ textAlign: 'center' }}>
             Failed to load news feed
           </Text>
-          <Text color="$color11" fontSize="$3" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
           <Button
@@ -483,7 +483,7 @@ export function NewsWidget({
             onPress={() => {
               void refetch()
             }}
-            size="$3"
+            size={12}
           >
             Try Again
           </Button>
@@ -491,55 +491,53 @@ export function NewsWidget({
       ) : null}
 
       {displayNews.length > 0 && (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {displayNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (
                 <Stack
-                  gap="$2"
-                  padding="$3"
+                  gap={8}
+                  padding={12}
                   backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$color4"
                   opacity={pressed ? 0.7 : 1}
                   style={{ borderRadius: 12 }}
                 >
-                  <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
+                  <Row justify="space-between" align="flex-start" gap={12}>
                     <Text
-                      fontSize="$4"
-                      fontWeight="600"
-                      color="$color12"
+                      color="gray"
                       flex={1}
                       numberOfLines={2}
                     >
                       {item.title}
                     </Text>
-                    <ExternalLink size={16} color="$color10" />
+                    <ExternalLink size={16} color="gray" />
                   </Row>
-                  <Row gap="$2" alignItems="center" flexWrap="wrap">
-                    <Text fontSize="$2" color="$color11">
+                  <Row gap={8} align="center" flexWrap="wrap">
+                    <Text color="gray">
                       {formatTimeAgo(item.pubDate)}
                     </Text>
                     {item.category && (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         • {capitalise(item.category)}
                       </Text>
                     )}
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       • {relevanceLabel(item.relevanceScore)}
                     </Text>
                   </Row>
                   {item.reasons.length > 0 && (
-                    <Row gap="$2" flexWrap="wrap">
+                    <Row gap={8} flexWrap="wrap">
                       {item.reasons.slice(0, 2).map((reason: string, index: number) => (
                         <Stack
                           key={`${item.id}-reason-${index}`}
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
+                          paddingHorizontal={8}
+                          paddingVertical={4}
                           backgroundColor="$blue3"
                           style={{ borderRadius: 8 }}
                         >
-                          <Text fontSize="$1" color="$blue11">
+                          <Text color="$blue11">
                             {reason}
                           </Text>
                         </Stack>
@@ -552,8 +550,8 @@ export function NewsWidget({
           ))}
 
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             onPress={handleViewAll}
             iconAfter={<ExternalLink size={16} />}
           >
@@ -570,47 +568,47 @@ export function NewsWidget({
         dismissOnSnapToBottom
       >
         <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame padding="$4" gap="$3">
+        <Sheet.Frame padding={16} gap={12}>
           <Sheet.Handle />
-          <Text fontSize="$5" fontWeight="600">
+          <Text>
             Customise Recommendations
           </Text>
-          <Paragraph color="$color11" size="$3">
+          <Paragraph color="gray" size={12}>
             Tailor the news feed using your profile information.
           </Paragraph>
 
-          <Stack gap="$3">
-            <Row justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Match my skills</Paragraph>
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Paragraph size={12}>Match my skills</Paragraph>
               <Switch
-                size="$2"
+                size={8}
                 checked={preferences.matchSkills}
                 onCheckedChange={(value) => updatePreference('matchSkills', value)}
               />
             </Row>
 
-            <Row justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Match my industry</Paragraph>
+            <Row justify="space-between" align="center">
+              <Paragraph size={12}>Match my industry</Paragraph>
               <Switch
-                size="$2"
+                size={8}
                 checked={preferences.matchIndustry}
                 onCheckedChange={(value) => updatePreference('matchIndustry', value)}
               />
             </Row>
 
-            <Row justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Boost trending stories</Paragraph>
+            <Row justify="space-between" align="center">
+              <Paragraph size={12}>Boost trending stories</Paragraph>
               <Switch
-                size="$2"
+                size={8}
                 checked={preferences.prioritizeTrending}
                 onCheckedChange={(value) => updatePreference('prioritizeTrending', value)}
               />
             </Row>
 
-            <Row justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Show recent stories only</Paragraph>
+            <Row justify="space-between" align="center">
+              <Paragraph size={12}>Show recent stories only</Paragraph>
               <Switch
-                size="$2"
+                size={8}
                 checked={preferences.recentOnly}
                 onCheckedChange={(value) => updatePreference('recentOnly', value)}
               />

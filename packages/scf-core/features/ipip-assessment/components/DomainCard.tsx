@@ -36,23 +36,23 @@ export const DomainCard = memo(function DomainCard({
   if (!isComplete) {
     return (
       <Stack
-        gap="$3"
-        padding="$4"
+        gap={12}
+        padding={16}
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
         opacity={0.6}
       >
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$5" fontWeight="bold" color="$color11">
+        <Row justify="space-between" align="center">
+          <Text color="gray">
             {domainName}
           </Text>
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             Incomplete
           </Text>
         </Row>
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           Complete {domainName} questions to unlock your results for this domain.
         </Text>
       </Stack>
@@ -63,27 +63,25 @@ export const DomainCard = memo(function DomainCard({
 
   return (
     <Stack
-      gap="$3"
-      padding="$4"
+      gap={12}
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       {/* Domain Header */}
-      <Row justifyContent="space-between" alignItems="center">
-        <Stack gap="$1" flex={1}>
-          <Text fontSize="$5" fontWeight="bold" color="$color12">
+      <Row justify="space-between" align="center">
+        <Stack gap={4} flex={1}>
+          <Text color="gray">
             {domainName}
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             {narrative?.summary || ''}
           </Text>
         </Stack>
-        <Stack alignItems="flex-end" gap="$1">
+        <Stack align="flex-end" gap={4}>
           <Text
-            fontSize="$4"
-            fontWeight="bold"
             color={
               classification === 'high'
                 ? '$green10'
@@ -94,7 +92,7 @@ export const DomainCard = memo(function DomainCard({
           >
             {classification.toUpperCase()}
           </Text>
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             {Math.round(percentage)}%
           </Text>
         </Stack>
@@ -107,7 +105,7 @@ export const DomainCard = memo(function DomainCard({
 
       {/* Domain Result Text */}
       {domainResult && (
-        <Text fontSize="$3" color="$color12">
+        <Text color="gray">
           {domainResult.text}
         </Text>
       )}
@@ -115,8 +113,8 @@ export const DomainCard = memo(function DomainCard({
       {/* Expand/Collapse Button */}
       {score?.facet && narrative?.facets && (
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           onPress={() => setIsExpanded(!isExpanded)}
           icon={isExpanded ? ChevronUp : ChevronDown}
         >

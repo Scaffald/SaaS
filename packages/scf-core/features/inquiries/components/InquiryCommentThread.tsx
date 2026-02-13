@@ -105,10 +105,10 @@ export function InquiryCommentThread({
   }
 
   return (
-    <Stack gap="$3">
+    <Stack gap={12}>
       {/* Comments List */}
       {comments.length > 0 && (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {comments.map((comment) => {
             const isUnread =
               currentUser &&
@@ -119,38 +119,38 @@ export function InquiryCommentThread({
             return (
               <Row
                 key={comment.id}
-                gap="$3"
-                padding="$3"
+                gap={12}
+                padding={12}
                 backgroundColor={isUnread ? '$blue2' : '$color2'}
-                borderRadius="$3"
+                borderRadius={12}
                 borderWidth={1}
                 borderColor={isUnread ? '$blue9' : '$borderColor'}
               >
-                <Avatar circular size="$3">
+                <Avatar circular size={12}>
                   <Avatar.Fallback backgroundColor="$blue9">
-                    <Text color="white" fontSize="$2">
+                    <Text color="white">
                       {comment.sender_id.charAt(0).toUpperCase()}
                     </Text>
                   </Avatar.Fallback>
                 </Avatar>
-                <Stack flex={1} gap="$1">
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$2" fontWeight="600" color="$color11">
+                <Stack flex={1} gap={4}>
+                  <Row justify="space-between" align="center">
+                    <Text color="gray">
                       {isFromCurrentUser ? 'You' : 'Organization'}
                     </Text>
-                    <Text fontSize="$1" color="$color10">
+                    <Text color="gray">
                       {formatTimestamp(comment.created_at)}
                     </Text>
                   </Row>
-                  <Text fontSize="$3" color="$color12">
+                  <Text color="gray">
                     {comment.content}
                   </Text>
                   {isUnread && (
                     <Button
-                      size="$2"
-                      variant="outlined"
+                      size={8}
+                      variant="outline"
                       onPress={() => handleMarkRead(comment.id)}
-                      marginTop="$1"
+                      marginTop={4}
                     >
                       Mark as read
                     </Button>
@@ -165,22 +165,22 @@ export function InquiryCommentThread({
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
         <Row
-          alignItems="center"
-          gap="$2"
-          padding="$2"
+          align="center"
+          gap={8}
+          padding={8}
           backgroundColor="$blue2"
-          borderRadius="$3"
+          borderRadius={12}
         >
           <MessageSquare size={16} color="$blue10" />
-          <Text fontSize="$2" color="$blue11" fontWeight="600">
+          <Text color="$blue11">
             {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}
           </Text>
         </Row>
       )}
 
       {/* Add Comment Input */}
-      <Stack gap="$2">
-        <Row gap="$2" alignItems="flex-end">
+      <Stack gap={8}>
+        <Row gap={8} align="flex-end">
           <Input
             flex={1}
             placeholder="Add a comment..."

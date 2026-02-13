@@ -53,41 +53,41 @@ export const CheckStatusCard = memo(function CheckStatusCard({
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
-        <Row justifyContent="space-between" alignItems="flex-start" gap="$4" flexWrap="wrap">
-          <Stack gap="$1" flex={1}>
-            <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Stack gap={16}>
+        <Row justify="space-between" align="flex-start" gap={16} flexWrap="wrap">
+          <Stack gap={4} flex={1}>
+            <Text color="gray">
               {packageLabel}
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Started {formatDate(check.created_at)}
             </Text>
             {estimatedCompletion && (
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 Est. completion {formatDate(estimatedCompletion)}
               </Text>
             )}
           </Stack>
 
-          <Stack gap="$2" alignItems="flex-end">
+          <Stack gap={8} align="flex-end">
             <Row
-              paddingHorizontal="$3"
-              paddingVertical="$1"
+              paddingHorizontal={12}
+              paddingVertical={4}
               backgroundColor={statusColors.background}
               borderWidth={1}
               borderColor={statusColors.border}
-              borderRadius="$3"
-              alignItems="center"
-              gap="$2"
+              borderRadius={12}
+              align="center"
+              gap={8}
             >
-              <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
+              <Text color={statusColors.text}>
                 {statusMeta.label}
               </Text>
             </Row>
             {check.expires_at && (
-              <Row alignItems="center" gap="$2">
+              <Row align="center" gap={8}>
                 {expirationWarning && <AlertTriangle size={14} color="$yellow10" />}
-                <Text fontSize="$2" color={expirationWarning ? '$yellow10' : '$color10'}>
+                <Text color={expirationWarning ? '$yellow10' : '$color10'}>
                   {expired
                     ? `Expired ${formatDate(check.expires_at)}`
                     : `Expires ${formatDate(check.expires_at)}${
@@ -101,26 +101,26 @@ export const CheckStatusCard = memo(function CheckStatusCard({
           </Stack>
         </Row>
 
-        <Stack gap="$2">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontSize="$3" fontWeight="500" color="$color12">
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Text color="gray">
               Progress
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               {progress}%
             </Text>
           </Row>
-          <Progress value={progress} max={100} backgroundColor="$color3" size="$1">
+          <Progress value={progress} max={100} backgroundColor="$color3" size={4}>
             <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
           </Progress>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {statusMeta.description}
           </Text>
         </Stack>
 
-        <Row gap="$2" flexWrap="wrap">
+        <Row gap={8} flexWrap="wrap">
           <Button
-            size="$3"
+            size={12}
             icon={Eye}
             onPress={() => onViewDetails(check)}
             accessibilityLabel="View background check details"
@@ -128,8 +128,8 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             View details
           </Button>
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={RefreshCcw}
             onPress={() => onRenew(check)}
             disabled={!renewalEligible}
@@ -137,7 +137,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             Renew
           </Button>
           {onDispute && (
-            <Button size="$3" variant="outlined" theme="warning" onPress={() => onDispute(check)}>
+            <Button size={12} variant="outline" theme="warning" onPress={() => onDispute(check)}>
               Dispute
             </Button>
           )}

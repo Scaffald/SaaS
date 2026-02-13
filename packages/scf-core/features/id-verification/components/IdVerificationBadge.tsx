@@ -77,8 +77,8 @@ export function IdVerificationBadge({
 
   return (
     <Row
-      alignItems="center"
-      gap="$1.5"
+      align="center"
+      gap={6}
       paddingHorizontal={size === 'sm' ? '$2' : '$3'}
       paddingVertical={size === 'sm' ? '$1' : '$2'}
       borderRadius="$10"
@@ -87,11 +87,11 @@ export function IdVerificationBadge({
       borderColor={muted ? mutedBorder : copy.border}
     >
       <Icon size={size === 'sm' ? 14 : 16} color={muted ? mutedColor : copy.color} />
-      <Text fontSize={size === 'sm' ? '$2' : '$3'} color={muted ? mutedColor : copy.color}>
+      <Text color={muted ? mutedColor : copy.color}>
         {copy.label}
       </Text>
       {expiresText && (
-        <Text fontSize="$2" color={muted ? mutedSubtext : copy.color}>
+        <Text color={muted ? mutedSubtext : copy.color}>
           · exp {expiresText}
         </Text>
       )}

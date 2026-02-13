@@ -49,27 +49,27 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="$4">
-      <Stack gap="$3">
-        <Row alignItems="center" gap="$2">
+    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding={16}>
+      <Stack gap={12}>
+        <Row align="center" gap={8}>
           <AlertTriangle color="$red11" size={20} />
-          <Text fontSize="$6" fontWeight="700" color="$red11">
+          <Text color="$red11">
             Delete Organization
           </Text>
         </Row>
 
-        <Text color="$color11" fontSize="$3">
+        <Text color="gray">
           Permanently delete this organization and all associated data. This action cannot be
           undone.
         </Text>
 
-        <Text color="$color10" fontSize="$2">
+        <Text color="gray">
           • All payment data will be anonymized • All payment methods will be removed from Stripe •
           Organization members will lose access • All jobs and applications will be archived
         </Text>
 
         <Button
-          variant="outlined"
+          variant="outline"
           borderColor="$red8"
           color="$red11"
           icon={Trash2}
@@ -82,19 +82,19 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
           <AlertDialog.Portal>
             <AlertDialog.Overlay />
             <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <Stack gap="$4" padding="$4">
-                <Stack gap="$2">
-                  <Text fontSize="$7" fontWeight="700" color="$red11">
+              <Stack gap={16} padding={16}>
+                <Stack gap={8}>
+                  <Text color="$red11">
                     Delete This Organization?
                   </Text>
-                  <Text color="$color11" fontSize="$3">
+                  <Text color="gray">
                     This action cannot be undone. All organization data will be permanently deleted
                     or anonymized.
                   </Text>
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Text>
                     Reason (optional)
                   </Text>
                   <TextArea
@@ -105,8 +105,8 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                   />
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Text>
                     Type "DELETE" to confirm
                   </Text>
                   <Input
@@ -117,9 +117,9 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
                   />
                 </Stack>
 
-                <Row gap="$3" justifyContent="flex-end">
+                <Row gap={12} justify="flex-end">
                   <Button
-                    variant="outlined"
+                    variant="outline"
                     onPress={() => {
                       setIsOpen(false)
                       setConfirmText('')

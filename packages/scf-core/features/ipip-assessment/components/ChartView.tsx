@@ -54,8 +54,8 @@ export function ChartView({
   // Handle missing data gracefully
   if (!scores && completedDomains === 0) {
     return (
-      <Stack gap="$4" padding="$4" alignItems="center">
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={16} padding={16} align="center">
+        <Text color="gray">
           No chart data available yet. Complete at least one domain to see visualizations.
         </Text>
       </Stack>
@@ -105,7 +105,7 @@ export function ChartView({
   }, [radarData])
 
   return (
-    <Stack gap="$6" width="100%">
+    <Stack gap={24} width="100%">
       {/* Accessible summary for assistive technologies */}
       <VisuallyHidden>
         <Text>
@@ -116,26 +116,26 @@ export function ChartView({
       {/* Archetype Badge */}
       {isComplete && archetype && (
         <Stack
-          gap="$3"
-          padding="$5"
+          gap={12}
+          padding={20}
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={2}
           borderColor="$blue9"
-          alignItems="center"
+          align="center"
         >
-          <Text fontSize="$6" fontWeight="bold" color="$blue11">
+          <Text color="$blue11">
             Your Archetype
           </Text>
-          <Text fontSize="$8" fontWeight="bold" color="$blue12">
+          <Text color="$blue12">
             {archetype.name}
           </Text>
           {archetype.confidence !== undefined && (
-            <Row gap="$2" alignItems="center">
-              <Text fontSize="$4" color="$blue10">
+            <Row gap={8} align="center">
+              <Text color="$blue10">
                 Confidence:
               </Text>
-              <Text fontSize="$5" fontWeight="600" color="$blue11">
+              <Text color="$blue11">
                 {archetype.confidence}%
               </Text>
             </Row>
@@ -145,20 +145,20 @@ export function ChartView({
 
       {/* Big Five Radar Chart */}
       <Stack
-        gap="$3"
-        padding="$4"
+        gap={12}
+        padding={16}
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text fontSize="$5" fontWeight="bold" color="$color12">
+        <Text color="gray">
           Big Five Personality Traits
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Your scores across the five major personality domains (0-100%)
         </Text>
-        <Stack alignItems="center" padding="$4">
+        <Stack align="center" padding={16}>
           <SkillsChart
             datasets={[
               {
@@ -186,7 +186,7 @@ export function ChartView({
           />
         </Stack>
         {/* Domain Labels with Scores */}
-        <Stack gap="$2" marginTop="$2">
+        <Stack gap={8} marginTop={8}>
           {topTraits.map((trait) => {
             const resultColor =
               trait.result === 'high' ? '$green10' : trait.result === 'low' ? '$blue10' : '$gray10'
@@ -194,20 +194,20 @@ export function ChartView({
             return (
               <Row
                 key={trait.domainName}
-                justifyContent="space-between"
-                alignItems="center"
-                padding="$2"
+                justify="space-between"
+                align="center"
+                padding={8}
                 backgroundColor="$color1"
-                borderRadius="$2"
+                borderRadius={8}
               >
-                <Text fontSize="$4" fontWeight="500" color="$color12">
+                <Text color="gray">
                   {trait.domainName}
                 </Text>
-                <Row gap="$3" alignItems="center">
-                  <Text fontSize="$3" color="$color10">
+                <Row gap={12} align="center">
+                  <Text color="gray">
                     {trait.value}%
                   </Text>
-                  <Text fontSize="$2" fontWeight="600" color={resultColor}>
+                  <Text color={resultColor}>
                     {trait.result.toUpperCase()}
                   </Text>
                 </Row>
@@ -218,7 +218,7 @@ export function ChartView({
       </Stack>
 
       {/* Facet Bars for Each Domain */}
-      <Stack gap="$4">
+      <Stack gap={16}>
         {DOMAIN_ORDER.map((domain) => {
           const domainScore = scores?.[domain]
           const domainName = DOMAIN_NAMES[domain]
@@ -229,19 +229,19 @@ export function ChartView({
             return (
               <Stack
                 key={domain}
-                gap="$2"
-                padding="$4"
+                gap={8}
+                padding={16}
                 backgroundColor="$gray2"
-                borderRadius="$4"
+                borderRadius={16}
                 borderWidth={1}
                 borderColor="$gray7"
                 opacity={0.6}
                 aria-live="polite"
               >
-                <Text fontSize="$4" fontWeight="600" color="$gray10">
+                <Text color="$gray10">
                   {domainName} Facets
                 </Text>
-                <Text fontSize="$3" color="$gray9">
+                <Text color="$gray9">
                   Complete {domainName} questions to see facet details.
                 </Text>
               </Stack>
@@ -267,17 +267,17 @@ export function ChartView({
           return (
             <Stack
               key={domain}
-              gap="$3"
-              padding="$4"
+              gap={12}
+              padding={16}
               backgroundColor="$color2"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$5" fontWeight="bold" color="$color12">
+              <Text color="gray">
                 {domainName} Facets
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Six sub-traits within {domainName} (0-100%)
               </Text>
               <BarChart
@@ -293,7 +293,7 @@ export function ChartView({
                 roundedBottom={true}
               />
               {/* Facet Labels */}
-              <Row flexWrap="wrap" gap="$2" marginTop="$2">
+              <Row flexWrap="wrap" gap={8} marginTop={8}>
                 {facetKeys.map((facetKey) => {
                   const facet = domainScore.facet[facetKey as keyof typeof domainScore.facet]
                   if (!facet) return null
@@ -307,18 +307,18 @@ export function ChartView({
                   return (
                     <Row
                       key={facetKey}
-                      gap="$2"
-                      padding="$2"
+                      gap={8}
+                      padding={8}
                       backgroundColor="$color1"
-                      borderRadius="$2"
-                      alignItems="center"
-                      justifyContent="center"
+                      borderRadius={8}
+                      align="center"
+                      justify="center"
                       style={{ minWidth: 80 }}
                     >
-                      <Text fontSize="$2" fontWeight="600" color="$color10">
+                      <Text color="gray">
                         F{facetKey}
                       </Text>
-                      <Text fontSize="$2" color={resultColor}>
+                      <Text color={resultColor}>
                         {percentage}%
                       </Text>
                     </Row>
@@ -333,18 +333,18 @@ export function ChartView({
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
         <Stack
-          gap="$2"
-          padding="$4"
+          gap={8}
+          padding={16}
           backgroundColor="$yellow2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$yellow7"
           aria-live="polite"
         >
-          <Text fontSize="$4" fontWeight="600" color="$yellow11">
+          <Text color="$yellow11">
             Complete Your Assessment
           </Text>
-          <Text fontSize="$3" color="$yellow10">
+          <Text color="$yellow10">
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype visualization.
           </Text>

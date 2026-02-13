@@ -59,23 +59,23 @@ export function CertificationProofCard({
   }
 
   return (
-    <Card padding="$4" bordered>
-      <Stack gap="$4">
+    <Card padding={16} bordered>
+      <Stack gap={16}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text fontWeight="600" fontSize="$5">
+          <Text>
             Add Proof
           </Text>
-          <Button size="$2" circular chromeless icon={X} onPress={onClose} />
+          <Button size={8} circular chromeless icon={X} onPress={onClose} />
         </Row>
 
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {certificationTitle}
         </Text>
 
-        <Row gap="$2">
+        <Row gap={8}>
           <Button
             flex={1}
-            variant="outlined"
+            variant="outline"
             onPress={() => setMode('url')}
             theme={mode === 'url' ? 'blue' : undefined}
           >
@@ -83,7 +83,7 @@ export function CertificationProofCard({
           </Button>
           <Button
             flex={1}
-            variant="outlined"
+            variant="outline"
             onPress={() => setMode('file')}
             theme={mode === 'file' ? 'blue' : undefined}
           >
@@ -92,7 +92,7 @@ export function CertificationProofCard({
         </Row>
 
         {mode === 'url' ? (
-          <Stack gap="$3">
+          <Stack gap={12}>
             <Input
               placeholder="https://example.com/certificate.pdf"
               value={urlInput}
@@ -107,7 +107,7 @@ export function CertificationProofCard({
             </Button>
           </Stack>
         ) : (
-          <Stack gap="$3">
+          <Stack gap={12}>
             <Button
               onPress={() => document.getElementById('cert-file-input')?.click()}
               disabled={uploading}
@@ -122,22 +122,22 @@ export function CertificationProofCard({
               style={{ display: 'none' }}
               onChange={handleFileSelect}
             />
-            <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               Accepted formats: PDF, JPG, PNG
             </Text>
           </Stack>
         )}
 
         {proofValue && (
-          <Stack gap="$2" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
-            <Text fontSize="$3" fontWeight="600">
+          <Stack gap={8} paddingTop={12} borderTopWidth={1} borderColor="$borderColor">
+            <Text>
               Current Proof
             </Text>
-            <Row gap="$2" style={{ alignItems: 'center' }}>
+            <Row gap={8} style={{ alignItems: 'center' }}>
               <Button
-                size="$2"
+                size={8}
                 flex={1}
-                variant="outlined"
+                variant="outline"
                 icon={ExternalLink}
                 onPress={() => proofType === 'url' && window.open(proofValue, '_blank')}
               >
@@ -145,8 +145,8 @@ export function CertificationProofCard({
               </Button>
               {onRemoveProof && (
                 <Button
-                  size="$2"
-                  variant="outlined"
+                  size={8}
+                  variant="outline"
                   theme="error"
                   onPress={onRemoveProof}
                   disabled={uploading}

@@ -22,9 +22,9 @@ export function PersonalityAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
+        <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+          <Spinner size="lg" color="$blue7" />
+          <Text color="gray">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -62,10 +62,10 @@ export function PersonalityAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Text color="gray">
             Personality Assessment
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Discover your personality traits through a comprehensive assessment including color
             psychology and personality questions.
           </Text>
@@ -74,18 +74,18 @@ export function PersonalityAssessmentWidget() {
         {/* Progress Display */}
         {hasStarted && (
           <Stack gap={spacing.xs}>
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Row justify="space-between" align="center">
+              <Text color="gray">
                 {getStepLabel(currentStep)}
               </Text>
-              <Text fontSize="$4" fontWeight="bold" color="$blue8">
+              <Text color="$blue8">
                 {completionScore}%
               </Text>
             </Row>
             <Progress value={completionScore} max={100}>
               <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
             </Progress>
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
             </Text>
           </Stack>
@@ -95,7 +95,7 @@ export function PersonalityAssessmentWidget() {
         <Button
           variant="primary"
           onPress={handleStart}
-          size="$5"
+          size={20}
           marginTop={hasStarted ? spacing.xs : spacing.md}
         >
           <Button.Text>
@@ -104,7 +104,7 @@ export function PersonalityAssessmentWidget() {
         </Button>
 
         {!hasStarted && (
-          <Text fontSize="$2" color="$color11">
+          <Text color="gray">
             This assessment takes about 10-15 minutes and includes color tests and 120 personality
             questions.
           </Text>

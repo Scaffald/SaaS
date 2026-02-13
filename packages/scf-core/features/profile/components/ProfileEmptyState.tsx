@@ -13,16 +13,16 @@ interface ProfileEmptyStateProps {
 export function ProfileEmptyState({ icon: Icon, message }: ProfileEmptyStateProps) {
   return (
     <Stack
-      padding="$4"
-      alignItems="center"
-      gap="$2"
+      padding={16}
+      align="center"
+      gap={8}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Icon size={48} color="$color11" />
-      <Text color="$color11">{message}</Text>
+      <Icon size={48} color="gray" />
+      <Text color="gray">{message}</Text>
     </Stack>
   )
 }

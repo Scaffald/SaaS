@@ -49,14 +49,14 @@ export function ExperienceWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load experience</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
           <Button
             variant="primary"
-            size="$2"
+            size={8}
             onPress={() => {
               void refetch()
             }}
@@ -76,12 +76,12 @@ export function ExperienceWidget({
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <Heading variant="h4">Work Experience</Heading>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
+              variant="outline"
+              size={8}
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
             >
               Edit
@@ -106,42 +106,42 @@ export function ExperienceWidget({
             }
           />
         ) : (
-          <Stack gap="$4">
+          <Stack gap={16}>
             {experiences
               .slice(0, showCompact ? 3 : undefined)
               .map((exp: UserExperience, index: number) => (
-                <Stack key={exp.id} gap="$2">
+                <Stack key={exp.id} gap={8}>
                   {/* Job Title & Company */}
-                  <Stack gap="$1">
-                    <Text fontSize="$4" fontWeight="600">
+                  <Stack gap={4}>
+                    <Text>
                       {exp.job_title}
                     </Text>
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       {exp.company_name}
                     </Text>
                   </Stack>
 
                   {/* Duration */}
-                  <Row gap="$2" alignItems="center">
-                    <Text fontSize="$2" color="$color10">
+                  <Row gap={8} align="center">
+                    <Text color="gray">
                       {formatDate(exp.start_date)}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       -
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
                       <Row
                         backgroundColor="$blue2"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
+                        paddingHorizontal={8}
+                        paddingVertical={2}
+                        borderRadius={8}
                         borderWidth={1}
                         borderColor="$blue7"
                       >
-                        <Text color="$blue11" fontSize="$1" fontWeight="600">
+                        <Text color="$blue11">
                           Current
                         </Text>
                       </Row>
@@ -150,19 +150,19 @@ export function ExperienceWidget({
 
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
-                    <Row gap="$2" flexWrap="wrap">
+                    <Row gap={8} flexWrap="wrap">
                       {exp.location && (
-                        <Text fontSize="$2" color="$color10">
+                        <Text color="gray">
                           📍 {exp.location}
                         </Text>
                       )}
                       {exp.employment_type && (
-                        <Text fontSize="$2" color="$color10">
+                        <Text color="gray">
                           • {exp.employment_type}
                         </Text>
                       )}
                       {exp.is_remote && (
-                        <Text fontSize="$2" color="$color10">
+                        <Text color="gray">
                           • Remote
                         </Text>
                       )}
@@ -171,13 +171,13 @@ export function ExperienceWidget({
 
                   {/* Description */}
                   {exp.description && !showCompact && (
-                    <Text fontSize="$3" color="$color11" lineHeight="$3">
+                    <Text color="gray" lineHeight={12}>
                       {exp.description}
                     </Text>
                   )}
 
                   {/* Separator between items */}
-                  {index < experiences.length - 1 && <Separator marginVertical="$2" />}
+                  {index < experiences.length - 1 && <Separator marginVertical={8} />}
                 </Stack>
               ))}
 
@@ -185,8 +185,6 @@ export function ExperienceWidget({
             {showCompact && experiences.length > 3 && (
               <Text
                 color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}

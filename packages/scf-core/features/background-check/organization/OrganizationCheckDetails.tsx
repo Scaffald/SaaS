@@ -50,48 +50,48 @@ export function OrganizationCheckDetails({
     <Stack
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$6"
-      padding="$4"
-      gap="$3"
+      borderRadius={24}
+      padding={16}
+      gap={12}
       backgroundColor="$color2"
     >
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$5" fontWeight="700" color="$color12">
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           Background Check Details
         </Text>
-        <Row gap="$2">
+        <Row gap={8}>
           <Button
-            size="$2"
-            variant="outlined"
+            size={8}
+            variant="outline"
             icon={RefreshCcw}
             onPress={() => checkQuery.refetch()}
             disabled={checkQuery.isLoading}
           >
             Refresh
           </Button>
-          <Button size="$2" variant="outlined" icon={X} onPress={onClose}>
+          <Button size={8} variant="outline" icon={X} onPress={onClose}>
             Close
           </Button>
         </Row>
       </Row>
 
       {checkQuery.isLoading ? (
-        <Stack gap="$2" alignItems="center" paddingVertical="$4">
-          <Spinner size="large" />
-          <Text fontSize="$3" color="$color11">
+        <Stack gap={8} align="center" paddingVertical={16}>
+          <Spinner size="lg" />
+          <Text color="gray">
             Loading background check details…
           </Text>
         </Stack>
       ) : null}
 
       {checkQuery.isError ? (
-        <Stack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
-          <Text fontSize="$3" color="$color11">
+        <Stack gap={8} padding={12} backgroundColor="$color3" borderRadius={16}>
+          <Text color="gray">
             We couldn’t load the background check details. Please try again.
           </Text>
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={RefreshCcw}
             onPress={() => checkQuery.refetch()}
             disabled={checkQuery.isLoading}
@@ -102,15 +102,15 @@ export function OrganizationCheckDetails({
       ) : null}
 
       {!checkQuery.isLoading && !checkQuery.isError && (detail || summary) ? (
-        <Stack gap="$3">
-          <Stack gap="$1">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text color="gray">
               Overview
             </Text>
             <Separator />
           </Stack>
 
-          <Stack gap="$2">
+          <Stack gap={8}>
             <InfoRow
               label="Status"
               value={formatStatus(detail?.status ?? summary?.status ?? 'pending')}
@@ -150,22 +150,22 @@ export function OrganizationCheckDetails({
           <Separator />
 
           {detail?.summary ? (
-            <Stack gap="$2">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Stack gap={8}>
+              <Text color="gray">
                 Summary
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 {detail.summary}
               </Text>
             </Stack>
           ) : null}
 
           {detail?.findings ? (
-            <Stack gap="$2">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Stack gap={8}>
+              <Text color="gray">
                 Findings
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 {typeof detail.findings === 'string'
                   ? detail.findings
                   : JSON.stringify(detail.findings, null, 2)}
@@ -174,19 +174,19 @@ export function OrganizationCheckDetails({
           ) : null}
 
           {componentStatuses.length > 0 ? (
-            <Stack gap="$2">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Stack gap={8}>
+              <Text color="gray">
                 Component Statuses
               </Text>
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {componentStatuses.map((component, index) => (
                   <Stack
                     key={`${component.check_type_id ?? index}`}
-                    padding="$3"
+                    padding={12}
                     backgroundColor="$color3"
-                    borderRadius="$4"
+                    borderRadius={16}
                   >
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Text color="gray">
                       {(component.check_type_id as string | undefined)?.slice(0, 8) ??
                         `Component ${index + 1}`}
                     </Text>
@@ -215,13 +215,12 @@ export function OrganizationCheckDetails({
           ) : null}
 
           {detail?.metadata ? (
-            <Stack gap="$2">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Stack gap={8}>
+              <Text color="gray">
                 Metadata
               </Text>
               <Text
-                fontSize="$3"
-                color="$color10"
+                color="gray"
                 style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
               >
                 {JSON.stringify(detail.metadata, null, 2)}
@@ -241,11 +240,11 @@ interface InfoRowProps {
 
 function InfoRow({ label, value }: InfoRowProps) {
   return (
-    <Row gap="$2" justifyContent="space-between" flexWrap="wrap">
-      <Text fontSize="$3" color="$color10">
+    <Row gap={8} justify="space-between" flexWrap="wrap">
+      <Text color="gray">
         {label}
       </Text>
-      <Text fontSize="$3" color="$color12" fontWeight="600">
+      <Text color="gray">
         {value}
       </Text>
     </Row>

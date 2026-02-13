@@ -102,13 +102,13 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
     const headlineWidths = [110, 90, 120] as const
     const overviewSections = ['overview-primary', 'overview-secondary'] as const
     return (
-      <Stack gap="$4">
+      <Stack gap={16}>
         {wrapWidget(
-          <Stack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             <SkeletonBlock height={96} width={96} radius={48} />
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
-            <Row gap="$2" flexWrap="wrap" justifyContent="center">
+            <Row gap={8} flexWrap="wrap" justify="center">
               {headlineWidths.map((width) => (
                 <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
@@ -117,9 +117,9 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
         )}
 
         {wrapWidget(
-          <Stack gap="$3">
+          <Stack gap={12}>
             {overviewSections.map((sectionId) => (
-              <Stack key={sectionId} gap="$2">
+              <Stack key={sectionId} gap={8}>
                 <SkeletonBlock height={20} width="70%" />
                 <SkeletonBlock height={14} width="50%" />
                 <SkeletonBlock height={12} width="40%" />
@@ -130,7 +130,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
         )}
 
         {wrapWidget(
-          <Stack gap="$2">
+          <Stack gap={8}>
             <SkeletonBlock height={20} width="55%" />
             <SkeletonBlock height={14} width="65%" />
             <SkeletonBlock height={12} width="40%" />
@@ -141,12 +141,12 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {wrapWidget(
-        <Stack gap="$3">
+        <Stack gap={12}>
           <SkeletonBlock height={20} width="60%" />
           {['review-1', 'review-2'].map((reviewId) => (
-            <Stack key={reviewId} gap="$1">
+            <Stack key={reviewId} gap={4}>
               <SkeletonBlock height={16} width="80%" />
               <SkeletonBlock height={12} width="55%" />
             </Stack>
@@ -155,9 +155,9 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
       )}
 
       {wrapWidget(
-        <Stack gap="$3">
+        <Stack gap={12}>
           <SkeletonBlock height={20} width="45%" />
-          <Row gap="$2" flexWrap="wrap">
+          <Row gap={8} flexWrap="wrap">
             {['skill-1', 'skill-2', 'skill-3', 'skill-4', 'skill-5', 'skill-6'].map((skillId) => (
               <SkeletonBlock key={skillId} height={28} width={100} radius={14} />
             ))}
@@ -166,10 +166,10 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
       )}
 
       {wrapWidget(
-        <Stack gap="$3">
+        <Stack gap={12}>
           <SkeletonBlock height={20} width="55%" />
           {['stat-1', 'stat-2', 'stat-3'].map((statId) => (
-            <Stack key={statId} gap="$1">
+            <Stack key={statId} gap={4}>
               <SkeletonBlock height={16} width="70%" />
               <SkeletonBlock height={12} width="40%" />
             </Stack>
@@ -217,11 +217,11 @@ export function DiscoverWorkerProfileScreen({
   if (!safeUserId) {
     const errorWidget = (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
-          <Text fontSize="$6" fontWeight="700" color="$red10">
+        <Stack align="center" justify="center" gap={8} paddingVertical={32}>
+          <Text color="$red10">
             Worker not found
           </Text>
-          <Text color="$color11">Select a worker from the list to view their profile.</Text>
+          <Text color="gray">Select a worker from the list to view their profile.</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -242,11 +242,11 @@ export function DiscoverWorkerProfileScreen({
   if (!generalInfo) {
     const unavailableWidget = (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
-          <Text fontSize="$6" fontWeight="700" color="$red10">
+        <Stack align="center" justify="center" gap={8} paddingVertical={32}>
+          <Text color="$red10">
             Profile unavailable
           </Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             We couldn&apos;t load this worker profile. Please try another worker.
           </Text>
         </Stack>
@@ -278,7 +278,7 @@ export function DiscoverWorkerProfileScreen({
   ]
 
   const leftColumn = (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <GeneralInfoWidget
         userId={safeUserId}
         showEdit={false}
@@ -291,7 +291,7 @@ export function DiscoverWorkerProfileScreen({
   )
 
   const rightColumn = (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <ReviewsWidget userId={safeUserId} showEdit />
       <ProfileSkillsSection userId={safeUserId} showEdit={false} />
       <CertificationsWidget userId={safeUserId} showEdit={false} />

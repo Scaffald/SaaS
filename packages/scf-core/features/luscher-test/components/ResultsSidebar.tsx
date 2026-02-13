@@ -82,60 +82,60 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
   }, [nextAvailableAt])
 
   return (
-    <Stack gap="$5">
+    <Stack gap={20}>
       {xpAwarded > 0 && (
         <Stack
-          gap="$3"
-          padding="$4"
+          gap={12}
+          padding={16}
           backgroundColor="$green2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$green7"
         >
-          <Row gap="$3" alignItems="center">
+          <Row gap={12} align="center">
             <Award size={24} color="$green10" />
-            <Text fontSize="$5" fontWeight="600" color="$green11">
+            <Text color="$green11">
               +{xpAwarded} Frequency XP
             </Text>
           </Row>
-          <Text fontSize="$3" color="$green10">
+          <Text color="$green10">
             You earned Frequency XP for completing this assessment.
           </Text>
         </Stack>
       )}
 
       <Stack
-        gap="$4"
-        padding="$6"
+        gap={16}
+        padding={24}
         backgroundColor="$blue2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$blue7"
       >
-        <Row gap="$3" alignItems="center">
+        <Row gap={12} align="center">
           <Clock size={24} color="$blue10" />
-          <Text fontSize="$5" fontWeight="600" color="$color12">
+          <Text color="gray">
             Test Availability
           </Text>
         </Row>
-        <Stack gap="$2">
-          <Text fontSize="$4" color="$color11">
+        <Stack gap={8}>
+          <Text color="gray">
             This test can be taken once every 7 days.
           </Text>
           {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
             <>
-              <Text fontSize="$4" color="$color11" marginTop="$2">
+              <Text color="gray" marginTop={8}>
                 You can take the test again on:
               </Text>
-              <Text fontSize="$4" fontWeight="600" color="$blue11">
+              <Text color="$blue11">
                 {formatDate(nextAvailableAt)}
               </Text>
-              <Text fontSize="$3" color="$blue10" marginTop="$2">
+              <Text color="$blue10" marginTop={8}>
                 Available in {formatCountdown(timeUntilAvailable)}
               </Text>
             </>
           ) : (
-            <Text fontSize="$4" fontWeight="600" color="$green11" marginTop="$2">
+            <Text color="$green11" marginTop={8}>
               The test is available now.
             </Text>
           )}

@@ -41,7 +41,7 @@ export interface UpdateTokensInput {
  * Create Supabase client with service role for session operations
  * Uses the 'forsured' schema where auth session functions are defined
  */
-export function createServiceClient(): SupabaseClient {
+export function createServiceClient(): SupabaseClient<any, 'forsured', any> {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 

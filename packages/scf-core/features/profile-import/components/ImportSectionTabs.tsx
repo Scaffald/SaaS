@@ -27,15 +27,15 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
         backgroundColor="$background"
         scrollable
       >
-        <Row gap="$3" paddingHorizontal="$2">
+        <Row gap={12} paddingHorizontal={8}>
           {sections.map((section) => (
             <Tabs.Tab
               key={section.id}
               value={section.id}
               borderBottomWidth={activeSection === section.id ? 2 : 0}
               borderBottomColor="$blue10"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
+              paddingHorizontal={12}
+              paddingVertical={8}
             >
               {section.label} ({section.count})
             </Tabs.Tab>

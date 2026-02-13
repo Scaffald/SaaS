@@ -98,9 +98,9 @@ export function DisputeStatusTracker({
 
   if (isLoading) {
     return (
-      <Stack gap="$2" alignItems="center" paddingVertical="$4">
-        <Spinner size="small" color="$color10" />
-        <Text fontSize="$2" color="$color10">
+      <Stack gap={8} align="center" paddingVertical={16}>
+        <Spinner size="sm" color="gray" />
+        <Text color="gray">
           Loading dispute history…
         </Text>
       </Stack>
@@ -113,14 +113,14 @@ export function DisputeStatusTracker({
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
-        padding="$3"
-        gap="$2"
+        borderRadius={16}
+        padding={12}
+        gap={8}
       >
-        <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Text color="gray">
           No disputes filed yet
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           If you notice any inaccuracies in your results, you can submit a dispute for review.
         </Text>
       </Card>
@@ -131,14 +131,14 @@ export function DisputeStatusTracker({
   const toneColors = TONE_COLORS[statusMeta.tone]
 
   return (
-    <Stack gap="$3">
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+    <Stack gap={12}>
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           Dispute status
         </Text>
         <Button
-          size="$2"
-          variant="outlined"
+          size={8}
+          variant="outline"
           icon={RefreshCcw}
           onPress={onRefresh}
           disabled={!onRefresh}
@@ -148,24 +148,24 @@ export function DisputeStatusTracker({
       </Row>
 
       <Stack
-        gap="$2"
-        padding="$3"
+        gap={8}
+        padding={12}
         backgroundColor={toneColors.background}
         borderColor={toneColors.border}
         borderWidth={1}
-        borderRadius="$4"
+        borderRadius={16}
       >
-        <Text fontSize="$3" fontWeight="600" color={toneColors.text}>
+        <Text color={toneColors.text}>
           {statusMeta.label}
         </Text>
-        <Text fontSize="$2" color={toneColors.text}>
+        <Text color={toneColors.text}>
           {statusMeta.description}
         </Text>
-        <Text fontSize="$2" color={toneColors.text}>
+        <Text color={toneColors.text}>
           Filed {formatDate(latestDispute.created_at)}
           {latestDispute.resolved_at ? ` • Resolved ${formatDate(latestDispute.resolved_at)}` : ''}
         </Text>
-        <Text fontSize="$2" color={toneColors.text}>
+        <Text color={toneColors.text}>
           Reason: {latestDispute.dispute_reason}
         </Text>
       </Stack>
@@ -174,23 +174,23 @@ export function DisputeStatusTracker({
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
-        padding="$3"
-        gap="$3"
+        borderRadius={16}
+        padding={12}
+        gap={12}
       >
-        <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Text color="gray">
           Dispute history
         </Text>
 
         {pendingCount > 0 ? (
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {pendingCount} dispute{pendingCount === 1 ? '' : 's'} currently awaiting review.
           </Text>
         ) : null}
 
         <Separator />
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           {disputes.map((dispute) => {
             const meta = getStatusMetadata(dispute.status)
             const colors = TONE_COLORS[meta.tone]
@@ -200,28 +200,28 @@ export function DisputeStatusTracker({
                 backgroundColor="$background"
                 borderColor="$borderColor"
                 borderWidth={1}
-                borderRadius="$3"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                gap="$1"
+                borderRadius={12}
+                paddingHorizontal={12}
+                paddingVertical={8}
+                gap={4}
               >
-                <Row gap="$2" alignItems="center" flexWrap="wrap">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
+                <Row gap={8} align="center" flexWrap="wrap">
+                  <Text color="gray">
                     {meta.label}
                   </Text>
-                  <Text fontSize="$2" color={colors.text}>
+                  <Text color={colors.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>
                 </Row>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   Reason: {dispute.dispute_reason}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   {dispute.dispute_details}
                 </Text>
                 {dispute.resolution ? (
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     Resolution: {dispute.resolution}
                     {dispute.resolution_notes ? ` — ${dispute.resolution_notes}` : ''}
                   </Text>

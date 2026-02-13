@@ -29,27 +29,27 @@ export function CertificationCheckbox({
   disabled = false,
 }: CertificationCheckboxProps) {
   return (
-    <Stack gap="$2">
-      <Row gap="$3" style={{ alignItems: 'flex-start' }}>
-        <Checkbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} size="$4">
+    <Stack gap={8}>
+      <Row gap={12} style={{ alignItems: 'flex-start' }}>
+        <Checkbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} size={16}>
           <Checkbox.Indicator>
             <Check />
           </Checkbox.Indicator>
         </Checkbox>
 
-        <Stack flex={1} gap="$1">
-          <Text fontWeight={checked ? '600' : '400'} fontSize="$3">
+        <Stack flex={1} gap={4}>
+          <Text>
             {certification.title}
           </Text>
           {certification.description && (
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               {certification.description}
             </Text>
           )}
         </Stack>
 
         {checked && onAddProof && (
-          <Button size="$2" variant="outlined" icon={Link} onPress={onAddProof} disabled={disabled}>
+          <Button size={8} variant="outline" icon={Link} onPress={onAddProof} disabled={disabled}>
             {hasProof ? 'View Proof' : 'Add Proof'}
           </Button>
         )}

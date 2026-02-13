@@ -21,12 +21,11 @@ export const OrganizationCard = memo(
           isSelected={isSelected}
           onPress={() => onSelect(organization.id)}
         >
-          <Row justifyContent="space-between" alignItems="center">
-            <Row alignItems="center" gap="$2" flex={1}>
+          <Row justify="space-between" align="center">
+            <Row align="center" gap={8} flex={1}>
               <Building size={20} color={isSelected ? '$color1' : '$blue11'} />
               <SizableText
-                size="$5"
-                fontWeight="700"
+                size={20}
                 color={isSelected ? '$color1' : '$color12'}
                 flex={1}
               >
@@ -36,9 +35,9 @@ export const OrganizationCard = memo(
           </Row>
 
           {organization.address && (
-            <Row alignItems="center" gap="$1">
+            <Row align="center" gap={4}>
               <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />
-              <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+              <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.address.city}
                 {organization.address.state && `, ${organization.address.state}`}
               </Text>
@@ -46,23 +45,23 @@ export const OrganizationCard = memo(
           )}
 
           {organization.employeeCount && (
-            <Row alignItems="center" gap="$1">
+            <Row align="center" gap={4}>
               <Users size={14} color={isSelected ? '$color1' : '$color10'} />
-              <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+              <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.employeeCount} employees
               </Text>
             </Row>
           )}
 
           <Button
-            size="$2"
-            borderRadius="$2"
+            size={8}
+            borderRadius={8}
             backgroundColor={isSelected ? '$color1' : '$blue9'}
             color={isSelected ? '$blue9' : '$color1'}
             hoverStyle={{
               backgroundColor: isSelected ? '$color2' : '$blue10',
             }}
-            marginTop="$2"
+            marginTop={8}
           >
             View Organization
           </Button>

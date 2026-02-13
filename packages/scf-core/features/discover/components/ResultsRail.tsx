@@ -36,13 +36,11 @@ export const ResultsRail = memo(function ResultsRail({
       width={320}
       minWidth={320}
       maxWidth={320}
-      gap="$3"
-      paddingHorizontal="$3"
+      gap={12}
+      paddingHorizontal={12}
       overflow="hidden"
       animation="quick"
-      // Hide on mobile ($sm and below), show on desktop ($md)
-      $sm={{ display: 'none' }}
-      $md={{ display: 'flex' }}
+      // Hide on mobile ($sm and below), show on desktop ($md)}}
       x={isVisible ? 0 : 320}
       opacity={isVisible ? 1 : 0}
       backgroundColor="$color2"

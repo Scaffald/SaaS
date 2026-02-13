@@ -68,15 +68,15 @@ export const ProfileAvatar = ({
       height={size}
       borderRadius="$12"
       backgroundColor={bgColor}
-      alignItems="center"
-      justifyContent="center"
+      align="center"
+      justify="center"
       borderWidth={1}
       borderColor="$borderColor"
     >
       {isOrganization ? (
         <Building size={Math.round(size * 0.5)} color="white" />
       ) : (
-        <Text color="white" fontSize={Math.round(size * 0.4)} fontWeight="700">
+        <Text color="white">
           {initials}
         </Text>
       )}

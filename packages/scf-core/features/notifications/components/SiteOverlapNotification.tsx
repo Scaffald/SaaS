@@ -52,47 +52,47 @@ export function SiteOverlapNotification({
   }
 
   return (
-    <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
-      <Stack gap="$4">
-        <Row gap="$3" alignItems="flex-start">
+    <Card padding={16} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+      <Stack gap={16}>
+        <Row gap={12} align="flex-start">
           <AlertTriangle size={24} color="$yellow11" />
-          <Stack flex={1} gap="$2">
-            <Text fontSize="$5" fontWeight="600" color="$yellow11">
+          <Stack flex={1} gap={8}>
+            <Text color="$yellow11">
               Site Overlap Detected
             </Text>
-            <Text fontSize="$3" color="$gray11">
+            <Text color="$gray11">
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
-            <Row gap="$2" flexWrap="wrap">
-              <Card padding="$2" backgroundColor="$yellow3" borderRadius="$2">
-                <Row gap="$2" alignItems="center">
+            <Row gap={8} flexWrap="wrap">
+              <Card padding={8} backgroundColor="$yellow3" borderRadius={8}>
+                <Row gap={8} align="center">
                   <MapPin size={14} />
-                  <Text fontSize="$2">Site 1: {siteId.slice(0, 8)}...</Text>
+                  <Text>Site 1: {siteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
-              <Card padding="$2" backgroundColor="$yellow3" borderRadius="$2">
-                <Row gap="$2" alignItems="center">
+              <Card padding={8} backgroundColor="$yellow3" borderRadius={8}>
+                <Row gap={8} align="center">
                   <MapPin size={14} />
-                  <Text fontSize="$2">Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
+                  <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
             </Row>
           </Stack>
         </Row>
 
-        <Row gap="$2" flexWrap="wrap" justifyContent="flex-end">
+        <Row gap={8} flexWrap="wrap" justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={MessageSquare}
             onPress={handleRequestSurveyData}
           >
             Request Survey Data
           </Button>
-          <Button size="$3" variant="outlined" icon={MapPin} onPress={handleAdjustBoundaries}>
+          <Button size={12} variant="outline" icon={MapPin} onPress={handleAdjustBoundaries}>
             Adjust Boundaries
           </Button>
-          <Button size="$3" variant="outlined" icon={X} onPress={handleDismiss}>
+          <Button size={12} variant="outline" icon={X} onPress={handleDismiss}>
             Dismiss
           </Button>
         </Row>

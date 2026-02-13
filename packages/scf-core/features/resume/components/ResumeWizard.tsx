@@ -455,21 +455,21 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   if (isLoading) {
     return (
-      <Stack alignItems="center" justifyContent="center" flex={1} gap="$3" paddingVertical="$10">
-        <Spinner size="large" />
-        <Text color="$color11">Loading resume import wizard...</Text>
+      <Stack align="center" justify="center" flex={1} gap={12} paddingVertical="$10">
+        <Spinner size="lg" />
+        <Text color="gray">Loading resume import wizard...</Text>
       </Stack>
     )
   }
 
   if (!wizard) {
     return (
-      <Stack alignItems="center" justifyContent="center" flex={1} gap="$3" paddingVertical="$10">
+      <Stack align="center" justify="center" flex={1} gap={12} paddingVertical="$10">
         <AlertCircle size={32} color="$red10" />
-        <Text fontWeight="700" color="$red11">
+        <Text color="$red11">
           Wizard session not found
         </Text>
-        <Text color="$color11">Please upload your resume again to kick off the import flow.</Text>
+        <Text color="gray">Please upload your resume again to kick off the import flow.</Text>
       </Stack>
     )
   }
@@ -546,19 +546,19 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   return (
     <Stack flex={1} gap={spacing.lg}>
-      <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700">
+      <Stack gap={8}>
+        <Text>
           Resume Import
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Review each section parsed from your resume. Make edits or skip sections you don't want to
           import.
         </Text>
       </Stack>
 
       {hasExistingProfileData ? (
-        <Stack gap="$2" backgroundColor="$blue3" padding="$3" borderRadius="$4">
-          <Text fontWeight="700" color="$blue11">
+        <Stack gap={8} backgroundColor="$blue3" padding={12} borderRadius={16}>
+          <Text color="$blue11">
             Merge resume with existing profile data
           </Text>
           <Text color="$blue11">
@@ -569,8 +569,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       ) : null}
 
       {mergedErrors && mergedErrors.length > 0 && (
-        <Stack gap="$2" backgroundColor="$yellow3" padding="$3" borderRadius="$4">
-          <Text fontWeight="700" color="$yellow11">
+        <Stack gap={8} backgroundColor="$yellow3" padding={12} borderRadius={16}>
+          <Text color="$yellow11">
             We couldn’t parse everything in this section.
           </Text>
           {mergedErrors.map((error) => (
@@ -582,18 +582,18 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       )}
 
       <ScrollView flex={1}>
-        <Stack gap={spacing.lg} paddingBottom="$8">
+        <Stack gap={spacing.lg} paddingBottom={32}>
           {renderCurrentStep()}
         </Stack>
       </ScrollView>
 
       <Separator />
 
-      <Row gap="$3" justifyContent="space-between" flexWrap="wrap">
-        <Row gap="$2">
+      <Row gap={12} justify="space-between" flexWrap="wrap">
+        <Row gap={8}>
           <Button
-            size="$4"
-            variant="outlined"
+            size={16}
+            variant="outline"
             icon={CornerDownLeft}
             disabled={currentIndex === 0 || isSaving}
             onPress={goPrevious}
@@ -602,8 +602,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           </Button>
           {currentStep.id !== 'review' && (
             <Button
-              size="$4"
-              variant="outlined"
+              size={16}
+              variant="outline"
               theme="blue"
               icon={SkipForward}
               disabled={isSaving}
@@ -616,7 +616,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
         <Button
           variant="primary"
-          size="$4"
+          size={16}
           icon={isSaving ? Spinner : UploadCloud}
           disabled={isSaving}
           onPress={() => void handleSaveCurrentStep()}
@@ -650,31 +650,31 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   function renderGeneralStep() {
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           General Information
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Update your basic profile details. We only update the fields you confirm.
         </Paragraph>
-        <Row gap="$4" flexWrap="wrap">
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">First Name</Text>
+        <Row gap={16} flexWrap="wrap">
+          <Stack gap={8} flex={1}>
+            <Text>First Name</Text>
             <Input
               value={generalForm.firstName}
               onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, firstName: value }))}
             />
           </Stack>
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">Last Name</Text>
+          <Stack gap={8} flex={1}>
+            <Text>Last Name</Text>
             <Input
               value={generalForm.lastName}
               onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, lastName: value }))}
             />
           </Stack>
         </Row>
-        <Stack gap="$2">
-          <Text fontWeight="600">Summary</Text>
+        <Stack gap={8}>
+          <Text>Summary</Text>
           <Input
             multiline
             numberOfLines={4}
@@ -692,8 +692,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       return <EmptyState message="No experience entries detected in your resume." />
     }
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           Work Experience
         </Text>
         <MergeStrategySelector
@@ -729,8 +729,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       return <EmptyState message="We didn’t find education entries in this resume." />
     }
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           Education
         </Text>
         <MergeStrategySelector
@@ -768,8 +768,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       )
     }
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           Skills
         </Text>
         <MergeStrategySelector
@@ -797,8 +797,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       return <EmptyState message="No certifications were found in this resume." />
     }
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           Certifications
         </Text>
         <MergeStrategySelector
@@ -822,9 +822,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
               description={cert.issuer}
               expandedContent={
                 details.length > 0 ? (
-                  <Stack gap="$1" paddingTop="$2">
+                  <Stack gap={4} paddingTop={8}>
                     {details.map((detail) => (
-                      <Text key={detail} color="$color11" fontSize="$3">
+                      <Text key={detail} color="gray">
                         • {detail}
                       </Text>
                     ))}
@@ -840,11 +840,11 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   function renderEmploymentStep() {
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           Employment Preferences
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Tell us about your ideal working conditions. We'll update your profile with these
           preferences.
         </Paragraph>
@@ -861,9 +861,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             }))
           }
         />
-        <Row gap="$3" flexWrap="wrap">
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">Hourly rate (USD)</Text>
+        <Row gap={12} flexWrap="wrap">
+          <Stack gap={8} flex={1}>
+            <Text>Hourly rate (USD)</Text>
             <Input
               keyboardType="numeric"
               value={employmentForm.hourlyRate?.toString() ?? ''}
@@ -876,10 +876,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             />
           </Stack>
         </Row>
-        <Stack gap="$2">
-          <Text fontWeight="600">Preferred locations</Text>
+        <Stack gap={8}>
+          <Text>Preferred locations</Text>
           {employmentForm.locations.map((entry) => (
-            <Row key={entry.id} gap="$2" alignItems="center">
+            <Row key={entry.id} gap={8} align="center">
               <Input
                 flex={1}
                 value={entry.value}
@@ -893,8 +893,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
                 }
               />
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 onPress={() =>
                   setEmploymentForm((prev) => ({
                     ...prev,
@@ -907,8 +907,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             </Row>
           ))}
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             onPress={() =>
               setEmploymentForm((prev) => ({
                 ...prev,
@@ -931,11 +931,11 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   function renderReviewStep() {
     return (
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16}>
+        <Text>
           Review & Confirm
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           All set! When you finish, we’ll save the confirmed details to your profile. You can always
           make further edits from the profile sections later on.
         </Paragraph>
@@ -943,10 +943,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           sections={mergeComparisonSections}
           isLoading={mergeComparisonLoading}
         />
-        <Stack gap="$2" backgroundColor="$green3" padding="$3" borderRadius="$4">
-          <Row gap="$2" alignItems="center">
+        <Stack gap={8} backgroundColor="$green3" padding={12} borderRadius={16}>
+          <Row gap={8} align="center">
             <CheckCircle2 color="$green10" />
-            <Text fontWeight="700" color="$green11">
+            <Text color="$green11">
               Ready to finalize
             </Text>
           </Row>
@@ -961,8 +961,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <Stack gap="$2" backgroundColor="$gray3" padding="$3" borderRadius="$4">
-      <Text color="$color11">{message}</Text>
+    <Stack gap={8} backgroundColor="$gray3" padding={12} borderRadius={16}>
+      <Text color="gray">{message}</Text>
     </Stack>
   )
 }
@@ -982,28 +982,28 @@ function SelectableCard({
 }) {
   return (
     <Stack
-      gap="$2"
-      padding="$3"
+      gap={8}
+      padding={12}
       borderWidth={1}
       borderColor={checked ? '$blue8' : '$borderColor'}
       backgroundColor={checked ? '$blue3' : '$background'}
-      borderRadius="$4"
+      borderRadius={16}
     >
-      <Row gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Checkbox
-          size="$3"
+          size={12}
           checked={checked}
           onCheckedChange={(value) => onCheckedChange(value === true)}
         />
-        <Stack gap="$1" flex={1}>
-          <Text fontWeight="700">{title}</Text>
-          {subtitle ? <Text color="$color11">{subtitle}</Text> : null}
+        <Stack gap={4} flex={1}>
+          <Text>{title}</Text>
+          {subtitle ? <Text color="gray">{subtitle}</Text> : null}
         </Stack>
       </Row>
       {!!details?.length && (
-        <Stack gap="$1" paddingLeft="$4">
+        <Stack gap={4} paddingLeft={16}>
           {details.map((detail) => (
-            <Text key={detail} color="$color11">
+            <Text key={detail} color="gray">
               • {detail}
             </Text>
           ))}
@@ -1083,13 +1083,13 @@ function MergeStrategySelector({
   }
 
   return (
-    <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
-      <Text fontWeight="600">Merge strategy</Text>
-      <Stack gap="$2">
+    <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
+      <Text>Merge strategy</Text>
+      <Stack gap={8}>
         {options.map((option) => (
           <Button
             key={`${section}-${option.value}`}
-            size="$3"
+            size={12}
             disabled={disabled || option.disabled}
             onPress={() => onChange(section, option.value)}
             borderWidth={1}
@@ -1097,9 +1097,9 @@ function MergeStrategySelector({
             backgroundColor={strategy === option.value ? '$blue3' : '$color1'}
             pressStyle={{ backgroundColor: strategy === option.value ? '$blue4' : '$color2' }}
           >
-            <Stack gap="$1" alignItems="flex-start">
-              <Text fontWeight="700">{option.label}</Text>
-              <Text fontSize="$2" color="$color11">
+            <Stack gap={4} align="flex-start">
+              <Text>{option.label}</Text>
+              <Text color="gray">
                 {option.description}
               </Text>
             </Stack>

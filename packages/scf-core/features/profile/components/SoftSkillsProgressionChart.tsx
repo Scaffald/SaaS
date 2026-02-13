@@ -115,20 +115,20 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (isLoading) {
     return (
-      <Stack gap="$4" alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text color="$color11">Loading progression data...</Text>
+      <Stack gap={16} align="center" justify="center" padding={16}>
+        <Spinner size="lg" color="$blue10" />
+        <Text color="gray">Loading progression data...</Text>
       </Stack>
     )
   }
 
   if (error) {
     return (
-      <Stack gap="$2" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$red11">
+      <Stack gap={8} padding={16}>
+        <Text color="$red11">
           Error loading progression
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {error.message || 'Failed to load progression data'}
         </Text>
       </Stack>
@@ -137,11 +137,11 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (versions.length < 2) {
     return (
-      <Stack gap="$2" padding="$4" alignItems="center">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Stack gap={8} padding={16} align="center">
+        <Text color="gray">
           Progression Tracking
         </Text>
-        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           Complete at least two assessments to see skill progression trends.
         </Text>
       </Stack>
@@ -171,7 +171,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
       case 'declined':
         return <ArrowDown size={16} color="$red10" />
       case 'stable':
-        return <ArrowRight size={16} color="$color10" />
+        return <ArrowRight size={16} color="gray" />
       default:
         return null
     }
@@ -196,63 +196,63 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap="$4" padding="$4">
-        <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Stack gap={16} padding={16}>
+        <Stack gap={8}>
+          <Text color="gray">
             Skill Progression
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Track how your soft skills have changed over time.
           </Text>
         </Stack>
 
         {/* Summary Stats */}
-        <Row gap="$3" flexWrap="wrap">
+        <Row gap={12} flexWrap="wrap">
           <Stack
-            gap="$1"
-            padding="$3"
+            gap={4}
+            padding={12}
             backgroundColor="$green2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$green7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text fontSize="$2" color="$green10" fontWeight="600">
+            <Text color="$green10">
               Improved
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$green11">
+            <Text color="$green11">
               {improvedSkills}
             </Text>
           </Stack>
           <Stack
-            gap="$1"
-            padding="$3"
+            gap={4}
+            padding={12}
             backgroundColor="$red2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$red7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text fontSize="$2" color="$red10" fontWeight="600">
+            <Text color="$red10">
               Declined
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$red11">
+            <Text color="$red11">
               {declinedSkills}
             </Text>
           </Stack>
           <Stack
-            gap="$1"
-            padding="$3"
+            gap={4}
+            padding={12}
             backgroundColor="$color2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text fontSize="$2" color="$color10" fontWeight="600">
+            <Text color="gray">
               Stable
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color11">
+            <Text color="gray">
               {stableSkills}
             </Text>
           </Stack>
@@ -263,48 +263,48 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
           if (skills.length === 0) return null
 
           return (
-            <Stack key={category} gap="$3">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Stack key={category} gap={12}>
+              <Text color="gray">
                 {categoryLabels[category as SoftSkillCategory]}
               </Text>
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {skills.map((skill) => (
                   <Stack
                     key={skill.skillId}
-                    gap="$2"
-                    padding="$3"
+                    gap={8}
+                    padding={12}
                     backgroundColor="$color2"
-                    borderRadius="$3"
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
                     <Row
-                      alignItems="center"
-                      justifyContent="space-between"
+                      align="center"
+                      justify="space-between"
                       flexWrap="wrap"
-                      gap="$2"
+                      gap={8}
                     >
-                      <Stack gap="$1" flex={1}>
-                        <Text fontSize="$4" fontWeight="600" color="$color12">
+                      <Stack gap={4} flex={1}>
+                        <Text color="gray">
                           {skill.skillName}
                         </Text>
-                        <Row gap="$3" alignItems="center">
+                        <Row gap={12} align="center">
                           {skill.previousRating !== null && (
-                            <Text fontSize="$2" color="$color10">
+                            <Text color="gray">
                               Previous: {skill.previousRating.toFixed(1)}/5
                             </Text>
                           )}
                           {skill.currentRating !== null && (
-                            <Text fontSize="$2" color="$color11" fontWeight="600">
+                            <Text color="gray">
                               Current: {skill.currentRating.toFixed(1)}/5
                             </Text>
                           )}
                         </Row>
                       </Stack>
-                      <Row gap="$2" alignItems="center">
+                      <Row gap={8} align="center">
                         {getTrendIcon(skill.trend)}
                         {skill.change !== null && (
-                          <Text fontSize="$3" fontWeight="600" color={getTrendColor(skill.trend)}>
+                          <Text color={getTrendColor(skill.trend)}>
                             {skill.change > 0 ? '+' : ''}
                             {skill.change.toFixed(1)}
                           </Text>

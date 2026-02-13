@@ -71,34 +71,33 @@ export function ResultsStep({
   const hasReport = assessment.ai_report && assessment.ai_report.length > 0
 
   return (
-    <Stack gap="$6" width="100%" style={{ maxWidth: 900, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" style={{ maxWidth: 900, alignSelf: 'center' }}>
       {/* AI Report Section */}
       {hasReport && (
         <Stack
-          gap="$4"
-          padding="$6"
+          gap={16}
+          padding={24}
           backgroundColor="$color2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Text color="gray">
             Personality Report
           </Text>
-          <Stack gap="$3">
+          <Stack gap={12}>
             {assessment.ai_report?.split('\n').map((line, index) => (
               <Text
                 key={`report-line-${index}-${line.slice(0, 10)}`}
-                fontSize="$4"
-                color="$color11"
-                lineHeight="$5"
+                color="gray"
+                lineHeight={20}
               >
                 {line}
               </Text>
             ))}
           </Stack>
           {assessment.ai_report_generated_at && (
-            <Text fontSize="$2" color="$color10" marginTop="$2">
+            <Text color="gray" marginTop={8}>
               Generated on {new Date(assessment.ai_report_generated_at).toLocaleDateString()}
             </Text>
           )}
@@ -108,25 +107,25 @@ export function ResultsStep({
       {/* Generate Report Button */}
       {!hasReport && !isReadOnly && onGenerateReport && (
         <Stack
-          gap="$4"
-          padding="$6"
+          gap={16}
+          padding={24}
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$blue8"
         >
-          <Text fontSize="$5" fontWeight="600" color="$blue11">
+          <Text color="$blue11">
             Generate Your Personality Report
           </Text>
-          <Text fontSize="$3" color="$blue10">
+          <Text color="$blue10">
             Based on your color test results, we'll generate a personalized personality report.
           </Text>
           <Button
-            size="$4"
+            size={16}
             theme="info"
             onPress={handleGenerateReport}
             disabled={generatingReport || isLoading}
-            icon={generatingReport || isLoading ? <Spinner size="small" /> : undefined}
+            icon={generatingReport || isLoading ? <Spinner size="sm" /> : undefined}
           >
             {generatingReport || isLoading ? 'Generating...' : 'Generate Report'}
           </Button>
@@ -135,11 +134,11 @@ export function ResultsStep({
 
       {/* IPIP Scores Section */}
       {ipipScores && (
-        <Stack gap="$4">
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+        <Stack gap={16}>
+          <Text color="gray">
             Personality Traits (Big Five)
           </Text>
-          <Stack gap="$4">
+          <Stack gap={16}>
             {Object.entries(results).map(([domain, domainResult]) => {
               const domainKey = domain as keyof typeof results
               const score = ipipScores[domainKey]
@@ -148,24 +147,22 @@ export function ResultsStep({
               return (
                 <Stack
                   key={domain}
-                  gap="$3"
-                  padding="$4"
+                  gap={12}
+                  padding={16}
                   backgroundColor="$color2"
-                  borderRadius="$4"
+                  borderRadius={16}
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                  <Row justify="space-between" align="center">
+                    <Text color="gray">
                       {domainResult.title}
                     </Text>
-                    <Row gap="$2" alignItems="center">
-                      <Text fontSize="$4" color="$color11">
+                    <Row gap={8} align="center">
+                      <Text color="gray">
                         Score: {score.score}
                       </Text>
                       <Text
-                        fontSize="$3"
-                        fontWeight="600"
                         color={
                           score.result === 'high'
                             ? '$green10'
@@ -178,14 +175,14 @@ export function ResultsStep({
                       </Text>
                     </Row>
                   </Row>
-                  <Text fontSize="$3" color="$color11">
+                  <Text color="gray">
                     {domainResult.summary}
                   </Text>
-                  <Stack gap="$2" marginTop="$2">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                  <Stack gap={8} marginTop={8}>
+                    <Text color="gray">
                       Your Result:
                     </Text>
-                    <Text fontSize="$3" color="$color11" lineHeight="$4">
+                    <Text color="gray" lineHeight={16}>
                       {domainResult.results[score.result].text}
                     </Text>
                   </Stack>
@@ -198,8 +195,8 @@ export function ResultsStep({
 
       {/* No Results State */}
       {!ipipScores && !hasReport && (
-        <Stack gap="$4" alignItems="center" padding="$8">
-          <Text fontSize="$5" color="$color11" style={{ textAlign: 'center' }}>
+        <Stack gap={16} align="center" padding={32}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             Complete the assessment to see your results.
           </Text>
         </Stack>

@@ -51,38 +51,38 @@ export const PaymentStep = memo(function PaymentStep({
   const canCreateSession = Boolean(payment.costCents && selectedPackage)
 
   return (
-    <Stack gap="$4" flex={1}>
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
+    <Stack gap={16} flex={1}>
+      <Stack gap={8}>
+        <Text color="gray">
           Payment & Authorization
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
         </Text>
       </Stack>
 
-      <Stack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
-        <Text fontSize="$2" color="$color11">
+      <Stack gap={8} backgroundColor="$color2" padding={16} borderRadius={16}>
+        <Text color="gray">
           Total Due
         </Text>
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
+        <Text color="gray">
           {formatCurrency(payment.costCents)}
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
       </Stack>
 
       {submitError && (
-        <Stack backgroundColor="$red3" padding="$3" borderRadius="$3">
+        <Stack backgroundColor="$red3" padding={12} borderRadius={12}>
           <Text color="$red11">{submitError.message}</Text>
         </Stack>
       )}
 
       {!paymentSession && (
         <Button
-          size="$4"
+          size={16}
           theme="blue"
           disabled={!canCreateSession || isCreatingSession || isConfirmingPayment}
           onPress={() => onCreatePaymentSession()}

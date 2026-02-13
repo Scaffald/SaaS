@@ -131,15 +131,15 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <Stack flex={1} gap="$3" padding="$3" width="100%">
-          <SkeletonList count={5} gap="$2" variant="profile" />
+        <Stack flex={1} gap={12} padding={12} width="100%">
+          <SkeletonList count={5} gap={8} variant="profile" />
         </Stack>
       )
     }
 
     if (error) {
       return (
-        <Stack flex={1} padding="$4" width="100%">
+        <Stack flex={1} padding={16} width="100%">
           <ErrorState
             title="Failed to load results"
             description="We encountered an error while loading workers. Please try again."
@@ -152,15 +152,15 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
     }
 
     return (
-      <Stack flex={1} gap="$3" overflow="hidden" width="100%">
+      <Stack flex={1} gap={12} overflow="hidden" width="100%">
         <Row
-          justifyContent="space-between"
-          alignItems="center"
+          justify="space-between"
+          align="center"
           flexShrink={0}
-          paddingTop="$3"
-          paddingHorizontal="$3"
+          paddingTop={12}
+          paddingHorizontal={12}
         >
-          <Text fontWeight="700" fontSize="$5">
+          <Text>
             {allResults.length} results
           </Text>
         </Row>
@@ -171,10 +171,10 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           renderToHardwareTextureAndroid
           width="100%"
         >
-          <Stack gap="$3" paddingBottom="$6" width="100%">
+          <Stack gap={12} paddingBottom={24} width="100%">
             {allResults.length === 0 ? (
               <EmptyState
-                icon={<Search size={48} color="$color9" />}
+                icon={<Search size={48} color="gray" />}
                 title="No results found"
                 description="Try adjusting your search filters or search terms to find more workers."
               />

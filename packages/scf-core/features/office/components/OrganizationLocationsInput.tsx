@@ -129,30 +129,30 @@ export function OrganizationLocationsInput({
   }
 
   return (
-    <Stack gap="$3">
+    <Stack gap={12}>
       {/* Label and Help Text */}
-      <Stack gap="$2">
-        <Text fontWeight="600">Locations *</Text>
-        <Text fontSize="$3" color="$color11" lineHeight="$1">
+      <Stack gap={8}>
+        <Text>Locations *</Text>
+        <Text color="gray" lineHeight={4}>
           Add one or more locations for this organization
         </Text>
       </Stack>
 
       {/* Location Inputs */}
-      <Stack gap="$4">
+      <Stack gap={16}>
         {value.length > 0 ? (
           value.map((location, index) => (
             <Stack
               key={locationIds[index]}
-              gap="$2"
-              padding="$3"
+              gap={8}
+              padding={12}
               backgroundColor="$background"
               borderWidth={1}
               borderColor="$borderColor"
             >
               {/* Location Name */}
-              <Stack gap="$2">
-                <Text fontSize="$3" fontWeight="500">
+              <Stack gap={8}>
+                <Text>
                   Location Name
                 </Text>
                 <Input
@@ -164,8 +164,8 @@ export function OrganizationLocationsInput({
               </Stack>
 
               {/* Location Address */}
-              <Stack gap="$2">
-                <Text fontSize="$3" fontWeight="500">
+              <Stack gap={8}>
+                <Text>
                   Address
                 </Text>
                 <AddressAutocomplete
@@ -183,10 +183,10 @@ export function OrganizationLocationsInput({
               </Stack>
 
               {/* Remove Button */}
-              <Row justifyContent="flex-end">
+              <Row justify="flex-end">
                 <Button
-                  variant="outlined"
-                  size="$3"
+                  variant="outline"
+                  size={12}
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled || value.length === 1}
                   backgroundColor="transparent"
@@ -202,20 +202,20 @@ export function OrganizationLocationsInput({
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <Stack padding="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
-            <Text color="$color11">No locations added yet</Text>
+          <Stack padding={16} borderWidth={1} borderColor="$borderColor" gap={8}>
+            <Text color="gray">No locations added yet</Text>
             <Button
-              variant="outlined"
-              size="$3"
+              variant="outline"
+              size={12}
               onPress={handleAddLocation}
               disabled={disabled}
               backgroundColor="transparent"
               borderColor="$color8"
             >
               <Button.Icon>
-                <Plus size={16} color="$color11" />
+                <Plus size={16} color="gray" />
               </Button.Icon>
-              <Button.Text color="$color11">Add First Location</Button.Text>
+              <Button.Text color="gray">Add First Location</Button.Text>
             </Button>
           </Stack>
         )}
@@ -224,8 +224,8 @@ export function OrganizationLocationsInput({
       {/* Add Another Location Button */}
       {value.length > 0 && (
         <Button
-          variant="outlined"
-          size="$3"
+          variant="outline"
+          size={12}
           onPress={handleAddLocation}
           disabled={disabled}
           alignSelf="flex-start"
@@ -233,15 +233,15 @@ export function OrganizationLocationsInput({
           borderColor="$color8"
         >
           <Button.Icon>
-            <Plus size={16} color="$color11" />
+            <Plus size={16} color="gray" />
           </Button.Icon>
-          <Button.Text color="$color11">Add Another Location</Button.Text>
+          <Button.Text color="gray">Add Another Location</Button.Text>
         </Button>
       )}
 
       {/* Error Message */}
       {errors && (
-        <Text color="$red10" fontSize="$2">
+        <Text color="$red10">
           {errors}
         </Text>
       )}

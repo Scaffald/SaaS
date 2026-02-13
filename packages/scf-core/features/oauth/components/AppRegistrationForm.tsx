@@ -62,50 +62,50 @@ export function AppRegistrationForm() {
 
   if (credentials) {
     return (
-      <Stack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
-        <Card padding="$4" gap="$4">
-          <Stack gap="$3">
-            <SizableText size="$6" fontWeight="600">
+      <Stack flex={1} padding={16} maxWidth={800} alignSelf="center" gap={16}>
+        <Card padding={16} gap={16}>
+          <Stack gap={12}>
+            <SizableText size={24}>
               App Registration Successful!
             </SizableText>
-            <Paragraph size="$3">
+            <Paragraph size={12}>
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
 
-            <Stack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$2">
-              <Stack gap="$1">
-                <SizableText size="$2" fontWeight="600">
+            <Stack gap={8} padding={16} backgroundColor="$blue2" borderRadius={8}>
+              <Stack gap={4}>
+                <SizableText size={8}>
                   Client ID
                 </SizableText>
-                <SizableText size="$3" fontFamily="$mono">
+                <SizableText size={12} fontFamily="$mono">
                   {credentials.client_id}
                 </SizableText>
               </Stack>
-              <Stack gap="$1">
-                <SizableText size="$2" fontWeight="600">
+              <Stack gap={4}>
+                <SizableText size={8}>
                   Client Secret
                 </SizableText>
-                <SizableText size="$3" fontFamily="$mono" color="$red10">
+                <SizableText size={12} fontFamily="$mono" color="$red10">
                   {credentials.client_secret}
                 </SizableText>
               </Stack>
             </Stack>
 
-            <Paragraph size="$2" color="$yellow10">
+            <Paragraph size={8} color="$yellow10">
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 
-            <Stack gap="$2">
-              <SizableText size="$4" fontWeight="600">
+            <Stack gap={8}>
+              <SizableText size={16}>
                 Next Steps
               </SizableText>
-              <Paragraph size="$2">
+              <Paragraph size={8}>
                 1. Test your app with the limited scopes (openid, profile, email)
               </Paragraph>
-              <Paragraph size="$2">
+              <Paragraph size={8}>
                 2. Request additional scopes via the developer dashboard
               </Paragraph>
-              <Paragraph size="$2">
+              <Paragraph size={8}>
                 3. Wait for admin approval for elevated permissions
               </Paragraph>
             </Stack>
@@ -116,21 +116,21 @@ export function AppRegistrationForm() {
   }
 
   return (
-    <Stack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
-      <Card padding="$4" gap="$4">
-        <Stack gap="$4">
-          <Stack gap="$2">
-            <SizableText size="$6" fontWeight="600">
+    <Stack flex={1} padding={16} maxWidth={800} alignSelf="center" gap={16}>
+      <Card padding={16} gap={16}>
+        <Stack gap={16}>
+          <Stack gap={8}>
+            <SizableText size={24}>
               Register OAuth Application
             </SizableText>
-            <Paragraph size="$2" color="$color11">
+            <Paragraph size={8} color="gray">
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
           </Stack>
 
-          <Stack gap="$3">
-            <Stack gap="$1">
-              <SizableText size="$3">App Name *</SizableText>
+          <Stack gap={12}>
+            <Stack gap={4}>
+              <SizableText size={12}>App Name *</SizableText>
               <Input
                 value={appName}
                 onChangeText={setAppName}
@@ -139,8 +139,8 @@ export function AppRegistrationForm() {
               />
             </Stack>
 
-            <Stack gap="$1">
-              <SizableText size="$3">Description *</SizableText>
+            <Stack gap={4}>
+              <SizableText size={12}>Description *</SizableText>
               <Input
                 value={description}
                 onChangeText={setDescription}
@@ -151,8 +151,8 @@ export function AppRegistrationForm() {
               />
             </Stack>
 
-            <Stack gap="$1">
-              <SizableText size="$3">Homepage URL *</SizableText>
+            <Stack gap={4}>
+              <SizableText size={12}>Homepage URL *</SizableText>
               <Input
                 value={homepageUrl}
                 onChangeText={setHomepageUrl}
@@ -161,10 +161,10 @@ export function AppRegistrationForm() {
               />
             </Stack>
 
-            <Stack gap="$2">
-              <SizableText size="$3">Redirect URIs *</SizableText>
+            <Stack gap={8}>
+              <SizableText size={12}>Redirect URIs *</SizableText>
               {redirectUris.map((uri, index) => (
-                <Row key={index} gap="$2">
+                <Row key={index} gap={8}>
                   <Input
                     flex={1}
                     value={uri}
@@ -173,21 +173,21 @@ export function AppRegistrationForm() {
                     keyboardType="url"
                   />
                   {redirectUris.length > 1 && (
-                    <Button onPress={() => removeRedirectUri(index)} variant="outlined">
+                    <Button onPress={() => removeRedirectUri(index)} variant="outline">
                       Remove
                     </Button>
                   )}
                 </Row>
               ))}
               {redirectUris.length < 10 && (
-                <Button onPress={addRedirectUri} variant="outlined" size="$2">
+                <Button onPress={addRedirectUri} variant="outline" size={8}>
                   Add Redirect URI
                 </Button>
               )}
             </Stack>
 
-            <Stack gap="$1">
-              <SizableText size="$3">Logo URL (optional)</SizableText>
+            <Stack gap={4}>
+              <SizableText size={12}>Logo URL (optional)</SizableText>
               <Input
                 value={logoUrl}
                 onChangeText={setLogoUrl}
@@ -196,8 +196,8 @@ export function AppRegistrationForm() {
               />
             </Stack>
 
-            <Stack gap="$1">
-              <SizableText size="$3">Privacy Policy URL (optional)</SizableText>
+            <Stack gap={4}>
+              <SizableText size={12}>Privacy Policy URL (optional)</SizableText>
               <Input
                 value={privacyPolicyUrl}
                 onChangeText={setPrivacyPolicyUrl}
@@ -206,8 +206,8 @@ export function AppRegistrationForm() {
               />
             </Stack>
 
-            <Stack gap="$1">
-              <SizableText size="$3">Terms of Service URL (optional)</SizableText>
+            <Stack gap={4}>
+              <SizableText size={12}>Terms of Service URL (optional)</SizableText>
               <Input
                 value={termsUrl}
                 onChangeText={setTermsUrl}
@@ -216,8 +216,8 @@ export function AppRegistrationForm() {
               />
             </Stack>
 
-            <Stack gap="$1">
-              <SizableText size="$3">Developer Email *</SizableText>
+            <Stack gap={4}>
+              <SizableText size={12}>Developer Email *</SizableText>
               <Input
                 value={developerEmail}
                 onChangeText={setDeveloperEmail}
@@ -227,7 +227,7 @@ export function AppRegistrationForm() {
             </Stack>
           </Stack>
 
-          <Row gap="$3" justifyContent="flex-end">
+          <Row gap={12} justify="flex-end">
             <Button
               onPress={handleSubmit}
               disabled={isSubmitting || !appName || !description || !homepageUrl || !developerEmail}

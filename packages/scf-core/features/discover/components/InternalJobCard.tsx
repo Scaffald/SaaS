@@ -224,25 +224,25 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   }
 
   return (
-    <DiscoverCard onPress={handleCardPress} padding="$4">
-      <Stack gap="$3">
+    <DiscoverCard onPress={handleCardPress} padding={16}>
+      <Stack gap={12}>
         {/* Header */}
-        <Stack gap="$2">
-          <Row justifyContent="space-between" alignItems="center">
-            <Stack flex={1} gap="$1">
-              <Text fontSize="$6" fontWeight="700" color="$color12">
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Stack flex={1} gap={4}>
+              <Text color="gray">
                 {job.title}
               </Text>
               {job.organization && (
-                <Row gap="$2" alignItems="center">
-                  <Building2 size={16} color="$color11" />
-                  <Text fontSize="$3" color="$color11" fontWeight="600">
+                <Row gap={8} align="center">
+                  <Building2 size={16} color="gray" />
+                  <Text color="gray">
                     {job.organization.name}
                   </Text>
                 </Row>
               )}
             </Stack>
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               {hasApplied && (
                 <Chip backgroundColor="$green9" color="$green1">
                   Applied
@@ -253,7 +253,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                   backgroundColor={
                     matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9'
                   }
-                  color="$color1"
+                  color="gray"
                 >
                   {Math.round(matchData.score)}% Match
                 </Chip>
@@ -262,19 +262,19 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           </Row>
 
           {/* Job metadata */}
-          <Row gap="$3" flexWrap="wrap">
+          <Row gap={12} flexWrap="wrap">
             {job.location && (
-              <Row gap="$1.5" alignItems="center">
-                <MapPin size={14} color="$color10" />
-                <Text fontSize="$2" color="$color10">
+              <Row gap={6} align="center">
+                <MapPin size={14} color="gray" />
+                <Text color="gray">
                   {job.location}
                 </Text>
               </Row>
             )}
             {employmentType && (
-              <Row gap="$1.5" alignItems="center">
-                <Briefcase size={14} color="$color10" />
-                <Text fontSize="$2" color="$color10">
+              <Row gap={6} align="center">
+                <Briefcase size={14} color="gray" />
+                <Text color="gray">
                   {employmentType}
                 </Text>
               </Row>
@@ -283,9 +283,8 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               <Chip
                 backgroundColor="$blue9"
                 color="$blue1"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 {remoteOption}
               </Chip>
@@ -295,18 +294,18 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
         {/* Description preview */}
         {descriptionText && (
-          <Text fontSize="$3" color="$color11" numberOfLines={2}>
+          <Text color="gray" numberOfLines={2}>
             {descriptionText}
           </Text>
         )}
 
         {/* Pay range and certifications */}
-        <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
-          <Row gap="$3" alignItems="center">
+        <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>
+          <Row gap={12} align="center">
             {payRange && (
-              <Row gap="$1.5" alignItems="center">
+              <Row gap={6} align="center">
                 <DollarSign size={16} color="$green10" />
-                <Text fontSize="$3" color="$green10" fontWeight="600">
+                <Text color="$green10">
                   {payRange}
                 </Text>
               </Row>
@@ -314,9 +313,9 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           </Row>
 
           {postedTime && (
-            <Row gap="$1.5" alignItems="center">
-              <Clock size={14} color="$color9" />
-              <Text fontSize="$2" color="$color9">
+            <Row gap={6} align="center">
+              <Clock size={14} color="gray" />
+              <Text color="gray">
                 {postedTime}
               </Text>
             </Row>
@@ -326,15 +325,14 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         {/* Certifications and Skills */}
         {(job.certifications && job.certifications.length > 0) ||
         (job.skills && job.skills.length > 0) ? (
-          <Row gap="$2" flexWrap="wrap">
+          <Row gap={8} flexWrap="wrap">
             {job.certifications?.slice(0, 3).map((cert) => (
               <Chip
                 key={cert.id}
                 backgroundColor="$red10"
-                color="$color1"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                color="gray"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 {cert.name}
               </Chip>
@@ -342,10 +340,9 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {job.certifications && job.certifications.length > 3 && (
               <Chip
                 backgroundColor="$color3"
-                color="$color11"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                color="gray"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 +{job.certifications.length - 3} more
               </Chip>
@@ -361,10 +358,9 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 <Chip
                   key={skill.id}
                   backgroundColor="$blue10"
-                  color="$color1"
-                  fontSize="$2"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
+                  color="gray"
+                  paddingHorizontal={8}
+                  paddingVertical={4}
                 >
                   {label}
                 </Chip>
@@ -373,10 +369,9 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {job.skills && job.skills.length > 2 && (
               <Chip
                 backgroundColor="$color3"
-                color="$color11"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                color="gray"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 +{job.skills.length - 2} more
               </Chip>

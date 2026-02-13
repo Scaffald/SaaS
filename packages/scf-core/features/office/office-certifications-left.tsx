@@ -184,20 +184,20 @@ export function OfficeCertificationsLeft({
 
   return (
     <DashboardWidget>
-      <Stack gap="$4" padding="$4">
-        <Row justifyContent="space-between" alignItems="center">
+      <Stack gap={16} padding={16}>
+        <Row justify="space-between" align="center">
           <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
           {isEditing && (
-            <Button size="$2" variant="outlined" onPress={onCancel} icon={X}>
+            <Button size={8} variant="outline" onPress={onCancel} icon={X}>
               Cancel
             </Button>
           )}
         </Row>
 
-        <Stack gap="$4">
+        <Stack gap={16}>
           {/* Name */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Name <Text color="$red10">*</Text>
             </Text>
             <Controller
@@ -213,18 +213,18 @@ export function OfficeCertificationsLeft({
               )}
             />
             {errors.name && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.name.message}
               </Text>
             )}
           </Stack>
 
           {/* Vanity URL */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Vanity URL <Text color="$red10">*</Text>
             </Text>
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               URL-friendly username (auto-generated from name)
             </Text>
             <Controller
@@ -240,15 +240,15 @@ export function OfficeCertificationsLeft({
               )}
             />
             {errors.slug && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.slug.message}
               </Text>
             )}
           </Stack>
 
           {/* Category */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Category <Text color="$red10">*</Text>
             </Text>
             <Controller
@@ -269,8 +269,8 @@ export function OfficeCertificationsLeft({
           </Stack>
 
           {/* Issuing Organization */}
-          <Stack gap="$2">
-            <Text fontWeight="600">Issuing Organization</Text>
+          <Stack gap={8}>
+            <Text>Issuing Organization</Text>
             <Controller
               name="issuing_organization"
               control={control}
@@ -285,8 +285,8 @@ export function OfficeCertificationsLeft({
           </Stack>
 
           {/* Description */}
-          <Stack gap="$2">
-            <Text fontWeight="600">Description</Text>
+          <Stack gap={8}>
+            <Text>Description</Text>
             <Controller
               name="description"
               control={control}
@@ -302,9 +302,9 @@ export function OfficeCertificationsLeft({
           </Stack>
 
           {/* Typical Duration */}
-          <Stack gap="$2">
-            <Text fontWeight="600">Typical Duration (days)</Text>
-            <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Text>Typical Duration (days)</Text>
+            <Text color="gray">
               How many days it typically takes to complete this certification
             </Text>
             <Controller
@@ -324,14 +324,14 @@ export function OfficeCertificationsLeft({
           </Stack>
 
           {/* Requires Renewal */}
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Controller
               name="requires_renewal"
               control={control}
               render={({ field }) => {
                 const isChecked = Boolean(field.value)
                 return (
-                  <Row gap="$3" alignItems="center">
+                  <Row gap={12} align="center">
                     <CustomCheckbox
                       checked={isChecked}
                       onCheckedChange={field.onChange}
@@ -339,7 +339,7 @@ export function OfficeCertificationsLeft({
                       testID="requires-renewal"
                     />
                     <Label cursor="pointer" onPress={() => field.onChange(!isChecked)}>
-                      <Text fontWeight="600">Requires Renewal</Text>
+                      <Text>Requires Renewal</Text>
                     </Label>
                   </Row>
                 )
@@ -349,9 +349,9 @@ export function OfficeCertificationsLeft({
 
           {/* Renewal Period (conditional) */}
           {requiresRenewal && (
-            <Stack gap="$2">
-              <Text fontWeight="600">Renewal Period (months)</Text>
-              <Text fontSize="$2" color="$color11">
+            <Stack gap={8}>
+              <Text>Renewal Period (months)</Text>
+              <Text color="gray">
                 How often this certification must be renewed
               </Text>
               <Controller
@@ -372,9 +372,9 @@ export function OfficeCertificationsLeft({
           )}
 
           {/* Submit Button */}
-          <Row justifyContent="flex-end" paddingTop="$4" gap="$2">
+          <Row justify="flex-end" paddingTop={16} gap={8}>
             {isEditing && (
-              <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
+              <Button variant="outline" onPress={onCancel} disabled={isLoading}>
                 Cancel
               </Button>
             )}

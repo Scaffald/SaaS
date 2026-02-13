@@ -79,19 +79,19 @@ export function FollowingList() {
           const avatar = followee?.avatar_url
 
           return (
-            <Row alignItems="center" gap="$2">
+            <Row align="center" gap={8}>
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$purple4">
-                    <Text fontSize="$3" fontWeight="600" color="$purple10">
+                    <Text color="$purple10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <Text fontSize="$3" fontWeight="500">
+              <Text>
                 {name}
               </Text>
             </Row>
@@ -104,7 +104,7 @@ export function FollowingList() {
         cell: ({ row }) => {
           const date = row.original.created_at
           return (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               {date ? new Date(date).toLocaleDateString() : '-'}
             </Text>
           )
@@ -117,8 +117,8 @@ export function FollowingList() {
           const follow = row.original
           return (
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               icon={UserMinus}
               onPress={() => handleUnfollow(follow.id, follow.followee_id)}
               disabled={unfollowMutation.isPending}
@@ -134,36 +134,36 @@ export function FollowingList() {
 
   if (isLoading) {
     return (
-      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading following…</Text>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading following…</Text>
       </Stack>
     )
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <Input
         placeholder="Search following..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size="$4"
+        size={16}
       />
 
       {filteredFollowing.length === 0 ? (
         <Stack
-          gap="$3"
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ minHeight: 300 }}
         >
-          <Text fontWeight="600">Not following anyone yet</Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text>Not following anyone yet</Text>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No users match your search.'
               : "You're not following anyone yet. Discover workers and start following them."}

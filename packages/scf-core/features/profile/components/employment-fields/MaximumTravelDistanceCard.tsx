@@ -39,7 +39,7 @@ export function MaximumTravelDistanceCard({
 }: MaximumTravelDistanceCardProps) {
   return (
     <RangeSliderCard
-      icon={<Plane size="$2" color="$color11" />}
+      icon={<Plane size={8} color="gray" />}
       title="Maximum Travel Distance"
       description={description}
       value={value}

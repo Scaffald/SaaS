@@ -87,20 +87,20 @@ export function SiteBoundaryDrawer({
   const areaSqft = calculateArea(coordinates)
 
   return (
-    <Stack gap="$4">
-      <Card padding="$4">
-        <Stack gap="$4">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontSize="$6" fontWeight="600">
+    <Stack gap={16}>
+      <Card padding={16}>
+        <Stack gap={16}>
+          <Row justify="space-between" align="center">
+            <Text>
               Site Boundary
             </Text>
-            <Button size="$2" icon={Plus} onPress={handleAddPoint}>
+            <Button size={8} icon={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
           </Row>
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
-          <Card padding="$4" backgroundColor="$gray2" minHeight={400} borderRadius="$4">
+          <Card padding={16} backgroundColor="$gray2" minHeight={400} borderRadius={16}>
             <Text color="$gray10" style={{ textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
@@ -119,8 +119,8 @@ export function SiteBoundaryDrawer({
 
           {/* Area Display */}
           {areaSqft > 0 && (
-            <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-              <Text fontWeight="600" color="$blue11">
+            <Card padding={12} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+              <Text color="$blue11">
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft
               </Text>
@@ -128,27 +128,27 @@ export function SiteBoundaryDrawer({
           )}
 
           {/* Coordinate List */}
-          <Stack gap="$2">
-            <Text fontWeight="600">Boundary Coordinates</Text>
+          <Stack gap={8}>
+            <Text>Boundary Coordinates</Text>
             {coordinates.length === 0 ? (
               <Text color="$gray10">No points added yet. Click "Add Point" to start drawing.</Text>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {coordinates.map((coord, index) => (
                   <Card
                     key={`${coord[0]}-${coord[1]}-${index}`}
-                    padding="$2"
+                    padding={8}
                     backgroundColor="$gray2"
                   >
-                    <Row gap="$2" alignItems="center" justifyContent="space-between">
-                      <Row gap="$2" flex={1}>
-                        <Text fontSize="$2" color="$gray10">
+                    <Row gap={8} align="center" justify="space-between">
+                      <Row gap={8} flex={1}>
+                        <Text color="$gray10">
                           Point {index + 1}:
                         </Text>
                         {editingIndex === index ? (
-                          <Row gap="$2" flex={1}>
+                          <Row gap={8} flex={1}>
                             <Input
-                              size="$2"
+                              size={8}
                               value={coord[0].toString()}
                               onChangeText={(value) => {
                                 const lng = Number.parseFloat(value) || 0
@@ -158,7 +158,7 @@ export function SiteBoundaryDrawer({
                               keyboardType="numeric"
                             />
                             <Input
-                              size="$2"
+                              size={8}
                               value={coord[1].toString()}
                               onChangeText={(value) => {
                                 const lat = Number.parseFloat(value) || 0
@@ -167,7 +167,7 @@ export function SiteBoundaryDrawer({
                               placeholder="Latitude"
                               keyboardType="numeric"
                             />
-                            <Button size="$2" onPress={() => setEditingIndex(null)}>
+                            <Button size={8} onPress={() => setEditingIndex(null)}>
                               Save
                             </Button>
                           </Row>
@@ -177,17 +177,17 @@ export function SiteBoundaryDrawer({
                           </Text>
                         )}
                       </Row>
-                      <Row gap="$2">
+                      <Row gap={8}>
                         <Button
-                          size="$2"
-                          variant="outlined"
+                          size={8}
+                          variant="outline"
                           icon={Edit3}
                           onPress={() => setEditingIndex(index)}
                           disabled={editingIndex !== null}
                         />
                         <Button
-                          size="$2"
-                          variant="outlined"
+                          size={8}
+                          variant="outline"
                           icon={Trash2}
                           onPress={() => handleRemovePoint(index)}
                           disabled={coordinates.length <= 3 || editingIndex !== null}

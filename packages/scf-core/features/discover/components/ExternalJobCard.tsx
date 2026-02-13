@@ -73,20 +73,20 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       variant={job.featured ? 'info' : 'neutral'}
       isSelected={job.featured}
       interactive={false}
-      padding="$4"
-      gap="$3"
+      padding={16}
+      gap={12}
     >
       {/* Header */}
-      <Row gap="$3" alignItems="flex-start">
+      <Row gap={12} align="flex-start">
         {job.company_logo ? (
           <Stack
             width={48}
             height={48}
-            borderRadius="$2"
+            borderRadius={8}
             overflow="hidden"
             backgroundColor="$color3"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
           >
             <img
               src={job.company_logo}
@@ -98,21 +98,21 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
           <Stack
             width={48}
             height={48}
-            borderRadius="$2"
+            borderRadius={8}
             backgroundColor="$blue4"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
           >
             <Building2 size={24} color="$blue10" />
           </Stack>
         )}
 
-        <Stack flex={1} gap="$1">
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+        <Stack flex={1} gap={4}>
+          <Text color="gray">
             {job.title}
           </Text>
           {job.company_name && (
-            <Text fontSize="$4" color="$color11">
+            <Text color="gray">
               {job.company_name}
             </Text>
           )}
@@ -120,12 +120,12 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
 
         {job.featured && (
           <Stack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
             backgroundColor="$blue5"
           >
-            <Text fontSize="$2" fontWeight="600" color="$blue11">
+            <Text color="$blue11">
               FEATURED
             </Text>
           </Stack>
@@ -133,36 +133,36 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       </Row>
 
       {/* Meta Info */}
-      <Row gap="$4" flexWrap="wrap">
+      <Row gap={16} flexWrap="wrap">
         {job.job_location && (
-          <Row gap="$2" alignItems="center">
-            <MapPin size={16} color="$color10" />
-            <Text fontSize="$3" color="$color11">
+          <Row gap={8} align="center">
+            <MapPin size={16} color="gray" />
+            <Text color="gray">
               {job.job_location}
             </Text>
           </Row>
         )}
 
         {job.job_type && (
-          <Row gap="$2" alignItems="center">
-            <Clock size={16} color="$color10" />
-            <Text fontSize="$3" color="$color11">
+          <Row gap={8} align="center">
+            <Clock size={16} color="gray" />
+            <Text color="gray">
               {job.job_type}
             </Text>
           </Row>
         )}
 
         {compensation && (
-          <Row gap="$2" alignItems="center">
-            <DollarSign size={16} color="$color10" />
-            <Text fontSize="$3" color="$color11">
+          <Row gap={8} align="center">
+            <DollarSign size={16} color="gray" />
+            <Text color="gray">
               {compensation}
             </Text>
           </Row>
         )}
 
         {postedDate && (
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             {postedDate}
           </Text>
         )}
@@ -170,33 +170,33 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
 
       {/* Description */}
       {job.description && (
-        <Text fontSize="$3" color="$color11" numberOfLines={3} ellipsizeMode="tail">
+        <Text color="gray" numberOfLines={3} ellipsizeMode="tail">
           {job.description}
         </Text>
       )}
 
       {/* Tags */}
-      <Row gap="$2" flexWrap="wrap">
+      <Row gap={8} flexWrap="wrap">
         {primaryIndustry && (
           <Stack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
             backgroundColor="$blue3"
           >
-            <Text fontSize="$2" color="$blue11">
+            <Text color="$blue11">
               {primaryIndustry}
             </Text>
           </Stack>
         )}
         {job.job_category && (
           <Stack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
             backgroundColor="$color3"
           >
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               {job.job_category}
             </Text>
           </Stack>
@@ -206,9 +206,9 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       <Separator />
 
       {/* Actions */}
-      <Row gap="$2" justifyContent="flex-end">
+      <Row gap={8} justify="flex-end">
         <Button
-          size="$3"
+          size={12}
           theme="info"
           onPress={() =>
             router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))

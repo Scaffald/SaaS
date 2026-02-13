@@ -53,18 +53,18 @@ export function SearchFilterWidget({
 }: SearchFilterWidgetProps) {
   const headerSection = (
     <Stack gap={subtitle ? '$2' : '$1'}>
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$6" fontWeight="700" color="$color12">
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           {title}
         </Text>
         {hasActiveFilters && (
-          <Button size="$2" chromeless color="$red10" icon={X} onPress={onClearFilters}>
+          <Button size={8} chromeless color="$red10" icon={X} onPress={onClearFilters}>
             Clear
           </Button>
         )}
       </Row>
       {subtitle && (
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {subtitle}
         </Text>
       )}
@@ -74,7 +74,7 @@ export function SearchFilterWidget({
   const searchSection = (
     <Stack gap={searchLabel ? '$2' : '$2'}>
       {searchLabel && (
-        <Label htmlFor="search" fontSize="$4" fontWeight="600" color="$color12">
+        <Label htmlFor="search" color="gray">
           {searchLabel}
         </Label>
       )}
@@ -83,17 +83,17 @@ export function SearchFilterWidget({
         placeholder={searchPlaceholder}
         value={searchQuery}
         onChangeText={onSearchChange}
-        size="$4"
+        size={16}
       />
     </Stack>
   )
 
   const defaultActiveFiltersContent = searchQuery && (
-    <Row gap="$2" alignItems="center">
-      <Text fontSize="$3" color="$color11">
+    <Row gap={8} align="center">
+      <Text color="gray">
         Search:
       </Text>
-      <Text fontSize="$3" fontWeight="600" color="$blue10">
+      <Text color="$blue10">
         {searchQuery}
       </Text>
     </Row>
@@ -106,8 +106,8 @@ export function SearchFilterWidget({
   const activeFiltersSection = shouldShowActiveFilters && (
     <>
       <Separator />
-      <Stack gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Text color="gray">
           Active Filters
         </Text>
         {activeFiltersContent !== undefined ? activeFiltersContent : defaultActiveFiltersContent}

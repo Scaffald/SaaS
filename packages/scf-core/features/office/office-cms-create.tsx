@@ -19,13 +19,13 @@ export function OfficeCMSCreate() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <Stack gap="$4">
+        <Stack gap={16}>
           <CMSSlideForm onSubmit={handleSubmit} isLoading={createSlide.isPending} />
         </Stack>
       }
       rightContent={
-        <Stack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
+        <Stack gap={16}>
+          <Text>
             Create New Slide
           </Text>
           <Text>Add a new welcome slide to be shown during user onboarding.</Text>

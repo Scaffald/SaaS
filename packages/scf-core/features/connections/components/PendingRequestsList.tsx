@@ -136,23 +136,23 @@ export function PendingRequestsList() {
           const avatar = user.avatar_url
 
           return (
-            <Row alignItems="center" gap="$2">
+            <Row align="center" gap={8}>
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$orange4">
-                    <Text fontSize="$3" fontWeight="600" color="$orange10">
+                    <Text color="$orange10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <Stack gap="$1">
-                <Text fontSize="$3" fontWeight="500">
+              <Stack gap={4}>
+                <Text>
                   {name}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   {request.type === 'sent' ? 'Sent' : 'Received'}
                 </Text>
               </Stack>
@@ -166,7 +166,7 @@ export function PendingRequestsList() {
         cell: ({ row }) => {
           const date = row.original.created_at
           return (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               {date ? new Date(date).toLocaleDateString() : '-'}
             </Text>
           )
@@ -183,8 +183,8 @@ export function PendingRequestsList() {
           if (request.type === 'sent') {
             return (
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 icon={X}
                 onPress={() => handleCancel(request.id)}
                 disabled={isLoading}
@@ -195,9 +195,9 @@ export function PendingRequestsList() {
           }
 
           return (
-            <Row gap="$1">
+            <Row gap={4}>
               <Button
-                size="$2"
+                size={8}
                 circular
                 icon={CheckCircle2}
                 theme="success"
@@ -205,10 +205,10 @@ export function PendingRequestsList() {
                 disabled={isLoading}
               />
               <Button
-                size="$2"
+                size={8}
                 circular
                 icon={X}
-                variant="outlined"
+                variant="outline"
                 onPress={() => handleDecline(request.id)}
                 disabled={isLoading}
               />
@@ -229,9 +229,9 @@ export function PendingRequestsList() {
 
   if (isLoading) {
     return (
-      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading pending requests…</Text>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading pending requests…</Text>
       </Stack>
     )
   }
@@ -242,18 +242,18 @@ export function PendingRequestsList() {
   if (combinedRequests.length === 0) {
     return (
       <Stack
-        gap="$3"
+        gap={12}
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
+        borderRadius={16}
+        padding={16}
         backgroundColor="$color2"
-        alignItems="center"
-        justifyContent="center"
+        align="center"
+        justify="center"
         style={{ minHeight: 300 }}
       >
-        <Text fontWeight="600">No pending requests</Text>
-        <Text color="$color11" style={{ textAlign: 'center' }}>
+        <Text>No pending requests</Text>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           You don't have any pending connection requests. Send connection requests to build your
           network.
         </Text>
@@ -262,10 +262,10 @@ export function PendingRequestsList() {
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {receivedRequests.length > 0 && (
-        <Stack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             Received ({receivedRequests.length})
           </Text>
           <DataTable
@@ -278,9 +278,9 @@ export function PendingRequestsList() {
       )}
 
       {sentRequests.length > 0 && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           {receivedRequests.length > 0 && <Separator />}
-          <Text fontSize="$5" fontWeight="600">
+          <Text>
             Sent ({sentRequests.length})
           </Text>
           <DataTable

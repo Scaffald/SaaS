@@ -118,25 +118,25 @@ export function ApplicationProcessSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Application Process
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Configure the application process and requirements
       </Text>
 
       {/* Requires Assessment */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Requires assessment</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Skills or aptitude test required
           </Text>
         </Stack>
@@ -148,7 +148,7 @@ export function ApplicationProcessSection({
       </Row>
 
       {localState.requires_assessment && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Assessment details</Label>
           <Input
             placeholder="Describe the assessment or test"
@@ -159,10 +159,10 @@ export function ApplicationProcessSection({
       )}
 
       {/* Requires Video Interview */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Requires video interview</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Pre-recorded video interview required
           </Text>
         </Stack>
@@ -174,7 +174,7 @@ export function ApplicationProcessSection({
       </Row>
 
       {/* Estimated Application Time */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Estimated application time (minutes)</Label>
         <Input
           placeholder="e.g. 15"
@@ -185,13 +185,13 @@ export function ApplicationProcessSection({
             handleChange('estimated_application_time_minutes', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           How long it takes to complete the application
         </Text>
       </Stack>
 
       {/* Application Expiry */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Application expiry (days)</Label>
         <Input
           placeholder="e.g. 30"
@@ -202,24 +202,24 @@ export function ApplicationProcessSection({
             handleChange('application_expiry_days', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Days after which started applications expire
         </Text>
       </Stack>
 
       {/* Inquiry Capability Questions */}
       <Stack
-        gap="$3"
-        marginTop="$4"
-        paddingTop="$4"
+        gap={12}
+        marginTop={16}
+        paddingTop={16}
         borderTopWidth={1}
         borderTopColor="$borderColor"
       >
-        <Stack gap="$1">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={4}>
+          <Text>
             Inquiry Capability Questions
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Define capability questions that will be asked during the inquiry phase
           </Text>
         </Stack>
@@ -227,33 +227,33 @@ export function ApplicationProcessSection({
         {/* Existing Questions */}
         {localState.inquiry_capability_questions &&
           localState.inquiry_capability_questions.length > 0 && (
-            <Stack gap="$2">
+            <Stack gap={8}>
               {localState.inquiry_capability_questions.map((question, index) => (
-                <Card key={question.name} padding="$3" gap="$2" backgroundColor="$color2">
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Stack flex={1} gap="$1">
-                      <Text fontSize="$4" fontWeight="500">
+                <Card key={question.name} padding={12} gap={8} backgroundColor="$color2">
+                  <Row justify="space-between" align="center">
+                    <Stack flex={1} gap={4}>
+                      <Text>
                         {question.label}
                       </Text>
-                      <Row gap="$2">
-                        <Text fontSize="$2" color="$color11">
+                      <Row gap={8}>
+                        <Text color="gray">
                           Type: {question.type}
                         </Text>
                         {question.unit && (
-                          <Text fontSize="$2" color="$color11">
+                          <Text color="gray">
                             Unit: {question.unit}
                           </Text>
                         )}
                         {question.required && (
-                          <Text fontSize="$2" color="$blue10" fontWeight="600">
+                          <Text color="$blue10">
                             Required
                           </Text>
                         )}
                       </Row>
                     </Stack>
                     <Button
-                      size="$2"
-                      variant="outlined"
+                      size={8}
+                      variant="outline"
                       icon={X}
                       onPress={() => handleRemoveQuestion(index)}
                       aria-label="Remove question"
@@ -265,7 +265,7 @@ export function ApplicationProcessSection({
           )}
 
         {/* Add Question Button */}
-        <Button variant="outlined" icon={Plus} onPress={() => setShowAddQuestionModal(true)}>
+        <Button variant="outline" icon={Plus} onPress={() => setShowAddQuestionModal(true)}>
           Add Capability Question
         </Button>
 
@@ -280,14 +280,14 @@ export function ApplicationProcessSection({
             }
           }}
         >
-          <Sheet.Frame padding="$4" gap="$4">
-            <Stack gap="$3">
-              <Text fontSize="$6" fontWeight="600">
+          <Sheet.Frame padding={16} gap={16}>
+            <Stack gap={12}>
+              <Text>
                 Add Capability Question
               </Text>
 
               {/* Question Label */}
-              <Stack gap="$2">
+              <Stack gap={8}>
                 <Label>Question Label *</Label>
                 <Input
                   placeholder="e.g., Are you able to lift heavy objects?"
@@ -306,7 +306,7 @@ export function ApplicationProcessSection({
               </Stack>
 
               {/* Question Type */}
-              <Stack gap="$2">
+              <Stack gap={8}>
                 <Label>Question Type *</Label>
                 <ResponsiveSelect
                   value={newQuestion.type || 'boolean'}
@@ -327,7 +327,7 @@ export function ApplicationProcessSection({
 
               {/* Unit (for number type) */}
               {newQuestion.type === 'number' && (
-                <Stack gap="$2">
+                <Stack gap={8}>
                   <Label>Unit (optional)</Label>
                   <Input
                     placeholder="e.g., Pounds, Hours, Miles"
@@ -338,20 +338,20 @@ export function ApplicationProcessSection({
               )}
 
               {/* Required */}
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <Switch
                   checked={newQuestion.required || false}
                   onCheckedChange={(checked) =>
                     setNewQuestion({ ...newQuestion, required: checked })
                   }
                 />
-                <Text fontSize="$3">Required</Text>
+                <Text>Required</Text>
               </Row>
 
               {/* Actions */}
-              <Row gap="$3" justifyContent="flex-end" marginTop="$2">
+              <Row gap={12} justify="flex-end" marginTop={8}>
                 <Button
-                  variant="outlined"
+                  variant="outline"
                   onPress={() => {
                     setShowAddQuestionModal(false)
                     setNewQuestion({

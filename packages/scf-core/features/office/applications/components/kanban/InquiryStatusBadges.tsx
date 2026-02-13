@@ -48,19 +48,19 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
   }
 
   return (
-    <Row gap="$1" flexWrap="wrap" marginTop="$2">
+    <Row gap={4} flexWrap="wrap" marginTop={8}>
       {/* Unread comments badge */}
       {unreadComments > 0 && (
         <Row
           backgroundColor="$blue3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
-          alignItems="center"
-          gap="$1"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+          align="center"
+          gap={4}
         >
           <MessageSquare size={12} color="$blue10" />
-          <Text fontSize="$1" color="$blue10" fontWeight="500">
+          <Text color="$blue10">
             {unreadComments}
           </Text>
         </Row>
@@ -70,14 +70,14 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {allAccepted && (
         <Row
           backgroundColor="$green9"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
-          alignItems="center"
-          gap="$1"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+          align="center"
+          gap={4}
         >
           <Check size={12} color="white" />
-          <Text fontSize="$1" color="white" fontWeight="600">
+          <Text color="white">
             Check completed
           </Text>
         </Row>
@@ -87,11 +87,11 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {pendingSections > 0 && !allAccepted && (
         <Stack
           backgroundColor="$gray3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$gray11" fontWeight="500">
+          <Text color="$gray11">
             {pendingSections} Pending
           </Text>
         </Stack>
@@ -101,11 +101,11 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {acceptedSections > 0 && !allAccepted && (
         <Stack
           backgroundColor="$green3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$green10" fontWeight="500">
+          <Text color="$green10">
             {acceptedSections} Completed
           </Text>
         </Stack>
@@ -115,11 +115,11 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {hasPendingChecks && (
         <Stack
           backgroundColor="$gray3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$gray11" fontWeight="500">
+          <Text color="$gray11">
             Pending checks
           </Text>
         </Stack>
@@ -129,11 +129,11 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {!allAccepted && (
         <Stack
           backgroundColor="$blue2"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$blue11" fontWeight="500">
+          <Text color="$blue11">
             {acceptedSections}/{totalSections}
           </Text>
         </Stack>

@@ -258,7 +258,7 @@ export function OfficeOrganizationsList() {
             key="content"
             bordered
             elevate
-            gap="$4"
+            gap={16}
             width={520}
             animateOnly={['transform', 'opacity']}
             animation={[
@@ -274,10 +274,10 @@ export function OfficeOrganizationsList() {
           >
             <Dialog.Title>Reject Request</Dialog.Title>
             <Dialog.Description>
-              Provide a short reason for rejecting <Text fontWeight="600">{rejectDialog.name}</Text>
+              Provide a short reason for rejecting <Text>{rejectDialog.name}</Text>
               . This helps the requester understand what to do next.
             </Dialog.Description>
-            <Stack gap="$2">
+            <Stack gap={8}>
               <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
               <TextArea
                 id="organization-reject-reason"
@@ -296,14 +296,14 @@ export function OfficeOrganizationsList() {
                 autoFocus
               />
               {rejectError ? (
-                <Text fontSize="$2" color="$red10">
+                <Text color="$red10">
                   {rejectError}
                 </Text>
               ) : null}
             </Stack>
-            <Row gap="$3" justifyContent="flex-end">
+            <Row gap={12} justify="flex-end">
               <Dialog.Close asChild>
-                <Button variant="outlined" disabled={reviewMutation.isPending}>
+                <Button variant="outline" disabled={reviewMutation.isPending}>
                   Cancel
                 </Button>
               </Dialog.Close>
@@ -340,15 +340,15 @@ export function OfficeOrganizationsList() {
         getItemName={getItemName}
         itemType="organization"
         rightContent={
-          <Stack gap="$4">
-            <DashboardWidget gap="$4">
-              <Row justifyContent="space-between" alignItems="center">
-                <Text fontSize="$5" fontWeight="700">
+          <Stack gap={16}>
+            <DashboardWidget gap={16}>
+              <Row justify="space-between" align="center">
+                <Text>
                   Moderation Summary
                 </Text>
                 <Button
-                  size="$2"
-                  variant="outlined"
+                  size={8}
+                  variant="outline"
                   icon={RefreshCw}
                   disabled={isRequestsLoading || isRequestsRefetching}
                   onPress={refreshRequests}
@@ -356,84 +356,84 @@ export function OfficeOrganizationsList() {
                   Refresh
                 </Button>
               </Row>
-              <Row gap="$4" $sm={{ flexDirection: 'column', gap: '$3' }}>
-                <Stack gap="$1">
-                  <Text fontSize="$2" color="$color11">
+              <Row gap={16}>
+                <Stack gap={4}>
+                  <Text color="gray">
                     Pending
                   </Text>
-                  <Text fontSize="$7" fontWeight="700">
+                  <Text>
                     {moderationCounts.pending}
                   </Text>
                 </Stack>
-                <Stack gap="$1">
-                  <Text fontSize="$2" color="$color11">
+                <Stack gap={4}>
+                  <Text color="gray">
                     Approved
                   </Text>
-                  <Text fontSize="$7" fontWeight="700" color="$green10">
+                  <Text color="$green10">
                     {moderationCounts.approved}
                   </Text>
                 </Stack>
-                <Stack gap="$1">
-                  <Text fontSize="$2" color="$color11">
+                <Stack gap={4}>
+                  <Text color="gray">
                     Rejected
                   </Text>
-                  <Text fontSize="$7" fontWeight="700" color="$red10">
+                  <Text color="$red10">
                     {moderationCounts.rejected}
                   </Text>
                 </Stack>
               </Row>
             </DashboardWidget>
 
-            <DashboardWidget gap="$4">
-              <Text fontSize="$5" fontWeight="700">
+            <DashboardWidget gap={16}>
+              <Text>
                 Pending Approvals
               </Text>
               {isRequestsLoading ? (
-                <Row justifyContent="center" paddingVertical="$4">
-                  <Spinner size="large" />
+                <Row justify="center" paddingVertical={16}>
+                  <Spinner size="lg" />
                 </Row>
               ) : pendingRequests.length === 0 ? (
-                <Text fontSize="$3" color="$color11">
+                <Text color="gray">
                   No pending organization requests. Check back soon!
                 </Text>
               ) : (
-                <Stack gap="$4">
+                <Stack gap={16}>
                   {pendingRequests.map((request, index) => (
-                    <Stack key={request.id} gap="$3">
-                      <Stack gap="$1.5">
-                        <Text fontSize="$4" fontWeight="600">
+                    <Stack key={request.id} gap={12}>
+                      <Stack gap={6}>
+                        <Text>
                           {request.name}
                         </Text>
-                        <Text fontSize="$2" color="$color11">
+                        <Text color="gray">
                           Vanity URL: {request.slug}
                         </Text>
                         {request.website ? (
-                          <Text fontSize="$2" color="$blue10">
+                          <Text color="$blue10">
                             {request.website}
                           </Text>
                         ) : null}
-                        <Text fontSize="$2" color="$color11">
+                        <Text color="gray">
                           Submitted {new Date(request.created_at).toLocaleString()}
                         </Text>
                         {request.notes ? (
-                          <Paragraph fontSize="$2" color="$color11">
+                          <Paragraph color="gray">
                             Notes: {request.notes}
                           </Paragraph>
                         ) : null}
                         {request.message ? (
-                          <Paragraph fontSize="$2" color="$color11">
+                          <Paragraph color="gray">
                             Message: {request.message}
                           </Paragraph>
                         ) : null}
                         {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
-                          <Text fontSize="$2" color="$color11">
+                          <Text color="gray">
                             Resent {request.resent_count} time(s)
                           </Text>
                         ) : null}
                       </Stack>
-                      <Row gap="$2">
+                      <Row gap={8}>
                         <Button
-                          size="$2"
+                          size={8}
                           theme="success"
                           icon={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isPending}
@@ -442,8 +442,8 @@ export function OfficeOrganizationsList() {
                           Approve
                         </Button>
                         <Button
-                          size="$2"
-                          variant="outlined"
+                          size={8}
+                          variant="outline"
                           theme="error"
                           icon={XIcon}
                           disabled={reviewMutation.isPending}

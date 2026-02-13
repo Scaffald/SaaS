@@ -17,7 +17,7 @@ export function OfficePageHeader({
   onCreateClick,
 }: OfficePageHeaderProps) {
   return (
-    <Row gap="$3" alignItems="center" flex={1} paddingHorizontal="$4">
+    <Row gap={12} align="center" flex={1} paddingHorizontal={16}>
       <Input
         flex={1}
         placeholder={searchPlaceholder}

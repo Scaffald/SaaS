@@ -461,9 +461,9 @@ export function ProfileEducationLeft({
   if (educationQuery.isLoading || educationLevelQuery.isLoading) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading education data...</Text>
+        <Stack align="center" justify="center" padding={32} gap={16}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -473,7 +473,7 @@ export function ProfileEducationLeft({
   if (educationQuery.isError || educationLevelQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack align="center" justify="center" padding={32} gap={16}>
           <Text color="$red10">Failed to load education data</Text>
           <Button onPress={() => educationQuery.refetch()}>Retry</Button>
         </Stack>
@@ -488,21 +488,21 @@ export function ProfileEducationLeft({
       {errorSummary.length > 0 && (
         <Stack
           role="alert"
-          marginTop="$2"
-          marginBottom="$2"
-          padding="$3"
-          gap="$2"
+          marginTop={8}
+          marginBottom={8}
+          padding={12}
+          gap={8}
           borderWidth={1}
           borderColor="$red7"
           backgroundColor="$red3"
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text color="$red11">
             Please resolve the following issues:
           </Text>
-          <Stack gap="$1">
+          <Stack gap={4}>
             {errorSummary.map((message) => (
-              <Text key={message} color="$red11" fontSize="$3">
+              <Text key={message} color="$red11">
                 • {message}
               </Text>
             ))}
@@ -510,10 +510,10 @@ export function ProfileEducationLeft({
         </Stack>
       )}
 
-      <Stack gap="$4">
+      <Stack gap={16}>
         {/* Education Level */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Highest Education Level</Text>
+        <Stack gap={8}>
+          <Text>Highest Education Level</Text>
           <Controller
             name="education_level"
             control={control}
@@ -535,10 +535,10 @@ export function ProfileEducationLeft({
         </Stack>
 
         {/* Education Entries */}
-        <Stack gap="$3">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontWeight="600">Education History</Text>
-            <Button size="$3" onPress={addEducationEntry} icon={Plus}>
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Text>Education History</Text>
+            <Button size={12} onPress={addEducationEntry} icon={Plus}>
               Add Education
             </Button>
           </Row>
@@ -572,24 +572,24 @@ export function ProfileEducationLeft({
                     entryRefs.current[entryId] = el as HTMLElement
                   }
                 }}
-                gap="$3"
-                padding="$3"
+                gap={12}
+                padding={12}
                 borderWidth={1}
                 borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : '$borderColor'}
                 backgroundColor={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
-                borderRadius="$4"
+                borderRadius={16}
               >
-                <Row justifyContent="space-between" alignItems="center">
-                  <Text fontWeight="600">
+                <Row justify="space-between" align="center">
+                  <Text>
                     {entryData?.id ? 'Edit Education' : `Education ${index + 1}`}
                   </Text>
-                  <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
+                  <Button size={8} variant="outline" onPress={() => remove(index)} icon={X}>
                     Remove
                   </Button>
                 </Row>
 
                 {/* Institution */}
-                <Stack gap="$2">
+                <Stack gap={8}>
                   <Text>Institution *</Text>
                   <Controller
                     name={`education_entries.${index}.university_id`}
@@ -601,7 +601,7 @@ export function ProfileEducationLeft({
                         render={({ field: nameField }) => {
                           const isManualMode = manualEntryMode[index] ?? false
                           return (
-                            <Stack gap="$2">
+                            <Stack gap={8}>
                               {!isManualMode ? (
                                 <>
                                   <UniversityAutocomplete
@@ -631,8 +631,8 @@ export function ProfileEducationLeft({
                                     }
                                   />
                                   <Button
-                                    size="$2"
-                                    variant="outlined"
+                                    size={8}
+                                    variant="outline"
                                     onPress={() => {
                                       setManualEntryMode((prev) => ({ ...prev, [index]: true }))
                                       universityField.onChange(null)
@@ -659,8 +659,8 @@ export function ProfileEducationLeft({
                                   />
                                   <FieldError message={entryErrors?.institution_name?.message} />
                                   <Button
-                                    size="$2"
-                                    variant="outlined"
+                                    size={8}
+                                    variant="outline"
                                     onPress={() => {
                                       setManualEntryMode((prev) => ({ ...prev, [index]: false }))
                                       nameField.onChange('')
@@ -680,7 +680,7 @@ export function ProfileEducationLeft({
                 </Stack>
 
                 {/* Degree Type */}
-                <Stack gap="$2">
+                <Stack gap={8}>
                   <Text>Degree Type</Text>
                   <Controller
                     name={`education_entries.${index}.degree_type`}
@@ -739,7 +739,7 @@ export function ProfileEducationLeft({
                 </Stack>
 
                 {/* Field of Study */}
-                <Stack gap="$2">
+                <Stack gap={8}>
                   <Text>Field of Study</Text>
                   <Controller
                     name={`education_entries.${index}.field_of_study`}
@@ -757,7 +757,7 @@ export function ProfileEducationLeft({
                 </Stack>
 
                 {/* GPA */}
-                <Stack gap="$2">
+                <Stack gap={8}>
                   <Text>GPA (Optional)</Text>
                   <Controller
                     name={`education_entries.${index}.gpa`}
@@ -835,9 +835,9 @@ export function ProfileEducationLeft({
                 </Stack>
 
                 {/* Start and End Dates */}
-                <Stack gap="$2">
-                  <Row gap="$3">
-                    <Stack gap="$2" flex={1}>
+                <Stack gap={8}>
+                  <Row gap={12}>
+                    <Stack gap={8} flex={1}>
                       <Controller
                         name={`education_entries.${index}.start_date`}
                         control={control}
@@ -855,7 +855,7 @@ export function ProfileEducationLeft({
                         )}
                       />
                     </Stack>
-                    <Stack gap="$2" flex={1}>
+                    <Stack gap={8} flex={1}>
                       <Controller
                         name={`education_entries.${index}.end_date`}
                         control={control}
@@ -898,7 +898,7 @@ export function ProfileEducationLeft({
                       }
 
                       return (
-                        <Row gap="$2" alignItems="center">
+                        <Row gap={8} align="center">
                           <CustomCheckbox
                             checked={isCurrent}
                             onCheckedChange={handleChange}
@@ -941,7 +941,7 @@ export function ProfileEducationLeft({
                 </Stack>
 
                 {/* Description */}
-                <Stack gap="$2">
+                <Stack gap={8}>
                   <Text>Description</Text>
                   <Controller
                     name={`education_entries.${index}.description`}
@@ -964,16 +964,16 @@ export function ProfileEducationLeft({
           })}
 
           {fields.length === 0 && (
-            <Stack padding="$4" alignItems="center" gap="$2">
-              <Text color="$color11">No education entries added yet</Text>
+            <Stack padding={16} align="center" gap={8}>
+              <Text color="gray">No education entries added yet</Text>
             </Stack>
           )}
         </Stack>
 
         {/* Action Buttons */}
-        <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
+        <Row justify="flex-end" gap={12} paddingTop={16}>
           <Button
-            variant="outlined"
+            variant="outline"
             disabled={!isDirty}
             onPress={() => setShowCancelDialog(true)}
             opacity={!isDirty ? 0.5 : 1}
@@ -1105,13 +1105,13 @@ function SmartSelect({
   const displayLabel = selectedOption?.label ?? placeholder ?? 'Select'
 
   return (
-    <Stack gap="$2">
+    <Stack gap={8}>
       <Popover open={open} onOpenChange={handleOpenChange}>
         <Popover.Trigger asChild>
           <Button
             ref={triggerRef}
-            variant="outlined"
-            justifyContent="space-between"
+            variant="outline"
+            justify="space-between"
             iconAfter={ChevronDown}
             disabled={disabled}
             borderColor={error ? '$red9' : '$borderColor'}
@@ -1130,7 +1130,7 @@ function SmartSelect({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          padding="$2"
+          padding={8}
           style={{
             width: contentWidth,
             minWidth: contentWidth ?? 220,
@@ -1138,12 +1138,12 @@ function SmartSelect({
           }}
         >
           <ScrollView style={{ maxHeight: 280 }}>
-            <Stack gap="$1">
+            <Stack gap={4}>
               {allowClear && (
                 <Button
-                  size="$2"
+                  size={8}
                   chromeless
-                  justifyContent="flex-start"
+                  justify="flex-start"
                   onPress={() => handleSelect(undefined)}
                   disabled={disabled}
                   hoverStyle={{ backgroundColor: '$color3' }}
@@ -1157,14 +1157,14 @@ function SmartSelect({
                 return (
                   <Button
                     key={option.value}
-                    size="$3"
+                    size={12}
                     chromeless
-                    justifyContent="flex-start"
+                    justify="flex-start"
                     onPress={() => handleSelect(option.value)}
                     disabled={disabled}
                     backgroundColor={isSelected ? '$blue3' : 'transparent'}
                     hoverStyle={{ backgroundColor: '$blue4' }}
-                    borderRadius="$3"
+                    borderRadius={12}
                     color={isSelected ? '$blue12' : '$color12'}
                   >
                     {option.label}
@@ -1176,7 +1176,7 @@ function SmartSelect({
         </Popover.Content>
       </Popover>
       {error && (
-        <Text fontSize="$2" color="$red10">
+        <Text color="$red10">
           {error}
         </Text>
       )}

@@ -38,8 +38,8 @@ export function IPIPResultsPage() {
 
   if (results.isLoading) {
     return (
-      <Stack gap="$4" padding="$8" alignItems="center" aria-live="polite">
-        <Text fontSize="$5" color="$color11">
+      <Stack gap={16} padding={32} align="center" aria-live="polite">
+        <Text color="gray">
           Loading your results...
         </Text>
       </Stack>
@@ -54,19 +54,19 @@ export function IPIPResultsPage() {
   // Handle critical errors (network, API failures)
   if (results.error && !results.hasPartialResults) {
     return (
-      <Stack gap="$4" padding="$8" alignItems="center" aria-live="assertive">
-        <AlertCircle size="$3" color="$red10" />
-        <Text fontSize="$5" color="$red10" fontWeight="600">
+      <Stack gap={16} padding={32} align="center" aria-live="assertive">
+        <AlertCircle size={12} color="$red10" />
+        <Text color="$red10">
           Error Loading Results
         </Text>
-        <Text fontSize="$4" color="$color11" textAlign="center">
+        <Text color="gray" textAlign="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
-        <Row gap="$3">
+        <Row gap={12}>
           <Button icon={RefreshCcw} onPress={handleRetry} theme="blue">
             Retry
           </Button>
-          <Button variant="outlined" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
+          <Button variant="outline" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
             Return to Dashboard
           </Button>
         </Row>
@@ -77,11 +77,11 @@ export function IPIPResultsPage() {
   // Handle case where no assessment has been started
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
-      <Stack gap="$4" padding="$8" alignItems="center">
-        <Text fontSize="$5" color="$color11" fontWeight="600">
+      <Stack gap={16} padding={32} align="center">
+        <Text color="gray">
           No Results Yet
         </Text>
-        <Text fontSize="$4" color="$color10" textAlign="center">
+        <Text color="gray" textAlign="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
@@ -95,13 +95,13 @@ export function IPIPResultsPage() {
   const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
-    <Stack gap="$6" width="100%" padding="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" padding={16} style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
-      <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Text color="gray">
           Your Personality Results
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="gray">
           Discover your Big Five personality traits and how they shape your work style.
         </Text>
       </Stack>
@@ -114,17 +114,17 @@ export function IPIPResultsPage() {
         flexDirection="column"
       >
         <Tabs.List
-          separator={<Stack width="$1" />}
+          separator={<Stack width={4} />}
           disablePassBorderRadius="bottom"
           aria-label="Manage your personality results view"
         >
           <Tabs.Tab flex={1} value="narrative">
-            <Text fontSize="$4" fontWeight="600">
+            <Text>
               Narrative View
             </Text>
           </Tabs.Tab>
           <Tabs.Tab flex={1} value="chart">
-            <Text fontSize="$4" fontWeight="600">
+            <Text>
               Chart View
             </Text>
           </Tabs.Tab>
@@ -132,10 +132,10 @@ export function IPIPResultsPage() {
 
         <Tabs.Content
           value="narrative"
-          padding="$4"
+          padding={16}
           backgroundColor="$color1"
-          borderBottomLeftRadius="$4"
-          borderBottomRightRadius="$4"
+          borderBottomLeftRadius={16}
+          borderBottomRightRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -150,10 +150,10 @@ export function IPIPResultsPage() {
 
         <Tabs.Content
           value="chart"
-          padding="$4"
+          padding={16}
           backgroundColor="$color1"
-          borderBottomLeftRadius="$4"
-          borderBottomRightRadius="$4"
+          borderBottomLeftRadius={16}
+          borderBottomRightRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -178,31 +178,31 @@ export function IPIPResultsPage() {
       {/* Data Quality Warnings */}
       {hasDataErrors && (
         <Stack
-          gap="$2"
-          padding="$4"
+          gap={8}
+          padding={16}
           backgroundColor="$yellow2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$yellow7"
         >
-          <Row alignItems="center" gap="$2">
-            <AlertCircle size="$1" color="$yellow11" />
-            <Text fontSize="$4" fontWeight="600" color="$yellow11">
+          <Row align="center" gap={8}>
+            <AlertCircle size={4} color="$yellow11" />
+            <Text color="$yellow11">
               Partial Data Available
             </Text>
           </Row>
-          <Text fontSize="$3" color="$yellow10">
+          <Text color="$yellow10">
             Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
             {results.normalizationError && 'Score normalization failed. '}
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={RefreshCcw}
             onPress={handleRetry}
-            marginTop="$2"
+            marginTop={8}
           >
             Refresh Data
           </Button>

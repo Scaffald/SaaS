@@ -31,9 +31,9 @@ interface ProfileResultCardProps extends CardProps {
  *   onRemove={() => handleRemove(item.id)}
  *   removeDisabled={isRemoving}
  * >
- *   <Stack gap="$2">
- *     <Text fontWeight="600">{item.name}</Text>
- *     <Text color="$color11">{item.description}</Text>
+ *   <Stack gap={8}>
+ *     <Text>{item.name}</Text>
+ *     <Text color="gray">{item.description}</Text>
  *   </Stack>
  * </ProfileResultCard>
  * ```
@@ -52,33 +52,33 @@ export function ProfileResultCard({
   return (
     <Card
       bordered={bordered}
-      size="$4"
+      size={16}
       backgroundColor={isNew ? '$green2' : undefined}
       borderColor={isNew ? '$green9' : undefined}
       borderWidth={isNew ? 2 : undefined}
       animation={isNew ? 'quick' : undefined}
       {...props}
     >
-      <Card.Header gap="$2">
-        <Stack gap="$3" flex={1}>
+      <Card.Header gap={8}>
+        <Stack gap={12} flex={1}>
           {children}
         </Stack>
 
         {/* Action buttons */}
         {(onRemove || actions) && (
-          <Row gap="$2" justifyContent="flex-end" paddingTop="$2">
+          <Row gap={8} justify="flex-end" paddingTop={8}>
             {actions}
             {onRemove && (
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 icon={isLoading ? undefined : X}
                 onPress={onRemove}
                 disabled={removeDisabled || isRemoving || isLoading}
               >
                 {isLoading ? (
-                  <Row gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" />
                     <Text>Removing...</Text>
                   </Row>
                 ) : (

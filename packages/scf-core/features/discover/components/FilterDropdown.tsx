@@ -53,8 +53,8 @@ export const FilterDropdown = ({
     <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
       <Popover.Trigger asChild>
         <Button
-          size="$4"
-          variant="outlined"
+          size={16}
+          variant="outline"
           backgroundColor={activeFilterCount < 3 ? '$blue9' : '$background'}
           color={activeFilterCount < 3 ? 'white' : '$color'}
           hoverStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
@@ -68,8 +68,8 @@ export const FilterDropdown = ({
       </Popover.Trigger>
 
       <Popover.Content
-        borderRadius="$4"
-        padding="$3"
+        borderRadius={16}
+        padding={12}
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$background"
@@ -82,15 +82,15 @@ export const FilterDropdown = ({
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       >
-        <Stack gap="$3">
-          <Text fontSize="$5" fontWeight="700" marginBottom="$1">
+        <Stack gap={12}>
+          <Text marginBottom={4}>
             Display on Map
           </Text>
 
           {/* Workers Toggle */}
-          <Stack gap="$1">
-            <Row justifyContent="space-between" alignItems="center">
-              <Label fontSize="$4" onPress={() => onShowWorkersChange?.(!showWorkers)}>
+          <Stack gap={4}>
+            <Row justify="space-between" align="center">
+              <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>
                 Workers
               </Label>
               <ToggleSwitch
@@ -99,15 +99,15 @@ export const FilterDropdown = ({
                 aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
               />
             </Row>
-            <Text fontSize="$2" color="$color10" paddingLeft="$1">
+            <Text color="gray" paddingLeft={4}>
               Show worker profiles on the map
             </Text>
           </Stack>
 
           {/* Employers Toggle */}
-          <Stack gap="$1">
-            <Row justifyContent="space-between" alignItems="center">
-              <Label fontSize="$4" onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
+          <Stack gap={4}>
+            <Row justify="space-between" align="center">
+              <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                 Employers
               </Label>
               <ToggleSwitch
@@ -118,15 +118,15 @@ export const FilterDropdown = ({
                 }
               />
             </Row>
-            <Text fontSize="$2" color="$color10" paddingLeft="$1">
+            <Text color="gray" paddingLeft={4}>
               Show employer organizations on the map
             </Text>
           </Stack>
 
           {/* Jobs Toggle */}
-          <Stack gap="$1">
-            <Row justifyContent="space-between" alignItems="center">
-              <Label fontSize="$4" onPress={() => onShowJobsChange?.(!showJobs)}>
+          <Stack gap={4}>
+            <Row justify="space-between" align="center">
+              <Label onPress={() => onShowJobsChange?.(!showJobs)}>
                 Jobs
               </Label>
               <ToggleSwitch
@@ -135,7 +135,7 @@ export const FilterDropdown = ({
                 aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
               />
             </Row>
-            <Text fontSize="$2" color="$color10" paddingLeft="$1">
+            <Text color="gray" paddingLeft={4}>
               Show job openings on the map
             </Text>
           </Stack>

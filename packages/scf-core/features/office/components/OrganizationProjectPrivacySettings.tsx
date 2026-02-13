@@ -79,25 +79,25 @@ export function OrganizationProjectPrivacySettings({
 
   if (isLoading) {
     return (
-      <Card padding="$4" backgroundColor="$gray2">
+      <Card padding={16} backgroundColor="$gray2">
         <Spinner />
       </Card>
     )
   }
 
   return (
-    <Card padding="$4" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-      <Stack gap="$4">
-        <Text fontSize="$6" fontWeight="600">
+    <Card padding={16} backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
+      <Stack gap={16}>
+        <Text>
           Project Location Privacy
         </Text>
-        <Text fontSize="$3" color="$gray11">
+        <Text color="$gray11">
           Set the default visibility level for project locations. Individual projects can override
           this setting.
         </Text>
 
-        <Stack gap="$2">
-          <Text fontWeight="600">Default Project Location Visibility</Text>
+        <Stack gap={8}>
+          <Text>Default Project Location Visibility</Text>
           <ResponsiveSelect
             value={selectedVisibility}
             onValueChange={(value) => setSelectedVisibility(value as ProjectLocationVisibility)}
@@ -109,18 +109,18 @@ export function OrganizationProjectPrivacySettings({
           />
         </Stack>
 
-        <Card padding="$3" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-          <Stack gap="$2">
-            <Text fontWeight="600" fontSize="$3">
+        <Card padding={12} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+          <Stack gap={8}>
+            <Text>
               Project Override Statistics
             </Text>
-            <Text fontSize="$2" color="$gray11">
+            <Text color="$gray11">
               {overrideCount} project{overrideCount !== 1 ? 's' : ''} override this default setting
             </Text>
             {overrideCount > 0 && (
               <Button
-                size="$2"
-                variant="outlined"
+                size={8}
+                variant="outline"
                 icon={ExternalLink}
                 onPress={() => {
                   // TODO: Navigate to projects list filtered by this org
@@ -133,7 +133,7 @@ export function OrganizationProjectPrivacySettings({
           </Stack>
         </Card>
 
-        <Row justifyContent="flex-end">
+        <Row justify="flex-end">
           <Button
             theme="blue"
             onPress={handleSave}

@@ -43,9 +43,9 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading portfolio...</Text>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading portfolio...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -58,11 +58,11 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
   return (
     <>
       <DashboardWidget>
-        <Stack gap="$4">
+        <Stack gap={16}>
           <H4>Portfolio</H4>
 
           {/* Grid Layout */}
-          <Stack gap="$3">
+          <Stack gap={12}>
             {portfolioItems.map((item: PortfolioItem) => {
               const imageUrl = item.file_path
                 ? getStorageUrl('portfolio', item.file_path)
@@ -77,22 +77,22 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                   cursor="pointer"
                   onPress={() => handleItemClick(item)}
                 >
-                  <Stack gap="$3">
+                  <Stack gap={12}>
                     {imageUrl && (
                       <Image
                         source={{ uri: imageUrl }}
                         width="100%"
                         height={variant === 'compact' ? 150 : 200}
                         objectFit="cover"
-                        borderRadius="$3"
+                        borderRadius={12}
                       />
                     )}
-                    <Stack gap="$2" padding="$3">
-                      <Text fontSize="$4" fontWeight="600" numberOfLines={2}>
+                    <Stack gap={8} padding={12}>
+                      <Text numberOfLines={2}>
                         {item.title}
                       </Text>
                       {item.description && variant === 'full' && (
-                        <Text fontSize="$3" color="$color11" numberOfLines={3}>
+                        <Text color="gray" numberOfLines={3}>
                           {/* Render rich text description - simplified for now */}
                           {typeof item.description === 'string'
                             ? item.description
@@ -100,9 +100,9 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         </Text>
                       )}
                       {imageUrl && (
-                        <Row gap="$2" alignItems="center" marginTop="$2">
-                          <Eye size={14} color="$color10" />
-                          <Text fontSize="$2" color="$color10">
+                        <Row gap={8} align="center" marginTop={8}>
+                          <Eye size={14} color="gray" />
+                          <Text color="gray">
                             Click to view
                           </Text>
                         </Row>
@@ -122,9 +122,9 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
           open={lightboxOpen}
           onOpenChange={setLightboxOpen}
           title={selectedItem.title}
-          size="large"
+          size="lg"
         >
-          <Stack gap="$4">
+          <Stack gap={16}>
             {(() => {
               const imageUrl = selectedItem.file_path
                 ? getStorageUrl('portfolio', selectedItem.file_path)
@@ -138,15 +138,15 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                       width="100%"
                       height={400}
                       objectFit="contain"
-                      borderRadius="$3"
+                      borderRadius={12}
                     />
                   )}
                   {selectedItem.description && (
-                    <Stack gap="$2">
-                      <Text fontSize="$3" fontWeight="600">
+                    <Stack gap={8}>
+                      <Text>
                         Description
                       </Text>
-                      <Text fontSize="$3" color="$color11" lineHeight="$4">
+                      <Text color="gray" lineHeight={16}>
                         {typeof selectedItem.description === 'string'
                           ? selectedItem.description
                           : 'Rich text description'}

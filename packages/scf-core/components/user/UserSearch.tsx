@@ -141,16 +141,16 @@ export function UserSearch({
     showResults && debouncedSearch.length >= 2 && (filteredUsers.length > 0 || isLoading)
 
   return (
-    <Stack gap="$2" position="relative" width="100%">
+    <Stack gap={8} position="relative" width="100%">
       <Row
-        gap="$2"
-        alignItems="center"
+        gap={8}
+        align="center"
         borderWidth={1}
         borderColor={error ? '$red8' : '$borderColor'}
-        borderRadius="$4"
+        borderRadius={16}
         backgroundColor="$background"
-        paddingHorizontal="$3"
-        paddingVertical="$2"
+        paddingHorizontal={12}
+        paddingVertical={8}
         focusStyle={{
           borderColor: error ? '$red8' : '$color8',
         }}
@@ -165,16 +165,14 @@ export function UserSearch({
           disabled={disabled}
           borderWidth={0}
           backgroundColor="transparent"
-          fontSize="$4"
         />
-        {isLoading && <Spinner size="small" />}
+        {isLoading && <Spinner size="sm" />}
         {searchTerm && !isLoading && (
           <Text
-            fontSize="$3"
-            color="$color10"
+            color="gray"
             cursor="pointer"
             onPress={handleClear}
-            paddingHorizontal="$2"
+            paddingHorizontal={8}
           >
             ✕
           </Text>
@@ -187,10 +185,10 @@ export function UserSearch({
           top="100%"
           left={0}
           right={0}
-          marginTop="$1"
+          marginTop={4}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$3"
+          borderRadius={12}
           backgroundColor="$background"
           maxHeight={300}
           overflow="scroll"
@@ -205,8 +203,8 @@ export function UserSearch({
               return (
                 <Row
                   key={user.id}
-                  padding="$3"
-                  gap="$2"
+                  padding={12}
+                  gap={8}
                   hoverStyle={{
                     backgroundColor: '$backgroundHover',
                   }}
@@ -216,13 +214,13 @@ export function UserSearch({
                   cursor="pointer"
                   onPress={() => handleSelect(user)}
                 >
-                  <Stack flex={1} gap="$1">
-                    <Text fontSize="$3" fontWeight="600">
+                  <Stack flex={1} gap={4}>
+                    <Text>
                       {user.first_name || user.last_name
                         ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
                         : user.display_name || user.username}
                     </Text>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="gray">
                       @{user.username}
                     </Text>
                   </Stack>
@@ -230,8 +228,8 @@ export function UserSearch({
               )
             })
           ) : isLoading ? (
-            <Stack padding="$4" alignItems="center">
-              <Text color="$color11">Searching...</Text>
+            <Stack padding={16} align="center">
+              <Text color="gray">Searching...</Text>
             </Stack>
           ) : null}
         </Stack>
@@ -243,22 +241,22 @@ export function UserSearch({
           top="100%"
           left={0}
           right={0}
-          marginTop="$1"
+          marginTop={4}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$3"
+          borderRadius={12}
           backgroundColor="$background"
-          padding="$3"
+          padding={12}
           zIndex={1000}
         >
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             No users found for "{debouncedSearch}"
           </Text>
         </Stack>
       )}
 
       {error && (
-        <Text fontSize="$2" color="$red10">
+        <Text color="$red10">
           {error}
         </Text>
       )}

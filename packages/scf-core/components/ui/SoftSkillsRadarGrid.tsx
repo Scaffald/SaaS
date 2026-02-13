@@ -55,17 +55,15 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <Stack gap="$4" padding="$4">
-        <Row flexWrap="wrap" gap="$3" $md={{ gap: '$4' }}>
+      <Stack gap={16} padding={16}>
+        <Row flexWrap="wrap" gap={12}>
           {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
               key={key}
               width="100%"
-              $md={{ width: '48%' }}
-              $lg={{ width: '31%' }}
               height={200}
               backgroundColor="$color3"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$color5"
             >
@@ -80,11 +78,11 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   // Empty state
   if (filteredSkills.length === 0) {
     return (
-      <Stack gap="$4" padding="$4" alignItems="center" justifyContent="center" minHeight={300}>
-        <Text fontSize="$5" fontWeight="600" color="$color11">
+      <Stack gap={16} padding={16} align="center" justify="center" minHeight={300}>
+        <Text color="gray">
           No skills in this category
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           Skills will appear here once they're added to this category.
         </Text>
       </Stack>
@@ -92,24 +90,15 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   }
 
   return (
-    <Stack gap="$4" padding="$4">
+    <Stack gap={16} padding={16}>
       <Row
         flexWrap="wrap"
-        gap="$3"
-        $md={{
-          gap: '$4',
-        }}
+        gap={12}
       >
         {filteredSkills.map((skill) => (
           <View
             key={skill.id}
             width="100%"
-            $md={{
-              width: '48%',
-            }}
-            $lg={{
-              width: '31%',
-            }}
           >
             <IndividualSkillRadarChart
               skillName={skill.name}
@@ -117,7 +106,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
               peerRating={skill.peerRating}
               versionHistory={skill.versionHistory}
               showTrend={skill.versionHistory && skill.versionHistory.length > 1}
-              size="medium"
+              size="md"
               onPress={onSkillPress ? () => onSkillPress(skill.id) : undefined}
             />
           </View>

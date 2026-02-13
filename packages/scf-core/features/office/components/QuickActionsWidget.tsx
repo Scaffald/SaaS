@@ -58,14 +58,14 @@ export function QuickActionsWidget({
   additionalActions,
 }: QuickActionsWidgetProps) {
   const renderListActions = () => (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {onCreate && (
         <Button theme="info" icon={ArrowRightCircle} onPress={onCreate}>
           Create {resourceName}
         </Button>
       )}
       {onRefresh && (
-        <Button variant="outlined" icon={RefreshCw} onPress={onRefresh} disabled={isLoading}>
+        <Button variant="outline" icon={RefreshCw} onPress={onRefresh} disabled={isLoading}>
           Refresh
         </Button>
       )}
@@ -74,14 +74,14 @@ export function QuickActionsWidget({
   )
 
   const renderCreateActions = () => (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {onSave && (
         <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
           Save
         </Button>
       )}
       {onCancel && (
-        <Button variant="outlined" icon={X} onPress={onCancel} disabled={isLoading}>
+        <Button variant="outline" icon={X} onPress={onCancel} disabled={isLoading}>
           Cancel
         </Button>
       )}
@@ -90,14 +90,14 @@ export function QuickActionsWidget({
   )
 
   const renderEditActions = () => (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {onSave && (
         <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
           Save Changes
         </Button>
       )}
       {onCancel && (
-        <Button variant="outlined" icon={X} onPress={onCancel} disabled={isLoading}>
+        <Button variant="outline" icon={X} onPress={onCancel} disabled={isLoading}>
           Cancel
         </Button>
       )}
@@ -111,14 +111,14 @@ export function QuickActionsWidget({
   )
 
   const renderDetailActions = () => (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {onEdit && (
         <Button theme="info" icon={Pencil} onPress={onEdit}>
           Edit
         </Button>
       )}
       {onView && (
-        <Button variant="outlined" icon={Eye} onPress={onView}>
+        <Button variant="outline" icon={Eye} onPress={onView}>
           View
         </Button>
       )}
@@ -147,8 +147,8 @@ export function QuickActionsWidget({
   }
 
   return (
-    <DashboardWidget gap="$3" elevated>
-      <Text fontSize="$5" fontWeight="700">
+    <DashboardWidget gap={12} elevated>
+      <Text>
         Quick Actions
       </Text>
       {renderActions()}

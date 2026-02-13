@@ -123,44 +123,44 @@ export function AdminDisputeResolutionDialog({
           exitStyle={{ opacity: 0, scale: 0.95 }}
           style={{ width: '90%', maxWidth: 640, maxHeight: '85%' }}
         >
-          <Stack gap="$4">
-            <Row justifyContent="space-between" alignItems="center">
-              <Dialog.Title fontSize="$6" fontWeight="700">
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <Dialog.Title>
                 Resolve dispute
               </Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="$2" variant="outlined" disabled={isSubmitting}>
+                <Button size={8} variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>
             </Row>
 
             {dispute ? (
-              <Stack gap="$3">
+              <Stack gap={12}>
                 <Stack
-                  gap="$2"
-                  padding="$3"
+                  gap={8}
+                  padding={12}
                   backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$borderColor"
-                  borderRadius="$4"
+                  borderRadius={16}
                 >
-                  <Row gap="$2" alignItems="center">
+                  <Row gap={8} align="center">
                     <AlertTriangle size={18} color="$yellow10" />
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Text color="gray">
                       {workerName}
                     </Text>
                   </Row>
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     Submitted {formatDateTime(dispute.created_at)}
                   </Text>
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     Current status: {dispute.status}
                   </Text>
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
+                <Stack gap={8}>
+                  <Text color="gray">
                     Dispute reason
                   </Text>
                   <TextArea
@@ -171,8 +171,8 @@ export function AdminDisputeResolutionDialog({
                   />
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
+                <Stack gap={8}>
+                  <Text color="gray">
                     Dispute details
                   </Text>
                   <TextArea
@@ -185,8 +185,8 @@ export function AdminDisputeResolutionDialog({
 
                 <Separator />
 
-                <Stack gap="$3">
-                  <Stack gap="$1">
+                <Stack gap={12}>
+                  <Stack gap={4}>
                     <Label htmlFor="dispute-resolution-status">Resolution</Label>
                     <ResponsiveSelect
                       value={resolutionStatus}
@@ -202,7 +202,7 @@ export function AdminDisputeResolutionDialog({
                     />
                   </Stack>
 
-                  <Stack gap="$1">
+                  <Stack gap={4}>
                     <Label htmlFor="dispute-resolution-notes">Resolution notes</Label>
                     <TextArea
                       id="dispute-resolution-notes"
@@ -215,9 +215,9 @@ export function AdminDisputeResolutionDialog({
                 </Stack>
               </Stack>
             ) : (
-              <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
-                <Spinner size="large" />
-                <Text fontSize="$3" color="$color10">
+              <Stack gap={12} align="center" justify="center" paddingVertical={24}>
+                <Spinner size="lg" />
+                <Text color="gray">
                   Loading dispute…
                 </Text>
               </Stack>
@@ -225,22 +225,22 @@ export function AdminDisputeResolutionDialog({
 
             <Separator />
 
-            <Row gap="$2" justifyContent="flex-end">
+            <Row gap={8} justify="flex-end">
               <Dialog.Close asChild>
-                <Button size="$3" variant="outlined" disabled={isSubmitting}>
+                <Button size={12} variant="outline" disabled={isSubmitting}>
                   Cancel
                 </Button>
               </Dialog.Close>
               <Button
-                size="$3"
+                size={12}
                 theme="blue"
                 onPress={handleResolve}
                 disabled={!dispute || isSubmitting}
               >
                 {isSubmitting ? (
-                  <Row gap="$2" alignItems="center">
-                    <Spinner size="small" color="$color1" />
-                    <Text color="$color1">Resolving…</Text>
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" color="gray" />
+                    <Text color="gray">Resolving…</Text>
                   </Row>
                 ) : (
                   'Resolve dispute'

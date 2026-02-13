@@ -91,14 +91,14 @@ export function OccupationAssessmentWizard() {
       error={error ? new Error(error.message ?? 'Failed to load assessment status.') : null}
       showNext={false}
     >
-      <Stack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack gap={16} width="100%" maxWidth={800} marginHorizontal="auto">
         {/* Current Occupation */}
-        <Stack gap="$3">
-          <Stack gap="$1">
-            <Text fontSize="$5" fontWeight="600">
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text>
               Current Occupation (Optional)
             </Text>
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               What is your current or most recent job?
             </Text>
           </Stack>
@@ -111,20 +111,20 @@ export function OccupationAssessmentWizard() {
         </Stack>
 
         {/* Target Occupations */}
-        <Stack gap="$3">
-          <Stack gap="$1">
-            <Text fontSize="$5" fontWeight="600">
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text>
               Target Occupations (Optional)
             </Text>
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               What occupations are you interested in pursuing?
             </Text>
           </Stack>
           {targetOccupations.map((occupation, index) => (
             <Row
               key={`target-occupation-${index}-${occupation || 'empty'}`}
-              gap="$2"
-              alignItems="center"
+              gap={8}
+              align="center"
             >
               <Stack flex={1}>
                 <OccupationSearch
@@ -135,8 +135,8 @@ export function OccupationAssessmentWizard() {
                 />
               </Stack>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 icon={X}
                 onPress={() => handleRemoveTarget(index)}
                 disabled={saveMutation.isPending}
@@ -144,8 +144,8 @@ export function OccupationAssessmentWizard() {
             </Row>
           ))}
           <Button
-            size="$4"
-            variant="outlined"
+            size={16}
+            variant="outline"
             icon={Plus}
             onPress={handleAddTarget}
             disabled={saveMutation.isPending}
@@ -154,7 +154,7 @@ export function OccupationAssessmentWizard() {
           </Button>
         </Stack>
 
-        <Button size="$5" themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
+        <Button size={20} themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
           <Button.Text>Save Preferences</Button.Text>
         </Button>
       </Stack>

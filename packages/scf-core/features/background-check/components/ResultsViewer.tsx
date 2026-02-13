@@ -44,16 +44,16 @@ export const ResultsViewer = memo(function ResultsViewer({
   if (getCheckQuery.isLoading || getCheckQuery.isFetching) {
     return (
       <Stack
-        gap="$3"
-        padding="$4"
+        gap={12}
+        padding={16}
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Row gap="$2" alignItems="center">
-          <Spinner size="small" color="$color11" />
-          <Text fontSize="$3" color="$color11">
+        <Row gap={8} align="center">
+          <Spinner size="sm" color="gray" />
+          <Text color="gray">
             Loading background check details…
           </Text>
         </Row>
@@ -64,20 +64,20 @@ export const ResultsViewer = memo(function ResultsViewer({
   if (getCheckQuery.isError || !getCheckQuery.data?.check) {
     return (
       <Stack
-        gap="$3"
-        padding="$4"
+        gap={12}
+        padding={16}
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Row gap="$2" alignItems="center">
+        <Row gap={8} align="center">
           <AlertTriangle size={18} color="$red10" />
-          <Text fontSize="$3" color="$red11">
+          <Text color="$red11">
             We couldn’t load your background check details. Try again.
           </Text>
         </Row>
-        <Button size="$3" variant="outlined" onPress={() => getCheckQuery.refetch()}>
+        <Button size={12} variant="outline" onPress={() => getCheckQuery.refetch()}>
           Retry
         </Button>
       </Stack>
@@ -106,37 +106,37 @@ export const ResultsViewer = memo(function ResultsViewer({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Row justifyContent="space-between" alignItems="center">
-        <Stack gap="$1">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text color="gray">
             {summary?.package?.display_name ?? 'Background check results'}
           </Text>
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <Stack
-              paddingHorizontal="$3"
-              paddingVertical="$1"
+              paddingHorizontal={12}
+              paddingVertical={4}
               backgroundColor={statusColors.background}
               borderWidth={1}
               borderColor={statusColors.border}
-              borderRadius="$3"
+              borderRadius={12}
             >
-              <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
+              <Text color={statusColors.text}>
                 {statusMeta.label}
               </Text>
             </Stack>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Last updated {formatDate(detail.updated_at)}
             </Text>
           </Row>
         </Stack>
-        <Button size="$3" variant="outlined" icon={CloseIcon} onPress={onClose}>
+        <Button size={12} variant="outline" icon={CloseIcon} onPress={onClose}>
           Close
         </Button>
       </Row>
@@ -159,21 +159,21 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       {onRequestDispute && summary?.status && (
         <Stack
-          gap="$2"
-          padding="$3"
+          gap={8}
+          padding={12}
           backgroundColor="$color2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+          <Text color="gray">
             Notice something inaccurate?
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Submit a dispute so our compliance team can review and correct any issues.
           </Text>
           <Button
-            size="$3"
+            size={12}
             theme="blue"
             disabled={hasActiveDispute}
             onPress={() => {
@@ -188,35 +188,35 @@ export const ResultsViewer = memo(function ResultsViewer({
       )}
 
       {detail.summary && (
-        <Stack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Summary
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {detail.summary}
           </Text>
         </Stack>
       )}
 
       {detail.findings && (
-        <Stack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Findings
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {JSON.stringify(detail.findings, null, 2)}
           </Text>
         </Stack>
       )}
 
-      <Stack gap="$3">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text color="gray">
             Documents
           </Text>
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={DownloadCloud}
             onPress={() =>
               Alert.alert(
@@ -230,31 +230,31 @@ export const ResultsViewer = memo(function ResultsViewer({
           </Button>
         </Row>
         {documents.length === 0 ? (
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             No documents uploaded yet.
           </Text>
         ) : (
-          <Stack gap="$2">
+          <Stack gap={8}>
             {documents.map((document: BackgroundCheckDocument) => (
               <Row
                 key={document.id}
-                justifyContent="space-between"
-                alignItems="center"
-                padding="$3"
+                justify="space-between"
+                align="center"
+                padding={12}
                 backgroundColor="$color2"
-                borderRadius="$3"
+                borderRadius={12}
                 borderWidth={1}
                 borderColor="$borderColor"
               >
-                <Stack gap="$1">
-                  <Text fontSize="$3" color="$color12">
+                <Stack gap={4}>
+                  <Text color="gray">
                     {document.file_name}
                   </Text>
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     Uploaded {formatDate(document.uploaded_at)}
                   </Text>
                 </Stack>
-                <Button size="$2" variant="outlined" disabled>
+                <Button size={8} variant="outline" disabled>
                   View
                 </Button>
               </Row>

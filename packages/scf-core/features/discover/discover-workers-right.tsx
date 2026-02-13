@@ -78,43 +78,43 @@ export function DiscoverWorkersRight({
 
   // Custom active filters content
   const activeFiltersContent = (
-    <Stack gap="$2">
+    <Stack gap={8}>
       {searchQuery && (
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$3" color="$color11">
+        <Row gap={8} align="center">
+          <Text color="gray">
             Search:
           </Text>
-          <Text fontSize="$3" fontWeight="600" color="$blue10">
+          <Text color="$blue10">
             {searchQuery}
           </Text>
         </Row>
       )}
       {minScore > 0 && (
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$3" color="$color11">
+        <Row gap={8} align="center">
+          <Text color="gray">
             Min Score:
           </Text>
-          <Text fontSize="$3" fontWeight="600" color="$blue10">
+          <Text color="$blue10">
             {minScore}
           </Text>
         </Row>
       )}
       {selectedSkills.length > 0 && (
-        <Row gap="$2" alignItems="center" flexWrap="wrap">
-          <Text fontSize="$3" color="$color11">
+        <Row gap={8} align="center" flexWrap="wrap">
+          <Text color="gray">
             Skills:
           </Text>
-          <Text fontSize="$3" fontWeight="600" color="$blue10">
+          <Text color="$blue10">
             {selectedSkills.length}
           </Text>
         </Row>
       )}
       {selectedCertifications.length > 0 && (
-        <Row gap="$2" alignItems="center" flexWrap="wrap">
-          <Text fontSize="$3" color="$color11">
+        <Row gap={8} align="center" flexWrap="wrap">
+          <Text color="gray">
             Certs:
           </Text>
-          <Text fontSize="$3" fontWeight="600" color="$green10">
+          <Text color="$green10">
             {selectedCertifications.length}
           </Text>
         </Row>
@@ -124,14 +124,14 @@ export function DiscoverWorkersRight({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap="$4" padding="$4">
+      <Stack gap={16} padding={16}>
         <SearchFilterWidget
           title="Search & Filter"
           subtitle="Find skilled workers for your projects"
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           searchLabel={
-            <Row alignItems="center" gap="$2">
+            <Row align="center" gap={8}>
               <Search size={16} />
               <Text>Search</Text>
             </Row>
@@ -145,12 +145,12 @@ export function DiscoverWorkersRight({
           <Separator />
 
           {/* Scaffald Score Filter */}
-          <Stack gap="$3">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Text color="gray">
                 Scaffald Score
               </Text>
-              <Text fontSize="$5" fontWeight="700" color="$blue10">
+              <Text color="$blue10">
                 {minScore}
               </Text>
             </Row>
@@ -172,44 +172,44 @@ export function DiscoverWorkersRight({
           <Separator />
 
           {/* Skills Filter */}
-          <Stack gap="$3">
-            <Row alignItems="center" gap="$2">
-              <Award size={16} color="$color12" />
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Stack gap={12}>
+            <Row align="center" gap={8}>
+              <Award size={16} color="gray" />
+              <Text color="gray">
                 Skills
               </Text>
             </Row>
 
-            <Row gap="$2">
+            <Row gap={8}>
               <Input
                 flex={1}
                 placeholder="Add skill..."
                 value={skillInput}
                 onChangeText={setSkillInput}
                 onSubmitEditing={handleAddSkill}
-                size="$3"
+                size={12}
               />
-              <Button size="$3" onPress={handleAddSkill} disabled={!skillInput.trim()}>
+              <Button size={12} onPress={handleAddSkill} disabled={!skillInput.trim()}>
                 Add
               </Button>
             </Row>
 
             {selectedSkills.length > 0 && (
-              <Row gap="$2" flexWrap="wrap">
+              <Row gap={8} flexWrap="wrap">
                 {selectedSkills.map((skill) => (
                   <Row
                     key={skill}
                     backgroundColor="$blue3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
-                    gap="$1"
-                    alignItems="center"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
+                    gap={4}
+                    align="center"
                   >
-                    <Text fontSize="$2" color="$blue11">
+                    <Text color="$blue11">
                       {skill}
                     </Text>
-                    <Button size="$1" circular unstyled onPress={() => handleRemoveSkill(skill)}>
+                    <Button size={4} circular unstyled onPress={() => handleRemoveSkill(skill)}>
                       <X size={12} color="$blue11" />
                     </Button>
                   </Row>
@@ -221,25 +221,25 @@ export function DiscoverWorkersRight({
           <Separator />
 
           {/* Certifications Filter */}
-          <Stack gap="$3">
-            <Row alignItems="center" gap="$2">
-              <BadgeCheck size={16} color="$color12" />
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Stack gap={12}>
+            <Row align="center" gap={8}>
+              <BadgeCheck size={16} color="gray" />
+              <Text color="gray">
                 Certifications
               </Text>
             </Row>
 
-            <Row gap="$2">
+            <Row gap={8}>
               <Input
                 flex={1}
                 placeholder="Add certification..."
                 value={certificationInput}
                 onChangeText={setCertificationInput}
                 onSubmitEditing={handleAddCertification}
-                size="$3"
+                size={12}
               />
               <Button
-                size="$3"
+                size={12}
                 onPress={handleAddCertification}
                 disabled={!certificationInput.trim()}
               >
@@ -248,22 +248,22 @@ export function DiscoverWorkersRight({
             </Row>
 
             {selectedCertifications.length > 0 && (
-              <Row gap="$2" flexWrap="wrap">
+              <Row gap={8} flexWrap="wrap">
                 {selectedCertifications.map((cert) => (
                   <Row
                     key={cert}
                     backgroundColor="$green3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
-                    gap="$1"
-                    alignItems="center"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
+                    gap={4}
+                    align="center"
                   >
-                    <Text fontSize="$2" color="$green11">
+                    <Text color="$green11">
                       {cert}
                     </Text>
                     <Button
-                      size="$1"
+                      size={4}
                       circular
                       unstyled
                       onPress={() => handleRemoveCertification(cert)}

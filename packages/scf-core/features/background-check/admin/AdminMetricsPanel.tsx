@@ -15,9 +15,9 @@ interface AdminMetricsPanelProps {
 export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetricsPanelProps) {
   if (isLoading) {
     return (
-      <Stack gap="$3" alignItems="center" paddingVertical="$6">
-        <Spinner size="large" />
-        <Text fontSize="$3" color="$color10">
+      <Stack gap={12} align="center" paddingVertical={24}>
+        <Spinner size="lg" />
+        <Text color="gray">
           Loading metrics…
         </Text>
       </Stack>
@@ -27,20 +27,20 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
   if (!metrics) {
     return (
       <Card
-        padding="$4"
-        gap="$3"
+        padding={16}
+        gap={12}
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
+        borderRadius={16}
       >
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Text color="gray">
           Metrics unavailable
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           We couldn’t load the latest metrics. Try refreshing to retrieve the most recent data.
         </Text>
-        <Button icon={RefreshCcw} onPress={onRefresh} size="$3" variant="outlined">
+        <Button icon={RefreshCcw} onPress={onRefresh} size={12} variant="outline">
           Refresh
         </Button>
       </Card>
@@ -48,8 +48,8 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
   }
 
   return (
-    <Stack gap="$4">
-      <Row gap="$3" flexWrap="wrap">
+    <Stack gap={16}>
+      <Row gap={12} flexWrap="wrap">
         <MetricCard
           title="Checks in system"
           value={metrics.totals.checks}
@@ -74,21 +74,20 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
       <Separator />
 
-      <Row flexWrap="wrap" gap="$3">
+      <Row flexWrap="wrap" gap={12}>
         <Card
-          flexBasis={260}
           flexGrow={1}
-          padding="$4"
-          gap="$3"
+          padding={16}
+          gap={12}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Text color="gray">
             Dispute status
           </Text>
-          <Stack gap="$2">
+          <Stack gap={8}>
             <DisputeMetric label="Pending review" value={metrics.disputes.pending} tone="warning" />
             <DisputeMetric label="Under review" value={metrics.disputes.under_review} tone="info" />
             <DisputeMetric label="Resolved" value={metrics.disputes.resolved} tone="success" />
@@ -97,65 +96,64 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         </Card>
 
         <Card
-          flexBasis={260}
           flexGrow={1}
-          padding="$4"
-          gap="$3"
+          padding={16}
+          gap={12}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Text color="gray">
             Average completion time
           </Text>
-          <Text fontSize="$7" fontWeight="700" color="$color12">
+          <Text color="gray">
             {metrics.averageCompletionDays != null ? `${metrics.averageCompletionDays} days` : '—'}
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Based on fully completed checks in the system.
           </Text>
         </Card>
       </Row>
 
       <Card
-        padding="$4"
-        gap="$3"
+        padding={16}
+        gap={12}
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
+        borderRadius={16}
       >
-        <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>
+          <Text color="gray">
             Package distribution
           </Text>
-          <Button variant="outlined" size="$2" icon={RefreshCcw} onPress={onRefresh}>
+          <Button variant="outline" size={8} icon={RefreshCcw} onPress={onRefresh}>
             Refresh
           </Button>
         </Row>
-        <Stack gap="$2">
+        <Stack gap={8}>
           {metrics.packageDistribution.length === 0 ? (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               No package usage data available yet.
             </Text>
           ) : (
             metrics.packageDistribution.map((item: { label: string; count: number }) => (
               <Row
                 key={item.label}
-                justifyContent="space-between"
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                justify="space-between"
+                align="center"
+                paddingHorizontal={12}
+                paddingVertical={8}
                 backgroundColor="$color1"
                 borderColor="$borderColor"
                 borderWidth={1}
-                borderRadius="$3"
+                borderRadius={12}
               >
-                <Text fontSize="$3" color="$color12">
+                <Text color="gray">
                   {item.label}
                 </Text>
-                <Text fontSize="$3" fontWeight="600" color="$color12">
+                <Text color="gray">
                   {item.count}
                 </Text>
               </Row>
@@ -176,22 +174,21 @@ interface MetricCardProps {
 function MetricCard({ title, value, description }: MetricCardProps) {
   return (
     <Card
-      flexBasis={200}
       flexGrow={1}
-      padding="$4"
-      gap="$2"
+      padding={16}
+      gap={8}
       backgroundColor="$color2"
       borderColor="$borderColor"
       borderWidth={1}
-      borderRadius="$4"
+      borderRadius={16}
     >
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         {title}
       </Text>
-      <Text fontSize="$7" fontWeight="700" color="$color12">
+      <Text color="gray">
         {value}
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         {description}
       </Text>
     </Card>
@@ -213,11 +210,11 @@ function DisputeMetric({ label, value, tone }: DisputeMetricProps) {
   } as const
 
   return (
-    <Row justifyContent="space-between" alignItems="center">
-      <Text fontSize="$2" color="$color10">
+    <Row justify="space-between" align="center">
+      <Text color="gray">
         {label}
       </Text>
-      <Text fontSize="$3" fontWeight="600" color={toneColors[tone]}>
+      <Text color={toneColors[tone]}>
         {value}
       </Text>
     </Row>

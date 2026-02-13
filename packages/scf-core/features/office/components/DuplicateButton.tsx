@@ -92,19 +92,19 @@ export function DuplicateButton({
               Duplicate {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
             </Dialog.Title>
             <Dialog.Description>
-              Create a copy of <Text fontWeight="600">"{itemName}"</Text>?
+              Create a copy of <Text>"{itemName}"</Text>?
             </Dialog.Description>
 
-            <Stack gap="$2">
-              <Text color="$color11" fontSize="$3">
+            <Stack gap={8}>
+              <Text color="gray">
                 A new {itemType} will be created as a draft with "(Copy)" appended to the title. All
                 settings, requirements, and team assignments will be copied.
               </Text>
             </Stack>
 
-            <Row gap="$3" alignItems="center" justifyContent="flex-end">
+            <Row gap={12} align="center" justify="flex-end">
               <Dialog.Close asChild>
-                <Button variant="outlined" disabled={isDuplicating}>
+                <Button variant="outline" disabled={isDuplicating}>
                   Cancel
                 </Button>
               </Dialog.Close>

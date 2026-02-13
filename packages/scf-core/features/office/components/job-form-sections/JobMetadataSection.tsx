@@ -84,22 +84,22 @@ export function JobMetadataSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Job Metadata & Management
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Internal tracking and management information
       </Text>
 
       {/* Internal Job Code */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Internal job code</Label>
         <Input
           placeholder="e.g. JOB-2025-001"
@@ -109,7 +109,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Department */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Department</Label>
         <Input
           placeholder="e.g. Operations, Sales, Engineering"
@@ -119,7 +119,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Cost Center */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Cost center</Label>
         <Input
           placeholder="e.g. CC-1234"
@@ -129,7 +129,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Hiring Manager */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Hiring manager</Label>
         <UserSearch
           value={localState.hiring_manager_id}
@@ -144,7 +144,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Recruiter */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Recruiter</Label>
         <UserSearch
           value={localState.recruiter_id}
@@ -159,7 +159,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Number of Openings */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Number of openings</Label>
         <Input
           placeholder="1"
@@ -173,7 +173,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Priority Level */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Priority level</Label>
         <ResponsiveSelect
           value={localState.priority_level || ''}
@@ -187,7 +187,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Requisition Number */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Requisition number</Label>
         <Input
           placeholder="e.g. REQ-2025-001"
@@ -197,7 +197,7 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Job Category */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Job category</Label>
         <Input
           placeholder="e.g. Trade Skills, Management, Administrative"
@@ -207,10 +207,10 @@ export function JobMetadataSection({
       </Stack>
 
       {/* Is Confidential */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Confidential posting</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Hide company name and details from job listings
           </Text>
         </Stack>
@@ -222,38 +222,38 @@ export function JobMetadataSection({
       </Row>
 
       {/* Date Fields */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Application deadline</Label>
         <Input
           placeholder="YYYY-MM-DD"
           value={localState.application_deadline || ''}
           onChangeText={(text) => handleChange('application_deadline', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Last date to accept applications
         </Text>
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Target start date</Label>
         <Input
           placeholder="YYYY-MM-DD"
           value={localState.target_start_date || ''}
           onChangeText={(text) => handleChange('target_start_date', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           When you want the hire to start
         </Text>
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>Estimated hire date</Label>
         <Input
           placeholder="YYYY-MM-DD"
           value={localState.estimated_hire_date || ''}
           onChangeText={(text) => handleChange('estimated_hire_date', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           When you expect to make a hire
         </Text>
       </Stack>

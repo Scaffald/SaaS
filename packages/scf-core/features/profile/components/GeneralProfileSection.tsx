@@ -182,8 +182,8 @@ export function GeneralProfileSection({
 
   if (isLoadingProfile) {
     return (
-      <Stack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="large" />
+      <Stack gap={16} padding={16} flex={1} justify="center" align="center">
+        <Spinner size="lg" />
         <Text>Loading profile...</Text>
       </Stack>
     )
@@ -191,10 +191,10 @@ export function GeneralProfileSection({
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
+      <Stack gap={16}>
         {/* Avatar Section */}
-        <Stack gap="$3" alignItems="center">
-          <Text fontWeight="600">Profile Photo</Text>
+        <Stack gap={12} align="center">
+          <Text>Profile Photo</Text>
           <AvatarImagePicker
             value={getAvatarUrl(avatarPath) || ''}
             onImageSelect={async (imageUri) => {
@@ -231,16 +231,16 @@ export function GeneralProfileSection({
             placeholder="Upload Avatar"
           />
           {uploadAvatarMutation.isPending && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Uploading avatar...
             </Text>
           )}
         </Stack>
 
         {/* Name Fields */}
-        <Row gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">First Name *</Text>
+        <Row gap={12}}>
+          <Stack gap={8} flex={1}>
+            <Text>First Name *</Text>
             <Controller
               name="first_name"
               control={control}
@@ -256,14 +256,14 @@ export function GeneralProfileSection({
               )}
             />
             {errors.first_name && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
               </Text>
             )}
           </Stack>
 
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">Last Name *</Text>
+          <Stack gap={8} flex={1}>
+            <Text>Last Name *</Text>
             <Controller
               name="last_name"
               control={control}
@@ -279,7 +279,7 @@ export function GeneralProfileSection({
               )}
             />
             {errors.last_name && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
               </Text>
             )}
@@ -287,8 +287,8 @@ export function GeneralProfileSection({
         </Row>
 
         {/* About Section */}
-        <Stack gap="$2">
-          <Text fontWeight="600">About</Text>
+        <Stack gap={8}>
+          <Text>About</Text>
           <Controller
             name="about"
             control={control}
@@ -305,15 +305,15 @@ export function GeneralProfileSection({
             )}
           />
           {errors.about && (
-            <Text color="$red10" fontSize="$2">
+            <Text color="$red10">
               {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
             </Text>
           )}
         </Stack>
 
         {/* Contact Information */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Phone</Text>
+        <Stack gap={8}>
+          <Text>Phone</Text>
           <Controller
             name="phone"
             control={control}
@@ -330,8 +330,8 @@ export function GeneralProfileSection({
           />
         </Stack>
 
-        <Stack gap="$2">
-          <Text fontWeight="600">Email {mode === 'user' ? '(Read-only)' : ''}</Text>
+        <Stack gap={8}>
+          <Text>Email {mode === 'user' ? '(Read-only)' : ''}</Text>
           <Controller
             name="email"
             control={control}
@@ -350,15 +350,15 @@ export function GeneralProfileSection({
             )}
           />
           {mode === 'user' && (
-            <Text color="$color10" fontSize="$2">
+            <Text color="gray">
               Email changes must be made through account settings
             </Text>
           )}
         </Stack>
 
         {/* Home Address */}
-        <Stack gap="$3">
-          <Text fontWeight="600">Home Address</Text>
+        <Stack gap={12}>
+          <Text>Home Address</Text>
           <AddressForm
             mode="hybrid"
             placeholder="Search for home address..."
@@ -413,14 +413,13 @@ export function GeneralProfileSection({
 
         {/* Save Button */}
         {!readOnly && (
-          <Row justifyContent="flex-end" paddingTop="$4">
+          <Row justify="flex-end" paddingTop={16}>
             <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
-              $sm={{ height: 44 }}
+              space={isLoading ? '$2' : 0}}
             >
               <AnimatePresence>
                 {isLoading && (

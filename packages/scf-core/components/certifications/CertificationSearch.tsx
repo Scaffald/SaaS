@@ -116,13 +116,13 @@ export function CertificationSearch({
     return (
       <Row
         backgroundColor={bgColor}
-        paddingHorizontal="$2"
-        paddingVertical="$0.5"
-        borderRadius="$2"
+        paddingHorizontal={8}
+        paddingVertical={2}
+        borderRadius={8}
         borderWidth={1}
         borderColor={bgColor}
       >
-        <Text color="$background" fontSize="$1" fontWeight="600">
+        <Text color="$background">
           {labels[depth] || `Depth ${depth}`}
         </Text>
       </Row>
@@ -130,8 +130,8 @@ export function CertificationSearch({
   }
 
   return (
-    <Stack gap="$2" position="relative">
-      <Text fontWeight="600" fontSize="$4">
+    <Stack gap={8} position="relative">
+      <Text>
         Search Certifications
       </Text>
       <Input
@@ -157,31 +157,31 @@ export function CertificationSearch({
           left={0}
           right={0}
           zIndex={1000}
-          elevation="$4"
+          elevation={16}
           height={400}
           overflow="hidden"
           testID="cert-search-results"
         >
           <ScrollView height={400}>
             {isLoading ? (
-              <Stack padding="$4" alignItems="center" gap="$2">
-                <Text color="$color11">Searching...</Text>
+              <Stack padding={16} align="center" gap={8}>
+                <Text color="gray">Searching...</Text>
               </Stack>
             ) : filteredResults.length === 0 ? (
-              <Stack padding="$4" alignItems="center" gap="$2">
+              <Stack padding={16} align="center" gap={8}>
                 {searchQuery.length > 0 ? (
                   <>
-                    <Search size={32} color="$color11" />
-                    <Text color="$color11">No certifications found</Text>
-                    <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+                    <Search size={32} color="gray" />
+                    <Text color="gray">No certifications found</Text>
+                    <Text color="gray" style={{ textAlign: 'center' }}>
                       Try a different search term
                     </Text>
                   </>
                 ) : (
                   <>
-                    <Search size={32} color="$color11" />
-                    <Text color="$color11">Type to search certifications</Text>
-                    <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+                    <Search size={32} color="gray" />
+                    <Text color="gray">Type to search certifications</Text>
+                    <Text color="gray" style={{ textAlign: 'center' }}>
                       Search for certifications like "OSHA" or "First Aid"
                     </Text>
                   </>
@@ -193,23 +193,23 @@ export function CertificationSearch({
                 {groupedResults.depth0.length > 0 && (
                   <Stack>
                     <Row
-                      padding="$3"
+                      padding={12}
                       backgroundColor="$color3"
                       borderBottomWidth={1}
                       borderColor="$borderColor"
-                      alignItems="center"
-                      gap="$2"
+                      align="center"
+                      gap={8}
                       testID="cert-search-section-depth0"
                     >
-                      <Award size={16} color="$color10" />
-                      <Text fontWeight="600" fontSize="$3" color="$color11">
+                      <Award size={16} color="gray" />
+                      <Text color="gray">
                         Top Level Categories
                       </Text>
                     </Row>
                     {groupedResults.depth0.map((cert) => (
                       <Card
                         key={cert.id}
-                        padding="$3"
+                        padding={12}
                         borderRadius={0}
                         borderWidth={0}
                         borderBottomWidth={1}
@@ -219,15 +219,15 @@ export function CertificationSearch({
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-0"
                       >
-                        <Stack gap="$2">
-                          <Row gap="$2" alignItems="center" flexWrap="wrap">
-                            <Text fontWeight="600" flex={1}>
+                        <Stack gap={8}>
+                          <Row gap={8} align="center" flexWrap="wrap">
+                            <Text flex={1}>
                               {cert.title}
                             </Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
                           {cert.description && (
-                            <Text fontSize="$2" color="$color11" numberOfLines={2}>
+                            <Text color="gray" numberOfLines={2}>
                               {cert.description}
                             </Text>
                           )}
@@ -241,16 +241,16 @@ export function CertificationSearch({
                 {Object.entries(groupedResults.depth1ByParent).map(([parentId, certs]) => (
                   <Stack key={parentId}>
                     <Row
-                      padding="$3"
+                      padding={12}
                       backgroundColor="$color3"
                       borderBottomWidth={1}
                       borderColor="$borderColor"
-                      alignItems="center"
-                      gap="$2"
+                      align="center"
+                      gap={8}
                       testID="cert-search-section-depth1"
                     >
-                      <Award size={16} color="$color10" />
-                      <Text fontWeight="600" fontSize="$3" color="$color11">
+                      <Award size={16} color="gray" />
+                      <Text color="gray">
                         {parentId === 'none'
                           ? 'Categories'
                           : `${getParentTitle(parentId)} > Categories`}
@@ -259,7 +259,7 @@ export function CertificationSearch({
                     {certs.map((cert) => (
                       <Card
                         key={cert.id}
-                        padding="$3"
+                        padding={12}
                         borderRadius={0}
                         borderWidth={0}
                         borderBottomWidth={1}
@@ -269,15 +269,15 @@ export function CertificationSearch({
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-1"
                       >
-                        <Stack gap="$2">
-                          <Row gap="$2" alignItems="center" flexWrap="wrap">
-                            <Text fontWeight="600" flex={1}>
+                        <Stack gap={8}>
+                          <Row gap={8} align="center" flexWrap="wrap">
+                            <Text flex={1}>
                               {cert.title}
                             </Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
                           {cert.description && (
-                            <Text fontSize="$2" color="$color11" numberOfLines={2}>
+                            <Text color="gray" numberOfLines={2}>
                               {cert.description}
                             </Text>
                           )}
@@ -291,16 +291,16 @@ export function CertificationSearch({
                 {Object.entries(groupedResults.depth2ByParent).map(([parentId, certs]) => (
                   <Stack key={parentId}>
                     <Row
-                      padding="$3"
+                      padding={12}
                       backgroundColor="$color3"
                       borderBottomWidth={1}
                       borderColor="$borderColor"
-                      alignItems="center"
-                      gap="$2"
+                      align="center"
+                      gap={8}
                       testID="cert-search-section-depth2"
                     >
-                      <Award size={16} color="$color10" />
-                      <Text fontWeight="600" fontSize="$3" color="$color11">
+                      <Award size={16} color="gray" />
+                      <Text color="gray">
                         {parentId === 'none'
                           ? 'Specific Certifications'
                           : `${getParentTitle(parentId)} > Certifications`}
@@ -315,7 +315,7 @@ export function CertificationSearch({
                       return (
                         <Card
                           key={cert.id}
-                          padding="$3"
+                          padding={12}
                           borderRadius={0}
                           borderWidth={0}
                           borderBottomWidth={1}
@@ -325,12 +325,12 @@ export function CertificationSearch({
                           onPress={() => handleSelect(cert)}
                           testID="cert-search-card-2"
                         >
-                          <Stack gap="$2">
-                            <Row gap="$2" alignItems="center" flexWrap="wrap">
-                              <Stack flex={1} gap="$1">
-                                <Text fontWeight="600">{cert.title}</Text>
+                          <Stack gap={8}>
+                            <Row gap={8} align="center" flexWrap="wrap">
+                              <Stack flex={1} gap={4}>
+                                <Text>{cert.title}</Text>
                                 {cert.parent_title && (
-                                  <Text fontSize="$2" color="$color10">
+                                  <Text color="gray">
                                     {hierarchyPath}
                                   </Text>
                                 )}
@@ -338,7 +338,7 @@ export function CertificationSearch({
                               <DepthBadge depth={cert.depth} />
                             </Row>
                             {cert.description && (
-                              <Text fontSize="$2" color="$color11" numberOfLines={2}>
+                              <Text color="gray" numberOfLines={2}>
                                 {cert.description}
                               </Text>
                             )}

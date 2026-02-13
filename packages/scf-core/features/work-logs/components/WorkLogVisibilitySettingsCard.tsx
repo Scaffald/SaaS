@@ -43,26 +43,26 @@ export function WorkLogVisibilitySettingsCard() {
 
   return (
     <DashboardWidget>
-      <Stack gap="$3">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack gap={12}>
+        <Text>
           Work log profile visibility
         </Text>
-        <Paragraph color="$color10">
+        <Paragraph color="gray">
           Choose which verified work logs appear on your public profile. Manage individual entries
           and jump directly to the detailed view for more options.
         </Paragraph>
 
         {listQuery.isLoading ? (
-          <Row gap="$2" alignItems="center">
-            <Spinner size="small" />
-            <Text color="$color10">Loading work logs…</Text>
+          <Row gap={8} align="center">
+            <Spinner size="sm" />
+            <Text color="gray">Loading work logs…</Text>
           </Row>
         ) : items.length === 0 ? (
-          <Paragraph color="$color10">
+          <Paragraph color="gray">
             Create and verify a work log to manage its public visibility.
           </Paragraph>
         ) : (
-          <Stack gap="$3">
+          <Stack gap={12}>
             {items.map((item) => {
               const isVerified = item.status === 'verified'
               const statusColor = getStatusColor(item.status)
@@ -71,28 +71,28 @@ export function WorkLogVisibilitySettingsCard() {
                   key={item.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  borderRadius="$4"
-                  paddingHorizontal="$3"
-                  paddingVertical="$3"
-                  gap="$3"
+                  borderRadius={16}
+                  paddingHorizontal={12}
+                  paddingVertical={12}
+                  gap={12}
                   backgroundColor="$color2"
                 >
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Stack gap="$1" flex={1}>
-                      <Text fontWeight="700">{item.project?.name ?? 'Work Log'}</Text>
-                      <Text color="$color10">
+                  <Row justify="space-between" align="center">
+                    <Stack gap={4} flex={1}>
+                      <Text>{item.project?.name ?? 'Work Log'}</Text>
+                      <Text color="gray">
                         {item.logDate ? formatDate(item.logDate) : 'Date not recorded'}
                       </Text>
                     </Stack>
-                    <Text color={statusColor as never} fontWeight="600">
+                    <Text color={statusColor as never}>
                       {getStatusLabel(item.status)}
                     </Text>
                   </Row>
 
-                  <Row justifyContent="space-between" alignItems="center" gap="$4">
-                    <Stack gap="$1" flex={1}>
-                      <Text fontWeight="600">Show on public profile</Text>
-                      <Paragraph color="$color10">
+                  <Row justify="space-between" align="center" gap={16}>
+                    <Stack gap={4} flex={1}>
+                      <Text>Show on public profile</Text>
+                      <Paragraph color="gray">
                         Only verified logs can be shown publicly. Disable to hide this entry.
                       </Paragraph>
                     </Stack>
@@ -117,10 +117,10 @@ export function WorkLogVisibilitySettingsCard() {
                     />
                   </Row>
 
-                  <Row justifyContent="space-between" alignItems="center" gap="$4">
-                    <Stack gap="$1" flex={1}>
-                      <Text fontWeight="600">Show date on profile</Text>
-                      <Paragraph color="$color10">
+                  <Row justify="space-between" align="center" gap={16}>
+                    <Stack gap={4} flex={1}>
+                      <Text>Show date on profile</Text>
+                      <Paragraph color="gray">
                         Display the logged date alongside this entry on your public profile.
                       </Paragraph>
                     </Stack>
@@ -137,10 +137,10 @@ export function WorkLogVisibilitySettingsCard() {
                     />
                   </Row>
 
-                  <Row justifyContent="flex-end">
+                  <Row justify="flex-end">
                     <Button
-                      size="$3"
-                      variant="outlined"
+                      size={12}
+                      variant="outline"
                       onPress={() =>
                         router.push(
                           buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id })

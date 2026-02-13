@@ -17,7 +17,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
   const facetKeys = Object.keys(facets).sort()
 
   return (
-    <Stack gap="$3" marginTop="$3">
+    <Stack gap={12} marginTop={12}>
       {facetKeys.map((facetKey) => {
         const facetScore = facets[facetKey]
         const facetNarrative = facetNarratives[facetKey as keyof IPIPResultFacets]
@@ -30,20 +30,18 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
         return (
           <Stack
             key={facetKey}
-            gap="$2"
-            padding="$3"
+            gap={8}
+            padding={12}
             backgroundColor="$color2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Row justify="space-between" align="center">
+              <Text color="gray">
                 {facetNarrative.title || facetKey}
               </Text>
               <Text
-                fontSize="$3"
-                fontWeight="600"
                 color={
                   facetScore.result === 'high'
                     ? '$green10'
@@ -56,7 +54,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
               </Text>
             </Row>
             {facetNarrative.text && (
-              <Text fontSize="$3" color="$color12">
+              <Text color="gray">
                 {facetNarrative.text}
               </Text>
             )}

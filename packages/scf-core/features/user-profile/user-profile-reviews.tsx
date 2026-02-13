@@ -78,9 +78,9 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   if (isLoading) {
     return (
       <Card elevate bordered>
-        <Stack gap="$4" padding="$5" alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$color10">Loading reviews...</Text>
+        <Stack gap={16} padding={20} align="center" justify="center" minHeight={400}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading reviews...</Text>
         </Stack>
       </Card>
     )
@@ -89,26 +89,26 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   if (!reviewsData || reviews.length === 0) {
     return (
       <Card elevate bordered>
-        <Stack gap="$4" padding="$5">
-          <Row justifyContent="space-between" alignItems="center">
-            <Row gap="$2" alignItems="center">
+        <Stack gap={16} padding={20}>
+          <Row justify="space-between" align="center">
+            <Row gap={8} align="center">
               <Star size={24} color="$blue10" fill="$blue10" />
-              <Text fontSize="$7" fontWeight="700" color="$color12">
+              <Text color="gray">
                 Reviews & Ratings
               </Text>
             </Row>
             {onLeaveReview && (
-              <Button size="$3" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
+              <Button size={12} theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
                 Leave Review
               </Button>
             )}
           </Row>
-          <Stack alignItems="center" justifyContent="center" minHeight={200} gap="$3">
-            <Text fontSize="$6" color="$color10">
+          <Stack align="center" justify="center" minHeight={200} gap={12}>
+            <Text color="gray">
               No reviews yet
             </Text>
-            <Stack alignItems="center">
-              <Text fontSize="$4" color="$color9">
+            <Stack align="center">
+              <Text color="gray">
                 Be the first to leave a review for this user
               </Text>
             </Stack>
@@ -145,17 +145,17 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
   return (
     <Card elevate bordered>
-      <Stack gap="$4" padding="$5">
+      <Stack gap={16} padding={20}>
         {/* Header with Leave Review Button */}
-        <Row justifyContent="space-between" alignItems="center">
-          <Row gap="$2" alignItems="center">
+        <Row justify="space-between" align="center">
+          <Row gap={8} align="center">
             <Star size={24} color="$blue10" fill="$blue10" />
-            <Text fontSize="$7" fontWeight="700" color="$color12">
+            <Text color="gray">
               Reviews & Ratings
             </Text>
           </Row>
           {onLeaveReview && (
-            <Button size="$3" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
+            <Button size={12} theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}
@@ -163,13 +163,13 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
         {/* Rating Summary */}
         <Card bordered backgroundColor="$color2">
-          <Stack gap="$3" padding="$4">
-            <Row gap="$4" alignItems="center">
-              <Stack alignItems="center">
-                <Text fontSize="$10" fontWeight="700" color="$color12">
+          <Stack gap={12} padding={16}>
+            <Row gap={16} align="center">
+              <Stack align="center">
+                <Text color="gray">
                   {overallRating.toFixed(1)}
                 </Text>
-                <Row gap="$1">
+                <Row gap={4}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={randomUUID()}
@@ -179,23 +179,23 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                     />
                   ))}
                 </Row>
-                <Text fontSize="$3" color="$color10">
+                <Text color="gray">
                   {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                 </Text>
               </Stack>
 
               {Object.keys(avgByCategory).length > 0 && (
-                <Stack flex={1} gap="$2">
+                <Stack flex={1} gap={8}>
                   {Object.entries(avgByCategory).map(([category, data]) => (
-                    <Row key={category} gap="$2" alignItems="center">
-                      <Text fontSize="$3" color="$color11" width={100} textTransform="capitalize">
+                    <Row key={category} gap={8} align="center">
+                      <Text color="gray" width={100} textTransform="capitalize">
                         {category}
                       </Text>
                       <Row
                         flex={1}
                         height={6}
                         backgroundColor="$color3"
-                        borderRadius="$2"
+                        borderRadius={8}
                         overflow="hidden"
                       >
                         <Row
@@ -203,7 +203,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                           backgroundColor="$yellow10"
                         />
                       </Row>
-                      <Text fontSize="$3" color="$color10" width={30}>
+                      <Text color="gray" width={30}>
                         {(data.sum / data.count).toFixed(1)}
                       </Text>
                     </Row>
@@ -213,30 +213,30 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             </Row>
 
             {/* Recommend Stats */}
-            <Row gap="$3" justifyContent="center">
+            <Row gap={12} justify="center">
               <Row
-                gap="$2"
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                gap={8}
+                align="center"
+                paddingHorizontal={12}
+                paddingVertical={8}
                 backgroundColor="$green3"
-                borderRadius="$3"
+                borderRadius={12}
               >
                 <ThumbsUp size={16} color="$green11" />
-                <Text fontSize="$4" fontWeight="600" color="$green11">
+                <Text color="$green11">
                   {recommendCount} Recommend
                 </Text>
               </Row>
               <Row
-                gap="$2"
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                gap={8}
+                align="center"
+                paddingHorizontal={12}
+                paddingVertical={8}
                 backgroundColor="$red3"
-                borderRadius="$3"
+                borderRadius={12}
               >
                 <ThumbsDown size={16} color="$red11" />
-                <Text fontSize="$4" fontWeight="600" color="$red11">
+                <Text color="$red11">
                   {notRecommendCount} Don't Recommend
                 </Text>
               </Row>
@@ -245,42 +245,42 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
         </Card>
 
         {/* Reviews List */}
-        <Stack gap="$3">
-          <Text fontSize="$6" fontWeight="700" color="$color12">
+        <Stack gap={12}>
+          <Text color="gray">
             Reviews ({totalReviews})
           </Text>
           {reviews.map((review: Review) => (
             <Card key={review.id} bordered backgroundColor="$color2">
-              <Stack gap="$3" padding="$4">
-                <Row justifyContent="space-between" alignItems="flex-start">
-                  <Stack gap="$1">
-                    <Row gap="$2" alignItems="center">
-                      <Text fontSize="$5" fontWeight="700" color="$color12">
+              <Stack gap={12} padding={16}>
+                <Row justify="space-between" align="flex-start">
+                  <Stack gap={4}>
+                    <Row gap={8} align="center">
+                      <Text color="gray">
                         Anonymous Reviewer
                       </Text>
                       <Row
-                        gap="$1"
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
+                        gap={4}
+                        align="center"
+                        paddingHorizontal={8}
+                        paddingVertical={2}
                         backgroundColor="$blue3"
-                        borderRadius="$2"
+                        borderRadius={8}
                       >
                         <Shield size={12} color="$blue11" />
-                        <Text fontSize="$1" color="$blue11" fontWeight="600">
+                        <Text color="$blue11">
                           VERIFIED
                         </Text>
                       </Row>
                     </Row>
                   </Stack>
-                  <Text fontSize="$3" color="$color10">
+                  <Text color="gray">
                     {new Date(review.created_at).toLocaleDateString()}
                   </Text>
                 </Row>
 
                 {/* Overall Rating */}
                 {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                  <Row gap="$1">
+                  <Row gap={4}>
                     {[...Array(5)].map((_, i) => {
                       const avgRating =
                         review.review_category_ratings.reduce(
@@ -301,25 +301,25 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
                 {/* Comment */}
                 {review.comment && (
-                  <Text fontSize="$4" color="$color11">
+                  <Text color="gray">
                     {review.comment}
                   </Text>
                 )}
 
                 {/* Recommendation */}
                 {review.reaction !== null && (
-                  <Row gap="$2" alignItems="center">
+                  <Row gap={8} align="center">
                     {review.reaction === 1 ? (
                       <>
                         <ThumbsUp size={16} color="$green11" />
-                        <Text fontSize="$3" color="$green11" fontWeight="600">
+                        <Text color="$green11">
                           Recommends this person
                         </Text>
                       </>
                     ) : (
                       <>
                         <ThumbsDown size={16} color="$red11" />
-                        <Text fontSize="$3" color="$red11" fontWeight="600">
+                        <Text color="$red11">
                           Does not recommend
                         </Text>
                       </>

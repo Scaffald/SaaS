@@ -8,57 +8,57 @@ interface ApplicationDetailsTabProps {
 
 export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProps) => {
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {/* Screening Answers */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Screening Questions
         </Text>
-        <Stack gap="$3">
-          <Row justifyContent="space-between">
+        <Stack gap={12}>
+          <Row justify="space-between">
             <Text opacity={0.7}>Current Location</Text>
-            <Text fontWeight="600">{application.screeningAnswers.currentLocation}</Text>
+            <Text>{application.screeningAnswers.currentLocation}</Text>
           </Row>
-          <Row justifyContent="space-between">
+          <Row justify="space-between">
             <Text opacity={0.7}>Willing to Relocate</Text>
-            <Text fontWeight="600">
+            <Text>
               {application.screeningAnswers.willingToRelocate ? 'Yes' : 'No'}
             </Text>
           </Row>
-          <Row justifyContent="space-between">
+          <Row justify="space-between">
             <Text opacity={0.7}>Years of Experience</Text>
-            <Text fontWeight="600">{application.screeningAnswers.yearsExperience}</Text>
+            <Text>{application.screeningAnswers.yearsExperience}</Text>
           </Row>
-          <Row justifyContent="space-between">
+          <Row justify="space-between">
             <Text opacity={0.7}>Authorized to Work</Text>
-            <Text fontWeight="600">
+            <Text>
               {application.screeningAnswers.isAuthorizedToWork ? 'Yes' : 'No'}
             </Text>
           </Row>
-          <Row justifyContent="space-between">
+          <Row justify="space-between">
             <Text opacity={0.7}>Earliest Start Date</Text>
-            <Text fontWeight="600">{application.screeningAnswers.earliestStartDate}</Text>
+            <Text>{application.screeningAnswers.earliestStartDate}</Text>
           </Row>
         </Stack>
       </Card>
 
       {/* Custom Questions */}
       {application.customAnswers.length > 0 && (
-        <Card padding="$4" backgroundColor="$color2">
-          <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+        <Card padding={16} backgroundColor="$color2">
+          <Text marginBottom={12}>
             Custom Questions
           </Text>
-          <Stack gap="$4">
+          <Stack gap={16}>
             {application.customAnswers.map((qa, index) => (
-              <Stack key={`qa-${qa.question}-${index}`} gap="$2">
-                <Text fontWeight="600" fontSize="$3">
+              <Stack key={`qa-${qa.question}-${index}`} gap={8}>
+                <Text>
                   {qa.question}
                 </Text>
-                <Text fontSize="$3" opacity={0.8}>
+                <Text opacity={0.8}>
                   {qa.answer}
                 </Text>
                 {index < application.customAnswers.length - 1 && (
-                  <Stack height={1} backgroundColor="$color5" marginTop="$2" />
+                  <Stack height={1} backgroundColor="$color5" marginTop={8} />
                 )}
               </Stack>
             ))}
@@ -67,67 +67,67 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       )}
 
       {/* Attachments */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Attachments
         </Text>
-        <Stack gap="$2">
+        <Stack gap={8}>
           {application.attachments.resume && (
             <Row
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
+              justify="space-between"
+              align="center"
+              padding={12}
               backgroundColor="$color3"
-              borderRadius="$3"
+              borderRadius={12}
             >
               <Stack flex={1}>
-                <Text fontWeight="600">Resume</Text>
-                <Text fontSize="$2" opacity={0.7}>
+                <Text>Resume</Text>
+                <Text opacity={0.7}>
                   {application.attachments.resume.filename} •{' '}
                   {(application.attachments.resume.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="$3" icon={Download} chromeless>
+              <Button size={12} icon={Download} chromeless>
                 Download
               </Button>
             </Row>
           )}
           {application.attachments.coverLetter && (
             <Row
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
+              justify="space-between"
+              align="center"
+              padding={12}
               backgroundColor="$color3"
-              borderRadius="$3"
+              borderRadius={12}
             >
               <Stack flex={1}>
-                <Text fontWeight="600">Cover Letter</Text>
-                <Text fontSize="$2" opacity={0.7}>
+                <Text>Cover Letter</Text>
+                <Text opacity={0.7}>
                   {application.attachments.coverLetter.filename} •{' '}
                   {(application.attachments.coverLetter.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="$3" icon={Download} chromeless>
+              <Button size={12} icon={Download} chromeless>
                 Download
               </Button>
             </Row>
           )}
           {application.attachments.portfolio && (
             <Row
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
+              justify="space-between"
+              align="center"
+              padding={12}
               backgroundColor="$color3"
-              borderRadius="$3"
+              borderRadius={12}
             >
               <Stack flex={1}>
-                <Text fontWeight="600">Portfolio</Text>
-                <Text fontSize="$2" opacity={0.7}>
+                <Text>Portfolio</Text>
+                <Text opacity={0.7}>
                   {application.attachments.portfolio.filename} •{' '}
                   {(application.attachments.portfolio.size / 1024).toFixed(0)} KB
                 </Text>
               </Stack>
-              <Button size="$3" icon={Download} chromeless>
+              <Button size={12} icon={Download} chromeless>
                 Download
               </Button>
             </Row>
@@ -136,19 +136,19 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       </Card>
 
       {/* Stage History */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
+      <Card padding={16} backgroundColor="$color2">
+        <Text marginBottom={12}>
           Application Timeline
         </Text>
-        <Stack gap="$3">
+        <Stack gap={12}>
           {application.stageHistory.map((history, index) => (
-            <Row key={`history-${history.changedAt}-${index}`} gap="$3">
-              <Stack width={3} backgroundColor="$blue9" borderRadius="$2" />
-              <Stack flex={1} gap="$1">
-                <Text fontWeight="600" textTransform="capitalize">
+            <Row key={`history-${history.changedAt}-${index}`} gap={12}>
+              <Stack width={3} backgroundColor="$blue9" borderRadius={8} />
+              <Stack flex={1} gap={4}>
+                <Text textTransform="capitalize">
                   {history.toStage}
                 </Text>
-                <Text fontSize="$2" opacity={0.7}>
+                <Text opacity={0.7}>
                   {history.changedBy} •{' '}
                   {new Date(history.changedAt).toLocaleDateString('en-US', {
                     month: 'short',
@@ -158,7 +158,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   })}
                 </Text>
                 {history.reason && (
-                  <Text fontSize="$2" opacity={0.8} marginTop="$1">
+                  <Text opacity={0.8} marginTop={4}>
                     {history.reason}
                   </Text>
                 )}

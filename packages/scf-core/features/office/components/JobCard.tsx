@@ -64,15 +64,13 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
-    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="$4" gap="$3">
+    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding={16} gap={12}>
       {/* Header: Title and Status */}
-      <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
-        <Stack gap="$2" flex={1}>
-          <Row alignItems="center" gap="$2" flexWrap="wrap">
+      <Row justify="space-between" align="flex-start" gap={12}>
+        <Stack gap={8} flex={1}>
+          <Row align="center" gap={8} flexWrap="wrap">
             <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
             <Text
-              fontSize="$5"
-              fontWeight="600"
               color={isSelected ? '$yellow11' : '$color12'}
               numberOfLines={2}
               flex={1}
@@ -81,25 +79,23 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             </Text>
           </Row>
           {job.organization && (
-            <Row alignItems="center" gap="$1.5" marginLeft="$7">
-              <Building2 size={14} color="$color10" />
-              <Text fontSize="$3" color="$color11" numberOfLines={1}>
+            <Row align="center" gap={6} marginLeft="$7">
+              <Building2 size={14} color="gray" />
+              <Text color="gray" numberOfLines={1}>
                 {job.organization.name}
               </Text>
             </Row>
           )}
         </Stack>
         <Row
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$3"
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={12}
           backgroundColor={statusColors.backgroundColor as GetThemeValueForKey<'backgroundColor'>}
           borderWidth={1}
           borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
         >
           <Text
-            fontSize="$2"
-            fontWeight="600"
             color={statusColors.text as GetThemeValueForKey<'color'>}
           >
             {getStatusLabel(job.status)}
@@ -108,7 +104,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       </Row>
 
       {/* Metrics Row */}
-      <Row gap="$3" flexWrap="wrap">
+      <Row gap={12} flexWrap="wrap">
         {applicationCount !== undefined && (
           <MetricItem
             icon={<Users size={14} />}
@@ -130,35 +126,33 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       </Row>
 
       {/* Details Row */}
-      <Row gap="$3" flexWrap="wrap">
+      <Row gap={12} flexWrap="wrap">
         {job.location && (
-          <Row alignItems="center" gap="$1.5">
-            <MapPin size={14} color="$color10" />
-            <Text fontSize="$3" color="$color11" numberOfLines={1}>
+          <Row align="center" gap={6}>
+            <MapPin size={14} color="gray" />
+            <Text color="gray" numberOfLines={1}>
               {job.location}
             </Text>
           </Row>
         )}
         {job.remote_option && (
           <Text
-            fontSize="$2"
-            color="$color10"
+            color="gray"
             backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
             {job.remote_option.replace('_', ' ').toUpperCase()}
           </Text>
         )}
         {job.employment_type && (
           <Text
-            fontSize="$2"
-            color="$color10"
+            color="gray"
             backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
@@ -167,9 +161,9 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 
       {/* Pay Range */}
       {payRange && (
-        <Row alignItems="center" gap="$1.5">
+        <Row align="center" gap={6}>
           <DollarSign size={14} color="$green10" />
-          <Text fontSize="$3" fontWeight="600" color="$green10">
+          <Text color="$green10">
             {payRange}
           </Text>
         </Row>
@@ -177,9 +171,9 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
-        <Row alignItems="center" gap="$1.5">
-          <Calendar size={12} color="$color9" />
-          <Text fontSize="$2" color="$color10">
+        <Row align="center" gap={6}>
+          <Calendar size={12} color="gray" />
+          <Text color="gray">
             Created {createdDate}
           </Text>
         </Row>
@@ -191,21 +185,21 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <Row
-      gap="$2"
-      alignItems="center"
+      gap={8}
+      align="center"
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$3"
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+      borderRadius={12}
+      paddingHorizontal={8}
+      paddingVertical={4}
       backgroundColor="$color3"
     >
       {icon}
       <Stack gap={0}>
-        <Text fontSize="$1" color="$color10" textTransform="uppercase">
+        <Text color="gray" textTransform="uppercase">
           {label}
         </Text>
-        <Text fontSize="$2" fontWeight="600" color="$color12">
+        <Text color="gray">
           {value}
         </Text>
       </Stack>

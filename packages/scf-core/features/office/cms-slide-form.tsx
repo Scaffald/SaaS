@@ -50,10 +50,10 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Stack gap="$4">
+      <Stack gap={16}>
         <H4>{initialData?.id ? 'Edit' : 'Create'} Welcome Slide</H4>
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="title">Title *</Label>
           <Input
             id="title"
@@ -64,7 +64,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
           />
         </Stack>
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="description">Description *</Label>
           <TextArea
             id="description"
@@ -89,7 +89,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
           helperText="Upload a high-quality background image for the slide"
         />
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="order">Display Order *</Label>
           <Input
             id="order"
@@ -99,12 +99,12 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
             keyboardType="numeric"
             disabled={isLoading}
           />
-          <Text fontSize="$2" opacity={0.6}>
+          <Text opacity={0.6}>
             Slides are shown in ascending order (1, 2, 3...)
           </Text>
         </Stack>
 
-        <Row gap="$3" alignItems="center">
+        <Row gap={12} align="center">
           <ToggleSwitch
             checked={isActive}
             onCheckedChange={setIsActive}
@@ -114,7 +114,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
           <Label>Active (visible to users)</Label>
         </Row>
 
-        <Row gap="$2" justifyContent="flex-end">
+        <Row gap={8} justify="flex-end">
           <Button onPress={handleSubmit} icon={Save} disabled={isLoading || !title || !description}>
             {isLoading ? 'Saving...' : 'Save Slide'}
           </Button>

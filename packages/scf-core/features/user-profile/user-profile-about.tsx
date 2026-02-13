@@ -7,11 +7,11 @@ interface UserProfileAboutProps {
 export function UserProfileAbout({ bio }: UserProfileAboutProps) {
   return (
     <Card elevate bordered>
-      <Stack gap="$3" padding="$5">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
+      <Stack gap={12} padding={20}>
+        <Text color="gray">
           About
         </Text>
-        <Text fontSize="$5" color="$color11" lineHeight={24}>
+        <Text color="gray" lineHeight={24}>
           {bio}
         </Text>
       </Stack>

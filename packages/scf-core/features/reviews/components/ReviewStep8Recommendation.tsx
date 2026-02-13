@@ -11,20 +11,20 @@ export function ReviewStep8Recommendation({
   onChange,
 }: ReviewStep8RecommendationProps) {
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="gray">
           Final Recommendation
         </Text>
-        <Text fontSize="$5" color="$color11">
+        <Text color="gray">
           Would you recommend working with this person?
         </Text>
       </Stack>
 
       {/* Recommendation Buttons */}
-      <Row gap="$4" justifyContent="center">
+      <Row gap={16} justify="center">
         <Button
-          size="$6"
+          size={24}
           theme={recommendation === true ? 'success' : undefined}
           variant={recommendation === true ? undefined : 'outlined'}
           icon={ThumbsUp}
@@ -36,7 +36,7 @@ export function ReviewStep8Recommendation({
         </Button>
 
         <Button
-          size="$6"
+          size={24}
           theme={recommendation === false ? 'error' : undefined}
           variant={recommendation === false ? undefined : 'outlined'}
           icon={ThumbsDown}
@@ -51,30 +51,30 @@ export function ReviewStep8Recommendation({
       {/* Selection Display */}
       {recommendation !== null && (
         <Stack
-          gap="$3"
-          padding="$4"
+          gap={12}
+          padding={16}
           backgroundColor={recommendation ? '$green3' : '$red3'}
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <Row gap="$2" alignItems="center" justifyContent="center">
+          <Row gap={8} align="center" justify="center">
             {recommendation ? (
               <>
                 <ThumbsUp size={24} color="$green11" />
-                <Text fontSize="$6" fontWeight="700" color="$green11">
+                <Text color="$green11">
                   You recommend this person
                 </Text>
               </>
             ) : (
               <>
                 <ThumbsDown size={24} color="$red11" />
-                <Text fontSize="$6" fontWeight="700" color="$red11">
+                <Text color="$red11">
                   You don't recommend this person
                 </Text>
               </>
             )}
           </Row>
-          <Row justifyContent="center">
-            <Text fontSize="$4" color={recommendation ? '$green11' : '$red11'}>
+          <Row justify="center">
+            <Text color={recommendation ? '$green11' : '$red11'}>
               {recommendation
                 ? 'Based on your positive experience, you would work with them again.'
                 : 'Based on your experience, you would not recommend working with them again.'}
@@ -84,7 +84,7 @@ export function ReviewStep8Recommendation({
       )}
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text color="gray" fontStyle="italic">
         This is your final assessment. Please be honest and fair in your recommendation.
       </Text>
     </Stack>

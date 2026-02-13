@@ -48,7 +48,7 @@ export interface OrganizationCardProps {
  *   industry="Technology"
  *   address={{ city: "San Francisco", state: "CA" }}
  *   employeeCount={500}
- *   isSelected={selected === "org-1"}
+ *   isSelected={selected === "org-1"
  *   onSelect={setSelected}
  *   onViewDetails={() => router.push(ROUTES.DASHBOARD.ORGANIZATIONS.path)}
  * />
@@ -102,16 +102,16 @@ export const OrganizationCard = memo(
 
           {/* Industry badge */}
           {industry && (
-            <Row alignItems="center" gap="$2">
+            <Row align="center" gap={8}>
               <Row
-                alignItems="center"
-                gap="$1"
+                align="center"
+                gap={4}
                 backgroundColor={isSelected ? '$blue3' : '$blue3'}
-                borderRadius="$4"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                borderRadius={16}
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
-                <Text color={isSelected ? '$color1' : '$blue11'} fontWeight="600" fontSize="$2">
+                <Text color={isSelected ? '$color1' : '$blue11'}>
                   {industry}
                 </Text>
               </Row>

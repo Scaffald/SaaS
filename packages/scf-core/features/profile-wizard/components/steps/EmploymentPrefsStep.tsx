@@ -124,19 +124,19 @@ export function EmploymentPrefsStep({
   }
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Share your work preferences
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Help employers match you with the right opportunities by adding where, how, and when you
           prefer to work.
         </Paragraph>
       </Stack>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Preferred work location</Text>
+      <Stack gap={8}>
+        <Text>Preferred work location</Text>
         <Controller
           control={control}
           name="locationPreference"
@@ -150,7 +150,7 @@ export function EmploymentPrefsStep({
         />
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <ControlledAddressForm
           control={control}
           name="location"
@@ -173,9 +173,9 @@ export function EmploymentPrefsStep({
         />
       </Stack>
 
-      <Row gap="$3" flexWrap="wrap">
-        <Stack flex={1} gap="$2" minWidth={160}>
-          <Text fontWeight="600">Availability</Text>
+      <Row gap={12} flexWrap="wrap">
+        <Stack flex={1} gap={8} minWidth={160}>
+          <Text>Availability</Text>
           <Controller
             control={control}
             name="availability"
@@ -193,8 +193,8 @@ export function EmploymentPrefsStep({
           />
         </Stack>
 
-        <Stack flex={1} gap="$2" minWidth={160}>
-          <Text fontWeight="600">Preferred hourly rate</Text>
+        <Stack flex={1} gap={8} minWidth={160}>
+          <Text>Preferred hourly rate</Text>
           <Controller
             control={control}
             name="hourlyRate"
@@ -210,8 +210,8 @@ export function EmploymentPrefsStep({
         </Stack>
       </Row>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Work environment</Text>
+      <Stack gap={8}>
+        <Text>Work environment</Text>
         <Controller
           control={control}
           name="remotePreference"

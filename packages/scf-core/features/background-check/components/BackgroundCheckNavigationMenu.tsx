@@ -35,17 +35,17 @@ export function BackgroundCheckNavigationMenu() {
   const pathname = usePathname()
 
   return (
-    <DashboardWidget gap="$4">
-      <Stack gap="$1">
-        <Text fontSize="$5" fontWeight="700" color="$color12">
+    <DashboardWidget gap={16}>
+      <Stack gap={4}>
+        <Text color="gray">
           Background Check Tools
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           Switch between related workflows and management tools.
         </Text>
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         {BACKGROUND_CHECK_NAV_ITEMS.map((item) => {
           const normalizedPath = pathname?.replace(/\/$/, '') ?? ''
           const itemPath = item.path.replace(/\/$/, '')
@@ -57,10 +57,10 @@ export function BackgroundCheckNavigationMenu() {
           return (
             <Link key={item.key} href={item.path} asChild>
               <Stack
-                paddingHorizontal="$4"
-                paddingVertical="$3"
-                gap="$2"
-                borderRadius="$4"
+                paddingHorizontal={16}
+                paddingVertical={12}
+                gap={8}
+                borderRadius={16}
                 borderWidth={1}
                 borderColor={isActive ? '$blue7' : '$color6'}
                 backgroundColor={isActive ? '$blue4' : '$color2'}
@@ -73,17 +73,17 @@ export function BackgroundCheckNavigationMenu() {
                 cursor="pointer"
                 animation="quick"
               >
-                <Stack gap="$1">
-                  <Text fontSize="$4" fontWeight="600" color={isActive ? '$blue12' : '$color12'}>
+                <Stack gap={4}>
+                  <Text color={isActive ? '$blue12' : '$color12'}>
                     {item.title}
                   </Text>
-                  <Text fontSize="$3" color={isActive ? '$blue11' : '$color10'}>
+                  <Text color={isActive ? '$blue11' : '$color10'}>
                     {item.description}
                   </Text>
                 </Stack>
 
-                <Row gap="$2" alignItems="center">
-                  <Text fontSize="$3" fontWeight="600" color={isActive ? '$blue12' : '$color11'}>
+                <Row gap={8} align="center">
+                  <Text color={isActive ? '$blue12' : '$color11'}>
                     View workspace
                   </Text>
                   <ArrowRight size={16} color={isActive ? '$blue11' : '$color10'} />

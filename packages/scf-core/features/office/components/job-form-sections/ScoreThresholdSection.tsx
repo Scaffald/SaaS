@@ -18,22 +18,22 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
   const currentScore = value[0] || 50
 
   return (
-    <Stack gap="$4" padding="$4">
-      <Stack gap="$2">
-        <Row gap="$2">
-          <Label fontSize="$5" fontWeight="600" flex={1}>
+    <Stack gap={16} padding={16}>
+      <Stack gap={8}>
+        <Row gap={8}>
+          <Label flex={1}>
             Minimum Score
           </Label>
-          <Text fontSize="$6" fontWeight="700">
+          <Text>
             {currentScore}
           </Text>
         </Row>
-        <Text fontSize="$2">
+        <Text>
           Set the minimum score threshold for auto-screening applicants (0-100 scale)
         </Text>
       </Stack>
 
-      <Stack gap="$3">
+      <Stack gap={12}>
         <Slider value={value} onValueChange={handleChange} min={0} max={100} step={1} width="100%">
           <Slider.Track>
             <Slider.TrackActive />
@@ -41,29 +41,29 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
           <Slider.Thumb circular index={0} />
         </Slider>
 
-        <Row gap="$2">
-          <Text fontSize="$1" flex={1}>
+        <Row gap={8}>
+          <Text flex={1}>
             0 (Low)
           </Text>
-          <Text fontSize="$1">100 (High)</Text>
+          <Text>100 (High)</Text>
         </Row>
       </Stack>
 
-      <Stack gap="$2" padding="$3">
-        <Text fontSize="$2" fontWeight="600" color="$blue11">
+      <Stack gap={8} padding={12}>
+        <Text color="$blue11">
           Score Guidelines
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">0-25:</Text> Entry level, minimal requirements
+        <Text color="$blue11">
+          • <Text>0-25:</Text> Entry level, minimal requirements
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">26-50:</Text> Some experience required
+        <Text color="$blue11">
+          • <Text>26-50:</Text> Some experience required
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">51-75:</Text> Experienced candidates preferred
+        <Text color="$blue11">
+          • <Text>51-75:</Text> Experienced candidates preferred
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">76-100:</Text> Highly qualified candidates only
+        <Text color="$blue11">
+          • <Text>76-100:</Text> Highly qualified candidates only
         </Text>
       </Stack>
     </Stack>

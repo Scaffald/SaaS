@@ -146,9 +146,9 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
 
   if (isLoading && metrics.length === 0) {
     return (
-      <Stack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$4">
-        <Spinner size="large" />
-        <Text color="$color11">Loading analytics data…</Text>
+      <Stack gap={12} align="center" justify="center" paddingVertical={16}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading analytics data…</Text>
       </Stack>
     )
   }
@@ -159,13 +159,13 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         borderWidth={1}
         borderColor="$borderColor"
         backgroundColor="$color2"
-        padding="$4"
-        gap="$2"
+        padding={16}
+        gap={8}
       >
-        <Text fontSize="$6" fontWeight="700">
+        <Text>
           Insights unavailable
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           We&apos;ll start charting metrics once your team begins reviewing applications and
           recording activity.
         </Text>
@@ -174,7 +174,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <AnalyticsCard
         title="Applications reviewed"
         description="Recent daily totals for applications reviewed by this team."
@@ -188,7 +188,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
           }
         >
           <Stack
-            gap="$2"
+            gap={8}
             accessible
             accessibilityRole="image"
             accessibilityLabel={`Applications reviewed bar chart for the past ${applicationsTrend.length} days`}
@@ -218,7 +218,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
           }
         >
           <Stack
-            gap="$2"
+            gap={8}
             accessible
             accessibilityRole="image"
             accessibilityLabel={`Average time to first review line chart for the past ${timeToFirstReviewTrend.length} days`}
@@ -241,7 +241,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         summary={workloadSummary ?? undefined}
       >
         {workloadBreakdown.length === 0 ? (
-          <Text color="$color11">No workload snapshots available.</Text>
+          <Text color="gray">No workload snapshots available.</Text>
         ) : (
           <ScrollView
             horizontal={isSmallScreen}
@@ -251,7 +251,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             }
           >
             <Stack
-              gap="$2"
+              gap={8}
               accessible
               accessibilityRole="image"
               accessibilityLabel="Donut chart of active and pending assignments per team member"
@@ -265,9 +265,9 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
                 showValuesAsLabels
                 textColor="#111"
               />
-              <Stack gap="$1">
+              <Stack gap={4}>
                 {workloadBreakdown.map((entry) => (
-                  <Text key={entry.text} fontSize="$2" color="$color11">
+                  <Text key={entry.text} color="gray">
                     {entry.text}: {entry.value} assignments
                   </Text>
                 ))}
@@ -298,25 +298,25 @@ function AnalyticsCard({
       borderWidth={1}
       borderColor="$borderColor"
       backgroundColor="$color2"
-      padding="$4"
-      gap="$3"
+      padding={16}
+      gap={12}
     >
-      <Stack gap="$1">
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
+      <Stack gap={4}>
+        <Text accessibilityRole="header">
           {title}
         </Text>
         {description ? (
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             {description}
           </Text>
         ) : null}
         {summary ? (
-          <Text fontSize="$2" color="$color11">
+          <Text color="gray">
             {summary}
           </Text>
         ) : null}
       </Stack>
-      {emptyMessage ? <Text color="$color11">{emptyMessage}</Text> : null}
+      {emptyMessage ? <Text color="gray">{emptyMessage}</Text> : null}
       {children}
     </Card>
   )

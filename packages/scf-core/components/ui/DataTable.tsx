@@ -180,7 +180,7 @@ export function DataTable<TData>({
 
   if (isLoading) {
     return (
-      <View flex={1} alignItems="center" justifyContent="center">
+      <View flex={1} align="center" justify="center">
         <Text>Loading...</Text>
       </View>
     )
@@ -188,7 +188,7 @@ export function DataTable<TData>({
 
   if (tableRows.length === 0) {
     return (
-      <View flex={1} alignItems="center" justifyContent="center">
+      <View flex={1} align="center" justify="center">
         <Text>{emptyMessage}</Text>
       </View>
     )
@@ -207,10 +207,10 @@ export function DataTable<TData>({
                 cellWidth={cellWidth as never}
                 cellHeight={cellHeight as never}
                 borderWidth={0.5}
-                borderTopRightRadius="$4"
-                borderTopLeftRadius="$4"
-                borderBottomLeftRadius="$2"
-                borderBottomRightRadius="$2"
+                borderTopRightRadius={16}
+                borderTopLeftRadius={16}
+                borderBottomLeftRadius={8}
+                borderBottomRightRadius={8}
               >
                 {/* Header */}
                 <Table.Head position="absolute" top={0} zIndex={5} backgroundColor="$background">
@@ -220,8 +220,8 @@ export function DataTable<TData>({
                       backgrounded
                       backgroundColor="$color2"
                       rowLocation="first"
-                      borderTopRightRadius="$4"
-                      borderTopLeftRadius="$4"
+                      borderTopRightRadius={16}
+                      borderTopLeftRadius={16}
                       position="absolute"
                       top={groupIndex * HEADER_ROW_HEIGHT}
                       zIndex={5 + groupIndex}
@@ -238,7 +238,7 @@ export function DataTable<TData>({
                           return (
                             <Table.HeaderCell
                               key={header.id}
-                              paddingLeft="$3"
+                              paddingLeft={12}
                               cellWidth={cellWidth as never}
                               cellLocation={cellLocation}
                             />
@@ -253,7 +253,7 @@ export function DataTable<TData>({
                         return (
                           <Table.HeaderCell
                             key={header.id}
-                            paddingLeft="$3"
+                            paddingLeft={12}
                             cellWidth={columnWidth as never}
                             cellLocation={cellLocation}
                           >
@@ -265,19 +265,19 @@ export function DataTable<TData>({
                                   ? header.column.getToggleSortingHandler()
                                   : undefined
                               }
-                              gap="$2"
-                              alignItems="center"
+                              gap={8}
+                              align="center"
                             >
-                              <Text fontSize="$4" selectable={false}>
+                              <Text selectable={false}>
                                 {flexRender(header.column.columnDef.header, header.getContext())}
                               </Text>
                               {header.column.getCanSort() &&
                                 (header.column.getIsSorted() === 'asc' ? (
-                                  <ChevronUp size="$1" />
+                                  <ChevronUp size={4} />
                                 ) : header.column.getIsSorted() === 'desc' ? (
-                                  <ChevronDown size="$1" />
+                                  <ChevronDown size={4} />
                                 ) : (
-                                  <ChevronsUpDown size="$1" />
+                                  <ChevronsUpDown size={4} />
                                 ))}
                             </View>
                           </Table.HeaderCell>
@@ -320,7 +320,7 @@ export function DataTable<TData>({
                         return (
                           <Table.Cell
                             key={cell.id}
-                            paddingLeft="$3"
+                            paddingLeft={12}
                             cellWidth={columnWidth as never}
                             cellLocation={
                               cellIdx === 0
@@ -330,7 +330,7 @@ export function DataTable<TData>({
                                   : 'middle'
                             }
                           >
-                            <Text fontSize="$4" color="$color11">
+                            <Text color="gray">
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </Text>
                           </Table.Cell>
@@ -379,21 +379,18 @@ export function DataTable<TData>({
       {!hidePagination && (
         <View
           flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
+          align="center"
+          justify="space-between"
+          paddingHorizontal={16}
+          paddingVertical={12}
           borderTopWidth={1}
           borderColor="$borderColor"
-          gap="$4"
-          $sm={{
-            flexDirection: 'column',
-          }}
+          gap={16}
         >
           <XGroup>
             <XGroup.Item>
               <Button
-                size="$3"
+                size={12}
                 onPress={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -404,7 +401,7 @@ export function DataTable<TData>({
             </XGroup.Item>
             <XGroup.Item>
               <Button
-                size="$3"
+                size={12}
                 onPress={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -414,7 +411,7 @@ export function DataTable<TData>({
               </Button>
             </XGroup.Item>
             <XGroup.Item>
-              <Button size="$3" onPress={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+              <Button size={12} onPress={() => table.nextPage()} disabled={!table.getCanNextPage()}>
                 <Button.Icon>
                   <ChevronRight />
                 </Button.Icon>
@@ -422,7 +419,7 @@ export function DataTable<TData>({
             </XGroup.Item>
             <XGroup.Item>
               <Button
-                size="$3"
+                size={12}
                 onPress={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
@@ -433,16 +430,16 @@ export function DataTable<TData>({
             </XGroup.Item>
           </XGroup>
 
-          <Text fontSize="$3">
+          <Text>
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </Text>
 
           {isWeb && (
-            <View flexDirection="row" gap="$2" alignItems="center">
-              <Text fontSize="$3">Go to:</Text>
+            <View flexDirection="row" gap={8} align="center">
+              <Text>Go to:</Text>
               <Input
-                size="$3"
-                width="$5"
+                size={12}
+                width={20}
                 keyboardType="numeric"
                 defaultValue={String(table.getState().pagination.pageIndex + 1)}
                 onChangeText={(text) => {

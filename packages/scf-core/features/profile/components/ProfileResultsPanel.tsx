@@ -49,22 +49,22 @@ export function ProfileResultsPanel({
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
-        <Stack gap="$4" {...props}>
+        <Stack gap={16} {...props}>
           {title && (
-            <Text fontWeight="600" fontSize="$5">
+            <Text>
               {title}
             </Text>
           )}
 
           {isLoading ? (
-            <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-              <Spinner size="large" />
-              <Text color="$color11">Loading...</Text>
+            <Stack align="center" justify="center" padding={32} gap={12}>
+              <Spinner size="lg" />
+              <Text color="gray">Loading...</Text>
             </Stack>
           ) : isEmpty ? (
-            <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-              {EmptyIcon && <EmptyIcon size={48} color="$color11" />}
-              <Text color="$color11" textAlign="center">
+            <Stack align="center" justify="center" padding={32} gap={12}>
+              {EmptyIcon && <EmptyIcon size={48} color="gray" />}
+              <Text color="gray" textAlign="center">
                 {emptyMessage || 'No items added yet'}
               </Text>
             </Stack>

@@ -33,46 +33,36 @@ export function TeamJobsList({
   const hasJobs = derivedJobs.length > 0
 
   return (
-    <Stack gap="$3" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+    <Stack gap={12} paddingHorizontal={12}>
       <Row
-        justifyContent="space-between"
-        alignItems="flex-start"
+        justify="space-between"
+        align="flex-start"
         flexWrap="wrap"
-        gap="$3"
+        gap={12}
         flexDirection="column"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
       >
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
+        <Text accessibilityRole="header">
           Team jobs
         </Text>
         <Row
-          gap="$2"
-          alignItems="flex-start"
+          gap={8}
+          align="flex-start"
           flexDirection="column"
           width="100%"
-          $md={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            width: undefined,
-          }}
         >
           <Button
-            size="$2"
-            variant="outlined"
+            size={8}
+            variant="outline"
             icon={RefreshCcw}
             onPress={() => onRefresh?.()}
             disabled={isLoading}
             accessibilityLabel="Refresh assigned jobs list"
             width="100%"
-            $md={{ width: undefined }}
           >
             Refresh
           </Button>
           <Button
-            size="$2"
+            size={8}
             icon={ArrowRight}
             onPress={() => {
               if (onCreateJob) {
@@ -86,7 +76,6 @@ export function TeamJobsList({
             }}
             accessibilityLabel="Assign a job to this team"
             width="100%"
-            $md={{ width: undefined }}
           >
             Assign job
           </Button>
@@ -94,64 +83,63 @@ export function TeamJobsList({
       </Row>
 
       {isLoading ? (
-        <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading assigned jobs…</Text>
+        <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading assigned jobs…</Text>
         </Stack>
       ) : error ? (
         <Card
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          padding="$4"
-          gap="$3"
+          padding={16}
+          gap={12}
         >
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <AlertTriangle size={18} color="$yellow10" />
-            <Text fontSize="$5" fontWeight="700">
+            <Text>
               Unable to load jobs
             </Text>
           </Row>
-          <Text color="$color11">
+          <Text color="gray">
             {error.message || 'Something went wrong while fetching jobs for this team.'}
           </Text>
-          <Button size="$3" onPress={() => onRefresh?.()}>
+          <Button size={12} onPress={() => onRefresh?.()}>
             Try again
           </Button>
         </Card>
       ) : hasJobs ? (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {derivedJobs.map((job) => (
             <Card
               key={job.id}
-              padding="$4"
+              padding={16}
               borderWidth={1}
               borderColor="$borderColor"
               backgroundColor="$color2"
-              gap="$3"
+              gap={12}
               accessible
               accessibilityRole="summary"
               accessibilityLabel={`Job ${job.title}. Status ${job.status ?? 'draft'}. Updated ${job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}`}
               width="100%"
             >
               <Row
-                justifyContent="space-between"
-                alignItems="flex-start"
-                gap="$3"
+                justify="space-between"
+                align="flex-start"
+                gap={12}
                 flexWrap="wrap"
                 flexDirection="column"
-                $md={{ flexDirection: 'row' }}
               >
-                <Stack gap="$1" flex={1} width="100%">
-                  <Text fontSize="$5" fontWeight="700">
+                <Stack gap={4} flex={1} width="100%">
+                  <Text>
                     {job.title}
                   </Text>
-                  <Text color="$color11">{job.organization?.name ?? 'No organization'}</Text>
+                  <Text color="gray">{job.organization?.name ?? 'No organization'}</Text>
                 </Stack>
                 <StatusChip status={job.status ?? 'draft'} />
               </Row>
               {job.teamAssignments && job.teamAssignments.length > 0 ? (
-                <Row gap="$2" flexWrap="wrap">
+                <Row gap={8} flexWrap="wrap">
                   {job.teamAssignments.map((assignment: TeamAssignment) => (
                     <TeamBadge
                       key={`${job.id}-${assignment.teamId}`}
@@ -162,29 +150,24 @@ export function TeamJobsList({
                 </Row>
               ) : null}
               <Row
-                gap="$2"
+                gap={8}
                 flexDirection="column"
-                alignItems="stretch"
-                $md={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
+                align="stretch"
               >
-                <Text fontSize="$3" color="$color10">
+                <Text color="gray">
                   Updated{' '}
                   {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
               </Row>
               <Row width="100%">
                 <Button
-                  size="$3"
-                  variant="outlined"
+                  size={12}
+                  variant="outline"
                   onPress={() =>
                     router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
                   }
                   accessibilityLabel={`View job ${job.title}`}
                   width="100%"
-                  $md={{ width: undefined }}
                 >
                   View job
                 </Button>
@@ -197,18 +180,18 @@ export function TeamJobsList({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          padding="$4"
-          gap="$2"
+          padding={16}
+          gap={8}
           width="100%"
         >
-          <Text fontWeight="600">No jobs assigned yet</Text>
-          <Text color="$color11">
+          <Text>No jobs assigned yet</Text>
+          <Text color="gray">
             Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
             team will appear here.
           </Text>
           <Button
-            marginTop="$2"
-            size="$3"
+            marginTop={8}
+            size={12}
             onPress={() => {
               if (onCreateJob) {
                 onCreateJob()
@@ -220,7 +203,6 @@ export function TeamJobsList({
               })
             }}
             width="100%"
-            $md={{ width: undefined }}
           >
             Create job
           </Button>
@@ -239,17 +221,17 @@ function StatusChip({ status }: { status: string }) {
 
   return (
     <Row
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+      paddingHorizontal={8}
+      paddingVertical={4}
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius="$4"
+      borderRadius={16}
       accessible
       accessibilityRole="text"
       accessibilityLabel={`Job status ${normalized}`}
     >
-      <Text fontSize="$2" color={textColor}>
+      <Text color={textColor}>
         {normalized}
       </Text>
     </Row>
@@ -263,17 +245,17 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
 
   return (
     <Row
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+      paddingHorizontal={8}
+      paddingVertical={4}
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius="$4"
+      borderRadius={16}
       accessible
       accessibilityRole="text"
       accessibilityLabel={`${name}${isPrimary ? ' primary team' : ''}`}
     >
-      <Text fontSize="$2" color={textColor}>
+      <Text color={textColor}>
         {name}
         {isPrimary ? ' • Primary' : ''}
       </Text>

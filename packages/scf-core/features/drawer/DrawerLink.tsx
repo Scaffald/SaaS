@@ -43,11 +43,11 @@ export const DrawerLink = ({
   const renderContent = useCallback(() => {
     const iconWrapper = (
       <Row
-        alignItems="center"
-        justifyContent="center"
+        align="center"
+        justify="center"
         width={collapsed ? 48 : 32}
         height={collapsed ? 48 : 32}
-        borderRadius="$8"
+        borderRadius={32}
         backgroundColor={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
       >
         {renderIcon()}
@@ -59,9 +59,9 @@ export const DrawerLink = ({
     }
 
     return (
-      <Row alignItems="center" gap="$3">
+      <Row align="center" gap={12}>
         {iconWrapper}
-        <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
+        <Paragraph size={16} color={active ? '$color1' : '$color12'}>
           {title}
         </Paragraph>
       </Row>
@@ -74,22 +74,22 @@ export const DrawerLink = ({
     }
 
     return (
-      <Row alignItems="center" gap="$2">
+      <Row align="center" gap={8}>
         {item.badge && (
           <Row
-            paddingHorizontal="$2"
-            paddingVertical="$1"
+            paddingHorizontal={8}
+            paddingVertical={4}
             borderRadius="$10"
             backgroundColor="$red9"
             minWidth={20}
-            alignItems="center"
+            align="center"
           >
-            <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
+            <Paragraph size={4} color={active ? '$color1' : '$color12'}>
               {item.badge}
             </Paragraph>
           </Row>
         )}
-        {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="$color10" />}
+        {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="gray" />}
       </Row>
     )
   }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable])
@@ -102,11 +102,11 @@ export const DrawerLink = ({
     if (collapsed) {
       return (
         <Row
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           width={56}
           height={56}
-          borderRadius="$8"
+          borderRadius={32}
           opacity={0.4}
           backgroundColor="$color4"
           cursor="not-allowed"
@@ -118,16 +118,16 @@ export const DrawerLink = ({
 
     return (
       <Row
-        alignItems="center"
-        gap="$3"
-        paddingHorizontal="$3"
-        paddingVertical="$2"
+        align="center"
+        gap={12}
+        paddingHorizontal={12}
+        paddingVertical={8}
         opacity={0.5}
         cursor="not-allowed"
         flex={1}
       >
-        {Icon && <Icon size={18} color="$color12" />}
-        <Paragraph size="$3" fontWeight="500" color="$color12">
+        {Icon && <Icon size={18} color="gray" />}
+        <Paragraph size={12} color="gray">
           {title}
         </Paragraph>
       </Row>
@@ -140,9 +140,9 @@ export const DrawerLink = ({
         <Row
           width={56}
           height={56}
-          borderRadius="$8"
-          alignItems="center"
-          justifyContent="center"
+          borderRadius={32}
+          align="center"
+          justify="center"
           backgroundColor={active ? '$blue9' : 'transparent'}
           hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
           pressStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
@@ -158,18 +158,18 @@ export const DrawerLink = ({
     return (
       <Link href={item.href} asChild>
         <Row
-          alignItems="center"
-          borderRadius="$4"
-          gap="$3"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
+          align="center"
+          borderRadius={16}
+          gap={12}
+          paddingHorizontal={12}
+          paddingVertical={8}
           paddingLeft="$9"
           pressStyle={{ backgroundColor: '$color1' }}
           hoverStyle={{ backgroundColor: '$blue4' }}
           cursor="pointer"
           flex={1}
         >
-          <Paragraph size="$4" fontWeight="500" color={active ? '$blue9' : '$color12'}>
+          <Paragraph size={16} color={active ? '$blue9' : '$color12'}>
             {title}
           </Paragraph>
           {item.isOnCooldown ? (
@@ -187,12 +187,12 @@ export const DrawerLink = ({
       <Stack flex={1}>
         <Link href={item.href} asChild>
           <Row
-            alignItems="center"
-            justifyContent="space-between"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$4"
-            marginVertical="$1"
+            align="center"
+            justify="space-between"
+            paddingHorizontal={12}
+            paddingVertical={8}
+            borderRadius={16}
+            marginVertical={4}
             backgroundColor={active ? '$blue9' : 'transparent'}
             hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
             pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
@@ -203,7 +203,7 @@ export const DrawerLink = ({
           </Row>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <Stack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+          <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -227,12 +227,12 @@ export const DrawerLink = ({
       <Stack flex={1}>
         <Link href={item.href} asChild>
           <Row
-            alignItems="center"
-            justifyContent="space-between"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$4"
-            marginVertical="$1"
+            align="center"
+            justify="space-between"
+            paddingHorizontal={12}
+            paddingVertical={8}
+            borderRadius={16}
+            marginVertical={4}
             backgroundColor={active ? '$blue9' : 'transparent'}
             hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
             pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
@@ -243,7 +243,7 @@ export const DrawerLink = ({
           </Row>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <Stack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+          <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -267,12 +267,12 @@ export const DrawerLink = ({
       <Stack flex={1}>
         <Link href={item.href} asChild>
           <Row
-            alignItems="center"
-            justifyContent="space-between"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$4"
-            marginVertical="$1"
+            align="center"
+            justify="space-between"
+            paddingHorizontal={12}
+            paddingVertical={8}
+            borderRadius={16}
+            marginVertical={4}
             backgroundColor={active ? '$blue9' : 'transparent'}
             hoverStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
             pressStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
@@ -282,7 +282,7 @@ export const DrawerLink = ({
             {renderRightSide()}
           </Row>
         </Link>
-        <Stack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+        <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
           {item.subItems.map((subItem) => (
             <DrawerLink
               key={subItem.key}
@@ -303,12 +303,12 @@ export const DrawerLink = ({
   return (
     <Link href={item.href} asChild>
       <Row
-        alignItems="center"
-        justifyContent="space-between"
-        paddingHorizontal="$3"
-        paddingVertical="$3"
-        borderRadius="$2"
-        marginVertical="$1"
+        align="center"
+        justify="space-between"
+        paddingHorizontal={12}
+        paddingVertical={12}
+        borderRadius={8}
+        marginVertical={4}
         backgroundColor={active ? '$blue9' : 'transparent'}
         hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
         pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}

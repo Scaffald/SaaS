@@ -208,9 +208,9 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
     apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
 
   return (
-    <Stack gap="$2" position="relative" zIndex={1000}>
+    <Stack gap={8} position="relative" zIndex={1000}>
       {label && (
-        <Text fontWeight="600">
+        <Text>
           {label}
           {required && ' *'}
         </Text>

@@ -214,46 +214,43 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       {/* Bulk Action Bar */}
       {selectedApplicationIds.size > 0 && (
         <Row
-          gap="$3"
-          padding="$3"
+          gap={12}
+          padding={12}
           backgroundColor="$blue2"
-          alignItems="center"
-          justifyContent="space-between"
+          align="center"
+          justify="space-between"
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
           flexWrap="wrap"
-          $sm={{ flexDirection: 'column', alignItems: 'stretch' }}
         >
-          <Text fontSize="$4" fontWeight="600">
+          <Text>
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
             selected
           </Text>
-          <Row gap="$2" flexWrap="wrap" $sm={{ width: '100%', flexDirection: 'column' }}>
-            <Button size="$3" variant="outlined" onPress={clearSelection} $sm={{ width: '100%' }}>
+          <Row gap={8} flexWrap="wrap"}>
+            <Button size={12} variant="outline" onPress={clearSelection}}>
               Clear
             </Button>
             {selectedApplications.length >= 2 &&
               selectedApplications.length <= 5 &&
               comparisonInquiryIds.length >= 2 && (
                 <Button
-                  size="$3"
+                  size={12}
                   theme="blue"
-                  variant="outlined"
+                  variant="outline"
                   onPress={() => {
                     if (comparisonInquiryIds.length >= 2 && comparisonInquiryIds.length <= 5) {
                       setShowComparison(true)
                     }
-                  }}
-                  $sm={{ width: '100%' }}
+                  }}}
                 >
                   Compare {comparisonInquiryIds.length}
                 </Button>
               )}
             <Button
-              size="$3"
+              size={12}
               theme="blue"
-              onPress={() => setShowBulkInquiry(true)}
-              $sm={{ width: '100%' }}
+              onPress={() => setShowBulkInquiry(true)}}
             >
               Send Inquiry to {selectedApplicationIds.size}
             </Button>
@@ -274,24 +271,23 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}
           >
             <Tabs.List
-              separator={<Stack width="$1" />}
+              separator={<Stack width={4} />}
               disablePassBorderRadius="bottom"
               aria-label="Kanban column navigation"
-              $sm={{ flexWrap: 'wrap' }}
             >
               {STATUSES.map((status) => (
                 <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
-                  <Text fontSize="$3" fontWeight="600" numberOfLines={1}>
+                  <Text numberOfLines={1}>
                     {STATUS_LABELS[status]}
                   </Text>
                   <Stack
                     backgroundColor="$color5"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$2"
-                    marginTop="$1"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={8}
+                    marginTop={4}
                   >
-                    <Text fontSize="$1" fontWeight="600" color="$color11">
+                    <Text color="gray">
                       {groupedApplications[status].length}
                     </Text>
                   </Stack>
@@ -300,7 +296,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             </Tabs.List>
 
             {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status} padding="$3">
+              <Tabs.Content key={status} value={status} padding={12}>
                 <StatusColumn
                   status={status}
                   label={STATUS_LABELS[status]}
@@ -316,7 +312,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         ) : (
           // Desktop: Horizontal scrolling layout
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Row gap="$3" paddingBottom="$4">
+            <Row gap={12} paddingBottom={16}>
               {STATUSES.map((status) => (
                 <StatusColumn
                   key={status}
@@ -454,7 +450,7 @@ const StatusColumn = ({
   return (
     <DroppableColumn
       id={status}
-      alignItems={applications.map((app) => app.id)}
+      align={applications.map((app) => app.id)}
       title={label}
       count={applications.length}
       color={color}

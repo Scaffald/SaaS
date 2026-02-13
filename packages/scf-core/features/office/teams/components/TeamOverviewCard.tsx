@@ -50,39 +50,39 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
 
   return (
     <Card
-      padding="$4"
+      padding={16}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$4"
+      gap={16}
       backgroundColor="$color2"
     >
-      <Row gap="$4" justifyContent="space-between" flexWrap="wrap">
-        <Stack gap="$2" flex={1} style={{ minWidth: 240 }}>
-          <Row gap="$2" alignItems="center" flexWrap="wrap">
-            <Text fontSize="$8" fontWeight="700">
+      <Row gap={16} justify="space-between" flexWrap="wrap">
+        <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
+          <Row gap={8} align="center" flexWrap="wrap">
+            <Text>
               {team.name || 'Untitled team'}
             </Text>
             {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
           </Row>
-          <Text color="$color11">
+          <Text color="gray">
             {team.description?.trim() ||
               'No description provided. Add context to help team members understand the focus of this team.'}
           </Text>
         </Stack>
         {actions ? (
-          <Row gap="$2" alignItems="flex-start" flexShrink={0} flexWrap="wrap">
+          <Row gap={8} align="flex-start" flexShrink={0} flexWrap="wrap">
             {actions}
           </Row>
         ) : null}
       </Row>
 
-      <Row gap="$2" flexWrap="wrap">
+      <Row gap={8} flexWrap="wrap">
         <Chip>{purposeLabel}</Chip>
         <Chip>{visibilityLabel}</Chip>
         <Chip>{invitationPolicyLabel}</Chip>
       </Row>
 
-      <Row gap="$4" flexWrap="wrap">
+      <Row gap={16} flexWrap="wrap">
         <StatItem
           icon={<Users size={16} />}
           label="Members"
@@ -107,11 +107,11 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
         ) : null}
       </Row>
 
-      <Stack gap="$1">
-        <Text fontSize="$2" color="$color10" textTransform="uppercase">
+      <Stack gap={4}>
+        <Text color="gray" textTransform="uppercase">
           Team slug
         </Text>
-        <Text fontWeight="600" color="$color12">
+        <Text color="gray">
           {team.slug || 'Not configured'}
         </Text>
       </Stack>
@@ -122,21 +122,21 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
 function StatItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <Row
-      gap="$2"
-      alignItems="center"
+      gap={8}
+      align="center"
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$4"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      borderRadius={16}
+      paddingHorizontal={12}
+      paddingVertical={8}
       backgroundColor="$color3"
     >
       {icon}
       <Stack>
-        <Text fontSize="$2" color="$color10" textTransform="uppercase">
+        <Text color="gray" textTransform="uppercase">
           {label}
         </Text>
-        <Text fontWeight="600">{value}</Text>
+        <Text>{value}</Text>
       </Stack>
     </Row>
   )
@@ -154,15 +154,15 @@ function Chip({
   const textColor = tone === 'warning' ? '$yellow11' : '$color11'
   return (
     <Row
-      gap="$2"
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+      gap={8}
+      paddingHorizontal={8}
+      paddingVertical={4}
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius="$4"
+      borderRadius={16}
     >
-      <Text fontSize="$2" color={textColor}>
+      <Text color={textColor}>
         {children}
       </Text>
     </Row>

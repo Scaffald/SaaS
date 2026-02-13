@@ -34,12 +34,10 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
   return (
     <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress}>
       {/* Job Title and Organization */}
-      <Stack gap="$1">
-        <Row alignItems="center" gap="$2">
+      <Stack gap={4}>
+        <Row align="center" gap={8}>
           <Briefcase size={16} color={isSelected ? '$yellow10' : '$color10'} />
           <Text
-            fontSize="$4"
-            fontWeight="600"
             color={isSelected ? '$yellow11' : '$color12'}
             numberOfLines={2}
           >
@@ -47,9 +45,9 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
           </Text>
         </Row>
         {job.organization_name && (
-          <Row alignItems="center" gap="$1.5" marginLeft="$6">
-            <Building2 size={14} color="$color10" />
-            <Text fontSize="$3" color="$color11" numberOfLines={1}>
+          <Row align="center" gap={6} marginLeft={24}>
+            <Building2 size={14} color="gray" />
+            <Text color="gray" numberOfLines={1}>
               {job.organization_name}
             </Text>
           </Row>
@@ -58,48 +56,45 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
 
       {/* Location */}
       {job.location && (
-        <Row alignItems="center" gap="$1.5">
+        <Row align="center" gap={6}>
           <MapPin size={14} color={isSelected ? '$yellow10' : '$color10'} />
-          <Text fontSize="$3" color="$color11" numberOfLines={1}>
+          <Text color="gray" numberOfLines={1}>
             {job.location}
           </Text>
         </Row>
       )}
 
       {/* Employment Type and Level */}
-      <Row gap="$2" flexWrap="wrap">
+      <Row gap={8} flexWrap="wrap">
         {job.employment_type && (
           <Text
-            fontSize="$2"
-            color="$color10"
+            color="gray"
             backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
         )}
         {job.remote_option && (
           <Text
-            fontSize="$2"
-            color="$color10"
+            color="gray"
             backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
             {job.remote_option.replace('_', ' ').toUpperCase()}
           </Text>
         )}
         {job.position_level && (
           <Text
-            fontSize="$2"
-            color="$color10"
+            color="gray"
             backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
             {job.position_level}
           </Text>
@@ -108,9 +103,9 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
 
       {/* Salary Range */}
       {salaryRange && (
-        <Row alignItems="center" gap="$1.5">
+        <Row align="center" gap={6}>
           <DollarSign size={14} color={isSelected ? '$yellow10' : '$green10'} />
-          <Text fontSize="$3" fontWeight="600" color="$green10">
+          <Text color="$green10">
             {salaryRange}
           </Text>
         </Row>
@@ -118,7 +113,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
 
       {/* View Details Button */}
       <Button
-        size="$2"
+        size={8}
         backgroundColor={isSelected ? '$yellow8' : '$color4'}
         color={isSelected ? '$yellow12' : '$color11'}
         hoverStyle={{

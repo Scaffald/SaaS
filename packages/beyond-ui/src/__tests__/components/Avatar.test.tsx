@@ -153,7 +153,8 @@ describe('Avatar', () => {
     it('should show initials on image error', () => {
       const { getByText, getByLabelText } = render(
         <TestWrapper>
-        <Avatar src="invalid-url" initials="JD" alt="Avatar" />,
+          <Avatar src="invalid-url" initials="JD" alt="Avatar" />
+        </TestWrapper>
       )
 
       // Trigger error
@@ -166,7 +167,8 @@ describe('Avatar', () => {
     it('should call onError callback when image fails', () => {
       const onError = vi.fn()
       const { getByLabelText } = render(
-        <Avatar src="invalid-url" initials="JD" alt="Avatar" onError={onError} />,
+        <TestWrapper>
+          <Avatar src="invalid-url" initials="JD" alt="Avatar" onError={onError} />
         </TestWrapper>
       )
 
@@ -180,7 +182,8 @@ describe('Avatar', () => {
     it('should handle image error without onError callback', () => {
       const { getByLabelText, getByText } = render(
         <TestWrapper>
-        <Avatar src="invalid-url" initials="JD" alt="Avatar" />,
+          <Avatar src="invalid-url" initials="JD" alt="Avatar" />
+        </TestWrapper>
       )
 
       // Should not throw
@@ -195,8 +198,11 @@ describe('Avatar', () => {
 
   describe('Accessibility', () => {
     it('should have proper accessibility role', () => {
-      const { getByRole } = render(<TestWrapper><Avatar initials="JD" alt="User avatar" /></TestWrapper>)
+      const { getByRole } = render(
+        <TestWrapper>
+          <Avatar initials="JD" alt="User avatar" />
         </TestWrapper>
+      )
       expect(getByRole('image')).toBeTruthy()
     })
 
@@ -247,7 +253,8 @@ describe('Avatar', () => {
     it('should prioritize image over initials', () => {
       const { getByLabelText, queryByText } = render(
         <TestWrapper>
-        <Avatar src="https://example.com/avatar.jpg" initials="JD" alt="Avatar" />,
+          <Avatar src="https://example.com/avatar.jpg" initials="JD" alt="Avatar" />
+        </TestWrapper>
       )
 
       expect(getByLabelText('Avatar')).toBeTruthy()
@@ -256,7 +263,8 @@ describe('Avatar', () => {
 
     it('should prioritize image over icon', () => {
       const { getByLabelText } = render(
-        <Avatar src="https://example.com/avatar.jpg" icon={<MockIcon />} alt="Avatar" />,
+        <TestWrapper>
+          <Avatar src="https://example.com/avatar.jpg" icon={<MockIcon />} alt="Avatar" />
         </TestWrapper>
       )
 
@@ -293,7 +301,8 @@ describe('Avatar', () => {
     it('should render large avatar with ring, status, and verified badge', () => {
       const { getByText, container } = render(
         <TestWrapper>
-        <Avatar size={64} initials="JD" showRing status="online" verified />,
+          <Avatar size={64} initials="JD" showRing status="online" verified />
+        </TestWrapper>
       )
 
       expect(getByText('JD')).toBeTruthy()
@@ -304,7 +313,8 @@ describe('Avatar', () => {
     it('should render clickable primary colored avatar with star', () => {
       const onPress = vi.fn()
       const { getByText, getByRole } = render(
-        <Avatar color="primary" initials="JD" star onPress={onPress} />,
+        <TestWrapper>
+          <Avatar color="primary" initials="JD" star onPress={onPress} />
         </TestWrapper>
       )
 
@@ -321,20 +331,20 @@ describe('Avatar', () => {
 
       const { getByText, container } = render(
         <TestWrapper>
-        <Avatar
-          size={48}
-          color="success"
-          src="https://example.com/avatar.jpg"
-          initials="JD"
-          alt="John Doe"
-          showRing
-          status="online"
-          verified
-          containerStyle={{ margin: 10 }}
-          avatarStyle={{ opacity: 0.9 }}
-          onPress={onPress}
-          onError={onError}
-        />,
+          <Avatar
+            size={48}
+            color="success"
+            src="https://example.com/avatar.jpg"
+            initials="JD"
+            alt="John Doe"
+            showRing
+            status="online"
+            verified
+            containerStyle={{ margin: 10 }}
+            avatarStyle={{ opacity: 0.9 }}
+            onPress={onPress}
+            onError={onError}
+          />
         </TestWrapper>
       )
 
@@ -373,13 +383,13 @@ describe('Avatar', () => {
     it('should handle null values gracefully', () => {
       const { container } = render(
         <TestWrapper>
-        <Avatar
-          src={undefined}
-          initials={undefined}
-          icon={undefined}
-          status={undefined}
-          badge={undefined}
-        />,
+          <Avatar
+            src={undefined}
+            initials={undefined}
+            icon={undefined}
+            status={undefined}
+            badge={undefined}
+          />
         </TestWrapper>
       )
       expect(container).toBeTruthy()

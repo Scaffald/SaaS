@@ -171,15 +171,15 @@ export function OfficeTeamsList() {
         archiveMutation.isPending ? (
           <Stack
             backgroundColor="$color2"
-            padding="$3"
-            borderRadius="$4"
+            padding={12}
+            borderRadius={16}
             shadowColor="$color10"
-            marginRight="$4"
-            marginBottom="$4"
+            marginRight={16}
+            marginBottom={16}
             style={{ alignSelf: 'flex-end' }}
           >
-            <Row gap="$3" alignItems="center">
-              <Spinner size="small" />
+            <Row gap={12} align="center">
+              <Spinner size="sm" />
               <Text>Archiving team...</Text>
             </Row>
           </Stack>

@@ -226,7 +226,7 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <Stack gap="$4" padding="$4">
+      <Stack gap={16} padding={16}>
         <SkeletonForm fields={6} />
       </Stack>
     )
@@ -234,10 +234,10 @@ export function ProfileGeneralLeft() {
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
+      <Stack gap={16}>
         {/* Avatar Section */}
-        <Stack gap="$3" alignItems="center">
-          <Text fontWeight="600">Profile Photo</Text>
+        <Stack gap={12} align="center">
+          <Text>Profile Photo</Text>
           <AvatarImagePicker
             value={getAvatarUrl(avatarPath) || ''}
             onImageSelect={async (imageUri) => {
@@ -280,16 +280,16 @@ export function ProfileGeneralLeft() {
             placeholder="Upload Avatar"
           />
           {uploadAvatarMutation.isPending && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Uploading avatar...
             </Text>
           )}
         </Stack>
 
         {/* Name Fields */}
-        <Row gap="$3">
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">First Name *</Text>
+        <Row gap={12}>
+          <Stack gap={8} flex={1}>
+            <Text>First Name *</Text>
             <Controller
               name="first_name"
               control={control}
@@ -308,14 +308,14 @@ export function ProfileGeneralLeft() {
               )}
             />
             {errors.first_name && (
-              <Text id="first_name-error" color="$red10" fontSize="$2" role="alert">
+              <Text id="first_name-error" color="$red10" role="alert">
                 {errors.first_name.message}
               </Text>
             )}
           </Stack>
 
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">Last Name *</Text>
+          <Stack gap={8} flex={1}>
+            <Text>Last Name *</Text>
             <Controller
               name="last_name"
               control={control}
@@ -334,7 +334,7 @@ export function ProfileGeneralLeft() {
               )}
             />
             {errors.last_name && (
-              <Text id="last_name-error" color="$red10" fontSize="$2" role="alert">
+              <Text id="last_name-error" color="$red10" role="alert">
                 {errors.last_name.message}
               </Text>
             )}
@@ -342,8 +342,8 @@ export function ProfileGeneralLeft() {
         </Row>
 
         {/* About Section - Rich Text Editor */}
-        <Stack gap="$2">
-          <Text fontWeight="600">About</Text>
+        <Stack gap={8}>
+          <Text>About</Text>
           <Controller
             name="about"
             control={control}
@@ -371,8 +371,8 @@ export function ProfileGeneralLeft() {
         </Stack>
 
         {/* Contact Information */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Phone</Text>
+        <Stack gap={8}>
+          <Text>Phone</Text>
           <Controller
             name="phone"
             control={control}
@@ -388,8 +388,8 @@ export function ProfileGeneralLeft() {
           />
         </Stack>
 
-        <Stack gap="$2">
-          <Text fontWeight="600">Email (Read-only)</Text>
+        <Stack gap={8}>
+          <Text>Email (Read-only)</Text>
           <Controller
             name="email"
             control={control}
@@ -407,7 +407,7 @@ export function ProfileGeneralLeft() {
               />
             )}
           />
-          <Text color="$color10" fontSize="$2">
+          <Text color="gray">
             Email changes must be made through account settings
           </Text>
         </Stack>
@@ -424,9 +424,9 @@ export function ProfileGeneralLeft() {
         />
 
         {/* Action Buttons */}
-        <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
+        <Row justify="flex-end" gap={12} paddingTop={16}>
           <Button
-            variant="outlined"
+            variant="outline"
             disabled={!isDirty}
             onPress={() => setShowCancelDialog(true)}
             opacity={!isDirty ? 0.5 : 1}

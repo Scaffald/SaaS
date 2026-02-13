@@ -324,9 +324,9 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading experience data...</Text>
+        <Stack align="center" justify="center" padding={32} gap={16}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -336,7 +336,7 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack align="center" justify="center" padding={32} gap={16}>
           <Text color="$red10">Failed to load experience data</Text>
           <Button onPress={() => experienceQuery.refetch()}>Retry</Button>
         </Stack>
@@ -348,18 +348,18 @@ export function ProfileExperienceLeft() {
     <DashboardWidget>
       <H4>Work Experience</H4>
 
-      <Stack gap="$4">
+      <Stack gap={16}>
         {/* Experience Summary */}
-        <Row gap="$3">
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">Total Years Experience</Text>
-            <Text fontSize="$6" fontWeight="700" color="$blue10">
+        <Row gap={12}>
+          <Stack gap={8} flex={1}>
+            <Text>Total Years Experience</Text>
+            <Text color="$blue10">
               {totalExperience.years} years {totalExperience.months} months
             </Text>
           </Stack>
 
-          <Stack gap="$2" flex={1}>
-            <Text fontWeight="600">Career Level</Text>
+          <Stack gap={8} flex={1}>
+            <Text>Career Level</Text>
             <Controller
               name="career_level"
               control={control}
@@ -379,10 +379,10 @@ export function ProfileExperienceLeft() {
         </Row>
 
         {/* Experience Entries */}
-        <Stack gap="$3">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontWeight="600">Work History</Text>
-            <Button size="$3" onPress={addExperienceEntry} icon={Plus}>
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Text>Work History</Text>
+            <Button size={12} onPress={addExperienceEntry} icon={Plus}>
               Add Experience
             </Button>
           </Row>
@@ -390,22 +390,22 @@ export function ProfileExperienceLeft() {
           {fields.map((field, index) => (
             <Stack
               key={field.id}
-              gap="$3"
-              padding="$3"
+              gap={12}
+              padding={12}
               borderWidth={1}
               borderColor="$borderColor"
-              borderRadius="$4"
+              borderRadius={16}
             >
-              <Row justifyContent="space-between" alignItems="center">
-                <Text fontWeight="600">Position {index + 1}</Text>
-                <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
+              <Row justify="space-between" align="center">
+                <Text>Position {index + 1}</Text>
+                <Button size={8} variant="outline" onPress={() => remove(index)} icon={X}>
                   Remove
                 </Button>
               </Row>
 
               {/* Job Title and Company */}
-              <Row gap="$3">
-                <Stack gap="$2" flex={1}>
+              <Row gap={12}>
+                <Stack gap={8} flex={1}>
                   <Text>Job Title *</Text>
                   <Controller
                     name={`experience_entries.${index}.job_title`}
@@ -422,13 +422,13 @@ export function ProfileExperienceLeft() {
                     )}
                   />
                   {errors.experience_entries?.[index]?.job_title && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text color="$red10">
                       {errors.experience_entries[index]?.job_title?.message}
                     </Text>
                   )}
                 </Stack>
 
-                <Stack gap="$2" flex={1}>
+                <Stack gap={8} flex={1}>
                   <Text>Company Name *</Text>
                   <Controller
                     name={`experience_entries.${index}.company_name`}
@@ -447,7 +447,7 @@ export function ProfileExperienceLeft() {
                     )}
                   />
                   {errors.experience_entries?.[index]?.company_name && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text color="$red10">
                       {errors.experience_entries[index]?.company_name?.message}
                     </Text>
                   )}
@@ -455,8 +455,8 @@ export function ProfileExperienceLeft() {
               </Row>
 
               {/* Employment Type and Location */}
-              <Row gap="$3">
-                <Stack gap="$2" flex={1}>
+              <Row gap={12}>
+                <Stack gap={8} flex={1}>
                   <Text>Employment Type</Text>
                   <Controller
                     name={`experience_entries.${index}.employment_type`}
@@ -475,7 +475,7 @@ export function ProfileExperienceLeft() {
                   />
                 </Stack>
 
-                <Stack gap="$2" flex={1}>
+                <Stack gap={8} flex={1}>
                   <ControlledAddressForm
                     control={control}
                     name={`experience_entries.${index}.location`}
@@ -492,12 +492,12 @@ export function ProfileExperienceLeft() {
                     error={errors.experience_entries?.[index]?.location?.message}
                   />
                   {watch(`experience_entries.${index}.is_remote`) && (
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="gray">
                       Enter company headquarters location
                     </Text>
                   )}
                   {errors.experience_entries?.[index]?.location && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text color="$red10">
                       {errors.experience_entries[index]?.location?.message}
                     </Text>
                   )}
@@ -511,7 +511,7 @@ export function ProfileExperienceLeft() {
                 render={({ field }) => {
                   const isRemote = Boolean(field.value)
                   return (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <CustomCheckbox
                         checked={isRemote}
                         onCheckedChange={field.onChange}
@@ -527,8 +527,8 @@ export function ProfileExperienceLeft() {
               />
 
               {/* Start and End Dates */}
-              <Row gap="$3">
-                <Stack gap="$2" flex={1}>
+              <Row gap={12}>
+                <Stack gap={8} flex={1}>
                   <Controller
                     name={`experience_entries.${index}.start_date`}
                     control={control}
@@ -547,7 +547,7 @@ export function ProfileExperienceLeft() {
                   />
                 </Stack>
 
-                <Stack gap="$2" flex={1}>
+                <Stack gap={8} flex={1}>
                   <Controller
                     name={`experience_entries.${index}.end_date`}
                     control={control}
@@ -575,7 +575,7 @@ export function ProfileExperienceLeft() {
                 render={({ field }) => {
                   const isCurrent = Boolean(field.value)
                   return (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <CustomCheckbox
                         checked={isCurrent}
                         onCheckedChange={field.onChange}
@@ -591,7 +591,7 @@ export function ProfileExperienceLeft() {
               />
 
               {/* Description */}
-              <Stack gap="$2">
+              <Stack gap={8}>
                 <Text>Job Description</Text>
                 <Controller
                   name={`experience_entries.${index}.description`}
@@ -610,8 +610,8 @@ export function ProfileExperienceLeft() {
           ))}
 
           {fields.length === 0 && (
-            <Stack padding="$4" alignItems="center" gap="$2">
-              <Text color="$color11">No work experience added yet</Text>
+            <Stack padding={16} align="center" gap={8}>
+              <Text color="gray">No work experience added yet</Text>
             </Stack>
           )}
         </Stack>
@@ -619,21 +619,21 @@ export function ProfileExperienceLeft() {
         {/* Save Feedback */}
         {saveBanner && (
           <Stack
-            marginTop="$4"
-            padding="$3"
-            gap="$2"
+            marginTop={16}
+            padding={12}
+            gap={8}
             borderWidth={1}
             borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
             backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
-            borderRadius="$4"
+            borderRadius={16}
           >
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               {saveBanner.type === 'success' ? (
                 <CheckCircle size={18} color="$green10" />
               ) : (
                 <AlertTriangle size={18} color="$red10" />
               )}
-              <Text fontWeight="600" color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
+              <Text color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
                 {saveBanner.message}
               </Text>
             </Row>
@@ -641,10 +641,10 @@ export function ProfileExperienceLeft() {
         )}
 
         {/* Action Buttons */}
-        <Row justifyContent="flex-end" gap="$3" paddingTop="$4">
+        <Row justify="flex-end" gap={12} paddingTop={16}>
           {(editingEntryId || isDirty) && (
             <Button
-              variant="outlined"
+              variant="outline"
               disabled={!isDirty && !editingEntryId}
               onPress={() => {
                 if (editingEntryId) {
@@ -668,13 +668,13 @@ export function ProfileExperienceLeft() {
             opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
           >
             {saveState === 'success' ? (
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <Check size={18} color="$green10" />
                 <Text color="$green10">Saved!</Text>
               </Row>
             ) : isSyncing && saveState === 'saving' ? (
-              <Row gap="$2" alignItems="center">
-                <Spinner size="small" color="$color12" />
+              <Row gap={8} align="center">
+                <Spinner size="sm" color="gray" />
                 <Text>Saving...</Text>
               </Row>
             ) : editingEntryId ? (

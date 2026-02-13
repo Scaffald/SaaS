@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { ScrollView, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView } from 'react-native'
+import { Row, Stack } from '@unicornlove/beyond-ui'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 
@@ -20,29 +21,18 @@ export const AssessmentsLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
-        {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop="$3" />}
+      <Stack gap={12} paddingTop={12} paddingBottom={20}>
+        {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop={12} />}
 
         <Row
-          gap="$3"
-          paddingHorizontal="$3"
-          paddingTop="$3"
+          gap={12}
+          paddingHorizontal={12}
+          paddingTop={12}
           flexDirection="column"
-          $md={{
-            gap: '$8',
-            paddingHorizontal: '$7',
-            paddingTop: '$3',
-            flexDirection: 'row',
-          }}
         >
           {hasLeftContent && (
             <Stack
               width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 13 : 1,
-                minWidth: hasBothColumns ? 300 : undefined,
-              }}
             >
               {leftContent}
             </Stack>
@@ -50,11 +40,6 @@ export const AssessmentsLayout = ({
           {hasRightContent && (
             <Stack
               width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 7 : 1,
-                minWidth: hasBothColumns ? 300 : undefined,
-              }}
             >
               {rightContent}
             </Stack>

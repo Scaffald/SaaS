@@ -32,11 +32,11 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
   const textColor = variant === 'strength' ? '$green11' : '$red11'
 
   return (
-    <Stack gap="$3">
-      <Text fontSize="$5" fontWeight="700" color="$color12">
+    <Stack gap={12}>
+      <Text color="gray">
         {title}
       </Text>
-      <Row gap="$2" flexWrap="wrap">
+      <Row gap={8} flexWrap="wrap">
         {displayTags.map((tag) => {
           const relativeSize = getRelativeSize(tag.count)
           const fontSize = relativeSize <= 1.5 ? '$2' : relativeSize <= 2.5 ? '$3' : '$4'
@@ -45,11 +45,11 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
             <Row
               key={tag.name}
               backgroundColor={bgColor}
-              paddingHorizontal="$3"
-              paddingVertical="$1.5"
-              borderRadius="$3"
+              paddingHorizontal={12}
+              paddingVertical={6}
+              borderRadius={12}
             >
-              <Text fontSize={fontSize} fontWeight="600" color={textColor}>
+              <Text color={textColor}>
                 {tag.name} ({tag.count})
               </Text>
             </Row>

@@ -145,30 +145,30 @@ function OptOutRow({
 
   return (
     <Stack
-      padding="$4"
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$3"
+      gap={12}
     >
-      <Row justifyContent="space-between" alignItems="flex-start">
-        <Stack flex={1} gap="$1" marginRight="$4">
-          <Text fontSize="$4" fontWeight="600">
+      <Row justify="space-between" align="flex-start">
+        <Stack flex={1} gap={4} marginRight={16}>
+          <Text>
             {info.title}
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             {info.description}
           </Text>
         </Stack>
 
-        <Stack alignItems="center" gap="$1">
+        <Stack align="center" gap={4}>
           <ToggleSwitch
             checked={isOptedOut}
             onChange={(checked) => onToggle(category, checked)}
             disabled={isPending || isGPCOptOut}
           />
-          <Text fontSize="$2" color={isOptedOut ? '$green10' : '$color10'}>
+          <Text color={isOptedOut ? '$green10' : '$color10'}>
             {isOptedOut ? 'Opted Out' : 'Opted In'}
           </Text>
         </Stack>
@@ -176,8 +176,8 @@ function OptOutRow({
 
       {/* Status info */}
       {status?.opted_out_at && (
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        <Row gap={8} align="center">
+          <Text color="gray">
             {isGPCOptOut ? 'Via GPC signal' : 'Manual opt-out'} on{' '}
             {formatDate(status.opted_out_at)}
           </Text>
@@ -186,11 +186,11 @@ function OptOutRow({
 
       {isGPCOptOut && (
         <Row
-          padding="$2"
+          padding={8}
           backgroundColor="$blue2"
-          borderRadius="$2"
+          borderRadius={8}
         >
-          <Text fontSize="$2" color="$blue11">
+          <Text color="$blue11">
             This opt-out was automatically applied based on your browser&apos;s Global Privacy
             Control (GPC) signal. To change this setting, disable GPC in your browser.
           </Text>
@@ -198,7 +198,7 @@ function OptOutRow({
       )}
 
       {/* Legal basis */}
-      <Text fontSize="$2" color="$color9">
+      <Text color="gray">
         Legal basis: {info.legalBasis}
       </Text>
     </Stack>
@@ -261,12 +261,12 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
 
   if (error) {
     return (
-      <Stack padding="$4" gap="$4" alignItems="center">
-        <Text color="$red10" fontSize="$4">
+      <Stack padding={16} gap={16} align="center">
+        <Text color="$red10">
           Error loading opt-out preferences
         </Text>
-        <Text color="$color11">{error.message}</Text>
-        <Button onPress={() => refetch()} variant="outlined">
+        <Text color="gray">{error.message}</Text>
+        <Button onPress={() => refetch()} variant="outline">
           Retry
         </Button>
       </Stack>
@@ -274,13 +274,13 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
   }
 
   return (
-    <Stack gap="$4" padding="$4">
+    <Stack gap={16} padding={16}>
       {/* Header */}
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
+      <Stack gap={8}>
+        <Text>
           Manage Opt-Out Preferences
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Control how your personal information is used and shared. Your choices here are
           protected under the California Consumer Privacy Act (CCPA).
         </Text>
@@ -289,31 +289,31 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       {/* GPC Detection Banner */}
       {hasGPC && (
         <Row
-          padding="$3"
+          padding={12}
           backgroundColor="$green2"
-          borderRadius="$3"
+          borderRadius={12}
           borderWidth={1}
           borderColor="$green6"
-          gap="$2"
-          alignItems="center"
+          gap={8}
+          align="center"
         >
           <Stack
             width={24}
             height={24}
             borderRadius={12}
             backgroundColor="$green9"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
           >
-            <Text color="white" fontSize="$2" fontWeight="bold">
+            <Text color="white">
               ✓
             </Text>
           </Stack>
           <Stack flex={1}>
-            <Text fontSize="$3" fontWeight="600" color="$green11">
+            <Text color="$green11">
               Global Privacy Control Detected
             </Text>
-            <Text fontSize="$2" color="$green11">
+            <Text color="$green11">
               Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal
               and have automatically opted you out of data sale and sharing.
             </Text>
@@ -323,13 +323,13 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
 
       {/* Loading state */}
       {isLoading ? (
-        <Row padding="$6" justifyContent="center">
-          <Spinner size="large" />
+        <Row padding={24} justify="center">
+          <Spinner size="lg" />
         </Row>
       ) : (
         <>
           {/* Opt-out categories */}
-          <Stack gap="$3">
+          <Stack gap={12}>
             <OptOutRow
               category="sale"
               status={statusMap.sale}
@@ -357,9 +357,9 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
           </Stack>
 
           {/* Opt-out all button */}
-          <Row gap="$3" justifyContent="center" marginTop="$2">
+          <Row gap={12} justify="center" marginTop={8}>
             <Button
-              size="$4"
+              size={16}
               onPress={() => {
                 // Opt out of all categories
                 const categories: OptOutCategory[] = [
@@ -383,33 +383,33 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
 
       {/* Non-discrimination notice */}
       <Stack
-        padding="$3"
+        padding={12}
         backgroundColor="$color3"
-        borderRadius="$2"
-        marginTop="$2"
+        borderRadius={8}
+        marginTop={8}
       >
-        <Text fontSize="$2" color="$color10">
-          <Text fontWeight="600">Non-Discrimination Notice:</Text> We will not discriminate
+        <Text color="gray">
+          <Text>Non-Discrimination Notice:</Text> We will not discriminate
           against you for exercising any of your privacy rights. You will receive the same
           service and pricing regardless of your privacy choices.
         </Text>
       </Stack>
 
       {/* Info about processing */}
-      <Stack gap="$2" marginTop="$2">
-        <Text fontSize="$3" fontWeight="500">
+      <Stack gap={8} marginTop={8}>
+        <Text>
           How Opt-Outs Work
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           • Opt-out preferences take effect immediately
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           • We will not sell or share your data with third parties while you are opted out
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           • You can change your preferences at any time
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           • If you use GPC, your opt-out will be automatically applied across all participating
           sites
         </Text>
@@ -417,8 +417,8 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
 
       {/* Close button */}
       {onClose && (
-        <Row justifyContent="flex-end" marginTop="$4">
-          <Button variant="outlined" onPress={onClose}>
+        <Row justify="flex-end" marginTop={16}>
+          <Button variant="outline" onPress={onClose}>
             Close
           </Button>
         </Row>

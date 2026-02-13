@@ -26,8 +26,8 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (!employerId) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
+        <Stack align="center" justify="center" padding={32} gap={12}>
+          <Text color="gray">
             Employer not specified
           </Text>
           <Button
@@ -50,9 +50,9 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (isLoading || isFetching) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-          <Spinner size="large" color="$blue10" />
-          <Text color="$color11">Loading employer details...</Text>
+        <Stack align="center" justify="center" padding={32} gap={12}>
+          <Spinner size="lg" color="$blue10" />
+          <Text color="gray">Loading employer details...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -61,8 +61,8 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (!employer) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-          <Text color="$red10" fontSize="$5" fontWeight="600">
+        <Stack align="center" justify="center" padding={32} gap={12}>
+          <Text color="$red10">
             Employer not found
           </Text>
           <Button
@@ -89,12 +89,12 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     : null
 
   return (
-    <DashboardWidget gap="$4">
+    <DashboardWidget gap={16}>
       {/* Header with Back Button */}
-      <Row alignItems="center" gap="$3">
+      <Row align="center" gap={12}>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           icon={ArrowLeft}
           onPress={() => {
             // Try to go back, fallback to employers list if no history
@@ -107,9 +107,9 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
         >
           Back
         </Button>
-        <Row alignItems="center" gap="$2" flex={1}>
+        <Row align="center" gap={8} flex={1}>
           <Building2 size={24} color="$blue10" />
-          <Text fontSize="$8" fontWeight="700">
+          <Text>
             {employer.name}
           </Text>
         </Row>
@@ -119,13 +119,13 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
 
       {/* Industry */}
       {employer.industries && (
-        <Stack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             Industry
           </Text>
-          <Row alignItems="center" gap="$2">
-            <Users size={16} color="$color11" />
-            <Text fontSize="$4" color="$color11">
+          <Row align="center" gap={8}>
+            <Users size={16} color="gray" />
+            <Text color="gray">
               {employer.industries.name}
             </Text>
           </Row>
@@ -134,11 +134,11 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
 
       {/* Description */}
       {employer.description && (
-        <Stack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             About
           </Text>
-          <Text fontSize="$4" color="$color11">
+          <Text color="gray">
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
@@ -148,14 +148,14 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
 
       {/* Location */}
       {employer.address && (
-        <Stack gap="$2">
-          <Row alignItems="center" gap="$2">
-            <MapPin size={18} color="$color10" />
-            <Text fontSize="$5" fontWeight="600">
+        <Stack gap={8}>
+          <Row align="center" gap={8}>
+            <MapPin size={18} color="gray" />
+            <Text>
               Location
             </Text>
           </Row>
-          <Text fontSize="$4" color="$color11">
+          <Text color="gray">
             {employer.address.street || employer.address.zipCode || 'Not specified'}
           </Text>
         </Stack>
@@ -163,10 +163,10 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
 
       {/* Website */}
       {websiteUrl && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Button
-            size="$4"
-            variant="outlined"
+            size={16}
+            variant="outline"
             icon={ExternalLink}
             onPress={() => {
               if (typeof window !== 'undefined') {
@@ -180,8 +180,8 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       )}
 
       {/* Additional Info */}
-      <Stack gap="$2">
-        <Text fontSize="$3" color="$color10">
+      <Stack gap={8}>
+        <Text color="gray">
           Created: {new Date(employer.created_at).toLocaleDateString()}
         </Text>
       </Stack>

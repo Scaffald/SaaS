@@ -54,34 +54,34 @@ export function SkillSearchForm({
   )
 
   return (
-    <Stack gap="$4">
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontWeight="600" fontSize="$4">
+    <Stack gap={16}>
+      <Row justify="space-between" align="center">
+        <Text>
           Search for Skills
         </Text>
 
         {/* Taxonomy Checkboxes */}
-        <Row gap="$3" alignItems="center">
-          <Row gap="$2" alignItems="center">
+        <Row gap={12} align="center">
+          <Row gap={8} align="center">
             <CustomCheckbox
               checked={searchCSI}
               onCheckedChange={onSearchCSIChange}
               aria-label="Filter CSI taxonomy"
               testID="search-csi"
             />
-            <Label fontSize="$2" onPress={() => onSearchCSIChange(!searchCSI)}>
+            <Label onPress={() => onSearchCSIChange(!searchCSI)}>
               CSI
             </Label>
           </Row>
 
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <CustomCheckbox
               checked={searchONET}
               onCheckedChange={onSearchONETChange}
               aria-label="Filter O*NET taxonomy"
               testID="search-onet"
             />
-            <Label fontSize="$2" onPress={() => onSearchONETChange(!searchONET)}>
+            <Label onPress={() => onSearchONETChange(!searchONET)}>
               O*NET
             </Label>
           </Row>

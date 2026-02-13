@@ -416,18 +416,18 @@ export function InquiryCreateForm({
       const isAutoFilled = keys.some((key) => autoFilledFields.has(key))
 
       return (
-        <Row alignItems="center" gap="$2">
-          <Text fontWeight="600" fontSize="$4">
+        <Row align="center" gap={8}>
+          <Text>
             {label}
           </Text>
           {isAutoFilled && (
             <Row
-              paddingHorizontal="$2"
-              paddingVertical="$1"
+              paddingHorizontal={8}
+              paddingVertical={4}
               backgroundColor="$green3"
-              borderRadius="$2"
+              borderRadius={8}
             >
-              <Text fontSize="$2" color="$green11" fontWeight="600">
+              <Text color="$green11">
                 Auto-filled
               </Text>
             </Row>
@@ -441,56 +441,53 @@ export function InquiryCreateForm({
   return (
     <>
       <FormProvider {...form}>
-        <Row gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
+        <Row gap={16} flex={1}>
           {/* Main Form */}
-          <Stack flex={1} gap="$4">
+          <Stack flex={1} gap={16}>
             <ScrollView>
-              <Stack gap="$6" padding="$4" $sm={{ gap: '$8', padding: '$3' }}>
+              <Stack gap={24} padding={16}>
                 {/* Templates Section */}
                 <Stack
-                  gap="$3"
-                  padding="$3"
+                  gap={12}
+                  padding={12}
                   borderWidth={1}
                   borderColor="$borderColor"
                   backgroundColor="$background"
-                  borderRadius="$4"
+                  borderRadius={16}
                 >
                   <Row
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap="$3"
-                    $sm={{ flexDirection: 'column' }}
+                    justify="space-between"
+                    align="center"
+                    gap={12}
                   >
                     <Stack>
-                      <Text fontSize="$6" fontWeight="700">
+                      <Text>
                         Templates
                       </Text>
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Reuse saved inquiry terms for this organization.
                       </Text>
                     </Stack>
-                    <Row gap="$2" $sm={{ width: '100%' }}>
+                    <Row gap={8}>
                       <Button
-                        size="$3"
-                        variant="outlined"
+                        size={12}
+                        variant="outline"
                         onPress={() => setSaveTemplateOpen(true)}
                         disabled={createTemplateMutation.isPending}
-                        $sm={{ flex: 1 }}
                       >
                         Save current
                       </Button>
                       <Button
-                        size="$3"
-                        variant="outlined"
+                        size={12}
+                        variant="outline"
                         onPress={() => setManageTemplatesOpen(true)}
-                        $sm={{ flex: 1 }}
                       >
                         Manage
                       </Button>
                     </Row>
                   </Row>
 
-                  <Row gap="$2" $sm={{ flexDirection: 'column' }}>
+                  <Row gap={8}>
                     <Stack flex={1}>
                       <ResponsiveSelect
                         value={selectedTemplateId || ''}
@@ -507,22 +504,21 @@ export function InquiryCreateForm({
                     </Stack>
 
                     <Button
-                      size="$3"
+                      size={12}
                       onPress={handleApplyTemplate}
                       disabled={!selectedTemplateId || applyTemplateMutation.isPending}
-                      $sm={{ width: '100%' }}
                     >
                       {applyTemplateMutation.isPending ? 'Applying…' : 'Apply template'}
                     </Button>
                   </Row>
 
                   {isTemplatesLoading && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       Loading templates…
                     </Text>
                   )}
                   {!isTemplatesLoading && templates.length === 0 && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       Save templates to quickly reuse standard employment terms.
                     </Text>
                   )}
@@ -531,68 +527,65 @@ export function InquiryCreateForm({
                 {/* Smart Defaults Banner */}
                 {mode === 'create' && (
                   <Stack
-                    gap="$3"
-                    padding="$3"
+                    gap={12}
+                    padding={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                     backgroundColor="$background"
-                    borderRadius="$4"
+                    borderRadius={16}
                   >
                     <Row
-                      justifyContent="space-between"
-                      alignItems="center"
-                      gap="$3"
-                      $sm={{ flexDirection: 'column' }}
+                      justify="space-between"
+                      align="center"
+                      gap={12}
                     >
-                      <Stack gap="$1" flex={1}>
-                        <Text fontSize="$6" fontWeight="700">
+                      <Stack gap={4} flex={1}>
+                        <Text>
                           Smart defaults
                         </Text>
                         {isSmartDefaultsLoading ? (
-                          <Text fontSize="$3" color="$color11">
+                          <Text color="gray">
                             Loading job-based recommendations…
                           </Text>
                         ) : smartDefaultsFieldCount > 0 ? (
-                          <Text fontSize="$3" color="$color11">
+                          <Text color="gray">
                             {smartDefaultsApplied
                               ? `Applied ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`
                               : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
                           </Text>
                         ) : (
-                          <Text fontSize="$3" color="$color11">
+                          <Text color="gray">
                             No defaults available for this job yet.
                           </Text>
                         )}
                       </Stack>
-                      <Row gap="$2" $sm={{ width: '100%' }}>
+                      <Row gap={8}>
                         <Button
-                          variant="outlined"
+                          variant="outline"
                           onPress={handleClearSmartDefaults}
                           disabled={!smartDefaultsApplied}
-                          $sm={{ flex: 1 }}
                         >
                           Clear
                         </Button>
                         <Button
                           onPress={() => handleApplySmartDefaults({ force: true })}
                           disabled={smartDefaultsFieldCount === 0}
-                          $sm={{ flex: 1 }}
                         >
                           {smartDefaultsApplied ? 'Reapply defaults' : 'Apply defaults'}
                         </Button>
                       </Row>
                     </Row>
                     {smartDefaultsFieldLabels.length > 0 && (
-                      <Row gap="$2" flexWrap="wrap">
+                      <Row gap={8} flexWrap="wrap">
                         {smartDefaultsFieldLabels.map((label) => (
                           <Stack
                             key={label}
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
+                            paddingHorizontal={8}
+                            paddingVertical={4}
                             backgroundColor="$gray3"
-                            borderRadius="$3"
+                            borderRadius={12}
                           >
-                            <Text fontSize="$2" color="$color11">
+                            <Text color="gray">
                               {label}
                             </Text>
                           </Stack>
@@ -603,21 +596,21 @@ export function InquiryCreateForm({
                 )}
 
                 {/* Employment Section */}
-                <Stack gap="$4">
-                  <Row alignItems="center" gap="$2">
-                    <Text fontSize="$6" fontWeight="700">
+                <Stack gap={16}>
+                  <Row align="center" gap={8}>
+                    <Text>
                       Employment
                     </Text>
                   </Row>
 
                   {/* Employment Type */}
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {renderSmartLabel('Employment type', 'employmentType')}
                     <Controller
                       control={control}
                       name="employmentType"
                       render={({ field }) => (
-                        <Row gap="$2" $sm={{ flexDirection: 'column' }}>
+                        <Row gap={8}>
                           {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
                             const isSelected = field.value === option.value
                             return (
@@ -627,8 +620,7 @@ export function InquiryCreateForm({
                                 theme={isSelected ? 'blue' : 'gray'}
                                 variant={isSelected ? undefined : 'outlined'}
                                 onPress={() => field.onChange(option.value)}
-                                size="$4"
-                                $sm={{ height: 48 }}
+                                size={16}
                               >
                                 {option.label}
                               </Button>
@@ -637,7 +629,7 @@ export function InquiryCreateForm({
                         </Row>
                       )}
                     />
-                    <Row alignItems="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Controller
                         control={control}
                         name="employmentTypeNegotiable"
@@ -645,24 +637,24 @@ export function InquiryCreateForm({
                           <CustomCheckbox
                             checked={!field.value}
                             onCheckedChange={(checked) => field.onChange(!checked)}
-                            size="medium"
+                            size="md"
                           />
                         )}
                       />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Non-negotiable
                       </Text>
                     </Row>
                   </Stack>
 
                   {/* Work Schedule */}
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {renderSmartLabel('Work schedule', 'workSchedule')}
                     <Controller
                       control={control}
                       name="workSchedule"
                       render={({ field }) => (
-                        <Row gap="$2" $sm={{ flexDirection: 'column' }}>
+                        <Row gap={8}>
                           {WORK_SCHEDULE_OPTIONS.map((option) => {
                             const isSelected = field.value === option.value
                             return (
@@ -672,8 +664,7 @@ export function InquiryCreateForm({
                                 theme={isSelected ? 'blue' : 'gray'}
                                 variant={isSelected ? undefined : 'outlined'}
                                 onPress={() => field.onChange(option.value)}
-                                size="$4"
-                                $sm={{ height: 48 }}
+                                size={16}
                               >
                                 {option.label}
                               </Button>
@@ -682,7 +673,7 @@ export function InquiryCreateForm({
                         </Row>
                       )}
                     />
-                    <Row alignItems="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Controller
                         control={control}
                         name="workScheduleNegotiable"
@@ -690,20 +681,20 @@ export function InquiryCreateForm({
                           <CustomCheckbox
                             checked={!field.value}
                             onCheckedChange={(checked) => field.onChange(!checked)}
-                            size="medium"
+                            size="md"
                           />
                         )}
                       />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Non-negotiable
                       </Text>
                     </Row>
                   </Stack>
 
                   {/* Schedule Shifts */}
-                  <Stack gap="$2">
-                    <Row justifyContent="space-between" alignItems="center">
-                      <Text fontWeight="600" fontSize="$4">
+                  <Stack gap={8}>
+                    <Row justify="space-between" align="center">
+                      <Text>
                         Schedule shifts
                       </Text>
                       <Controller
@@ -713,7 +704,7 @@ export function InquiryCreateForm({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            size="$4"
+                            size={16}
                           />
                         )}
                       />
@@ -721,14 +712,14 @@ export function InquiryCreateForm({
                   </Stack>
 
                   {/* Working Hours */}
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {renderSmartLabel('Working hours', [
                       'workingHoursStart',
                       'workingHoursEnd',
                       'workingHoursTimezone',
                     ])}
-                    <Row gap="$2" $sm={{ flexDirection: 'column' }}>
-                      <Stack gap="$2" flex={1}>
+                    <Row gap={8}>
+                      <Stack gap={8} flex={1}>
                         <Controller
                           control={control}
                           name="workingHoursTimezone"
@@ -745,7 +736,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap="$2" flex={1}>
+                      <Stack gap={8} flex={1}>
                         <Controller
                           control={control}
                           name="workingHoursStart"
@@ -758,12 +749,12 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursStart && (
-                          <Text fontSize="$2" color="$red10">
+                          <Text color="$red10">
                             {errors.workingHoursStart.message}
                           </Text>
                         )}
                       </Stack>
-                      <Stack gap="$2" flex={1}>
+                      <Stack gap={8} flex={1}>
                         <Controller
                           control={control}
                           name="workingHoursEnd"
@@ -776,13 +767,13 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursEnd && (
-                          <Text fontSize="$2" color="$red10">
+                          <Text color="$red10">
                             {errors.workingHoursEnd.message}
                           </Text>
                         )}
                       </Stack>
                     </Row>
-                    <Row alignItems="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Controller
                         control={control}
                         name="workingHoursNegotiable"
@@ -790,24 +781,24 @@ export function InquiryCreateForm({
                           <CustomCheckbox
                             checked={!field.value}
                             onCheckedChange={(checked) => field.onChange(!checked)}
-                            size="medium"
+                            size="md"
                           />
                         )}
                       />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Non-negotiable
                       </Text>
                     </Row>
                   </Stack>
 
                   {/* Workdays */}
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {renderSmartLabel('Workdays', 'workdays')}
                     <Controller
                       control={control}
                       name="workdays"
                       render={({ field }) => (
-                        <Row gap="$2" flexWrap="wrap" $sm={{ gap: '$3' }}>
+                        <Row gap={8} flexWrap="wrap">
                           {WORKDAYS.map((day) => {
                             const isSelected = field.value?.includes(day.value)
                             return (
@@ -823,10 +814,9 @@ export function InquiryCreateForm({
                                     field.onChange([...current, day.value])
                                   }
                                 }}
-                                size="$3"
-                                paddingHorizontal="$3"
+                                size={12}
+                                paddingHorizontal={12}
                                 borderRadius="$10"
-                                $sm={{ height: 48, paddingHorizontal: '$4' }}
                               >
                                 {day.label}
                               </Button>
@@ -835,7 +825,7 @@ export function InquiryCreateForm({
                         </Row>
                       )}
                     />
-                    <Row alignItems="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Controller
                         control={control}
                         name="workdaysNegotiable"
@@ -843,21 +833,21 @@ export function InquiryCreateForm({
                           <CustomCheckbox
                             checked={!field.value}
                             onCheckedChange={(checked) => field.onChange(!checked)}
-                            size="medium"
+                            size="md"
                           />
                         )}
                       />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Non-negotiable
                       </Text>
                     </Row>
                   </Stack>
 
                   {/* Date of Employment */}
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {renderSmartLabel('Date of employment', 'employmentStartDate')}
-                    <Row gap="$2" $sm={{ flexDirection: 'column' }}>
-                      <Stack gap="$2" flex={1}>
+                    <Row gap={8}>
+                      <Stack gap={8} flex={1}>
                         <Controller
                           control={control}
                           name="employmentStartDate"
@@ -871,7 +861,7 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentStartDate && (
-                                <Text fontSize="$2" color="$red10">
+                                <Text color="$red10">
                                   {errors.employmentStartDate.message}
                                 </Text>
                               )}
@@ -879,7 +869,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap="$2" flex={1}>
+                      <Stack gap={8} flex={1}>
                         <Controller
                           control={control}
                           name="employmentEndDate"
@@ -891,19 +881,19 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentEndDate && (
-                                <Text fontSize="$2" color="$red10">
+                                <Text color="$red10">
                                   {errors.employmentEndDate.message}
                                 </Text>
                               )}
                             </>
                           )}
                         />
-                        <Text fontSize="$2" color="$color11">
+                        <Text color="gray">
                           End date is not mandatory
                         </Text>
                       </Stack>
                     </Row>
-                    <Row alignItems="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Controller
                         control={control}
                         name="employmentDatesNegotiable"
@@ -911,11 +901,11 @@ export function InquiryCreateForm({
                           <CustomCheckbox
                             checked={!field.value}
                             onCheckedChange={(checked) => field.onChange(!checked)}
-                            size="medium"
+                            size="md"
                           />
                         )}
                       />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Non-negotiable
                       </Text>
                     </Row>
@@ -925,18 +915,18 @@ export function InquiryCreateForm({
                 <Separator />
 
                 {/* Compensation Section */}
-                <Stack gap="$4">
-                  <Row alignItems="center" gap="$2">
-                    <Text fontSize="$6" fontWeight="700">
+                <Stack gap={16}>
+                  <Row align="center" gap={8}>
+                    <Text>
                       Compensation
                     </Text>
                   </Row>
 
                   {/* Rate Type */}
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {renderSmartLabel('Rate', ['rateType', 'rateMinCents', 'rateMaxCents'])}
-                    <Row gap="$2" $sm={{ flexDirection: 'column' }}>
-                      <Stack gap="$2" flex={2}>
+                    <Row gap={8}>
+                      <Stack gap={8} flex={2}>
                         <Controller
                           control={control}
                           name="rateType"
@@ -953,8 +943,8 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap="$2" flex={1}>
-                        <Row alignItems="center" gap="$1">
+                      <Stack gap={8} flex={1}>
+                        <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
                             control={control}
@@ -974,16 +964,16 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMinCents && (
-                          <Text fontSize="$2" color="$red10">
+                          <Text color="$red10">
                             {errors.rateMinCents.message}
                           </Text>
                         )}
                       </Stack>
-                      <Stack gap="$2" flex={1}>
-                        <Text fontSize="$3" color="$color11">
+                      <Stack gap={8} flex={1}>
+                        <Text color="gray">
                           to
                         </Text>
-                        <Row alignItems="center" gap="$1">
+                        <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
                             control={control}
@@ -1003,16 +993,16 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMaxCents && (
-                          <Text fontSize="$2" color="$red10">
+                          <Text color="$red10">
                             {errors.rateMaxCents.message}
                           </Text>
                         )}
                       </Stack>
                     </Row>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="gray">
                       Add a range or a single rate
                     </Text>
-                    <Row alignItems="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Controller
                         control={control}
                         name="rateNegotiable"
@@ -1020,11 +1010,11 @@ export function InquiryCreateForm({
                           <CustomCheckbox
                             checked={!field.value}
                             onCheckedChange={(checked) => field.onChange(!checked)}
-                            size="medium"
+                            size="md"
                           />
                         )}
                       />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Non-negotiable
                       </Text>
                     </Row>
@@ -1034,22 +1024,22 @@ export function InquiryCreateForm({
                 <Separator />
 
                 {/* Capabilities Section */}
-                <Stack gap="$4">
-                  <Row alignItems="center" gap="$2">
-                    <Text fontSize="$6" fontWeight="700">
+                <Stack gap={16}>
+                  <Row align="center" gap={8}>
+                    <Text>
                       Capabilities
                     </Text>
                   </Row>
 
                   {/* Endurance */}
-                  <Stack gap="$2">
-                    <Row justifyContent="space-between" alignItems="center">
-                      <Row alignItems="center" gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
+                  <Stack gap={8}>
+                    <Row justify="space-between" align="center">
+                      <Row align="center" gap={8}>
+                        <Text>
                           Endurance
                         </Text>
                         <Button
-                          size="$2"
+                          size={8}
                           circular
                           chromeless
                           icon={Info}
@@ -1063,7 +1053,7 @@ export function InquiryCreateForm({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            size="$4"
+                            size={16}
                           />
                         )}
                       />
@@ -1074,17 +1064,17 @@ export function InquiryCreateForm({
                 <Separator />
 
                 {/* Other Section */}
-                <Stack gap="$4">
-                  <Row alignItems="center" gap="$2">
-                    <Text fontSize="$6" fontWeight="700">
+                <Stack gap={16}>
+                  <Row align="center" gap={8}>
+                    <Text>
                       Other
                     </Text>
                   </Row>
 
                   {/* Willing to Travel */}
-                  <Stack gap="$2">
-                    <Row justifyContent="space-between" alignItems="center">
-                      <Text fontWeight="600" fontSize="$4">
+                  <Stack gap={8}>
+                    <Row justify="space-between" align="center">
+                      <Text>
                         Willing to travel
                       </Text>
                       <Controller
@@ -1094,14 +1084,14 @@ export function InquiryCreateForm({
                           <Switch
                             checked={field.value ?? false}
                             onCheckedChange={field.onChange}
-                            size="$4"
+                            size={16}
                           />
                         )}
                       />
                     </Row>
                     {watchedValues.willingToTravel && (
-                      <Stack gap="$2">
-                        <Row alignItems="center" gap="$1">
+                      <Stack gap={8}>
+                        <Row align="center" gap={4}>
                           <Text>up to</Text>
                           <Controller
                             control={control}
@@ -1126,9 +1116,9 @@ export function InquiryCreateForm({
                   </Stack>
 
                   {/* Willing to Work Overtime */}
-                  <Stack gap="$2">
-                    <Row justifyContent="space-between" alignItems="center">
-                      <Text fontWeight="600" fontSize="$4">
+                  <Stack gap={8}>
+                    <Row justify="space-between" align="center">
+                      <Text>
                         Willing to work overtime
                       </Text>
                       <Controller
@@ -1138,7 +1128,7 @@ export function InquiryCreateForm({
                           <Switch
                             checked={field.value ?? false}
                             onCheckedChange={field.onChange}
-                            size="$4"
+                            size={16}
                           />
                         )}
                       />
@@ -1146,9 +1136,9 @@ export function InquiryCreateForm({
                   </Stack>
 
                   {/* Has Driver's License */}
-                  <Stack gap="$2">
-                    <Row justifyContent="space-between" alignItems="center">
-                      <Text fontWeight="600" fontSize="$4">
+                  <Stack gap={8}>
+                    <Row justify="space-between" align="center">
+                      <Text>
                         Has driver's license
                       </Text>
                       <Controller
@@ -1158,7 +1148,7 @@ export function InquiryCreateForm({
                           <Switch
                             checked={field.value ?? false}
                             onCheckedChange={field.onChange}
-                            size="$4"
+                            size={16}
                           />
                         )}
                       />
@@ -1166,8 +1156,8 @@ export function InquiryCreateForm({
                   </Stack>
 
                   {/* Additional Notes */}
-                  <Stack gap="$2">
-                    <Text fontWeight="600" fontSize="$4">
+                  <Stack gap={8}>
+                    <Text>
                       Additional note
                     </Text>
                     <Controller
@@ -1185,7 +1175,7 @@ export function InquiryCreateForm({
                       )}
                     />
                     {errors.additionalNotes && (
-                      <Text fontSize="$2" color="$red10">
+                      <Text color="$red10">
                         {errors.additionalNotes.message}
                       </Text>
                     )}
@@ -1196,20 +1186,18 @@ export function InquiryCreateForm({
 
             {/* Form Actions */}
             <Row
-              gap="$3"
-              padding="$4"
+              gap={12}
+              padding={16}
               backgroundColor="$background"
               borderTopWidth={1}
               borderTopColor="$borderColor"
-              justifyContent="flex-end"
-              $sm={{ flexDirection: 'column-reverse' }}
+              justify="flex-end"
             >
               {onCancel && (
                 <Button
-                  variant="outlined"
+                  variant="outline"
                   onPress={onCancel}
                   disabled={isSubmitting}
-                  $sm={{ height: 48, flex: 1 }}
                 >
                   Cancel
                 </Button>
@@ -1217,10 +1205,9 @@ export function InquiryCreateForm({
               {mode === 'create' && (
                 <>
                   <Button
-                    variant="outlined"
+                    variant="outline"
                     onPress={onSaveDraft}
                     disabled={isSubmitting}
-                    $sm={{ height: 48, flex: 1 }}
                   >
                     Save Draft
                   </Button>
@@ -1228,7 +1215,6 @@ export function InquiryCreateForm({
                     onPress={onSubmit}
                     disabled={isSubmitting}
                     theme="blue"
-                    $sm={{ height: 48, flex: 1 }}
                   >
                     {isSubmitting ? 'Sending...' : 'Continue'}
                   </Button>
@@ -1239,7 +1225,6 @@ export function InquiryCreateForm({
                   onPress={onSubmit}
                   disabled={isSubmitting}
                   theme="blue"
-                  $sm={{ height: 48, flex: 1 }}
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -1250,11 +1235,10 @@ export function InquiryCreateForm({
           {/* Help Sidebar */}
           <Stack
             width={300}
-            padding="$4"
+            padding={16}
             backgroundColor="$color2"
             borderLeftWidth={1}
             borderLeftColor="$borderColor"
-            $sm={{ display: 'none' }}
           >
             <InquiryHelpSidebar />
           </Stack>
@@ -1270,23 +1254,23 @@ export function InquiryCreateForm({
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame padding="$4" gap="$4">
-          <Text fontSize="$6" fontWeight="700">
+        <Sheet.Frame padding={16} gap={16}>
+          <Text>
             Save template
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Capture the current inquiry terms as a reusable template.
           </Text>
-          <Stack gap="$2">
-            <Text fontWeight="600">Template name</Text>
+          <Stack gap={8}>
+            <Text>Template name</Text>
             <Input
               placeholder="E.g., Standard day shift"
               value={templateName}
               onChangeText={setTemplateName}
             />
           </Stack>
-          <Stack gap="$2">
-            <Text fontWeight="600">Description (optional)</Text>
+          <Stack gap={8}>
+            <Text>Description (optional)</Text>
             <TextArea
               placeholder="Describe when to use this template..."
               value={templateDescription}
@@ -1294,9 +1278,9 @@ export function InquiryCreateForm({
               numberOfLines={4}
             />
           </Stack>
-          <Row gap="$3" justifyContent="flex-end">
+          <Row gap={12} justify="flex-end">
             <Button
-              variant="outlined"
+              variant="outline"
               onPress={() => setSaveTemplateOpen(false)}
               disabled={createTemplateMutation.isPending}
             >
@@ -1322,17 +1306,17 @@ export function InquiryCreateForm({
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame padding="$4" gap="$4">
-          <Text fontSize="$6" fontWeight="700">
+        <Sheet.Frame padding={16} gap={16}>
+          <Text>
             Manage templates
           </Text>
           {templates.length === 0 ? (
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               No templates saved yet. Create one from the inquiry form.
             </Text>
           ) : (
             <Sheet.ScrollView>
-              <Stack gap="$3" paddingVertical="$2">
+              <Stack gap={12} paddingVertical={8}>
                 {templateList.map((template) => {
                   const templateId = template.id
                   const usageCount = template.usage_count ?? 0
@@ -1340,36 +1324,35 @@ export function InquiryCreateForm({
                   return (
                     <Stack
                       key={templateId}
-                      padding="$3"
-                      gap="$2"
+                      padding={12}
+                      gap={8}
                       borderWidth={1}
                       borderColor="$borderColor"
-                      borderRadius="$4"
+                      borderRadius={16}
                       backgroundColor="$background"
                     >
                       <Row
-                        gap="$3"
-                        alignItems="center"
-                        justifyContent="space-between"
-                        $sm={{ flexDirection: 'column' }}
+                        gap={12}
+                        align="center"
+                        justify="space-between"
                       >
-                        <Stack flex={1} gap="$1">
-                          <Text fontSize="$4" fontWeight="600">
+                        <Stack flex={1} gap={4}>
+                          <Text>
                             {template.name}
                           </Text>
                           {template.description && (
-                            <Text fontSize="$3" color="$color11">
+                            <Text color="gray">
                               {template.description}
                             </Text>
                           )}
-                          <Text fontSize="$2" color="$color11">
+                          <Text color="gray">
                             {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
                             {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}
                           </Text>
                         </Stack>
                         <Button
-                          size="$3"
-                          variant="outlined"
+                          size={12}
+                          variant="outline"
                           color="$red11"
                           borderColor="$red8"
                           onPress={() => handleDeleteTemplate(templateId)}

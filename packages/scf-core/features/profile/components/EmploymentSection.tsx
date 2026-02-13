@@ -163,8 +163,8 @@ export function EmploymentSection({
 
   if (isLoadingEmployment) {
     return (
-      <Stack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="large" />
+      <Stack gap={16} padding={16} flex={1} justify="center" align="center">
+        <Spinner size="lg" />
         <Text>Loading employment preferences...</Text>
       </Stack>
     )
@@ -172,15 +172,15 @@ export function EmploymentSection({
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
+      <Stack gap={16}>
         {/* Hourly Rate */}
-        <Stack gap="$2">
-          <Text fontWeight="600">Hourly Rate ($)</Text>
+        <Stack gap={8}>
+          <Text>Hourly Rate ($)</Text>
           <Controller
             name="hourly_rate"
             control={control}
             render={({ field }) => (
-              <Row gap="$3" alignItems="center">
+              <Row gap={12} align="center">
                 <Input
                   flex={1}
                   placeholder="Enter your hourly rate"
@@ -198,15 +198,15 @@ export function EmploymentSection({
             )}
           />
           {errors.hourly_rate && (
-            <Text color="$red10" fontSize="$2">
+            <Text color="$red10">
               {errors.hourly_rate.message}
             </Text>
           )}
         </Stack>
 
         {/* Preferred Work Locations */}
-        <Stack gap="$3" paddingVertical="$3">
-          <Text fontWeight="600">Preferred Work Locations</Text>
+        <Stack gap={12} paddingVertical={12}>
+          <Text>Preferred Work Locations</Text>
           <Controller
             name="preferred_work_locations"
             control={control}
@@ -226,8 +226,8 @@ export function EmploymentSection({
         </Stack>
 
         {/* Travel Preferences */}
-        <Stack gap="$3">
-          <Text fontWeight="600">Travel Preferences</Text>
+        <Stack gap={12}>
+          <Text>Travel Preferences</Text>
           <Controller
             name="open_to_travel"
             control={control}
@@ -247,8 +247,8 @@ export function EmploymentSection({
         </Stack>
 
         {/* Residency */}
-        <Stack gap="$3">
-          <Text fontWeight="600">Residency</Text>
+        <Stack gap={12}>
+          <Text>Residency</Text>
           <Controller
             name="us_resident"
             control={control}
@@ -274,8 +274,8 @@ export function EmploymentSection({
         </Stack>
 
         {/* Drivers License */}
-        <Stack gap="$3">
-          <Text fontWeight="600">Driver's License</Text>
+        <Stack gap={12}>
+          <Text>Driver's License</Text>
           <Controller
             name="drivers_license_classes"
             control={control}
@@ -286,7 +286,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Car size="$2" color="$color11" />}
+                  icon={<Car size={8} color="gray" />}
                   title="I have a valid driver's license"
                   description="Class D (standard license) is automatically selected. Add any additional classes below."
                   checked={isExpanded}
@@ -302,9 +302,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <Stack gap="$2" paddingTop="$2">
+                    <Stack gap={8} paddingTop={8}>
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                        <Row key={license} gap="$3" alignItems="center">
+                        <Row key={license} gap={12} align="center">
                           <CustomCheckbox
                             checked={field.value?.includes(license) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -352,8 +352,8 @@ export function EmploymentSection({
         </Stack>
 
         {/* Military Status */}
-        <Stack gap="$3">
-          <Text fontWeight="600">Military Status</Text>
+        <Stack gap={12}>
+          <Text>Military Status</Text>
           <Controller
             name="military_status"
             control={control}
@@ -364,7 +364,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Shield size="$2" color="$color11" />}
+                  icon={<Shield size={8} color="gray" />}
                   title="Former/Current Military"
                   description="Select all that apply"
                   checked={isExpanded}
@@ -377,9 +377,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <Stack gap="$2" paddingTop="$2">
+                    <Stack gap={8} paddingTop={8}>
                       {MILITARY_STATUS_OPTIONS.map((status) => (
-                        <Row key={status} gap="$3" alignItems="center">
+                        <Row key={status} gap={12} align="center">
                           <CustomCheckbox
                             checked={field.value?.includes(status) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -406,8 +406,8 @@ export function EmploymentSection({
         </Stack>
 
         {/* Availability */}
-        <Stack gap="$3">
-          <Text fontWeight="600">Availability</Text>
+        <Stack gap={12}>
+          <Text>Availability</Text>
           <Controller
             name="availability"
             control={control}
@@ -418,7 +418,7 @@ export function EmploymentSection({
 
               return (
                 <ToggleCard
-                  icon={<Calendar size="$2" color="$color11" />}
+                  icon={<Calendar size={8} color="gray" />}
                   title="I'm available for work"
                   description="Select all that apply"
                   checked={isExpanded}
@@ -431,9 +431,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <Stack gap="$2" paddingTop="$2">
+                    <Stack gap={8} paddingTop={8}>
                       {AVAILABILITY_OPTIONS.map((option) => (
-                        <Row key={option} gap="$3" alignItems="center">
+                        <Row key={option} gap={12} align="center">
                           <CustomCheckbox
                             checked={field.value?.includes(option) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -461,14 +461,13 @@ export function EmploymentSection({
 
         {/* Save Button */}
         {!readOnly && (
-          <Row justifyContent="flex-end" paddingTop="$4">
+          <Row justify="flex-end" paddingTop={16}>
             <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
-              $sm={{ height: 44 }}
+              space={isLoading ? '$2' : 0}}
             >
               <AnimatePresence>
                 {isLoading && (

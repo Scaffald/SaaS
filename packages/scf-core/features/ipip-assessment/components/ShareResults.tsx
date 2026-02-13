@@ -130,21 +130,21 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
   if (!isComplete) {
     return (
       <Stack
-        gap="$3"
-        padding="$4"
+        gap={12}
+        padding={16}
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
         aria-live="polite"
       >
-        <Row alignItems="center" gap="$2">
-          <Lock size="$1" color="$color10" />
-          <Text fontSize="$4" fontWeight="600" color="$color11">
+        <Row align="center" gap={8}>
+          <Lock size={4} color="gray" />
+          <Text color="gray">
             Complete Assessment to Share
           </Text>
         </Row>
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           Finish all 120 questions to generate a shareable link to your personality results.
         </Text>
       </Stack>
@@ -153,74 +153,74 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Stack gap="$2">
-        <Row alignItems="center" gap="$2">
-          <Share2 size="$1" color="$color11" />
-          <Text fontSize="$5" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Row align="center" gap={8}>
+          <Share2 size={4} color="gray" />
+          <Text color="gray">
             Share Your Results
           </Text>
         </Row>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Create a shareable link to your personality assessment results. You control what's visible
           and can revoke access at any time.
         </Text>
       </Stack>
 
       {/* Privacy Controls */}
-      <Stack gap="$3">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+      <Stack gap={12}>
+        <Text color="gray">
           Privacy Settings
         </Text>
 
         <Row
-          justifyContent="space-between"
-          alignItems="center"
-          padding="$3"
+          justify="space-between"
+          align="center"
+          padding={12}
           backgroundColor="$color1"
-          borderRadius="$3"
+          borderRadius={12}
         >
-          <Stack flex={1} gap="$1">
-            <Text fontSize="$4" fontWeight="500" color="$color12">
+          <Stack flex={1} gap={4}>
+            <Text color="gray">
               Include Archetype
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Show your personality archetype classification
             </Text>
           </Stack>
           <Switch
             checked={includeArchetype}
             onCheckedChange={setIncludeArchetype}
-            size="$3"
+            size={12}
             aria-label="Toggle archetype visibility in shared results"
           />
         </Row>
 
         <Row
-          justifyContent="space-between"
-          alignItems="center"
-          padding="$3"
+          justify="space-between"
+          align="center"
+          padding={12}
           backgroundColor="$color1"
-          borderRadius="$3"
+          borderRadius={12}
         >
-          <Stack flex={1} gap="$1">
-            <Text fontSize="$4" fontWeight="500" color="$color12">
+          <Stack flex={1} gap={4}>
+            <Text color="gray">
               Include Domain Scores
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Show Big Five domain scores and percentages
             </Text>
           </Stack>
           <Switch
             checked={includeScores}
             onCheckedChange={setIncludeScores}
-            size="$3"
+            size={12}
             aria-label="Toggle domain scores visibility in shared results"
           />
         </Row>
@@ -230,17 +230,17 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
       {/* Share Link Generation */}
       {!shareLink ? (
-        <Stack gap="$3">
-          <Stack gap="$2">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Stack gap={12}>
+          <Stack gap={8}>
+            <Text color="gray">
               Expiration (Optional)
             </Text>
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               Set how many days until the link expires (1-365 days). Leave empty for no expiration.
             </Text>
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <Button
-                size="$3"
+                size={12}
                 variant={expiresInDays === 7 ? 'outlined' : 'outlined'}
                 onPress={() => setExpiresInDays(7)}
                 backgroundColor={expiresInDays === 7 ? '$blue3' : undefined}
@@ -248,24 +248,24 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
                 7 days
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 onPress={() => setExpiresInDays(30)}
                 backgroundColor={expiresInDays === 30 ? '$blue3' : undefined}
               >
                 30 days
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 onPress={() => setExpiresInDays(90)}
                 backgroundColor={expiresInDays === 90 ? '$blue3' : undefined}
               >
                 90 days
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 onPress={() => setExpiresInDays(0)}
                 backgroundColor={expiresInDays === 0 ? '$blue3' : undefined}
               >
@@ -275,7 +275,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           </Stack>
 
           <Button
-            size="$4"
+            size={16}
             theme="info"
             icon={Share2}
             onPress={handleGenerateShareLink}
@@ -285,44 +285,43 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           </Button>
         </Stack>
       ) : (
-        <Stack gap="$3" aria-live="polite">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Stack gap={12} aria-live="polite">
+          <Text color="gray">
             Your Share Link
           </Text>
           <Row
-            gap="$2"
-            alignItems="center"
-            padding="$3"
+            gap={8}
+            align="center"
+            padding={12}
             backgroundColor="$color1"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
             <Text
               flex={1}
               style={{ fontFamily: 'monospace' }}
-              fontSize="$3"
-              color="$color11"
+              color="gray"
               numberOfLines={1}
               data-testid="share-link-url"
             >
               {shareLink}
             </Text>
-            <Button size="$3" icon={Copy} onPress={handleCopyLink} variant="outlined">
+            <Button size={12} icon={Copy} onPress={handleCopyLink} variant="outline">
               Copy
             </Button>
             <Button
-              size="$3"
+              size={12}
               icon={X}
               onPress={handleRevokeLink}
-              variant="outlined"
+              variant="outline"
               theme="error"
               disabled={revokeShareToken.isPending}
             >
               Revoke
             </Button>
           </Row>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Anyone with this link can view your results. You can revoke it at any time.
           </Text>
         </Stack>
@@ -333,28 +332,28 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
         <>
           <Separator />
           <Stack
-            gap="$2"
-            padding="$3"
+            gap={8}
+            padding={12}
             backgroundColor="$yellow2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$yellow7"
             aria-live="polite"
           >
-            <Row alignItems="center" gap="$2">
-              <Calendar size="$1" color="$yellow11" />
-              <Text fontSize="$4" fontWeight="600" color="$yellow11">
+            <Row align="center" gap={8}>
+              <Calendar size={4} color="$yellow11" />
+              <Text color="$yellow11">
                 Retake Available Soon
               </Text>
             </Row>
-            <Text fontSize="$3" color="$yellow10">
+            <Text color="$yellow10">
               You can retake the IPIP assessment in{' '}
               {cooldownInfo.daysRemaining > 0
                 ? `${cooldownInfo.daysRemaining} day${cooldownInfo.daysRemaining !== 1 ? 's' : ''}`
                 : `${cooldownInfo.hoursRemaining} hour${cooldownInfo.hoursRemaining !== 1 ? 's' : ''}`}
               . This cooldown period ensures accurate results.
             </Text>
-            <Text fontSize="$2" color="$yellow9">
+            <Text color="$yellow9">
               Available: {cooldownInfo.availableDate.toLocaleDateString()}{' '}
               {cooldownInfo.availableDate.toLocaleTimeString()}
             </Text>

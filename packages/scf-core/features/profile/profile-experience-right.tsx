@@ -86,9 +86,9 @@ export function ProfileExperienceRight() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading experience data...</Text>
+        <Stack align="center" justify="center" padding={32} gap={16}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -98,7 +98,7 @@ export function ProfileExperienceRight() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack align="center" justify="center" padding={32} gap={16}>
           <Text color="$red10">Failed to load experience data</Text>
         </Stack>
       </DashboardWidget>
@@ -109,27 +109,27 @@ export function ProfileExperienceRight() {
     <DashboardWidget>
       <H4>Saved Work Experience</H4>
 
-      <Text color="$color11" fontSize="$3" marginBottom="$4">
+      <Text color="gray" marginBottom={16}>
         Your work experience history is displayed here. Edit entries in the left panel.
       </Text>
 
       {/* Experience Summary Section */}
       <Stack
-        gap="$3"
-        marginBottom="$4"
-        padding="$3"
+        gap={12}
+        marginBottom={16}
+        padding={12}
         backgroundColor="$background"
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
+        borderRadius={16}
       >
-        <H4 fontSize="$5">Experience Summary</H4>
+        <H4>Experience Summary</H4>
         {experienceSummaryQuery.data?.career_level ? (
-          <Text fontSize="$3" color="$color11">
-            Career Level: <Text fontWeight="600">{experienceSummaryQuery.data.career_level}</Text>
+          <Text color="gray">
+            Career Level: <Text>{experienceSummaryQuery.data.career_level}</Text>
           </Text>
         ) : (
-          <Text color="$color11" fontSize="$3">
+          <Text color="gray">
             Add a career level to highlight your experience level
           </Text>
         )}
@@ -141,41 +141,41 @@ export function ProfileExperienceRight() {
           message="No work experience saved yet. Add your first position in the left panel."
         />
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {(experienceEntries as ExperienceEntry[]).map((exp) => {
             const locationDisplay = formatLocationForDisplay(exp.location, exp.is_remote || false)
 
             return (
               <Stack
                 key={exp.id}
-                padding="$4"
-                gap="$3"
+                padding={16}
+                gap={12}
                 backgroundColor="$background"
                 borderWidth={1}
                 borderColor="$borderColor"
-                borderRadius="$4"
+                borderRadius={16}
                 hoverStyle={{
                   borderColor: '$borderColorHover',
                   backgroundColor: '$backgroundHover',
                 }}
               >
                 {/* Job Title */}
-                <Stack gap="$1">
-                  <Text fontSize="$6" fontWeight="700" color="$color12">
+                <Stack gap={4}>
+                  <Text color="gray">
                     {exp.job_title}
                   </Text>
 
                   {/* Company Name */}
-                  <Row gap="$2" alignItems="center" flexWrap="wrap">
-                    <Text fontSize="$4" fontWeight="600" color="$color11">
+                  <Row gap={8} align="center" flexWrap="wrap">
+                    <Text color="gray">
                       {exp.company_name}
                     </Text>
                     {exp.employment_type && (
                       <>
-                        <Text color="$color11" fontSize="$2">
+                        <Text color="gray">
                           •
                         </Text>
-                        <Text color="$color11" fontSize="$2">
+                        <Text color="gray">
                           {exp.employment_type}
                         </Text>
                       </>
@@ -184,8 +184,8 @@ export function ProfileExperienceRight() {
 
                   {/* Current Position Badge */}
                   {exp.is_current && (
-                    <Row gap="$1" alignItems="center">
-                      <Text fontSize="$2" fontWeight="600" color="$blue10">
+                    <Row gap={4} align="center">
+                      <Text color="$blue10">
                         Current Position
                       </Text>
                     </Row>
@@ -193,12 +193,12 @@ export function ProfileExperienceRight() {
                 </Stack>
 
                 {/* Details */}
-                <Stack gap="$2">
+                <Stack gap={8}>
                   {/* Date Range */}
                   {(exp.start_date || exp.end_date || exp.is_current) && (
-                    <Row gap="$2" alignItems="center">
-                      <Calendar size={16} color="$color11" />
-                      <Text fontSize="$2" color="$color11">
+                    <Row gap={8} align="center">
+                      <Calendar size={16} color="gray" />
+                      <Text color="gray">
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
                       </Text>
                     </Row>
@@ -206,9 +206,9 @@ export function ProfileExperienceRight() {
 
                   {/* Location */}
                   {locationDisplay && (
-                    <Row gap="$2" alignItems="center">
-                      <MapPin size={16} color="$color11" />
-                      <Text fontSize="$2" color="$color11">
+                    <Row gap={8} align="center">
+                      <MapPin size={16} color="gray" />
+                      <Text color="gray">
                         {locationDisplay}
                       </Text>
                     </Row>
@@ -216,11 +216,11 @@ export function ProfileExperienceRight() {
 
                   {/* Description */}
                   {exp.description && (
-                    <Stack gap="$1">
-                      <Text fontSize="$2" fontWeight="600" color="$color11">
+                    <Stack gap={4}>
+                      <Text color="gray">
                         Description:
                       </Text>
-                      <Text fontSize="$2" color="$color11">
+                      <Text color="gray">
                         {exp.description.length > 200
                           ? `${exp.description.substring(0, 200)}...`
                           : exp.description}
@@ -230,10 +230,10 @@ export function ProfileExperienceRight() {
                 </Stack>
 
                 {/* Edit Button */}
-                <Row justifyContent="flex-end" marginTop="$2">
+                <Row justify="flex-end" marginTop={8}>
                   <Button
-                    size="$2"
-                    variant="outlined"
+                    size={8}
+                    variant="outline"
                     icon={Pencil}
                     aria-label={`Edit ${exp.job_title} at ${exp.company_name}`}
                     accessibilityLabel={`Edit ${exp.job_title} at ${exp.company_name}`}

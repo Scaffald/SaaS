@@ -36,19 +36,19 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
   return (
     <DiscoverCard onPress={() => onViewDetails(employer)}>
-      <Stack gap="$3">
+      <Stack gap={12}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
-          <Stack flex={1} gap="$2">
-            <Row alignItems="center" gap="$2">
+        <Row justify="space-between" align="flex-start" gap={12}>
+          <Stack flex={1} gap={8}>
+            <Row align="center" gap={8}>
               <Building2 size={20} color="$blue10" />
-              <Text fontSize="$6" fontWeight="700" color="$color12">
+              <Text color="gray">
                 {employer.name}
               </Text>
             </Row>
 
             {employer.industries && (
-              <Text fontSize="$3" color="$blue10" fontWeight="600">
+              <Text color="$blue10">
                 {employer.industries.name}
               </Text>
             )}
@@ -57,7 +57,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
         {/* Description */}
         {employer.description && (
-          <Text fontSize="$4" color="$color11" numberOfLines={3}>
+          <Text color="gray" numberOfLines={3}>
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
@@ -65,29 +65,29 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         )}
 
         {/* Details */}
-        <Stack gap="$2">
+        <Stack gap={8}>
           {location && (
-            <Row alignItems="center" gap="$2">
-              <MapPin size={16} color="$color10" />
-              <Text fontSize="$3" color="$color11">
+            <Row align="center" gap={8}>
+              <MapPin size={16} color="gray" />
+              <Text color="gray">
                 {location}
               </Text>
             </Row>
           )}
 
           {employer.employee_count_range && (
-            <Row alignItems="center" gap="$2">
-              <Users size={16} color="$color10" />
-              <Text fontSize="$3" color="$color11">
+            <Row align="center" gap={8}>
+              <Users size={16} color="gray" />
+              <Text color="gray">
                 {employer.employee_count_range} employees
               </Text>
             </Row>
           )}
 
           {employer.website_url && (
-            <Row alignItems="center" gap="$2">
-              <ExternalLink size={16} color="$color10" />
-              <Text fontSize="$3" color="$blue10" numberOfLines={1}>
+            <Row align="center" gap={8}>
+              <ExternalLink size={16} color="gray" />
+              <Text color="$blue10" numberOfLines={1}>
                 {employer.website_url.replace(/^https?:\/\//, '')}
               </Text>
             </Row>

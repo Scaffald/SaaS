@@ -19,49 +19,49 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   const orderedSteps = useMemo(() => PROFILE_WIZARD_STEPS, [])
 
   return (
-    <Stack gap="$3" aria-live="polite">
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$4" fontWeight="700">
+    <Stack gap={12} aria-live="polite">
+      <Row justify="space-between" align="center">
+        <Text>
           Step {orderedSteps.indexOf(currentStep) + 1} of {orderedSteps.length}
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {completionPercentage}%
         </Text>
       </Row>
 
-      <Progress size="$2" value={completionPercentage} max={100} backgroundColor="$color3">
+      <Progress size={8} value={completionPercentage} max={100} backgroundColor="$color3">
         <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
       </Progress>
 
       {showStepLabels && (
-        <Row gap="$3" alignItems="flex-start" marginTop="$2" flexWrap="wrap">
+        <Row gap={12} align="flex-start" marginTop={8} flexWrap="wrap">
           {orderedSteps.map((stepId, index) => {
             const meta = PROFILE_WIZARD_STEP_META[stepId]
             const isCompleted = completedSteps.includes(stepId)
             const isCurrent = currentStep === stepId
 
             return (
-              <Row key={stepId} gap="$2" alignItems="center">
+              <Row key={stepId} gap={8} align="center">
                 <Stack
                   width={32}
                   height={32}
                   backgroundColor={isCurrent ? '$blue10' : isCompleted ? '$green9' : '$color5'}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="$3"
+                  align="center"
+                  justify="center"
+                  borderRadius={12}
                   role="img"
                   aria-label={`${meta.title} ${isCurrent ? '(current step)' : isCompleted ? '(completed)' : '(not completed)'}`}
                   aria-current={isCurrent ? 'step' : undefined}
                 >
-                  <Text fontWeight="600" color="$color1">
+                  <Text color="gray">
                     {index + 1}
                   </Text>
                 </Stack>
                 <Stack style={{ maxWidth: 160 }}>
-                  <Text fontSize="$3" fontWeight={isCurrent ? '700' : '600'} color="$color12">
+                  <Text color="gray">
                     {meta.title}
                   </Text>
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     {meta.estimatedTimeMinutes} min
                   </Text>
                 </Stack>

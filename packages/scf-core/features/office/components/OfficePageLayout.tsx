@@ -104,10 +104,10 @@ export function OfficePageLayout<TData>({
   children,
 }: OfficePageLayoutProps<TData>) {
   const content = (
-    <Stack flex={1} padding="$4" gap="$4">
+    <Stack flex={1} padding={16} gap={16}>
       {beforeContent}
       {!hideHeader && (
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <H2>{title}</H2>
           {!actionBarConfig && !hideCreateButton && (
             <Button icon={Plus} onPress={onCreateClick}>

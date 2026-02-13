@@ -83,9 +83,9 @@ export function OrganizationRequestForm({
   const submissionSucceeded = createOrganizationRequestMutation.isSuccess
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Label htmlFor="organization-request-name" fontSize="$3" fontWeight="600" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Label htmlFor="organization-request-name" color="gray">
           Organization Name
         </Label>
         <Controller
@@ -109,14 +109,14 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.name ? (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {formState.errors.name.message}
           </Text>
         ) : null}
       </Stack>
 
-      <Stack gap="$2">
-        <Label htmlFor="organization-request-slug" fontSize="$3" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Label htmlFor="organization-request-slug" color="gray">
           Preferred Slug
         </Label>
         <Controller
@@ -134,18 +134,16 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.slug ? (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {formState.errors.slug.message}
           </Text>
         ) : null}
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label
           htmlFor="organization-request-website"
-          fontSize="$3"
-          fontWeight="600"
-          color="$color12"
+          color="gray"
         >
           Website (optional)
         </Label>
@@ -164,14 +162,14 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.website ? (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {formState.errors.website.message}
           </Text>
         ) : null}
       </Stack>
 
-      <Stack gap="$2">
-        <Label htmlFor="organization-request-notes" fontSize="$3" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Label htmlFor="organization-request-notes" color="gray">
           Notes for the review team (optional)
         </Label>
         <Controller
@@ -188,14 +186,14 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.notes ? (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {formState.errors.notes.message}
           </Text>
         ) : null}
       </Stack>
 
       <Button
-        size="$4"
+        size={16}
         theme="info"
         icon={isSubmitting ? Loader2 : undefined}
         disabled={isSubmitting}
@@ -205,14 +203,14 @@ export function OrganizationRequestForm({
       </Button>
 
       {submissionSucceeded ? (
-        <Card bordered theme="success" padding="$4" gap="$3">
-          <Row gap="$3" alignItems="center">
+        <Card bordered theme="success" padding={16} gap={12}>
+          <Row gap={12} align="center">
             <CheckCircle2 size={20} color="$green10" />
-            <Text fontSize="$4" fontWeight="700" color="$green10">
+            <Text color="$green10">
               Request submitted successfully
             </Text>
           </Row>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             We&apos;ve logged your request. Our team will review it and follow up if we need
             additional details.
           </Text>

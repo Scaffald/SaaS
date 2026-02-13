@@ -219,13 +219,13 @@ export function CustomQuestionsStep({
   }
 
   return (
-    <Stack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <Stack gap={24} width="100%" maxWidth={800} padding={16}>
       {/* Header */}
-      <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Text color="gray">
           Additional Questions
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="gray">
           The employer has requested additional information
         </Text>
       </Stack>
@@ -233,23 +233,23 @@ export function CustomQuestionsStep({
       {/* Validation Summary */}
       {Object.entries(errors).some(([, error]) => error !== undefined) && (
         <Stack
-          padding="$4"
-          borderRadius="$4"
+          padding={16}
+          borderRadius={16}
           backgroundColor="$red2"
           borderWidth={1}
           borderColor="$red7"
-          gap="$2"
+          gap={8}
         >
-          <Text fontSize="$4" fontWeight="600" color="$red11">
+          <Text color="$red11">
             Please complete the following:
           </Text>
-          <Stack gap="$1">
+          <Stack gap={4}>
             {Object.entries(errors)
               .filter(([, error]) => error !== undefined)
               .map(([questionId, error]) => {
                 const question = questions.find((q) => q.id === questionId)
                 return (
-                  <Text key={questionId} fontSize="$3" color="$red11">
+                  <Text key={questionId} color="$red11">
                     • {question?.question || 'Question'}: {error}
                   </Text>
                 )
@@ -259,13 +259,13 @@ export function CustomQuestionsStep({
       )}
 
       {/* Questions */}
-      <Stack gap="$5">
+      <Stack gap={20}>
         {questions.map((question, index) => (
-          <Stack key={question.id} gap="$2">
-            <Label fontSize="$4" fontWeight="600">
+          <Stack key={question.id} gap={8}>
+            <Label>
               {index + 1}. {question.question}
               {question.required && (
-                <Text color="$red10" marginLeft="$1">
+                <Text color="$red10" marginLeft={4}>
                   *
                 </Text>
               )}
@@ -273,7 +273,7 @@ export function CustomQuestionsStep({
 
             {/* Short Text Input */}
             {question.type === 'short_text' && (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 <Input
                   value={(getAnswer(question.id) as string) || ''}
                   onChangeText={(text) =>
@@ -290,9 +290,8 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <Row justifyContent="flex-end">
+                <Row justify="flex-end">
                   <Text
-                    fontSize="$2"
                     color={
                       getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
                     }
@@ -305,7 +304,7 @@ export function CustomQuestionsStep({
 
             {/* Long Text Input */}
             {question.type === 'long_text' && (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 <TextArea
                   value={(getAnswer(question.id) as string) || ''}
                   onChangeText={(text) =>
@@ -323,9 +322,8 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <Row justifyContent="flex-end">
+                <Row justify="flex-end">
                   <Text
-                    fontSize="$2"
                     color={
                       getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
                     }
@@ -338,14 +336,14 @@ export function CustomQuestionsStep({
 
             {/* Single Choice (Radio Buttons) */}
             {question.type === 'single_choice' && question.options && (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {question.options.map((option) => (
                   <Row
                     key={option}
-                    gap="$3"
-                    alignItems="center"
-                    padding="$3"
-                    borderRadius="$4"
+                    gap={12}
+                    align="center"
+                    padding={12}
+                    borderRadius={16}
                     borderWidth={1}
                     borderColor={
                       getAnswer(question.id) === option
@@ -368,8 +366,8 @@ export function CustomQuestionsStep({
                       borderRadius="$12"
                       borderWidth={2}
                       borderColor={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
-                      justifyContent="center"
-                      alignItems="center"
+                      justify="center"
+                      align="center"
                       backgroundColor="$background"
                     >
                       {getAnswer(question.id) === option && (
@@ -381,7 +379,7 @@ export function CustomQuestionsStep({
                         />
                       )}
                     </Stack>
-                    <Text fontSize="$3" color="$color12" flex={1}>
+                    <Text color="gray" flex={1}>
                       {option}
                     </Text>
                   </Row>
@@ -391,7 +389,7 @@ export function CustomQuestionsStep({
 
             {/* Multiple Choice (Checkboxes) */}
             {question.type === 'multiple_choice' && question.options && (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {question.options.map((option) => {
                   const currentAnswers = (getAnswer(question.id) as string[]) || []
                   const isSelected = currentAnswers.includes(option)
@@ -399,10 +397,10 @@ export function CustomQuestionsStep({
                   return (
                     <Row
                       key={option}
-                      gap="$3"
-                      alignItems="center"
-                      padding="$3"
-                      borderRadius="$4"
+                      gap={12}
+                      align="center"
+                      padding={12}
+                      borderRadius={16}
                       borderWidth={1}
                       borderColor={
                         isSelected ? '$blue9' : errors[question.id] ? '$red9' : '$borderColor'
@@ -421,20 +419,20 @@ export function CustomQuestionsStep({
                       <Stack
                         width={20}
                         height={20}
-                        borderRadius="$2"
+                        borderRadius={8}
                         borderWidth={2}
                         borderColor={isSelected ? '$blue9' : '$borderColor'}
-                        justifyContent="center"
-                        alignItems="center"
+                        justify="center"
+                        align="center"
                         backgroundColor={isSelected ? '$blue9' : '$background'}
                       >
                         {isSelected && (
-                          <Text fontSize="$3" fontWeight="bold" color="white">
+                          <Text color="white">
                             ✓
                           </Text>
                         )}
                       </Stack>
-                      <Text fontSize="$3" color="$color12" flex={1}>
+                      <Text color="gray" flex={1}>
                         {option}
                       </Text>
                     </Row>
@@ -445,7 +443,7 @@ export function CustomQuestionsStep({
 
             {/* Yes/No Toggle */}
             {question.type === 'yes_no' && (
-              <Row gap="$4" alignItems="center">
+              <Row gap={16} align="center">
                 <ToggleSwitch
                   checked={(getAnswer(question.id) as boolean) || false}
                   onCheckedChange={(checked) =>
@@ -454,7 +452,7 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   aria-label={`${question.question} toggle`}
                 />
-                <Text fontSize="$3" color="$color11">
+                <Text color="gray">
                   {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
                 </Text>
               </Row>
@@ -462,7 +460,7 @@ export function CustomQuestionsStep({
 
             {/* Error Message */}
             {errors[question.id] && (
-              <Text fontSize="$2" color="$red10">
+              <Text color="$red10">
                 {errors[question.id]}
               </Text>
             )}
@@ -473,28 +471,28 @@ export function CustomQuestionsStep({
       {/* No Questions Message */}
       {questions.length === 0 && (
         <Stack
-          padding="$6"
-          alignItems="center"
-          gap="$2"
+          padding={24}
+          align="center"
+          gap={8}
           backgroundColor="$background"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontSize="$4" color="$color11" textAlign="center">
+          <Text color="gray" textAlign="center">
             This position has no additional questions.
           </Text>
-          <Text fontSize="$3" color="$color10" textAlign="center">
+          <Text color="gray" textAlign="center">
             You can proceed to the next step.
           </Text>
         </Stack>
       )}
 
       {/* Navigation Buttons */}
-      <Row gap="$3" justifyContent="space-between" marginTop="$4">
+      <Row gap={12} justify="space-between" marginTop={16}>
         <Button
-          size="$4"
-          variant="outlined"
+          size={16}
+          variant="outline"
           icon={ArrowLeft}
           onPress={onPrevious}
           disabled={isSubmitting}
@@ -502,7 +500,7 @@ export function CustomQuestionsStep({
           Previous
         </Button>
         <Button
-          size="$4"
+          size={16}
           theme="info"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}

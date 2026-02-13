@@ -26,8 +26,8 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <Stack gap="$4" padding="$4" alignItems="center" aria-live="polite">
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={16} padding={16} align="center" aria-live="polite">
+        <Text color="gray">
           No results available yet. Complete at least one domain to see results.
         </Text>
       </Stack>
@@ -38,21 +38,21 @@ export function NarrativeView({
   const overallSummary = scores ? generateOverallSummary(scores) : null
 
   return (
-    <Stack gap="$6" width="100%">
+    <Stack gap={24} width="100%">
       {/* Overall Summary - only show if we have scores and narratives */}
       {overallSummary && (
         <Stack
-          gap="$3"
-          padding="$5"
+          gap={12}
+          padding={20}
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Text fontSize="$6" fontWeight="bold" color="$blue11">
+          <Text color="$blue11">
             Your Personality Profile
           </Text>
-          <Text fontSize="$4" color="$blue10" lineHeight="$5">
+          <Text color="$blue10" lineHeight={20}>
             {overallSummary}
           </Text>
         </Stack>
@@ -61,25 +61,25 @@ export function NarrativeView({
       {/* Show message if summary unavailable but we have partial data */}
       {!overallSummary && completedDomains > 0 && (
         <Stack
-          gap="$2"
-          padding="$4"
+          gap={8}
+          padding={16}
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
           aria-live="polite"
         >
-          <Text fontSize="$4" fontWeight="600" color="$blue11">
+          <Text color="$blue11">
             Partial Results
           </Text>
-          <Text fontSize="$3" color="$blue10">
+          <Text color="$blue10">
             Complete more domains to see your full personality profile summary.
           </Text>
         </Stack>
       )}
 
       {/* Domain Cards */}
-      <Stack gap="$4">
+      <Stack gap={16}>
         {DOMAIN_ORDER.map((domain) => {
           const domainScore = scores?.[domain] ?? null
           const normalizedDomainScore = normalizedScores?.[domain]
@@ -103,17 +103,17 @@ export function NarrativeView({
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
         <Stack
-          gap="$2"
-          padding="$4"
+          gap={8}
+          padding={16}
           backgroundColor="$yellow2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$yellow7"
         >
-          <Text fontSize="$4" fontWeight="600" color="$yellow11">
+          <Text color="$yellow11">
             Complete Your Assessment
           </Text>
-          <Text fontSize="$3" color="$yellow10">
+          <Text color="$yellow10">
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype.
           </Text>

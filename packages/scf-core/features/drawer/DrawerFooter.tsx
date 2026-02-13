@@ -30,16 +30,16 @@ export const DrawerFooter = () => {
 
   return (
     <Row
-      paddingHorizontal="$4"
-      paddingVertical="$3"
+      paddingHorizontal={16}
+      paddingVertical={12}
       borderTopWidth={1}
       borderTopColor="$color4"
-      justifyContent="space-between"
-      alignItems="center"
+      justify="space-between"
+      align="center"
     >
       {/* Theme Toggle Button */}
       <Button
-        size="$3"
+        size={12}
         circular
         backgroundColor="$color3"
         borderColor="$color4"
@@ -60,7 +60,7 @@ export const DrawerFooter = () => {
 
       {/* Logout Button */}
       <Button
-        size="$3"
+        size={12}
         circular
         backgroundColor="$color3"
         borderColor="$color4"

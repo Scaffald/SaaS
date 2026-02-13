@@ -24,41 +24,41 @@ export function AuthorizedAppsList() {
 
   if (consentsQuery.isLoading) {
     return (
-      <Stack flex={1} padding="$4" gap="$4">
+      <Stack flex={1} padding={16} gap={16}>
         <SizableText>Loading authorized apps...</SizableText>
       </Stack>
     )
   }
 
   return (
-    <Stack flex={1} gap="$4" data-testid="authorized-apps-list">
+    <Stack flex={1} gap={16} data-testid="authorized-apps-list">
       {/* Header */}
-      <Stack gap="$2">
-        <SizableText size="$6" fontWeight="600">
+      <Stack gap={8}>
+        <SizableText size={24}>
           Authorized Applications
         </SizableText>
-        <Paragraph size="$3" color="$color11">
+        <Paragraph size={12} color="gray">
           These apps have access to your Scaffald account. You can revoke access at any time.
         </Paragraph>
       </Stack>
 
       {/* Apps List */}
       {consents.length > 0 ? (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {consents.map((consent) => {
             const app = consent.oauth_app as OAuthApp | undefined
             const grantedAt = new Date(consent.granted_at)
             const expiresAt = consent.expires_at ? new Date(consent.expires_at) : null
 
             return (
-              <Card key={consent.id} padding="$4" data-testid={`authorized-app-${consent.id}`}>
-                <Row gap="$4" alignItems="flex-start">
+              <Card key={consent.id} padding={16} data-testid={`authorized-app-${consent.id}`}>
+                <Row gap={16} align="flex-start">
                   {/* App Logo */}
                   {app?.logo_url && (
                     <Stack
                       width={64}
                       height={64}
-                      borderRadius="$2"
+                      borderRadius={8}
                       overflow="hidden"
                       backgroundColor="$color3"
                     >
@@ -71,18 +71,18 @@ export function AuthorizedAppsList() {
                   )}
 
                   {/* App Info */}
-                  <Stack flex={1} gap="$3">
-                    <Stack gap="$1">
-                      <SizableText size="$5" fontWeight="600" data-testid="authorized-app-name">
+                  <Stack flex={1} gap={12}>
+                    <Stack gap={4}>
+                      <SizableText size={20} data-testid="authorized-app-name">
                         {app?.display_name || 'Unknown App'}
                       </SizableText>
                       {app?.description && (
-                        <Paragraph size="$3" color="$color11" data-testid="authorized-app-description">
+                        <Paragraph size={12} color="gray" data-testid="authorized-app-description">
                           {app.description}
                         </Paragraph>
                       )}
                       {app?.homepage_url && (
-                        <SizableText size="$2" color="$blue10" data-testid="authorized-app-homepage">
+                        <SizableText size={8} color="$blue10" data-testid="authorized-app-homepage">
                           {app.homepage_url}
                         </SizableText>
                       )}
@@ -91,17 +91,17 @@ export function AuthorizedAppsList() {
                     <Separator />
 
                     {/* Scopes */}
-                    <Stack gap="$2">
-                      <SizableText size="$3" fontWeight="600">
+                    <Stack gap={8}>
+                      <SizableText size={12}>
                         Permissions
                       </SizableText>
-                      <Stack gap="$1">
+                      <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
-                          <Row key={scope} gap="$2" alignItems="center">
-                            <SizableText size="$1" color="$color11">
+                          <Row key={scope} gap={8} align="center">
+                            <SizableText size={4} color="gray">
                               •
                             </SizableText>
-                            <SizableText size="$2" color="$color11">
+                            <SizableText size={8} color="gray">
                               {scope}
                             </SizableText>
                           </Row>
@@ -110,12 +110,12 @@ export function AuthorizedAppsList() {
                     </Stack>
 
                     {/* Metadata */}
-                    <Stack gap="$1">
-                      <SizableText size="$2" color="$color11">
+                    <Stack gap={4}>
+                      <SizableText size={8} color="gray">
                         Authorized on {grantedAt.toLocaleDateString()}
                       </SizableText>
                       {expiresAt && (
-                        <SizableText size="$2" color="$color11">
+                        <SizableText size={8} color="gray">
                           Expires on {expiresAt.toLocaleDateString()}
                         </SizableText>
                       )}
@@ -124,7 +124,7 @@ export function AuthorizedAppsList() {
 
                   {/* Actions */}
                   <Button
-                    variant="outlined"
+                    variant="outline"
                     onPress={() => setRevokeAppId(consent.id)}
                     data-testid={`revoke-app-button-${consent.id}`}
                   >
@@ -136,12 +136,12 @@ export function AuthorizedAppsList() {
           })}
         </Stack>
       ) : (
-        <Card padding="$6" data-testid="no-authorized-apps">
-          <Stack gap="$3" alignItems="center">
-            <SizableText size="$5" fontWeight="600">
+        <Card padding={24} data-testid="no-authorized-apps">
+          <Stack gap={12} align="center">
+            <SizableText size={20}>
               No Authorized Apps
             </SizableText>
-            <Paragraph size="$3" color="$color11" textAlign="center">
+            <Paragraph size={12} color="gray" textAlign="center">
               You haven't authorized any third-party applications to access your account yet.
             </Paragraph>
           </Stack>
@@ -153,8 +153,8 @@ export function AuthorizedAppsList() {
         <AlertDialog.Portal>
           <AlertDialog.Overlay />
           <AlertDialog.Content>
-            <Stack gap="$4">
-              <Stack gap="$2">
+            <Stack gap={16}>
+              <Stack gap={8}>
                 <AlertDialog.Title>Revoke App Access</AlertDialog.Title>
                 <AlertDialog.Description>
                   Are you sure you want to revoke access for{' '}
@@ -162,17 +162,17 @@ export function AuthorizedAppsList() {
                 </AlertDialog.Description>
               </Stack>
 
-              <Stack gap="$2" paddingLeft="$4">
-                <Paragraph size="$3">• Immediately invalidate all access tokens</Paragraph>
-                <Paragraph size="$3">• Prevent the app from accessing your data</Paragraph>
-                <Paragraph size="$3">
+              <Stack gap={8} paddingLeft={16}>
+                <Paragraph size={12}>• Immediately invalidate all access tokens</Paragraph>
+                <Paragraph size={12}>• Prevent the app from accessing your data</Paragraph>
+                <Paragraph size={12}>
                   • Require you to re-authorize if you want to use the app again
                 </Paragraph>
               </Stack>
 
-              <Row gap="$3" justifyContent="flex-end">
+              <Row gap={12} justify="flex-end">
                 <AlertDialog.Cancel asChild>
-                  <Button variant="outlined">Cancel</Button>
+                  <Button variant="outline">Cancel</Button>
                 </AlertDialog.Cancel>
                 <Button
                   onPress={() => revokeAppId && revokeConsent.mutate({ consent_id: revokeAppId })}

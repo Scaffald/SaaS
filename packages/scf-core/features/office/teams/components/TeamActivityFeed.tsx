@@ -127,15 +127,15 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$2">
-              <Text fontWeight="600">{actor} commented</Text>
+            <Stack gap={8}>
+              <Text>{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
-                <Text fontSize="$3" color="$color10">
+                <Text color="gray">
                   Mentions: {mentionNames.join(', ')}
                 </Text>
               ) : null}
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -148,11 +148,11 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$1">
-              <Text fontWeight="600">
+            <Stack gap={4}>
+              <Text>
                 {actor} assigned this team to job {jobId}
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -165,11 +165,11 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$1">
-              <Text fontWeight="600">
+            <Stack gap={4}>
+              <Text>
                 {actor} updated the job assignment for {jobId}
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -182,11 +182,11 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$1">
-              <Text fontWeight="600">
+            <Stack gap={4}>
+              <Text>
                 {actor} removed this team from job {jobId}
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -199,11 +199,11 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$1">
-              <Text fontWeight="600">
+            <Stack gap={4}>
+              <Text>
                 {actor} transferred ownership to {targetMember}
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -215,9 +215,9 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$1">
-              <Text fontWeight="600">{actor} left the team</Text>
-              <Text fontSize="$2" color="$color10">
+            <Stack gap={4}>
+              <Text>{actor} left the team</Text>
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -230,11 +230,11 @@ export function TeamActivityFeed({
         return {
           accessibilityLabel,
           content: (
-            <Stack gap="$1">
-              <Text fontWeight="600">
+            <Stack gap={4}>
+              <Text>
                 {actor} performed {normalizedEvent}
               </Text>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {occurredAt}
               </Text>
             </Stack>
@@ -280,40 +280,35 @@ export function TeamActivityFeed({
   const disableSubmit = isPosting || commentBody.trim().length === 0
 
   return (
-    <Stack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+    <Stack gap={16} paddingHorizontal={12}>
       <Row
-        gap="$2"
-        alignItems="flex-start"
-        justifyContent="space-between"
+        gap={8}
+        align="flex-start"
+        justify="space-between"
         flexWrap="wrap"
         flexDirection="column"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
       >
-        <Row gap="$2" alignItems="center">
+        <Row gap={8} align="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
-          <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
+          <Text accessibilityRole="header">
             Team activity
           </Text>
         </Row>
         <Button
-          size="$2"
-          variant="outlined"
+          size={8}
+          variant="outline"
           onPress={() => void activityQuery.refetch()}
           disabled={activityQuery.isFetching}
           accessibilityLabel="Refresh team activity feed"
           accessibilityHint="Reloads the most recent team events"
           width="100%"
-          $md={{ width: undefined }}
         >
           Refresh
         </Button>
       </Row>
 
-      <Stack gap="$3">
-        <Text fontWeight="600" accessibilityRole="header">
+      <Stack gap={12}>
+        <Text accessibilityRole="header">
           Share an update
         </Text>
         <TextArea
@@ -328,29 +323,24 @@ export function TeamActivityFeed({
         />
 
         {mentionOptions.length > 0 ? (
-          <Stack gap="$2">
-            <Text fontSize="$3" color="$color11">
+          <Stack gap={8}>
+            <Text color="gray">
               Mention a teammate (optional)
             </Text>
             <Row
-              gap="$2"
+              gap={8}
               flexWrap="wrap"
               flexDirection="column"
-              alignItems="stretch"
-              $md={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
+              align="stretch"
             >
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}
-                  size="$2"
-                  variant="outlined"
+                  size={8}
+                  variant="outline"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
                   width="100%"
-                  $md={{ width: undefined }}
                 >
                   @{mention.label}
                 </Button>
@@ -360,7 +350,7 @@ export function TeamActivityFeed({
                   value={mentionSelection}
                   onValueChange={(value) => handleMentionSelection(value)}
                   placeholder="Mention teammate"
-                  size="$2"
+                  size={8}
                   options={[
                     { value: 'none', label: 'Select teammate' },
                     ...availableMentionOptions.map((option) => ({
@@ -374,20 +364,19 @@ export function TeamActivityFeed({
           </Stack>
         ) : null}
 
-        <Row justifyContent="flex-end">
+        <Row justify="flex-end">
           <Button
-            size="$3"
+            size={12}
             backgroundColor="$color9"
-            color="$color1"
+            color="gray"
             icon={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}
             accessibilityLabel="Post update"
             accessibilityHint="Shares your message with the team"
             width="100%"
-            $md={{ width: undefined }}
           >
-            {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
+            {isPosting ? <Spinner size="sm" color="gray" /> : 'Post update'}
           </Button>
         </Row>
       </Stack>
@@ -395,26 +384,26 @@ export function TeamActivityFeed({
       <Separator />
 
       {activityQuery.isLoading ? (
-        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
-          <Spinner size="large" />
-          <Text color="$color11">Loading team activity…</Text>
+        <Stack align="center" justify="center" gap={8} paddingVertical={24}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading team activity…</Text>
         </Stack>
       ) : events.length === 0 ? (
-        <Stack gap="$2">
-          <Text fontWeight="600">No activity yet</Text>
-          <Text color="$color11">
+        <Stack gap={8}>
+          <Text>No activity yet</Text>
+          <Text color="gray">
             Your team&apos;s collaboration history will appear here as members take action.
           </Text>
         </Stack>
       ) : (
-        <Stack gap="$4">
+        <Stack gap={16}>
           {events.map((event, index) => {
             const eventContent = renderEventDetails(event)
             return (
               <Stack
                 key={event.id}
-                gap="$2"
-                paddingBottom="$3"
+                gap={8}
+                paddingBottom={12}
                 borderBottomWidth={index === events.length - 1 ? 0 : 1}
                 borderColor="$borderColor"
                 accessible
@@ -427,16 +416,16 @@ export function TeamActivityFeed({
           })}
 
           {activityQuery.hasNextPage ? (
-            <Row justifyContent="center">
+            <Row justify="center">
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 onPress={() => void activityQuery.fetchNextPage()}
                 disabled={activityQuery.isFetchingNextPage}
                 accessibilityLabel="Load more activity"
                 accessibilityHint="Loads older team activity events"
               >
-                {activityQuery.isFetchingNextPage ? <Spinner size="small" /> : 'Load more'}
+                {activityQuery.isFetchingNextPage ? <Spinner size="sm" /> : 'Load more'}
               </Button>
             </Row>
           ) : null}

@@ -29,7 +29,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(getByText('Tab 2')).toBeTruthy()
@@ -46,7 +46,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Content 1')).toBeTruthy()
       expect(queryByText('Content 2')).toBeNull()
@@ -59,7 +59,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(queryByText('Content 1')).toBeNull()
     })
@@ -77,7 +77,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Content 1')).toBeTruthy()
       expect(queryByText('Content 2')).toBeNull()
@@ -93,7 +93,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(queryByText('Content 1')).toBeNull()
       expect(getByText('Content 2')).toBeTruthy()
@@ -111,7 +111,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
 
       fireEvent.press(getByText('Tab 2'))
@@ -131,7 +131,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
 
       expect(getByText('Content 1')).toBeTruthy()
@@ -155,7 +155,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
 
       fireEvent.press(getByText('Tab 2'))
@@ -174,7 +174,7 @@ describe('Tabs', () => {
               <Tabs.Trigger>Tab 1</Tabs.Trigger>
               <Tabs.Content>Content 1</Tabs.Content>
             </Tabs.Item>
-          </Tabs.Item>,
+          </Tabs>
         )
         expect(getByText('Tab 1')).toBeTruthy()
       })
@@ -192,7 +192,7 @@ describe('Tabs', () => {
               <Tabs.Trigger>Tab 1</Tabs.Trigger>
               <Tabs.Content>Content 1</Tabs.Content>
             </Tabs.Item>
-          </Tabs.Item>,
+          </Tabs>
         )
         expect(getByText('Tab 1')).toBeTruthy()
       })
@@ -210,7 +210,7 @@ describe('Tabs', () => {
               <Tabs.Trigger>Tab 1</Tabs.Trigger>
               <Tabs.Content>Content 1</Tabs.Content>
             </Tabs.Item>
-          </Tabs.Item>,
+          </Tabs>
         )
         expect(getByText('Tab 1')).toBeTruthy()
       })
@@ -228,7 +228,7 @@ describe('Tabs', () => {
               <Tabs.Trigger>Tab 1</Tabs.Trigger>
               <Tabs.Content>Content 1</Tabs.Content>
             </Tabs.Item>
-          </Tabs.Item>,
+          </Tabs>
         )
         expect(getByText('Tab 1')).toBeTruthy()
       })
@@ -247,7 +247,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
 
       expect(getByText('Content 1')).toBeTruthy()
@@ -267,7 +267,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs.Item>,
+        </Tabs>,
       )
 
       fireEvent.press(getByText('Tab 1'))
@@ -288,7 +288,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(getByText('Tab 2')).toBeTruthy()
@@ -306,7 +306,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
 
       expect(getByText('Content 1')).toBeTruthy()
@@ -329,7 +329,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
 
       expect(getByText('Content 1')).toBeTruthy()
@@ -347,7 +347,7 @@ describe('Tabs', () => {
             <Tabs.Trigger iconStart={MockIcon}>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(container).toBeTruthy()
@@ -360,7 +360,7 @@ describe('Tabs', () => {
             <Tabs.Trigger iconEnd={MockIcon}>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(container).toBeTruthy()
@@ -375,7 +375,7 @@ describe('Tabs', () => {
             </Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(container).toBeTruthy()
@@ -388,7 +388,7 @@ describe('Tabs', () => {
             <Tabs.Trigger iconStart={MockIcon} iconOnly />
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(container).toBeTruthy()
       // Should not render text in icon-only mode
@@ -405,7 +405,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(container).toBeTruthy()
@@ -419,7 +419,7 @@ describe('Tabs', () => {
             <Tabs.Trigger textStyle={customTextStyle}>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
     })
@@ -433,7 +433,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByRole('tab')).toBeTruthy()
     })
@@ -449,7 +449,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       const tab1 = getByRole('tab', { name: 'Tab 1' })
       expect(tab1.props.accessibilityState.selected).toBe(true)
@@ -469,7 +469,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 2</Tabs.Trigger>
             <Tabs.Content>Content 2</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       const tab2 = getByRole('tab', { name: 'Tab 2' })
       expect(tab2.props.accessibilityState.disabled).toBe(true)
@@ -484,7 +484,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
     })
@@ -496,7 +496,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
     })
@@ -510,7 +510,7 @@ describe('Tabs', () => {
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
             <Tabs.Content>Content 1</Tabs.Content>
           </Tabs.Item>
-        </Tabs>,
+        </Tabs>
       )
       expect(getByText('Tab 1')).toBeTruthy()
       expect(container).toBeTruthy()

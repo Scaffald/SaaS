@@ -73,7 +73,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           ]}
           enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap="$4"
+          gap={16}
           width="90%"
           style={{ maxWidth: 600 }}
         >
@@ -81,51 +81,51 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           <Dialog.Description>View and download receipt for this transaction.</Dialog.Description>
 
           {receiptQuery.isLoading ? (
-            <Stack alignItems="center" paddingVertical="$6" gap="$3">
-              <Spinner size="large" />
-              <Text color="$color10">Loading receipt…</Text>
+            <Stack align="center" paddingVertical={24} gap={12}>
+              <Spinner size="lg" />
+              <Text color="gray">Loading receipt…</Text>
             </Stack>
           ) : receiptQuery.error ? (
-            <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+            <Card padding={16} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
               <Text color="$red11">Failed to load receipt: {receiptQuery.error.message}</Text>
             </Card>
           ) : receiptQuery.data ? (
-            <Stack gap="$4">
+            <Stack gap={16}>
               <Card
-                padding="$4"
+                padding={16}
                 backgroundColor="$color2"
                 borderColor="$borderColor"
                 borderWidth={1}
               >
-                <Stack gap="$3">
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$5" fontWeight="700">
+                <Stack gap={12}>
+                  <Row justify="space-between" align="center">
+                    <Text>
                       {receiptQuery.data.receiptNumber}
                     </Text>
-                    <Text fontSize="$4" fontWeight="600" color="$green11">
+                    <Text color="$green11">
                       {receiptQuery.data.amount}
                     </Text>
                   </Row>
-                  <Stack gap="$2">
-                    <Row justifyContent="space-between">
-                      <Text color="$color10">Date:</Text>
+                  <Stack gap={8}>
+                    <Row justify="space-between">
+                      <Text color="gray">Date:</Text>
                       <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
                     </Row>
-                    <Row justifyContent="space-between">
-                      <Text color="$color10">Organization:</Text>
+                    <Row justify="space-between">
+                      <Text color="gray">Organization:</Text>
                       <Text>{receiptQuery.data.organizationName}</Text>
                     </Row>
-                    <Row justifyContent="space-between">
-                      <Text color="$color10">Type:</Text>
+                    <Row justify="space-between">
+                      <Text color="gray">Type:</Text>
                       <Text>{receiptQuery.data.transactionType}</Text>
                     </Row>
-                    <Row justifyContent="space-between">
-                      <Text color="$color10">Status:</Text>
-                      <Text fontWeight="600">{receiptQuery.data.status}</Text>
+                    <Row justify="space-between">
+                      <Text color="gray">Status:</Text>
+                      <Text>{receiptQuery.data.status}</Text>
                     </Row>
-                    <Row justifyContent="space-between">
-                      <Text color="$color10">Payment Intent:</Text>
-                      <Text fontSize="$2" style={{ fontFamily: 'monospace' }}>
+                    <Row justify="space-between">
+                      <Text color="gray">Payment Intent:</Text>
+                      <Text style={{ fontFamily: 'monospace' }}>
                         {receiptQuery.data.stripePaymentIntentId}
                       </Text>
                     </Row>
@@ -133,16 +133,16 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                 </Stack>
               </Card>
 
-              <Row gap="$2" justifyContent="flex-end">
+              <Row gap={8} justify="flex-end">
                 <Button
-                  size="$4"
-                  variant="outlined"
+                  size={16}
+                  variant="outline"
                   icon={Download}
                   onPress={handleDownloadReceipt}
                 >
                   Download Receipt
                 </Button>
-                <Button size="$4" variant="outlined" icon={X} onPress={() => onOpenChange(false)}>
+                <Button size={16} variant="outline" icon={X} onPress={() => onOpenChange(false)}>
                   Close
                 </Button>
               </Row>

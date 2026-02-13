@@ -12,12 +12,12 @@ export function WorkLogCreateScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <Stack padding="$4" gap="$4">
-        <Stack gap="$1">
-          <Text fontSize="$7" fontWeight="700">
+      <Stack padding={16} gap={16}>
+        <Stack gap={4}>
+          <Text>
             Record work log
           </Text>
-          <Text color="$color10">
+          <Text color="gray">
             Document the work performed today, capture time entries, tasks, and skills used.
           </Text>
         </Stack>
@@ -36,7 +36,7 @@ export function WorkLogCreateScreen() {
           }}
         />
 
-        <Button size="$3" variant="outlined" onPress={() => router.back()}>
+        <Button size={12} variant="outline" onPress={() => router.back()}>
           Cancel
         </Button>
       </Stack>

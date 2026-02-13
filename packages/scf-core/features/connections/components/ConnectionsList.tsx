@@ -138,19 +138,19 @@ export function ConnectionsList() {
           const avatar = conn.requester?.avatar_url || conn.addressee?.avatar_url
 
           return (
-            <Row alignItems="center" gap="$2">
+            <Row align="center" gap={8}>
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$blue4">
-                    <Text fontSize="$3" fontWeight="600" color="$blue10">
+                    <Text color="$blue10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <Text fontSize="$3" fontWeight="500">
+              <Text>
                 {name}
               </Text>
             </Row>
@@ -163,7 +163,7 @@ export function ConnectionsList() {
         cell: ({ row }) => {
           const date = row.original.created_at
           return (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               {date ? new Date(date).toLocaleDateString() : '-'}
             </Text>
           )
@@ -176,8 +176,8 @@ export function ConnectionsList() {
           const conn = row.original
           return (
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               icon={Trash2}
               onPress={() => handleRemove(conn.id)}
               disabled={removeConnectionMutation.isPending}
@@ -193,25 +193,25 @@ export function ConnectionsList() {
 
   if (isLoading) {
     return (
-      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading connections…</Text>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading connections…</Text>
       </Stack>
     )
   }
 
   return (
-    <Stack gap="$4">
-      <Row justifyContent="space-between" alignItems="center" gap="$2">
+    <Stack gap={16}>
+      <Row justify="space-between" align="center" gap={8}>
         <Input
           flex={1}
           placeholder="Search connections..."
           value={searchTerm}
           onChangeText={setSearchTerm}
-          size="$4"
+          size={16}
         />
         {filteredConnections.length > 0 && (
-          <Button size="$3" variant="outlined" icon={Download} onPress={handleExportCSV}>
+          <Button size={12} variant="outline" icon={Download} onPress={handleExportCSV}>
             Export CSV
           </Button>
         )}
@@ -219,18 +219,18 @@ export function ConnectionsList() {
 
       {filteredConnections.length === 0 ? (
         <Stack
-          gap="$3"
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ minHeight: 300 }}
         >
-          <Text fontWeight="600">No connections yet</Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text>No connections yet</Text>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No connections match your search.'
               : "You haven't connected with anyone yet. Send connection requests to build your network."}

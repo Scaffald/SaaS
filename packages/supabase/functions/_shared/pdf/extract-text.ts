@@ -7,7 +7,6 @@ let unpdfModule: any | null = null
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getUnpdf(): Promise<any> {
   if (!unpdfModule) {
-    // @ts-expect-error: Dynamic import for optional dependency
     unpdfModule = await import('unpdf')
   }
   return unpdfModule

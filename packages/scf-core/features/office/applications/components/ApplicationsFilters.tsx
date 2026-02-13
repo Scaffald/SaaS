@@ -26,17 +26,17 @@ export const ApplicationsFilters = ({
 }: ApplicationsFiltersProps) => {
   return (
     <Row
-      gap="$3"
-      paddingVertical="$3"
-      paddingHorizontal="$4"
+      gap={12}
+      paddingVertical={12}
+      paddingHorizontal={16}
       backgroundColor="$color2"
-      borderRadius="$4"
-      marginBottom="$4"
+      borderRadius={16}
+      marginBottom={16}
       flexWrap="wrap"
     >
       {/* Job Filter */}
       <Stack width={200}>
-        <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
+        <Text marginBottom={8} opacity={0.7}>
           Filter by Job
         </Text>
         <ResponsiveSelect
@@ -61,7 +61,7 @@ export const ApplicationsFilters = ({
 
       {/* Status Filter */}
       <Stack width={200}>
-        <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
+        <Text marginBottom={8} opacity={0.7}>
           Filter by Status
         </Text>
         <ResponsiveSelect
@@ -88,9 +88,9 @@ export const ApplicationsFilters = ({
 
       {/* Clear Filters */}
       {(filters.jobId || filters.status || filters.minScore > 0) && (
-        <Stack justifyContent="flex-end">
+        <Stack justify="flex-end">
           <Button
-            size="$3"
+            size={12}
             chromeless
             onPress={() => {
               onFiltersChange({

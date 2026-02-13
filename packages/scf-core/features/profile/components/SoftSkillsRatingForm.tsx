@@ -218,12 +218,12 @@ export const SoftSkillsRatingForm: FC = () => {
 
   if (error) {
     return (
-      <Stack gap="$4" alignItems="center" paddingVertical="$8">
+      <Stack gap={16} align="center" paddingVertical={32}>
         <Text color="$red10">Failed to load assessment</Text>
-        <Text color="$color11" fontSize="$2">
+        <Text color="gray">
           {error.message}
         </Text>
-        <Button variant="primary" size="$2" onPress={() => void refetch()}>
+        <Button variant="primary" size={8} onPress={() => void refetch()}>
           Retry
         </Button>
       </Stack>
@@ -232,9 +232,9 @@ export const SoftSkillsRatingForm: FC = () => {
 
   if (formSkills.length === 0) {
     return (
-      <Stack gap="$4" alignItems="center" paddingVertical="$8">
-        <Text color="$color11">No soft skills available</Text>
-        <Text color="$color10" fontSize="$2">
+      <Stack gap={16} align="center" paddingVertical={32}>
+        <Text color="gray">No soft skills available</Text>
+        <Text color="gray">
           Please contact support if this issue persists.
         </Text>
       </Stack>
@@ -242,9 +242,9 @@ export const SoftSkillsRatingForm: FC = () => {
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {/* Header */}
-      <Row justifyContent="space-between" alignItems="center">
+      <Row justify="space-between" align="center">
         <Heading variant="h3">Rate Your Soft Skills</Heading>
         <SaveStatusIndicator
           status={autoSaveStatus}
@@ -253,7 +253,7 @@ export const SoftSkillsRatingForm: FC = () => {
         />
       </Row>
 
-      <Text fontSize="$3" color="$color11">
+      <Text color="gray">
         Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
         saved every 30 seconds.
       </Text>
@@ -269,10 +269,10 @@ export const SoftSkillsRatingForm: FC = () => {
       <Separator />
 
       {/* Skills List for Active Category */}
-      <Stack gap="$4">
+      <Stack gap={16}>
         {categorySkills.length === 0 ? (
-          <Stack gap="$2" alignItems="center" paddingVertical="$8">
-            <Text color="$color11">No skills in this category</Text>
+          <Stack gap={8} align="center" paddingVertical={32}>
+            <Text color="gray">No skills in this category</Text>
           </Stack>
         ) : (
           categorySkills.map((skill) => {
@@ -285,14 +285,14 @@ export const SoftSkillsRatingForm: FC = () => {
             }
 
             return (
-              <Card key={skill.id} bordered padding="$4" backgroundColor="$background">
-                <Stack gap="$3">
-                  <Stack gap="$1">
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Card key={skill.id} bordered padding={16} backgroundColor="$background">
+                <Stack gap={12}>
+                  <Stack gap={4}>
+                    <Text color="gray">
                       {skill.name}
                     </Text>
                     {skill.description && (
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {skill.description}
                       </Text>
                     )}
@@ -310,16 +310,16 @@ export const SoftSkillsRatingForm: FC = () => {
                       const sliderValue = typeof value === 'number' ? value : defaultRating
 
                       return (
-                        <Stack gap="$2">
+                        <Stack gap={8}>
                           <Slider
                             value={[sliderValue]}
                             onValueChange={(newValue) => onChange(newValue[0])}
                             min={1}
                             max={5}
                             step={1}
-                            size="$3"
-                            marginTop="$4"
-                            marginBottom="$2"
+                            size={12}
+                            marginTop={16}
+                            marginBottom={8}
                           >
                             <Slider.Track backgroundColor="$color4" height={6} borderRadius={10}>
                               <Slider.TrackActive backgroundColor="$blue9" borderRadius={10} />
@@ -327,14 +327,14 @@ export const SoftSkillsRatingForm: FC = () => {
                             <Slider.Thumb
                               index={0}
                               circular
-                              size="$1"
+                              size={4}
                               backgroundColor="$blue9"
                               borderWidth={2}
                               borderColor="$blue11"
                             />
                           </Slider>
 
-                          <Row justifyContent="space-between" gap="$2" flexWrap="wrap">
+                          <Row justify="space-between" gap={8} flexWrap="wrap">
                             {SOFT_SKILL_LEVELS.map((level) => (
                               <Stack
                                 key={level.value}
@@ -343,12 +343,11 @@ export const SoftSkillsRatingForm: FC = () => {
                                 style={{ alignItems: 'center' }}
                                 opacity={sliderValue === level.value ? 1 : 0.6}
                               >
-                                <Text fontSize="$2" fontWeight="700" color="$color12">
+                                <Text color="gray">
                                   {level.value}
                                 </Text>
                                 <Text
-                                  fontSize="$2"
-                                  color="$color11"
+                                  color="gray"
                                   style={{ textAlign: 'center' }}
                                 >
                                   {level.label}
@@ -370,14 +369,14 @@ export const SoftSkillsRatingForm: FC = () => {
       <Separator />
 
       {/* Submit Button */}
-      <Row justifyContent="flex-end" paddingTop="$2">
+      <Row justify="flex-end" paddingTop={8}>
         <Button
           variant="primary"
-          size="$4"
+          size={16}
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
           icon={updateMutation.isPending ? undefined : CheckCircle2}
-          iconAfter={updateMutation.isPending ? <Spinner size="small" /> : undefined}
+          iconAfter={updateMutation.isPending ? <Spinner size="sm" /> : undefined}
         >
           {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}
         </Button>
@@ -388,10 +387,10 @@ export const SoftSkillsRatingForm: FC = () => {
         open={showSuccessModal}
         onOpenChange={setShowSuccessModal}
         title="Assessment Complete!"
-        size="medium"
+        size="md"
         showCloseButton={true}
       >
-        <Stack gap="$4" padding="$4" alignItems="center">
+        <Stack gap={16} padding={16} align="center">
           <Stack
             width={80}
             height={80}
@@ -399,24 +398,24 @@ export const SoftSkillsRatingForm: FC = () => {
             backgroundColor="$green2"
             borderWidth={2}
             borderColor="$green9"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
           >
             <CheckCircle2 size={48} color="$green10" />
           </Stack>
 
-          <Stack gap="$2" alignItems="center">
-            <Text fontSize="$6" fontWeight="700" color="$color12" style={{ textAlign: 'center' }}>
+          <Stack gap={8} align="center">
+            <Text color="gray" style={{ textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
-            <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               Your assessment has been saved successfully. Your ratings will be used to improve job
               matching and showcase your strengths.
             </Text>
           </Stack>
 
-          <Row gap="$3" paddingTop="$2">
-            <Button variant="outlined" onPress={handleSuccessModalClose}>
+          <Row gap={12} paddingTop={8}>
+            <Button variant="outline" onPress={handleSuccessModalClose}>
               View Profile
             </Button>
             <Button

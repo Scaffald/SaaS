@@ -130,8 +130,8 @@ export function OccupationSearch({
     showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
 
   return (
-    <Stack gap="$2" position="relative" width="100%">
-      <Row gap="$2" alignItems="center">
+    <Stack gap={8} position="relative" width="100%">
+      <Row gap={8} align="center">
         <Input
           flex={1}
           placeholder={placeholder}
@@ -141,7 +141,7 @@ export function OccupationSearch({
           onBlur={handleInputBlur}
           disabled={disabled}
         />
-        {isLoading && <Spinner size="small" />}
+        {isLoading && <Spinner size="sm" />}
       </Row>
 
       {showDropdown && (
@@ -150,10 +150,10 @@ export function OccupationSearch({
           top="100%"
           left={0}
           right={0}
-          marginTop="$1"
+          marginTop={4}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$3"
+          borderRadius={12}
           backgroundColor="$background"
           maxHeight={300}
           overflow="scroll"
@@ -166,8 +166,8 @@ export function OccupationSearch({
           {occupations.map((occupation: Occupation) => (
             <Row
               key={occupation.onetsoc_code}
-              padding="$3"
-              gap="$2"
+              padding={12}
+              gap={8}
               hoverStyle={{
                 backgroundColor: '$backgroundHover',
               }}
@@ -177,11 +177,11 @@ export function OccupationSearch({
               cursor="pointer"
               onPress={() => handleSelect(occupation)}
             >
-              <Stack flex={1} gap="$1">
-                <Text fontSize="$3" fontWeight="600">
+              <Stack flex={1} gap={4}>
+                <Text>
                   {occupation.title}
                 </Text>
-                <Text fontSize="$2" color="$color11">
+                <Text color="gray">
                   {occupation.onetsoc_code}
                 </Text>
               </Stack>
@@ -196,15 +196,15 @@ export function OccupationSearch({
           top="100%"
           left={0}
           right={0}
-          marginTop="$1"
+          marginTop={4}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$3"
+          borderRadius={12}
           backgroundColor="$background"
-          padding="$3"
+          padding={12}
           zIndex={1000}
         >
-          <Text fontSize="$3" color="$red10">
+          <Text color="$red10">
             {queryError.message || 'Unable to load occupations. Please try again.'}
           </Text>
         </Stack>
@@ -216,15 +216,15 @@ export function OccupationSearch({
           top="100%"
           left={0}
           right={0}
-          marginTop="$1"
+          marginTop={4}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$3"
+          borderRadius={12}
           backgroundColor="$background"
-          padding="$3"
+          padding={12}
           zIndex={1000}
         >
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             No occupations found for "{debouncedSearch}"
           </Text>
         </Stack>

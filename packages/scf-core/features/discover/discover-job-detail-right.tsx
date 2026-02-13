@@ -161,9 +161,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text marginTop="$2" color="$color11">
+      <Stack flex={1} align="center" justify="center" padding={16}>
+        <Spinner size="lg" color="$blue10" />
+        <Text marginTop={8} color="gray">
           Loading job details...
         </Text>
       </Stack>
@@ -172,11 +172,11 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
   if (!job) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
+        <Text color="gray">
           Job not found
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="gray">
           This job may have been removed or is no longer available
         </Text>
       </Stack>
@@ -195,57 +195,57 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
     return (
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <Stack gap="$4" padding="$4">
+        <Stack gap={16} padding={16}>
           {/* Applied Status Banner */}
           {hasApplied && (
             <Stack
-              gap="$2"
+              gap={8}
               backgroundColor="$green2"
-              padding="$3"
-              borderRadius="$4"
+              padding={12}
+              borderRadius={16}
               borderWidth={1}
               borderColor="$green7"
             >
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <Shield size={16} color="$green10" />
-                <Text fontSize="$4" fontWeight="600" color="$green11">
+                <Text color="$green11">
                   You've Applied
                 </Text>
               </Row>
-              <Text fontSize="$3" color="$green11">
+              <Text color="$green11">
                 Your application has been submitted. You can edit your application any time.
               </Text>
             </Stack>
           )}
 
-          <Text fontSize="$8" fontWeight="700" color="$color12">
+          <Text color="gray">
             {job.title}
           </Text>
 
           {/* Company info */}
           {job.organization && (
-            <Row gap="$2" alignItems="center">
-              <Building2 size={20} color="$color11" />
-              <Text fontSize="$5" color="$color11" fontWeight="600">
+            <Row gap={8} align="center">
+              <Building2 size={20} color="gray" />
+              <Text color="gray">
                 {job.organization.name}
               </Text>
             </Row>
           )}
 
           {/* Job metadata */}
-          <Row gap="$3" flexWrap="wrap">
+          <Row gap={12} flexWrap="wrap">
             {job.location && (
-              <Row gap="$2" alignItems="center">
-                <MapPin size={16} color="$color10" />
-                <Text fontSize="$3" color="$color10">
+              <Row gap={8} align="center">
+                <MapPin size={16} color="gray" />
+                <Text color="gray">
                   {job.location}
                 </Text>
               </Row>
             )}
             {employmentType && (
-              <Row gap="$2" alignItems="center">
-                <Briefcase size={16} color="$color10" />
-                <Text fontSize="$3" color="$color10">
+              <Row gap={8} align="center">
+                <Briefcase size={16} color="gray" />
+                <Text color="gray">
                   {employmentType}
                 </Text>
               </Row>
@@ -254,9 +254,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               <Chip
                 backgroundColor="$blue9"
                 color="$blue1"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 {remoteOption}
               </Chip>
@@ -265,9 +264,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Pay range */}
           {payRange && (
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <DollarSign size={18} color="$green10" />
-              <Text fontSize="$4" color="$green10" fontWeight="600">
+              <Text color="$green10">
                 {payRange}
               </Text>
             </Row>
@@ -275,14 +274,14 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Benefits Summary */}
           {job.benefits_summary && (
-            <Stack gap="$2" backgroundColor="$green2" padding="$3" borderRadius="$4">
-              <Row gap="$2" alignItems="center">
+            <Stack gap={8} backgroundColor="$green2" padding={12} borderRadius={16}>
+              <Row gap={8} align="center">
                 <Heart size={16} color="$green10" />
-                <Text fontSize="$4" fontWeight="600" color="$green11">
+                <Text color="$green11">
                   Benefits
                 </Text>
               </Row>
-              <Text fontSize="$3" color="$green11">
+              <Text color="$green11">
                 {job.benefits_summary}
               </Text>
             </Stack>
@@ -291,11 +290,11 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           <Separator />
 
           {/* Description */}
-          <Stack gap="$2">
-            <Text fontSize="$5" fontWeight="600" color="$color12">
+          <Stack gap={8}>
+            <Text color="gray">
               Job Description
             </Text>
-            <Text fontSize="$3" color="$color11" lineHeight="$4">
+            <Text color="gray" lineHeight={16}>
               {typeof job.description === 'string'
                 ? job.description
                 : job.description
@@ -314,65 +313,65 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
             job.travel_percentage) && (
             <>
               <Separator />
-              <Stack gap="$3">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={12}>
+                <Text color="gray">
                   Requirements
                 </Text>
-                <Stack gap="$2">
+                <Stack gap={8}>
                   {job.minimum_education_level && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Award size={16} color="$red10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {formatEducationLevel(job.minimum_education_level)}
                       </Text>
                     </Row>
                   )}
                   {job.minimum_years_experience && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Clock size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {job.minimum_years_experience}+ years of experience
                       </Text>
                     </Row>
                   )}
                   {job.require_background_check && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Shield size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Background check required
                         {job.background_check_type && ` (${job.background_check_type})`}
                       </Text>
                     </Row>
                   )}
                   {job.require_drug_test && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Shield size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Drug test required
                       </Text>
                     </Row>
                   )}
                   {job.require_drivers_license && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Briefcase size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Driver's license required
                         {job.drivers_license_type && ` (${job.drivers_license_type})`}
                       </Text>
                     </Row>
                   )}
                   {job.security_clearance_required && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Shield size={16} color="$red10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Security clearance: {job.security_clearance_required}
                       </Text>
                     </Row>
                   )}
                   {job.travel_percentage && job.travel_percentage > 0 && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Plane size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Travel: {job.travel_percentage}%
                       </Text>
                     </Row>
@@ -386,31 +385,31 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {(job.work_schedule_details || job.relocation_assistance_offered || job.timezone) && (
             <>
               <Separator />
-              <Stack gap="$3">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={12}>
+                <Text color="gray">
                   Work Details
                 </Text>
-                <Stack gap="$2">
+                <Stack gap={8}>
                   {job.work_schedule_details && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Clock size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {job.work_schedule_details}
                       </Text>
                     </Row>
                   )}
                   {job.timezone && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <MapPin size={16} color="$blue10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Timezone: {job.timezone}
                       </Text>
                     </Row>
                   )}
                   {job.relocation_assistance_offered && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Home size={16} color="$green10" />
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Relocation assistance available
                         {job.relocation_assistance_details &&
                           `: ${job.relocation_assistance_details}`}
@@ -426,14 +425,14 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {job.application_deadline && (
             <>
               <Separator />
-              <Stack gap="$2" backgroundColor="$yellow2" padding="$3" borderRadius="$4">
-                <Row gap="$2" alignItems="center">
+              <Stack gap={8} backgroundColor="$yellow2" padding={12} borderRadius={16}>
+                <Row gap={8} align="center">
                   <Calendar size={16} color="$yellow10" />
-                  <Text fontSize="$4" fontWeight="600" color="$yellow11">
+                  <Text color="$yellow11">
                     Application Deadline
                   </Text>
                 </Row>
-                <Text fontSize="$3" color="$yellow11">
+                <Text color="$yellow11">
                   {new Date(job.application_deadline).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -448,19 +447,18 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {job.certifications && job.certifications.length > 0 && (
             <>
               <Separator />
-              <Stack gap="$3">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={12}>
+                <Text color="gray">
                   Required Certifications
                 </Text>
-                <Row gap="$2" flexWrap="wrap">
+                <Row gap={8} flexWrap="wrap">
                   {job.certifications.map((cert: { id: string; name: string }) => (
                     <Chip
                       key={cert.id}
                       backgroundColor="$red10"
-                      color="$color1"
-                      fontSize="$3"
-                      paddingHorizontal="$3"
-                      paddingVertical="$2"
+                      color="gray"
+                      paddingHorizontal={12}
+                      paddingVertical={8}
                     >
                       {cert.name}
                     </Chip>
@@ -474,11 +472,11 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {job.skills && job.skills.length > 0 && (
             <>
               <Separator />
-              <Stack gap="$3">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={12}>
+                <Text color="gray">
                   Required Skills
                 </Text>
-                <Row gap="$2" flexWrap="wrap">
+                <Row gap={8} flexWrap="wrap">
                   {((job.skills ?? []) as InternalJobSkill[]).map((skill) => {
                     const label =
                       skill.name ??
@@ -490,10 +488,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                       <Chip
                         key={skill.id}
                         backgroundColor="$blue10"
-                        color="$color1"
-                        fontSize="$3"
-                        paddingHorizontal="$3"
-                        paddingVertical="$2"
+                        color="gray"
+                        paddingHorizontal={12}
+                        paddingVertical={8}
                       >
                         {label}
                       </Chip>
@@ -508,9 +505,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {hasSoftSkillsRequirements && (
             <>
               <Separator />
-              <Stack gap="$3">
-                <Row justifyContent="space-between" alignItems="center">
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={12}>
+                <Row justify="space-between" align="center">
+                  <Text color="gray">
                     Your Soft Skills Match
                   </Text>
                   {matchData?.score !== null && matchData?.score !== undefined && (
@@ -522,10 +519,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                             ? '$yellow9'
                             : '$red9'
                       }
-                      color="$color1"
-                      fontSize="$3"
-                      paddingHorizontal="$3"
-                      paddingVertical="$2"
+                      color="gray"
+                      paddingHorizontal={12}
+                      paddingVertical={8}
                     >
                       {Math.round(matchData.score)}% Match
                     </Chip>
@@ -533,40 +529,40 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 </Row>
 
                 {isLoadingMatch ? (
-                  <Stack gap="$2" alignItems="center" paddingVertical="$4">
-                    <Spinner size="small" color="$blue10" />
-                    <Text fontSize="$3" color="$color11">
+                  <Stack gap={8} align="center" paddingVertical={16}>
+                    <Spinner size="sm" color="$blue10" />
+                    <Text color="gray">
                       Calculating match...
                     </Text>
                   </Stack>
                 ) : matchData?.needsSelfAssessment ? (
                   <Stack
-                    gap="$3"
+                    gap={12}
                     backgroundColor="$blue2"
-                    padding="$4"
-                    borderRadius="$4"
+                    padding={16}
+                    borderRadius={16}
                     borderWidth={1}
                     borderColor="$blue7"
                   >
-                    <Text fontSize="$4" fontWeight="600" color="$blue11">
+                    <Text color="$blue11">
                       Complete Your Assessment
                     </Text>
-                    <Text fontSize="$3" color="$blue11">
+                    <Text color="$blue11">
                       Complete your soft skills assessment to see how well you match this job's
                       requirements.
                     </Text>
                     <Button
                       variant="primary"
-                      size="$3"
+                      size={12}
                       onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                     >
                       Start Assessment
                     </Button>
                   </Stack>
                 ) : matchData?.details && matchData.details.length > 0 ? (
-                  <Stack gap="$4">
+                  <Stack gap={16}>
                     {/* Skill-by-skill breakdown */}
-                    <Stack gap="$2">
+                    <Stack gap={8}>
                       {matchData.details.map(
                         (detail: {
                           skillId: string
@@ -591,20 +587,20 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                       (detail: { meetsRequirement: boolean }) => !detail.meetsRequirement
                     ) && (
                       <Stack
-                        gap="$2"
+                        gap={8}
                         backgroundColor="$yellow2"
-                        padding="$4"
-                        borderRadius="$4"
+                        padding={16}
+                        borderRadius={16}
                         borderWidth={1}
                         borderColor="$yellow7"
                       >
-                        <Row gap="$2" alignItems="center">
+                        <Row gap={8} align="center">
                           <TrendingUp size={16} color="$yellow10" />
-                          <Text fontSize="$4" fontWeight="600" color="$yellow11">
+                          <Text color="$yellow11">
                             Skills to Develop
                           </Text>
                         </Row>
-                        <Stack gap="$1">
+                        <Stack gap={4}>
                           {matchData.details
                             .filter(
                               (detail: { meetsRequirement: boolean }) => !detail.meetsRequirement
@@ -616,7 +612,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                                 userRating: number | null
                                 requiredImportance: number
                               }) => (
-                                <Text key={detail.skillId} fontSize="$3" color="$yellow11">
+                                <Text key={detail.skillId} color="$yellow11">
                                   • {detail.skillName} (currently {detail.userRating || 0}/5, need{' '}
                                   {detail.requiredImportance}/5)
                                 </Text>
@@ -624,8 +620,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                             )}
                         </Stack>
                         <Button
-                          variant="outlined"
-                          size="$3"
+                          variant="outline"
+                          size={12}
                           onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                         >
                           Update Assessment
@@ -646,47 +642,46 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
   if (isExternal && 'company_name' in job) {
     return (
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <Stack gap="$4" padding="$4">
-          <Stack gap="$2">
+        <Stack gap={16} padding={16}>
+          <Stack gap={8}>
             <Row>
               <Chip
                 backgroundColor="$red9"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 External Job
               </Chip>
             </Row>
-            <Text fontSize="$8" fontWeight="700" color="$color12">
+            <Text color="gray">
               {job.title}
             </Text>
           </Stack>
 
           {/* Company info */}
           {job.company_name && (
-            <Row gap="$2" alignItems="center">
-              <Building2 size={20} color="$color11" />
-              <Text fontSize="$5" color="$color11" fontWeight="600">
+            <Row gap={8} align="center">
+              <Building2 size={20} color="gray" />
+              <Text color="gray">
                 {job.company_name}
               </Text>
             </Row>
           )}
 
           {/* Job metadata */}
-          <Row gap="$3" flexWrap="wrap">
+          <Row gap={12} flexWrap="wrap">
             {job.location && (
-              <Row gap="$2" alignItems="center">
-                <MapPin size={16} color="$color10" />
-                <Text fontSize="$3" color="$color10">
+              <Row gap={8} align="center">
+                <MapPin size={16} color="gray" />
+                <Text color="gray">
                   {job.location}
                 </Text>
               </Row>
             )}
             {job.job_type && (
-              <Row gap="$2" alignItems="center">
-                <Briefcase size={16} color="$color10" />
-                <Text fontSize="$3" color="$color10">
+              <Row gap={8} align="center">
+                <Briefcase size={16} color="gray" />
+                <Text color="gray">
                   {formatEmploymentType(job.job_type)}
                 </Text>
               </Row>
@@ -698,9 +693,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
             <Row>
               <Chip
                 backgroundColor="$blue9"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
                 {job.job_category}
               </Chip>
@@ -711,11 +705,11 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Description */}
           {job.description && (
-            <Stack gap="$2">
-              <Text fontSize="$5" fontWeight="600" color="$color12">
+            <Stack gap={8}>
+              <Text color="gray">
                 Job Description
               </Text>
-              <Text fontSize="$3" color="$color11" lineHeight="$4">
+              <Text color="gray" lineHeight={16}>
                 {typeof job.description === 'string'
                   ? job.description
                   : extractPlainText(job.description as JSONContent)}
@@ -727,18 +721,17 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {job.industries && job.industries.length > 0 && (
             <>
               <Separator />
-              <Stack gap="$3">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={12}>
+                <Text color="gray">
                   Industries
                 </Text>
-                <Row gap="$2" flexWrap="wrap">
+                <Row gap={8} flexWrap="wrap">
                   {job.industries.map((industry: { industry_name: string }, idx: number) => (
                     <Chip
                       key={`${industry.industry_name}-${idx}`}
                       backgroundColor="$blue9"
-                      fontSize="$3"
-                      paddingHorizontal="$3"
-                      paddingVertical="$2"
+                      paddingHorizontal={12}
+                      paddingVertical={8}
                     >
                       {industry.industry_name}
                     </Chip>
@@ -749,14 +742,14 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           )}
 
           {/* External Link Notice */}
-          <Stack gap="$2" backgroundColor="$blue2" padding="$3" borderRadius="$4">
-            <Row gap="$2" alignItems="center">
+          <Stack gap={8} backgroundColor="$blue2" padding={12} borderRadius={16}>
+            <Row gap={8} align="center">
               <ExternalLink size={16} color="$blue10" />
-              <Text fontSize="$4" fontWeight="600" color="$blue11">
+              <Text color="$blue11">
                 External Application
               </Text>
             </Row>
-            <Text fontSize="$3" color="$blue11">
+            <Text color="$blue11">
               This job is hosted on an external site. You'll be directed to apply through their
               application process.
             </Text>

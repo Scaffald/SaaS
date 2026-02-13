@@ -187,24 +187,24 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         if (!isOpen) onClose()
       }}
       title={application.candidate.name}
-      size="large"
+      size="lg"
     >
       {/* Candidate Header */}
-      <Row gap="$3" alignItems="center">
-        <Avatar circular size="$6">
+      <Row gap={12} align="center">
+        <Avatar circular size={24}>
           <Avatar.Image src={application.candidate.photo} />
           <Avatar.Fallback backgroundColor="$blue9">
-            <Text color="white" fontWeight="600" fontSize="$6">
+            <Text color="white">
               {application.candidate.name.charAt(0)}
             </Text>
           </Avatar.Fallback>
         </Avatar>
 
         <Stack flex={1}>
-          <Text fontSize="$4" opacity={0.7}>
+          <Text opacity={0.7}>
             {application.candidate.title}
           </Text>
-          <Text fontSize="$2" opacity={0.6} marginTop="$1">
+          <Text opacity={0.6} marginTop={4}>
             {application.candidate.location}
           </Text>
         </Stack>
@@ -213,36 +213,36 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       {/* Score Badge */}
       <Stack
         backgroundColor={scoreBg}
-        paddingHorizontal="$4"
-        paddingVertical="$3"
-        borderRadius="$4"
-        alignItems="center"
+        paddingHorizontal={16}
+        paddingVertical={12}
+        borderRadius={16}
+        align="center"
       >
-        <Text fontSize="$8" fontWeight="700" color={scoreColor}>
+        <Text color={scoreColor}>
           {application.score}
         </Text>
-        <Text fontSize="$3" fontWeight="600" opacity={0.8}>
+        <Text opacity={0.8}>
           Application Score
         </Text>
       </Stack>
 
       {/* Quick Actions */}
-      <Row gap="$2">
-        <Button theme="success" flex={1} size="$4">
+      <Row gap={8}>
+        <Button theme="success" flex={1} size={16}>
           Advance to Interview
         </Button>
-        <Button theme="error" flex={1} size="$4">
+        <Button theme="error" flex={1} size={16}>
           Reject
         </Button>
       </Row>
-      <Button flex={1} size="$4">
+      <Button flex={1} size={16}>
         Send Message
       </Button>
       {teamId && currentUser?.id ? (
         <Button
           flex={1}
-          size="$4"
-          variant="outlined"
+          size={16}
+          variant="outline"
           onPress={() =>
             assignMutation.mutate({
               teamId,
@@ -252,15 +252,15 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           }
           disabled={assignMutation.isPending}
         >
-          {assignMutation.isPending ? <Spinner size="small" /> : 'Assign to me'}
+          {assignMutation.isPending ? <Spinner size="sm" /> : 'Assign to me'}
         </Button>
       ) : null}
       {teamId ? (
-        <Stack gap="$1">
-          <Text fontSize="$3" opacity={0.6}>
+        <Stack gap={4}>
+          <Text opacity={0.6}>
             Current assignee
           </Text>
-          <Text fontSize="$4" fontWeight="600">
+          <Text>
             {application.team?.assignedUserId
               ? (mentionOptions.find((option) => option.id === application.team?.assignedUserId)
                   ?.label ?? `User ${application.team?.assignedUserId.slice(0, 6)}`)
@@ -270,12 +270,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       ) : null}
 
       {/* Application Meta */}
-      <Row gap="$4" flexWrap="wrap">
+      <Row gap={16} flexWrap="wrap">
         <Stack flex={1} width={150}>
-          <Text fontSize="$2" opacity={0.6}>
+          <Text opacity={0.6}>
             Applied
           </Text>
-          <Text fontSize="$3" fontWeight="600">
+          <Text>
             {new Date(application.appliedAt).toLocaleDateString('en-US', {
               month: 'long',
               day: 'numeric',
@@ -284,18 +284,18 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Text>
         </Stack>
         <Stack flex={1} width={150}>
-          <Text fontSize="$2" opacity={0.6}>
+          <Text opacity={0.6}>
             Job
           </Text>
-          <Text fontSize="$3" fontWeight="600">
+          <Text>
             {application.job.title}
           </Text>
         </Stack>
         <Stack flex={1} width={150}>
-          <Text fontSize="$2" opacity={0.6}>
+          <Text opacity={0.6}>
             Experience
           </Text>
-          <Text fontSize="$3" fontWeight="600">
+          <Text>
             {application.candidate.yearsExperience} years
           </Text>
         </Stack>
@@ -309,35 +309,35 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         flexDirection="column"
         flex={1}
       >
-        <Tabs.List gap="$2" backgroundColor="$color2" padding="$1" borderRadius="$3">
+        <Tabs.List gap={8} backgroundColor="$color2" padding={4} borderRadius={12}>
           <Tabs.Tab value="profile" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
+            <Text>
               Profile
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value="application" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
+            <Text>
               Application
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value="notes" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
+            <Text>
               Notes ({application.notes.length})
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value="messages" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
+            <Text>
               Messages
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value="inquiry" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
+            <Text>
               Inquiry
             </Text>
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Content value="profile" paddingTop="$4">
+        <Tabs.Content value="profile" paddingTop={16}>
           <CandidateProfileTab
             candidate={application.candidate}
             contactInfo={contactInfoQuery.data ?? undefined}
@@ -346,11 +346,11 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           />
         </Tabs.Content>
 
-        <Tabs.Content value="application" paddingTop="$4">
+        <Tabs.Content value="application" paddingTop={16}>
           <ApplicationDetailsTab application={application} />
         </Tabs.Content>
 
-        <Tabs.Content value="notes" paddingTop="$4">
+        <Tabs.Content value="notes" paddingTop={16}>
           <NotesTab
             applicationId={application.id}
             teamId={teamId}
@@ -358,14 +358,14 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           />
         </Tabs.Content>
 
-        <Tabs.Content value="messages" paddingTop="$4">
+        <Tabs.Content value="messages" paddingTop={16}>
           <MessagesTab applicationId={application.id} />
         </Tabs.Content>
 
-        <Tabs.Content value="inquiry" paddingTop="$4">
+        <Tabs.Content value="inquiry" paddingTop={16}>
           {inquiryMode === 'view' && isInquiryLoading && (
-            <Stack padding="$4" alignItems="center" gap="$4">
-              <Spinner size="large" />
+            <Stack padding={16} align="center" gap={16}>
+              <Spinner size="lg" />
               <Text>Loading inquiry...</Text>
             </Stack>
           )}
@@ -401,8 +401,8 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           ) : null}
 
           {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-            <Stack padding="$4" gap="$3">
-              <Text color="$color11">No inquiry has been created for this candidate yet.</Text>
+            <Stack padding={16} gap={12}>
+              <Text color="gray">No inquiry has been created for this candidate yet.</Text>
               <Button theme="blue" onPress={() => setInquiryMode('create')}>
                 Start Inquiry
               </Button>
@@ -410,8 +410,8 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           )}
 
           {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-            <Stack padding="$4" alignItems="center" gap="$4">
-              <Spinner size="large" />
+            <Stack padding={16} align="center" gap={16}>
+              <Spinner size="lg" />
               <Text>Preparing inquiry for editing...</Text>
             </Stack>
           )}

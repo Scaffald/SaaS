@@ -76,30 +76,30 @@ export function OrganizationPaymentMethodsPanel({
 
   if (paymentMethodQuery.isLoading) {
     return (
-      <Card bordered padding="$4">
-        <Stack gap="$3" alignItems="center" paddingVertical="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading payment method…</Text>
+      <Card bordered padding={16}>
+        <Stack gap={12} align="center" paddingVertical={16}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading payment method…</Text>
         </Stack>
       </Card>
     )
   }
 
   return (
-    <Card bordered padding="$4" gap="$3">
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$5" fontWeight="600">
+    <Card bordered padding={16} gap={12}>
+      <Row justify="space-between" align="center">
+        <Text>
           Payment Method
         </Text>
         {!showAddForm && !paymentMethod && (
-          <Button size="$3" theme="blue" icon={Plus} onPress={() => setShowAddForm(true)}>
+          <Button size={12} theme="blue" icon={Plus} onPress={() => setShowAddForm(true)}>
             Add Payment Method
           </Button>
         )}
       </Row>
 
       {showAddForm ? (
-        <Stack gap="$3">
+        <Stack gap={12}>
           <SetupIntentForm
             organizationId={organizationId}
             onSuccess={handleAddSuccess}
@@ -107,36 +107,36 @@ export function OrganizationPaymentMethodsPanel({
           />
         </Stack>
       ) : paymentMethod ? (
-        <Stack gap="$3">
+        <Stack gap={12}>
           <Row
-            gap="$3"
-            alignItems="center"
-            padding="$3"
+            gap={12}
+            align="center"
+            padding={12}
             backgroundColor="$color2"
-            borderRadius="$4"
+            borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <CreditCard size={24} color="$color11" />
-            <Stack flex={1} gap="$1">
-              <Row gap="$2" alignItems="center">
-                <Text fontWeight="600" fontSize="$4">
+            <CreditCard size={24} color="gray" />
+            <Stack flex={1} gap={4}>
+              <Row gap={8} align="center">
+                <Text>
                   {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                 </Text>
                 {paymentMethod.isDefault && (
-                  <Text fontSize="$2" color="$blue11" fontWeight="600">
+                  <Text color="$blue11">
                     Default
                   </Text>
                 )}
               </Row>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
                 {paymentMethod.billingName ? ` • ${paymentMethod.billingName}` : ''}
               </Text>
             </Stack>
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               icon={Trash2}
               onPress={handleDelete}
               disabled={deleteMutation.isPending}
@@ -146,16 +146,16 @@ export function OrganizationPaymentMethodsPanel({
               Remove
             </Button>
           </Row>
-          <Button size="$3" variant="outlined" icon={Plus} onPress={() => setShowAddForm(true)}>
+          <Button size={12} variant="outline" icon={Plus} onPress={() => setShowAddForm(true)}>
             Replace Payment Method
           </Button>
         </Stack>
       ) : (
-        <Stack gap="$2" padding="$3" backgroundColor="$color2" borderRadius="$4">
-          <Text color="$color11" fontSize="$3">
+        <Stack gap={8} padding={12} backgroundColor="$color2" borderRadius={16}>
+          <Text color="gray">
             No payment method on file
           </Text>
-          <Text color="$color10" fontSize="$2">
+          <Text color="gray">
             Add a payment method to enable automatic billing for this organization.
           </Text>
         </Stack>

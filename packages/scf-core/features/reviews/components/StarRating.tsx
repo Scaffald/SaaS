@@ -11,11 +11,11 @@ interface StarRatingProps {
 
 export function StarRating({ label, value, onChange, readonly = false }: StarRatingProps) {
   return (
-    <Stack gap="$2">
-      <Text fontSize="$5" fontWeight="600" color="$color12">
+    <Stack gap={8}>
+      <Text color="gray">
         {label}
       </Text>
-      <Row gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Pressable
             key={`star-${star}`}
@@ -25,7 +25,7 @@ export function StarRating({ label, value, onChange, readonly = false }: StarRat
             <Star size={32} color="$yellow10" fill={star <= value ? '$yellow10' : 'transparent'} />
           </Pressable>
         ))}
-        <Text fontSize="$6" fontWeight="700" color="$color11" marginLeft="$2">
+        <Text color="gray" marginLeft={8}>
           {value}/5
         </Text>
       </Row>

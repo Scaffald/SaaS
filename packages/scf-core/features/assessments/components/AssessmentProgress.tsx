@@ -30,13 +30,13 @@ export function AssessmentProgress({
 
   if (orientation === 'vertical') {
     return (
-      <Stack gap="$5" width="100%">
+      <Stack gap={20} width="100%">
         {completionScore !== undefined && (
-          <Stack gap="$2">
-            <Text fontSize="$3" fontWeight="600" color="$color11">
+          <Stack gap={8}>
+            <Text color="gray">
               Progress
             </Text>
-            <Stack gap="$1">
+            <Stack gap={4}>
               <Row
                 height={8}
                 backgroundColor="$color5"
@@ -51,14 +51,14 @@ export function AssessmentProgress({
                   animation="quick"
                 />
               </Row>
-              <Text fontSize="$2" fontWeight="600" color="$blue10" style={{ textAlign: 'right' }}>
+              <Text color="$blue10" style={{ textAlign: 'right' }}>
                 {completionScore}%
               </Text>
             </Stack>
           </Stack>
         )}
 
-        <Stack gap="$4">
+        <Stack gap={16}>
           {sortedSteps.map((step, index) => {
             const isCompleted = completedSteps.has(step.id)
             const isCurrent = step.id === currentStep
@@ -78,20 +78,20 @@ export function AssessmentProgress({
                 : '$color10'
 
             return (
-              <Row key={step.id} gap="$3" alignItems="flex-start">
-                <Stack alignItems="center" gap="$1" style={{ minWidth: 32 }}>
+              <Row key={step.id} gap={12} align="flex-start">
+                <Stack align="center" gap={4} style={{ minWidth: 32 }}>
                   <Circle
                     size={32}
                     backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
                     borderWidth={2}
                     borderColor={isCurrent ? '$blue11' : 'transparent'}
-                    alignItems="center"
-                    justifyContent="center"
+                    align="center"
+                    justify="center"
                   >
                     {isCompleted ? (
                       <Check size={18} color="white" />
                     ) : (
-                      <Text fontSize="$2" fontWeight="600" color={isCurrent ? 'white' : '$color11'}>
+                      <Text color={isCurrent ? 'white' : '$color11'}>
                         {index + 1}
                       </Text>
                     )}
@@ -105,15 +105,13 @@ export function AssessmentProgress({
                   )}
                 </Stack>
 
-                <Stack gap="$1" flex={1}>
+                <Stack gap={4} flex={1}>
                   <Text
-                    fontSize="$3"
-                    fontWeight={isCurrent ? '700' : '500'}
                     color={isCurrent ? '$color12' : '$color11'}
                   >
                     {step.label}
                   </Text>
-                  <Text fontSize="$2" color={statusColor}>
+                  <Text color={statusColor}>
                     {statusLabel}
                   </Text>
                 </Stack>
@@ -126,15 +124,15 @@ export function AssessmentProgress({
   }
 
   return (
-    <Stack gap="$3" width="100%">
+    <Stack gap={12} width="100%">
       {/* Progress Bar */}
       {completionScore !== undefined && (
-        <Stack gap="$2">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontSize="$3" color="$color11">
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Text color="gray">
               Progress
             </Text>
-            <Text fontSize="$4" fontWeight="600" color="$blue10">
+            <Text color="$blue10">
               {completionScore}%
             </Text>
           </Row>
@@ -156,7 +154,7 @@ export function AssessmentProgress({
       )}
 
       {/* Step Indicators */}
-      <Row gap="$2" flexWrap="wrap" justifyContent="center" $md={{ gap: '$6' }}>
+      <Row gap={8} flexWrap="wrap" justify="center">
         {sortedSteps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id)
           const isCurrent = step.id === currentStep
@@ -166,8 +164,8 @@ export function AssessmentProgress({
           return (
             <Row
               key={step.id}
-              alignItems="center"
-              gap="$2"
+              align="center"
+              gap={8}
               opacity={isPast || isCurrent || isCompleted ? 1 : 0.5}
             >
               <Circle
@@ -175,20 +173,18 @@ export function AssessmentProgress({
                 backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
                 borderWidth={2}
                 borderColor={isCurrent ? '$blue11' : 'transparent'}
-                alignItems="center"
-                justifyContent="center"
+                align="center"
+                justify="center"
               >
                 {isCompleted ? (
                   <Check size={16} color="white" />
                 ) : (
-                  <Text fontSize="$2" fontWeight="600" color={isCurrent ? 'white' : '$color11'}>
+                  <Text color={isCurrent ? 'white' : '$color11'}>
                     {index + 1}
                   </Text>
                 )}
               </Circle>
               <Text
-                fontSize="$2"
-                fontWeight={isCurrent ? '600' : '400'}
                 color={isCurrent ? '$color12' : '$color11'}
               >
                 {step.label}

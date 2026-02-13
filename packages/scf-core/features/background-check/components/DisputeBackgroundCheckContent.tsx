@@ -72,20 +72,20 @@ export function DisputeBackgroundCheckContent({
     check?.package?.display_name ?? check?.package?.slug ?? 'Background check package'
 
   return (
-    <Stack gap="$4">
-      <Row justifyContent="space-between" alignItems="center">
-        <Stack gap="$1">
-          <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text>
             Dispute background check
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Flag inaccurate information so our compliance team can investigate.
           </Text>
         </Stack>
         {(renderHeaderAction?.({ isSubmitting, isUploading }) as ReactNode) ?? (
           <Button
-            size="$2"
-            variant="outlined"
+            size={8}
+            variant="outline"
             disabled={isSubmitting || isUploading}
             onPress={onClose}
           >
@@ -96,26 +96,26 @@ export function DisputeBackgroundCheckContent({
 
       {check ? (
         <>
-          <Stack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
-            <Row gap="$2" alignItems="center">
+          <Stack gap={8} backgroundColor="$color3" padding={12} borderRadius={16}>
+            <Row gap={8} align="center">
               <AlertTriangle size={18} color="$yellow10" />
-              <Text fontSize="$3" fontWeight="600" color="$color12">
+              <Text color="gray">
                 {statusMeta?.label ?? 'Background check'}
               </Text>
             </Row>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Package:{' '}
-              <Text fontWeight="600" color="$color12">
+              <Text color="gray">
                 {summaryPackage}
               </Text>
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Completed: {formatDate(check.completed_at)}
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Expires: {formatDate(check.expires_at)}
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Disputes should focus on factual inaccuracies, missing context, or mismatched records.
             </Text>
           </Stack>
@@ -143,8 +143,8 @@ export function DisputeBackgroundCheckContent({
           />
         </>
       ) : (
-        <Stack gap="$3" alignItems="center" paddingVertical="$6">
-          <Text fontSize="$3" color="$color10">
+        <Stack gap={12} align="center" paddingVertical={24}>
+          <Text color="gray">
             Select a background check to review dispute information.
           </Text>
         </Stack>

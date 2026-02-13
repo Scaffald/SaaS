@@ -21,12 +21,12 @@ export function ConnectionsManagementPage() {
   )
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$1">
-        <Text fontSize="$7" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={4}>
+        <Text>
           Connections
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Manage your professional connections, followers, and pending requests.
         </Text>
       </Stack>
@@ -42,22 +42,22 @@ export function ConnectionsManagementPage() {
         />
 
         <Tabs.Content value="connections">
-          <Stack paddingTop="$4">
+          <Stack paddingTop={16}>
             <ConnectionsList />
           </Stack>
         </Tabs.Content>
         <Tabs.Content value="followers">
-          <Stack paddingTop="$4">
+          <Stack paddingTop={16}>
             <FollowersList />
           </Stack>
         </Tabs.Content>
         <Tabs.Content value="following">
-          <Stack paddingTop="$4">
+          <Stack paddingTop={16}>
             <FollowingList />
           </Stack>
         </Tabs.Content>
         <Tabs.Content value="pending">
-          <Stack paddingTop="$4">
+          <Stack paddingTop={16}>
             <PendingRequestsList />
           </Stack>
         </Tabs.Content>

@@ -173,11 +173,11 @@ export function EducationEntryEditModal({
         open={open}
         onOpenChange={handleClose}
         title="Edit Education Entry"
-        size="large"
+        size="lg"
       >
-        <Stack gap="$4" padding="$4">
+        <Stack gap={16} padding={16}>
           {/* Institution */}
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>Institution *</Text>
             <Controller
               name="university_id"
@@ -188,7 +188,7 @@ export function EducationEntryEditModal({
                   control={control}
                   render={({ field: nameField }) => {
                     return (
-                      <Stack gap="$2">
+                      <Stack gap={8}>
                         {!manualEntryMode ? (
                           <>
                             <UniversityAutocomplete
@@ -210,8 +210,8 @@ export function EducationEntryEditModal({
                               }
                             />
                             <Button
-                              size="$2"
-                              variant="outlined"
+                              size={8}
+                              variant="outline"
                               onPress={() => {
                                 setManualEntryMode(true)
                                 universityField.onChange(null)
@@ -233,8 +233,8 @@ export function EducationEntryEditModal({
                             />
                             <FieldError message={errors.institution_name?.message} />
                             <Button
-                              size="$2"
-                              variant="outlined"
+                              size={8}
+                              variant="outline"
                               onPress={() => {
                                 setManualEntryMode(false)
                                 nameField.onChange('')
@@ -254,7 +254,7 @@ export function EducationEntryEditModal({
           </Stack>
 
           {/* Degree Type */}
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>Degree Type</Text>
             <Controller
               name="degree_type"
@@ -304,7 +304,7 @@ export function EducationEntryEditModal({
           </Stack>
 
           {/* Field of Study */}
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>Field of Study</Text>
             <Controller
               name="field_of_study"
@@ -320,7 +320,7 @@ export function EducationEntryEditModal({
           </Stack>
 
           {/* GPA */}
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>GPA (Optional)</Text>
             <Controller
               name="gpa"
@@ -396,9 +396,9 @@ export function EducationEntryEditModal({
           </Stack>
 
           {/* Start and End Dates */}
-          <Stack gap="$2">
-            <Row gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
-              <Stack gap="$2" flex={1}>
+          <Stack gap={8}>
+            <Row gap={12}}>
+              <Stack gap={8} flex={1}>
                 <Controller
                   name="start_date"
                   control={control}
@@ -415,7 +415,7 @@ export function EducationEntryEditModal({
                   )}
                 />
               </Stack>
-              <Stack gap="$2" flex={1}>
+              <Stack gap={8} flex={1}>
                 <Controller
                   name="end_date"
                   control={control}
@@ -453,7 +453,7 @@ export function EducationEntryEditModal({
                 }
 
                 return (
-                  <Row gap="$2" alignItems="center">
+                  <Row gap={8} align="center">
                     <CustomCheckbox
                       checked={isCurrent}
                       onCheckedChange={handleChange}
@@ -487,7 +487,7 @@ export function EducationEntryEditModal({
           </Stack>
 
           {/* Description */}
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Text>Description</Text>
             <Controller
               name="description"
@@ -508,19 +508,15 @@ export function EducationEntryEditModal({
 
           {/* Action Buttons */}
           <Row
-            justifyContent="flex-end"
-            gap="$3"
-            paddingTop="$4"
-            $sm={{ flexDirection: 'column' }}
-            $md={{ flexDirection: 'row' }}
+            justify="flex-end"
+            gap={12}
+            paddingTop={16}}}
           >
             <Button
-              variant="outlined"
+              variant="outline"
               disabled={!isDirty}
               onPress={() => setShowCancelDialog(true)}
-              opacity={!isDirty ? 0.5 : 1}
-              $sm={{ height: 44, width: '100%' }}
-              $md={{ height: undefined, width: undefined }}
+              opacity={!isDirty ? 0.5 : 1}}}
             >
               Cancel
             </Button>
@@ -528,13 +524,11 @@ export function EducationEntryEditModal({
               variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              $sm={{ height: 44, width: '100%' }}
-              $md={{ height: undefined, width: undefined }}
+              opacity={!isDirty || isLoading ? 0.5 : 1}}}
             >
               {isLoading ? (
-                <Row gap="$2" alignItems="center">
-                  <Spinner size="small" />
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
                   <Text>Saving...</Text>
                 </Row>
               ) : (

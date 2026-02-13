@@ -229,8 +229,8 @@ export function VanityUrlSection() {
   if (isLoadingProfile) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" padding="$4">
-          <Spinner size="small" />
+        <Stack align="center" padding={16}>
+          <Spinner size="sm" />
         </Stack>
       </DashboardWidget>
     )
@@ -238,41 +238,40 @@ export function VanityUrlSection() {
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
-        <Stack gap="$2">
+      <Stack gap={16}>
+        <Stack gap={8}>
           <H4>Vanity URL</H4>
-          <Text color="$color10" fontSize="$3">
+          <Text color="gray">
             Customize your public profile URL to make it easier to share
           </Text>
         </Stack>
 
         {/* Current URL Display */}
         {vanityUrl && !isEditing && (
-          <Stack gap="$2">
-            <Text fontWeight="600" fontSize="$3">
+          <Stack gap={8}>
+            <Text>
               Your Profile URL
             </Text>
             <Row
-              gap="$2"
-              alignItems="center"
-              padding="$3"
+              gap={8}
+              align="center"
+              padding={12}
               backgroundColor="$color3"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$color6"
             >
               <Text
                 flex={1}
                 style={{ fontFamily: 'monospace' }}
-                fontSize="$3"
-                color="$color11"
+                color="gray"
                 numberOfLines={1}
               >
                 {typeof window !== 'undefined' && window.location
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}
               </Text>
-              <Button size="$3" icon={Copy} onPress={handleCopyUrl} variant="outlined">
+              <Button size={12} icon={Copy} onPress={handleCopyUrl} variant="outline">
                 Copy
               </Button>
             </Row>
@@ -280,14 +279,14 @@ export function VanityUrlSection() {
         )}
 
         {/* Vanity URL Input */}
-        <Stack gap="$2">
-          <Row alignItems="center" justifyContent="space-between">
-            <Text fontWeight="600" fontSize="$3">
+        <Stack gap={8}>
+          <Row align="center" justify="space-between">
+            <Text>
               Profile Vanity URL
             </Text>
             {!isEditing && (
               <Button
-                size="$3"
+                size={12}
                 onPress={() => setIsEditing(true)}
                 disabled={!!daysRemaining && daysRemaining > 0}
               >
@@ -297,9 +296,9 @@ export function VanityUrlSection() {
           </Row>
 
           {isEditing ? (
-            <Stack gap="$2">
-              <Row gap="$2" alignItems="center">
-                <Text fontSize="$2" color="$color10">
+            <Stack gap={8}>
+              <Row gap={8} align="center">
+                <Text color="gray">
                   /u/
                 </Text>
                 <Input
@@ -317,42 +316,42 @@ export function VanityUrlSection() {
                         : '$borderColor'
                   }
                 />
-                {isCheckingAvailability && <Spinner size="small" />}
+                {isCheckingAvailability && <Spinner size="sm" />}
               </Row>
 
               {/* Availability Status */}
               {slugInput && (
-                <Stack gap="$1">
+                <Stack gap={4}>
                   {availabilityStatus.checking ? (
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       Checking availability...
                     </Text>
                   ) : availabilityStatus.available === true ? (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <Check size={16} color="$green10" />
-                      <Text fontSize="$2" color="$green10">
+                      <Text color="$green10">
                         Available
                       </Text>
                     </Row>
                   ) : availabilityStatus.available === false ? (
-                    <Stack gap="$1">
-                      <Row gap="$2" alignItems="center">
+                    <Stack gap={4}>
+                      <Row gap={8} align="center">
                         <AlertCircle size={16} color="$red10" />
-                        <Text fontSize="$2" color="$red10">
+                        <Text color="$red10">
                           Not available
                         </Text>
                       </Row>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
-                          <Stack gap="$1" marginLeft="$4">
-                            <Text fontSize="$2" color="$color10">
+                          <Stack gap={4} marginLeft={16}>
+                            <Text color="gray">
                               Suggestions:
                             </Text>
                             {availabilityStatus.suggestions.map((suggestion) => (
                               <Button
                                 key={suggestion}
-                                size="$2"
-                                variant="outlined"
+                                size={8}
+                                variant="outline"
                                 onPress={() => {
                                   setSlugInput(suggestion)
                                 }}
@@ -364,11 +363,11 @@ export function VanityUrlSection() {
                         )}
                     </Stack>
                   ) : !isSlugValid(slugInput.toLowerCase().trim()) ? (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       Invalid format. Use 3-50 characters, alphanumeric and dashes only.
                     </Text>
                   ) : isReservedSlug(slugInput.toLowerCase().trim()) ? (
-                    <Text fontSize="$2" color="$red10">
+                    <Text color="$red10">
                       This vanity URL is reserved and cannot be used.
                     </Text>
                   ) : null}
@@ -376,13 +375,13 @@ export function VanityUrlSection() {
               )}
 
               {/* Action Buttons */}
-              <Row gap="$2" justifyContent="flex-end">
-                <Button size="$3" variant="outlined" onPress={handleCancel} disabled={isUpdating}>
+              <Row gap={8} justify="flex-end">
+                <Button size={12} variant="outline" onPress={handleCancel} disabled={isUpdating}>
                   Cancel
                 </Button>
                 <Button
                   variant="primary"
-                  size="$3"
+                  size={12}
                   onPress={handleSave}
                   disabled={
                     isUpdating ||
@@ -391,21 +390,21 @@ export function VanityUrlSection() {
                     availabilityStatus.available !== true
                   }
                 >
-                  {isUpdating ? <Spinner size="small" /> : 'Save'}
+                  {isUpdating ? <Spinner size="sm" /> : 'Save'}
                 </Button>
               </Row>
             </Stack>
           ) : (
             <Row
-              gap="$2"
-              alignItems="center"
-              padding="$3"
+              gap={8}
+              align="center"
+              padding={12}
               backgroundColor="$color3"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text flex={1} style={{ fontFamily: 'monospace' }} fontSize="$3" color="$color11">
+              <Text flex={1} style={{ fontFamily: 'monospace' }} color="gray">
                 {currentSlug || 'No vanity URL set'}
               </Text>
             </Row>
@@ -415,20 +414,20 @@ export function VanityUrlSection() {
         {/* Cooldown Information */}
         {daysRemaining && daysRemaining > 0 && nextChangeAllowed && (
           <Row
-            gap="$2"
-            alignItems="center"
-            padding="$3"
+            gap={8}
+            align="center"
+            padding={12}
             backgroundColor="$yellow3"
-            borderRadius="$4"
+            borderRadius={16}
             borderWidth={1}
             borderColor="$yellow7"
           >
             <Clock size={16} color="$orange10" />
-            <Stack flex={1} gap="$1">
-              <Text fontSize="$2" fontWeight="600" color="$yellow11">
+            <Stack flex={1} gap={4}>
+              <Text color="$yellow11">
                 Vanity URL Change Cooldown
               </Text>
-              <Text fontSize="$2" color="$yellow10">
+              <Text color="$yellow10">
                 You can change your vanity URL again in {daysRemaining} day
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
                 )
@@ -439,11 +438,11 @@ export function VanityUrlSection() {
 
         {/* Slug History */}
         {slugHistory?.history && slugHistory.history.length > 0 && (
-          <Stack gap="$2">
-            <Text fontWeight="600" fontSize="$3">
+          <Stack gap={8}>
+            <Text>
               Change History
             </Text>
-            <Stack gap="$1">
+            <Stack gap={4}>
               {(
                 slugHistory.history as Array<{
                   changed_at: string
@@ -455,15 +454,15 @@ export function VanityUrlSection() {
                 .map((entry) => (
                   <Row
                     key={`${entry.changed_at}-${entry.new_slug}`}
-                    gap="$2"
-                    padding="$2"
+                    gap={8}
+                    padding={8}
                     backgroundColor="$color3"
-                    borderRadius="$2"
+                    borderRadius={8}
                   >
-                    <Text fontSize="$2" color="$color10" flex={1}>
+                    <Text color="gray" flex={1}>
                       {entry.old_slug || '(initial)'} → {entry.new_slug}
                     </Text>
-                    <Text fontSize="$2" color="$color8">
+                    <Text color="gray">
                       {new Date(entry.changed_at).toLocaleDateString()}
                     </Text>
                   </Row>

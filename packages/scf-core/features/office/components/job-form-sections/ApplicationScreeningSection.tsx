@@ -65,14 +65,14 @@ export function ApplicationScreeningSection({
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {/* Current Location */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Current location</Label>
         </Stack>
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        <Row gap={8} align="center">
+          <Text color="gray">
             {localState.require_current_location ? '1' : '0'}
           </Text>
           <ToggleSwitch
@@ -84,12 +84,12 @@ export function ApplicationScreeningSection({
       </Row>
 
       {/* Willing to Relocate */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Willing to relocate</Label>
         </Stack>
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        <Row gap={8} align="center">
+          <Text color="gray">
             {localState.require_relocation_willingness ? '1' : '0'}
           </Text>
           <ToggleSwitch
@@ -101,13 +101,13 @@ export function ApplicationScreeningSection({
       </Row>
 
       {/* Minimum Years of Experience */}
-      <Stack gap="$2">
-        <Row gap="$3" alignItems="center" justifyContent="space-between">
-          <Stack gap="$1" flex={1}>
+      <Stack gap={8}>
+        <Row gap={12} align="center" justify="space-between">
+          <Stack gap={4} flex={1}>
             <Label>Minimum years of experience</Label>
           </Stack>
-          <Row gap="$2" alignItems="center">
-            <Text fontSize="$2" color="$color10">
+          <Row gap={8} align="center">
+            <Text color="gray">
               {localState.minimum_years_experience_enabled ? '1' : '0'}
             </Text>
             <ToggleSwitch
@@ -135,12 +135,12 @@ export function ApplicationScreeningSection({
       </Stack>
 
       {/* Work Authorization */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Authorized to work in US</Label>
         </Stack>
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        <Row gap={8} align="center">
+          <Text color="gray">
             {localState.require_work_authorization ? '1' : '0'}
           </Text>
           <ToggleSwitch
@@ -152,12 +152,12 @@ export function ApplicationScreeningSection({
       </Row>
 
       {/* Earliest Start Date */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Earliest start date</Label>
         </Stack>
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        <Row gap={8} align="center">
+          <Text color="gray">
             {localState.require_earliest_start_date ? '1' : '0'}
           </Text>
           <ToggleSwitch

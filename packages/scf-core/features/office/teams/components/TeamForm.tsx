@@ -271,12 +271,12 @@ export function TeamForm({
   }))
 
   const renderContent = () => (
-    <Stack gap="$4" width="100%" maxWidth={640} alignSelf="center">
+    <Stack gap={16} width="100%" maxWidth={640} alignSelf="center">
       <Controller
         name="name"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label htmlFor="team-name">Name *</Label>
             <Input
               id="team-name"
@@ -287,7 +287,7 @@ export function TeamForm({
               borderColor={errors.name ? '$red8' : '$borderColor'}
             />
             {errors.name && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.name.message}
               </Text>
             )}
@@ -299,7 +299,7 @@ export function TeamForm({
         name="slug"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label htmlFor="team-slug">Vanity URL *</Label>
             <Input
               id="team-slug"
@@ -309,11 +309,11 @@ export function TeamForm({
               placeholder="field-ops-team"
               borderColor={errors.slug ? '$red8' : '$borderColor'}
             />
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               Lowercase, URL-friendly username for the team
             </Text>
             {errors.slug && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.slug.message}
               </Text>
             )}
@@ -325,7 +325,7 @@ export function TeamForm({
         name="purpose"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label htmlFor="team-purpose">Purpose</Label>
             <Input
               id="team-purpose"
@@ -335,7 +335,7 @@ export function TeamForm({
               placeholder="e.g. Hiring for Southeast operations"
             />
             {errors.purpose && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.purpose.message}
               </Text>
             )}
@@ -347,7 +347,7 @@ export function TeamForm({
         name="visibility"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label>Visibility</Label>
             <ResponsiveSelect
               value={field.value}
@@ -361,7 +361,7 @@ export function TeamForm({
               }))}
             />
             {errors.visibility && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.visibility.message}
               </Text>
             )}
@@ -373,7 +373,7 @@ export function TeamForm({
         name="invitationPolicy"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label>Invitation Policy</Label>
             <ResponsiveSelect
               value={field.value}
@@ -387,7 +387,7 @@ export function TeamForm({
               }))}
             />
             {errors.invitationPolicy && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.invitationPolicy.message}
               </Text>
             )}
@@ -399,7 +399,7 @@ export function TeamForm({
         name="description"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label htmlFor="team-description">Description</Label>
             <TextArea
               id="team-description"
@@ -410,7 +410,7 @@ export function TeamForm({
               rows={4}
             />
             {errors.description && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.description.message as string}
               </Text>
             )}
@@ -422,7 +422,7 @@ export function TeamForm({
         name="defaultRoleId"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label>Default Role</Label>
             <ResponsiveSelect
               value={field.value ?? ''}
@@ -442,7 +442,7 @@ export function TeamForm({
               }))}
             />
             {errors.defaultRoleId && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.defaultRoleId.message as string}
               </Text>
             )}
@@ -450,10 +450,10 @@ export function TeamForm({
         )}
       />
 
-      <Row gap="$2" justifyContent="flex-end">
+      <Row gap={8} justify="flex-end">
         <Button
           theme="gray"
-          variant="outlined"
+          variant="outline"
           onPress={onCancel ?? (() => router.back())}
           disabled={isSubmitting}
           testID="team-form-cancel"
@@ -473,9 +473,9 @@ export function TeamForm({
 
   if (isOptionsLoading && roles.length === 0) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$6">
-        <Spinner size="large" />
-        <Text marginTop="$4">Loading team options…</Text>
+      <Stack flex={1} align="center" justify="center" padding={24}>
+        <Spinner size="lg" />
+        <Text marginTop={16}>Loading team options…</Text>
       </Stack>
     )
   }
@@ -484,7 +484,7 @@ export function TeamForm({
     <ScrollView
       flex={1}
       backgroundColor="$color2"
-      padding="$5"
+      padding={20}
       showsVerticalScrollIndicator={false}
     >
       {renderContent()}

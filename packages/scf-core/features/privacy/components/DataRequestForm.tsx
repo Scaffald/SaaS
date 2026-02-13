@@ -93,15 +93,15 @@ function Checkbox({
 }) {
   return (
     <Row
-      padding="$3"
+      padding={12}
       backgroundColor={checked ? '$blue2' : '$color2'}
-      borderRadius="$2"
+      borderRadius={8}
       borderWidth={1}
       borderColor={checked ? '$blue6' : '$borderColor'}
       cursor="pointer"
       onPress={() => onChange(!checked)}
-      gap="$3"
-      alignItems="flex-start"
+      gap={12}
+      align="flex-start"
     >
       <Stack
         width={20}
@@ -110,22 +110,22 @@ function Checkbox({
         borderWidth={2}
         borderColor={checked ? '$blue10' : '$color8'}
         backgroundColor={checked ? '$blue10' : 'transparent'}
-        alignItems="center"
-        justifyContent="center"
+        align="center"
+        justify="center"
         marginTop={2}
       >
         {checked && (
-          <Text color="white" fontSize="$2" fontWeight="bold">
+          <Text color="white">
             ✓
           </Text>
         )}
       </Stack>
-      <Stack flex={1} gap="$1">
-        <Text fontSize="$3" fontWeight="500">
+      <Stack flex={1} gap={4}>
+        <Text>
           {label}
         </Text>
         {description && (
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {description}
           </Text>
         )}
@@ -150,15 +150,15 @@ function RadioButton({
 }) {
   return (
     <Row
-      padding="$3"
+      padding={12}
       backgroundColor={selected ? '$blue2' : '$color2'}
-      borderRadius="$2"
+      borderRadius={8}
       borderWidth={1}
       borderColor={selected ? '$blue6' : '$borderColor'}
       cursor="pointer"
       onPress={onSelect}
-      gap="$3"
-      alignItems="flex-start"
+      gap={12}
+      align="flex-start"
     >
       <Stack
         width={20}
@@ -166,20 +166,20 @@ function RadioButton({
         borderRadius={10}
         borderWidth={2}
         borderColor={selected ? '$blue10' : '$color8'}
-        alignItems="center"
-        justifyContent="center"
+        align="center"
+        justify="center"
         marginTop={2}
       >
         {selected && (
           <Stack width={10} height={10} borderRadius={5} backgroundColor="$blue10" />
         )}
       </Stack>
-      <Stack flex={1} gap="$1">
-        <Text fontSize="$3" fontWeight="500">
+      <Stack flex={1} gap={4}>
+        <Text>
           {label}
         </Text>
         {description && (
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {description}
           </Text>
         )}
@@ -231,30 +231,30 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
   // Submitted state
   if (step === 'submitted') {
     return (
-      <Stack padding="$4" gap="$4" alignItems="center">
+      <Stack padding={16} gap={16} align="center">
         <Stack
           width={80}
           height={80}
           borderRadius={40}
           backgroundColor="$green3"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
         >
-          <Text fontSize="$8" color="$green10">
+          <Text color="$green10">
             ✓
           </Text>
         </Stack>
-        <Text fontSize="$6" fontWeight="600" textAlign="center">
+        <Text textAlign="center">
           Request Submitted
         </Text>
-        <Text fontSize="$3" color="$color11" textAlign="center">
+        <Text color="gray" textAlign="center">
           Your {requestType === 'export' ? 'data export' : requestType === 'deletion' ? 'deletion' : 'correction'}{' '}
           request has been submitted. We will process your request within 45 days as required by CCPA.
         </Text>
-        <Text fontSize="$3" color="$color11" textAlign="center">
+        <Text color="gray" textAlign="center">
           You will receive email updates about the status of your request.
         </Text>
-        <Button onPress={onCancel} marginTop="$4">
+        <Button onPress={onCancel} marginTop={16}>
           Close
         </Button>
       </Stack>
@@ -262,24 +262,24 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
   }
 
   return (
-    <Stack gap="$4" padding="$4">
+    <Stack gap={16} padding={16}>
       {/* Header */}
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
+      <Stack gap={8}>
+        <Text>
           {typeInfo.title}
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {typeInfo.description}
         </Text>
       </Stack>
 
       {/* Step 1: Select Request Type */}
       {step === 'type' && (
-        <Stack gap="$3">
-          <Text fontSize="$4" fontWeight="500">
+        <Stack gap={12}>
+          <Text>
             Select Request Type
           </Text>
-          <Stack gap="$2">
+          <Stack gap={8}>
             <RadioButton
               selected={requestType === 'export'}
               onSelect={() => setRequestType('export')}
@@ -300,8 +300,8 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
             />
           </Stack>
 
-          <Row gap="$3" justifyContent="flex-end" marginTop="$4">
-            <Button variant="outlined" onPress={onCancel}>
+          <Row gap={12} justify="flex-end" marginTop={16}>
+            <Button variant="outline" onPress={onCancel}>
               Cancel
             </Button>
             <Button onPress={() => setStep('categories')}>
@@ -313,34 +313,33 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
 
       {/* Step 2: Select Data Categories */}
       {step === 'categories' && (
-        <Stack gap="$3">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontSize="$4" fontWeight="500">
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Text>
               {requestType === 'correction' ? 'Describe Correction' : 'Select Data Categories'}
             </Text>
             {requestType !== 'correction' && (
-              <Button size="$2" variant="outlined" onPress={selectAllCategories}>
+              <Button size={8} variant="outline" onPress={selectAllCategories}>
                 Select All
               </Button>
             )}
           </Row>
 
           {requestType === 'correction' ? (
-            <Stack gap="$2">
-              <Text fontSize="$3" color="$color11">
+            <Stack gap={8}>
+              <Text color="gray">
                 Please describe what information is incorrect and what the correct information should be:
               </Text>
               <Stack
                 as="textarea"
                 minHeight={150}
-                padding="$3"
+                padding={12}
                 backgroundColor="$color2"
-                borderRadius="$2"
+                borderRadius={8}
                 borderWidth={1}
                 borderColor="$borderColor"
               >
                 <Text
-                  fontSize="$3"
                   color={correctionDetails ? '$color12' : '$color10'}
                 >
                   {correctionDetails || 'Enter correction details here...'}
@@ -348,7 +347,7 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
               </Stack>
             </Stack>
           ) : (
-            <Stack gap="$2">
+            <Stack gap={8}>
               {DATA_CATEGORIES.map((category) => (
                 <Checkbox
                   key={category.id}
@@ -361,8 +360,8 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
             </Stack>
           )}
 
-          <Row gap="$3" justifyContent="flex-end" marginTop="$4">
-            <Button variant="outlined" onPress={() => setStep('type')}>
+          <Row gap={12} justify="flex-end" marginTop={16}>
+            <Button variant="outline" onPress={() => setStep('type')}>
               Back
             </Button>
             <Button
@@ -380,23 +379,23 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
 
       {/* Step 3: Confirmation */}
       {step === 'confirm' && (
-        <Stack gap="$3">
-          <Text fontSize="$4" fontWeight="500">
+        <Stack gap={12}>
+          <Text>
             Confirm Your Request
           </Text>
 
           {/* Summary */}
           <Stack
-            padding="$3"
+            padding={12}
             backgroundColor="$color2"
-            borderRadius="$2"
-            gap="$2"
+            borderRadius={8}
+            gap={8}
           >
-            <Text fontSize="$3" fontWeight="500">
+            <Text>
               Request Type: {REQUEST_TYPE_INFO[requestType].title}
             </Text>
             {requestType !== 'correction' && (
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Categories: {selectedCategories.length === DATA_CATEGORIES.length
                   ? 'All categories'
                   : selectedCategories
@@ -409,13 +408,13 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
           {/* Warning for deletion */}
           {typeInfo.warning && (
             <Row
-              padding="$3"
+              padding={12}
               backgroundColor="$red2"
-              borderRadius="$2"
+              borderRadius={8}
               borderWidth={1}
               borderColor="$red6"
             >
-              <Text fontSize="$3" color="$red11">
+              <Text color="$red11">
                 ⚠️ {typeInfo.warning}
               </Text>
             </Row>
@@ -423,11 +422,11 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
 
           {/* Processing time info */}
           <Row
-            padding="$3"
+            padding={12}
             backgroundColor="$blue2"
-            borderRadius="$2"
+            borderRadius={8}
           >
-            <Text fontSize="$3" color="$blue11">
+            <Text color="$blue11">
               Your request will be processed within 45 days as required by CCPA. You will receive
               email notifications about the status of your request.
             </Text>
@@ -445,8 +444,8 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
             }
           />
 
-          <Row gap="$3" justifyContent="flex-end" marginTop="$4">
-            <Button variant="outlined" onPress={() => setStep('categories')}>
+          <Row gap={12} justify="flex-end" marginTop={16}>
+            <Button variant="outline" onPress={() => setStep('categories')}>
               Back
             </Button>
             <Button
@@ -455,8 +454,8 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
               theme={requestType === 'deletion' ? 'red' : undefined}
             >
               {submitRequest.isPending ? (
-                <Row gap="$2" alignItems="center">
-                  <Spinner size="small" />
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
                   <Text>Submitting...</Text>
                 </Row>
               ) : (

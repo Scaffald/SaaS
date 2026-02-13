@@ -70,42 +70,42 @@ export function OrganizationPreviewModal({
       open={open}
       onOpenChange={onOpenChange}
       title={organization?.name || 'Organization Details'}
-      size="medium"
+      size="md"
     >
       {isLoading ? (
-        <Stack paddingVertical="$8" alignItems="center" justifyContent="center">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$4" color="$color11">
+        <Stack paddingVertical={32} align="center" justify="center">
+          <Spinner size="lg" color="$blue10" />
+          <Text marginTop={16} color="gray">
             Loading organization details...
           </Text>
         </Stack>
       ) : !organization ? (
-        <Stack paddingVertical="$8" alignItems="center">
-          <Text color="$red10" fontSize="$5" fontWeight="600">
+        <Stack paddingVertical={32} align="center">
+          <Text color="$red10">
             Organization not found
           </Text>
         </Stack>
       ) : (
         <>
           {/* Organization Header */}
-          <Stack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             <Stack
               width={80}
               height={80}
-              borderRadius="$6"
+              borderRadius={24}
               backgroundColor="$blue4"
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
             >
               <Building2 size={40} color="$blue10" />
             </Stack>
 
-            <Stack gap="$2" alignItems="center">
-              <Text fontSize="$8" fontWeight="700" color="$color12">
+            <Stack gap={8} align="center">
+              <Text color="gray">
                 {organization.name}
               </Text>
               {organization.industry_name && (
-                <Text fontSize="$5" color="$color11">
+                <Text color="gray">
                   {organization.industry_name}
                 </Text>
               )}
@@ -115,16 +115,16 @@ export function OrganizationPreviewModal({
             {jobsCount > 0 && (
               <Row
                 backgroundColor="$green2"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
+                paddingHorizontal={16}
+                paddingVertical={8}
                 borderRadius="$10"
-                gap="$2"
-                alignItems="center"
+                gap={8}
+                align="center"
                 borderWidth={1}
                 borderColor="$green5"
               >
                 <Briefcase size={16} color="$green10" />
-                <Text fontSize="$4" fontWeight="700" color="$green11">
+                <Text color="$green11">
                   {jobsCount} Open {jobsCount === 1 ? 'Position' : 'Positions'}
                 </Text>
               </Row>
@@ -134,20 +134,20 @@ export function OrganizationPreviewModal({
           <Separator />
 
           {/* Quick Info */}
-          <Stack gap="$3">
+          <Stack gap={12}>
             {formatAddress(organization.address) && (
-              <Row gap="$2" alignItems="center">
-                <MapPin size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
+              <Row gap={8} align="center">
+                <MapPin size={18} color="gray" />
+                <Text color="gray">
                   {formatAddress(organization.address)}
                 </Text>
               </Row>
             )}
 
             {organization.employee_count_range && (
-              <Row gap="$2" alignItems="center">
-                <Users size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
+              <Row gap={8} align="center">
+                <Users size={18} color="gray" />
+                <Text color="gray">
                   {organization.employee_count_range} employees
                 </Text>
               </Row>
@@ -156,11 +156,11 @@ export function OrganizationPreviewModal({
             {organization.is_verified && (
               <Row
                 backgroundColor="$blue3"
-                paddingHorizontal="$3"
-                paddingVertical="$1.5"
-                borderRadius="$3"
+                paddingHorizontal={12}
+                paddingVertical={6}
+                borderRadius={12}
               >
-                <Text fontSize="$3" fontWeight="600" color="$blue11">
+                <Text color="$blue11">
                   ✓ Verified Organization
                 </Text>
               </Row>
@@ -171,11 +171,11 @@ export function OrganizationPreviewModal({
           {organization.description && (
             <>
               <Separator />
-              <Stack gap="$2">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={8}>
+                <Text color="gray">
                   About
                 </Text>
-                <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
+                <Text color="gray" lineHeight={4} numberOfLines={4}>
                   {typeof organization.description === 'string'
                     ? organization.description
                     : extractPlainText(organization.description as JSONContent)}
@@ -188,10 +188,9 @@ export function OrganizationPreviewModal({
           {organization.website_url && (
             <>
               <Separator />
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <ExternalLink size={16} color="$blue10" />
                 <Text
-                  fontSize="$4"
                   color="$blue10"
                   textDecorationLine="underline"
                   onPress={() => {
@@ -213,12 +212,12 @@ export function OrganizationPreviewModal({
           <Separator />
 
           {/* CTA Buttons */}
-          <Stack gap="$3">
+          <Stack gap={12}>
             {typeof window !== 'undefined' && (
               <Button
-                size="$5"
+                size={20}
                 theme="blue"
-                variant="outlined"
+                variant="outline"
                 iconAfter={<ExternalLink size={18} />}
                 onPress={handleOpenInNewTab}
               >
@@ -227,7 +226,7 @@ export function OrganizationPreviewModal({
             )}
             {jobsCount > 0 ? (
               <Button
-                size="$5"
+                size={20}
                 theme="info"
                 iconAfter={<Briefcase size={18} />}
                 onPress={handleViewJobs}
@@ -235,8 +234,8 @@ export function OrganizationPreviewModal({
                 View Open Positions ({jobsCount})
               </Button>
             ) : (
-              <Stack backgroundColor="$color3" padding="$3" borderRadius="$3" alignItems="center">
-                <Text fontSize="$4" color="$color11">
+              <Stack backgroundColor="$color3" padding={12} borderRadius={12} align="center">
+                <Text color="gray">
                   No open positions at this time
                 </Text>
               </Stack>

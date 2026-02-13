@@ -198,7 +198,7 @@ export function ProfileSkillsRight() {
   const skillName = skillToRemove?.skill_details?.name || 'this skill'
 
   return (
-    <Stack gap="$4" flex={1}>
+    <Stack gap={16} flex={1}>
       <ConfirmationDialog
         open={confirmRemoveSkillId !== null}
         onOpenChange={(open) => {
@@ -215,7 +215,7 @@ export function ProfileSkillsRight() {
         isLoading={removeSkillMutation.isPending}
       />
       <DashboardWidget>
-        <Stack gap="$3">
+        <Stack gap={12}>
           <SkillCompletionProgress
             skillCount={skillCount}
             hasMinimumSkills={hasMinimumSkills}
@@ -237,7 +237,7 @@ export function ProfileSkillsRight() {
         emptyIcon={Award as ComponentType<{ size?: number; color?: string }>}
         emptyMessage="No skills added yet. Use the form on the left to add your first skill."
       >
-        <Stack gap="$3">
+        <Stack gap={12}>
           {userSkills.map(
             (skill: {
               id: string
@@ -263,23 +263,23 @@ export function ProfileSkillsRight() {
                   isNew={newSkillId === skill.id}
                 >
                   {/* Skill Name and Code */}
-                  <Stack gap="$2">
-                    <Text fontSize="$4" fontWeight="600">
+                  <Stack gap={8}>
+                    <Text>
                       {skill.skill_details?.name || 'Unknown Skill'}
                     </Text>
                     {skill.skill_details?.display_code && (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         Code: {skill.skill_details.display_code}
                       </Text>
                     )}
 
                     {/* Proficiency Level */}
-                    <Row justifyContent="space-between" alignItems="center" paddingTop="$2">
-                      <Stack gap="$1">
-                        <Text fontSize="$2" color="$color11">
+                    <Row justify="space-between" align="center" paddingTop={8}>
+                      <Stack gap={4}>
+                        <Text color="gray">
                           Proficiency
                         </Text>
-                        <Text fontWeight="600" fontSize="$3">
+                        <Text>
                           {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)
                         </Text>

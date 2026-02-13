@@ -38,38 +38,38 @@ const PackageCard = memo(function PackageCard({
       backgroundColor={isSelected ? '$blue3' : '$background'}
       borderColor={isSelected ? '$blue8' : '$borderColor'}
       borderWidth={2}
-      borderRadius="$4"
-      padding="$4"
-      gap="$3"
+      borderRadius={16}
+      padding={16}
+      gap={12}
       onPress={onSelect}
     >
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Text color="gray">
           {pkg.display_name}
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {pkg.description}
         </Text>
-        <Row gap="$3" alignItems="center">
-          <Text fontSize="$4" fontWeight="bold" color="$color12">
+        <Row gap={12} align="center">
+          <Text color="gray">
             {formatCurrency(pkg.retail_cost_cents)}
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Platform cost: {formatCurrency(pkg.platform_cost_cents)}
           </Text>
         </Row>
-        <Stack gap="$1">
-          <Text fontSize="$2" color="$color10" fontWeight="bold">
+        <Stack gap={4}>
+          <Text color="gray">
             Components
           </Text>
           {pkg.components?.length ? (
             pkg.components.map((component: BackgroundCheckPackage['components'][number]) => (
-              <Text key={component.id} fontSize="$2" color="$color11">
+              <Text key={component.id} color="gray">
                 • {component.display_name}
               </Text>
             ))
           ) : (
-            <Text fontSize="$2" color="$color9">
+            <Text color="gray">
               Component list coming soon
             </Text>
           )}
@@ -89,26 +89,26 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
   const hasSelection = Boolean(selectedPackageId)
 
   return (
-    <Stack gap="$4" flex={1}>
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
+    <Stack gap={16} flex={1}>
+      <Stack gap={8}>
+        <Text color="gray">
           Choose a background check package
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Select the screening package that best fits your role. You can review the included
           components and pricing before continuing.
         </Text>
       </Stack>
 
       <ScrollView flex={1}>
-        <Stack gap="$3" paddingBottom="$6">
+        <Stack gap={12} paddingBottom={24}>
           {isLoading && (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               Loading packages…
             </Text>
           )}
           {!isLoading && (!packages || packages.length === 0) && (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               Packages will be available soon. Please check back later.
             </Text>
           )}
@@ -123,7 +123,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
         </Stack>
       </ScrollView>
 
-      <Button size="$4" theme="blue" disabled={!hasSelection} onPress={onContinue}>
+      <Button size={16} theme="blue" disabled={!hasSelection} onPress={onContinue}>
         Continue
       </Button>
     </Stack>

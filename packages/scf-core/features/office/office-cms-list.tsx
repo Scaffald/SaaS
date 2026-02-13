@@ -55,17 +55,17 @@ export function OfficeCMSList() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <Stack flex={1} gap="$4">
-          <Row justifyContent="space-between" alignItems="center">
+        <Stack flex={1} gap={16}>
+          <Row justify="space-between" align="center">
             <H2>Welcome Slides CMS</H2>
             <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
               <Button icon={Plus}>Create Slide</Button>
             </Link>
           </Row>
 
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <Button
-              size="$3"
+              size={12}
               chromeless={!includeInactive}
               onPress={() => setIncludeInactive(!includeInactive)}
             >
@@ -74,11 +74,11 @@ export function OfficeCMSList() {
           </Row>
 
           {isLoading ? (
-            <Stack alignItems="center" justifyContent="center" flex={1}>
-              <Spinner size="large" />
+            <Stack align="center" justify="center" flex={1}>
+              <Spinner size="lg" />
             </Stack>
           ) : (
-            <Stack gap="$2">
+            <Stack gap={8}>
               {data?.slides.map(
                 (slide: {
                   id: string
@@ -91,37 +91,37 @@ export function OfficeCMSList() {
                 }) => (
                   <Row
                     key={slide.id}
-                    padding="$4"
-                    gap="$3"
+                    padding={16}
+                    gap={12}
                     backgroundColor="$background"
-                    borderRadius="$4"
+                    borderRadius={16}
                     borderWidth={1}
                     borderColor="$borderColor"
-                    alignItems="center"
+                    align="center"
                   >
-                    <Stack flex={1} gap="$2">
-                      <Row gap="$2" alignItems="center">
-                        <Text fontWeight="bold">{slide.title}</Text>
+                    <Stack flex={1} gap={8}>
+                      <Row gap={8} align="center">
+                        <Text>{slide.title}</Text>
                         {!slide.is_active && (
-                          <Text fontSize="$2" color="$red10">
+                          <Text color="$red10">
                             (Inactive)
                           </Text>
                         )}
                       </Row>
                       <Text opacity={0.7}>{slide.description}</Text>
-                      <Row gap="$2">
-                        <Text fontSize="$2" opacity={0.5}>
+                      <Row gap={8}>
+                        <Text opacity={0.5}>
                           Icon: {slide.icon_name}
                         </Text>
-                        <Text fontSize="$2" opacity={0.5}>
+                        <Text opacity={0.5}>
                           • Order: {slide.display_order}
                         </Text>
                       </Row>
                     </Stack>
 
-                    <Row gap="$2">
+                    <Row gap={8}>
                       <Button
-                        size="$3"
+                        size={12}
                         icon={slide.is_active ? EyeOff : Eye}
                         onPress={() => handleToggleActive(slide)}
                         chromeless
@@ -130,10 +130,10 @@ export function OfficeCMSList() {
                         href={ROUTES.OFFICE.CMS.WELCOME.EDIT.path.replace(':id', slide.id)}
                         asChild
                       >
-                        <Button size="$3" icon={Pencil} chromeless />
+                        <Button size={12} icon={Pencil} chromeless />
                       </Link>
                       <Button
-                        size="$3"
+                        size={12}
                         icon={Trash2}
                         onPress={() => handleDelete(slide.id, slide.title)}
                         chromeless
@@ -145,7 +145,7 @@ export function OfficeCMSList() {
               )}
 
               {(!data?.slides || data.slides.length === 0) && (
-                <Stack alignItems="center" justifyContent="center" gap="$4" paddingVertical="$8">
+                <Stack align="center" justify="center" gap={16} paddingVertical={32}>
                   <Text opacity={0.5}>No slides found</Text>
                   <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
                     <Button icon={Plus}>Create First Slide</Button>
@@ -157,8 +157,8 @@ export function OfficeCMSList() {
         </Stack>
       }
       rightContent={
-        <Stack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
+        <Stack gap={16}>
+          <Text>
             About Welcome Slides
           </Text>
           <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>

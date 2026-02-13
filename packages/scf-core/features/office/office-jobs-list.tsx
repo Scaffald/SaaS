@@ -240,16 +240,16 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const getItemName = (job: Job) => job.title
 
   const filtersAccessory = (
-    <Row gap="$3" alignItems="center" flexWrap="wrap">
-      <Row gap="$2" alignItems="center">
-        <Text fontSize="$2" color="$color11">
+    <Row gap={12} align="center" flexWrap="wrap">
+      <Row gap={8} align="center">
+        <Text color="gray">
           Status
         </Text>
         <ResponsiveSelect
           value={statusFilter ?? 'all'}
           onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
           placeholder="All statuses"
-          size="$2"
+          size={8}
           options={[
             { value: 'all', label: 'All statuses' },
             { value: 'draft', label: 'Draft' },
@@ -260,15 +260,15 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       </Row>
       {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
-        <Row gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color11">
+        <Row gap={8} align="center">
+          <Text color="gray">
             Organization
           </Text>
           <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
             placeholder="All organizations"
-            size="$2"
+            size={8}
             options={[
               { value: 'all', label: 'All organizations' },
               ...organizationsData.organizations.map(
@@ -281,15 +281,15 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           />
         </Row>
       )}
-      <Row gap="$2" alignItems="center">
-        <Text fontSize="$2" color="$color11">
+      <Row gap={8} align="center">
+        <Text color="gray">
           Team
         </Text>
         <ResponsiveSelect
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
           placeholder={teamFilterPlaceholder}
-          size="$2"
+          size={8}
           disabled={teamsLoading}
           options={[
             { value: 'all', label: 'All teams' },
@@ -300,23 +300,23 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           ]}
         />
       </Row>
-      <Row gap="$2" alignItems="center">
-        <Text fontSize="$2" color="$color11">
+      <Row gap={8} align="center">
+        <Text color="gray">
           My teams only
         </Text>
-        <Switch size="$2" checked={myTeamsOnly} onCheckedChange={setMyTeamsOnly}>
+        <Switch size={8} checked={myTeamsOnly} onCheckedChange={setMyTeamsOnly}>
           <Switch.Thumb />
         </Switch>
       </Row>
-      <Row gap="$2" alignItems="center">
-        <Text fontSize="$2" color="$color11">
+      <Row gap={8} align="center">
+        <Text color="gray">
           Sort
         </Text>
         <ResponsiveSelect
           value={sortBy}
           onValueChange={(value: string) => setSortBy(value as SortOption)}
           placeholder="Sort by"
-          size="$2"
+          size={8}
           options={[
             { value: 'created_desc', label: 'Newest first' },
             { value: 'created_asc', label: 'Oldest first' },
@@ -338,30 +338,30 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         leftContent={
           <Stack flex={1} backgroundColor="$background">
             {showHeader && (
-              <Stack padding="$4" paddingBottom="$3" gap="$3">
-                <Row justifyContent="space-between" alignItems="center">
+              <Stack padding={16} paddingBottom={12} gap={12}>
+                <Row justify="space-between" align="center">
                   <Stack>
                     <H2>Jobs</H2>
-                    <Text color="$color11" fontSize="$3">
+                    <Text color="gray">
                       {filteredAndSortedJobs.length} total jobs
                     </Text>
                   </Stack>
-                  <Row gap="$2">
-                    <Button size="$3" onPress={() => setViewMode('kanban')} variant="outlined">
+                  <Row gap={8}>
+                    <Button size={12} onPress={() => setViewMode('kanban')} variant="outline">
                       Kanban
                     </Button>
-                    <Button size="$3" onPress={() => setViewMode('list')}>
+                    <Button size={12} onPress={() => setViewMode('list')}>
                       List
                     </Button>
                     <Button
-                      size="$3"
+                      size={12}
                       onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
                     >
                       Create Job
                     </Button>
                   </Row>
                 </Row>
-                <Row gap="$2" alignItems="center" flexWrap="wrap">
+                <Row gap={8} align="center" flexWrap="wrap">
                   {filtersAccessory}
                 </Row>
               </Stack>
@@ -405,12 +405,12 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           onSearchChange: setSearch,
           searchPlaceholder: 'Search jobs...',
           rightAccessory: (
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               {filtersAccessory}
-              <Button size="$2" onPress={() => setViewMode('kanban')} variant="outlined">
+              <Button size={8} onPress={() => setViewMode('kanban')} variant="outline">
                 Kanban
               </Button>
-              <Button size="$2" onPress={() => setViewMode('list')}>
+              <Button size={8} onPress={() => setViewMode('list')}>
                 List
               </Button>
             </Row>

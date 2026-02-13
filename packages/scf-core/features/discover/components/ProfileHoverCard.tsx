@@ -94,8 +94,8 @@ export function ProfileHoverCard({
       backgroundColor="$background"
       borderColor="$color6"
       borderWidth={1}
-      borderRadius="$4"
-      padding="$3"
+      borderRadius={16}
+      padding={12}
       minWidth={240}
       maxWidth={300}
       style={{
@@ -110,16 +110,16 @@ export function ProfileHoverCard({
       onMouseLeave={onHoverCardLeave}
     >
       {isLoading ? (
-        <Stack alignItems="center" paddingVertical="$4" gap="$2">
-          <Spinner size="small" color="$blue10" />
-          <Text fontSize="$3" color="$color11">
+        <Stack align="center" paddingVertical={16} gap={8}>
+          <Spinner size="sm" color="$blue10" />
+          <Text color="gray">
             Loading...
           </Text>
         </Stack>
       ) : pinType === 'worker' && workerPreview ? (
-        <Stack gap="$2">
+        <Stack gap={8}>
           {/* Header with avatar and name */}
-          <Row gap="$3" alignItems="center">
+          <Row gap={12} align="center">
             {avatarUrl ? (
               <View
                 width={48}
@@ -140,27 +140,27 @@ export function ProfileHoverCard({
                 height={48}
                 borderRadius="$10"
                 backgroundColor="$blue4"
-                alignItems="center"
-                justifyContent="center"
+                align="center"
+                justify="center"
               >
                 <User size={24} color="$blue10" />
               </View>
             )}
-            <Stack flex={1} gap="$1">
-              <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
+            <Stack flex={1} gap={4}>
+              <Text color="gray" numberOfLines={1}>
                 {workerPreview.displayName}
               </Text>
               {workerPreview.headline && (
-                <Text fontSize="$3" color="$color11" numberOfLines={1}>
+                <Text color="gray" numberOfLines={1}>
                   {workerPreview.headline}
                 </Text>
               )}
             </Stack>
             {profileUrl ? (
               <Button
-                size="$2"
+                size={8}
                 circular
-                variant="outlined"
+                variant="outline"
                 icon={ExternalLink}
                 aria-label="View full profile in new tab"
                 onPress={handleOpenProfile}
@@ -170,9 +170,9 @@ export function ProfileHoverCard({
 
           {/* Location */}
           {workerPreview.location && (
-            <Row gap="$2" alignItems="center">
-              <MapPin size={14} color="$color10" />
-              <Text fontSize="$3" color="$color11" numberOfLines={1}>
+            <Row gap={8} align="center">
+              <MapPin size={14} color="gray" />
+              <Text color="gray" numberOfLines={1}>
                 {workerPreview.location}
               </Text>
             </Row>
@@ -180,7 +180,7 @@ export function ProfileHoverCard({
 
           {/* Top Skills */}
           {workerPreview.topSkills && workerPreview.topSkills.length > 0 && (
-            <Row gap="$1" flexWrap="wrap">
+            <Row gap={4} flexWrap="wrap">
               {workerPreview.topSkills
                 .slice(0, 3)
                 .map((skill: (typeof workerPreview.topSkills)[0]) => {
@@ -193,18 +193,18 @@ export function ProfileHoverCard({
                     <View
                       key={skillKey}
                       backgroundColor="$blue4"
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
                     >
-                      <Text fontSize="$1" color="$blue11">
+                      <Text color="$blue11">
                         {skill.taxonomy || 'Skill'}
                       </Text>
                     </View>
                   )
                 })}
               {workerPreview.topSkills.length > 3 && (
-                <Text fontSize="$1" color="$color10">
+                <Text color="gray">
                   +{workerPreview.topSkills.length - 3} more
                 </Text>
               )}
@@ -212,34 +212,34 @@ export function ProfileHoverCard({
           )}
         </Stack>
       ) : pinType === 'organization' && organization ? (
-        <Stack gap="$2">
+        <Stack gap={8}>
           {/* Header with icon and name */}
-          <Row gap="$3" alignItems="center">
+          <Row gap={12} align="center">
             <View
               width={48}
               height={48}
-              borderRadius="$6"
+              borderRadius={24}
               backgroundColor="$blue4"
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
             >
               <Building2 size={24} color="$blue10" />
             </View>
-            <Stack flex={1} gap="$1">
-              <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
+            <Stack flex={1} gap={4}>
+              <Text color="gray" numberOfLines={1}>
                 {organization.name}
               </Text>
               {organization.industry_name && (
-                <Text fontSize="$3" color="$color11" numberOfLines={1}>
+                <Text color="gray" numberOfLines={1}>
                   {organization.industry_name}
                 </Text>
               )}
             </Stack>
             {profileUrl ? (
               <Button
-                size="$2"
+                size={8}
                 circular
-                variant="outlined"
+                variant="outline"
                 icon={ExternalLink}
                 aria-label="View organization in new tab"
                 onPress={handleOpenProfile}
@@ -251,9 +251,9 @@ export function ProfileHoverCard({
           {organization.address &&
             typeof organization.address === 'object' &&
             'city' in organization.address && (
-              <Row gap="$2" alignItems="center">
-                <MapPin size={14} color="$color10" />
-                <Text fontSize="$3" color="$color11" numberOfLines={1}>
+              <Row gap={8} align="center">
+                <MapPin size={14} color="gray" />
+                <Text color="gray" numberOfLines={1}>
                   {[
                     (organization.address as { city?: string }).city,
                     (organization.address as { state?: string }).state,
@@ -265,18 +265,18 @@ export function ProfileHoverCard({
             )}
 
           {/* Key Metrics */}
-          <Row gap="$3" flexWrap="wrap">
+          <Row gap={12} flexWrap="wrap">
             {jobsCount > 0 && (
-              <Row gap="$1" alignItems="center">
+              <Row gap={4} align="center">
                 <Briefcase size={14} color="$green10" />
-                <Text fontSize="$2" color="$color11">
+                <Text color="gray">
                   {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
                 </Text>
               </Row>
             )}
             {organization.employee_count_range && (
-              <Row gap="$1" alignItems="center">
-                <Text fontSize="$2" color="$color11">
+              <Row gap={4} align="center">
+                <Text color="gray">
                   {organization.employee_count_range}
                 </Text>
               </Row>

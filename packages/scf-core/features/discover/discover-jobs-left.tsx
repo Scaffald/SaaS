@@ -187,11 +187,11 @@ export function DiscoverJobsLeft({
   // Handle soft skills assessment required state
   if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Stack flex={1} align="center" justify="center" padding={16} gap={12}>
+        <Text color="gray">
           Complete Your Assessment
         </Text>
-        <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           Complete your soft skills assessment to filter and sort jobs by match score.
         </Text>
       </Stack>
@@ -200,19 +200,19 @@ export function DiscoverJobsLeft({
 
   if (isLoading) {
     return (
-      <Stack flex={1} padding="$4">
-        <SkeletonList count={5} gap="$3" variant="job" />
+      <Stack flex={1} padding={16}>
+        <SkeletonList count={5} gap={12} variant="job" />
       </Stack>
     )
   }
 
   if (filteredJobs.length === 0) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
+        <Text color="gray">
           No jobs found
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="gray">
           {shouldUseSoftSkillsMatch
             ? 'No jobs match your soft skills filter criteria'
             : 'Try adjusting your filters or search query'}
@@ -223,8 +223,8 @@ export function DiscoverJobsLeft({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap="$3" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Stack gap={12} padding={16}>
+        <Text color="gray">
           {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
         </Text>
 

@@ -158,12 +158,12 @@ export const DrawerContent = ({
       flex={1}
       backgroundColor="$color3"
       paddingHorizontal={isCollapsed ? '$2' : '$6'}
-      paddingVertical="$5"
-      alignItems={isCollapsed ? 'center' : 'stretch'}
+      paddingVertical={20}
+      align={isCollapsed ? 'center' : 'stretch'}
     >
-      <Stack flex={1} justifyContent="space-between" gap="$5" width="100%">
+      <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
-          <Row justifyContent="center" alignItems="center" gap="$3" paddingTop="$2" width="100%">
+          <Row justify="center" align="center" gap={12} paddingTop={8} width="100%">
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
               width={isCollapsed ? 30 : 120}
@@ -183,11 +183,11 @@ export const DrawerContent = ({
         ) : null}
 
         <Stack
-          gap="$2"
+          gap={8}
           flex={1}
-          marginTop="$2"
+          marginTop={8}
           width="100%"
-          alignItems={isCollapsed ? 'center' : 'stretch'}
+          align={isCollapsed ? 'center' : 'stretch'}
         >
           {hasOfficeRole ? (
             <DrawerLink
@@ -209,19 +209,19 @@ export const DrawerContent = ({
         </Stack>
 
         <Stack
-          paddingTop="$4"
+          paddingTop={16}
           borderTopWidth={1}
           borderColor="$color5"
           width="100%"
-          alignItems={isCollapsed ? 'center' : 'stretch'}
+          align={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
-            <Stack gap="$3" alignItems="center">
+            <Stack gap={12} align="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$color11" />
+                <SettingsIcon size={footerIconSize} color="gray" />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$color11" />
+                <ThemeToggleIcon size={footerIconSize} color="gray" />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -229,9 +229,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$color11" />
+                    <PanelRightClose size={footerIconSize} color="gray" />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$color11" />
+                    <PanelLeftClose size={footerIconSize} color="gray" />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -239,16 +239,16 @@ export const DrawerContent = ({
           ) : (
             <Row
               width="100%"
-              justifyContent="space-between"
-              alignItems="center"
-              gap="$3"
-              paddingHorizontal="$3"
+              justify="space-between"
+              align="center"
+              gap={12}
+              paddingHorizontal={12}
             >
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$color11" />
+                <SettingsIcon size={footerIconSize} color="gray" />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$color11" />
+                <ThemeToggleIcon size={footerIconSize} color="gray" />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -256,9 +256,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$color11" />
+                    <PanelRightClose size={footerIconSize} color="gray" />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$color11" />
+                    <PanelLeftClose size={footerIconSize} color="gray" />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -292,10 +292,10 @@ const DrawerProfileCard = ({
       width="100%"
       borderWidth={1}
       borderColor="$color4"
-      padding="$3"
-      gap="$3"
-      alignItems="center"
-      borderRadius="$4"
+      padding={12}
+      gap={12}
+      align="center"
+      borderRadius={16}
     >
       {avatarUri ? (
         <Stack
@@ -305,8 +305,8 @@ const DrawerProfileCard = ({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ borderRadius: avatarSize / 2 }}
         >
           <Image
@@ -320,25 +320,24 @@ const DrawerProfileCard = ({
           width={avatarSize}
           height={avatarSize}
           backgroundColor="$blue10"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           borderWidth={1}
           borderColor="$borderColor"
           style={{ borderRadius: avatarSize / 2 }}
         >
-          <Text color="$color1" fontSize={16} fontWeight="700">
+          <Text color="gray">
             {fallbackInitial}
           </Text>
         </Stack>
       )}
 
-      <Stack flex={1} gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+      <Stack flex={1} gap={8}>
+        <Text color="gray">
           {displayName}
         </Text>
-        <Row gap="$4">
+        <Row gap={16}>
           <Text
-            fontSize="$2"
             color="$blue10"
             textDecorationLine="underline"
             cursor="pointer"
@@ -348,7 +347,6 @@ const DrawerProfileCard = ({
             My Profile
           </Text>
           <Text
-            fontSize="$2"
             color="$red10"
             textDecorationLine="underline"
             cursor="pointer"

@@ -60,7 +60,7 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
     return (
       <ThemeProvider>
         <Stack flex={1} align="center" justify="center">
-          <Spinner size="large" />
+          <Spinner size="lg" />
         </Stack>
       </ThemeProvider>
     )

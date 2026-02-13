@@ -124,11 +124,11 @@ export function IdVerificationAdminPage({
         header: 'Worker',
         cell: ({ row }: CellContext<VerificationItem, unknown>) => (
           <Stack>
-            <Text fontSize="$3" fontWeight="600" color="$color12">
+            <Text color="gray">
               {row.original.workerName}
             </Text>
             {row.original.workerEmail ? (
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {row.original.workerEmail}
               </Text>
             ) : null}
@@ -144,20 +144,18 @@ export function IdVerificationAdminPage({
           const meta = STATUS_META[badgeKey]
           if (!meta) {
             return (
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 {row.original.badgeStatus}
               </Text>
             )
           }
           return (
             <Text
-              fontSize="$2"
-              fontWeight="600"
               color={meta.color}
               backgroundColor={meta.backgroundColor}
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$3"
+              paddingHorizontal={8}
+              paddingVertical={4}
+              borderRadius={12}
             >
               {meta.label}
             </Text>
@@ -196,13 +194,11 @@ export function IdVerificationAdminPage({
           const meta = SOURCE_META[sourceKey]
           return (
             <Text
-              fontSize="$2"
-              fontWeight="600"
               color={meta.color}
               backgroundColor={meta.backgroundColor}
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$3"
+              paddingHorizontal={8}
+              paddingVertical={4}
+              borderRadius={12}
             >
               {meta.label}
             </Text>
@@ -233,9 +229,9 @@ export function IdVerificationAdminPage({
   }
 
   return (
-    <Stack flex={1} gap="$4">
-      <Stack paddingHorizontal="$4" gap="$3">
-        <Row gap="$3" flexWrap="wrap">
+    <Stack flex={1} gap={16}>
+      <Stack paddingHorizontal={16} gap={12}>
+        <Row gap={12} flexWrap="wrap">
           {[
             {
               label: 'Active badges',
@@ -262,22 +258,22 @@ export function IdVerificationAdminPage({
               key={item.label}
               flex={1}
               minWidth={200}
-              padding="$3"
+              padding={12}
               borderColor="$borderColor"
               borderWidth={1}
             >
-              <Text fontSize="$2" color="$color11">
+              <Text color="gray">
                 {item.label}
               </Text>
-              <Text fontSize="$6" fontWeight="700" color={item.color}>
+              <Text color={item.color}>
                 {item.value}
               </Text>
             </Card>
           ))}
         </Row>
 
-        <Stack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Badge status filter
           </Text>
           <Tabs
@@ -286,14 +282,14 @@ export function IdVerificationAdminPage({
           >
             <Tabs.List
               backgroundColor="$color2"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
               overflow="hidden"
             >
               {STATUS_TABS.map((tab) => (
                 <Tabs.Tab key={tab.value} flex={1} value={tab.value}>
-                  <Text fontSize="$3" fontWeight="600">
+                  <Text>
                     {tab.label}
                   </Text>
                 </Tabs.Tab>
@@ -302,8 +298,8 @@ export function IdVerificationAdminPage({
           </Tabs>
         </Stack>
 
-        <Stack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Organization
           </Text>
           <ResponsiveSelect
@@ -325,19 +321,19 @@ export function IdVerificationAdminPage({
             ]}
           />
           {isLoadingOrganizations ? (
-            <Row gap="$2" alignItems="center">
-              <Spinner size="small" />
-              <Text fontSize="$2" color="$color11">
+            <Row gap={8} align="center">
+              <Spinner size="sm" />
+              <Text color="gray">
                 Loading organizations…
               </Text>
             </Row>
           ) : null}
         </Stack>
 
-        <Row justifyContent="flex-end">
+        <Row justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={RefreshCcw}
             onPress={() => listQuery.refetch()}
             disabled={listQuery.isFetching}

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { ScrollView, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView } from 'react-native'
+import { Row, Stack } from '@unicornlove/beyond-ui'
 import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -34,33 +35,22 @@ export const DashboardLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
+      <Stack gap={12} paddingTop={12} paddingBottom={20}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+          <Row paddingHorizontal={8} paddingTop={12}>
             <Breadcrumb items={displayBreadcrumbs} />
           </Row>
         )}
 
         {/* Content Area - Responsive two-column or single-column layout */}
         <Row
-          gap="$3"
+          gap={12}
           flexDirection="column"
-          $md={{
-            gap: '$8',
-            padding: '$7',
-            flexDirection: 'row',
-          }}
         >
           {leftContent && (
             <Stack
               width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 3 : undefined,
-                minWidth: hasBothColumns ? 300 : undefined,
-                maxWidth: hasBothColumns ? undefined : '100%',
-              }}
             >
               {leftContent}
             </Stack>
@@ -68,12 +58,6 @@ export const DashboardLayout = ({
           {rightContent && (
             <Stack
               width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 2 : undefined,
-                minWidth: hasBothColumns ? 300 : undefined,
-                maxWidth: hasBothColumns ? undefined : '100%',
-              }}
             >
               {rightContent}
             </Stack>

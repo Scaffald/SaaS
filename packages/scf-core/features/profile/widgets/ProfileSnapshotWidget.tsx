@@ -53,9 +53,9 @@ export function ProfileSnapshotWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading profile...</Text>
+        <Stack gap={spacing.md} align="center" paddingVertical={spacing['2xl']}>
+          <Spinner size="lg" color="$blue7" />
+          <Text color="gray">Loading profile...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -64,8 +64,8 @@ export function ProfileSnapshotWidget() {
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Text color="$color11">Profile data unavailable</Text>
+        <Stack gap={spacing.md} align="center" paddingVertical={spacing['2xl']}>
+          <Text color="gray">Profile data unavailable</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -115,10 +115,10 @@ export function ProfileSnapshotWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <H4>Profile</H4>
           <Button
-            size="$2"
+            size={8}
             chromeless
             color="$blue7"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
@@ -128,8 +128,8 @@ export function ProfileSnapshotWidget() {
         </Row>
 
         {/* Avatar & Name Section */}
-        <Stack gap="$3" alignItems="center">
-          <Avatar circular size="$8">
+        <Stack gap={12} align="center">
+          <Avatar circular size={32}>
             <Avatar.Image
               source={{
                 uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
@@ -138,13 +138,13 @@ export function ProfileSnapshotWidget() {
             <Avatar.Fallback backgroundColor="$color6" />
           </Avatar>
 
-          <Stack gap="$1" alignItems="center">
-            <Text fontSize="$5" fontWeight="600">
+          <Stack gap={4} align="center">
+            <Text>
               {displayName}
             </Text>
             {generalInfo.headline && (
-              <Stack alignItems="center">
-                <Text color="$color11" fontSize="$2">
+              <Stack align="center">
+                <Text color="gray">
                   {generalInfo.headline}
                 </Text>
               </Stack>
@@ -155,13 +155,13 @@ export function ProfileSnapshotWidget() {
           {generalInfo.open_to_work && (
             <Row
               backgroundColor="$green3"
-              paddingHorizontal="$3"
-              paddingVertical="$1.5"
+              paddingHorizontal={12}
+              paddingVertical={6}
               borderRadius="$10"
               borderWidth={1}
               borderColor="$green7"
             >
-              <Text color="$green11" fontSize="$2" fontWeight="600">
+              <Text color="$green11">
                 Open to Work
               </Text>
             </Row>
@@ -170,32 +170,32 @@ export function ProfileSnapshotWidget() {
 
         {/* Current Role */}
         {currentRole && (
-          <Stack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
-            <Text fontSize="$2" color="$color10">
+          <Stack gap={4} backgroundColor="$color2" padding={12} borderRadius={12}>
+            <Text color="gray">
               Current Role
             </Text>
-            <Text fontSize="$3" fontWeight="600">
+            <Text>
               {currentRole.job_title}
             </Text>
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               {currentRole.company_name}
             </Text>
           </Stack>
         )}
 
         {/* Stats Grid */}
-        <Stack gap="$3">
-          <Text fontSize="$3" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Profile Stats
           </Text>
 
           {/* Completion Bar */}
-          <Stack gap="$2">
-            <Row justifyContent="space-between">
-              <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Row justify="space-between">
+              <Text color="gray">
                 Completion
               </Text>
-              <Text fontSize="$2" fontWeight="600">
+              <Text>
                 {completion}%
               </Text>
             </Row>
@@ -207,52 +207,52 @@ export function ProfileSnapshotWidget() {
           {/* Stats Row */}
           <Row gap={spacing.sm} flexWrap="wrap">
             <Stack
-              gap="$1"
+              gap={4}
               flex={1}
               minWidth={80}
               backgroundColor="$color2"
               padding={spacing.sm}
-              borderRadius="$3"
-              alignItems="center"
+              borderRadius={12}
+              align="center"
             >
-              <Text fontSize="$6" fontWeight="700" color="$blue8">
+              <Text color="$blue8">
                 {skills?.length || 0}
               </Text>
-              <Text fontSize="$1" color="$color11">
+              <Text color="gray">
                 Skills
               </Text>
             </Stack>
 
             <Stack
-              gap="$1"
+              gap={4}
               flex={1}
               minWidth={80}
               backgroundColor="$color2"
               padding={spacing.sm}
-              borderRadius="$3"
-              alignItems="center"
+              borderRadius={12}
+              align="center"
             >
-              <Text fontSize="$6" fontWeight="700" color="$green10">
+              <Text color="$green10">
                 {certifications?.length || 0}
               </Text>
-              <Text fontSize="$1" color="$color11">
+              <Text color="gray">
                 Certs
               </Text>
             </Stack>
 
             <Stack
-              gap="$1"
+              gap={4}
               flex={1}
               minWidth={80}
               backgroundColor="$color2"
               padding={spacing.sm}
-              borderRadius="$3"
-              alignItems="center"
+              borderRadius={12}
+              align="center"
             >
-              <Text fontSize="$6" fontWeight="700" color="$blue7">
+              <Text color="$blue7">
                 {formattedYearsOfExperience}
               </Text>
-              <Text fontSize="$1" color="$color11">
+              <Text color="gray">
                 Years
               </Text>
             </Stack>
@@ -261,20 +261,20 @@ export function ProfileSnapshotWidget() {
 
         {/* Top Skills Preview */}
         {topSkills.length > 0 && (
-          <Stack gap="$2">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$3" fontWeight="600">
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Text>
                 Top Skills
               </Text>
               <Button
-                size="$1"
+                size={4}
                 chromeless
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >
                 View All
               </Button>
             </Row>
-            <Row gap="$2" flexWrap="wrap">
+            <Row gap={8} flexWrap="wrap">
               {topSkills.map((skill: Record<string, unknown>) => {
                 const displayCode = typeof skill.displayCode === 'string' ? skill.displayCode : null
                 const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
@@ -289,18 +289,18 @@ export function ProfileSnapshotWidget() {
                   <Row
                     key={skill.id as string}
                     backgroundColor="$color3"
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1.5"
-                    borderRadius="$2"
+                    paddingHorizontal={10}
+                    paddingVertical={6}
+                    borderRadius={8}
                     borderWidth={1}
                     borderColor={skill.verified ? '$green7' : '$color6'}
                   >
                     {skill.verified && (
-                      <Text color="$green10" fontSize="$1" marginRight="$1">
+                      <Text color="$green10" marginRight={4}>
                         ✓
                       </Text>
                     )}
-                    <Text fontSize="$2">{chipLabel}</Text>
+                    <Text>{chipLabel}</Text>
                   </Row>
                 )
               })}
@@ -312,15 +312,15 @@ export function ProfileSnapshotWidget() {
         <Stack gap={spacing.xs}>
           <Button
             variant="primary"
-            size="$3"
+            size={12}
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
             width="100%"
           >
             Edit Profile
           </Button>
           {completion < 100 && (
-            <Stack alignItems="center">
-              <Text fontSize="$1" color="$color11">
+            <Stack align="center">
+              <Text color="gray">
                 Complete your profile to attract more opportunities
               </Text>
             </Stack>

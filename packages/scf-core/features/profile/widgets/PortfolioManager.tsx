@@ -397,8 +397,8 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
         <H4>Manage Portfolio</H4>
 
         {!isEditing ? (
-          <Stack gap="$3">
-            <Text fontSize="$3" color="$color11">
+          <Stack gap={12}>
+            <Text color="gray">
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
             <Button
@@ -413,17 +413,17 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             </Button>
           </Stack>
         ) : (
-          <Stack gap="$4">
-            <Row justifyContent="space-between" alignItems="center">
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
               <H4>{editingId ? 'Edit Portfolio Item' : 'Add Portfolio Item'}</H4>
-              <Button size="$2" variant="outlined" onPress={handleCancel}>
+              <Button size={8} variant="outline" onPress={handleCancel}>
                 Cancel
               </Button>
             </Row>
 
             {/* Title */}
-            <Stack gap="$2">
-              <Text fontSize="$3" fontWeight="600">
+            <Stack gap={8}>
+              <Text>
                 Title *
               </Text>
               <Input
@@ -434,8 +434,8 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             </Stack>
 
             {/* Description */}
-            <Stack gap="$2">
-              <Text fontSize="$3" fontWeight="600">
+            <Stack gap={8}>
+              <Text>
                 Description
               </Text>
               <RichTextEditor
@@ -447,8 +447,8 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             </Stack>
 
             {/* Image Upload */}
-            <Stack gap="$2">
-              <Text fontSize="$3" fontWeight="600">
+            <Stack gap={8}>
+              <Text>
                 Image
               </Text>
               <ImageUpload
@@ -461,8 +461,8 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             </Stack>
 
             {/* Save Button */}
-            <Row gap="$2" justifyContent="flex-end">
-              <Button variant="outlined" onPress={handleCancel}>
+            <Row gap={8} justify="flex-end">
+              <Button variant="outline" onPress={handleCancel}>
                 Cancel
               </Button>
               <Button
@@ -485,7 +485,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
         emptyIcon={PortfolioEmptyStateIcon}
         emptyMessage="No portfolio items yet. Add your first item to showcase your work."
       >
-        <Stack gap="$3">
+        <Stack gap={12}>
           {portfolioItems.map((item, index) => {
             const imageUrl = item.file_path
               ? getStorageUrl('portfolio', item.file_path)
@@ -497,26 +497,26 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 onRemove={deleteMutation.isPending ? undefined : () => handleDelete(item.id)}
                 removeDisabled={deleteMutation.isPending}
                 actions={
-                  <Row gap="$2">
+                  <Row gap={8}>
                     {/* Reorder buttons */}
                     <Button
-                      size="$2"
-                      variant="outlined"
+                      size={8}
+                      variant="outline"
                       icon={ArrowUp}
                       onPress={() => handleMoveUp(index)}
                       disabled={index === 0 || reorderMutation.isPending}
                     />
                     <Button
-                      size="$2"
-                      variant="outlined"
+                      size={8}
+                      variant="outline"
                       icon={ArrowDown}
                       onPress={() => handleMoveDown(index)}
                       disabled={index === portfolioItems.length - 1 || reorderMutation.isPending}
                     />
                     {/* Edit button */}
                     <Button
-                      size="$2"
-                      variant="outlined"
+                      size={8}
+                      variant="outline"
                       icon={Edit3}
                       onPress={() => handleEdit(item)}
                       disabled={isEditing}
@@ -524,22 +524,22 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   </Row>
                 }
               >
-                <Stack gap="$3">
+                <Stack gap={12}>
                   {imageUrl && (
                     <Image
                       source={{ uri: imageUrl }}
                       width="100%"
                       height={200}
                       objectFit="cover"
-                      borderRadius="$3"
+                      borderRadius={12}
                     />
                   )}
-                  <Stack gap="$2">
-                    <Text fontSize="$4" fontWeight="600">
+                  <Stack gap={8}>
+                    <Text>
                       {item.title}
                     </Text>
                     {item.description && (
-                      <Text fontSize="$3" color="$color11" numberOfLines={3}>
+                      <Text color="gray" numberOfLines={3}>
                         {getDescriptionPreview(item.description)}
                       </Text>
                     )}

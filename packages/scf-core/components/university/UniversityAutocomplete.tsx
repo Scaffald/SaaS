@@ -98,12 +98,12 @@ export function UniversityAutocomplete({
   // Custom render function for university results
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
-      <Stack gap="$1" flex={1} alignItems="flex-start">
-        <SizableText fontSize="$4" color="$color12" numberOfLines={1} fontWeight="600">
+      <Stack gap={4} flex={1} align="flex-start">
+        <SizableText color="gray" numberOfLines={1}>
           {option.raw.name}
         </SizableText>
         {option.raw.country && (
-          <SizableText fontSize="$2" color="$color11" numberOfLines={1}>
+          <SizableText color="gray" numberOfLines={1}>
             {option.raw.country}
           </SizableText>
         )}

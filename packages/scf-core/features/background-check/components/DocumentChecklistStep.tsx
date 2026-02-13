@@ -26,18 +26,18 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
       : true
 
   return (
-    <Stack gap="$4" flex={1}>
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
+    <Stack gap={16} flex={1}>
+      <Stack gap={8}>
+        <Text color="gray">
           Upload required documents
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Provide clear copies of each requested document. Depending on your package, this might
           include government ID, SSN card, or driving history.
         </Text>
       </Stack>
 
-      <Stack gap="$3" flex={1}>
+      <Stack gap={12} flex={1}>
         {requiredDocuments?.length ? (
           requiredDocuments.map((docType) => {
             const isChecked = fulfilledDocuments.has(docType)
@@ -45,23 +45,23 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
               <Card
                 key={docType}
                 bordered
-                borderRadius="$4"
-                padding="$3"
+                borderRadius={16}
+                padding={12}
                 backgroundColor={isChecked ? '$green3' : '$color2'}
               >
-                <Row alignItems="center" gap="$3">
+                <Row align="center" gap={12}>
                   <Checkbox
-                    size="$4"
+                    size={16}
                     checked={isChecked}
                     onCheckedChange={(checked) => onToggleDocument(docType, Boolean(checked))}
                   >
                     <Checkbox.Indicator />
                   </Checkbox>
-                  <Stack gap="$1" flex={1}>
-                    <Text fontSize="$4" fontWeight="bold" color="$color12">
+                  <Stack gap={4} flex={1}>
+                    <Text color="gray">
                       {docType.replace(/_/g, ' ')}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
                     </Text>
                   </Stack>
@@ -70,15 +70,15 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
             )
           })
         ) : (
-          <Card bordered borderRadius="$4" padding="$3" backgroundColor="$color2">
-            <Text fontSize="$3" color="$color11">
+          <Card bordered borderRadius={16} padding={12} backgroundColor="$color2">
+            <Text color="gray">
               No documents are required for this package.
             </Text>
           </Card>
         )}
       </Stack>
 
-      <Button size="$4" theme="blue" disabled={!allDocumentsProvided} onPress={onContinue}>
+      <Button size={16} theme="blue" disabled={!allDocumentsProvided} onPress={onContinue}>
         Continue
       </Button>
     </Stack>

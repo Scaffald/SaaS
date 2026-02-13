@@ -225,35 +225,35 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
   }, [caption, ensureReady, photoType, showOnProfile, toast, uploadPhoto, resetForm])
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <Stack
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
-        gap="$3"
+        borderRadius={16}
+        padding={16}
+        gap={12}
         backgroundColor="$color2"
       >
-        <Stack gap="$2">
-          <Text fontWeight="700" fontSize="$5">
+        <Stack gap={8}>
+          <Text>
             Work Log Photos
           </Text>
-          <Text color="$color11" fontSize="$3">
+          <Text color="gray">
             Add up to {maxPhotos} photos documenting your work. Individual files must be 2MB or
             less.
           </Text>
         </Stack>
 
-        <Stack gap="$2">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontWeight="600" fontSize="$3">
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Text>
               Storage Usage
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               {formatStorageSummary(storageUsage.usedBytes, storageUsage.limitBytes)}
             </Text>
           </Row>
-          <View height={10} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
+          <View height={10} backgroundColor="$color4" borderRadius={16} overflow="hidden">
             <View
               height="100%"
               width={`${usagePercent}%`}
@@ -267,23 +267,23 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
             borderWidth={1}
             borderColor="$orange8"
             backgroundColor="$orange2"
-            borderRadius="$4"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            gap="$2"
+            borderRadius={16}
+            paddingHorizontal={12}
+            paddingVertical={8}
+            gap={8}
           >
-            <Text fontWeight="600" color="$orange11">
+            <Text color="$orange11">
               Draft not yet saved
             </Text>
-            <Text color="$orange11" fontSize="$3">
+            <Text color="$orange11">
               Photos can be added after the work log draft is saved. Keep filling out the form and
               we&apos;ll enable uploads automatically.
             </Text>
           </Stack>
         ) : (
-          <Stack gap="$3">
-            <Stack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
+          <Stack gap={12}>
+            <Stack gap={8}>
+              <Text>
                 Photo Details
               </Text>
               <Input
@@ -301,13 +301,13 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   label: option.label,
                 }))}
               />
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <Checkbox
                   checked={showOnProfile}
                   onCheckedChange={(value) => setShowOnProfile(Boolean(value))}
-                  size="$3"
+                  size={12}
                 />
-                <Text fontSize="$3">Show on my public profile when verified</Text>
+                <Text>Show on my public profile when verified</Text>
               </Row>
             </Stack>
 
@@ -324,18 +324,18 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               onSelect={handleUploadSelection}
             >
               {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => (
-                <Stack gap="$3">
+                <Stack gap={12}>
                   <Stack
                     {...(getRootProps() as Record<string, unknown>)}
-                    padding="$4"
+                    padding={16}
                     backgroundColor={isDragActive ? '$blue3' : '$color1'}
-                    borderRadius="$4"
+                    borderRadius={16}
                     borderWidth={2}
                     borderColor={isDragActive ? '$blue9' : '$borderColor'}
                     borderStyle="dashed"
-                    alignItems="center"
-                    justifyContent="center"
-                    gap="$2"
+                    align="center"
+                    justify="center"
+                    gap={8}
                   >
                     {Platform.OS === 'web' ? (
                       <input
@@ -344,19 +344,19 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                       />
                     ) : null}
                     <ImagePlus size={32} color={isDragActive ? '$blue11' : '$color10'} />
-                    <Text fontWeight="600" fontSize="$3">
+                    <Text>
                       Drag and drop photos here
                     </Text>
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="gray">
                       or tap below to browse your device
                     </Text>
                   </Stack>
 
-                  <Row gap="$2">
+                  <Row gap={8}>
                     <Button
                       flex={1}
                       icon={UploadCloud}
-                      size="$3"
+                      size={12}
                       disabled={isUploading || isProcessing || isCapturing}
                       onPress={open}
                     >
@@ -366,7 +366,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                       <Button
                         flex={1}
                         icon={Camera}
-                        size="$3"
+                        size={12}
                         disabled={isUploading || isProcessing || isCapturing}
                         onPress={handleCapturePhoto}
                       >
@@ -379,11 +379,11 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
             </UploadSurface>
 
             {(isUploading || uploadProgress > 0) && (
-              <Stack gap="$2">
-                <Text fontSize="$2" color="$color11">
+              <Stack gap={8}>
+                <Text color="gray">
                   Upload progress
                 </Text>
-                <View height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
+                <View height={8} backgroundColor="$color4" borderRadius={16} overflow="hidden">
                   <View height="100%" width={`${uploadProgress}%`} backgroundColor="$blue9" />
                 </View>
               </Stack>
@@ -394,9 +394,9 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 borderWidth={1}
                 borderColor="$red8"
                 backgroundColor="$red3"
-                borderRadius="$4"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                borderRadius={16}
+                paddingHorizontal={12}
+                paddingVertical={8}
               >
                 <Text color="$red11">{uploadError}</Text>
               </Stack>
@@ -406,7 +406,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       </Stack>
 
       {isLoadingPhotos ? (
-        <Row gap="$2" alignItems="center">
+        <Row gap={8} align="center">
           <Spinner />
           <Text>Loading photos…</Text>
         </Row>

@@ -60,14 +60,14 @@ export function ProfileSkillsLeft() {
   if (isLoadingIndustries) {
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Stack gap="$4">
+        <Stack gap={16}>
           <DashboardWidget>
-            <Stack gap="$4" padding="$4">
+            <Stack gap={16} padding={16}>
               <SkeletonForm fields={4} />
             </Stack>
           </DashboardWidget>
           <DashboardWidget>
-            <Stack gap="$4" padding="$4">
+            <Stack gap={16} padding={16}>
               <SkeletonForm fields={6} />
             </Stack>
           </DashboardWidget>
@@ -78,11 +78,11 @@ export function ProfileSkillsLeft() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <Stack gap="$4">
+      <Stack gap={16}>
         <DashboardWidget>
-          <Stack gap="$4">
+          <Stack gap={16}>
             {/* Header with Save Status Indicator */}
-            <Row justifyContent="space-between" alignItems="center" marginBottom="$2">
+            <Row justify="space-between" align="center" marginBottom={8}>
               <Stack flex={1} />
               <SaveStatusIndicator
                 status={saveStatus}
@@ -92,7 +92,7 @@ export function ProfileSkillsLeft() {
             </Row>
 
             {/* Industry Selector */}
-            <Stack gap="$2">
+            <Stack gap={8}>
               <ResponsiveSelect
                 value={selectedIndustryId || ''}
                 onValueChange={handleIndustryChange}
@@ -103,7 +103,7 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text fontSize="$2" color="$color11">
+              <Text color="gray">
                 Select your industry to search for relevant skills
               </Text>
             </Stack>
@@ -113,13 +113,13 @@ export function ProfileSkillsLeft() {
             {/* Inline Skill Search */}
             {!selectedIndustryId ? (
               <Stack
-                padding="$4"
-                alignItems="center"
-                gap="$2"
+                padding={16}
+                align="center"
+                gap={8}
                 backgroundColor="$color3"
-                borderRadius="$4"
+                borderRadius={16}
               >
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text color="gray" textAlign="center">
                   Please select an industry above to search for skills
                 </Text>
               </Stack>
@@ -139,17 +139,17 @@ export function ProfileSkillsLeft() {
             <Separator />
 
             {/* Save Button */}
-            <Row justifyContent="flex-end" paddingTop="$2">
+            <Row justify="flex-end" paddingTop={8}>
               <Button
-                size="$4"
+                size={16}
                 themeInverse
                 onPress={handleForceSave}
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
                 icon={saveButtonState === 'saved' ? Check : undefined}
               >
                 {saveButtonState === 'saving' ? (
-                  <Row gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" />
                     <Text>Saving...</Text>
                   </Row>
                 ) : saveButtonState === 'saved' ? (

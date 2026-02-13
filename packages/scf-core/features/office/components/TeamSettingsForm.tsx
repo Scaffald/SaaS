@@ -212,17 +212,17 @@ export function TeamSettingsForm({
 
   return (
     <Card
-      padding="$4"
+      padding={16}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$4"
+      gap={16}
       backgroundColor="$color2"
     >
-      <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700">
+      <Stack gap={8}>
+        <Text>
           Team settings
         </Text>
-        <Text color="$color11">
+        <Text color="gray">
           Configure defaults and collaboration preferences for this team. Changes are saved
           automatically.
         </Text>
@@ -232,12 +232,12 @@ export function TeamSettingsForm({
 
       <Separator />
 
-      <Stack gap="$4" opacity={canEdit ? 1 : 0.6}>
-        <Stack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
+      <Stack gap={16} opacity={canEdit ? 1 : 0.6}>
+        <Stack gap={8}>
+          <Text>
             Default role for new members
           </Text>
-          <Text color="$color11">
+          <Text color="gray">
             Select which role is assigned when a member is added without specifying a role.
           </Text>
           <Controller
@@ -262,8 +262,8 @@ export function TeamSettingsForm({
           />
         </Stack>
 
-        <Stack gap="$3">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Notification preferences
           </Text>
           <SettingsToggle
@@ -296,8 +296,8 @@ export function TeamSettingsForm({
           />
         </Stack>
 
-        <Stack gap="$3">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Assignment rules
           </Text>
           <SettingsToggle
@@ -319,16 +319,16 @@ export function TeamSettingsForm({
 
       <Separator />
 
-      <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-        <Row gap="$2" alignItems="center">
-          {updateMutation.isPending ? <Spinner size="small" /> : null}
-          <Text fontSize="$3" color={statusColor}>
+      <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+        <Row gap={8} align="center">
+          {updateMutation.isPending ? <Spinner size="sm" /> : null}
+          <Text color={statusColor}>
             {statusLabel}
           </Text>
         </Row>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           onPress={handleReset}
           disabled={!canEdit || updateMutation.isPending}
         >
@@ -404,13 +404,13 @@ function SettingsToggle({
           borderWidth={1}
           borderColor="$borderColor"
           backgroundColor="$color3"
-          padding="$3"
-          gap="$2"
+          padding={12}
+          gap={8}
         >
-          <Row justifyContent="space-between" alignItems="center" gap="$3">
-            <Stack flex={1} gap="$1">
-              <Text fontWeight="600">{label}</Text>
-              <Text fontSize="$3" color="$color11">
+          <Row justify="space-between" align="center" gap={12}>
+            <Stack flex={1} gap={4}>
+              <Text>{label}</Text>
+              <Text color="gray">
                 {description}
               </Text>
             </Stack>
@@ -418,7 +418,7 @@ function SettingsToggle({
               checked={field.value}
               onCheckedChange={(value) => field.onChange(Boolean(value))}
               disabled={disabled}
-              size="$3"
+              size={12}
             >
               <Switch.Thumb />
             </Switch>
@@ -432,19 +432,19 @@ function SettingsToggle({
 function PermissionBanner() {
   return (
     <Row
-      gap="$3"
-      alignItems="center"
+      gap={12}
+      align="center"
       borderWidth={1}
       borderColor="$borderColor"
       backgroundColor="$color3"
-      borderRadius="$4"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      borderRadius={16}
+      paddingHorizontal={12}
+      paddingVertical={8}
     >
-      <Info size={18} color="$color11" />
-      <Stack gap="$1">
-        <Text fontWeight="600">View only</Text>
-        <Text fontSize="$3" color="$color11">
+      <Info size={18} color="gray" />
+      <Stack gap={4}>
+        <Text>View only</Text>
+        <Text color="gray">
           You need team admin permissions to update settings for this team.
         </Text>
       </Stack>

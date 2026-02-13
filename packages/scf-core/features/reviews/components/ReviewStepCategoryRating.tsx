@@ -17,12 +17,12 @@ export function ReviewStepCategoryRating({
   onChange,
 }: ReviewStepCategoryRatingProps) {
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="gray">
           {title}
         </Text>
-        <Text fontSize="$5" color="$color11">
+        <Text color="gray">
           {description}
         </Text>
       </Stack>
@@ -31,7 +31,7 @@ export function ReviewStepCategoryRating({
       <StarRating label={`Overall ${category}`} value={rating} onChange={onChange} />
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text color="gray" fontStyle="italic">
         Rate from 1-5 stars based on your overall assessment
       </Text>
     </Stack>

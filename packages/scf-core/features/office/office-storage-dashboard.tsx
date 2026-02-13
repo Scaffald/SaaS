@@ -115,9 +115,9 @@ export function OfficeStorageDashboard() {
         cell: (info) => {
           const row = info.row.original
           return (
-            <Stack gap="$1">
-              <Text fontWeight="600">{row.displayName}</Text>
-              <Text color="$color10" fontSize="$2">
+            <Stack gap={4}>
+              <Text>{row.displayName}</Text>
+              <Text color="gray">
                 {row.username ? `@${row.username}` : row.userId.slice(0, 8)}
               </Text>
             </Stack>
@@ -146,7 +146,7 @@ export function OfficeStorageDashboard() {
           const row = info.row.original
           if (!row.storageLimitBytes) {
             return (
-              <Text color="$color10" fontSize="$2">
+              <Text color="gray">
                 No limit
               </Text>
             )
@@ -156,14 +156,14 @@ export function OfficeStorageDashboard() {
           const clamped = Math.min(Math.max(percent, 0), 200)
 
           return (
-            <Stack gap="$1">
-              <Progress value={clamped} max={100} backgroundColor="$color3" size="$1">
+            <Stack gap={4}>
+              <Progress value={clamped} max={100} backgroundColor="$color3" size={4}>
                 <Progress.Indicator
                   animation="bouncy"
                   backgroundColor={percent > 100 ? '$red10' : '$green10'}
                 />
               </Progress>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {formatPercent(percent)} of {formatBytes(row.storageLimitBytes)}
               </Text>
             </Stack>
@@ -229,19 +229,19 @@ export function OfficeStorageDashboard() {
   const isLoading = analyticsQuery.isLoading
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Row justifyContent="space-between" alignItems="center">
+    <Stack flex={1} padding={16} gap={16}>
+      <Row justify="space-between" align="center">
         <Stack>
-          <Text fontSize="$7" fontWeight="700">
+          <Text>
             Storage Analytics
           </Text>
-          <Paragraph color="$color10">
+          <Paragraph color="gray">
             Monitor how workers consume storage across work logs, portfolios, and certifications.
           </Paragraph>
         </Stack>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           icon={RefreshCw}
           onPress={() => analyticsQuery.refetch()}
           disabled={analyticsQuery.isRefetching}
@@ -251,32 +251,32 @@ export function OfficeStorageDashboard() {
       </Row>
 
       {isLoading ? (
-        <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-          <Spinner size="large" />
-          <Text color="$color10">Loading storage metrics…</Text>
+        <Stack flex={1} align="center" justify="center" gap={12}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading storage metrics…</Text>
         </Stack>
       ) : (
         <>
-          <Row gap="$3" flexWrap="wrap">
+          <Row gap={12} flexWrap="wrap">
             {summaryCards.map((card) => (
               <Card
                 key={card.label}
                 borderWidth={1}
                 borderColor="$color6"
                 backgroundColor="$color2"
-                padding="$4"
+                padding={16}
                 width="100%"
                 maxWidth={320}
               >
-                <Stack gap="$2">
-                  <Text color="$color10" fontSize="$2">
+                <Stack gap={8}>
+                  <Text color="gray">
                     {card.label}
                   </Text>
-                  <Text fontSize="$5" fontWeight="700">
+                  <Text>
                     {card.value}
                   </Text>
                   {card.subtext ? (
-                    <Text color="$color10" fontSize="$2">
+                    <Text color="gray">
                       {card.subtext}
                     </Text>
                   ) : null}
@@ -285,21 +285,21 @@ export function OfficeStorageDashboard() {
             ))}
           </Row>
 
-          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-            <Stack gap="$3">
-              <Text fontWeight="600" fontSize="$4">
+          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+            <Stack gap={12}>
+              <Text>
                 Usage breakdown
               </Text>
-              <Stack gap="$3">
+              <Stack gap={12}>
                 {breakdown.map((entry: StorageAnalytics['breakdown'][number]) => (
-                  <Stack key={entry.label} gap="$1">
-                    <Row justifyContent="space-between" alignItems="center">
-                      <Text fontWeight="600">{entry.label}</Text>
-                      <Text color="$color10" fontSize="$2">
+                  <Stack key={entry.label} gap={4}>
+                    <Row justify="space-between" align="center">
+                      <Text>{entry.label}</Text>
+                      <Text color="gray">
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
                     </Row>
-                    <Progress value={entry.percent} max={100} backgroundColor="$color3" size="$1">
+                    <Progress value={entry.percent} max={100} backgroundColor="$color3" size={4}>
                       <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
                     </Progress>
                   </Stack>
@@ -308,15 +308,15 @@ export function OfficeStorageDashboard() {
             </Stack>
           </Card>
 
-          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-            <Stack gap="$3">
-              <Row justifyContent="space-between" alignItems="center">
-                <Text fontWeight="600" fontSize="$4">
+          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+            <Stack gap={12}>
+              <Row justify="space-between" align="center">
+                <Text>
                   Top users by storage consumption
                 </Text>
                 <Button
-                  size="$2"
-                  variant="outlined"
+                  size={8}
+                  variant="outline"
                   onPress={() => analyticsQuery.refetch()}
                   disabled={analyticsQuery.isRefetching}
                 >

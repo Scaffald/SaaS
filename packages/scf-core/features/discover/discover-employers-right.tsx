@@ -26,7 +26,7 @@ export function DiscoverEmployersRight({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap="$4" padding="$4">
+      <Stack gap={16} padding={16}>
         <SearchFilterWidget
           title="Search & Filter"
           searchQuery={searchQuery}

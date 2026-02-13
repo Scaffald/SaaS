@@ -44,7 +44,7 @@ export function OfficePaymentAnalytics() {
     const defs = [
       columnHelper.accessor('transactionType', {
         header: 'Type',
-        cell: (info) => <Text fontWeight="600">{formatTransactionType(info.getValue())}</Text>,
+        cell: (info) => <Text>{formatTransactionType(info.getValue())}</Text>,
       }),
       columnHelper.accessor('amountCents', {
         header: 'Amount',
@@ -53,7 +53,7 @@ export function OfficePaymentAnalytics() {
       columnHelper.accessor('failureReason', {
         header: 'Failure Reason',
         cell: (info) => (
-          <Text color="$red11" fontSize="$3">
+          <Text color="$red11">
             {info.getValue() ?? 'Unknown error'}
           </Text>
         ),
@@ -118,19 +118,19 @@ export function OfficePaymentAnalytics() {
   const isLoading = analyticsQuery.isLoading
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Row justifyContent="space-between" alignItems="center">
+    <Stack flex={1} padding={16} gap={16}>
+      <Row justify="space-between" align="center">
         <Stack>
-          <Text fontSize="$7" fontWeight="700">
+          <Text>
             Payment Analytics
           </Text>
-          <Text color="$color10" fontSize="$3">
+          <Text color="gray">
             Monitor payment transactions, revenue, and failure rates across all services.
           </Text>
         </Stack>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           icon={RefreshCw}
           onPress={() => analyticsQuery.refetch()}
           disabled={analyticsQuery.isRefetching}
@@ -140,32 +140,32 @@ export function OfficePaymentAnalytics() {
       </Row>
 
       {isLoading ? (
-        <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-          <Spinner size="large" />
-          <Text color="$color10">Loading payment metrics…</Text>
+        <Stack flex={1} align="center" justify="center" gap={12}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading payment metrics…</Text>
         </Stack>
       ) : (
         <>
-          <Row gap="$3" flexWrap="wrap">
+          <Row gap={12} flexWrap="wrap">
             {summaryCards.map((card) => (
               <Card
                 key={card.label}
                 borderWidth={1}
                 borderColor="$color6"
                 backgroundColor="$color2"
-                padding="$4"
+                padding={16}
                 width="100%"
                 maxWidth={280}
               >
-                <Stack gap="$2">
-                  <Text color="$color10" fontSize="$2">
+                <Stack gap={8}>
+                  <Text color="gray">
                     {card.label}
                   </Text>
-                  <Text fontSize="$5" fontWeight="700">
+                  <Text>
                     {card.value}
                   </Text>
                   {card.subtext ? (
-                    <Text color="$color10" fontSize="$2">
+                    <Text color="gray">
                       {card.subtext}
                     </Text>
                   ) : null}
@@ -175,22 +175,22 @@ export function OfficePaymentAnalytics() {
           </Row>
 
           {typeBreakdown.length > 0 && (
-            <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-              <Stack gap="$3">
-                <Text fontWeight="600" fontSize="$4">
+            <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding={16}>
+              <Stack gap={12}>
+                <Text>
                   Revenue by Transaction Type
                 </Text>
-                <Stack gap="$3">
+                <Stack gap={12}>
                   {typeBreakdown.map((entry) => (
-                    <Stack key={entry.type} gap="$1">
-                      <Row justifyContent="space-between" alignItems="center">
-                        <Text fontWeight="600">{entry.label}</Text>
-                        <Text color="$color10" fontSize="$2">
+                    <Stack key={entry.type} gap={4}>
+                      <Row justify="space-between" align="center">
+                        <Text>{entry.label}</Text>
+                        <Text color="gray">
                           {formatCurrency(entry.revenue)} · {entry.count} transactions
                         </Text>
                       </Row>
-                      <Row gap="$2">
-                        <Text fontSize="$2" color="$color10">
+                      <Row gap={8}>
+                        <Text color="gray">
                           {entry.succeeded} succeeded, {entry.failed} failed
                         </Text>
                       </Row>
@@ -202,13 +202,13 @@ export function OfficePaymentAnalytics() {
           )}
 
           {failedQueue.length > 0 && (
-            <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="$4">
-              <Stack gap="$3">
-                <Row justifyContent="space-between" alignItems="center">
-                  <Text fontWeight="600" fontSize="$4" color="$red11">
+            <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding={16}>
+              <Stack gap={12}>
+                <Row justify="space-between" align="center">
+                  <Text color="$red11">
                     Failed Transactions Queue
                   </Text>
-                  <Text color="$red11" fontSize="$3">
+                  <Text color="$red11">
                     {failedQueue.length} failed
                   </Text>
                 </Row>

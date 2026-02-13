@@ -51,28 +51,28 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
 
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <Stack gap="$4" padding="$4">
-        <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="700">
+      <Stack gap={16} padding={16}>
+        <Stack gap={8}>
+          <Text>
             Verified work history
           </Text>
-          <Paragraph color="$color10">
+          <Paragraph color="gray">
             Recent verified work logs selected by this worker. Projects appear here only when the
             worker has chosen to share them publicly.
           </Paragraph>
         </Stack>
 
         {isLoading ? (
-          <Row gap="$2" alignItems="center">
-            <Spinner size="small" />
-            <Text color="$color10">Loading work history…</Text>
+          <Row gap={8} align="center">
+            <Spinner size="sm" />
+            <Text color="gray">Loading work history…</Text>
           </Row>
         ) : workLogs.length === 0 ? (
-          <Paragraph color="$color10">
+          <Paragraph color="gray">
             No verified work logs are currently visible on this profile.
           </Paragraph>
         ) : (
-          <Stack gap="$4">
+          <Stack gap={16}>
             {groupedLogs.map((group) => {
               const allDates = group.entries
                 .map((entry) => entry.logDate)
@@ -104,37 +104,37 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                   key={group.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  borderRadius="$4"
-                  paddingHorizontal="$3"
-                  paddingVertical="$3"
-                  gap="$3"
+                  borderRadius={16}
+                  paddingHorizontal={12}
+                  paddingVertical={12}
+                  gap={12}
                   backgroundColor="$color2"
                 >
-                  <Row alignItems="center" justifyContent="space-between">
-                    <Stack gap="$1">
-                      <Text fontWeight="700">{group.projectName ?? 'Project'}</Text>
+                  <Row align="center" justify="space-between">
+                    <Stack gap={4}>
+                      <Text>{group.projectName ?? 'Project'}</Text>
                       {group.organizationName ? (
-                        <Text color="$color10">{group.organizationName}</Text>
+                        <Text color="gray">{group.organizationName}</Text>
                       ) : null}
-                      <Text color="$color10">{dateLabel}</Text>
+                      <Text color="gray">{dateLabel}</Text>
                     </Stack>
                     <Row
-                      gap="$2"
-                      alignItems="center"
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$4"
+                      gap={8}
+                      align="center"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={16}
                       backgroundColor="$green4"
                     >
                       <ShieldCheck size={16} color="$green11" />
-                      <Text color="$green11" fontSize="$2" fontWeight="600">
+                      <Text color="$green11">
                         Verified by Scaffald
                       </Text>
                     </Row>
                   </Row>
 
                   {photos.length > 0 ? (
-                    <Row gap="$2" flexWrap="wrap">
+                    <Row gap={8} flexWrap="wrap">
                       {photos.map((photo) => (
                         <Card
                           key={`${group.id}-${photo.id}`}
@@ -157,11 +157,11 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                           ) : (
                             <Stack
                               flex={1}
-                              alignItems="center"
-                              justifyContent="center"
+                              align="center"
+                              justify="center"
                               backgroundColor="$color3"
                             >
-                              <Text color="$color10" fontSize="$2">
+                              <Text color="gray">
                                 Photo unavailable
                               </Text>
                             </Stack>
@@ -170,7 +170,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       ))}
                     </Row>
                   ) : (
-                    <Paragraph color="$color10">No photos were shared for this project.</Paragraph>
+                    <Paragraph color="gray">No photos were shared for this project.</Paragraph>
                   )}
                 </Stack>
               )

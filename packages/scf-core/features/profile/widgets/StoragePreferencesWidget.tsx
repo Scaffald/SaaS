@@ -90,9 +90,9 @@ export function StoragePreferencesWidget() {
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load storage preferences</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
         </Stack>
@@ -104,17 +104,17 @@ export function StoragePreferencesWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
-          <Stack gap="$1">
+        <Row justify="space-between" align="center">
+          <Stack gap={4}>
             <Heading variant="h4">Document Storage</Heading>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Choose where your documents are stored
             </Text>
           </Stack>
           {hasChanges && (
             <Button
               variant="primary"
-              size="$2"
+              size={8}
               disabled={mutation.isPending}
               onPress={handleSave}
             >
@@ -124,7 +124,7 @@ export function StoragePreferencesWidget() {
         </Row>
 
         {/* Storage Options */}
-        <Stack gap="$3">
+        <Stack gap={12}>
           {STORAGE_OPTIONS.map((option) => {
             const isSelected = selectedPreference === option.value
             const IconComponent = option.icon
@@ -132,8 +132,8 @@ export function StoragePreferencesWidget() {
             return (
               <Row
                 key={option.value}
-                padding="$4"
-                borderRadius="$4"
+                padding={16}
+                borderRadius={16}
                 borderWidth={2}
                 borderColor={isSelected ? '$blue8' : '$borderColor'}
                 backgroundColor={isSelected ? '$blue2' : '$color1'}
@@ -141,16 +141,16 @@ export function StoragePreferencesWidget() {
                 pressStyle={option.available ? { scale: 0.98 } : undefined}
                 onPress={() => option.available && handleSelect(option.value)}
                 cursor={option.available ? 'pointer' : 'not-allowed'}
-                gap="$3"
-                alignItems="center"
+                gap={12}
+                align="center"
               >
                 <Row
                   width={48}
                   height={48}
-                  borderRadius="$3"
+                  borderRadius={12}
                   backgroundColor={isSelected ? '$blue4' : '$color3'}
-                  alignItems="center"
-                  justifyContent="center"
+                  align="center"
+                  justify="center"
                 >
                   <IconComponent
                     size={24}
@@ -158,19 +158,19 @@ export function StoragePreferencesWidget() {
                   />
                 </Row>
 
-                <Stack flex={1} gap="$1">
-                  <Row alignItems="center" gap="$2">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                <Stack flex={1} gap={4}>
+                  <Row align="center" gap={8}>
+                    <Text color="gray">
                       {option.label}
                     </Text>
                     {!option.available && (
                       <Row
                         backgroundColor="$yellow4"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
+                        paddingHorizontal={8}
+                        paddingVertical={4}
+                        borderRadius={8}
                       >
-                        <Text fontSize="$1" color="$yellow11" fontWeight="600">
+                        <Text color="$yellow11">
                           COMING SOON
                         </Text>
                       </Row>
@@ -178,17 +178,17 @@ export function StoragePreferencesWidget() {
                     {isSelected && option.available && (
                       <Row
                         backgroundColor="$green4"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
+                        paddingHorizontal={8}
+                        paddingVertical={4}
+                        borderRadius={8}
                       >
-                        <Text fontSize="$1" color="$green11" fontWeight="600">
+                        <Text color="$green11">
                           ACTIVE
                         </Text>
                       </Row>
                     )}
                   </Row>
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="gray">
                     {option.description}
                   </Text>
                 </Stack>
@@ -199,12 +199,12 @@ export function StoragePreferencesWidget() {
 
         {/* Status Messages */}
         {mutation.isSuccess && (
-          <Text fontSize="$2" color="$green10">
+          <Text color="$green10">
             Storage preference saved successfully.
           </Text>
         )}
         {mutation.isError && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             Failed to save storage preference: {mutation.error.message}
           </Text>
         )}
@@ -212,12 +212,12 @@ export function StoragePreferencesWidget() {
         {/* Info Note */}
         <Stack
           backgroundColor="$blue2"
-          padding="$3"
-          borderRadius="$3"
+          padding={12}
+          borderRadius={12}
           borderWidth={1}
           borderColor="$blue6"
         >
-          <Text fontSize="$2" color="$blue11">
+          <Text color="$blue11">
             Note: Existing documents will remain in their current storage location.
             Only new documents will use your selected preference.
           </Text>

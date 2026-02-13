@@ -50,14 +50,14 @@ export function CertificationsWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load certifications</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
           <Button
             variant="primary"
-            size="$2"
+            size={8}
             onPress={() => {
               void refetch()
             }}
@@ -88,12 +88,12 @@ export function CertificationsWidget({
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <Heading variant="h4">Certifications</Heading>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
+              variant="outline"
+              size={8}
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
             >
               Edit
@@ -118,87 +118,86 @@ export function CertificationsWidget({
             }
           />
         ) : (
-          <Stack gap="$4">
+          <Stack gap={16}>
             {/* Active Certifications */}
             {activeCerts.length > 0 && (
-              <Stack gap="$3">
+              <Stack gap={12}>
                 {activeCerts
                   .slice(0, showCompact ? 3 : undefined)
                   .map((cert: UserCertification, index: number) => (
-                    <Stack key={cert.id} gap="$2">
+                    <Stack key={cert.id} gap={8}>
                       {/* Certification Name & Organization */}
-                      <Stack gap="$1">
-                        <Row gap="$2" alignItems="center">
-                          <Text fontSize="$4" fontWeight="600">
+                      <Stack gap={4}>
+                        <Row gap={8} align="center">
+                          <Text>
                             {cert.name}
                           </Text>
                           <Row
                             backgroundColor="$blue2"
-                            paddingHorizontal="$2"
-                            paddingVertical="$0.5"
-                            borderRadius="$2"
+                            paddingHorizontal={8}
+                            paddingVertical={2}
+                            borderRadius={8}
                             borderWidth={1}
                             borderColor="$blue7"
                           >
                             <CheckCircle size={12} color="$blue11" />
-                            <Text color="$blue11" fontSize="$1" fontWeight="600" marginLeft="$1">
+                            <Text color="$blue11" marginLeft={4}>
                               Active
                             </Text>
                           </Row>
                         </Row>
                         {cert.issuing_organization && (
-                          <Text fontSize="$3" color="$color11">
+                          <Text color="gray">
                             {cert.issuing_organization}
                           </Text>
                         )}
                       </Stack>
 
                       {/* Dates */}
-                      <Row gap="$4" flexWrap="wrap">
+                      <Row gap={16} flexWrap="wrap">
                         {cert.issue_date && (
-                          <Stack gap="$1">
-                            <Text fontSize="$2" color="$color10">
+                          <Stack gap={4}>
+                            <Text color="gray">
                               Issued
                             </Text>
-                            <Text fontSize="$2">{formatDate(cert.issue_date)}</Text>
+                            <Text>{formatDate(cert.issue_date)}</Text>
                           </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
-                          <Stack gap="$1">
-                            <Text fontSize="$2" color="$color10">
+                          <Stack gap={4}>
+                            <Text color="gray">
                               Expires
                             </Text>
-                            <Text fontSize="$2">{formatDate(cert.expiration_date)}</Text>
+                            <Text>{formatDate(cert.expiration_date)}</Text>
                           </Stack>
                         )}
                         {cert.does_not_expire && (
-                          <Stack gap="$1">
-                            <Text fontSize="$2" color="$color10">
+                          <Stack gap={4}>
+                            <Text color="gray">
                               Validity
                             </Text>
-                            <Text fontSize="$2">No Expiration</Text>
+                            <Text>No Expiration</Text>
                           </Stack>
                         )}
                       </Row>
 
                       {/* Credential Details */}
                       {!showCompact && (cert.credential_id || cert.credential_url) && (
-                        <Row gap="$4" flexWrap="wrap">
+                        <Row gap={16} flexWrap="wrap">
                           {cert.credential_id && (
-                            <Stack gap="$1">
-                              <Text fontSize="$2" color="$color10">
+                            <Stack gap={4}>
+                              <Text color="gray">
                                 Credential ID
                               </Text>
-                              <Text fontSize="$2">{cert.credential_id}</Text>
+                              <Text>{cert.credential_id}</Text>
                             </Stack>
                           )}
                           {cert.credential_url && (
-                            <Stack gap="$1">
-                              <Text fontSize="$2" color="$color10">
+                            <Stack gap={4}>
+                              <Text color="gray">
                                 Verification
                               </Text>
                               <Text
-                                fontSize="$2"
                                 color="$blue7"
                                 textDecorationLine="underline"
                                 cursor="pointer"
@@ -213,7 +212,7 @@ export function CertificationsWidget({
                       )}
 
                       {/* Separator */}
-                      {index < activeCerts.length - 1 && <Separator marginVertical="$2" />}
+                      {index < activeCerts.length - 1 && <Separator marginVertical={8} />}
                     </Stack>
                   ))}
               </Stack>
@@ -221,31 +220,31 @@ export function CertificationsWidget({
 
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
-              <Stack gap="$3">
-                <Text fontSize="$3" fontWeight="600" color="$color11">
+              <Stack gap={12}>
+                <Text color="gray">
                   Expired ({expiredCerts.length})
                 </Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
-                  <Stack key={cert.id} gap="$1" opacity={0.6}>
-                    <Row gap="$2" alignItems="center">
-                      <Text fontSize="$3" fontWeight="600">
+                  <Stack key={cert.id} gap={4} opacity={0.6}>
+                    <Row gap={8} align="center">
+                      <Text>
                         {cert.name}
                       </Text>
                       <Row
                         backgroundColor="$color3"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
+                        paddingHorizontal={8}
+                        paddingVertical={2}
+                        borderRadius={8}
                         borderWidth={1}
                         borderColor="$color6"
                       >
-                        <Text color="$color10" fontSize="$1" fontWeight="600">
+                        <Text color="gray">
                           Expired
                         </Text>
                       </Row>
                     </Row>
                     {cert.issuing_organization && (
-                      <Text fontSize="$2" color="$color11">
+                      <Text color="gray">
                         {cert.issuing_organization}
                       </Text>
                     )}
@@ -258,8 +257,6 @@ export function CertificationsWidget({
             {showCompact && certifications.length > 3 && (
               <Text
                 color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}

@@ -79,19 +79,19 @@ export function SoftSkillsRequirementsSection({
   if (isLoading) {
     return (
       <Stack
-        gap="$4"
-        padding="$4"
+        gap={16}
+        padding={16}
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text fontSize="$6" fontWeight="600">
+        <Text>
           Soft Skills Requirements
         </Text>
-        <Stack alignItems="center" padding="$4">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$2" color="$color11">
+        <Stack align="center" padding={16}>
+          <Spinner size="lg" color="$blue10" />
+          <Text marginTop={8} color="gray">
             Loading soft skills catalog...
           </Text>
         </Stack>
@@ -102,17 +102,17 @@ export function SoftSkillsRequirementsSection({
   if (!softSkillsData || Object.keys(softSkillsData).length === 0) {
     return (
       <Stack
-        gap="$4"
-        padding="$4"
+        gap={16}
+        padding={16}
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text fontSize="$6" fontWeight="600">
+        <Text>
           Soft Skills Requirements
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Soft skills catalog is not available.
         </Text>
       </Stack>
@@ -123,23 +123,23 @@ export function SoftSkillsRequirementsSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
+      <Stack gap={8}>
+        <Text>
           Soft Skills Requirements
         </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Select which soft skills are required for this job and set their importance level (1-5).
           Candidates will see how well their soft skills match your requirements.
         </Text>
         {selectedCount > 0 && (
-          <Text fontSize="$3" color="$blue11" fontWeight="600">
+          <Text color="$blue11">
             {selectedCount} {selectedCount === 1 ? 'skill' : 'skills'} selected
           </Text>
         )}
@@ -150,19 +150,19 @@ export function SoftSkillsRequirementsSection({
         if (!Array.isArray(skills) || skills.length === 0) return null
 
         return (
-          <Stack key={category} gap="$3">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Stack key={category} gap={12}>
+            <Text color="gray">
               {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
             </Text>
-            <Row gap="$2" flexWrap="wrap">
+            <Row gap={8} flexWrap="wrap">
               {skills.map((skill) => {
                 const isSelected = selectedSkills.has(skill.id)
                 const importance = selectedSkills.get(skill.id) ?? 3
 
                 return (
-                  <Stack key={skill.id} gap="$2">
+                  <Stack key={skill.id} gap={8}>
                     <Button
-                      size="$3"
+                      size={12}
                       variant={isSelected ? 'outlined' : 'outlined'}
                       theme={isSelected ? 'blue' : undefined}
                       onPress={() => handleSkillToggle(skill.id)}
@@ -170,16 +170,16 @@ export function SoftSkillsRequirementsSection({
                       {skill.name}
                     </Button>
                     {isSelected && (
-                      <Stack gap="$1">
-                        <Label fontSize="$2" color="$color11">
+                      <Stack gap={4}>
+                        <Label color="gray">
                           Importance:{' '}
                           {IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]}
                         </Label>
-                        <Row gap="$1">
+                        <Row gap={4}>
                           {[1, 2, 3, 4, 5].map((level) => (
                             <Button
                               key={level}
-                              size="$2"
+                              size={8}
                               variant={importance === level ? 'outlined' : 'outlined'}
                               theme={importance === level ? 'blue' : undefined}
                               onPress={() => handleImportanceChange(skill.id, level)}
@@ -201,17 +201,17 @@ export function SoftSkillsRequirementsSection({
       {/* Preview Section */}
       {selectedCount > 0 && (
         <Stack
-          gap="$2"
-          padding="$3"
+          gap={8}
+          padding={12}
           backgroundColor="$blue2"
-          borderRadius="$3"
+          borderRadius={12}
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Text fontSize="$4" fontWeight="600" color="$blue11">
+          <Text color="$blue11">
             Preview: How candidates will see this
           </Text>
-          <Stack gap="$1">
+          <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               type SoftSkill = {
                 id?: string
@@ -227,7 +227,7 @@ export function SoftSkillsRequirementsSection({
               const importanceLabel =
                 IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
-                <Text key={skillId} fontSize="$3" color="$blue11">
+                <Text key={skillId} color="$blue11">
                   • {skill.name} ({importanceLabel} - {importance}/5)
                 </Text>
               )

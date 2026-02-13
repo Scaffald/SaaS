@@ -21,9 +21,9 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text marginTop="$2" color="$color11">
+      <Stack flex={1} align="center" justify="center" padding={16}>
+        <Spinner size="lg" color="$blue10" />
+        <Text marginTop={8} color="gray">
           Loading employers...
         </Text>
       </Stack>
@@ -32,11 +32,11 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (employers.length === 0) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Stack flex={1} align="center" justify="center" padding={16} gap={8}>
+        <Text color="gray">
           No employers found
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="gray">
           Try adjusting your filters or search query
         </Text>
       </Stack>
@@ -45,8 +45,8 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap="$3" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Stack gap={12} padding={16}>
+        <Text color="gray">
           {employers.length} {employers.length === 1 ? 'Employer' : 'Employers'}
         </Text>
 

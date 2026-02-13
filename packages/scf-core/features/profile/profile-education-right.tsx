@@ -63,9 +63,9 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isPending) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading education data...</Text>
+        <Stack align="center" justify="center" padding={32} gap={16}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -75,7 +75,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack alignItems="center" justifyContent="center" padding="$8" gap="$4">
+        <Stack align="center" justify="center" padding={32} gap={16}>
           <Text color="$red10">Failed to load education data</Text>
         </Stack>
       </DashboardWidget>
@@ -86,7 +86,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
     <DashboardWidget>
       <H4>Saved Education</H4>
 
-      <Text color="$color11" fontSize="$3" marginBottom="$4">
+      <Text color="gray" marginBottom={16}>
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
@@ -96,7 +96,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
           message="No education history saved yet. Add your first education entry in the left panel."
         />
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {educationEntries.map((edu) => {
             const normalizedGpa =
               typeof edu.gpa === 'number' ? edu.gpa : edu.gpa != null ? Number(edu.gpa) : undefined
@@ -105,27 +105,27 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
             return (
               <Stack
                 key={edu.id}
-                padding="$4"
-                gap="$3"
+                padding={16}
+                gap={12}
                 backgroundColor="$background"
                 borderWidth={1}
                 borderColor="$borderColor"
-                borderRadius="$4"
+                borderRadius={16}
                 hoverStyle={{
                   borderColor: '$borderColorHover',
                   backgroundColor: '$backgroundHover',
                 }}
               >
                 {/* Institution Name with Verification Badge */}
-                <Stack gap="$1">
-                  <Row gap="$2" alignItems="center" flexWrap="wrap">
-                    <Text fontSize="$6" fontWeight="700" color="$color12">
+                <Stack gap={4}>
+                  <Row gap={8} align="center" flexWrap="wrap">
+                    <Text color="gray">
                       {edu.institution_name}
                     </Text>
                     {!edu.is_verified && (
-                      <Row gap="$1" alignItems="center">
+                      <Row gap={4} align="center">
                         <AlertCircle size={14} color="$orange10" />
-                        <Text fontSize="$1" color="$orange10">
+                        <Text color="$orange10">
                           Pending verification
                         </Text>
                       </Row>
@@ -134,8 +134,8 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                   {/* Current Education Badge */}
                   {edu.is_current && (
-                    <Row gap="$1" alignItems="center">
-                      <Text fontSize="$2" fontWeight="600" color="$blue10">
+                    <Row gap={4} align="center">
+                      <Text color="$blue10">
                         Current
                       </Text>
                     </Row>
@@ -143,21 +143,21 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                   {/* Degree Type */}
                   {edu.degree_type && (
-                    <Text fontSize="$4" fontWeight="600" color="$color11">
+                    <Text color="gray">
                       {edu.degree_type}
                     </Text>
                   )}
 
                   {/* Field of Study */}
                   {edu.field_of_study && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       {edu.field_of_study}
                     </Text>
                   )}
 
                   {/* GPA */}
                   {hasValidGpa && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       GPA: {normalizedGpa.toFixed(1)}/4.0
                     </Text>
                   )}
@@ -176,8 +176,8 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         Are you sure you want to delete this education entry? This action cannot be
                         undone.
                       </Dialog.Description>
-                      <Row gap="$3" justifyContent="flex-end" marginTop="$4">
-                        <Button variant="outlined" onPress={() => setDeleteDialogOpen(null)}>
+                      <Row gap={12} justify="flex-end" marginTop={16}>
+                        <Button variant="outline" onPress={() => setDeleteDialogOpen(null)}>
                           Cancel
                         </Button>
                         <Button
@@ -193,12 +193,12 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                 </Dialog>
 
                 {/* Details */}
-                <Stack gap="$2">
-                  <Row alignItems="center" flexWrap="wrap" gap="$3">
+                <Stack gap={8}>
+                  <Row align="center" flexWrap="wrap" gap={12}>
                     {(edu.start_date || edu.end_date || edu.is_current) && (
-                      <Row gap="$2" alignItems="center">
-                        <Calendar size={16} color="$color11" />
-                        <Text fontSize="$2" color="$color11">
+                      <Row gap={8} align="center">
+                        <Calendar size={16} color="gray" />
+                        <Text color="gray">
                           {formatDateRange(
                             edu.start_date,
                             edu.end_date,
@@ -209,10 +209,10 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                       </Row>
                     )}
 
-                    <Row gap="$2" marginLeft="auto">
+                    <Row gap={8} marginLeft="auto">
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         circular
                         icon={Pencil}
                         aria-label="Edit education entry"
@@ -230,8 +230,8 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         }}
                       />
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         circular
                         icon={Trash2}
                         aria-label="Delete education entry"
@@ -243,9 +243,9 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                   {/* Location */}
                   {edu.location && (
-                    <Row gap="$2" alignItems="center">
-                      <MapPin size={16} color="$color11" />
-                      <Text fontSize="$2" color="$color11">
+                    <Row gap={8} align="center">
+                      <MapPin size={16} color="gray" />
+                      <Text color="gray">
                         {edu.location}
                       </Text>
                     </Row>
@@ -253,11 +253,11 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                   {/* Description */}
                   {edu.description && (
-                    <Stack gap="$1">
-                      <Text fontSize="$2" fontWeight="600" color="$color11">
+                    <Stack gap={4}>
+                      <Text color="gray">
                         Description:
                       </Text>
-                      <Text fontSize="$2" color="$color11">
+                      <Text color="gray">
                         {edu.description}
                       </Text>
                     </Stack>

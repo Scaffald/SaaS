@@ -96,13 +96,13 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <Stack padding="$4" gap="$4">
-        <Row alignItems="center" justifyContent="space-between">
-          <Text fontSize="$8" fontWeight="bold">
+      <Stack padding={16} gap={16}>
+        <Row align="center" justify="space-between">
+          <Text>
             Edit User
           </Text>
-          <Row gap="$2">
-            <Button data-testid="cancel-button" onPress={() => router.back()} variant="outlined">
+          <Row gap={8}>
+            <Button data-testid="cancel-button" onPress={() => router.back()} variant="outline">
               Cancel
             </Button>
             <Button
@@ -117,14 +117,14 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Row>
 
         {/* Profile Information */}
-        <Card padding="$4">
-          <Stack gap="$3">
-            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
+        <Card padding={16}>
+          <Stack gap={12}>
+            <Text marginBottom={8}>
               Profile Information
             </Text>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">First Name</Text>
+            <Stack gap={8}>
+              <Text>First Name</Text>
               <Input
                 data-testid="user-first-name-input"
                 value={firstName}
@@ -133,8 +133,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Last Name</Text>
+            <Stack gap={8}>
+              <Text>Last Name</Text>
               <Input
                 data-testid="user-last-name-input"
                 value={lastName}
@@ -143,8 +143,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Display Name</Text>
+            <Stack gap={8}>
+              <Text>Display Name</Text>
               <Input
                 data-testid="user-display-name-input"
                 value={displayName}
@@ -153,8 +153,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Bio</Text>
+            <Stack gap={8}>
+              <Text>Bio</Text>
               <Input
                 data-testid="user-bio-input"
                 value={bio}
@@ -168,14 +168,14 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Private Information */}
-        <Card padding="$4">
-          <Stack gap="$3">
-            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
+        <Card padding={16}>
+          <Stack gap={12}>
+            <Text marginBottom={8}>
               Private Information
             </Text>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Email</Text>
+            <Stack gap={8}>
+              <Text>Email</Text>
               <Input
                 data-testid="user-email-input"
                 value={email}
@@ -186,8 +186,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Phone</Text>
+            <Stack gap={8}>
+              <Text>Phone</Text>
               <Input
                 data-testid="user-phone-input"
                 value={phone}
@@ -197,8 +197,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Birth Date</Text>
+            <Stack gap={8}>
+              <Text>Birth Date</Text>
               <Input
                 data-testid="user-birth-date-input"
                 value={birthDate}
@@ -207,8 +207,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Location</Text>
+            <Stack gap={8}>
+              <Text>Location</Text>
               <Input
                 data-testid="user-location-input"
                 value={location}
@@ -220,14 +220,14 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Employment Information */}
-        <Card padding="$4">
-          <Stack gap="$3">
-            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
+        <Card padding={16}>
+          <Stack gap={12}>
+            <Text marginBottom={8}>
               Employment Information
             </Text>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Employment Status</Text>
+            <Stack gap={8}>
+              <Text>Employment Status</Text>
               <Input
                 data-testid="user-employment-status-input"
                 value={employmentStatus}
@@ -236,8 +236,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Job Search Status</Text>
+            <Stack gap={8}>
+              <Text>Job Search Status</Text>
               <Input
                 data-testid="user-job-search-status-input"
                 value={jobSearchStatus}
@@ -246,8 +246,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Years of Experience</Text>
+            <Stack gap={8}>
+              <Text>Years of Experience</Text>
               <Input
                 data-testid="user-years-experience-input"
                 value={yearsOfExperience}
@@ -257,8 +257,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Current Title</Text>
+            <Stack gap={8}>
+              <Text>Current Title</Text>
               <Input
                 data-testid="user-current-title-input"
                 value={currentTitle}
@@ -267,8 +267,8 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               />
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Current Employer</Text>
+            <Stack gap={8}>
+              <Text>Current Employer</Text>
               <Input
                 data-testid="user-current-employer-input"
                 value={currentEmployer}
@@ -280,12 +280,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Submit Button (mobile-friendly placement) */}
-        <Row gap="$2" paddingBottom="$4">
+        <Row gap={8} paddingBottom={16}>
           <Button
             data-testid="cancel-button"
             flex={1}
             onPress={() => router.back()}
-            variant="outlined"
+            variant="outline"
           >
             Cancel
           </Button>

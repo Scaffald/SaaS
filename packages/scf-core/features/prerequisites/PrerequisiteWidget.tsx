@@ -140,26 +140,26 @@ export function PrerequisiteWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Text color="gray">
             Complete Your Profile
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Please complete these required fields to continue using Scaffald
           </Text>
         </Stack>
 
         {isCheckingStatus ? (
-          <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-            <Spinner size="large" color="$blue7" />
-            <Text color="$color11">Loading...</Text>
+          <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+            <Spinner size="lg" color="$blue7" />
+            <Text color="gray">Loading...</Text>
           </Stack>
         ) : (
           <>
             {/* 1. Name Fields */}
-            <Stack gap="$3">
-              <Row gap="$3">
-                <Stack gap="$2" flex={1}>
-                  <Text fontWeight="600">First Name *</Text>
+            <Stack gap={12}>
+              <Row gap={12}>
+                <Stack gap={8} flex={1}>
+                  <Text>First Name *</Text>
                   <Controller
                     name="first_name"
                     control={control}
@@ -173,14 +173,14 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.first_name && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text color="$red10">
                       {errors.first_name.message}
                     </Text>
                   )}
                 </Stack>
 
-                <Stack gap="$2" flex={1}>
-                  <Text fontWeight="600">Last Name *</Text>
+                <Stack gap={8} flex={1}>
+                  <Text>Last Name *</Text>
                   <Controller
                     name="last_name"
                     control={control}
@@ -194,7 +194,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.last_name && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text color="$red10">
                       {errors.last_name.message}
                     </Text>
                   )}
@@ -205,9 +205,9 @@ export function PrerequisiteWidget() {
             <Separator />
 
             {/* 2. Address */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Address *</Text>
-              <Text fontSize="$2" color="$color11" marginBottom="$2">
+            <Stack gap={12}>
+              <Text>Address *</Text>
+              <Text color="gray" marginBottom={8}>
                 Search and select your home address
               </Text>
               <ControlledAddressForm
@@ -219,7 +219,7 @@ export function PrerequisiteWidget() {
                 error={errors.address?.street?.message || errors.address?.city?.message}
               />
               {errors.address && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.address.street?.message ||
                     errors.address.city?.message ||
                     errors.address.state?.message ||
@@ -231,15 +231,15 @@ export function PrerequisiteWidget() {
             <Separator />
 
             {/* 3. User Types */}
-            <Stack gap="$3">
-              <Text fontWeight="600">I am a (select all that apply) *</Text>
+            <Stack gap={12}>
+              <Text>I am a (select all that apply) *</Text>
               <Controller
                 name="user_types"
                 control={control}
                 render={({ field }) => (
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {USER_TYPE_OPTIONS.map((option) => (
-                      <Row key={option.value} gap="$3" alignItems="center">
+                      <Row key={option.value} gap={12} align="center">
                         <Checkbox
                           checked={field.value?.includes(option.value as UserType)}
                           onChange={(checked: boolean) => {
@@ -281,7 +281,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.user_types && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.user_types.message}
                 </Text>
               )}
@@ -290,17 +290,17 @@ export function PrerequisiteWidget() {
             <Separator />
 
             {/* 4. Primary Industry */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Primary Industry *</Text>
+            <Stack gap={12}>
+              <Text>Primary Industry *</Text>
               <Controller
                 name="industry_id"
                 control={control}
                 render={({ field }) => (
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {isLoadingIndustries ? (
-                      <Row gap="$2" alignItems="center">
-                        <Spinner size="small" />
-                        <Text color="$color11">Loading industries...</Text>
+                      <Row gap={8} align="center">
+                        <Spinner size="sm" />
+                        <Text color="gray">Loading industries...</Text>
                       </Row>
                     ) : industriesData?.data && industriesData.data.length > 0 ? (
                       <ResponsiveSelect
@@ -315,7 +315,7 @@ export function PrerequisiteWidget() {
                         )}
                       />
                     ) : (
-                      <Text color="$color11" fontSize="$2">
+                      <Text color="gray">
                         No industries available
                       </Text>
                     )}
@@ -323,7 +323,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.industry_id && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.industry_id.message}
                 </Text>
               )}
@@ -332,16 +332,16 @@ export function PrerequisiteWidget() {
             <Separator />
 
             {/* 5. Legal Agreements */}
-            <Stack gap="$3">
-              <Text fontWeight="600">Legal Agreements *</Text>
+            <Stack gap={12}>
+              <Text>Legal Agreements *</Text>
 
               {/* Privacy Policy */}
               <Controller
                 name="accepts_privacy_policy"
                 control={control}
                 render={({ field }) => (
-                  <Stack gap="$2">
-                    <Row gap="$3" alignItems="center">
+                  <Stack gap={8}>
+                    <Row gap={12} align="center">
                       <Checkbox
                         checked={field.value}
                         onChange={field.onChange}
@@ -375,7 +375,7 @@ export function PrerequisiteWidget() {
                       </Pressable>
                     </Row>
                     {errors.accepts_privacy_policy && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text color="$red10">
                         {errors.accepts_privacy_policy.message}
                       </Text>
                     )}
@@ -388,8 +388,8 @@ export function PrerequisiteWidget() {
                 name="accepts_terms_of_service"
                 control={control}
                 render={({ field }) => (
-                  <Stack gap="$2">
-                    <Row gap="$3" alignItems="center">
+                  <Stack gap={8}>
+                    <Row gap={12} align="center">
                       <Checkbox
                         checked={field.value}
                         onChange={field.onChange}
@@ -423,7 +423,7 @@ export function PrerequisiteWidget() {
                       </Pressable>
                     </Row>
                     {errors.accepts_terms_of_service && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text color="$red10">
                         {errors.accepts_terms_of_service.message}
                       </Text>
                     )}

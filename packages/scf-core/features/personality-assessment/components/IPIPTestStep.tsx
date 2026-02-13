@@ -141,16 +141,16 @@ export function IPIPTestStep({
   if (isComplete) {
     return (
       <Stack
-        gap="$6"
+        gap={24}
         width="100%"
-        alignItems="center"
-        padding="$8"
+        align="center"
+        padding={32}
         style={{ maxWidth: 800, alignSelf: 'center' }}
       >
-        <Text fontSize="$8" fontWeight="bold" color="$green10">
+        <Text color="$green10">
           ✓ All Questions Complete!
         </Text>
-        <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
       </Stack>
@@ -159,8 +159,8 @@ export function IPIPTestStep({
 
   if (!currentQuestion) {
     return (
-      <Stack gap="$4" alignItems="center" padding="$8">
-        <Text fontSize="$5" color="$color11">
+      <Stack gap={16} align="center" padding={32}>
+        <Text color="gray">
           Loading question...
         </Text>
       </Stack>
@@ -168,40 +168,40 @@ export function IPIPTestStep({
   }
 
   return (
-    <Stack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Domain Header */}
       {currentDomain && (
         <Row
-          gap="$2"
-          padding="$4"
+          gap={8}
+          padding={16}
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
-          justifyContent="space-between"
-          alignItems="center"
+          justify="space-between"
+          align="center"
         >
-          <Stack gap="$1">
-            <Text fontSize="$5" fontWeight="bold" color="$blue11">
+          <Stack gap={4}>
+            <Text color="$blue11">
               {DOMAIN_NAMES[currentDomain]}
             </Text>
-            <Text fontSize="$3" color="$blue10">
+            <Text color="$blue10">
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
           </Stack>
-          <Text fontSize="$5" fontWeight="600" color="$blue11">
+          <Text color="$blue11">
             {domainProgress}%
           </Text>
         </Row>
       )}
 
       {/* Progress Bar */}
-      <Stack gap="$2">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Row justify="space-between" align="center">
+          <Text color="gray">
             Question {currentIndex + 1} of 120
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             {overallProgress}%
           </Text>
         </Row>
@@ -212,38 +212,36 @@ export function IPIPTestStep({
 
       {/* Question */}
       <Stack
-        gap="$4"
-        padding="$6"
+        gap={16}
+        padding={24}
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
         <Text
-          fontSize="$7"
-          fontWeight="bold"
-          color="$color12"
+          color="gray"
           style={{ textAlign: 'center' }}
-          lineHeight="$6"
+          lineHeight={24}
         >
           I {currentQuestion.text.toLowerCase()}
         </Text>
       </Stack>
 
       {/* Choices */}
-      <Stack gap="$3">
+      <Stack gap={12}>
         {[...currentChoices].reverse().map((choice) => (
           <Button
             key={`${currentQuestion.id}-${choice.score}`}
-            size="$5"
-            variant="outlined"
+            size={20}
+            variant="outline"
             onPress={() => handleAnswer(choice)}
             disabled={isLoading}
             pressStyle={{ scale: 0.98 }}
             borderColor="$borderColor"
             hoverStyle={{ borderColor: '$blue8', backgroundColor: '$blue2' }}
           >
-            <Text fontSize="$4" color="$color12" fontWeight="500">
+            <Text color="gray">
               {choice.text}
             </Text>
           </Button>
@@ -251,16 +249,16 @@ export function IPIPTestStep({
       </Stack>
 
       {/* Navigation */}
-      <Row gap="$3" justifyContent="space-between">
+      <Row gap={12} justify="space-between">
         <Button
-          size="$4"
-          variant="outlined"
+          size={16}
+          variant="outline"
           onPress={handlePrevious}
           disabled={currentIndex === 0 || isLoading}
         >
           Previous
         </Button>
-        <Text fontSize="$3" color="$color11" style={{ alignSelf: 'center' }}>
+        <Text color="gray" style={{ alignSelf: 'center' }}>
           {answers.length} answers saved
         </Text>
       </Row>

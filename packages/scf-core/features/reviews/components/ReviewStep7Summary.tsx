@@ -7,12 +7,12 @@ interface ReviewStep7SummaryProps {
 
 export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProps) {
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="gray">
           Summary (Optional)
         </Text>
-        <Text fontSize="$5" color="$color11">
+        <Text color="gray">
           Add any additional comments about working with this person
         </Text>
       </Stack>
@@ -23,15 +23,14 @@ export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProp
         value={comment}
         onChangeText={onChange}
         minHeight={200}
-        fontSize="$4"
-        padding="$4"
+        padding={16}
         borderWidth={2}
         borderColor="$color5"
         focusStyle={{ borderColor: '$blue8' }}
       />
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text color="gray" fontStyle="italic">
         This field is optional. You can skip it or add details about your experience working
         together.
       </Text>

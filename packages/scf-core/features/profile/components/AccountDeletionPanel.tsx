@@ -45,26 +45,26 @@ export function AccountDeletionPanel() {
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="$4">
-      <Stack gap="$3">
-        <Row alignItems="center" gap="$2">
+    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding={16}>
+      <Stack gap={12}>
+        <Row align="center" gap={8}>
           <AlertTriangle color="$red11" size={20} />
-          <Text fontSize="$6" fontWeight="700" color="$red11">
+          <Text color="$red11">
             Delete Account
           </Text>
         </Row>
 
-        <Text color="$color11" fontSize="$3">
+        <Text color="gray">
           Permanently delete your account and all associated data. This action cannot be undone.
         </Text>
 
-        <Text color="$color10" fontSize="$2">
+        <Text color="gray">
           • All payment data will be anonymized • Your profile will be removed • You will lose
           access to all organizations and teams
         </Text>
 
         <Button
-          variant="outlined"
+          variant="outline"
           borderColor="$red8"
           color="$red11"
           icon={Trash2}
@@ -77,19 +77,19 @@ export function AccountDeletionPanel() {
           <AlertDialog.Portal>
             <AlertDialog.Overlay />
             <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <Stack gap="$4" padding="$4">
-                <Stack gap="$2">
-                  <Text fontSize="$7" fontWeight="700" color="$red11">
+              <Stack gap={16} padding={16}>
+                <Stack gap={8}>
+                  <Text color="$red11">
                     Delete Your Account?
                   </Text>
-                  <Text color="$color11" fontSize="$3">
+                  <Text color="gray">
                     This action cannot be undone. All your data will be permanently deleted or
                     anonymized.
                   </Text>
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Text>
                     Reason (optional)
                   </Text>
                   <TextArea
@@ -100,8 +100,8 @@ export function AccountDeletionPanel() {
                   />
                 </Stack>
 
-                <Stack gap="$2">
-                  <Text fontSize="$4" fontWeight="600">
+                <Stack gap={8}>
+                  <Text>
                     Type "DELETE" to confirm
                   </Text>
                   <Input
@@ -112,9 +112,9 @@ export function AccountDeletionPanel() {
                   />
                 </Stack>
 
-                <Row gap="$3" justifyContent="flex-end">
+                <Row gap={12} justify="flex-end">
                   <Button
-                    variant="outlined"
+                    variant="outline"
                     onPress={() => {
                       setIsOpen(false)
                       setConfirmText('')

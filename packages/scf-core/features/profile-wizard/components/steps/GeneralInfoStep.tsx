@@ -89,20 +89,20 @@ export function GeneralInfoStep({
   }
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Tell us about yourself
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Add a friendly introduction. This helps employers quickly understand who you are and what
           you bring to the table.
         </Paragraph>
       </Stack>
 
-      <Row gap="$3" flexWrap="wrap">
-        <Stack flex={1} minWidth={150} gap="$2">
-          <Text fontWeight="600">First Name *</Text>
+      <Row gap={12} flexWrap="wrap">
+        <Stack flex={1} minWidth={150} gap={8}>
+          <Text>First Name *</Text>
           <Controller
             control={control}
             name="firstName"
@@ -117,14 +117,14 @@ export function GeneralInfoStep({
             )}
           />
           {errors.firstName && (
-            <Text fontSize="$2" color="$red10">
+            <Text color="$red10">
               {errors.firstName.message}
             </Text>
           )}
         </Stack>
 
-        <Stack flex={1} minWidth={150} gap="$2">
-          <Text fontWeight="600">Last Name *</Text>
+        <Stack flex={1} minWidth={150} gap={8}>
+          <Text>Last Name *</Text>
           <Controller
             control={control}
             name="lastName"
@@ -139,15 +139,15 @@ export function GeneralInfoStep({
             )}
           />
           {errors.lastName && (
-            <Text fontSize="$2" color="$red10">
+            <Text color="$red10">
               {errors.lastName.message}
             </Text>
           )}
         </Stack>
       </Row>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Professional Headline *</Text>
+      <Stack gap={8}>
+        <Text>Professional Headline *</Text>
         <Controller
           control={control}
           name="headline"
@@ -161,14 +161,14 @@ export function GeneralInfoStep({
           )}
         />
         {errors.headline && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {errors.headline.message}
           </Text>
         )}
       </Stack>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Short Bio</Text>
+      <Stack gap={8}>
+        <Text>Short Bio</Text>
         <Controller
           control={control}
           name="bio"
@@ -183,7 +183,7 @@ export function GeneralInfoStep({
             />
           )}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Keep it short and friendly—1-2 sentences is perfect.
         </Text>
       </Stack>

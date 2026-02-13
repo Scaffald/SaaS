@@ -99,61 +99,61 @@ export function CooldownStep({
   )
 
   return (
-    <Stack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Cooldown Timer */}
       <Stack
-        gap="$4"
-        padding="$6"
+        gap={16}
+        padding={24}
         backgroundColor="$color3"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$color7"
       >
-        <Stack gap="$2" alignItems="center">
-          <Text fontSize="$6" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
+        <Stack gap={8} align="center">
+          <Text color="gray" style={{ textAlign: 'center' }}>
             Cooldown Period
           </Text>
-          <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             Please wait 60 seconds before taking the second color test
           </Text>
-          <Text fontSize="$8" fontWeight="bold" color="$blue10">
+          <Text color="$blue10">
             {formatTime(timeRemaining)}
           </Text>
         </Stack>
-        <Progress value={cooldownProgress} max={100} size="$2">
+        <Progress value={cooldownProgress} max={100} size={8}>
           <Progress.Indicator animation="quick" />
         </Progress>
       </Stack>
 
       {/* IPIP Questions Section */}
-      <Stack gap="$4">
-        <Stack gap="$2" alignItems="center">
-          <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
+      <Stack gap={16}>
+        <Stack gap={8} align="center">
+          <Text color="gray" style={{ textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
-          <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             Progress: {currentIndex} / 120 ({progress}%)
           </Text>
         </Stack>
 
         {currentQuestion && (
           <Stack
-            gap="$4"
-            padding="$4"
-            borderRadius="$4"
+            gap={16}
+            padding={16}
+            borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text fontSize="$5" fontWeight="500" color="$color12">
+            <Text color="gray">
               {currentQuestion.text}
             </Text>
 
-            <Stack gap="$3">
+            <Stack gap={12}>
               {currentChoices.map((choice) => (
                 <Button
                   key={choice.score}
-                  size="$4"
-                  variant="outlined"
+                  size={16}
+                  variant="outline"
                   onPress={() => handleAnswer(choice)}
                   disabled={isLoading}
                   width="100%"
@@ -166,8 +166,8 @@ export function CooldownStep({
         )}
 
         {!currentQuestion && !isCooldownActive && (
-          <Stack gap="$2" alignItems="center" padding="$4">
-            <Text fontSize="$4" color="$green10" fontWeight="600" style={{ textAlign: 'center' }}>
+          <Stack gap={8} align="center" padding={16}>
+            <Text color="$green10" style={{ textAlign: 'center' }}>
               All questions answered! You can continue to the next step.
             </Text>
           </Stack>

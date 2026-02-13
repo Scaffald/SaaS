@@ -85,11 +85,11 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
       const hasOverride = info.row.original.location_visibility_override
 
       return (
-        <Row gap="$2" alignItems="center">
+        <Row gap={8} align="center">
           <Icon size={16} />
           <Text>{label}</Text>
           {hasOverride && (
-            <Text fontSize="$1" color="$yellow10">
+            <Text color="$yellow10">
               (Override)
             </Text>
           )}
@@ -127,25 +127,25 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <Stack flex={1} padding="$4" gap="$4">
+        <Stack flex={1} padding={16} gap={16}>
           {showHeader && (
-            <Stack gap="$2">
+            <Stack gap={8}>
               <H2>Projects</H2>
-              <Text fontSize="$4" color="$gray11">
+              <Text color="$gray11">
                 Manage construction projects with geographic data
               </Text>
             </Stack>
           )}
-          <Stack gap="$4">
-            <Row gap="$4" alignItems="center" justifyContent="space-between" flexWrap="wrap">
-              <Row gap="$4" alignItems="center" flexWrap="wrap">
+          <Stack gap={16}>
+            <Row gap={16} align="center" justify="space-between" flexWrap="wrap">
+              <Row gap={16} align="center" flexWrap="wrap">
                 {organizationsData && (
                   <Row width={200}>
                     <ResponsiveSelect
                       value={selectedOrg || ''}
                       onValueChange={setSelectedOrg}
                       placeholder="All Organizations"
-                      size="$3"
+                      size={12}
                       options={[
                         { value: '', label: 'All Organizations' },
                         ...(organizationsData?.organizations ?? []).map(
@@ -164,7 +164,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                     value={statusFilter || ''}
                     onValueChange={setStatusFilter}
                     placeholder="All Statuses"
-                    size="$3"
+                    size={12}
                     options={[
                       { value: '', label: 'All Statuses' },
                       { value: 'planning', label: 'Planning' },
@@ -190,28 +190,28 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
             ) : projects.length === 0 ? (
               <Text>No projects found</Text>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {projects.map((project: (typeof projects)[0]) => (
                   <Row
                     key={project.id}
-                    padding="$4"
+                    padding={16}
                     backgroundColor="$background"
-                    borderRadius="$4"
-                    justifyContent="space-between"
-                    alignItems="center"
+                    borderRadius={16}
+                    justify="space-between"
+                    align="center"
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Stack gap="$1" flex={1}>
-                      <Text fontWeight="600">{project.name}</Text>
-                      <Text fontSize="$2" color="$gray10">
+                    <Stack gap={4} flex={1}>
+                      <Text>{project.name}</Text>
+                      <Text color="$gray10">
                         {project.organization?.name || 'No organization'} • {project.status}
                       </Text>
                     </Stack>
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                       <Button
-                        size="$2"
+                        size={8}
                         icon={Pencil}
                         onPress={() => {
                           router.push(

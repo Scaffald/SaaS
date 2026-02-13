@@ -283,23 +283,23 @@ export function WorkLogDetailScreen() {
 
   if (workLogQuery.isLoading) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center" gap="$3">
-        <Spinner size="large" />
-        <Text color="$color10">Loading work log…</Text>
+      <Stack flex={1} justify="center" align="center" gap={12}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading work log…</Text>
       </Stack>
     )
   }
 
   if (!workLog) {
     return (
-      <Stack flex={1} justifyContent="center" alignItems="center" gap="$3" padding="$4">
-        <Text fontSize="$6" fontWeight="700">
+      <Stack flex={1} justify="center" align="center" gap={12} padding={16}>
+        <Text>
           Work log not found
         </Text>
-        <Paragraph color="$color10" style={{ textAlign: 'center' }}>
+        <Paragraph color="gray" style={{ textAlign: 'center' }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
-        <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}>
+        <Button size={16} onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}>
           Back to work logs
         </Button>
       </Stack>
@@ -398,32 +398,32 @@ export function WorkLogDetailScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <Stack padding="$4" gap="$4">
-        <Stack gap="$2">
-          <Row justifyContent="space-between" alignItems="center">
-            <Stack gap="$1" flex={1}>
-              <Text fontSize="$7" fontWeight="700">
+      <Stack padding={16} gap={16}>
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Stack gap={4} flex={1}>
+              <Text>
                 {project?.name ?? 'Work Log'}
               </Text>
-              <Text color="$color10">
+              <Text color="gray">
                 Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
             </Stack>
-            <Button size="$3" variant="outlined" icon={Edit} onPress={() => workLogQuery.refetch()}>
+            <Button size={12} variant="outline" icon={Edit} onPress={() => workLogQuery.refetch()}>
               Refresh
             </Button>
           </Row>
-          <Text color={getStatusColor(workLog.status)} fontWeight="600">
+          <Text color={getStatusColor(workLog.status)}>
             {getStatusLabel(workLog.status)}
           </Text>
         </Stack>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Text>
               Summary
             </Text>
-            <Row gap="$4" flexWrap="wrap">
+            <Row gap={16} flexWrap="wrap">
               <SummaryMetric
                 icon={Activity}
                 label="Total hours"
@@ -441,9 +441,9 @@ export function WorkLogDetailScreen() {
               />
             </Row>
             <Separator />
-            <Stack gap="$2">
-              <Text fontWeight="600">Description</Text>
-              <Paragraph color="$color10">
+            <Stack gap={8}>
+              <Text>Description</Text>
+              <Paragraph color="gray">
                 {workLog.work_description || 'No description provided.'}
               </Paragraph>
             </Stack>
@@ -451,23 +451,23 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Text>
               Profile visibility
             </Text>
-            <Paragraph color="$color10">
+            <Paragraph color="gray">
               Control how this work log appears on your public profile.
             </Paragraph>
             {!isVerified && (
-              <Paragraph color="$orange10" fontWeight="600">
+              <Paragraph color="$orange10">
                 This work log must be verified before it can be shared publicly.
               </Paragraph>
             )}
-            <Stack gap="$4">
-              <Row justifyContent="space-between" alignItems="center" gap="$4">
-                <Stack gap="$1" flex={1}>
-                  <Text fontWeight="600">Show on public profile</Text>
-                  <Paragraph color="$color10">
+            <Stack gap={16}>
+              <Row justify="space-between" align="center" gap={16}>
+                <Stack gap={4} flex={1}>
+                  <Text>Show on public profile</Text>
+                  <Paragraph color="gray">
                     Display this work log on your public profile. Only verified work is eligible.
                   </Paragraph>
                 </Stack>
@@ -479,10 +479,10 @@ export function WorkLogDetailScreen() {
                 />
               </Row>
 
-              <Row justifyContent="space-between" alignItems="center" gap="$4">
-                <Stack gap="$1" flex={1}>
-                  <Text fontWeight="600">Show date on profile</Text>
-                  <Paragraph color="$color10">
+              <Row justify="space-between" align="center" gap={16}>
+                <Stack gap={4} flex={1}>
+                  <Text>Show date on profile</Text>
+                  <Paragraph color="gray">
                     When enabled, the logged date is shown on your public profile.
                   </Paragraph>
                 </Stack>
@@ -494,10 +494,10 @@ export function WorkLogDetailScreen() {
                 />
               </Row>
 
-              <Row justifyContent="space-between" alignItems="center">
-                <Stack gap="$1">
-                  <Text fontWeight="600">Verification status</Text>
-                  <Paragraph color="$color10">
+              <Row justify="space-between" align="center">
+                <Stack gap={4}>
+                  <Text>Verification status</Text>
+                  <Paragraph color="gray">
                     {isVerified
                       ? 'Verified entries display a “Verified by Scaffald” badge on your public profile.'
                       : 'Awaiting verification. Visibility controls unlock once this log is verified.'}
@@ -506,19 +506,18 @@ export function WorkLogDetailScreen() {
                 <Text
                   backgroundColor={isVerified ? '$green4' : '$yellow4'}
                   color={isVerified ? '$green11' : '$yellow11'}
-                  paddingHorizontal="$3"
-                  paddingVertical="$1"
-                  borderRadius="$4"
-                  fontWeight="600"
+                  paddingHorizontal={12}
+                  paddingVertical={4}
+                  borderRadius={16}
                 >
                   {isVerified ? 'Verified' : 'Pending'}
                 </Text>
               </Row>
 
-              <Row justifyContent="space-between" alignItems="center">
-                <Stack gap="$1">
-                  <Text fontWeight="600">Current visibility</Text>
-                  <Paragraph color="$color10">
+              <Row justify="space-between" align="center">
+                <Stack gap={4}>
+                  <Text>Current visibility</Text>
+                  <Paragraph color="gray">
                     {isPublicVisibility
                       ? 'This work log is set to public visibility.'
                       : 'This work log is currently private.'}
@@ -530,27 +529,27 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Text>
               Time entries
             </Text>
-            <Stack gap="$2">
+            <Stack gap={8}>
               {timeEntryItems.length === 0 ? (
-                <Paragraph color="$color10">No time entries recorded.</Paragraph>
+                <Paragraph color="gray">No time entries recorded.</Paragraph>
               ) : (
                 timeEntryItems.map((entry) => (
                   <Row
                     key={entry.key}
-                    justifyContent="space-between"
+                    justify="space-between"
                     backgroundColor="$color3"
-                    paddingHorizontal="$3"
-                    paddingVertical="$2"
-                    borderRadius="$4"
+                    paddingHorizontal={12}
+                    paddingVertical={8}
+                    borderRadius={16}
                   >
-                    <Text fontWeight="600">
+                    <Text>
                       {entry.start}–{entry.end}
                     </Text>
-                    <Text color="$color10">{computeEntryHours(entry.start, entry.end)}h</Text>
+                    <Text color="gray">{computeEntryHours(entry.start, entry.end)}h</Text>
                   </Row>
                 ))
               )}
@@ -559,21 +558,21 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Text>
               Tasks completed
             </Text>
             {taskItems.length === 0 ? (
-              <Paragraph color="$color10">No tasks recorded for this entry.</Paragraph>
+              <Paragraph color="gray">No tasks recorded for this entry.</Paragraph>
             ) : (
-              <Stack gap="$2">
+              <Stack gap={8}>
                 {taskItems.map((task) => (
                   <Row
                     key={task.key}
                     backgroundColor="$color3"
-                    paddingHorizontal="$3"
-                    paddingVertical="$2"
-                    borderRadius="$4"
+                    paddingHorizontal={12}
+                    paddingVertical={8}
+                    borderRadius={16}
                   >
                     <Text>{task.task}</Text>
                   </Row>
@@ -581,20 +580,20 @@ export function WorkLogDetailScreen() {
               </Stack>
             )}
             <Separator />
-            <Text fontSize="$6" fontWeight="700">
+            <Text>
               Skills used
             </Text>
             {skillNames.length === 0 ? (
-              <Paragraph color="$color10">No skills associated with this log.</Paragraph>
+              <Paragraph color="gray">No skills associated with this log.</Paragraph>
             ) : (
-              <Row gap="$2" flexWrap="wrap">
+              <Row gap={8} flexWrap="wrap">
                 {skillNames.map((skill) => (
                   <Text
                     key={skill}
                     backgroundColor="$color3"
-                    paddingHorizontal="$3"
-                    paddingVertical="$1"
-                    borderRadius="$4"
+                    paddingHorizontal={12}
+                    paddingVertical={4}
+                    borderRadius={16}
                   >
                     {skill}
                   </Text>
@@ -606,8 +605,8 @@ export function WorkLogDetailScreen() {
 
         {photos.length > 0 && (
           <Card borderColor="$color6" borderWidth={1}>
-            <Stack gap="$3" padding="$3">
-              <Text fontSize="$6" fontWeight="700">
+            <Stack gap={12} padding={12}>
+              <Text>
                 Photos
               </Text>
               <PhotoGallery
@@ -637,26 +636,26 @@ export function WorkLogDetailScreen() {
         )}
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Row justify="space-between" align="center">
+              <Text>
                 Collaborators
               </Text>
               <Button
-                size="$3"
+                size={12}
                 icon={Users}
-                variant="outlined"
+                variant="outline"
                 onPress={() => collaboratorsQuery.refetch()}
               >
                 Refresh
               </Button>
             </Row>
-            <Paragraph color="$color10">
+            <Paragraph color="gray">
               Share this work log with teammates to give them edit or view access.
             </Paragraph>
-            <Stack gap="$2">
+            <Stack gap={8}>
               {collaborators.length === 0 ? (
-                <Paragraph color="$color10">No collaborators yet.</Paragraph>
+                <Paragraph color="gray">No collaborators yet.</Paragraph>
               ) : (
                 collaborators.map((collaborator) => (
                   <CollaboratorRow
@@ -672,17 +671,17 @@ export function WorkLogDetailScreen() {
               )}
             </Stack>
             <Separator />
-            <Stack gap="$2">
-              <Text fontWeight="600">Add collaborator</Text>
+            <Stack gap={8}>
+              <Text>Add collaborator</Text>
               <Input
                 placeholder="Collaborator user ID"
                 value={collaboratorIdInput}
                 onChangeText={setCollaboratorIdInput}
               />
-              <Row gap="$2">
+              <Row gap={8}>
                 <Button
                   flex={1}
-                  size="$3"
+                  size={12}
                   variant={collaboratorPermission === 'view' ? 'default' : 'outlined'}
                   onPress={() => setCollaboratorPermission('view')}
                 >
@@ -690,7 +689,7 @@ export function WorkLogDetailScreen() {
                 </Button>
                 <Button
                   flex={1}
-                  size="$3"
+                  size={12}
                   variant={collaboratorPermission === 'edit' ? 'default' : 'outlined'}
                   onPress={() => setCollaboratorPermission('edit')}
                 >
@@ -698,7 +697,7 @@ export function WorkLogDetailScreen() {
                 </Button>
               </Row>
               <Button
-                size="$3"
+                size={12}
                 icon={Users}
                 loading={addCollaboratorMutation.isPending}
                 onPress={handleAddCollaborator}
@@ -710,23 +709,23 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Row justifyContent="space-between" alignItems="center">
-              <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Row justify="space-between" align="center">
+              <Text>
                 Conversation
               </Text>
               <Button
-                size="$3"
+                size={12}
                 icon={MessageSquare}
-                variant="outlined"
+                variant="outline"
                 onPress={() => conversationQuery.refetch()}
               >
                 Refresh
               </Button>
             </Row>
-            <Stack gap="$3">
+            <Stack gap={12}>
               {conversation.length === 0 ? (
-                <Paragraph color="$color10">
+                <Paragraph color="gray">
                   No messages yet. Start the conversation to give additional context.
                 </Paragraph>
               ) : (
@@ -736,8 +735,8 @@ export function WorkLogDetailScreen() {
               )}
             </Stack>
             <Separator />
-            <Stack gap="$2">
-              <Text fontWeight="600">Add message</Text>
+            <Stack gap={8}>
+              <Text>Add message</Text>
               <Input
                 multiline
                 numberOfLines={4}
@@ -746,7 +745,7 @@ export function WorkLogDetailScreen() {
                 placeholder="Share an update or ask a question…"
               />
               <Button
-                size="$3"
+                size={12}
                 icon={MessageSquare}
                 loading={addCommentMutation.isPending}
                 onPress={handleAddComment}
@@ -758,17 +757,17 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Stack gap="$3" padding="$3">
-            <Text fontSize="$6" fontWeight="700">
+          <Stack gap={12} padding={12}>
+            <Text>
               Exports
             </Text>
-            <Paragraph color="$color10">
+            <Paragraph color="gray">
               Generate a shareable export for reporting or offline records. Links expire after ten
               minutes.
             </Paragraph>
-            <Row gap="$3" flexWrap="wrap">
+            <Row gap={12} flexWrap="wrap">
               <Button
-                size="$4"
+                size={16}
                 icon={DownloadCloud}
                 loading={exportMutation.isPending && exportMutation.variables?.format === 'pdf'}
                 onPress={() =>
@@ -781,9 +780,9 @@ export function WorkLogDetailScreen() {
                 Export PDF
               </Button>
               <Button
-                size="$4"
+                size={16}
                 icon={DownloadCloud}
-                variant="outlined"
+                variant="outline"
                 loading={exportMutation.isPending && exportMutation.variables?.format === 'csv'}
                 onPress={() =>
                   exportMutation.mutate({
@@ -812,16 +811,16 @@ function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps
   return (
     <Row
       backgroundColor="$color3"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius="$4"
-      gap="$2"
-      alignItems="center"
+      paddingHorizontal={12}
+      paddingVertical={8}
+      borderRadius={16}
+      gap={8}
+      align="center"
     >
       <IconComponent size={16} color="currentColor" />
-      <Stack gap="$1">
-        <Text fontWeight="600">{value}</Text>
-        <Text fontSize="$3" color="$color10">
+      <Stack gap={4}>
+        <Text>{value}</Text>
+        <Text color="gray">
           {label}
         </Text>
       </Stack>
@@ -851,16 +850,16 @@ function CollaboratorRow({
 
   return (
     <Card borderWidth={1} borderColor="$color6">
-      <Stack gap="$2" padding="$3">
-        <Text fontWeight="600">{displayName}</Text>
-        <Text color="$color10">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
-        <Row gap="$2">
-          <Button size="$3" variant="outlined" disabled={isUpdating} onPress={onTogglePermission}>
+      <Stack gap={8} padding={12}>
+        <Text>{displayName}</Text>
+        <Text color="gray">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
+        <Row gap={8}>
+          <Button size={12} variant="outline" disabled={isUpdating} onPress={onTogglePermission}>
             Toggle permission
           </Button>
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             color="$red10"
             disabled={isUpdating}
             onPress={onRemove}
@@ -887,14 +886,14 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
   return (
     <Stack
       backgroundColor={isSystemMessage ? '$color4' : isOwner ? '$color3' : '$color2'}
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius="$4"
-      gap="$1"
+      paddingHorizontal={12}
+      paddingVertical={8}
+      borderRadius={16}
+      gap={4}
     >
-      <Row justifyContent="space-between">
-        <Text fontWeight="600">{authorName}</Text>
-        <Text color="$color10">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
+      <Row justify="space-between">
+        <Text>{authorName}</Text>
+        <Text color="gray">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
       </Row>
       <Paragraph>{entry.message}</Paragraph>
     </Stack>

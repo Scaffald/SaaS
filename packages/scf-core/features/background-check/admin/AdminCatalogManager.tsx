@@ -462,31 +462,31 @@ export function AdminCatalogManager() {
 
   return (
     <>
-      <Stack gap="$4">
+      <Stack gap={16}>
         <Card
-          padding="$4"
-          gap="$4"
+          padding={16}
+          gap={16}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius="$5"
+          borderRadius={20}
         >
-          <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-            <Stack gap="$1">
-              <Row gap="$2" alignItems="center">
-                <PackagePlus size={18} color="$color10" />
-                <Text fontSize="$4" fontWeight="700" color="$color12">
+          <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+            <Stack gap={4}>
+              <Row gap={8} align="center">
+                <PackagePlus size={18} color="gray" />
+                <Text color="gray">
                   Packages
                 </Text>
               </Row>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 Manage bundles of screening components that organizations can request.
               </Text>
             </Stack>
-            <Row gap="$2" flexWrap="wrap">
+            <Row gap={8} flexWrap="wrap">
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 icon={RefreshCcw}
                 disabled={packagesQuery.isLoading || checkTypesQuery.isLoading}
                 onPress={() => {
@@ -497,7 +497,7 @@ export function AdminCatalogManager() {
                 Refresh catalog
               </Button>
               <Button
-                size="$3"
+                size={12}
                 icon={Plus}
                 onPress={() => openPackageDialog('create')}
                 disabled={checkTypes.length === 0}
@@ -508,59 +508,59 @@ export function AdminCatalogManager() {
           </Row>
 
           {packagesQuery.isLoading ? (
-            <Stack gap="$2" alignItems="center" paddingVertical="$4">
-              <Spinner size="large" />
-              <Text fontSize="$3" color="$color10">
+            <Stack gap={8} align="center" paddingVertical={16}>
+              <Spinner size="lg" />
+              <Text color="gray">
                 Loading packages…
               </Text>
             </Stack>
           ) : packages.length === 0 ? (
-            <Stack gap="$2" paddingVertical="$4" alignItems="center">
-              <Text fontSize="$3" color="$color10">
+            <Stack gap={8} paddingVertical={16} align="center">
+              <Text color="gray">
                 {hasCatalogData ? 'No packages match the filters.' : 'No packages configured yet.'}
               </Text>
-              <Button size="$3" onPress={() => openPackageDialog('create')}>
+              <Button size={12} onPress={() => openPackageDialog('create')}>
                 Create your first package
               </Button>
             </Stack>
           ) : (
-            <Stack gap="$3">
+            <Stack gap={12}>
               {packages.map((pkg: AdminPackageRecord) => (
                 <Card
                   key={pkg.id}
-                  padding="$4"
-                  gap="$3"
+                  padding={16}
+                  gap={12}
                   backgroundColor="$color1"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  borderRadius="$4"
+                  borderRadius={16}
                 >
-                  <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
-                    <Stack gap="$1" flex={1}>
-                      <Text fontSize="$5" fontWeight="700" color="$color12">
+                  <Row justify="space-between" align="flex-start" gap={12}>
+                    <Stack gap={4} flex={1}>
+                      <Text color="gray">
                         {pkg.display_name}
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         {pkg.slug}
                       </Text>
                       {pkg.description ? (
-                        <Text fontSize="$3" color="$color11">
+                        <Text color="gray">
                           {pkg.description}
                         </Text>
                       ) : null}
                     </Stack>
-                    <Row gap="$2" flexWrap="wrap">
+                    <Row gap={8} flexWrap="wrap">
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         icon={Edit3}
                         onPress={() => openPackageDialog('edit', pkg)}
                       >
                         Edit
                       </Button>
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         disabled={packageToggleId === pkg.id}
                         onPress={() => {
                           void handleTogglePackage(pkg)
@@ -571,7 +571,7 @@ export function AdminCatalogManager() {
                     </Row>
                   </Row>
 
-                  <Row gap="$3" flexWrap="wrap">
+                  <Row gap={12} flexWrap="wrap">
                     <InfoChip
                       label="Platform cost"
                       value={formatCurrency(pkg.platform_cost_cents)}
@@ -586,32 +586,32 @@ export function AdminCatalogManager() {
 
                   <Separator />
 
-                  <Stack gap="$2">
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                  <Stack gap={8}>
+                    <Text color="gray">
                       Components
                     </Text>
                     {pkg.components.length === 0 ? (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         No check types linked to this package.
                       </Text>
                     ) : (
                       pkg.components.map((component: AdminPackageRecord['components'][number]) => (
                         <Row
                           key={component.id}
-                          justifyContent="space-between"
-                          alignItems="center"
+                          justify="space-between"
+                          align="center"
                           borderColor="$borderColor"
                           borderWidth={1}
-                          borderRadius="$3"
-                          paddingHorizontal="$3"
-                          paddingVertical="$2"
+                          borderRadius={12}
+                          paddingHorizontal={12}
+                          paddingVertical={8}
                           backgroundColor="$background"
                         >
-                          <Stack gap="$1" flex={1}>
-                            <Text fontSize="$3" fontWeight="600" color="$color12">
+                          <Stack gap={4} flex={1}>
+                            <Text color="gray">
                               {component.display_name}
                             </Text>
-                            <Row gap="$2" flexWrap="wrap">
+                            <Row gap={8} flexWrap="wrap">
                               <InfoText label="Category" value={component.category ?? 'General'} />
                               <InfoText
                                 label="Completion"
@@ -634,86 +634,86 @@ export function AdminCatalogManager() {
         </Card>
 
         <Card
-          padding="$4"
-          gap="$4"
+          padding={16}
+          gap={16}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius="$5"
+          borderRadius={20}
         >
-          <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-            <Stack gap="$1">
-              <Row gap="$2" alignItems="center">
-                <Shield size={18} color="$color10" />
-                <Text fontSize="$4" fontWeight="700" color="$color12">
+          <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
+            <Stack gap={4}>
+              <Row gap={8} align="center">
+                <Shield size={18} color="gray" />
+                <Text color="gray">
                   Check types
                 </Text>
               </Row>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 Maintain granular screening components synchronized with NationSearch.
               </Text>
             </Stack>
-            <Row gap="$2" flexWrap="wrap">
-              <Button size="$3" icon={Plus} onPress={() => openCheckTypeDialog('create')}>
+            <Row gap={8} flexWrap="wrap">
+              <Button size={12} icon={Plus} onPress={() => openCheckTypeDialog('create')}>
                 New check type
               </Button>
             </Row>
           </Row>
 
           {checkTypesQuery.isLoading ? (
-            <Stack gap="$2" alignItems="center" paddingVertical="$4">
-              <Spinner size="large" />
-              <Text fontSize="$3" color="$color10">
+            <Stack gap={8} align="center" paddingVertical={16}>
+              <Spinner size="lg" />
+              <Text color="gray">
                 Loading check types…
               </Text>
             </Stack>
           ) : checkTypes.length === 0 ? (
-            <Stack gap="$2" paddingVertical="$4" alignItems="center">
-              <Text fontSize="$3" color="$color10">
+            <Stack gap={8} paddingVertical={16} align="center">
+              <Text color="gray">
                 No check types configured yet.
               </Text>
-              <Button size="$3" onPress={() => openCheckTypeDialog('create')}>
+              <Button size={12} onPress={() => openCheckTypeDialog('create')}>
                 Create your first check type
               </Button>
             </Stack>
           ) : (
-            <Stack gap="$3">
+            <Stack gap={12}>
               {checkTypes.map((type: AdminCheckTypeRecord) => (
                 <Card
                   key={type.id}
-                  padding="$4"
-                  gap="$3"
+                  padding={16}
+                  gap={12}
                   backgroundColor="$color1"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  borderRadius="$4"
+                  borderRadius={16}
                 >
-                  <Row justifyContent="space-between" alignItems="flex-start" gap="$3">
-                    <Stack gap="$1" flex={1}>
-                      <Text fontSize="$5" fontWeight="700" color="$color12">
+                  <Row justify="space-between" align="flex-start" gap={12}>
+                    <Stack gap={4} flex={1}>
+                      <Text color="gray">
                         {type.display_name}
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         {type.slug}
                       </Text>
                       {type.description ? (
-                        <Text fontSize="$3" color="$color11">
+                        <Text color="gray">
                           {type.description}
                         </Text>
                       ) : null}
                     </Stack>
-                    <Row gap="$2" flexWrap="wrap">
+                    <Row gap={8} flexWrap="wrap">
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         icon={Edit3}
                         onPress={() => openCheckTypeDialog('edit', type)}
                       >
                         Edit
                       </Button>
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         disabled={checkTypeToggleId === type.id}
                         onPress={() => {
                           void handleToggleCheckType(type)
@@ -724,7 +724,7 @@ export function AdminCatalogManager() {
                     </Row>
                   </Row>
 
-                  <Row gap="$3" flexWrap="wrap">
+                  <Row gap={12} flexWrap="wrap">
                     <InfoChip label="Category" value={type.category ?? 'General'} />
                     <InfoChip
                       label="Platform cost"
@@ -744,7 +744,7 @@ export function AdminCatalogManager() {
 
                   <Separator />
 
-                  <Row flexWrap="wrap" gap="$2">
+                  <Row flexWrap="wrap" gap={8}>
                     <InfoText
                       label="Required documents"
                       value={formatDocuments(type.required_documents)}
@@ -779,7 +779,7 @@ export function AdminCatalogManager() {
             </Dialog.Description>
 
             <ScrollView showsVerticalScrollIndicator>
-              <Stack gap="$3" marginTop="$3" paddingBottom="$4">
+              <Stack gap={12} marginTop={12} paddingBottom={16}>
                 <Input
                   placeholder="Slug"
                   value={packageForm.slug}
@@ -798,9 +798,9 @@ export function AdminCatalogManager() {
                   rows={3}
                 />
 
-                <Row gap="$3" flexWrap="wrap">
+                <Row gap={12} flexWrap="wrap">
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Platform cost (USD cents)
                     </Text>
                     <Input
@@ -810,7 +810,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Retail price (USD cents)
                     </Text>
                     <Input
@@ -820,7 +820,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Estimated completion (days)
                     </Text>
                     <Input
@@ -840,20 +840,20 @@ export function AdminCatalogManager() {
                   autoCapitalize="none"
                 />
 
-                <Stack gap="$2">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
+                <Stack gap={8}>
+                  <Text color="gray">
                     Included check types
                   </Text>
-                  <Stack gap="$2">
+                  <Stack gap={8}>
                     {checkTypesQuery.isLoading ? (
-                      <Row gap="$2" alignItems="center">
-                        <Spinner size="small" />
-                        <Text fontSize="$2" color="$color10">
+                      <Row gap={8} align="center">
+                        <Spinner size="sm" />
+                        <Text color="gray">
                           Loading check types…
                         </Text>
                       </Row>
                     ) : checkTypes.length === 0 ? (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         No check types available. Create a check type before configuring packages.
                       </Text>
                     ) : (
@@ -862,17 +862,17 @@ export function AdminCatalogManager() {
                         return (
                           <Row
                             key={type.id}
-                            gap="$2"
-                            alignItems="center"
+                            gap={8}
+                            align="center"
                             borderColor="$borderColor"
                             borderWidth={1}
-                            borderRadius="$3"
-                            paddingHorizontal="$3"
-                            paddingVertical="$2"
+                            borderRadius={12}
+                            paddingHorizontal={12}
+                            paddingVertical={8}
                             backgroundColor={selected ? '$blue3' : '$background'}
                           >
                             <Checkbox
-                              size="$3"
+                              size={12}
                               checked={selected}
                               onCheckedChange={(value) =>
                                 handleTogglePackageType(type.id, value === true)
@@ -882,11 +882,11 @@ export function AdminCatalogManager() {
                                 <Check size={16} />
                               </Checkbox.Indicator>
                             </Checkbox>
-                            <Stack gap="$1" flex={1}>
-                              <Text fontSize="$3" fontWeight="600" color="$color12">
+                            <Stack gap={4} flex={1}>
+                              <Text color="gray">
                                 {type.display_name}
                               </Text>
-                              <Text fontSize="$2" color="$color10">
+                              <Text color="gray">
                                 {type.category ?? 'General'} ·{' '}
                                 {formatCurrency(type.platform_cost_cents)}
                               </Text>
@@ -898,7 +898,7 @@ export function AdminCatalogManager() {
                   </Stack>
                 </Stack>
 
-                <Row gap="$2" alignItems="center">
+                <Row gap={8} align="center">
                   <Checkbox
                     checked={packageForm.isActive}
                     onCheckedChange={(value) =>
@@ -909,7 +909,7 @@ export function AdminCatalogManager() {
                       <Check size={16} />
                     </Checkbox.Indicator>
                   </Checkbox>
-                  <Text fontSize="$2" color="$color12">
+                  <Text color="gray">
                     Package is active and selectable
                   </Text>
                 </Row>
@@ -928,19 +928,19 @@ export function AdminCatalogManager() {
                 />
 
                 {packageFormError ? (
-                  <Text fontSize="$2" color="$red10">
+                  <Text color="$red10">
                     {packageFormError}
                   </Text>
                 ) : null}
 
-                <Row gap="$2" justifyContent="flex-end">
+                <Row gap={8} justify="flex-end">
                   <Dialog.Close asChild>
-                    <Button variant="outlined" size="$3">
+                    <Button variant="outline" size={12}>
                       Cancel
                     </Button>
                   </Dialog.Close>
                   <Button
-                    size="$3"
+                    size={12}
                     disabled={upsertPackageMutation.isPending}
                     onPress={() => {
                       void handlePackageSubmit()
@@ -977,7 +977,7 @@ export function AdminCatalogManager() {
             </Dialog.Description>
 
             <ScrollView showsVerticalScrollIndicator>
-              <Stack gap="$3" marginTop="$3" paddingBottom="$4">
+              <Stack gap={12} marginTop={12} paddingBottom={16}>
                 <Input
                   placeholder="Slug"
                   value={checkTypeForm.slug}
@@ -1007,9 +1007,9 @@ export function AdminCatalogManager() {
                   autoCapitalize="none"
                 />
 
-                <Row gap="$3" flexWrap="wrap">
+                <Row gap={12} flexWrap="wrap">
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Platform cost (USD cents)
                     </Text>
                     <Input
@@ -1019,7 +1019,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Retail price (USD cents, optional)
                     </Text>
                     <Input
@@ -1029,7 +1029,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Validity period (days, optional)
                     </Text>
                     <Input
@@ -1039,7 +1039,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text fontSize="$2" color="$color10" marginBottom="$1">
+                    <Text color="gray" marginBottom={4}>
                       Estimated completion (days)
                     </Text>
                     <Input
@@ -1059,7 +1059,7 @@ export function AdminCatalogManager() {
                   rows={2}
                 />
 
-                <Row gap="$2" alignItems="center">
+                <Row gap={8} align="center">
                   <Checkbox
                     checked={checkTypeForm.isActive}
                     onCheckedChange={(value) =>
@@ -1070,7 +1070,7 @@ export function AdminCatalogManager() {
                       <Check size={16} />
                     </Checkbox.Indicator>
                   </Checkbox>
-                  <Text fontSize="$2" color="$color12">
+                  <Text color="gray">
                     Check type is active
                   </Text>
                 </Row>
@@ -1092,19 +1092,19 @@ export function AdminCatalogManager() {
                 />
 
                 {checkTypeFormError ? (
-                  <Text fontSize="$2" color="$red10">
+                  <Text color="$red10">
                     {checkTypeFormError}
                   </Text>
                 ) : null}
 
-                <Row gap="$2" justifyContent="flex-end">
+                <Row gap={8} justify="flex-end">
                   <Dialog.Close asChild>
-                    <Button variant="outlined" size="$3">
+                    <Button variant="outline" size={12}>
                       Cancel
                     </Button>
                   </Dialog.Close>
                   <Button
-                    size="$3"
+                    size={12}
                     disabled={upsertCheckTypeMutation.isPending}
                     onPress={() => {
                       void handleCheckTypeSubmit()
@@ -1130,18 +1130,18 @@ interface InfoChipProps {
 function InfoChip({ label, value }: InfoChipProps) {
   return (
     <Stack
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      paddingHorizontal={12}
+      paddingVertical={8}
       borderColor="$borderColor"
       borderWidth={1}
-      borderRadius="$3"
+      borderRadius={12}
       backgroundColor="$background"
-      gap="$1"
+      gap={4}
     >
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         {label}
       </Text>
-      <Text fontSize="$3" fontWeight="600" color="$color12">
+      <Text color="gray">
         {value}
       </Text>
     </Stack>
@@ -1155,11 +1155,11 @@ interface InfoTextProps {
 
 function InfoText({ label, value }: InfoTextProps) {
   return (
-    <Row gap="$1" alignItems="center">
-      <Text fontSize="$2" color="$color10">
+    <Row gap={4} align="center">
+      <Text color="gray">
         {label}:
       </Text>
-      <Text fontSize="$2" color="$color12">
+      <Text color="gray">
         {value}
       </Text>
     </Row>

@@ -79,42 +79,42 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
 
   if (isLoading) {
     return (
-      <Card bordered padding="$4">
-        <Stack gap="$3" alignItems="center" paddingVertical="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading account credits…</Text>
+      <Card bordered padding={16}>
+        <Stack gap={12} align="center" paddingVertical={16}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading account credits…</Text>
         </Stack>
       </Card>
     )
   }
 
   return (
-    <Card bordered padding="$4" gap="$3">
-      <Row justifyContent="space-between" alignItems="center">
+    <Card bordered padding={16} gap={12}>
+      <Row justify="space-between" align="center">
         <Stack>
-          <Text fontSize="$5" fontWeight="600">
+          <Text>
             Account Credits
           </Text>
-          <Text color="$color10" fontSize="$2">
+          <Text color="gray">
             Pre-funded balance for automatic payments
           </Text>
         </Stack>
         {!showDepositForm && (
-          <Button size="$3" theme="blue" icon={Plus} onPress={() => setShowDepositForm(true)}>
+          <Button size={12} theme="blue" icon={Plus} onPress={() => setShowDepositForm(true)}>
             Add Credits
           </Button>
         )}
       </Row>
 
       {/* Balance Display */}
-      <Card padding="$4" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Row gap="$3" alignItems="center">
+      <Card padding={16} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+        <Row gap={12} align="center">
           <DollarSign size={32} color="$green11" />
           <Stack flex={1}>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Current Balance
             </Text>
-            <Text fontSize="$6" fontWeight="700" color="$green11">
+            <Text color="$green11">
               {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
             </Text>
           </Stack>
@@ -122,9 +122,9 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       </Card>
 
       {showDepositForm ? (
-        <Stack gap="$3">
-          <Stack gap="$2">
-            <Text fontSize="$3" fontWeight="600">
+        <Stack gap={12}>
+          <Stack gap={8}>
+            <Text>
               Deposit Amount
             </Text>
             <Input
@@ -132,16 +132,16 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               value={depositAmount}
               onChangeText={setDepositAmount}
               keyboardType="decimal-pad"
-              size="$4"
+              size={16}
             />
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Enter the amount you want to add to your account credits.
             </Text>
           </Stack>
-          <Row gap="$2">
+          <Row gap={8}>
             <Button
-              size="$4"
-              variant="outlined"
+              size={16}
+              variant="outline"
               onPress={() => {
                 setShowDepositForm(false)
                 setDepositAmount('')
@@ -150,7 +150,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               Cancel
             </Button>
             <Button
-              size="$4"
+              size={16}
               theme="blue"
               icon={CreditCard}
               onPress={() => {
@@ -178,11 +178,11 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
         <>
           {/* Recent Transactions */}
           {ledgerQuery.data && ledgerQuery.data.items.length > 0 && (
-            <Stack gap="$2">
-              <Text fontSize="$3" fontWeight="600">
+            <Stack gap={8}>
+              <Text>
                 Recent Transactions
               </Text>
-              <Stack gap="$1">
+              <Stack gap={4}>
                 {ledgerQuery.data.items
                   .slice(0, 5)
                   .map(
@@ -197,23 +197,21 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                     }) => (
                       <Row
                         key={entry.id}
-                        justifyContent="space-between"
-                        alignItems="center"
-                        padding="$2"
+                        justify="space-between"
+                        align="center"
+                        padding={8}
                         backgroundColor="$color2"
-                        borderRadius="$2"
+                        borderRadius={8}
                       >
                         <Stack flex={1}>
-                          <Text fontSize="$3" fontWeight="500">
+                          <Text>
                             {entry.description ?? entry.transactionType}
                           </Text>
-                          <Text fontSize="$2" color="$color10">
+                          <Text color="gray">
                             {new Date(entry.createdAt).toLocaleDateString()}
                           </Text>
                         </Stack>
                         <Text
-                          fontSize="$4"
-                          fontWeight="600"
                           color={entry.direction === 'credit' ? '$green11' : '$red11'}
                         >
                           {entry.direction === 'credit' ? '+' : '-'}

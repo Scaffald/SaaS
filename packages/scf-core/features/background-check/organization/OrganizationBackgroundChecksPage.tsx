@@ -131,11 +131,11 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Worker',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Stack>
-              <Text fontSize="$3" fontWeight="600" color="$color12">
+              <Text color="gray">
                 {row.original.workerName}
               </Text>
               {row.original.workerEmail ? (
-                <Text fontSize="$2" color="$color10">
+                <Text color="gray">
                   {row.original.workerEmail}
                 </Text>
               ) : null}
@@ -181,8 +181,8 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Actions',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               icon={Eye}
               onPress={() => setSelectedCheckId(row.original.id)}
             >
@@ -196,9 +196,9 @@ export function OrganizationBackgroundChecksPage() {
 
   if (isLoadingOrganizations) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
-        <Spinner size="large" />
-        <Text fontSize="$3" color="$color11">
+      <Stack flex={1} align="center" justify="center" gap={8}>
+        <Spinner size="lg" />
+        <Text color="gray">
           Loading organizations…
         </Text>
       </Stack>
@@ -207,11 +207,11 @@ export function OrganizationBackgroundChecksPage() {
 
   if (!organizations.length) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
-        <Text fontSize="$6" fontWeight="700" color="$color12">
+      <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
+        <Text color="gray">
           No organizations available
         </Text>
-        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           Create an organization before managing background checks.
         </Text>
       </Stack>
@@ -220,8 +220,8 @@ export function OrganizationBackgroundChecksPage() {
 
   return (
     <Stack flex={1}>
-      <Stack padding="$4" gap="$3">
-        <Stack gap="$2">
+      <Stack padding={16} gap={12}>
+        <Stack gap={8}>
           <Label htmlFor="office-background-checks-organization">Organization</Label>
           <ResponsiveSelect
             value={selectedOrganizationId ?? ''}
@@ -243,10 +243,10 @@ export function OrganizationBackgroundChecksPage() {
           />
         </Stack>
 
-        <Row gap="$2" justifyContent="flex-end">
+        <Row gap={8} justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             icon={RefreshCcw}
             onPress={() => checksQuery.refetch()}
             disabled={checksQuery.isLoading}
@@ -254,7 +254,7 @@ export function OrganizationBackgroundChecksPage() {
             Refresh
           </Button>
           <Button
-            size="$3"
+            size={12}
             theme="blue"
             icon={ExternalLink}
             onPress={handleNavigateToRequest}
@@ -285,18 +285,18 @@ export function OrganizationBackgroundChecksPage() {
           onRowView={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
-        <Stack flex={1} padding="$4" gap="$3" alignItems="center" justifyContent="center">
-          <Text fontSize="$5" fontWeight="700" color="$color12">
+        <Stack flex={1} padding={16} gap={12} align="center" justify="center">
+          <Text color="gray">
             Select an organization to view background checks
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Choose an organization above to manage screening requests and results.
           </Text>
         </Stack>
       )}
 
       {selectedCheckId ? (
-        <Stack paddingHorizontal="$4" paddingBottom="$6" gap="$3">
+        <Stack paddingHorizontal={16} paddingBottom={24} gap={12}>
           <OrganizationCheckDetails
             checkId={selectedCheckId}
             summary={rows.find((row: CheckRow) => row.id === selectedCheckId)?.raw}

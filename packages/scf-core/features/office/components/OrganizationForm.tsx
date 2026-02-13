@@ -251,7 +251,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     <ScrollView
       flex={1}
       backgroundColor="$color2"
-      padding="$5"
+      padding={20}
       showsVerticalScrollIndicator={false}
     >
       {/* Name */}
@@ -259,8 +259,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="name"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
-            <Text fontWeight="600">Name *</Text>
+          <Stack gap={8}>
+            <Text>Name *</Text>
             <Input
               testID="org-form-name"
               value={field.value}
@@ -269,7 +269,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               borderColor={errors.name ? '$red8' : '$borderColor'}
             />
             {errors.name && (
-              <Text data-testid="name-error" color="$red10" fontSize="$2">
+              <Text data-testid="name-error" color="$red10">
                 {errors.name.message}
               </Text>
             )}
@@ -282,8 +282,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="slug"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
-            <Text fontWeight="600">Vanity URL *</Text>
+          <Stack gap={8}>
+            <Text>Vanity URL *</Text>
             <Input
               testID="org-form-slug"
               value={field.value}
@@ -293,44 +293,44 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               autoCorrect={false}
               borderColor={slugHasAvailabilityError || errors.slug ? '$red8' : '$borderColor'}
             />
-            <Text fontSize="$2" opacity={0.7}>
+            <Text opacity={0.7}>
               Lowercase, URL-friendly username (hyphens only)
             </Text>
             {errors.slug && (
-              <Text data-testid="slug-error" color="$red10" fontSize="$2">
+              <Text data-testid="slug-error" color="$red10">
                 {errors.slug.message}
               </Text>
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
-              <Row gap="$2" alignItems="center">
-                <Spinner size="small" />
-                <Text fontSize="$2" color="$color11">
+              <Row gap={8} align="center">
+                <Spinner size="sm" />
+                <Text color="gray">
                   Checking availability...
                 </Text>
               </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
-              <Text color="$green10" fontSize="$2">
+              <Text color="$green10">
                 This vanity URL is available.
               </Text>
             )}
             {slugStatus.state === 'invalid' && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {slugStatus.message}
               </Text>
             )}
             {slugStatus.state === 'taken' && (
-              <Stack gap="$2">
-                <Text color="$red10" fontSize="$2">
+              <Stack gap={8}>
+                <Text color="$red10">
                   {slugStatus.message}
                 </Text>
                 {slugStatus.suggestions?.length ? (
-                  <Row gap="$2" flexWrap="wrap">
+                  <Row gap={8} flexWrap="wrap">
                     {slugStatus.suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         onPress={() => setValue('slug', suggestion, { shouldValidate: true })}
                       >
                         {suggestion}
@@ -341,7 +341,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Stack>
             )}
             {slugStatus.state === 'error' && (
-              <Text color="$orange10" fontSize="$2">
+              <Text color="$orange10">
                 {slugStatus.message}
               </Text>
             )}
@@ -377,8 +377,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="logo_url"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
-            <Text fontWeight="600">Logo URL</Text>
+          <Stack gap={8}>
+            <Text>Logo URL</Text>
             <Input
               testID="org-form-logo-url"
               value={field.value || ''}
@@ -387,7 +387,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               borderColor={errors.logo_url ? '$red8' : '$borderColor'}
             />
             {errors.logo_url && (
-              <Text data-testid="logo-error" color="$red10" fontSize="$2">
+              <Text data-testid="logo-error" color="$red10">
                 {errors.logo_url.message}
               </Text>
             )}
@@ -400,8 +400,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="visibility"
         control={control}
         render={({ field }) => (
-          <Stack gap="$2">
-            <Text fontWeight="600">Visibility</Text>
+          <Stack gap={8}>
+            <Text>Visibility</Text>
             <ResponsiveSelect
               value={field.value}
               onValueChange={field.onChange}
@@ -414,7 +414,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               ]}
             />
             {errors.visibility && (
-              <Text color="$red10" fontSize="$2">
+              <Text color="$red10">
                 {errors.visibility.message}
               </Text>
             )}
@@ -462,19 +462,15 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
       {/* Submit buttons */}
       <Row
-        justifyContent="flex-end"
-        gap="$2"
-        marginTop="$4"
-        $sm={{ flexDirection: 'column' }}
-        $md={{ flexDirection: 'row' }}
+        justify="flex-end"
+        gap={8}
+        marginTop={16}}}
       >
         <Button
           testID="org-form-cancel-btn"
-          variant="outlined"
+          variant="outline"
           onPress={() => router.back()}
-          disabled={isLoading}
-          $sm={{ height: 44, width: '100%' }}
-          $md={{ height: undefined, width: undefined }}
+          disabled={isLoading}}
         >
           Cancel
         </Button>
@@ -482,9 +478,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading || slugAvailabilityBlocksSubmit}
-          icon={isLoading ? <Spinner /> : undefined}
-          $sm={{ height: 44, width: '100%' }}
-          $md={{ height: undefined, width: undefined }}
+          icon={isLoading ? <Spinner /> : undefined}}}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>

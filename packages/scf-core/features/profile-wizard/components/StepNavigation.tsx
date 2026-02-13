@@ -33,38 +33,38 @@ export function StepNavigation({
   footerSlot,
 }: StepNavigationProps) {
   return (
-    <Stack gap="$3">
-      <Row gap="$3" flexWrap="wrap">
-        <Button size="$4" flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
+    <Stack gap={12}>
+      <Row gap={12} flexWrap="wrap">
+        <Button size={16} flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
           {isLastStep ? 'Finish' : nextLabel}
         </Button>
         <Button
-          size="$4"
+          size={16}
           flex={1}
           onPress={onBack}
           disabled={!canGoBack || isSaving}
-          variant="outlined"
+          variant="outline"
         >
           {backLabel}
         </Button>
       </Row>
 
-      <Row justifyContent="space-between" flexWrap="wrap" gap="$2">
+      <Row justify="space-between" flexWrap="wrap" gap={8}>
         {onSkip && (
-          <Button size="$3" variant="outlined" chromeless onPress={onSkip} disabled={isSaving}>
+          <Button size={12} variant="outline" chromeless onPress={onSkip} disabled={isSaving}>
             {skipLabel}
           </Button>
         )}
 
         {onSaveForLater && (
-          <Button size="$3" chromeless onPress={onSaveForLater} disabled={isSaving}>
+          <Button size={12} chromeless onPress={onSaveForLater} disabled={isSaving}>
             {saveLabel}
           </Button>
         )}
       </Row>
 
       {isSaving && (
-        <Text fontSize="$2" color="$color10" aria-live="polite">
+        <Text color="gray" aria-live="polite">
           Saving your progress...
         </Text>
       )}

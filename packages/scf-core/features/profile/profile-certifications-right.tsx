@@ -172,11 +172,11 @@ export function ProfileCertificationsRight() {
   if (allCerts.length === 0) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingTop="$8">
-          <Award size={48} color="$color11" />
-          <Stack gap="$2" alignItems="center">
+        <Stack gap={16} align="center" paddingTop={32}>
+          <Award size={48} color="gray" />
+          <Stack gap={8} align="center">
             <H4>Your Certifications</H4>
-            <Text color="$color11">Search and add certifications on the left</Text>
+            <Text color="gray">Search and add certifications on the left</Text>
           </Stack>
         </Stack>
       </DashboardWidget>
@@ -185,15 +185,15 @@ export function ProfileCertificationsRight() {
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
+      <Stack gap={16}>
         <H4>Your Certifications</H4>
 
         <ScrollView height={700}>
-          <Stack gap="$4">
+          <Stack gap={16}>
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
-              <Stack gap="$2">
-                <Text fontWeight="600" fontSize="$4" color="$blue11">
+              <Stack gap={8}>
+                <Text color="$blue11">
                   Top-Level Categories
                 </Text>
                 {depth0.map((cert) => {
@@ -201,7 +201,7 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      padding="$3"
+                      padding={12}
                       bordered
                       animation="quick"
                       backgroundColor={
@@ -219,30 +219,29 @@ export function ProfileCertificationsRight() {
                             : '$borderColor'
                       }
                     >
-                      <Row justifyContent="space-between" alignItems="center">
-                        <Stack flex={1} gap="$1">
-                          <Row gap="$2" alignItems="center">
-                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                      <Row justify="space-between" align="center">
+                        <Stack flex={1} gap={4}>
+                          <Row gap={8} align="center">
+                            <Text>{cert.catalog.title}</Text>
                             <Text
-                              fontSize="$1"
                               color="$blue9"
                               backgroundColor="$blue2"
-                              paddingHorizontal="$2"
-                              paddingVertical="$0.5"
-                              borderRadius="$2"
+                              paddingHorizontal={8}
+                              paddingVertical={2}
+                              borderRadius={8}
                             >
                               Top Level
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text fontSize="$2" color="$color11">
+                            <Text color="gray">
                               {cert.catalog.description}
                             </Text>
                           )}
                         </Stack>
                       </Row>
                       {changeStatus === 'added' && (
-                        <Text marginTop="$2" fontSize="$2" color="$green11">
+                        <Text marginTop={8} color="$green11">
                           ✓ Added to profile
                         </Text>
                       )}
@@ -254,8 +253,8 @@ export function ProfileCertificationsRight() {
 
             {/* Depth 1 - Categories */}
             {depth1.length > 0 && (
-              <Stack gap="$2">
-                <Text fontWeight="600" fontSize="$4" color="$green11">
+              <Stack gap={8}>
+                <Text color="$green11">
                   Sub-Categories
                 </Text>
                 {depth1.map((cert) => {
@@ -263,7 +262,7 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      padding="$3"
+                      padding={12}
                       bordered
                       animation="quick"
                       backgroundColor={
@@ -281,30 +280,29 @@ export function ProfileCertificationsRight() {
                             : '$borderColor'
                       }
                     >
-                      <Row justifyContent="space-between" alignItems="center">
-                        <Stack flex={1} gap="$1">
-                          <Row gap="$2" alignItems="center">
-                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                      <Row justify="space-between" align="center">
+                        <Stack flex={1} gap={4}>
+                          <Row gap={8} align="center">
+                            <Text>{cert.catalog.title}</Text>
                             <Text
-                              fontSize="$1"
                               color="$green9"
                               backgroundColor="$green2"
-                              paddingHorizontal="$2"
-                              paddingVertical="$0.5"
-                              borderRadius="$2"
+                              paddingHorizontal={8}
+                              paddingVertical={2}
+                              borderRadius={8}
                             >
                               Category
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text fontSize="$2" color="$color11">
+                            <Text color="gray">
                               {cert.catalog.description}
                             </Text>
                           )}
                         </Stack>
                       </Row>
                       {changeStatus === 'added' && (
-                        <Text marginTop="$2" fontSize="$2" color="$green11">
+                        <Text marginTop={8} color="$green11">
                           ✓ Added to profile
                         </Text>
                       )}
@@ -316,8 +314,8 @@ export function ProfileCertificationsRight() {
 
             {/* Depth 2 - Specific Certifications */}
             {depth2.length > 0 && (
-              <Stack gap="$2">
-                <Text fontWeight="600" fontSize="$4" color="$purple11">
+              <Stack gap={8}>
+                <Text color="$purple11">
                   Specific Certifications
                 </Text>
                 {depth2.map((cert) => {
@@ -348,54 +346,53 @@ export function ProfileCertificationsRight() {
                     >
                       {/* Header - Always Visible */}
                       <Row
-                        padding="$3"
-                        gap="$3"
-                        alignItems="center"
+                        padding={12}
+                        gap={12}
+                        align="center"
                         pressStyle={{ backgroundColor: '$backgroundHover' }}
                         cursor="pointer"
                         onPress={() => toggleExpand(cert.id)}
                       >
                         {isExpanded ? (
-                          <ChevronDown size={20} color="$color11" />
+                          <ChevronDown size={20} color="gray" />
                         ) : (
-                          <ChevronRight size={20} color="$color11" />
+                          <ChevronRight size={20} color="gray" />
                         )}
 
-                        <Stack flex={1} gap="$1">
-                          <Row gap="$2" alignItems="center" flexWrap="wrap">
-                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                        <Stack flex={1} gap={4}>
+                          <Row gap={8} align="center" flexWrap="wrap">
+                            <Text>{cert.catalog.title}</Text>
                             <Text
-                              fontSize="$1"
                               color="$purple9"
                               backgroundColor="$purple2"
-                              paddingHorizontal="$2"
-                              paddingVertical="$0.5"
-                              borderRadius="$2"
+                              paddingHorizontal={8}
+                              paddingVertical={2}
+                              borderRadius={8}
                             >
                               Certification
                             </Text>
                           </Row>
                           {hasProof && (
-                            <Text fontSize="$2" color="$green10">
+                            <Text color="$green10">
                               ✓ Proof added
                             </Text>
                           )}
                           {changeStatus === 'added' && (
-                            <Text fontSize="$2" color="$green11">
+                            <Text color="$green11">
                               ✓ Added to profile
                             </Text>
                           )}
                           {changeStatus === 'removed' && (
-                            <Text fontSize="$2" color="$red11">
+                            <Text color="$red11">
                               Removed from profile
                             </Text>
                           )}
                         </Stack>
 
-                        <Row gap="$2">
+                        <Row gap={8}>
                           {hasProof && (
                             <Button
-                              size="$2"
+                              size={8}
                               chromeless
                               icon={<ExternalLink size={16} />}
                               onPress={(e) => {
@@ -410,7 +407,7 @@ export function ProfileCertificationsRight() {
                             </Button>
                           )}
                           <Button
-                            size="$2"
+                            size={8}
                             chromeless
                             icon={<Trash2 size={16} />}
                             onPress={(e) => {
@@ -427,18 +424,18 @@ export function ProfileCertificationsRight() {
                       {/* Expanded Content - File Upload & URL */}
                       {isExpanded && (
                         <Stack
-                          padding="$3"
+                          padding={12}
                           paddingTop="$0"
-                          gap="$4"
+                          gap={16}
                           borderTopWidth={1}
                           borderColor="$borderColor"
                         >
                           {/* File Upload */}
-                          <Stack gap="$2">
-                            <Text fontWeight="600" fontSize="$3">
+                          <Stack gap={8}>
+                            <Text>
                               Upload Certificate
                             </Text>
-                            <Row gap="$2" style={{ alignItems: 'center' }}>
+                            <Row gap={8} style={{ alignItems: 'center' }}>
                               <Button
                                 flex={1}
                                 icon={<Upload size={16} />}
@@ -470,18 +467,18 @@ export function ProfileCertificationsRight() {
                               )}
                             </Row>
                             {cert.certificate_file_path && (
-                              <Text fontSize="$2" color="$color11">
+                              <Text color="gray">
                                 Current: {cert.certificate_file_path.split('/').pop()}
                               </Text>
                             )}
                           </Stack>
 
                           {/* URL Input */}
-                          <Stack gap="$2">
-                            <Text fontWeight="600" fontSize="$3">
+                          <Stack gap={8}>
+                            <Text>
                               Or Add URL
                             </Text>
-                            <Row gap="$2">
+                            <Row gap={8}>
                               <Input
                                 flex={1}
                                 placeholder="https://..."
@@ -500,7 +497,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                             </Row>
                             {cert.credential_url && (
-                              <Text fontSize="$2" color="$color11">
+                              <Text color="gray">
                                 Current: {cert.credential_url}
                               </Text>
                             )}

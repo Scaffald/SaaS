@@ -42,14 +42,14 @@ export const TimeEntryInput = memo(function TimeEntryInput({
     <Stack
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$4"
-      padding="$3"
-      gap="$2"
+      borderRadius={16}
+      padding={12}
+      gap={8}
       backgroundColor="$background"
     >
-      <Row gap="$3" alignItems="center">
-        <Stack flex={1} gap="$1">
-          <Text fontWeight="600" fontSize="$3">
+      <Row gap={12} align="center">
+        <Stack flex={1} gap={4}>
+          <Text>
             Start Time
           </Text>
           <Controller
@@ -66,14 +66,14 @@ export const TimeEntryInput = memo(function TimeEntryInput({
             )}
           />
           {rowError?.start?.message && (
-            <Text fontSize="$2" color="$red10">
+            <Text color="$red10">
               {rowError.start.message}
             </Text>
           )}
         </Stack>
 
-        <Stack flex={1} gap="$1">
-          <Text fontWeight="600" fontSize="$3">
+        <Stack flex={1} gap={4}>
+          <Text>
             End Time
           </Text>
           <Controller
@@ -90,14 +90,14 @@ export const TimeEntryInput = memo(function TimeEntryInput({
             )}
           />
           {rowError?.end?.message && (
-            <Text fontSize="$2" color="$red10">
+            <Text color="$red10">
               {rowError.end.message}
             </Text>
           )}
         </Stack>
 
         <Button
-          size="$3"
+          size={12}
           chromeless
           onPress={onRemove}
           disabled={disableRemove}
@@ -108,7 +108,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
       </Row>
 
       {typeof rowError?.message === 'string' && (
-        <Text fontSize="$2" color="$red10">
+        <Text color="$red10">
           {rowError.message}
         </Text>
       )}

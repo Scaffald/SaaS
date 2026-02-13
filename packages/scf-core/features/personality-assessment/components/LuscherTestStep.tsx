@@ -73,15 +73,15 @@ export function LuscherTestStep({
   const remaining = 8 - selectedOrder.length
 
   return (
-    <Stack gap="$6" maxWidth={800} width="100%" marginHorizontal="auto">
-      <Stack gap="$2" alignItems="center">
-        <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
+    <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto">
+      <Stack gap={8} align="center">
+        <Text color="gray" textAlign="center">
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
-        <Text fontSize="$4" color="$color11" textAlign="center">
+        <Text color="gray" textAlign="center">
           Click the colors in order based on what makes you feel the best.
         </Text>
-        <Text fontSize="$3" color="$color10" textAlign="center">
+        <Text color="gray" textAlign="center">
           {isComplete
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
@@ -89,14 +89,13 @@ export function LuscherTestStep({
       </Stack>
 
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
-      <Stack gap="$3" width="100%">
+      <Stack gap={12} width="100%">
         {/* Mobile: 2 columns, 4 rows */}
         <Row
-          gap="$3"
+          gap={12}
           flexWrap="wrap"
-          justifyContent="center"
+          justify="center"
           display="flex"
-          $md={{ display: 'none' }}
         >
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
@@ -104,15 +103,14 @@ export function LuscherTestStep({
             return (
               <Stack
                 key={String(color.key)}
-                gap="$2"
-                alignItems="center"
+                gap={8}
+                align="center"
                 cursor={isSelected ? 'default' : 'pointer'}
                 opacity={isSelected ? 0 : 1}
                 animation="quick"
                 pressStyle={{ scale: 0.95 }}
                 onPress={() => !isSelected && handleColorPress(color.value)}
                 disabled={isSelected || isLoading}
-                flexBasis="48%"
                 maxWidth={200}
                 minWidth={120}
                 pointerEvents={isSelected ? 'none' : 'auto'}
@@ -123,9 +121,9 @@ export function LuscherTestStep({
                   maxWidth={200}
                   maxHeight={200}
                   style={{ backgroundColor: color.hex }}
-                  borderRadius="$4"
-                  justifyContent="center"
-                  alignItems="center"
+                  borderRadius={16}
+                  justify="center"
+                  align="center"
                   shadowColor="$shadowColor"
                   shadowOffset={{ width: 0, height: 2 }}
                   shadowOpacity={0.1}
@@ -138,11 +136,10 @@ export function LuscherTestStep({
 
         {/* Desktop: 4 columns, 2 rows */}
         <Row
-          gap="$3"
+          gap={12}
           flexWrap="wrap"
-          justifyContent="center"
+          justify="center"
           display="none"
-          $md={{ display: 'flex' }}
         >
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
@@ -150,15 +147,14 @@ export function LuscherTestStep({
             return (
               <Stack
                 key={String(color.key)}
-                gap="$2"
-                alignItems="center"
+                gap={8}
+                align="center"
                 cursor={isSelected ? 'default' : 'pointer'}
                 opacity={isSelected ? 0 : 1}
                 animation="quick"
                 pressStyle={{ scale: 0.95 }}
                 onPress={() => !isSelected && handleColorPress(color.value)}
                 disabled={isSelected || isLoading}
-                flexBasis="23%"
                 maxWidth={250}
                 minWidth={150}
                 pointerEvents={isSelected ? 'none' : 'auto'}
@@ -169,9 +165,9 @@ export function LuscherTestStep({
                   maxWidth={250}
                   maxHeight={250}
                   style={{ backgroundColor: color.hex }}
-                  borderRadius="$4"
-                  justifyContent="center"
-                  alignItems="center"
+                  borderRadius={16}
+                  justify="center"
+                  align="center"
                   shadowColor="$shadowColor"
                   shadowOffset={{ width: 0, height: 2 }}
                   shadowOpacity={0.1}
@@ -185,8 +181,8 @@ export function LuscherTestStep({
 
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
-        <Row justifyContent="center">
-          <Button variant="primary" size="$4" onPress={() => onSave(selectedOrder)}>
+        <Row justify="center">
+          <Button variant="primary" size={16} onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>
         </Row>

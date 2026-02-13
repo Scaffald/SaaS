@@ -10,14 +10,14 @@ interface MilestoneBadgeProps {
 export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: MilestoneBadgeProps) {
   return (
     <Row
-      gap="$2"
-      alignItems="center"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      gap={8}
+      align="center"
+      paddingHorizontal={12}
+      paddingVertical={8}
       backgroundColor={milestone.achieved ? '$green3' : '$color3'}
       borderColor={milestone.achieved ? '$green7' : '$color5'}
       borderWidth={1}
-      borderRadius="$3"
+      borderRadius={12}
       opacity={milestone.achieved ? 1 : 0.7}
     >
       <Trophy
@@ -26,10 +26,10 @@ export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: Milest
         data-testid="trophy-icon"
       />
       <Stack>
-        <Text fontSize="$2" fontWeight="600" color={milestone.achieved ? '$green11' : '$color11'}>
+        <Text color={milestone.achieved ? '$green11' : '$color11'}>
           {milestone.label}
         </Text>
-        <Text fontSize="$1" color="$color10">
+        <Text color="gray">
           {milestone.threshold}% milestone
         </Text>
       </Stack>

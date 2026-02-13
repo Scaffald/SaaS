@@ -126,39 +126,38 @@ export function ComparisonColumn({
   return (
     <Stack
       width={width}
-      gap="$3"
+      gap={12}
       backgroundColor="$background"
-      padding="$4"
-      borderRadius="$4"
+      padding={16}
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
-      $sm={{ width: '100%' }}
     >
       {/* Candidate Header */}
-      <Stack gap="$2">
-        <Row gap="$2" alignItems="center">
-          <Avatar circular size="$4">
+      <Stack gap={8}>
+        <Row gap={8} align="center">
+          <Avatar circular size={16}>
             <Avatar.Image src={candidateAvatar || undefined} />
             <Avatar.Fallback backgroundColor="$blue9">
-              <Text color="white" fontWeight="600">
+              <Text color="white">
                 {candidateName.charAt(0).toUpperCase()}
               </Text>
             </Avatar.Fallback>
           </Avatar>
           <Stack flex={1}>
-            <Text fontSize="$5" fontWeight="600">
+            <Text>
               {candidateName}
             </Text>
             {jobTitle && (
-              <Text fontSize="$2" color="$color11">
+              <Text color="gray">
                 {jobTitle}
               </Text>
             )}
           </Stack>
           {canRemove && onRemove && (
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               color="$red11"
               borderColor="$red8"
               onPress={() => onRemove(inquiry.id)}
@@ -168,13 +167,13 @@ export function ComparisonColumn({
           )}
         </Row>
 
-        <Row flexWrap="wrap" gap="$2">
+        <Row flexWrap="wrap" gap={8}>
           <StatusBadge label={inquiryStatus} />
           <SubtleBadge label={`Updated ${inquiryUpdatedAt}`} />
         </Row>
 
         {/* Section Status Badges */}
-        <Row gap="$2" flexWrap="wrap">
+        <Row gap={8} flexWrap="wrap">
           {['employment', 'compensation', 'capabilities', 'other'].map((sectionName) => {
             const status = getSectionStatus(sectionName)
             const commentCount = getCommentCount(sectionName)
@@ -182,30 +181,28 @@ export function ComparisonColumn({
               <Row
                 key={sectionName}
                 backgroundColor={status.accepted ? '$green3' : '$gray3'}
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                borderRadius="$2"
-                alignItems="center"
-                gap="$1"
+                paddingHorizontal={8}
+                paddingVertical={4}
+                borderRadius={8}
+                align="center"
+                gap={4}
               >
                 {status.accepted ? (
                   <Check size={12} color="$green11" />
                 ) : (
-                  <Text fontSize="$1" color="$gray11">
+                  <Text color="$gray11">
                     ○
                   </Text>
                 )}
                 <Text
-                  fontSize="$1"
                   color={status.accepted ? '$green11' : '$gray11'}
-                  fontWeight="600"
                 >
                   {sectionName}
                 </Text>
                 {commentCount > 0 && (
-                  <Row alignItems="center" gap="$1">
+                  <Row align="center" gap={4}>
                     <MessageSquare size={10} color="$blue11" />
-                    <Text fontSize="$1" color="$blue11">
+                    <Text color="$blue11">
                       {commentCount}
                     </Text>
                   </Row>
@@ -219,8 +216,8 @@ export function ComparisonColumn({
       <Separator />
 
       {/* Employment Section */}
-      <Card padding="$3" gap="$2">
-        <Text fontSize="$4" fontWeight="600">
+      <Card padding={12} gap={8}>
+        <Text>
           Employment
         </Text>
         <ComparisonField
@@ -271,17 +268,17 @@ export function ComparisonColumn({
           isDifferent={highlightDifferences.has('employmentDatesNegotiable')}
         />
         {getSectionStatus('employment').accepted && (
-          <Row alignItems="center" gap="$1" marginTop="$1">
+          <Row align="center" gap={4} marginTop={4}>
             <Check size={14} color="$green11" />
-            <Text fontSize="$2" color="$green11" fontWeight="600">
+            <Text color="$green11">
               Accepted
             </Text>
           </Row>
         )}
         {getCommentCount('employment') > 0 && (
-          <Row alignItems="center" gap="$1" marginTop="$1">
+          <Row align="center" gap={4} marginTop={4}>
             <MessageSquare size={14} color="$blue11" />
-            <Text fontSize="$2" color="$blue11">
+            <Text color="$blue11">
               {getCommentCount('employment')} comment
               {getCommentCount('employment') !== 1 ? 's' : ''}
             </Text>
@@ -290,8 +287,8 @@ export function ComparisonColumn({
       </Card>
 
       {/* Compensation Section */}
-      <Card padding="$3" gap="$2">
-        <Text fontSize="$4" fontWeight="600">
+      <Card padding={12} gap={8}>
+        <Text>
           Compensation
         </Text>
         <ComparisonField
@@ -305,17 +302,17 @@ export function ComparisonColumn({
           isDifferent={highlightDifferences.has('rateNegotiable')}
         />
         {getSectionStatus('compensation').accepted && (
-          <Row alignItems="center" gap="$1" marginTop="$1">
+          <Row align="center" gap={4} marginTop={4}>
             <Check size={14} color="$green11" />
-            <Text fontSize="$2" color="$green11" fontWeight="600">
+            <Text color="$green11">
               Accepted
             </Text>
           </Row>
         )}
         {getCommentCount('compensation') > 0 && (
-          <Row alignItems="center" gap="$1" marginTop="$1">
+          <Row align="center" gap={4} marginTop={4}>
             <MessageSquare size={14} color="$blue11" />
-            <Text fontSize="$2" color="$blue11">
+            <Text color="$blue11">
               {getCommentCount('compensation')} comment
               {getCommentCount('compensation') !== 1 ? 's' : ''}
             </Text>
@@ -325,8 +322,8 @@ export function ComparisonColumn({
 
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
-        <Card padding="$3" gap="$2">
-          <Text fontSize="$4" fontWeight="600">
+        <Card padding={12} gap={8}>
+          <Text>
             Capabilities
           </Text>
           {capabilityResponses.map((response: CapabilityResponseRecord) => (
@@ -342,17 +339,17 @@ export function ComparisonColumn({
             />
           ))}
           {getSectionStatus('capabilities').accepted && (
-            <Row alignItems="center" gap="$1" marginTop="$1">
+            <Row align="center" gap={4} marginTop={4}>
               <Check size={14} color="$green11" />
-              <Text fontSize="$2" color="$green11" fontWeight="600">
+              <Text color="$green11">
                 Accepted
               </Text>
             </Row>
           )}
           {getCommentCount('capabilities') > 0 && (
-            <Row alignItems="center" gap="$1" marginTop="$1">
+            <Row align="center" gap={4} marginTop={4}>
               <MessageSquare size={14} color="$blue11" />
-              <Text fontSize="$2" color="$blue11">
+              <Text color="$blue11">
                 {getCommentCount('capabilities')} comment
                 {getCommentCount('capabilities') !== 1 ? 's' : ''}
               </Text>
@@ -361,8 +358,8 @@ export function ComparisonColumn({
         </Card>
       )}
 
-      <Card padding="$3" gap="$2">
-        <Text fontSize="$4" fontWeight="600">
+      <Card padding={12} gap={8}>
+        <Text>
           Other Terms
         </Text>
         <ComparisonField
@@ -406,8 +403,8 @@ export function ComparisonColumn({
 
       {/* View Full Inquiry Button */}
       <Button
-        size="$3"
-        variant="outlined"
+        size={12}
+        variant="outline"
         onPress={() =>
           router.push(
             ROUTES.OFFICE.APPLICATIONS.INQUIRY.path.replace(
@@ -438,14 +435,14 @@ const statusColors: Record<string, GetThemeValueForKey<'color'>> = {
 function StatusBadge({ label }: { label: string }) {
   return (
     <Row
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+      paddingHorizontal={8}
+      paddingVertical={4}
       backgroundColor="$color3"
-      borderRadius="$3"
-      alignItems="center"
-      gap="$1"
+      borderRadius={12}
+      align="center"
+      gap={4}
     >
-      <Text fontSize="$2" color={statusColors[label] ?? '$color11'} fontWeight="600">
+      <Text color={statusColors[label] ?? '$color11'}>
         {label.replace(/_/g, ' ')}
       </Text>
     </Row>
@@ -454,8 +451,8 @@ function StatusBadge({ label }: { label: string }) {
 
 function SubtleBadge({ label }: { label: string }) {
   return (
-    <Row paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$color2" borderRadius="$3">
-      <Text fontSize="$2" color="$color10">
+    <Row paddingHorizontal={8} paddingVertical={4} backgroundColor="$color2" borderRadius={12}>
+      <Text color="gray">
         {label}
       </Text>
     </Row>

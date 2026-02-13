@@ -46,9 +46,9 @@ export function PersonalityAssessmentWizard() {
   // Loading state
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
-        <Spinner size="large" />
-        <Text color="$color11">Loading assessment...</Text>
+      <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading assessment...</Text>
       </Stack>
     )
   }
@@ -56,12 +56,12 @@ export function PersonalityAssessmentWizard() {
   // Error state
   if (error) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
+      <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
         <AlertCircle size={48} color="$red10" />
-        <Text fontSize="$5" fontWeight="600" color="$red11">
+        <Text color="$red11">
           Error loading assessment
         </Text>
-        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           {error.message || 'An unexpected error occurred'}
         </Text>
       </Stack>
@@ -91,17 +91,17 @@ export function PersonalityAssessmentWizard() {
     <Stack flex={1} backgroundColor="$background">
       {/* Header */}
       <Stack
-        padding="$4"
+        padding={16}
         backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
-        gap="$3"
+        gap={12}
       >
-        <Stack gap="$1">
-          <Text fontSize="$7" fontWeight="bold" color="$color12">
+        <Stack gap={4}>
+          <Text color="gray">
             Personality Assessment
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             {stepInfo.description}
           </Text>
         </Stack>
@@ -112,7 +112,7 @@ export function PersonalityAssessmentWizard() {
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <Stack padding="$4" gap="$4">
+        <Stack padding={16} gap={16}>
           {currentStep === 'luscher1' && (
             <LuscherTestStep
               step="luscher1"
@@ -225,11 +225,11 @@ export function PersonalityAssessmentWizard() {
           )}
 
           {currentStep === 'completed' && (
-            <Stack gap="$4" alignItems="center" padding="$8">
-              <Text fontSize="$8" fontWeight="bold" color="$green10">
+            <Stack gap={16} align="center" padding={32}>
+              <Text color="$green10">
                 ✓ Assessment Complete!
               </Text>
-              <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+              <Text color="gray" style={{ textAlign: 'center' }}>
                 Your personality assessment has been completed. You can view your results below.
               </Text>
               {assessment && <ResultsStep assessment={assessment} isReadOnly />}
@@ -240,11 +240,11 @@ export function PersonalityAssessmentWizard() {
 
       {/* Navigation Footer */}
       {currentStep !== 'completed' && (
-        <Stack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <Row gap="$3" justifyContent="space-between">
+        <Stack padding={16} borderTopWidth={1} borderTopColor="$borderColor">
+          <Row gap={12} justify="space-between">
             <Button
-              size="$4"
-              variant="outlined"
+              size={16}
+              variant="outline"
               icon={ChevronLeft}
               onPress={handlePrevious}
               disabled={!canGoPrevious}
@@ -254,7 +254,7 @@ export function PersonalityAssessmentWizard() {
 
             {canGoNext && (
               <Button
-                size="$4"
+                size={16}
                 iconAfter={ChevronRight}
                 onPress={handleNext}
                 disabled={

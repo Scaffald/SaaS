@@ -17,7 +17,7 @@ interface ProfileFormPanelProps extends YStackProps {
  * ```tsx
  * <ProfileFormPanel>
  *   <H4>Skills & Expertise</H4>
- *   <Stack gap="$4">
+ *   <Stack gap={16}>
  *     {/* Form inputs and controls *\/}
  *   </Stack>
  * </ProfileFormPanel>
@@ -31,7 +31,7 @@ export function ProfileFormPanel({
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
-        <Stack gap="$4" {...props}>
+        <Stack gap={16} {...props}>
           {children}
         </Stack>
       </DashboardWidget>

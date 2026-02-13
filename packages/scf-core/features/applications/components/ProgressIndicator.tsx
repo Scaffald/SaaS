@@ -46,10 +46,10 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
 
   return (
     <Row
-      gap="$2"
-      alignItems="center"
+      gap={8}
+      align="center"
       flexWrap="wrap"
-      padding="$4"
+      padding={16}
       role="progressbar"
       aria-label="Application progress"
       aria-valuenow={steps.findIndex((s) => s.id === currentStep) + 1}
@@ -72,17 +72,17 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
           })
 
         return (
-          <Row key={step.id} gap="$2" alignItems="center" flex={1} minWidth={0}>
+          <Row key={step.id} gap={8} align="center" flex={1} minWidth={0}>
             {/* Step Circle */}
-            <Stack gap="$2" alignItems="center" flexShrink={0}>
+            <Stack gap={8} align="center" flexShrink={0}>
               {status === 'completed' ? (
                 <Stack
                   width={32}
                   height={32}
                   borderRadius="$10"
                   backgroundColor="$blue9"
-                  alignItems="center"
-                  justifyContent="center"
+                  align="center"
+                  justify="center"
                   borderWidth={2}
                   borderColor="$blue10"
                   shadowColor="$blue9"
@@ -90,7 +90,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   shadowOpacity={0.2}
                   shadowRadius={4}
                 >
-                  <CheckCircle2 size={20} color="$color12" />
+                  <CheckCircle2 size={20} color="gray" />
                 </Stack>
               ) : (
                 <Stack
@@ -98,8 +98,8 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   height={32}
                   borderRadius="$10"
                   backgroundColor={status === 'current' ? '$blue9' : '$gray4'}
-                  alignItems="center"
-                  justifyContent="center"
+                  align="center"
+                  justify="center"
                   borderWidth={status === 'current' ? 2 : 1}
                   borderColor={status === 'current' ? '$blue10' : '$gray7'}
                   shadowColor={status === 'current' ? '$blue9' : undefined}
@@ -108,8 +108,6 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   shadowRadius={status === 'current' ? 4 : undefined}
                 >
                   <Text
-                    fontSize="$4"
-                    fontWeight="600"
                     color={status === 'current' ? '$color12' : '$gray11'}
                   >
                     {stepNumber}
@@ -119,8 +117,6 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
 
               {/* Step Label */}
               <Text
-                fontSize="$3"
-                fontWeight={status === 'current' ? '600' : '400'}
                 color={
                   status === 'current' ? '$blue10' : status === 'completed' ? '$gray11' : '$gray10'
                 }
@@ -139,7 +135,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 flex={1}
                 height={2}
                 backgroundColor={isLineCompleted ? '$blue9' : '$gray4'}
-                marginHorizontal="$2"
+                marginHorizontal={8}
                 minWidth={20}
               />
             )}

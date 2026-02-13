@@ -10,16 +10,16 @@ export function DrawModeIndicator({ isActive }: DrawModeIndicatorProps) {
   return (
     <Stack
       position="absolute"
-      top="$4"
-      left="$4"
-      right="$4"
+      top={16}
+      left={16}
+      right={16}
       zIndex={100}
       backgroundColor="$blue9"
-      padding="$3"
-      borderRadius="$4"
-      alignItems="center"
+      padding={12}
+      borderRadius={16}
+      align="center"
     >
-      <Text color="white" fontSize="$4" fontWeight="600">
+      <Text color="white">
         🖊️ Draw Mode Active - Draw on the map to select an area
       </Text>
     </Stack>

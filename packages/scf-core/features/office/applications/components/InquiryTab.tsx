@@ -29,10 +29,10 @@ export function InquiryTab({
   const { inquiry } = data
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       {onEditInquiry && (
-        <Stack alignItems="flex-end">
-          <Button size="$3" variant="outlined" onPress={onEditInquiry}>
+        <Stack align="flex-end">
+          <Button size={12} variant="outline" onPress={onEditInquiry}>
             {editLabel}
           </Button>
         </Stack>

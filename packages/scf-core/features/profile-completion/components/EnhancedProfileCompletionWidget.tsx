@@ -138,8 +138,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
   if (isStatusLoading) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$6">
-          <Text color="$color11">Loading profile insights...</Text>
+        <Stack gap={16} align="center" paddingVertical={24}>
+          <Text color="gray">Loading profile insights...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -163,71 +163,71 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
 
   return (
     <DashboardWidget>
-      <Stack gap="$4">
-        <Stack gap="$2">
-          <Text fontSize="$3" color="$color11">
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Text color="gray">
             Profile Progress
           </Text>
-          <Text fontSize="$6" fontWeight="700">
+          <Text>
             {headline}
           </Text>
         </Stack>
 
-        <Stack gap="$3">
-          <Row justifyContent="space-between" alignItems="center">
-            <Text fontSize="$5" fontWeight="600">
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Text>
               {completionStatus.completionPercentage}%
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               {completionStatus.incompleteSections.length} sections remaining
             </Text>
           </Row>
           <Progress
-            size="$3"
+            size={12}
             backgroundColor="$color4"
-            borderRadius="$5"
+            borderRadius={20}
             height={18}
             value={completionStatus.completionPercentage}
           >
             <Progress.Indicator asChild>
-              <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} borderRadius="$5" />
+              <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} borderRadius={20} />
             </Progress.Indicator>
           </Progress>
         </Stack>
 
         <Card bordered backgroundColor="$color2">
-          <Card.Header padded gap="$3">
-            <Row justifyContent="space-between" alignItems="center">
-              <Row gap="$2" alignItems="center">
+          <Card.Header padded gap={12}>
+            <Row justify="space-between" align="center">
+              <Row gap={8} align="center">
                 <Sparkles size={20} color="$blue10" />
-                <Text fontWeight="600" fontSize="$3">
+                <Text>
                   Profile Suggestion
                 </Text>
               </Row>
 
               {showCarouselControls && (
-                <Row gap="$1">
+                <Row gap={4}>
                   <Button
-                    size="$2"
+                    size={8}
                     circular
                     chromeless
                     width={32}
                     height={32}
-                    alignItems="center"
-                    justifyContent="center"
+                    align="center"
+                    justify="center"
                     icon={ChevronLeft}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View previous profile suggestion"
                     onPress={retreatBenefit}
                   />
                   <Button
-                    size="$2"
+                    size={8}
                     circular
                     chromeless
                     width={32}
                     height={32}
-                    alignItems="center"
-                    justifyContent="center"
+                    align="center"
+                    justify="center"
                     icon={ChevronRight}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View next profile suggestion"
@@ -237,28 +237,28 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
               )}
             </Row>
 
-            <Stack gap="$3">
+            <Stack gap={12}>
               <SuggestionViewport
                 height={suggestionHeight ?? undefined}
-                justifyContent="center"
+                justify="center"
                 style={suggestionHeight == null ? suggestionFallbackStyle : undefined}
               >
                 <AnimatePresence initial={false}>
                   {isBenefitLoading ? (
                     <AnimatedSuggestion key="loading" onLayout={handleSuggestionLayout}>
-                      <Text fontSize="$3" color="$color10">
+                      <Text color="gray">
                         Gathering personalized suggestions…
                       </Text>
                     </AnimatedSuggestion>
                   ) : currentBenefit ? (
                     <AnimatedSuggestion key={currentBenefit.id} onLayout={handleSuggestionLayout}>
-                      <Text fontSize="$4" fontWeight="600" color="$color12">
+                      <Text color="gray">
                         {currentBenefit.title}
                       </Text>
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         {currentBenefit.description}
                       </Text>
-                      <Text fontSize="$3" color="$color10">
+                      <Text color="gray">
                         Suggested section: {(() => {
                           try {
                             const sectionId = currentBenefit.relatedSection as ProfileWizardStepId
@@ -275,7 +275,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     </AnimatedSuggestion>
                   ) : (
                     <AnimatedSuggestion key="empty" onLayout={handleSuggestionLayout}>
-                      <Text fontSize="$3" color="$color11">
+                      <Text color="gray">
                         Stay on track by finishing your remaining sections. We’ll surface targeted
                         ideas here once more data is available.
                       </Text>
@@ -285,7 +285,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
               </SuggestionViewport>
 
               {showCarouselControls && (
-                <Row gap="$2" justifyContent="center" alignItems="center">
+                <Row gap={8} justify="center" align="center">
                   {benefitDotIndices.map((dotIndex) => (
                     <Button
                       key={`profile-suggestion-dot-${dotIndex}`}
@@ -317,23 +317,23 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
           </Card.Header>
         </Card>
 
-        <Stack gap="$3">
-          <Text fontSize="$3" fontWeight="600">
+        <Stack gap={12}>
+          <Text>
             Milestones
           </Text>
-          <Row flexWrap="wrap" gap="$2">
+          <Row flexWrap="wrap" gap={8}>
             {completionStatus.milestoneBadges.map((milestone) => (
               <MilestoneBadge key={milestone.id} milestone={milestone} />
             ))}
           </Row>
         </Stack>
 
-        <Row gap="$3" flexWrap="wrap">
-          <Button size="$4" flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
+        <Row gap={12} flexWrap="wrap">
+          <Button size={16} flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
             Complete Profile
           </Button>
           {/* TODO: Uncomment this when we fix the route
-          <Button size="$4" flex={1} icon={UploadCloud} onPress={() => {}}>
+          <Button size={16} flex={1} icon={UploadCloud} onPress={() => {}}>
             Import Data
           </Button>
           */}

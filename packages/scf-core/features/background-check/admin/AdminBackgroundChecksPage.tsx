@@ -192,11 +192,11 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text fontSize="$3" fontWeight="600" color="$color12">
+            <Text color="gray">
               {row.original.workerName}
             </Text>
             {row.original.workerEmail ? (
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {row.original.workerEmail}
               </Text>
             ) : null}
@@ -233,8 +233,8 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size="$2"
-            variant="outlined"
+            size={8}
+            variant="outline"
             icon={ClipboardList}
             onPress={() => setSelectedCheck(row.original.raw)}
           >
@@ -253,11 +253,11 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text fontSize="$3" fontWeight="600" color="$color12">
+            <Text color="gray">
               {row.original.workerName}
             </Text>
             {row.original.workerEmail ? (
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {row.original.workerEmail}
               </Text>
             ) : null}
@@ -284,8 +284,8 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size="$2"
-            variant="outlined"
+            size={8}
+            variant="outline"
             icon={AlertTriangle}
             onPress={() => setSelectedDispute(row.original.raw)}
           >
@@ -315,9 +315,9 @@ export function AdminBackgroundChecksPage() {
 
   if (isLoadingRoles) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
-        <Spinner size="large" />
-        <Text fontSize="$3" color="$color11">
+      <Stack flex={1} align="center" justify="center" gap={8}>
+        <Spinner size="lg" />
+        <Text color="gray">
           Verifying admin access…
         </Text>
       </Stack>
@@ -326,17 +326,17 @@ export function AdminBackgroundChecksPage() {
 
   if (!isAdmin) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
-        <Text fontSize="$6" fontWeight="700" color="$color12">
+      <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
+        <Text color="gray">
           Admin access required
         </Text>
-        <Text fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           Background check review tools are restricted to compliance administrators. Contact an
           administrator if you believe this is an error.
         </Text>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
         >
           Go to organization background checks
@@ -347,59 +347,59 @@ export function AdminBackgroundChecksPage() {
 
   return (
     <Stack flex={1} backgroundColor="$background">
-      <Stack padding="$4" gap="$4">
-        <Stack gap="$2">
-          <Text fontSize="$6" fontWeight="700" color="$color12">
+      <Stack padding={16} gap={16}>
+        <Stack gap={8}>
+          <Text color="gray">
             Background check administration
           </Text>
-          <Text fontSize="$3" color="$color10">
+          <Text color="gray">
             Review in-progress screenings, resolve disputes, and keep results compliant.
           </Text>
         </Stack>
 
-        <Row gap="$3" flexWrap="wrap">
+        <Row gap={12} flexWrap="wrap">
           <Card
-            padding="$3"
+            padding={12}
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Active reviews
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
+            <Text color="gray">
               {summaryStats.underReview}
             </Text>
           </Card>
           <Card
-            padding="$3"
+            padding={12}
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Pending disputes
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
+            <Text color="gray">
               {summaryStats.pendingDisputes}
             </Text>
           </Card>
           <Card
-            padding="$3"
+            padding={12}
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
             style={{ flexBasis: 160 }}
           >
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Total checks in view
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
+            <Text color="gray">
               {summaryStats.total}
             </Text>
           </Card>
@@ -417,13 +417,13 @@ export function AdminBackgroundChecksPage() {
             backgroundColor="$background"
             scrollable
           >
-            <Row gap="$3" paddingHorizontal="$2">
+            <Row gap={12} paddingHorizontal={8}>
               <Tabs.Tab
                 value="checks"
                 borderBottomWidth={activeTab === 'checks' ? 2 : 0}
                 borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
               >
                 Checks
               </Tabs.Tab>
@@ -431,8 +431,8 @@ export function AdminBackgroundChecksPage() {
                 value="disputes"
                 borderBottomWidth={activeTab === 'disputes' ? 2 : 0}
                 borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
               >
                 Disputes
               </Tabs.Tab>
@@ -440,8 +440,8 @@ export function AdminBackgroundChecksPage() {
                 value="metrics"
                 borderBottomWidth={activeTab === 'metrics' ? 2 : 0}
                 borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
               >
                 Metrics
               </Tabs.Tab>
@@ -449,8 +449,8 @@ export function AdminBackgroundChecksPage() {
                 value="catalog"
                 borderBottomWidth={activeTab === 'catalog' ? 2 : 0}
                 borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
               >
                 Catalog
               </Tabs.Tab>
@@ -458,8 +458,8 @@ export function AdminBackgroundChecksPage() {
                 value="audit"
                 borderBottomWidth={activeTab === 'audit' ? 2 : 0}
                 borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                paddingHorizontal={12}
+                paddingVertical={8}
               >
                 Audit Log
               </Tabs.Tab>
@@ -468,8 +468,8 @@ export function AdminBackgroundChecksPage() {
         </Tabs>
 
         {activeTab === 'checks' ? (
-          <Row gap="$3" flexWrap="wrap" justifyContent="space-between" alignItems="center">
-            <Row gap="$2" alignItems="center">
+          <Row gap={12} flexWrap="wrap" justify="space-between" align="center">
+            <Row gap={8} align="center">
               <ResponsiveSelect
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as 'all' | BackgroundCheckStatus)}
@@ -480,8 +480,8 @@ export function AdminBackgroundChecksPage() {
                 }))}
               />
               <Button
-                size="$3"
-                variant="outlined"
+                size={12}
+                variant="outline"
                 icon={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
                 disabled={checksQuery.isLoading}
@@ -490,8 +490,8 @@ export function AdminBackgroundChecksPage() {
               </Button>
             </Row>
             <Button
-              size="$3"
-              variant="outlined"
+              size={12}
+              variant="outline"
               onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
             >
               Organization view
@@ -500,10 +500,10 @@ export function AdminBackgroundChecksPage() {
         ) : null}
 
         {activeTab === 'disputes' ? (
-          <Row gap="$2">
+          <Row gap={8}>
             <Button
-              size="$3"
-              variant="outlined"
+              size={12}
+              variant="outline"
               icon={RefreshCcw}
               onPress={() => disputesQuery.refetch()}
               disabled={disputesQuery.isLoading}
@@ -557,7 +557,7 @@ export function AdminBackgroundChecksPage() {
       ) : null}
 
       {activeTab === 'metrics' ? (
-        <Stack paddingHorizontal="$4" paddingBottom="$4">
+        <Stack paddingHorizontal={16} paddingBottom={16}>
           <AdminMetricsPanel
             metrics={metricsQuery.data}
             isLoading={metricsQuery.isLoading}
@@ -567,7 +567,7 @@ export function AdminBackgroundChecksPage() {
       ) : null}
 
       {activeTab === 'catalog' ? (
-        <Stack paddingHorizontal="$4" paddingBottom="$4">
+        <Stack paddingHorizontal={16} paddingBottom={16}>
           <AdminCatalogManager />
         </Stack>
       ) : null}

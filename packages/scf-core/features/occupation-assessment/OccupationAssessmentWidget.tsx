@@ -15,9 +15,9 @@ export function OccupationAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
+        <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+          <Spinner size="lg" color="$blue7" />
+          <Text color="gray">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -35,20 +35,20 @@ export function OccupationAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Text color="gray">
             Occupation Preferences
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Tell us about your current occupation and target occupations to help us recommend
             relevant opportunities.
           </Text>
         </Stack>
 
-        <Button variant="primary" onPress={handleStart} size="$5">
+        <Button variant="primary" onPress={handleStart} size={20}>
           <Button.Text>Add Occupations</Button.Text>
         </Button>
 
-        <Text fontSize="$2" color="$color11">
+        <Text color="gray">
           Takes about 1-2 minutes (optional)
         </Text>
       </Stack>

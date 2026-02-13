@@ -61,17 +61,17 @@ export const AssessmentsLandingLeft = () => {
           <DashboardWidget key={key} gap={spacing.md}>
             <Stack gap={spacing.sm}>
               <Stack gap={spacing.xs}>
-                <Text fontSize="$6" fontWeight="700" color="$color12">
+                <Text color="gray">
                   {title}
                 </Text>
-                <Text fontSize="$3" color="$color11">
+                <Text color="gray">
                   {description}
                 </Text>
               </Stack>
 
               <Button
                 variant="primary"
-                size="$5"
+                size={20}
                 onPress={() => {
                   router.push(route.path)
                 }}
@@ -81,7 +81,7 @@ export const AssessmentsLandingLeft = () => {
               </Button>
 
               {estimatedTime ? (
-                <Text fontSize="$2" color="$color11">
+                <Text color="gray">
                   {estimatedTime}
                 </Text>
               ) : null}

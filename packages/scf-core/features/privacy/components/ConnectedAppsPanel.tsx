@@ -97,11 +97,11 @@ function PermissionBadge({ permission }: { permission: string }) {
   return (
     <Row
       backgroundColor={colors.bg}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$2"
+      paddingHorizontal={8}
+      paddingVertical={4}
+      borderRadius={8}
     >
-      <Text fontSize="$1" color={colors.text} fontWeight="500">
+      <Text color={colors.text}>
         {permission}
       </Text>
     </Row>
@@ -123,12 +123,12 @@ function AppIconPlaceholder({ name }: { name: string }) {
     <Stack
       width={48}
       height={48}
-      borderRadius="$3"
+      borderRadius={12}
       backgroundColor="$color4"
-      alignItems="center"
-      justifyContent="center"
+      align="center"
+      justify="center"
     >
-      <Text fontSize="$4" fontWeight="600" color="$color11">
+      <Text color="gray">
         {initials}
       </Text>
     </Stack>
@@ -149,22 +149,22 @@ function AppCard({
 }) {
   return (
     <Stack
-      padding="$4"
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$3"
+      gap={12}
     >
       {/* App header */}
-      <Row gap="$3" alignItems="flex-start">
+      <Row gap={12} align="flex-start">
         <AppIconPlaceholder name={app.app_name} />
-        <Stack flex={1} gap="$1">
-          <Text fontSize="$4" fontWeight="600">
+        <Stack flex={1} gap={4}>
+          <Text>
             {app.app_name}
           </Text>
           {app.description && (
-            <Text fontSize="$3" color="$color11" numberOfLines={2}>
+            <Text color="gray" numberOfLines={2}>
               {app.description}
             </Text>
           )}
@@ -172,21 +172,21 @@ function AppCard({
       </Row>
 
       {/* Connection info */}
-      <Row gap="$4" flexWrap="wrap">
-        <Stack gap="$1">
-          <Text fontSize="$2" color="$color10">
+      <Row gap={16} flexWrap="wrap">
+        <Stack gap={4}>
+          <Text color="gray">
             Connected
           </Text>
-          <Text fontSize="$3">
+          <Text>
             {formatDate(app.connected_at)}
           </Text>
         </Stack>
         {app.last_accessed_at && (
-          <Stack gap="$1">
-            <Text fontSize="$2" color="$color10">
+          <Stack gap={4}>
+            <Text color="gray">
               Last Access
             </Text>
-            <Text fontSize="$3">
+            <Text>
               {formatRelativeTime(app.last_accessed_at)}
             </Text>
           </Stack>
@@ -194,22 +194,22 @@ function AppCard({
       </Row>
 
       {/* Permissions */}
-      <Stack gap="$2">
-        <Text fontSize="$2" color="$color10" fontWeight="500">
+      <Stack gap={8}>
+        <Text color="gray">
           Permissions
         </Text>
-        <Row gap="$1" flexWrap="wrap">
+        <Row gap={4} flexWrap="wrap">
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
           ))}
           {app.permissions.length > 5 && (
             <Row
               backgroundColor="$color4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
+              paddingHorizontal={8}
+              paddingVertical={4}
+              borderRadius={8}
             >
-              <Text fontSize="$1" color="$color11">
+              <Text color="gray">
                 +{app.permissions.length - 5} more
               </Text>
             </Row>
@@ -218,27 +218,27 @@ function AppCard({
       </Stack>
 
       {/* Data categories */}
-      <Stack gap="$2">
-        <Text fontSize="$2" color="$color10" fontWeight="500">
+      <Stack gap={8}>
+        <Text color="gray">
           Data Categories Accessed
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {app.data_categories.join(' • ')}
         </Text>
       </Stack>
 
       {/* Actions */}
-      <Row gap="$2" justifyContent="flex-end" marginTop="$1">
+      <Row gap={8} justify="flex-end" marginTop={4}>
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           onPress={() => onViewDetails?.(app.id)}
         >
           View Details
         </Button>
         {app.can_revoke && (
           <Button
-            size="$3"
+            size={12}
             theme="red"
             onPress={() => onRevoke?.(app.id)}
           >
@@ -256,18 +256,18 @@ function AppCard({
 function EmptyState() {
   return (
     <Stack
-      padding="$6"
+      padding={24}
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      alignItems="center"
-      gap="$2"
+      align="center"
+      gap={8}
     >
-      <Text fontSize="$4" color="$color11">
+      <Text color="gray">
         No Connected Applications
       </Text>
-      <Text fontSize="$3" color="$color10" textAlign="center">
+      <Text color="gray" textAlign="center">
         When you connect third-party applications to your account,
         they will appear here so you can manage their access to your data.
       </Text>
@@ -290,16 +290,16 @@ export function ConnectedAppsPanel({
   }
 
   return (
-    <Stack gap="$3">
+    <Stack gap={12}>
       {/* Summary */}
       <Row
-        padding="$3"
+        padding={12}
         backgroundColor="$orange2"
-        borderRadius="$3"
-        gap="$2"
-        alignItems="center"
+        borderRadius={12}
+        gap={8}
+        align="center"
       >
-        <Text fontSize="$3" color="$orange11">
+        <Text color="$orange11">
           {apps.length} application{apps.length === 1 ? '' : 's'} currently have access to your data.
           You can revoke access at any time.
         </Text>
@@ -316,7 +316,7 @@ export function ConnectedAppsPanel({
       ))}
 
       {/* Info text */}
-      <Text fontSize="$2" color="$color10" marginTop="$2">
+      <Text color="gray" marginTop={8}>
         Revoking access will immediately prevent the application from accessing your data.
         Some applications may require you to re-authorize access to restore functionality.
       </Text>

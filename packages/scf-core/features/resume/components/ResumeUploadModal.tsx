@@ -329,9 +329,9 @@ export function ResumeUploadModal({
   }, [beginUpload, handleUploadError, validateFileSize])
 
   return (
-    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Import Resume" size="medium">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Import Resume" size="md">
       <Stack gap={spacing.md}>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Upload a PDF or Word document under 1MB. We’ll extract your experience, education, skills,
           and preferences so you can confirm the details before saving them to your profile.
         </Paragraph>
@@ -358,7 +358,7 @@ export function ResumeUploadModal({
         ) : (
           <Stack gap={spacing.sm}>
             <Button
-              size="$4"
+              size={16}
               icon={UploadCloud}
               disabled={status === 'uploading' || status === 'parsing'}
               onPress={handleNativePick}
@@ -366,12 +366,12 @@ export function ResumeUploadModal({
               Choose File
             </Button>
             {fileName ? (
-              <Text color="$color11">Selected file: {fileName}</Text>
+              <Text color="gray">Selected file: {fileName}</Text>
             ) : (
-              <Text color="$color11">Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
+              <Text color="gray">Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
             )}
             {status === 'error' && errorMessage ? (
-              <Row gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <AlertCircle color="$red10" size={18} />
                 <Text color="$red10">{errorMessage}</Text>
               </Row>
@@ -380,23 +380,23 @@ export function ResumeUploadModal({
         )}
 
         {shouldShowProgressIndicators && progressValue > 0 && (
-          <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$3">
-            <Stack height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
+          <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={12}>
+            <Stack height={8} backgroundColor="$color4" borderRadius={16} overflow="hidden">
               <Stack
                 height="100%"
                 width={`${Math.round(progressValue * 100)}%`}
                 backgroundColor={progressColor}
               />
             </Stack>
-            <Row gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               {status === 'success' ? (
                 <CheckCircle2 color="$green10" size={18} />
               ) : status === 'error' ? (
                 <AlertCircle color="$red10" size={18} />
               ) : (
-                <Spinner size="small" color="$blue10" />
+                <Spinner size="sm" color="$blue10" />
               )}
-              <Text color={status === 'error' ? '$red11' : '$color11'} fontWeight="600">
+              <Text color={status === 'error' ? '$red11' : '$color11'}>
                 {progressLabel ?? 'Processing resume...'}
               </Text>
             </Row>
@@ -405,14 +405,14 @@ export function ResumeUploadModal({
 
         {status === 'success' && (
           <Row
-            gap="$3"
-            alignItems="center"
+            gap={12}
+            align="center"
             backgroundColor="$green3"
-            padding="$3"
-            borderRadius="$3"
+            padding={12}
+            borderRadius={12}
           >
             <CheckCircle2 color="$green10" size={20} />
-            <Text color="$green11" fontWeight="600">
+            <Text color="$green11">
               Resume uploaded successfully. Redirecting...
             </Text>
           </Row>
@@ -420,30 +420,30 @@ export function ResumeUploadModal({
 
         {status === 'error' && errorMessage && (
           <Row
-            gap="$3"
-            alignItems="center"
+            gap={12}
+            align="center"
             backgroundColor="$red3"
-            padding="$3"
-            borderRadius="$3"
+            padding={12}
+            borderRadius={12}
           >
             <AlertCircle color="$red10" size={20} />
-            <Text color="$red11" fontWeight="600">
+            <Text color="$red11">
               {errorMessage}
             </Text>
           </Row>
         )}
 
-        <Row gap="$2" justifyContent="flex-end">
+        <Row gap={8} justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
+            size={12}
+            variant="outline"
             disabled={showProgress}
             onPress={() => onOpenChange(false)}
           >
             Cancel
           </Button>
           <Button
-            size="$3"
+            size={12}
             disabled
             icon={showProgress ? Loader2 : undefined}
             backgroundColor={status === 'error' ? '$red4' : '$blue4'}

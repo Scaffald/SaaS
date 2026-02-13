@@ -242,21 +242,21 @@ export const ApplicationStatusChangeModal = ({
       }}
       title={isRejection ? 'Reject Application' : 'Mark as Hired'}
     >
-      <Stack gap="$4" padding="$4">
+      <Stack gap={16} padding={16}>
         {/* Confirmation message */}
-        <Stack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             {isRejection ? `Reject ${candidateName}?` : `Mark ${candidateName} as Hired?`}
           </Text>
-          <Text color="$color11" fontSize="$3">
+          <Text color="gray">
             This will move the application from{' '}
-            <Text fontWeight="600">{STATUS_LABELS[fromStatus]}</Text> to{' '}
-            <Text fontWeight="600">{STATUS_LABELS[toStatus]}</Text>
+            <Text>{STATUS_LABELS[fromStatus]}</Text> to{' '}
+            <Text>{STATUS_LABELS[toStatus]}</Text>
           </Text>
         </Stack>
 
         {isHire && (
-          <Stack gap="$3">
+          <Stack gap={12}>
             <HireSummaryCard
               hireSummary={hireSummary}
               isProcessing={initializingIntent}
@@ -267,17 +267,17 @@ export const ApplicationStatusChangeModal = ({
             />
 
             {initializingIntent && !paymentCompleted && (
-              <Stack gap="$1" alignItems="center">
-                <Spinner size="small" />
-                <Text color="$color11" fontSize="$3">
+              <Stack gap={4} align="center">
+                <Spinner size="sm" />
+                <Text color="gray">
                   Preparing payment form…
                 </Text>
               </Stack>
             )}
 
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
-              <Card padding="$3" backgroundColor="$green2" borderColor="$green6" borderWidth={1}>
-                <Text fontWeight="600" color="$green11">
+              <Card padding={12} backgroundColor="$green2" borderColor="$green6" borderWidth={1}>
+                <Text color="$green11">
                   Upfront fee paid on{' '}
                   {successFeeStatus.upfrontPaidAt
                     ? new Date(successFeeStatus.upfrontPaidAt).toLocaleDateString()
@@ -292,20 +292,20 @@ export const ApplicationStatusChangeModal = ({
               intentState?.clientSecret &&
               hireSummary &&
               successFeeStatus?.status !== 'upfront_paid' && (
-                <Stack gap="$3">
+                <Stack gap={12}>
                   <Card
-                    padding="$3"
+                    padding={12}
                     backgroundColor="$color2"
                     borderColor="$borderColor"
                     borderWidth={1}
                   >
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       <CustomCheckbox
                         aria-label="Acknowledge success-fee agreement"
                         checked={legalAccepted}
                         onCheckedChange={(next) => setLegalAccepted(Boolean(next))}
                       />
-                      <Text flex={1} fontSize="$3" color="$color11">
+                      <Text flex={1} color="gray">
                         {legalCopy}
                       </Text>
                     </Row>
@@ -324,8 +324,8 @@ export const ApplicationStatusChangeModal = ({
         )}
 
         {/* Reason input */}
-        <Stack gap="$2">
-          <Text fontSize="$4" fontWeight="600">
+        <Stack gap={8}>
+          <Text>
             {isRejection ? 'Reason for rejection' : 'Notes (optional)'}
             {isRejection && <Text color="$red10"> *</Text>}
           </Text>
@@ -342,17 +342,17 @@ export const ApplicationStatusChangeModal = ({
             numberOfLines={4}
           />
           {isRejection && !reason.trim() && (
-            <Text data-testid="reason-error" color="$red10" fontSize="$2">
+            <Text data-testid="reason-error" color="$red10">
               Rejection reason is required
             </Text>
           )}
         </Stack>
 
         {/* Action buttons */}
-        <Row gap="$3" marginLeft="auto">
+        <Row gap={12} marginLeft="auto">
           <Button
             data-testid="status-change-cancel-button"
-            variant="outlined"
+            variant="outline"
             onPress={handleClose}
             disabled={isLoading}
           >
@@ -503,11 +503,11 @@ function HireSummaryCard({
 }) {
   if (hasMissingData) {
     return (
-      <Card padding="$3" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-        <Text fontWeight="600" color="$yellow11">
+      <Card padding={12} backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Text color="$yellow11">
           Add pay range information to this job before marking the hire.
         </Text>
-        <Text marginTop="$1" fontSize="$3" color="$yellow11">
+        <Text marginTop={4} color="$yellow11">
           We use the job&apos;s pay range to calculate success fees and payment schedules.
         </Text>
       </Card>
@@ -519,49 +519,49 @@ function HireSummaryCard({
   }
 
   return (
-    <Card padding="$4" borderWidth={1} borderColor="$borderColor">
-      <Stack gap="$2">
-        <Text fontSize="$4" fontWeight="600">
+    <Card padding={16} borderWidth={1} borderColor="$borderColor">
+      <Stack gap={8}>
+        <Text>
           Success Fee Overview
         </Text>
-        <Row justifyContent="space-between">
-          <Text color="$color11">Total Hire Value</Text>
-          <Text fontWeight="600">
+        <Row justify="space-between">
+          <Text color="gray">Total Hire Value</Text>
+          <Text>
             {currencyFormatter.format(hireSummary.totalHireValueCents / 100)}
           </Text>
         </Row>
-        <Row justifyContent="space-between">
-          <Text color="$color11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
-          <Text fontWeight="600">
+        <Row justify="space-between">
+          <Text color="gray">Upfront ({hireSummary.upfrontPercentage}%)</Text>
+          <Text>
             {currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}
           </Text>
         </Row>
-        <Row justifyContent="space-between">
-          <Text color="$color11">Final ({hireSummary.finalPercentage}%)</Text>
-          <Text fontWeight="600">
+        <Row justify="space-between">
+          <Text color="gray">Final ({hireSummary.finalPercentage}%)</Text>
+          <Text>
             {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due{' '}
             {hireSummary.finalDueDate}
           </Text>
         </Row>
         {isProcessing && (
-          <Text fontSize="$2" color="$color11">
+          <Text color="gray">
             Creating payment intent...
           </Text>
         )}
         {paymentError && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {paymentError}
           </Text>
         )}
         {isStatusLoading && (
-          <Text fontSize="$2" color="$color11">
+          <Text color="gray">
             Checking latest payment status…
           </Text>
         )}
         {!isStatusLoading &&
           successFeeStatus &&
           typeof (successFeeStatus as unknown as Record<string, unknown>)?.status === 'string' && (
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               Current status:{' '}
               {(successFeeStatus as unknown as Record<string, unknown>).status
                 ?.toString()

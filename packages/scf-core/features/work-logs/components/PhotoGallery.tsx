@@ -25,27 +25,27 @@ export function PhotoGallery({
       <Stack
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        paddingHorizontal="$4"
-        paddingVertical="$5"
+        borderRadius={16}
+        paddingHorizontal={16}
+        paddingVertical={20}
         backgroundColor="$color2"
-        gap="$2"
+        gap={8}
       >
-        <Text fontWeight="600" fontSize="$4">
+        <Text>
           Photo Gallery
         </Text>
-        <Text color="$color11">No photos have been uploaded yet.</Text>
+        <Text color="gray">No photos have been uploaded yet.</Text>
       </Stack>
     )
   }
 
   return (
-    <Stack gap="$3">
-      <Text fontWeight="600" fontSize="$4">
+    <Stack gap={12}>
+      <Text>
         Photo Gallery
       </Text>
       <ScrollView horizontal={false} showsVerticalScrollIndicator>
-        <Row gap="$3" flexWrap="wrap">
+        <Row gap={12} flexWrap="wrap">
           {photos.map((photo) => (
             <Stack key={photo.id} width="100%">
               <PhotoCard

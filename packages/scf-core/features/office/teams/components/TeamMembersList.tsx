@@ -180,44 +180,39 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const workloadErrorMessage = workloadQuery.error?.message ?? null
 
   return (
-    <Stack gap="$4" flex={1} paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
+    <Stack gap={16} flex={1} paddingHorizontal={12}>
       <Row
-        justifyContent="space-between"
-        alignItems="flex-start"
-        gap="$3"
+        justify="space-between"
+        align="flex-start"
+        gap={12}
         flexDirection="column"
         width="100%"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
       >
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
+        <Text accessibilityRole="header">
           Team members
         </Text>
         <Button
           icon={Plus}
           onPress={() => setIsAddModalOpen(true)}
           backgroundColor="$color9"
-          color="$color1"
-          size="$3"
+          color="gray"
+          size={12}
           accessibilityLabel="Add a new team member"
           width="100%"
-          $md={{ width: undefined }}
         >
           Add Member
         </Button>
       </Row>
 
       {isLoadingMembers ? (
-        <Stack alignItems="center" justifyContent="center" paddingVertical="$8" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading team members…</Text>
+        <Stack align="center" justify="center" paddingVertical={32} gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading team members…</Text>
         </Stack>
       ) : hasMembers ? (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {workloadErrorMessage ? (
-            <Text color="$red10" fontSize="$3">
+            <Text color="$red10">
               Unable to load workload snapshots: {workloadErrorMessage}
             </Text>
           ) : null}
@@ -239,37 +234,29 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
             return (
               <Card
                 key={member.id}
-                padding="$4"
+                padding={16}
                 borderColor="$borderColor"
                 borderWidth={1}
-                gap="$3"
+                gap={12}
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={`${member.displayName ?? 'Team member'} · Role ${memberRoleName} · Status ${memberStatusLabel}`}
                 width="100%"
               >
                 <Row
-                  gap="$3"
-                  alignItems="flex-start"
-                  justifyContent="space-between"
+                  gap={12}
+                  align="flex-start"
+                  justify="space-between"
                   flexDirection="column"
                   width="100%"
-                  $md={{
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}
                 >
                   <Row
-                    gap="$3"
+                    gap={12}
                     width="100%"
                     flexDirection="column"
-                    alignItems="flex-start"
-                    $md={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
+                    align="flex-start"
                   >
-                    <Avatar circular size="$4">
+                    <Avatar circular size={16}>
                       <Avatar.Image
                         accessibilityLabel={member.displayName ?? 'Member avatar'}
                         src={member.avatarPath ?? undefined}
@@ -277,28 +264,23 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       <Avatar.Fallback>{member.displayName?.[0] ?? '?'}</Avatar.Fallback>
                     </Avatar>
                     <Stack>
-                      <Text fontWeight="600">{member.displayName}</Text>
+                      <Text>{member.displayName}</Text>
                       {member.username ? (
-                        <Text fontSize="$3" color="$color11">
+                        <Text color="gray">
                           @{member.username}
                         </Text>
                       ) : null}
                     </Stack>
                   </Row>
                   <Row
-                    gap="$3"
+                    gap={12}
                     flexWrap="wrap"
                     width="100%"
                     flexDirection="column"
-                    justifyContent="flex-start"
-                    alignItems="stretch"
-                    $md={{
-                      flexDirection: 'row',
-                      justify: 'flex-end',
-                      items: 'center',
-                    }}
+                    justify="flex-start"
+                    align="stretch"
                   >
-                    <Stack width="100%" $md={{ width: undefined }}>
+                    <Stack width="100%"}>
                       <TeamMemberRoleSelect
                         teamId={teamId}
                         userId={member.userId ?? ''}
@@ -311,21 +293,20 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     </Stack>
                     {canTransferToMember ? (
                       <Button
-                        size="$2"
-                        variant="outlined"
+                        size={8}
+                        variant="outline"
                         icon={Crown}
                         disabled={transferOwnershipMutation.isPending}
                         onPress={() => void handleTransferOwnership(member)}
                         accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
                         accessibilityHint="Updates the member's permissions and notifies the team"
                         width="100%"
-                        $md={{ width: undefined }}
                       >
                         Make owner
                       </Button>
                     ) : null}
                     <Button
-                      variant="outlined"
+                      variant="outline"
                       color="$red10"
                       icon={UserMinus}
                       onPress={() =>
@@ -343,33 +324,32 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       accessibilityLabel={`Remove ${member.displayName ?? 'this member'} from the team`}
                       accessibilityHint="Opens a dialog to confirm removal"
                       width="100%"
-                      $md={{ width: undefined }}
                     >
                       Remove
                     </Button>
                   </Row>
                 </Row>
-                <Text fontSize="$3" color="$color11">
+                <Text color="gray">
                   Status: {memberStatusLabel}
                 </Text>
                 {workload ? (
-                  <Row gap="$3" flexWrap="wrap">
-                    <Text fontSize="$2" color="$color10">
+                  <Row gap={12} flexWrap="wrap">
+                    <Text color="gray">
                       Active: {workload.activeAssignments}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       Pending: {workload.pendingAssignments}
                     </Text>
                     {workload.overdueAssignments > 0 ? (
-                      <Text fontSize="$2" color="$red10">
+                      <Text color="$red10">
                         Overdue: {workload.overdueAssignments}
                       </Text>
                     ) : null}
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       Reviews completed: {workload.completedReviews}
                     </Text>
                     {availabilityLabel ? (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         Availability: {availabilityLabel}
                       </Text>
                     ) : null}
@@ -381,15 +361,15 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         </Stack>
       ) : (
         <Stack
-          gap="$2"
+          gap={8}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$color2"
         >
-          <Text fontWeight="600">No team members yet</Text>
-          <Text color="$color11">
+          <Text>No team members yet</Text>
+          <Text color="gray">
             Add collaborators to this team to manage jobs and applications together.
           </Text>
         </Stack>
@@ -397,16 +377,15 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
 
       {viewerMembership ? (
         <Button
-          variant="outlined"
+          variant="outline"
           color="$red10"
           icon={LogOut}
-          size="$3"
+          size={12}
           disabled={selfRemoveMutation.isPending}
           onPress={() => setIsLeaveDialogOpen(true)}
           accessibilityLabel="Open leave team dialog"
           accessibilityHint="Opens a confirmation dialog to leave this team"
           width="100%"
-          $md={{ width: undefined }}
         >
           Leave team
         </Button>
@@ -448,15 +427,15 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
             animation="quick"
             enterStyle={{ opacity: 0, scale: 0.95 }}
             exitStyle={{ opacity: 0, scale: 0.95 }}
-            gap="$4"
+            gap={16}
           >
             <AlertDialog.Title>Leave team</AlertDialog.Title>
             <AlertDialog.Description>
               You will lose access to jobs, applications, and notifications for this team. This
               action cannot be undone.
             </AlertDialog.Description>
-            <Stack gap="$2">
-              <Text fontSize="$3" color="$color11">
+            <Stack gap={8}>
+              <Text color="gray">
                 Optional reason
               </Text>
               <TextArea
@@ -468,20 +447,20 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 accessibilityHint="Optional message sent to the team about your departure"
               />
             </Stack>
-            <Row gap="$3" justifyContent="flex-end">
+            <Row gap={12} justify="flex-end">
               <AlertDialog.Cancel asChild>
-                <Button variant="outlined">Cancel</Button>
+                <Button variant="outline">Cancel</Button>
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
                 <Button
                   backgroundColor="$red9"
-                  color="$color1"
+                  color="gray"
                   icon={LogOut}
                   onPress={() => void handleLeaveTeam()}
                   disabled={selfRemoveMutation.isPending}
                 >
                   {selfRemoveMutation.isPending ? (
-                    <Spinner size="small" color="$color1" />
+                    <Spinner size="sm" color="gray" />
                   ) : (
                     'Leave team'
                   )}

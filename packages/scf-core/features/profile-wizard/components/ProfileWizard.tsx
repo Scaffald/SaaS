@@ -225,7 +225,7 @@ export function ProfileWizard({
   if (showStartScreen) {
     return (
       <ScrollView>
-        <Stack padding="$6">
+        <Stack padding={24}>
           <WizardStartScreen
             completionPercentage={state.progress.completionPercentage}
             onStartWizard={() => {
@@ -250,20 +250,20 @@ export function ProfileWizard({
 
   if (isLoading) {
     return (
-      <Stack gap="$4" alignItems="center" justifyContent="center" flex={1} padding="$6">
-        <Spinner size="large" />
-        <Text color="$color11">Loading your profile wizard...</Text>
+      <Stack gap={16} align="center" justify="center" flex={1} padding={24}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading your profile wizard...</Text>
       </Stack>
     )
   }
 
   if (isError) {
     return (
-      <Stack gap="$3" alignItems="center" justifyContent="center" flex={1} padding="$6">
-        <Text fontSize="$4" fontWeight="600">
+      <Stack gap={12} align="center" justify="center" flex={1} padding={24}>
+        <Text>
           We couldn't load your wizard
         </Text>
-        <Paragraph color="$color11" textAlign="center">
+        <Paragraph color="gray" textAlign="center">
           Please refresh and try again. If the issue persists, contact support.
         </Paragraph>
         <Button onPress={onCancel}>Close</Button>
@@ -273,9 +273,9 @@ export function ProfileWizard({
 
   if (state.isCompleting) {
     return (
-      <Stack gap="$4" alignItems="center" justifyContent="center" flex={1} padding="$6">
-        <Spinner size="large" />
-        <Text color="$color11">Wrapping up your profile...</Text>
+      <Stack gap={16} align="center" justify="center" flex={1} padding={24}>
+        <Spinner size="lg" />
+        <Text color="gray">Wrapping up your profile...</Text>
       </Stack>
     )
   }
@@ -303,15 +303,15 @@ export function ProfileWizard({
 
   if (orderedSteps.length === 0) {
     return (
-      <Stack alignItems="center" justifyContent="center" flex={1} padding="$4">
-        <Paragraph color="$color11">Loading wizard...</Paragraph>
+      <Stack align="center" justify="center" flex={1} padding={16}>
+        <Paragraph color="gray">Loading wizard...</Paragraph>
       </Stack>
     )
   }
 
   return (
     <ScrollView>
-      <Stack gap="$5" padding="$6">
+      <Stack gap={20} padding={24}>
         <ProgressIndicator
           currentStep={state.progress.currentStep}
           completedSteps={state.progress.completedSteps}
@@ -338,7 +338,7 @@ export function ProfileWizard({
           }
         />
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <ButtonRow onCancel={onCancel} />
         </Stack>
       </Stack>
@@ -355,10 +355,10 @@ function ButtonRow({ onCancel }: ButtonRowProps) {
 
   return (
     <Stack>
-      <Button size="$3" variant="outlined" onPress={onCancel}>
+      <Button size={12} variant="outline" onPress={onCancel}>
         Save & exit wizard
       </Button>
-      <Text fontSize="$2" color="$color10" marginTop="$1">
+      <Text color="gray" marginTop={4}>
         You can resume anytime from your dashboard.
       </Text>
     </Stack>

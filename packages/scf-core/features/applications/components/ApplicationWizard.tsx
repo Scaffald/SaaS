@@ -180,18 +180,18 @@ export function ApplicationWizard({
     <Stack flex={1} backgroundColor="$background">
       {/* Header */}
       <Stack
-        padding="$4"
+        padding={16}
         backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
-        gap="$3"
+        gap={12}
       >
-        <Row justifyContent="space-between" alignItems="flex-start" width="100%">
-          <Stack gap="$1" flex={1}>
-            <Text fontSize="$6" fontWeight="bold" color="$color12">
+        <Row justify="space-between" align="flex-start" width="100%">
+          <Stack gap={4} flex={1}>
+            <Text color="gray">
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
             </Text>
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               {organizationName}
             </Text>
           </Stack>
@@ -214,14 +214,14 @@ export function ApplicationWizard({
       {/* Error Display */}
       {submitError && (
         <Stack
-          padding="$4"
+          padding={16}
           backgroundColor="$red2"
           borderBottomWidth={1}
           borderBottomColor="$red7"
         >
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <AlertCircle size={20} color="$red10" />
-            <Text fontSize="$3" color="$red11" flex={1}>
+            <Text color="$red11" flex={1}>
               {submitError.message || 'An error occurred'}
             </Text>
           </Row>
@@ -230,7 +230,7 @@ export function ApplicationWizard({
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <Stack padding="$4" alignItems="center">
+        <Stack padding={16} align="center">
           {currentStep === 'screening' && (
             <ScreeningStep
               answers={screeningAnswers}
@@ -316,35 +316,35 @@ export function ApplicationWizard({
           right={0}
           bottom={0}
           backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          padding="$4"
+          align="center"
+          justify="center"
+          padding={16}
         >
           <Stack
             backgroundColor="$background"
-            borderRadius="$4"
-            padding="$6"
-            gap="$4"
+            borderRadius={16}
+            padding={24}
+            gap={16}
             maxWidth={400}
             width="100%"
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Stack gap="$2">
-              <Text fontSize="$6" fontWeight="bold" color="$color12">
+            <Stack gap={8}>
+              <Text color="gray">
                 Cancel Application?
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text color="gray">
                 Your progress has been auto-saved. You can return to complete your application
                 later.
               </Text>
             </Stack>
 
-            <Row gap="$3" justifyContent="flex-end">
-              <Button size="$4" variant="outlined" onPress={() => setShowCancelConfirm(false)}>
+            <Row gap={12} justify="flex-end">
+              <Button size={16} variant="outline" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>
-              <Button size="$4" theme="error" onPress={confirmCancel}>
+              <Button size={16} theme="error" onPress={confirmCancel}>
                 Exit Application
               </Button>
             </Row>

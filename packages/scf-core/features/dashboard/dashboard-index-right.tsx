@@ -9,12 +9,12 @@ import { H4, Text, Stack } from '@unicornlove/beyond-ui'
 const profileTipCards = [
   {
     children: (
-      <Stack gap="$3">
+      <Stack gap={12}>
         <H4 color="$color">📸 Add a Profile Photo</H4>
-        <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
+        <Text color="gray" fontStyle="italic" lineHeight={16}>
           Did you know that profiles with a photo are dramatically more visible?
         </Text>
-        <Text fontSize="$3" color="$color8" lineHeight="$4">
+        <Text color="gray" lineHeight={16}>
           Members with a profile picture receive up to 21× more profile views and as many as 36×
           more messages. A simple upload could make the difference between getting passed over or
           getting noticed.
@@ -24,12 +24,12 @@ const profileTipCards = [
   },
   {
     children: (
-      <Stack gap="$3">
+      <Stack gap={12}>
         <H4 color="$color">⏱ First Impressions</H4>
-        <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
+        <Text color="gray" fontStyle="italic" lineHeight={16}>
           Make Every Second Count
         </Text>
-        <Text fontSize="$3" color="$color8" lineHeight="$4">
+        <Text color="gray" lineHeight={16}>
           Recruiters skim profiles and resumes quickly — often giving just 6 seconds in an initial
           scan. Having your basic details like name, email, and phone filled out ensures they don't
           miss something important about you in those crucial first moments.
@@ -39,12 +39,12 @@ const profileTipCards = [
   },
   {
     children: (
-      <Stack gap="$3">
+      <Stack gap={12}>
         <H4 color="$color">🎖 Verified Credentials</H4>
-        <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
+        <Text color="gray" fontStyle="italic" lineHeight={16}>
           Verified Details Build Trust
         </Text>
-        <Text fontSize="$3" color="$color8" lineHeight="$4">
+        <Text color="gray" lineHeight={16}>
           Sharing verified information builds credibility with employers. In one large-scale study,
           discover who displayed credentials publicly increased their likelihood of gaining new
           employment by about 6 percentage points compared to those who didn't. Trust really does
@@ -57,7 +57,7 @@ const profileTipCards = [
 
 export function DashboardIndexRight() {
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <ProfileActivityWidget />
       <StackedCards
         cards={profileTipCards}

@@ -49,14 +49,14 @@ export function EducationWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load education</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
           <Button
             variant="primary"
-            size="$2"
+            size={8}
             onPress={() => {
               void refetch()
             }}
@@ -76,12 +76,12 @@ export function EducationWidget({
     <DashboardWidget>
       <Stack gap={spacing.md}>
         {/* Header */}
-        <Row justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <Heading variant="h4">Education</Heading>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
+              variant="outline"
+              size={8}
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
             >
               Edit
@@ -106,43 +106,43 @@ export function EducationWidget({
             }
           />
         ) : (
-          <Stack gap="$4">
+          <Stack gap={16}>
             {education
               .slice(0, showCompact ? 2 : undefined)
               .map((edu: UserEducation, index: number) => (
-                <Stack key={edu.id} gap="$2">
+                <Stack key={edu.id} gap={8}>
                   {/* Degree & Field */}
-                  <Stack gap="$1">
-                    <Text fontSize="$4" fontWeight="600">
+                  <Stack gap={4}>
+                    <Text>
                       {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="gray">
                       {edu.institution_name || 'Institution'}
                     </Text>
                   </Stack>
 
                   {/* Duration */}
-                  <Row gap="$2" alignItems="center">
-                    <Text fontSize="$2" color="$color10">
+                  <Row gap={8} align="center">
+                    <Text color="gray">
                       {formatDate(edu.start_date)}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       -
                     </Text>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
                       <Row
                         backgroundColor="$blue2"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
+                        paddingHorizontal={8}
+                        paddingVertical={2}
+                        borderRadius={8}
                         borderWidth={1}
                         borderColor="$blue7"
                       >
-                        <Text color="$blue11" fontSize="$1" fontWeight="600">
+                        <Text color="$blue11">
                           Current
                         </Text>
                       </Row>
@@ -151,20 +151,20 @@ export function EducationWidget({
 
                   {/* Location */}
                   {edu.location && (
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       📍 {edu.location}
                     </Text>
                   )}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text fontSize="$3" color="$color11" lineHeight="$3">
+                    <Text color="gray" lineHeight={12}>
                       {edu.description}
                     </Text>
                   )}
 
                   {/* Separator between items */}
-                  {index < education.length - 1 && <Separator marginVertical="$2" />}
+                  {index < education.length - 1 && <Separator marginVertical={8} />}
                 </Stack>
               ))}
 
@@ -172,8 +172,6 @@ export function EducationWidget({
             {showCompact && education.length > 2 && (
               <Text
                 color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}

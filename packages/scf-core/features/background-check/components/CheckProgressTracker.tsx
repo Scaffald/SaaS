@@ -101,30 +101,30 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   )
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Row justify="space-between" align="center">
+          <Text color="gray">
             Overall progress
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {progress}%
           </Text>
         </Row>
-        <Progress value={progress} max={100} backgroundColor="$color3" size="$2">
+        <Progress value={progress} max={100} backgroundColor="$color3" size={8}>
           <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
         </Progress>
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {statusMeta.description}
         </Text>
       </Stack>
 
       {normalizedComponents.length > 0 && (
-        <Stack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Component status
           </Text>
-          <Stack gap="$2">
+          <Stack gap={8}>
             {normalizedComponents.map((component) => {
               const componentStatusMeta =
                 typeof component.status === 'string'
@@ -136,34 +136,34 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
               return (
                 <Row
                   key={component.id}
-                  justifyContent="space-between"
-                  alignItems="center"
-                  padding="$3"
+                  justify="space-between"
+                  align="center"
+                  padding={12}
                   backgroundColor="$color2"
-                  borderRadius="$3"
+                  borderRadius={12}
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <Stack gap="$1" flex={1}>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                  <Stack gap={4} flex={1}>
+                    <Text color="gray">
                       {component.label}
                     </Text>
                     {component.completedAt && (
-                      <Text fontSize="$2" color="$color10">
+                      <Text color="gray">
                         Completed {formatDate(component.completedAt)}
                       </Text>
                     )}
                   </Stack>
                   {componentStatusMeta && (
                     <Row
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
                       backgroundColor={componentColors.background}
                       borderWidth={1}
                       borderColor={componentColors.border}
-                      borderRadius="$3"
+                      borderRadius={12}
                     >
-                      <Text fontSize="$2" fontWeight="500" color={componentColors.text}>
+                      <Text color={componentColors.text}>
                         {componentStatusMeta.label}
                       </Text>
                     </Row>
@@ -176,17 +176,17 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
       )}
 
       {normalizedHistory.length > 0 && (
-        <Stack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text color="gray">
             Recent activity
           </Text>
-          <Stack gap="$2">
+          <Stack gap={8}>
             {normalizedHistory.map((entry, index) => {
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
               const colors = getStatusToneColors(historyMeta.tone)
               return (
-                <Row key={`${entry.status}-${index}`} gap="$3" alignItems="center">
-                  <Stack width={10} alignItems="center">
+                <Row key={`${entry.status}-${index}`} gap={12} align="center">
+                  <Stack width={10} align="center">
                     <Stack
                       width={2}
                       flex={1}
@@ -196,26 +196,26 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   </Stack>
                   <Stack
                     flex={1}
-                    padding="$3"
+                    padding={12}
                     backgroundColor="$color2"
-                    borderRadius="$3"
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
-                    gap="$1"
+                    gap={4}
                   >
-                    <Text fontSize="$3" fontWeight="500" color={colors.text}>
+                    <Text color={colors.text}>
                       {historyMeta.label}
                     </Text>
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       {entry.occurredAt && (
-                        <Text fontSize="$2" color="$color10">
+                        <Text color="gray">
                           {formatDate(entry.occurredAt)}
                         </Text>
                       )}
                       {entry.actor && (
                         <>
                           <Separator vertical />
-                          <Text fontSize="$2" color="$color10">
+                          <Text color="gray">
                             {entry.actor}
                           </Text>
                         </>
@@ -229,26 +229,26 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
         </Stack>
       )}
 
-      <Stack gap="$2">
-        <Text fontSize="$3" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Text color="gray">
           Key dates
         </Text>
-        <Stack gap="$1">
-          <Text fontSize="$2" color="$color10">
+        <Stack gap={4}>
+          <Text color="gray">
             Started: {formatDate(createdAt)}
           </Text>
           {estimatedCompletionDate && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Estimated completion: {formatDate(estimatedCompletionDate)}
             </Text>
           )}
           {completedAt && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Completed: {formatDate(completedAt)}
             </Text>
           )}
           {expiresAt && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="gray">
               Expires: {formatDate(expiresAt)}
             </Text>
           )}

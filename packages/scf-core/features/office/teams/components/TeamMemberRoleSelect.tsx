@@ -71,8 +71,8 @@ export function TeamMemberRoleSelect({
   }
 
   return (
-    <Stack gap="$2">
-      <Text fontSize="$3" color="$color11">
+    <Stack gap={8}>
+      <Text color="gray">
         Role
       </Text>
       <ResponsiveSelect

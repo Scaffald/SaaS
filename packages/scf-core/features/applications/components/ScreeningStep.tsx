@@ -111,20 +111,20 @@ export function ScreeningStep({
   }
 
   return (
-    <Stack gap="$6" width="100%" maxWidth={600} padding="$4">
+    <Stack gap={24} width="100%" maxWidth={600} padding={16}>
       {/* Header */}
-      <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Text color="gray">
           Basic Information
         </Text>
-        <Text fontSize="$4" color="$color11">
+        <Text color="gray">
           Please provide some basic information to help us match you with this position.
         </Text>
       </Stack>
 
       {/* Current Location */}
-      <Stack gap="$2">
-        <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
+      <Stack gap={8}>
+        <Label htmlFor="current_location">
           Your current location <Text color="$red10">*</Text>
         </Label>
         {mapboxToken ? (
@@ -165,21 +165,21 @@ export function ScreeningStep({
           />
         )}
         {errors.current_location && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {errors.current_location}
           </Text>
         )}
       </Stack>
 
       {/* Willing to Relocate */}
-      <Stack gap="$2">
-        <Label fontSize="$4" fontWeight="600">
+      <Stack gap={8}>
+        <Label>
           Are you willing to relocate? <Text color="$red10">*</Text>
         </Label>
-        <Row gap="$3">
+        <Row gap={12}>
           <Button
             flex={1}
-            size="$4"
+            size={16}
             theme={answers.willing_to_relocate ? 'info' : undefined}
             variant={answers.willing_to_relocate ? undefined : 'outlined'}
             onPress={() => {
@@ -191,7 +191,7 @@ export function ScreeningStep({
           </Button>
           <Button
             flex={1}
-            size="$4"
+            size={16}
             theme={!answers.willing_to_relocate ? 'info' : undefined}
             variant={!answers.willing_to_relocate ? undefined : 'outlined'}
             onPress={() => {
@@ -205,8 +205,8 @@ export function ScreeningStep({
       </Stack>
 
       {/* Years of Experience */}
-      <Stack gap="$2">
-        <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
+      <Stack gap={8}>
+        <Label htmlFor="years_experience">
           Years of experience <Text color="$red10">*</Text>
         </Label>
         <ResponsiveSelect
@@ -224,29 +224,29 @@ export function ScreeningStep({
           }}
         />
         {errors.years_experience && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {errors.years_experience}
           </Text>
         )}
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Include all relevant work experience, including internships and part-time roles
         </Text>
       </Stack>
 
       {/* Required Skills (Display Only) */}
       {requiredSkills.length > 0 && (
-        <Stack gap="$2">
-          <Label fontSize="$4" fontWeight="600">
+        <Stack gap={8}>
+          <Label>
             Required skills
           </Label>
           <Stack
-            padding="$3"
+            padding={12}
             backgroundColor="$gray3"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               {requiredSkills.join(', ')}
             </Text>
           </Stack>
@@ -255,18 +255,18 @@ export function ScreeningStep({
 
       {/* Optional Skills (Display Only) */}
       {optionalSkills.length > 0 && (
-        <Stack gap="$2">
-          <Label fontSize="$4" fontWeight="600">
+        <Stack gap={8}>
+          <Label>
             Optional skills
           </Label>
           <Stack
-            padding="$3"
+            padding={12}
             backgroundColor="$gray3"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               {optionalSkills.join(', ')}
             </Text>
           </Stack>
@@ -274,14 +274,14 @@ export function ScreeningStep({
       )}
 
       {/* Work Authorization */}
-      <Stack gap="$2">
-        <Label fontSize="$4" fontWeight="600">
+      <Stack gap={8}>
+        <Label>
           Are you authorized to work legally in the US? <Text color="$red10">*</Text>
         </Label>
-        <Row gap="$3">
+        <Row gap={12}>
           <Button
             flex={1}
-            size="$4"
+            size={16}
             theme={answers.is_authorized_to_work ? 'info' : undefined}
             variant={answers.is_authorized_to_work ? undefined : 'outlined'}
             onPress={() => {
@@ -296,7 +296,7 @@ export function ScreeningStep({
           </Button>
           <Button
             flex={1}
-            size="$4"
+            size={16}
             theme={!answers.is_authorized_to_work ? 'info' : undefined}
             variant={!answers.is_authorized_to_work ? undefined : 'outlined'}
             onPress={() => {
@@ -311,15 +311,15 @@ export function ScreeningStep({
           </Button>
         </Row>
         {errors.is_authorized_to_work && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {errors.is_authorized_to_work}
           </Text>
         )}
       </Stack>
 
       {/* Earliest Start Date */}
-      <Stack gap="$2">
-        <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
+      <Stack gap={8}>
+        <Label htmlFor="earliest_start_date">
           Earliest start date <Text color="$red10">*</Text>
         </Label>
         <ResponsiveSelect
@@ -341,11 +341,11 @@ export function ScreeningStep({
 
       {/* Continue Button */}
       <Button
-        size="$5"
+        size={20}
         theme="info"
         onPress={validateAndContinue}
         disabled={isSubmitting}
-        marginTop="$4"
+        marginTop={16}
       >
         {isSubmitting ? 'Saving...' : 'Continue'}
       </Button>

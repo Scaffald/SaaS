@@ -172,7 +172,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             ) : null
           },
           headerRight: () => (
-            <Row gap="$3" alignItems="center">
+            <Row gap={12} align="center">
               <ScaffaldLogo height={22} width={22} showWordmark={false} />
             </Row>
           ),

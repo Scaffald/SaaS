@@ -159,31 +159,31 @@ export function StripeSettingsPage() {
 
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
         <Text>Loading Stripe settings…</Text>
       </Stack>
     )
   }
 
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$8" fontWeight="700">
+    <Stack flex={1} padding={16} gap={16}>
+      <Stack gap={8}>
+        <Text>
           Stripe Payments
         </Text>
-        <Paragraph size="$4" color="$color11">
+        <Paragraph size={16} color="gray">
           Manage API keys, webhook secrets, and connection diagnostics for the Stripe integration.
         </Paragraph>
       </Stack>
 
-      <Stack gap="$4" style={{ maxWidth: 720, width: '100%' }}>
-        <Card padding="$4" gap="$4">
-          <Stack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
+      <Stack gap={16} style={{ maxWidth: 720, width: '100%' }}>
+        <Card padding={16} gap={16}>
+          <Stack gap={8}>
+            <Text>
               Publishable Key
             </Text>
-            <Paragraph size="$3" color="$color10">
+            <Paragraph size={12} color="gray">
               Used on the client to initialize Stripe.js. Updating this key does not affect existing
               payment intents.
             </Paragraph>
@@ -194,10 +194,10 @@ export function StripeSettingsPage() {
               autoCorrect={false}
               placeholder="pk_live_..."
             />
-            <Row gap="$2" justifyContent="flex-end">
+            <Row gap={8} justify="flex-end">
               <Button
                 backgroundColor="$blue9"
-                color="$color1"
+                color="gray"
                 disabled={updatePublishableKey.isPending || publishableKey.length < 16}
                 onPress={() =>
                   updatePublishableKey.mutate({
@@ -211,20 +211,20 @@ export function StripeSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="$4" gap="$4">
-          <Stack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
+        <Card padding={16} gap={16}>
+          <Stack gap={8}>
+            <Text>
               Secret Keys
             </Text>
-            <Paragraph size="$3" color="$color10">
+            <Paragraph size={12} color="gray">
               Secrets are encrypted with Supabase Vault. They are never returned by the API after
               storage.
             </Paragraph>
           </Stack>
 
-          <Stack gap="$3">
-            <Stack gap="$2">
-              <Text fontWeight="600">Stripe API Secret</Text>
+          <Stack gap={12}>
+            <Stack gap={8}>
+              <Text>Stripe API Secret</Text>
               <Input
                 value={apiSecret}
                 onChangeText={setApiSecret}
@@ -233,10 +233,10 @@ export function StripeSettingsPage() {
                 secureTextEntry
                 placeholder="sk_live_..."
               />
-              <Row gap="$2" justifyContent="flex-end">
+              <Row gap={8} justify="flex-end">
                 <Button
                   backgroundColor="$green9"
-                  color="$color1"
+                  color="gray"
                   disabled={updateApiKey.isPending || apiSecret.length < 20}
                   onPress={() => {
                     updateApiKey.mutate({ secret: apiSecret })
@@ -247,18 +247,18 @@ export function StripeSettingsPage() {
                 </Button>
               </Row>
               {data?.hasApiKey ? (
-                <Text fontSize="$2" color="$green10">
+                <Text color="$green10">
                   ✓ Secret stored in Vault
                 </Text>
               ) : (
-                <Text fontSize="$2" color="$red10">
+                <Text color="$red10">
                   API secret not configured
                 </Text>
               )}
             </Stack>
 
-            <Stack gap="$2">
-              <Text fontWeight="600">Webhook Signing Secret</Text>
+            <Stack gap={8}>
+              <Text>Webhook Signing Secret</Text>
               <Input
                 value={webhookSecret}
                 onChangeText={setWebhookSecret}
@@ -267,10 +267,10 @@ export function StripeSettingsPage() {
                 secureTextEntry
                 placeholder="whsec_..."
               />
-              <Row gap="$2" justifyContent="flex-end">
+              <Row gap={8} justify="flex-end">
                 <Button
                   backgroundColor="$green9"
-                  color="$color1"
+                  color="gray"
                   disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
                   onPress={() => {
                     updateWebhookSecret.mutate({ secret: webhookSecret })
@@ -281,11 +281,11 @@ export function StripeSettingsPage() {
                 </Button>
               </Row>
               {data?.hasWebhookSecret ? (
-                <Text fontSize="$2" color="$green10">
+                <Text color="$green10">
                   ✓ Webhook secret stored
                 </Text>
               ) : (
-                <Text fontSize="$2" color="$red10">
+                <Text color="$red10">
                   Webhook secret not configured
                 </Text>
               )}
@@ -293,33 +293,33 @@ export function StripeSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="$4" gap="$4">
-          <Stack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
+        <Card padding={16} gap={16}>
+          <Stack gap={8}>
+            <Text>
               Webhook Endpoint
             </Text>
-            <Paragraph size="$3" color="$color10">
+            <Paragraph size={12} color="gray">
               Configure this URL inside the Stripe Dashboard and supply the signing secret above.
             </Paragraph>
             <Input value={webhookUrl} editable={false} />
-            <Row gap="$2">
-              <Button variant="outlined" flex={1} onPress={handleCopyWebhook}>
+            <Row gap={8}>
+              <Button variant="outline" flex={1} onPress={handleCopyWebhook}>
                 Copy Endpoint
               </Button>
             </Row>
           </Stack>
         </Card>
 
-        <Card padding="$4" gap="$4">
-          <Stack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
+        <Card padding={16} gap={16}>
+          <Stack gap={8}>
+            <Text>
               Test Mode
             </Text>
-            <Paragraph size="$3" color="$color10">
+            <Paragraph size={12} color="gray">
               Toggle between live and test credentials without redeploying the backend.
             </Paragraph>
           </Stack>
-          <Row gap="$3" alignItems="center">
+          <Row gap={12} align="center">
             <Switch
               id="stripe-test-mode"
               checked={data?.testMode ?? true}
@@ -336,32 +336,32 @@ export function StripeSettingsPage() {
           </Row>
         </Card>
 
-        <Card padding="$4" gap="$4">
-          <Stack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
+        <Card padding={16} gap={16}>
+          <Stack gap={8}>
+            <Text>
               Connection Diagnostics
             </Text>
-            <Paragraph size="$3" color="$color10">
+            <Paragraph size={12} color="gray">
               Validates the current secret by calling Stripe. Fails if the API key lacks required
               permissions.
             </Paragraph>
           </Stack>
 
-          <Stack gap="$2">
-            <Text fontSize="$3" color="$color11">
+          <Stack gap={8}>
+            <Text color="gray">
               Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
             </Text>
             {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
-              <Paragraph size="$3" color="$red10">
+              <Paragraph size={12} color="$red10">
                 {data.lastTestedError}
               </Paragraph>
             ) : null}
           </Stack>
 
-          <Row gap="$2" justifyContent="flex-end">
+          <Row gap={8} justify="flex-end">
             <Button
               backgroundColor="$blue9"
-              color="$color1"
+              color="gray"
               disabled={testConnection.isPending || !data?.hasApiKey}
               onPress={() => testConnection.mutate()}
             >

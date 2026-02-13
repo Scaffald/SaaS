@@ -168,17 +168,17 @@ export function IdVerificationRequestPanel({
   const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
-    <Stack gap="$4" padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-      <Stack gap="$1">
-        <Text fontSize="$5" fontWeight="700" color="$color12">
+    <Stack gap={16} padding={16} borderWidth={1} borderColor="$borderColor" borderRadius={16}>
+      <Stack gap={4}>
+        <Text color="gray">
           Trigger Verification
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           Collect payment and generate a Persona inquiry on behalf of an organization.
         </Text>
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label htmlFor="idv-organization">Organization</Label>
         <ResponsiveSelect
           value={organizationId ?? '__none__'}
@@ -200,7 +200,7 @@ export function IdVerificationRequestPanel({
         />
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label htmlFor="idv-worker">Worker</Label>
         <Input
           id="idv-worker-search"
@@ -229,7 +229,7 @@ export function IdVerificationRequestPanel({
         />
       </Stack>
 
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label htmlFor="idv-pricing">Verification plan</Label>
         <ResponsiveSelect
           value={selectedPricingId ?? ''}
@@ -251,7 +251,7 @@ export function IdVerificationRequestPanel({
 
       {!paymentSession ? (
         <Button
-          size="$4"
+          size={16}
           theme="blue"
           icon={CreditCard}
           disabled={!canSubmit || requestVerification.isPending}
@@ -262,7 +262,7 @@ export function IdVerificationRequestPanel({
       ) : null}
 
       {paymentError ? (
-        <Text color="$red11" fontSize="$3">
+        <Text color="$red11">
           {paymentError}
         </Text>
       ) : null}
@@ -284,8 +284,8 @@ export function IdVerificationRequestPanel({
 
       {paymentSession ? (
         <Button
-          size="$3"
-          variant="outlined"
+          size={12}
+          variant="outline"
           icon={RefreshCcw}
           disabled={confirmVerification.isPending}
           onPress={resetForm}
@@ -294,14 +294,14 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
-        <Row gap="$2" alignItems="center">
-          <ShieldCheck size={16} color="$color11" />
-          <Text fontWeight="600" color="$color12">
+      <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
+        <Row gap={8} align="center">
+          <ShieldCheck size={16} color="gray" />
+          <Text color="gray">
             What happens next?
           </Text>
         </Row>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s
           profile details. They receive an email and in-app notification with a secure link to
           upload their government ID. Most verifications finish within minutes.

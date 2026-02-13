@@ -27,18 +27,18 @@ const STRATEGY_LABELS: Record<ResumeMergeStrategy, string> = {
 export function MergeComparisonView({ sections, isLoading = false }: MergeComparisonViewProps) {
   if (isLoading) {
     return (
-      <Row gap="$2" alignItems="center">
-        <Spinner size="small" />
-        <Text color="$color11">Loading current profile data…</Text>
+      <Row gap={8} align="center">
+        <Spinner size="sm" />
+        <Text color="gray">Loading current profile data…</Text>
       </Row>
     )
   }
 
   if (sections.length === 0) {
     return (
-      <Stack gap="$2">
-        <Text fontWeight="600">Nothing to review</Text>
-        <Text color="$color11">
+      <Stack gap={8}>
+        <Text>Nothing to review</Text>
+        <Text color="gray">
           We didn’t detect any changes to compare. You can still finish the wizard to exit.
         </Text>
       </Stack>
@@ -46,35 +46,35 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
   }
 
   return (
-    <Stack gap="$3">
+    <Stack gap={12}>
       {sections.map((section) => (
         <Stack
           key={section.id}
-          gap="$3"
-          padding="$3"
+          gap={12}
+          padding={12}
           borderWidth={1}
           borderColor="$color6"
           backgroundColor="$color2"
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <Row justifyContent="space-between" alignItems="center" gap="$2" flexWrap="wrap">
-            <Text fontWeight="700" fontSize="$4">
+          <Row justify="space-between" align="center" gap={8} flexWrap="wrap">
+            <Text>
               {section.label}
             </Text>
             <StrategyPill strategy={section.strategy} />
           </Row>
 
           {section.notes ? (
-            <Text color="$color11" fontSize="$2">
+            <Text color="gray">
               {section.notes}
             </Text>
           ) : null}
 
-          <Row gap="$4" flexWrap="wrap">
-            <SummaryColumn title="Current profile" alignItems={section.existingItems} />
+          <Row gap={16} flexWrap="wrap">
+            <SummaryColumn title="Current profile" align={section.existingItems} />
             <SummaryColumn
               title="Incoming from resume"
-              alignItems={section.incomingItems}
+              align={section.incomingItems}
               highlight={section.hasIncoming}
             />
           </Row>
@@ -95,20 +95,20 @@ function SummaryColumn({
 }) {
   return (
     <Stack
-      gap="$2"
+      gap={8}
       flex={1}
-      padding="$2"
+      padding={8}
       backgroundColor={highlight ? '$blue3' : 'transparent'}
-      borderRadius="$3"
+      borderRadius={12}
       style={{ minWidth: 220 }}
     >
-      <Text fontWeight="600">{title}</Text>
+      <Text>{title}</Text>
       {items.length === 0 ? (
-        <Text color="$color10">No data</Text>
+        <Text color="gray">No data</Text>
       ) : (
         items.map((item, index) => (
           <Fragment key={`${title}-${index}-${item}`}>
-            <Text color="$color11">{item}</Text>
+            <Text color="gray">{item}</Text>
           </Fragment>
         ))
       )}
@@ -119,16 +119,14 @@ function SummaryColumn({
 function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
   return (
     <Stack
-      paddingHorizontal="$3"
-      paddingVertical="$1"
-      borderRadius="$3"
+      paddingHorizontal={12}
+      paddingVertical={4}
+      borderRadius={12}
       backgroundColor={
         strategy === 'replace' ? '$red3' : strategy === 'append' ? '$blue3' : '$gray3'
       }
     >
       <Text
-        fontSize="$2"
-        fontWeight="600"
         color={strategy === 'replace' ? '$red11' : strategy === 'append' ? '$blue11' : '$color11'}
       >
         {STRATEGY_LABELS[strategy]}

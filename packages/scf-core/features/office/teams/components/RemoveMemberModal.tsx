@@ -70,14 +70,14 @@ export function RemoveMemberModal({
 
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Remove team member">
-      <Stack gap="$4">
-        <Text fontSize="$4">
+      <Stack gap={16}>
+        <Text>
           Are you sure you want to remove{' '}
-          <Text fontWeight="700">{member?.displayName ?? 'this member'}</Text> from the team?
+          <Text>{member?.displayName ?? 'this member'}</Text> from the team?
         </Text>
 
-        <Stack gap="$2">
-          <Text fontSize="$3" color="$color11">
+        <Stack gap={8}>
+          <Text color="gray">
             Removal reason (optional)
           </Text>
           <TextArea
@@ -87,36 +87,36 @@ export function RemoveMemberModal({
             rows={4}
             borderWidth={1}
             borderColor="$borderColor"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
+            paddingHorizontal={12}
+            paddingVertical={8}
             disabled={removeMemberMutation.isPending}
           />
         </Stack>
 
-        <Stack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
-          <Text fontWeight="600">What happens next?</Text>
-          <Text color="$color11" fontSize="$3">
+        <Stack gap={8} backgroundColor="$color2" padding={12} borderRadius={16}>
+          <Text>What happens next?</Text>
+          <Text color="gray">
             • The member loses access to the team immediately.
           </Text>
-          <Text color="$color11" fontSize="$3">
+          <Text color="gray">
             • Their review history is preserved for auditing.
           </Text>
-          <Text color="$color11" fontSize="$3">
+          <Text color="gray">
             • You can re-add them later if needed.
           </Text>
         </Stack>
 
-        <Stack gap="$3">
+        <Stack gap={12}>
           <Button
             backgroundColor="$red9"
-            color="$color1"
+            color="gray"
             onPress={handleRemove}
             disabled={removeMemberMutation.isPending}
           >
             {removeMemberMutation.isPending ? 'Removing…' : 'Remove Member'}
           </Button>
           <Button
-            variant="outlined"
+            variant="outline"
             onPress={() => onOpenChange(false)}
             disabled={removeMemberMutation.isPending}
           >

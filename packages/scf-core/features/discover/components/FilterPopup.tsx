@@ -101,9 +101,9 @@ export const FilterPopup = ({
           exitStyle={{ opacity: 0, y: 20 }}
           opacity={1}
           y={0}
-          justifyContent="center"
-          alignItems="center"
-          paddingHorizontal="$4"
+          justify="center"
+          align="center"
+          paddingHorizontal={16}
         >
           <Stack
             width={300}
@@ -116,25 +116,25 @@ export const FilterPopup = ({
             shadowOffset={{ width: 0, height: 4 }}
             shadowOpacity={0.15}
             shadowRadius={12}
-            borderRadius="$4"
+            borderRadius={16}
             overflow="hidden"
           >
             {/* Header */}
             <Row
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              justifyContent="space-between"
-              alignItems="center"
+              paddingHorizontal={16}
+              paddingVertical={12}
+              justify="space-between"
+              align="center"
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
-              <Text fontSize="$5" fontWeight="700">
+              <Text>
                 Filters
               </Text>
               <Button
-                size="$2"
+                size={8}
                 circular
-                variant="outlined"
+                variant="outline"
                 onPress={onClose}
                 icon={X}
                 scaleIcon={1.2}
@@ -143,20 +143,20 @@ export const FilterPopup = ({
 
             {/* Scrollable Content */}
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-              <Stack padding="$3" gap="$2">
+              <Stack padding={12} gap={8}>
                 {/* Show Section */}
                 <Stack>
                   <Button
                     unstyled
                     onPress={() => toggleSection('show')}
-                    paddingHorizontal="$3"
-                    paddingVertical="$2"
+                    paddingHorizontal={12}
+                    paddingVertical={8}
                     hoverStyle={{ backgroundColor: '$color3' }}
                     pressStyle={{ backgroundColor: '$color4' }}
-                    borderRadius="$3"
+                    borderRadius={12}
                   >
-                    <Row justifyContent="space-between" alignItems="center" flex={1}>
-                      <Text fontSize="$4" fontWeight="600">
+                    <Row justify="space-between" align="center" flex={1}>
+                      <Text>
                         {getSectionHeaderText()}
                       </Text>
                       {openSections.has('show') ? (
@@ -168,11 +168,11 @@ export const FilterPopup = ({
                   </Button>
 
                   {openSections.has('show') && (
-                    <Stack gap="$3" paddingHorizontal="$3" paddingVertical="$3">
+                    <Stack gap={12} paddingHorizontal={12} paddingVertical={12}>
                       {/* Workers Toggle */}
-                      <Stack gap="$1">
-                        <Row justifyContent="space-between" alignItems="center">
-                          <Label fontSize="$3" onPress={() => onShowWorkersChange?.(!showWorkers)}>
+                      <Stack gap={4}>
+                        <Row justify="space-between" align="center">
+                          <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>
                             Workers
                           </Label>
                           <ToggleSwitch
@@ -183,16 +183,15 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
+                        <Text color="gray" paddingLeft={4}>
                           Show worker profiles on the map
                         </Text>
                       </Stack>
 
                       {/* Employers Toggle */}
-                      <Stack gap="$1">
-                        <Row justifyContent="space-between" alignItems="center">
+                      <Stack gap={4}>
+                        <Row justify="space-between" align="center">
                           <Label
-                            fontSize="$3"
                             onPress={() => onShowOrganizationsChange?.(!showOrganizations)}
                           >
                             Employers
@@ -207,15 +206,15 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
+                        <Text color="gray" paddingLeft={4}>
                           Show employer organizations on the map
                         </Text>
                       </Stack>
 
                       {/* Jobs Toggle */}
-                      <Stack gap="$1">
-                        <Row justifyContent="space-between" alignItems="center">
-                          <Label fontSize="$3" onPress={() => onShowJobsChange?.(!showJobs)}>
+                      <Stack gap={4}>
+                        <Row justify="space-between" align="center">
+                          <Label onPress={() => onShowJobsChange?.(!showJobs)}>
                             Jobs
                           </Label>
                           <ToggleSwitch
@@ -224,7 +223,7 @@ export const FilterPopup = ({
                             aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
                         </Row>
-                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
+                        <Text color="gray" paddingLeft={4}>
                           Show job openings on the map
                         </Text>
                       </Stack>
@@ -236,17 +235,17 @@ export const FilterPopup = ({
 
             {/* Footer */}
             <Row
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              gap="$2"
-              justifyContent="flex-end"
+              paddingHorizontal={16}
+              paddingVertical={12}
+              gap={8}
+              justify="flex-end"
               borderTopWidth={1}
               borderTopColor="$borderColor"
             >
-              <Button size="$3" variant="outlined" onPress={onClose}>
+              <Button size={12} variant="outline" onPress={onClose}>
                 <Text>Close</Text>
               </Button>
-              <Button size="$3" onPress={onClose}>
+              <Button size={12} onPress={onClose}>
                 <Text>Apply</Text>
               </Button>
             </Row>

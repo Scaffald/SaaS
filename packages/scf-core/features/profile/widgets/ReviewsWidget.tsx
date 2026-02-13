@@ -90,14 +90,14 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md} alignItems="center" paddingVertical="$6">
+        <Stack gap={spacing.md} align="center" paddingVertical={24}>
           <Text color="$red10">Failed to load reviews</Text>
-          <Text color="$color11" fontSize="$2">
+          <Text color="gray">
             {error.message}
           </Text>
           <Button
             variant="primary"
-            size="$2"
+            size={8}
             onPress={() => {
               void refetch()
             }}
@@ -115,12 +115,12 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       <>
         <DashboardWidget>
           <Stack gap={spacing.md}>
-            <Row justifyContent="space-between" alignItems="center">
+            <Row justify="space-between" align="center">
               <Heading variant="h4">Reviews & Ratings</Heading>
               {canLeaveReview && (
                 <Button
                   variant="primary"
-                  size="$2"
+                  size={8}
                   icon={<MessageSquarePlus size={16} />}
                   onPress={handleLeaveReview}
                 >
@@ -128,12 +128,12 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                 </Button>
               )}
             </Row>
-            <Stack alignItems="center" justifyContent="center" minHeight={150} gap="$2">
-              <Text fontSize="$5" color="$color10">
+            <Stack align="center" justify="center" minHeight={150} gap={8}>
+              <Text color="gray">
                 No reviews yet
               </Text>
               {canLeaveReview && (
-                <Text fontSize="$3" color="$color9">
+                <Text color="gray">
                   Be the first to leave a review
                 </Text>
               )}
@@ -146,7 +146,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             open={showReviewModal}
             onOpenChange={setShowReviewModal}
             title={`Review ${profile?.name || 'User'}`}
-            size="large"
+            size="lg"
           >
             <ReviewWizard
               subjectId={userId || ''}
@@ -192,12 +192,12 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       <DashboardWidget>
         <Stack gap={spacing.md}>
           {/* Header */}
-          <Row justifyContent="space-between" alignItems="center">
+          <Row justify="space-between" align="center">
             <Heading variant="h4">Reviews & Ratings</Heading>
             {canLeaveReview && (
               <Button
                 variant="primary"
-                size="$2"
+                size={8}
                 icon={<MessageSquarePlus size={16} />}
                 onPress={handleLeaveReview}
               >
@@ -208,13 +208,13 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
 
           {/* Rating Summary */}
           <Card bordered backgroundColor="$color2">
-            <Stack gap="$3" padding="$4">
-              <Row gap="$4" alignItems="center">
-                <Stack alignItems="center">
-                  <Text fontSize="$10" fontWeight="700" color="$color12">
+            <Stack gap={12} padding={16}>
+              <Row gap={16} align="center">
+                <Stack align="center">
+                  <Text color="gray">
                     {overallRating.toFixed(1)}
                   </Text>
-                  <Row gap="$1">
+                  <Row gap={4}>
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={randomUUID()}
@@ -224,20 +224,19 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                       />
                     ))}
                   </Row>
-                  <Text fontSize="$3" color="$color10">
+                  <Text color="gray">
                     {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                   </Text>
                 </Stack>
 
                 {Object.keys(avgByCategory).length > 0 && !showCompact && (
-                  <Stack flex={1} gap="$2">
+                  <Stack flex={1} gap={8}>
                     {Object.entries(avgByCategory).map(([category, data]) => {
                       const categoryData = data as { sum: number; count: number }
                       return (
-                        <Row key={category} gap="$2" alignItems="center">
+                        <Row key={category} gap={8} align="center">
                           <Text
-                            fontSize="$3"
-                            color="$color11"
+                            color="gray"
                             width={100}
                             textTransform="capitalize"
                           >
@@ -247,7 +246,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                             flex={1}
                             height={6}
                             backgroundColor="$color3"
-                            borderRadius="$2"
+                            borderRadius={8}
                             overflow="hidden"
                           >
                             <Row
@@ -255,7 +254,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                               backgroundColor="$yellow10"
                             />
                           </Row>
-                          <Text fontSize="$3" color="$color10" width={30}>
+                          <Text color="gray" width={30}>
                             {(categoryData.sum / categoryData.count).toFixed(1)}
                           </Text>
                         </Row>
@@ -266,30 +265,30 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               </Row>
 
               {/* Recommend Stats */}
-              <Row gap="$3" justifyContent="center">
+              <Row gap={12} justify="center">
                 <Row
-                  gap="$2"
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
+                  gap={8}
+                  align="center"
+                  paddingHorizontal={12}
+                  paddingVertical={8}
                   backgroundColor="$green3"
-                  borderRadius="$3"
+                  borderRadius={12}
                 >
                   <ThumbsUp size={16} color="$green11" />
-                  <Text fontSize="$4" fontWeight="600" color="$green11">
+                  <Text color="$green11">
                     {recommendCount} Recommend
                   </Text>
                 </Row>
                 <Row
-                  gap="$2"
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
+                  gap={8}
+                  align="center"
+                  paddingHorizontal={12}
+                  paddingVertical={8}
                   backgroundColor="$red3"
-                  borderRadius="$3"
+                  borderRadius={12}
                 >
                   <ThumbsDown size={16} color="$red11" />
-                  <Text fontSize="$4" fontWeight="600" color="$red11">
+                  <Text color="$red11">
                     {notRecommendCount} Don't Recommend
                   </Text>
                 </Row>
@@ -298,42 +297,42 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           </Card>
 
           {/* Reviews List */}
-          <Stack gap="$3">
-            <Text fontSize="$5" fontWeight="700" color="$color12">
+          <Stack gap={12}>
+            <Text color="gray">
               Reviews ({totalReviews})
             </Text>
             {reviewsToShow.map((review: Review) => (
               <Card key={review.id} bordered backgroundColor="$color2">
-                <Stack gap="$3" padding="$4">
-                  <Row justifyContent="space-between" alignItems="flex-start">
-                    <Stack gap="$1">
-                      <Row gap="$2" alignItems="center">
-                        <Text fontSize="$5" fontWeight="700" color="$color12">
+                <Stack gap={12} padding={16}>
+                  <Row justify="space-between" align="flex-start">
+                    <Stack gap={4}>
+                      <Row gap={8} align="center">
+                        <Text color="gray">
                           Anonymous Reviewer
                         </Text>
                         <Row
-                          gap="$1"
-                          alignItems="center"
-                          paddingHorizontal="$2"
-                          paddingVertical="$0.5"
+                          gap={4}
+                          align="center"
+                          paddingHorizontal={8}
+                          paddingVertical={2}
                           backgroundColor="$blue2"
-                          borderRadius="$2"
+                          borderRadius={8}
                         >
                           <Shield size={12} color="$blue11" />
-                          <Text fontSize="$1" color="$blue11" fontWeight="600">
+                          <Text color="$blue11">
                             VERIFIED
                           </Text>
                         </Row>
                       </Row>
                     </Stack>
-                    <Text fontSize="$3" color="$color10">
+                    <Text color="gray">
                       {new Date(review.created_at).toLocaleDateString()}
                     </Text>
                   </Row>
 
                   {/* Overall Rating */}
                   {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                    <Row gap="$1">
+                    <Row gap={4}>
                       {[...Array(5)].map((_, i) => {
                         const avgRating =
                           review.review_category_ratings.reduce(
@@ -354,25 +353,25 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
 
                   {/* Comment */}
                   {review.comment && (
-                    <Text fontSize="$4" color="$color11">
+                    <Text color="gray">
                       {review.comment}
                     </Text>
                   )}
 
                   {/* Recommendation */}
                   {review.reaction !== null && (
-                    <Row gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       {review.reaction === 1 ? (
                         <>
                           <ThumbsUp size={16} color="$green11" />
-                          <Text fontSize="$3" color="$green11" fontWeight="600">
+                          <Text color="$green11">
                             Recommends this person
                           </Text>
                         </>
                       ) : (
                         <>
                           <ThumbsDown size={16} color="$red11" />
-                          <Text fontSize="$3" color="$red11" fontWeight="600">
+                          <Text color="$red11">
                             Does not recommend
                           </Text>
                         </>
@@ -384,7 +383,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text fontSize="$3" color="$blue7" fontWeight="600" cursor="pointer">
+              <Text color="$blue7" cursor="pointer">
                 + {reviews.length - 2} more reviews
               </Text>
             )}
@@ -398,7 +397,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           open={showReviewModal}
           onOpenChange={setShowReviewModal}
           title={`Review ${profile?.name || 'User'}`}
-          size="large"
+          size="lg"
         >
           <ReviewWizard
             subjectId={userId || ''}

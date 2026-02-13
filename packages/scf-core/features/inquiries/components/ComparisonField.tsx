@@ -11,20 +11,20 @@ export function ComparisonField({ label, value, isDifferent, description }: Comp
   return (
     <Stack
       backgroundColor={isDifferent ? '$yellow2' : 'transparent'}
-      padding="$2"
-      borderRadius="$2"
-      gap="$1"
+      padding={8}
+      borderRadius={8}
+      gap={4}
     >
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$3" color="$color11">
+      <Row justify="space-between" align="center">
+        <Text color="gray">
           {label}
         </Text>
-        <Text fontSize="$3" fontWeight="500" color={isDifferent ? '$yellow11' : '$color12'}>
+        <Text color={isDifferent ? '$yellow11' : '$color12'}>
           {value}
         </Text>
       </Row>
       {description && (
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           {description}
         </Text>
       )}

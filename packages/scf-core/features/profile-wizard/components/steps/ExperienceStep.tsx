@@ -82,18 +82,18 @@ export function ExperienceStep({
   }
 
   return (
-    <Stack gap="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>
           Add your latest experience
         </Text>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Showcase your most recent role. You can add more later in your full profile.
         </Paragraph>
       </Stack>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Job Title *</Text>
+      <Stack gap={8}>
+        <Text>Job Title *</Text>
         <Controller
           control={control}
           name="jobTitle"
@@ -102,14 +102,14 @@ export function ExperienceStep({
           )}
         />
         {errors.jobTitle && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {errors.jobTitle.message}
           </Text>
         )}
       </Stack>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Company *</Text>
+      <Stack gap={8}>
+        <Text>Company *</Text>
         <Controller
           control={control}
           name="companyName"
@@ -118,14 +118,14 @@ export function ExperienceStep({
           )}
         />
         {errors.companyName && (
-          <Text fontSize="$2" color="$red10">
+          <Text color="$red10">
             {errors.companyName.message}
           </Text>
         )}
       </Stack>
 
-      <Row gap="$3">
-        <Stack flex={1} gap="$2">
+      <Row gap={12}>
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="startDate"
@@ -140,7 +140,7 @@ export function ExperienceStep({
           />
         </Stack>
 
-        <Stack flex={1} gap="$2">
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="endDate"
@@ -157,7 +157,7 @@ export function ExperienceStep({
         </Stack>
       </Row>
 
-      <Row gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Controller
           control={control}
           name="isCurrent"
@@ -170,11 +170,11 @@ export function ExperienceStep({
             />
           )}
         />
-        <Text fontSize="$3">I currently work here</Text>
+        <Text>I currently work here</Text>
       </Row>
 
-      <Stack gap="$2">
-        <Text fontWeight="600">Summary</Text>
+      <Stack gap={8}>
+        <Text>Summary</Text>
         <Controller
           control={control}
           name="summary"

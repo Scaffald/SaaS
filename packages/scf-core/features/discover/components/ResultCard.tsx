@@ -44,63 +44,63 @@ export const ResultCard = memo(
         isSelected={isSelected}
         onPress={handleCardPress}
       >
-        <Row justifyContent="space-between" alignItems="center">
-          <SizableText size="$5" fontWeight="700" color={isSelected ? '$color1' : '$color12'}>
+        <Row justify="space-between" align="center">
+          <SizableText size={20} color={isSelected ? '$color1' : '$color12'}>
             {profile.name}
           </SizableText>
-          <Row alignItems="center" gap="$2">
+          <Row align="center" gap={8}>
             <Row
-              alignItems="center"
-              gap="$1"
+              align="center"
+              gap={4}
               backgroundColor="$blue3"
-              borderRadius="$4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
+              borderRadius={16}
+              paddingHorizontal={8}
+              paddingVertical={4}
             >
               <Star size={12} color="$blue11" />
-              <Text color="$blue11" fontWeight="700" fontSize="$2">
+              <Text color="$blue11">
                 {profile.score}
               </Text>
             </Row>
           </Row>
         </Row>
 
-        <Paragraph size="$3" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+        <Paragraph size={12} color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
           {profile.title}
         </Paragraph>
 
-        <Row flexWrap="wrap" gap="$2">
-          <Row alignItems="center" gap="$1">
+        <Row flexWrap="wrap" gap={8}>
+          <Row align="center" gap={4}>
             <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />
-            <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+            <Text color={isSelected ? '$color1' : '$color11'}>
               {profile.experienceYears} years
             </Text>
           </Row>
           {profile.hourlyRate ? (
-            <Row alignItems="center" gap="$1">
+            <Row align="center" gap={4}>
               <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />
-              <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+              <Text color={isSelected ? '$color1' : '$color11'}>
                 ${profile.hourlyRate}/hr
               </Text>
             </Row>
           ) : null}
-          <Row alignItems="center" gap="$1">
+          <Row align="center" gap={4}>
             <Award size={14} color={isSelected ? '$color1' : '$color10'} />
-            <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+            <Text color={isSelected ? '$color1' : '$color11'}>
               {profile.locationLabel}
             </Text>
           </Row>
         </Row>
 
-        <Row gap="$1" flexWrap="wrap">
+        <Row gap={4} flexWrap="wrap">
           {profile.badges.slice(0, 3).map((badge) => (
             <Row
               key={badge.id}
-              alignItems="center"
-              gap="$1"
-              paddingHorizontal="$1"
-              paddingVertical="$0.5"
-              borderRadius="$8"
+              align="center"
+              gap={4}
+              paddingHorizontal={4}
+              paddingVertical={2}
+              borderRadius={32}
               backgroundColor={
                 badge.tone === 'success'
                   ? '$green3'
@@ -117,7 +117,6 @@ export const ResultCard = memo(
                 <Award size={12} color="$red11" />
               )}
               <Text
-                fontSize="$1"
                 color={
                   badge.tone === 'success'
                     ? '$green11'
@@ -131,25 +130,25 @@ export const ResultCard = memo(
             </Row>
           ))}
           {profile.badges.length > 3 && (
-            <Text fontSize="$1" color="$color10">
+            <Text color="gray">
               +{profile.badges.length - 3} more
             </Text>
           )}
         </Row>
 
-        <Row gap="$1" flexWrap="wrap">
+        <Row gap={4} flexWrap="wrap">
           {profile.certifications.slice(0, 2).map((certification) => (
-            <Button key={certification} size="$1" borderRadius="$8">
+            <Button key={certification} size={4} borderRadius={32}>
               {certification}
             </Button>
           ))}
           {profile.skills.slice(0, 3).map((skill) => (
-            <Button key={skill} size="$1" borderRadius="$8">
+            <Button key={skill} size={4} borderRadius={32}>
               {skill}
             </Button>
           ))}
           {(profile.certifications.length > 2 || profile.skills.length > 3) && (
-            <Text fontSize="$1" color="$color10">
+            <Text color="gray">
               +{profile.certifications.length - 2 + profile.skills.length - 3} more
             </Text>
           )}

@@ -158,28 +158,28 @@ export function TeamInviteModal({
       title="Invite team member"
       testID="modal"
     >
-      <Stack gap="$4">
-        <Stack gap="$2">
-          <Text color="$color11">{inviteTypeDescription}</Text>
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Text color="gray">{inviteTypeDescription}</Text>
           <RadioGroup
             value={inviteType}
             onValueChange={(next) => setInviteType(next as InviteType)}
             orientation="horizontal"
-            gap="$3"
+            gap={12}
           >
-            <Row gap="$2" alignItems="center">
-              <RadioGroup.Item value="email" id="invite-email" size="$3" />
+            <Row gap={8} align="center">
+              <RadioGroup.Item value="email" id="invite-email" size={12} />
               <Label htmlFor="invite-email">Email invite</Label>
             </Row>
-            <Row gap="$2" alignItems="center">
-              <RadioGroup.Item value="user" id="invite-user" size="$3" />
+            <Row gap={8} align="center">
+              <RadioGroup.Item value="user" id="invite-user" size={12} />
               <Label htmlFor="invite-user">Existing member</Label>
             </Row>
           </RadioGroup>
         </Stack>
 
         {inviteType === 'email' ? (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label htmlFor="team-invite-email">Email</Label>
             <Input
               id="team-invite-email"
@@ -198,13 +198,13 @@ export function TeamInviteModal({
               disabled={inviteMutation.isPending}
             />
             {formErrorSource === 'email' && formError ? (
-              <Text color="$red10" fontSize="$3">
+              <Text color="$red10">
                 {formError}
               </Text>
             ) : null}
           </Stack>
         ) : (
-          <Stack gap="$2">
+          <Stack gap={8}>
             <Label>Organization member</Label>
             <UserSearch
               value={selectedUserId}
@@ -223,15 +223,15 @@ export function TeamInviteModal({
           </Stack>
         )}
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Team role</Label>
           {isLoadingRoles ? (
-            <Row gap="$2" alignItems="center">
-              <Spinner size="small" />
-              <Text color="$color11">Loading roles…</Text>
+            <Row gap={8} align="center">
+              <Spinner size="sm" />
+              <Text color="gray">Loading roles…</Text>
             </Row>
           ) : roleOptions.length === 0 ? (
-            <Text color="$color11">No roles are configured for this organization.</Text>
+            <Text color="gray">No roles are configured for this organization.</Text>
           ) : (
             <ResponsiveSelect
               value={selectedRoleId || defaultRoleId || roleOptions[0]?.id || ''}
@@ -246,7 +246,7 @@ export function TeamInviteModal({
           )}
         </Stack>
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="team-invite-message">Message (optional)</Label>
           <TextArea
             id="team-invite-message"
@@ -258,7 +258,7 @@ export function TeamInviteModal({
           />
         </Stack>
 
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="team-invite-expiry">Invitation expires in (days)</Label>
           <Input
             id="team-invite-expiry"
@@ -274,21 +274,21 @@ export function TeamInviteModal({
             }}
             disabled={inviteMutation.isPending}
           />
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN},
             maximum {TEAM_INVITATION_TTL_MAX}.
           </Text>
         </Stack>
 
         {formErrorSource === 'general' && formError ? (
-          <Text color="$red10" fontSize="$3">
+          <Text color="$red10">
             {formError}
           </Text>
         ) : null}
 
-        <Row gap="$3" justifyContent="flex-end">
+        <Row gap={12} justify="flex-end">
           <Button
-            variant="outlined"
+            variant="outline"
             disabled={inviteMutation.isPending}
             onPress={() => onOpenChange(false)}
           >
@@ -296,13 +296,13 @@ export function TeamInviteModal({
           </Button>
           <Button
             backgroundColor="$color9"
-            color="$color1"
+            color="gray"
             icon={inviteType === 'email' ? Mail : UserPlus}
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >
             {inviteMutation.isPending ? (
-              <Spinner size="small" color="$color1" />
+              <Spinner size="sm" color="gray" />
             ) : (
               'Send Invitation'
             )}

@@ -43,8 +43,8 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (config.isLoading || !options || !stripePromise) {
     return (
-      <Card padding="$3" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text fontSize="$3" color="$color11">
+      <Card padding={12} backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+        <Text color="gray">
           Preparing secure payment form…
         </Text>
       </Card>
@@ -53,7 +53,7 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (!config.publishableKey) {
     return (
-      <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+      <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
         <Text color="$red11">
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -125,23 +125,23 @@ function PaymentIntentFormInner({
   const amountLabel = currencyFormatter.format(amountCents / 100)
 
   return (
-    <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
-      <Stack gap="$1">
-        <Row justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600">
+    <Card padding={16} borderColor="$borderColor" borderWidth={1} gap={12}>
+      <Stack gap={4}>
+        <Row justify="space-between" align="center">
+          <Text>
             Charge amount
           </Text>
-          <Text fontSize="$5" fontWeight="700">
+          <Text>
             {amountLabel}
           </Text>
         </Row>
         {description ? (
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             {description}
           </Text>
         ) : null}
         {testMode && (
-          <Text fontSize="$2" color="$orange11">
+          <Text color="$orange11">
             Stripe test mode is active. Use test card numbers only.
           </Text>
         )}
@@ -150,9 +150,9 @@ function PaymentIntentFormInner({
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-          <Row gap="$2" alignItems="center">
-            <Text color="$red11" fontSize="$3" flex={1}>
+        <Card padding={12} backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+          <Row gap={8} align="center">
+            <Text color="$red11" flex={1}>
               {errorMessage}
             </Text>
           </Row>
@@ -160,14 +160,14 @@ function PaymentIntentFormInner({
       ) : null}
 
       <Button
-        size="$4"
+        size={16}
         theme="blue"
         disabled={disabled || isSubmitting || !stripe || !elements}
         onPress={handleSubmit}
       >
         {isSubmitting ? (
-          <Row gap="$2" alignItems="center">
-            <Spinner size="small" color="white" />
+          <Row gap={8} align="center">
+            <Spinner size="sm" color="white" />
             <Text>Processing…</Text>
           </Row>
         ) : (

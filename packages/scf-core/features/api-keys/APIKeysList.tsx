@@ -83,9 +83,9 @@ export function APIKeysList({
 
   if (isLoading) {
     return (
-      <Stack f={1} jc="center" ai="center" padding="$6">
-        <Spinner size="large" color="$blue10" />
-        <Paragraph mt="$4" color="$gray11">
+      <Stack f={1} jc="center" ai="center" padding={24}>
+        <Spinner size="lg" color="$blue10" />
+        <Paragraph mt={16} color="$gray11">
           Loading API keys...
         </Paragraph>
       </Stack>
@@ -93,10 +93,10 @@ export function APIKeysList({
   }
 
   return (
-    <Stack f={1} gap="$4">
+    <Stack f={1} gap={16}>
       {/* Header */}
       <Row jc="space-between" ai="center">
-        <Stack gap="$2">
+        <Stack gap={8}>
           <H2>API Keys</H2>
           <Paragraph color="$gray11">
             Manage API keys for third-party integrations and SDK access
@@ -112,9 +112,9 @@ export function APIKeysList({
       {/* Keys List */}
       {keys.length === 0 ? (
         <Card padded bordered>
-          <Stack ai="center" gap="$4" padding="$6">
+          <Stack ai="center" gap={16} padding={24}>
             <Key size={48} color="$gray9" />
-            <Stack ai="center" gap="$2">
+            <Stack ai="center" gap={8}>
               <H4>No API Keys</H4>
               <Paragraph color="$gray11" textAlign="center">
                 Create your first API key to start using the Scaffald SDK
@@ -126,23 +126,23 @@ export function APIKeysList({
           </Stack>
         </Card>
       ) : (
-        <Stack gap="$3">
+        <Stack gap={12}>
           {keys.map((key) => (
             <Card key={key.id} padded bordered hoverStyle={{ borderColor: '$blue8' }}>
-              <Stack gap="$4">
+              <Stack gap={16}>
                 {/* Key Header */}
                 <Row jc="space-between" ai="flex-start">
-                  <Stack gap="$2" f={1}>
-                    <Row ai="center" gap="$2">
+                  <Stack gap={8} f={1}>
+                    <Row ai="center" gap={8}>
                       <H4>{key.name}</H4>
                       {!key.is_active && (
                         <Card
                           backgroundColor="$red3"
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                          paddingHorizontal={8}
+                          paddingVertical={4}
+                          borderRadius={8}
                         >
-                          <Paragraph size="$2" color="$red11" fontWeight="600">
+                          <Paragraph size={8} color="$red11">
                             REVOKED
                           </Paragraph>
                         </Card>
@@ -150,19 +150,19 @@ export function APIKeysList({
                     </Row>
 
                     {/* Key Prefix */}
-                    <Row ai="center" gap="$2">
+                    <Row ai="center" gap={8}>
                       <Card
                         backgroundColor="$gray3"
-                        paddingHorizontal="$3"
-                        paddingVertical="$2"
-                        borderRadius="$3"
+                        paddingHorizontal={12}
+                        paddingVertical={8}
+                        borderRadius={12}
                       >
-                        <Paragraph fontFamily="$mono" size="$3">
+                        <Paragraph fontFamily="$mono" size={12}>
                           {key.key_prefix}
                         </Paragraph>
                       </Card>
                       <Button
-                        size="$2"
+                        size={8}
                         chromeless
                         icon={Copy}
                         onPress={() => copyToClipboard(key.key_prefix, key.id)}
@@ -173,23 +173,23 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Actions Menu */}
-                  <Button size="$3" chromeless circular icon={MoreVertical} />
+                  <Button size={12} chromeless circular icon={MoreVertical} />
                 </Row>
 
                 {/* Key Metadata */}
-                <Row gap="$4" flexWrap="wrap">
+                <Row gap={16} flexWrap="wrap">
                   {/* Rate Limit Tier */}
-                  <Stack gap="$1">
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4}>
+                    <Paragraph size={8} color="$gray11">
                       Rate Limit
                     </Paragraph>
                     <Card
                       backgroundColor={getRateLimitBadgeColor(key.rate_limit_tier)}
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
                     >
-                      <Paragraph size="$2" color="$gray12" fontWeight="600">
+                      <Paragraph size={8} color="$gray12">
                         {key.rate_limit_tier.toUpperCase()} -{' '}
                         {getRateLimitDescription(key.rate_limit_tier)}
                       </Paragraph>
@@ -197,20 +197,20 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Scopes */}
-                  <Stack gap="$1" f={1}>
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4} f={1}>
+                    <Paragraph size={8} color="$gray11">
                       Scopes
                     </Paragraph>
-                    <Row gap="$2" flexWrap="wrap">
+                    <Row gap={8} flexWrap="wrap">
                       {key.scopes.map((scope) => (
                         <Card
                           key={scope}
                           backgroundColor="$blue3"
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                          paddingHorizontal={8}
+                          paddingVertical={4}
+                          borderRadius={8}
                         >
-                          <Paragraph size="$2" color="$blue11">
+                          <Paragraph size={8} color="$blue11">
                             {scope}
                           </Paragraph>
                         </Card>
@@ -219,11 +219,11 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Last Used */}
-                  <Stack gap="$1">
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4}>
+                    <Paragraph size={8} color="$gray11">
                       Last Used
                     </Paragraph>
-                    <Paragraph size="$3">
+                    <Paragraph size={12}>
                       {key.last_used_at
                         ? format(new Date(key.last_used_at), 'MMM d, yyyy HH:mm')
                         : 'Never'}
@@ -231,22 +231,22 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Created */}
-                  <Stack gap="$1">
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4}>
+                    <Paragraph size={8} color="$gray11">
                       Created
                     </Paragraph>
-                    <Paragraph size="$3">
+                    <Paragraph size={12}>
                       {format(new Date(key.created_at), 'MMM d, yyyy')}
                     </Paragraph>
                   </Stack>
 
                   {/* Expires */}
                   {key.expires_at && (
-                    <Stack gap="$1">
-                      <Paragraph size="$2" color="$gray11">
+                    <Stack gap={4}>
+                      <Paragraph size={8} color="$gray11">
                         Expires
                       </Paragraph>
-                      <Paragraph size="$3" color="$orange11">
+                      <Paragraph size={12} color="$orange11">
                         {format(new Date(key.expires_at), 'MMM d, yyyy')}
                       </Paragraph>
                     </Stack>
@@ -254,19 +254,19 @@ export function APIKeysList({
                 </Row>
 
                 {/* Actions */}
-                <Row gap="$2">
-                  <Button size="$3" variant="outlined" onPress={() => onViewUsage(key.id)}>
+                <Row gap={8}>
+                  <Button size={12} variant="outline" onPress={() => onViewUsage(key.id)}>
                     View Usage
                   </Button>
                   {onManageScopes && key.is_active && (
-                    <Button size="$3" variant="outlined" onPress={() => onManageScopes(key.id)}>
+                    <Button size={12} variant="outline" onPress={() => onManageScopes(key.id)}>
                       Manage Scopes
                     </Button>
                   )}
                   {key.is_active && (
                     <Button
-                      size="$3"
-                      variant="outlined"
+                      size={12}
+                      variant="outline"
                       theme="red"
                       icon={Trash2}
                       onPress={() => onRevokeKey(key.id)}

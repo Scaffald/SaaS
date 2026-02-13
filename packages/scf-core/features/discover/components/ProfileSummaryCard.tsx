@@ -11,10 +11,10 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
     <Card
       alignSelf="center"
       elevate
-      size="$2"
+      size={8}
       backgroundColor="$background"
-      padding="$3"
-      gap="$2"
+      padding={12}
+      gap={8}
       pressStyle={{ scale: 0.98, opacity: 0.9 }}
       onPress={onPress}
       cursor="pointer"
@@ -27,37 +27,36 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
       shadowRadius={12}
       maxWidth={320}
     >
-      <Text fontSize="$5" fontWeight="700" color="$color12">
+      <Text color="gray">
         {profile.name}
       </Text>
 
-      <Row gap="$2" alignItems="center" flexWrap="wrap">
-        <Paragraph fontSize="$2" color="$color11">
+      <Row gap={8} align="center" flexWrap="wrap">
+        <Paragraph color="gray">
           {profile.experienceYears} years
         </Paragraph>
-        <Text color="$color8">•</Text>
-        <Paragraph fontSize="$2" color="$color11" fontWeight="600">
+        <Text color="gray">•</Text>
+        <Paragraph color="gray">
           ${profile.hourlyRate}/hr
         </Paragraph>
       </Row>
 
       {profile.skills && profile.skills.length > 0 && (
-        <Row gap="$1" flexWrap="wrap">
+        <Row gap={4} flexWrap="wrap">
           {profile.skills.slice(0, 3).map((skill) => (
             <Text
               key={skill}
-              fontSize="$1"
-              color="$color10"
+              color="gray"
               backgroundColor="$color4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
+              paddingHorizontal={8}
+              paddingVertical={4}
+              borderRadius={8}
             >
               {skill}
             </Text>
           ))}
           {profile.skills.length > 3 && (
-            <Text fontSize="$1" color="$color10">
+            <Text color="gray">
               +{profile.skills.length - 3} more
             </Text>
           )}

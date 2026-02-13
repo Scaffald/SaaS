@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { ScrollView, Row, Stack } from '@unicornlove/beyond-ui'
+import { ScrollView } from 'react-native'
+import { Row, Stack } from '@unicornlove/beyond-ui'
 import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
@@ -36,47 +37,31 @@ export const ProfileLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
+      <Stack gap={12} paddingTop={12} paddingBottom={20}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+          <Row paddingHorizontal={8} paddingTop={12}>
             <Breadcrumb items={displayBreadcrumbs} />
           </Row>
         )}
 
         {/* Tab Navigation - positioned at top */}
-        {showTabs && <ProfileTabs marginHorizontal="$7" marginTop="$3" />}
+        {showTabs && <ProfileTabs marginHorizontal="$7" marginTop={12} />}
 
         {/* Content Area - Responsive two-column layout */}
         <Row
-          gap="$3"
-          paddingHorizontal="$3"
-          paddingTop="$3"
+          gap={12}
+          paddingHorizontal={12}
+          paddingTop={12}
           flexDirection="column"
-          $md={{
-            gap: '$8',
-            paddingHorizontal: '$7',
-            paddingTop: '$3',
-            flexDirection: 'row',
-          }}
         >
           <Stack
             width="100%"
-            $md={{
-              width: undefined,
-              flex: 3,
-              minWidth: 300,
-            }}
           >
             {leftContent}
           </Stack>
           <Stack
             width="100%"
-            $md={{
-              width: undefined,
-              flex: 2,
-              minWidth: 300,
-            }}
           >
             {rightContent}
           </Stack>

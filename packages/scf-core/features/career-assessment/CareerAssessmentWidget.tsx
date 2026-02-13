@@ -84,9 +84,9 @@ export function CareerAssessmentWidget() {
   if (isCheckingStatus) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
+        <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+          <Spinner size="lg" color="$blue7" />
+          <Text color="gray">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -101,10 +101,10 @@ export function CareerAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Text color="gray">
             Career Assessment
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Take a quick assessment to help us recommend jobs that match your interests and skills
           </Text>
         </Stack>
@@ -127,10 +127,10 @@ export function CareerAssessmentWidget() {
         <Separator />
 
         {/* Current Occupation (Optional) */}
-        <Stack gap="$3">
-          <Stack gap="$1">
-            <Text fontWeight="600">Current Occupation (Optional)</Text>
-            <Text fontSize="$2" color="$color11">
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text>Current Occupation (Optional)</Text>
+            <Text color="gray">
               What is your current or most recent job?
             </Text>
           </Stack>
@@ -147,7 +147,7 @@ export function CareerAssessmentWidget() {
             )}
           />
           {errors.current_occupation_code && (
-            <Text color="$red10" fontSize="$2">
+            <Text color="$red10">
               {errors.current_occupation_code.message}
             </Text>
           )}
@@ -159,12 +159,12 @@ export function CareerAssessmentWidget() {
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
           opacity={isSubmitting ? 0.5 : 1}
-          size="$5"
+          size={20}
           marginTop={spacing.xs}
         >
           {isSubmitting ? (
-            <Row gap={spacing.xs} alignItems="center">
-              <Spinner size="small" color="white" />
+            <Row gap={spacing.xs} align="center">
+              <Spinner size="sm" color="white" />
               <Button.Text>Saving Assessment...</Button.Text>
             </Row>
           ) : (
@@ -172,7 +172,7 @@ export function CareerAssessmentWidget() {
           )}
         </Button>
 
-        <Text fontSize="$2" color="$color11">
+        <Text color="gray">
           This assessment takes about 2 minutes and helps us recommend careers that fit your
           interests
         </Text>

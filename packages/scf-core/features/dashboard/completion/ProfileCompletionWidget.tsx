@@ -27,7 +27,7 @@ export const ProfileCompletionWidget = ({ onNavigate }: ProfileCompletionWidgetP
         <Checklist
           title="Complete Your Profile"
           subtitle="Your profile is your first impression on Scaffald. A complete profile helps employers, collaborators, and peers quickly understand who you are and what you're looking for. This checklist guides you through adding the most important details step by step. As you fill things out, you'll see your progress update in real time. Aim for 100% to unlock better visibility in search results and increase your chances of matching with the right opportunities."
-          alignItems={[]}
+          align={[]}
           completionPercentage={0}
           isLoading={isLoading}
         />
@@ -40,7 +40,7 @@ export const ProfileCompletionWidget = ({ onNavigate }: ProfileCompletionWidgetP
       <Checklist
         title="Complete Your Profile"
         subtitle="Your profile is your first impression on Scaffald. A complete profile helps employers, collaborators, and peers quickly understand who you are and what you're looking for. This checklist guides you through adding the most important details step by step. As you fill things out, you'll see your progress update in real time. Aim for 100% to unlock better visibility in search results and increase your chances of matching with the right opportunities."
-        alignItems={completionData.items}
+        align={completionData.items}
         completionPercentage={completionData.completionPercentage}
         onItemPress={handleItemPress}
         isLoading={isLoading}

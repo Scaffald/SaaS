@@ -15,9 +15,9 @@ export function RIASECAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
+        <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+          <Spinner size="lg" color="$blue7" />
+          <Text color="gray">Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -35,19 +35,19 @@ export function RIASECAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+          <Text color="gray">
             Career Interests
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text color="gray">
             Rate your interest in 6 career dimensions to discover careers that match your interests.
           </Text>
         </Stack>
 
-        <Button variant="primary" onPress={handleStart} size="$5">
+        <Button variant="primary" onPress={handleStart} size={20}>
           <Button.Text>Start Interest Assessment</Button.Text>
         </Button>
 
-        <Text fontSize="$2" color="$color11">
+        <Text color="gray">
           Takes about 2-3 minutes
         </Text>
       </Stack>

@@ -169,9 +169,9 @@ export const OfficeApplicationsScreen = () => {
   // Loading state
   if (isLoading) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
-        <Spinner size="large" />
-        <Text marginTop="$4" color="$color11">
+      <Stack flex={1} align="center" justify="center" backgroundColor="$background">
+        <Spinner size="lg" />
+        <Text marginTop={16} color="gray">
           Loading applications...
         </Text>
       </Stack>
@@ -181,12 +181,12 @@ export const OfficeApplicationsScreen = () => {
   // Error state
   if (isError) {
     return (
-      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
-        <Text color="$red10" fontSize="$5" fontWeight="bold">
+      <Stack flex={1} align="center" justify="center" padding={16}>
+        <Text color="$red10">
           Error Loading Applications
         </Text>
-        <Stack alignItems="center">
-          <Text color="$color11" marginTop="$2">
+        <Stack align="center">
+          <Text color="gray" marginTop={8}>
             {error?.message || 'Failed to load applications. Please try again.'}
           </Text>
         </Stack>
@@ -195,26 +195,26 @@ export const OfficeApplicationsScreen = () => {
   }
 
   return (
-    <Stack flex={1} padding="$4" backgroundColor="$background">
+    <Stack flex={1} padding={16} backgroundColor="$background">
       {/* Header */}
-      <Row justifyContent="space-between" alignItems="center" marginBottom="$4">
+      <Row justify="space-between" align="center" marginBottom={16}>
         <Stack>
           <H2>Applications</H2>
-          <Text color="$color11" fontSize="$3">
+          <Text color="gray">
             {filteredApplications.length} total applications
           </Text>
         </Stack>
 
-        <Row gap="$2">
+        <Row gap={8}>
           <Button
-            size="$3"
+            size={12}
             onPress={() => setViewMode('kanban')}
             variant={viewMode === 'kanban' ? 'outlined' : undefined}
           >
             Kanban
           </Button>
           <Button
-            size="$3"
+            size={12}
             onPress={() => setViewMode('list')}
             variant={viewMode === 'list' ? 'outlined' : undefined}
           >
@@ -230,7 +230,7 @@ export const OfficeApplicationsScreen = () => {
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       ) : (
-        <Stack padding="$4">
+        <Stack padding={16}>
           <Text>List view coming soon...</Text>
         </Stack>
       )}

@@ -22,14 +22,14 @@ export const ConfidenceBadge = memo(function ConfidenceBadge({
   const Icon = ICON_MAP[level]
 
   return (
-    <Row gap="$2" alignItems="center">
+    <Row gap={8} align="center">
       <Icon size={16} color={config.colorToken} />
       <Stack>
-        <Text color={config.colorToken} fontSize="$2" fontWeight="600">
+        <Text color={config.colorToken}>
           {config.label}
         </Text>
         {showDescription && (
-          <Text color="$color10" fontSize="$1">
+          <Text color="gray">
             {config.description}
           </Text>
         )}

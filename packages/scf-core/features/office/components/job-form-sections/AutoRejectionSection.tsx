@@ -45,19 +45,19 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
   }
 
   return (
-    <Stack gap="$4" padding="$4">
-      <Stack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
+    <Stack gap={16} padding={16}>
+      <Stack gap={8}>
+        <Text>
           Auto-Rejection
         </Text>
-        <Text fontSize="$2">Automatically reject applicants who don't meet minimum criteria</Text>
+        <Text>Automatically reject applicants who don't meet minimum criteria</Text>
       </Stack>
 
       {/* Enable Auto-Rejection */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Row gap="$2" alignItems="center" flex={1}>
-          <Label fontWeight="600">Reject automatically</Label>
-          <HelpCircle size={16} color="$color10" />
+      <Row gap={12} align="center" justify="space-between">
+        <Row gap={8} align="center" flex={1}>
+          <Label>Reject automatically</Label>
+          <HelpCircle size={16} color="gray" />
         </Row>
         <ToggleSwitch
           checked={localState.enabled}
@@ -65,22 +65,22 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           aria-label="Enable auto-rejection"
         />
       </Row>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Based on Elevate score, work authorization and required skills
       </Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
-        <Stack gap="$3" padding="$3">
-          <Text fontSize="$3" fontWeight="600">
+        <Stack gap={12} padding={12}>
+          <Text>
             Rejection Criteria
           </Text>
 
           {/* Work Authorization */}
-          <Row gap="$3">
-            <Stack gap="$1" flex={1}>
+          <Row gap={12}>
+            <Stack gap={4} flex={1}>
               <Label>Work authorization required</Label>
-              <Text fontSize="$1">Reject if not authorized to work</Text>
+              <Text>Reject if not authorized to work</Text>
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_work_authorization || false}
@@ -92,10 +92,10 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           </Row>
 
           {/* All Skills Required */}
-          <Row gap="$3">
-            <Stack gap="$1" flex={1}>
+          <Row gap={12}>
+            <Stack gap={4} flex={1}>
               <Label>All skills required</Label>
-              <Text fontSize="$1">Reject if missing any required skills</Text>
+              <Text>Reject if missing any required skills</Text>
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_skills || false}
@@ -107,10 +107,10 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           </Row>
 
           {/* All Certifications Required */}
-          <Row gap="$3">
-            <Stack gap="$1" flex={1}>
+          <Row gap={12}>
+            <Stack gap={4} flex={1}>
               <Label>All certifications required</Label>
-              <Text fontSize="$1">Reject if missing any required certifications</Text>
+              <Text>Reject if missing any required certifications</Text>
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_certifications || false}
@@ -121,11 +121,11 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
             />
           </Row>
 
-          <Stack gap="$2" padding="$3">
-            <Text fontSize="$2" fontWeight="600" color="$yellow11">
+          <Stack gap={8} padding={12}>
+            <Text color="$yellow11">
               ⚠️ Important
             </Text>
-            <Text fontSize="$1" color="$yellow11">
+            <Text color="$yellow11">
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This
               action cannot be undone automatically. Review your criteria carefully.
             </Text>

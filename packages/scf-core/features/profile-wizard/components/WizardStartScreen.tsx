@@ -49,61 +49,61 @@ export const WizardStartScreen = memo(function WizardStartScreen({
   }
 
   return (
-    <Stack gap="$5" testID="profile-wizard-start-screen">
-      <Stack gap="$3">
+    <Stack gap={20} testID="profile-wizard-start-screen">
+      <Stack gap={12}>
         <H3>Complete Your Profile in Minutes</H3>
-        <Paragraph color="$color11">
+        <Paragraph color="gray">
           Unlock better job matches and visibility by finishing six quick steps. We&apos;ll guide
           you through the essentials and save your progress automatically.
         </Paragraph>
       </Stack>
 
       <Card bordered elevate backgroundColor="$color2">
-        <Card.Header padded gap="$4">
-          <Stack gap="$3">
-            <Row gap="$2" alignItems="center">
+        <Card.Header padded gap={16}>
+          <Stack gap={12}>
+            <Row gap={8} align="center">
               <Zap size={20} color="$yellow10" />
-              <Text fontSize="$3" fontWeight="600" color="$color12">
+              <Text color="gray">
                 Fast-Track Your Profile
               </Text>
             </Row>
-            <Paragraph color="$color11">
+            <Paragraph color="gray">
               You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile
               visibility, milestone badges, and curated job recommendations.
             </Paragraph>
           </Stack>
 
-          <Stack gap="$3">
-            <Text fontWeight="600" color="$color12">
+          <Stack gap={12}>
+            <Text color="gray">
               What you&apos;ll cover
             </Text>
-            <Stack gap="$3">
+            <Stack gap={12}>
               {PROFILE_WIZARD_STEPS.map((stepId) => {
                 const meta = PROFILE_WIZARD_STEP_META[stepId]
                 const StepIcon = STEP_ICONS[stepId] ?? Sparkles
                 return (
-                  <Row key={stepId} gap="$3" alignItems="center">
+                  <Row key={stepId} gap={12} align="center">
                     <Card
                       backgroundColor="$color3"
                       borderColor="$color5"
                       borderWidth={1}
                       width={44}
                       height={44}
-                      alignItems="center"
-                      justifyContent="center"
-                      borderRadius="$4"
+                      align="center"
+                      justify="center"
+                      borderRadius={16}
                     >
                       <StepIcon size={20} color="$blue10" />
                     </Card>
                     <Stack flex={1}>
-                      <Text fontSize="$3" fontWeight="600" color="$color12">
+                      <Text color="gray">
                         {meta.title}
                       </Text>
-                      <Text fontSize="$2" color="$color11">
+                      <Text color="gray">
                         {meta.description}
                       </Text>
                     </Stack>
-                    <Text fontSize="$2" color="$color10">
+                    <Text color="gray">
                       {meta.estimatedTimeMinutes} min
                     </Text>
                   </Row>
@@ -114,28 +114,28 @@ export const WizardStartScreen = memo(function WizardStartScreen({
         </Card.Header>
       </Card>
 
-      <Stack gap="$3">
-        <Button size="$5" themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
+      <Stack gap={12}>
+        <Button size={20} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
           Start Wizard
         </Button>
-        <Button size="$5" icon={Upload} onPress={onUploadResume}>
+        <Button size={20} icon={Upload} onPress={onUploadResume}>
           Upload Resume
         </Button>
-        <Button size="$3" chromeless onPress={onSkip}>
+        <Button size={12} chromeless onPress={onSkip}>
           Skip and Edit Later
         </Button>
       </Stack>
 
       <Card bordered backgroundColor="$color2">
-        <Card.Header padded gap="$3">
-          <Row gap="$3" flexWrap="wrap">
-            <Row gap="$2" alignItems="center">
+        <Card.Header padded gap={12}>
+          <Row gap={12} flexWrap="wrap">
+            <Row gap={8} align="center">
               <Clock size={18} color="$blue10" />
-              <Text fontSize="$3" fontWeight="600" color="$color12">
+              <Text color="gray">
                 {estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes
               </Text>
             </Row>
-            <Text fontSize="$3" color="$color11">
+            <Text color="gray">
               6 guided steps • Auto-save enabled • Resume anytime
             </Text>
           </Row>

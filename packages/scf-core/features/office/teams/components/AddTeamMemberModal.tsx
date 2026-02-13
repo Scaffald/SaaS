@@ -86,13 +86,13 @@ export function AddTeamMemberModal({
 
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Add team member">
-      <Stack gap="$4">
-        <Text color="$color11">
+      <Stack gap={16}>
+        <Text color="gray">
           Invite an existing organization member to collaborate on this team.
         </Text>
 
-        <Stack gap="$2">
-          <Text fontSize="$3" color="$color11">
+        <Stack gap={8}>
+          <Text color="gray">
             Member
           </Text>
           <UserSearch
@@ -108,14 +108,14 @@ export function AddTeamMemberModal({
           />
         </Stack>
 
-        <Stack gap="$2">
-          <Text fontSize="$3" color="$color11">
+        <Stack gap={8}>
+          <Text color="gray">
             Role
           </Text>
           {isLoadingRoles ? (
-            <Row alignItems="center" gap="$2">
-              <Spinner size="small" />
-              <Text color="$color11">Loading roles...</Text>
+            <Row align="center" gap={8}>
+              <Spinner size="sm" />
+              <Text color="gray">Loading roles...</Text>
             </Row>
           ) : (
             <ResponsiveSelect
@@ -130,9 +130,9 @@ export function AddTeamMemberModal({
           )}
         </Stack>
 
-        <Row gap="$3" justifyContent="flex-end">
+        <Row gap={12} justify="flex-end">
           <Button
-            variant="outlined"
+            variant="outline"
             disabled={addMemberMutation.isPending}
             onPress={() => onOpenChange(false)}
           >
@@ -141,10 +141,10 @@ export function AddTeamMemberModal({
           <Button
             onPress={handleSubmit}
             backgroundColor="$color9"
-            color="$color1"
+            color="gray"
             disabled={addMemberMutation.isPending}
           >
-            {addMemberMutation.isPending ? <Spinner size="small" color="$color1" /> : 'Add Member'}
+            {addMemberMutation.isPending ? <Spinner size="sm" color="gray" /> : 'Add Member'}
           </Button>
         </Row>
       </Stack>

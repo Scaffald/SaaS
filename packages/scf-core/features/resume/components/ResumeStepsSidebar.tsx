@@ -44,12 +44,12 @@ export function ResumeStepsSidebar() {
   }, [completedStepIds, steps.length])
 
   return (
-    <Stack gap="$5" padding="$2" $md={{ padding: '$1' }}>
-      <Stack gap="$1">
-        <Text fontSize="$5" fontWeight="700">
+    <Stack gap={20} padding={8}>
+      <Stack gap={4}>
+        <Text>
           Resume Steps
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text color="gray">
           Keep track of each resume section as you merge data into your profile.
         </Text>
       </Stack>

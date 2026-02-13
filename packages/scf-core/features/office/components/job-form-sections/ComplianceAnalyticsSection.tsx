@@ -41,38 +41,38 @@ export function ComplianceAnalyticsSection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Compliance & Analytics
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         EEO compliance and tracking settings
       </Text>
 
       {/* EEO Job Category */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>EEO job category</Label>
         <Input
           placeholder="e.g. Craft Workers, Laborers, Operatives"
           value={localState.eeo_job_category || ''}
           onChangeText={(text) => handleChange('eeo_job_category', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Equal Employment Opportunity category
         </Text>
       </Stack>
 
       {/* Veteran Friendly */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Veteran friendly</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Position suitable for veterans
           </Text>
         </Stack>
@@ -84,10 +84,10 @@ export function ComplianceAnalyticsSection({
       </Row>
 
       {/* Disability Friendly */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Disability friendly</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Accommodations available for disabilities
           </Text>
         </Stack>
@@ -99,10 +99,10 @@ export function ComplianceAnalyticsSection({
       </Row>
 
       {/* Affirmative Action Plan */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Affirmative action plan</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Part of affirmative action hiring
           </Text>
         </Stack>
@@ -114,10 +114,10 @@ export function ComplianceAnalyticsSection({
       </Row>
 
       {/* Source Tracking */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Source tracking enabled</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Track where applicants find this job
           </Text>
         </Stack>

@@ -101,34 +101,32 @@ function RightCard({
 
   return (
     <Stack
-      padding="$4"
+      padding={16}
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$3"
+      gap={12}
     >
-      <Row gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Stack
           width={8}
           height={8}
           borderRadius={4}
           backgroundColor="$green10"
         />
-        <Text fontSize="$5" fontWeight="600">
+        <Text>
           {right.title}
         </Text>
       </Row>
 
-      <Text fontSize="$3" color="$color11" lineHeight="$4">
+      <Text color="gray" lineHeight={16}>
         {right.description}
       </Text>
 
       {right.actionLabel && right.actionType !== 'info' && (
         <Text
-          fontSize="$3"
           color={ACTION_COLORS[right.actionType || 'info']}
-          fontWeight="500"
           cursor="pointer"
           hoverStyle={{ textDecorationLine: 'underline' }}
           onPress={handleAction}
@@ -154,19 +152,19 @@ interface PrivacyRightsListProps {
  */
 export function PrivacyRightsList({ onAction }: PrivacyRightsListProps) {
   return (
-    <Stack gap="$3">
+    <Stack gap={12}>
       {CCPA_RIGHTS.map((right) => (
         <RightCard key={right.id} right={right} onAction={onAction} />
       ))}
 
       {/* Legal reference */}
       <Stack
-        padding="$3"
+        padding={12}
         backgroundColor="$color3"
-        borderRadius="$2"
-        marginTop="$2"
+        borderRadius={8}
+        marginTop={8}
       >
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           These rights are provided under the California Consumer Privacy Act (CCPA) and
           California Privacy Rights Act (CPRA). To exercise any of these rights, you can use
           the quick actions at the top of this page or contact our Privacy Team.

@@ -36,7 +36,6 @@ let mammothModule: any | null = null
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getMammoth(): Promise<any> {
   if (!mammothModule) {
-    // @ts-expect-error: Dynamic import for optional dependency
     mammothModule = await import('mammoth')
   }
   return mammothModule

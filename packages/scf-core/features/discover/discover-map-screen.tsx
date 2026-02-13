@@ -616,8 +616,8 @@ export const DiscoverMapScreen = () => {
             <Stack
               flex={1}
               backgroundColor="$background"
-              paddingHorizontal="$3"
-              paddingVertical="$3"
+              paddingHorizontal={12}
+              paddingVertical={12}
             >
               <ResultList
                 ref={resultListRef}
@@ -789,13 +789,13 @@ const MobileSearchHeader = ({
   return (
     <Row
       width="100%"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
-      gap="$3"
+      paddingHorizontal={16}
+      paddingVertical={12}
+      gap={12}
       backgroundColor="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
-      alignItems="center"
+      align="center"
     >
       {tokenValidation.valid ? (
         <AddressAutocomplete
@@ -826,26 +826,26 @@ const MobileSearchHeader = ({
         <Stack
           flex={1}
           backgroundColor="$background"
-          padding="$3"
-          borderRadius="$4"
+          padding={12}
+          borderRadius={16}
           borderWidth={1}
           borderColor="$red8"
-          gap="$2"
+          gap={8}
           style={{ flexShrink: 1 }}
         >
-          <Text fontSize="$4" fontWeight="600" color="$red10">
+          <Text color="$red10">
             Map Search Unavailable
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             {tokenValidation.error}
           </Text>
         </Stack>
       )}
 
       <Button
-        size="$4"
+        size={16}
         circular
-        variant="outlined"
+        variant="outline"
         icon={SlidersHorizontal}
         aria-label="Open filters"
         onPress={onFiltersPress}
@@ -864,12 +864,12 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
   return (
     <Row
       position="absolute"
-      bottom="$3"
-      left="$3"
-      right="$3"
+      bottom={12}
+      left={12}
+      right={12}
       backgroundColor="$color2"
-      borderRadius="$6"
-      padding="$1"
+      borderRadius={24}
+      padding={4}
       shadowColor="$shadowColor"
       shadowOffset={{ width: 0, height: -2 }}
       shadowOpacity={0.15}
@@ -877,18 +877,18 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
       style={{ zIndex: 60 }}
     >
       <Tabs value={activeView} onValueChange={onViewChange} activationMode="manual" flex={1}>
-        <Tabs.List flex={1} gap="$2" backgroundColor="transparent">
+        <Tabs.List flex={1} gap={8} backgroundColor="transparent">
           <Tabs.Tab
             value="map"
             flex={1}
             backgroundColor={activeView === 'map' ? '$background' : 'transparent'}
-            borderRadius="$5"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            borderRadius={20}
+            paddingHorizontal={16}
+            paddingVertical={12}
           >
-            <Row alignItems="center" justifyContent="center" gap="$2">
+            <Row align="center" justify="center" gap={8}>
               <MapIcon size={16} />
-              <Text fontSize="$4" fontWeight="600">
+              <Text>
                 Map
               </Text>
             </Row>
@@ -897,13 +897,13 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             value="list"
             flex={1}
             backgroundColor={activeView === 'list' ? '$background' : 'transparent'}
-            borderRadius="$5"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            borderRadius={20}
+            paddingHorizontal={16}
+            paddingVertical={12}
           >
-            <Row alignItems="center" justifyContent="center" gap="$2">
+            <Row align="center" justify="center" gap={8}>
               <ListIcon size={16} />
-              <Text fontSize="$4" fontWeight="600">
+              <Text>
                 List
               </Text>
             </Row>
@@ -936,15 +936,15 @@ const MobileFiltersContent = ({
   onReset,
 }: MobileFiltersContentProps) => {
   return (
-    <Stack flex={1} padding="$4" gap="$4">
-      <Row justifyContent="space-between" alignItems="center">
-        <Text fontSize="$6" fontWeight="700">
+    <Stack flex={1} padding={16} gap={16}>
+      <Row justify="space-between" align="center">
+        <Text>
           Filters
         </Text>
         <Button
-          size="$3"
+          size={12}
           circular
-          variant="outlined"
+          variant="outline"
           icon={X}
           aria-label="Close filters"
           onPress={onClose}
@@ -952,7 +952,7 @@ const MobileFiltersContent = ({
       </Row>
 
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <Stack gap="$4" paddingBottom="$6">
+        <Stack gap={16} paddingBottom={24}>
           <FilterToggle
             label="Workers"
             description="Show worker profiles on the map"
@@ -975,8 +975,8 @@ const MobileFiltersContent = ({
       </ScrollView>
 
       <Button
-        size="$4"
-        variant="outlined"
+        size={16}
+        variant="outline"
         icon={RotateCcw}
         scaleIcon={1.2}
         onPress={onReset}
@@ -997,20 +997,20 @@ type FilterToggleProps = {
 
 const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => (
   <Stack
-    gap="$2"
+    gap={8}
     backgroundColor="$color2"
-    padding="$3"
-    borderRadius="$4"
+    padding={12}
+    borderRadius={16}
     borderWidth={1}
     borderColor="$borderColor"
   >
-    <Row justifyContent="space-between" alignItems="center" gap="$2">
-      <Text fontSize="$4" fontWeight="600">
+    <Row justify="space-between" align="center" gap={8}>
+      <Text>
         {label}
       </Text>
       <ToggleSwitch checked={value} onCheckedChange={onValueChange} aria-label={label} />
     </Row>
-    <Text fontSize="$2" color="$color10">
+    <Text color="gray">
       {description}
     </Text>
   </Stack>

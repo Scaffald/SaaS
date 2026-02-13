@@ -214,17 +214,15 @@ export const JobCard = memo(
           }
         >
           {/* Header */}
-          <Row justifyContent="space-between" alignItems="center">
+          <Row justify="space-between" align="center">
             <CardHeader
               title={title}
               subtitle={
                 organization ? (
-                  <Row gap="$2" alignItems="center">
+                  <Row gap={8} align="center">
                     <Building2 size={16} color={isSelected ? '$color1' : '$color11'} />
                     <Text
-                      fontSize="$3"
                       color={isSelected ? '$color1' : '$color11'}
-                      fontWeight="600"
                     >
                       {organization.name}
                     </Text>
@@ -236,11 +234,11 @@ export const JobCard = memo(
                 hasApplied ? (
                   <Row
                     backgroundColor="$green9"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$2"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={8}
                   >
-                    <Text color="$green1" fontSize="$2" fontWeight="600">
+                    <Text color="$green1">
                       Applied
                     </Text>
                   </Row>
@@ -251,14 +249,14 @@ export const JobCard = memo(
 
           {/* Remote option chip */}
           {remoteOption && (
-            <Row gap="$2">
+            <Row gap={8}>
               <Row
                 backgroundColor="$blue8"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                borderRadius="$2"
+                paddingHorizontal={8}
+                paddingVertical={4}
+                borderRadius={8}
               >
-                <Text color="white" fontSize="$2" fontWeight="600">
+                <Text color="white">
                   {remoteOption === 'on_site'
                     ? 'On-site'
                     : remoteOption === 'hybrid'
@@ -271,7 +269,7 @@ export const JobCard = memo(
 
           {/* Description */}
           {description && (
-            <Paragraph size="$3" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+            <Paragraph size={12} color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
               {description}
             </Paragraph>
           )}
@@ -283,9 +281,9 @@ export const JobCard = memo(
 
           {/* Pay range */}
           {payRange && (
-            <Row gap="$1.5" alignItems="center">
+            <Row gap={6} align="center">
               <DollarSign size={16} color="$green10" />
-              <Text fontSize="$3" color="$green10" fontWeight="600">
+              <Text color="$green10">
                 {payRange}
               </Text>
             </Row>

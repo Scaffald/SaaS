@@ -124,20 +124,20 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (isLoading) {
     return (
-      <Stack gap="$4" alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text color="$color11">Loading version history...</Text>
+      <Stack gap={16} align="center" justify="center" padding={16}>
+        <Spinner size="lg" color="$blue10" />
+        <Text color="gray">Loading version history...</Text>
       </Stack>
     )
   }
 
   if (error) {
     return (
-      <Stack gap="$2" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$red11">
+      <Stack gap={8} padding={16}>
+        <Text color="$red11">
           Error loading history
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           {error.message || 'Failed to load version history'}
         </Text>
       </Stack>
@@ -146,11 +146,11 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (versions.length === 0) {
     return (
-      <Stack gap="$2" padding="$4" alignItems="center">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Stack gap={8} padding={16} align="center">
+        <Text color="gray">
           No History Yet
         </Text>
-        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           Complete your first soft skills assessment to start tracking your progress over time.
         </Text>
       </Stack>
@@ -159,28 +159,28 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (versions.length === 1) {
     return (
-      <Stack gap="$3" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Stack gap={12} padding={16}>
+        <Text color="gray">
           Assessment History
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           This is your first assessment. Complete another assessment to see progression tracking.
         </Text>
         <Stack
-          gap="$2"
-          padding="$3"
+          gap={8}
+          padding={12}
           backgroundColor="$blue2"
-          borderRadius="$3"
+          borderRadius={12}
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Row gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <Calendar size={16} color="$blue10" />
-            <Text fontSize="$4" fontWeight="600" color="$blue11">
+            <Text color="$blue11">
               Version {versions[0].version}
             </Text>
             {versions[0].selfAssessedAt && (
-              <Text fontSize="$3" color="$blue10">
+              <Text color="$blue10">
                 • {formatDate(versions[0].selfAssessedAt)}
               </Text>
             )}
@@ -215,16 +215,16 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <Stack gap="$4" padding="$4">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Stack gap={16} padding={16}>
+        <Text color="gray">
           Assessment History
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text color="gray">
           View your soft skills assessments over time and track your progress.
         </Text>
 
         {/* Timeline */}
-        <Stack gap="$3">
+        <Stack gap={12}>
           {versions.map((version, index) => {
             const isCurrent = version.version === currentVersion
             const isSelected = selectedVersion === version.version
@@ -239,47 +239,47 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                   pressStyle={{ opacity: 0.8 }}
                 >
                   <Stack
-                    gap="$3"
-                    padding="$4"
+                    gap={12}
+                    padding={16}
                     backgroundColor={isSelected ? '$blue2' : isCurrent ? '$green2' : '$color2'}
-                    borderRadius="$4"
+                    borderRadius={16}
                     borderWidth={2}
                     borderColor={isSelected ? '$blue9' : isCurrent ? '$green9' : '$borderColor'}
                   >
                     <Row
-                      alignItems="center"
-                      justifyContent="space-between"
+                      align="center"
+                      justify="space-between"
                       flexWrap="wrap"
-                      gap="$2"
+                      gap={8}
                     >
-                      <Row gap="$3" alignItems="center">
+                      <Row gap={12} align="center">
                         <Stack
                           width={40}
                           height={40}
                           borderRadius="$12"
                           backgroundColor={isCurrent ? '$green9' : '$blue9'}
-                          alignItems="center"
-                          justifyContent="center"
+                          align="center"
+                          justify="center"
                         >
-                          <Text fontSize="$4" fontWeight="700" color="$color1">
+                          <Text color="gray">
                             V{version.version}
                           </Text>
                         </Stack>
-                        <Stack gap="$1">
-                          <Row gap="$2" alignItems="center">
-                            <Text fontSize="$4" fontWeight="600" color="$color12">
+                        <Stack gap={4}>
+                          <Row gap={8} align="center">
+                            <Text color="gray">
                               Version {version.version}
                               {isCurrent && (
-                                <Text fontSize="$3" color="$green11" marginLeft="$2">
+                                <Text color="$green11" marginLeft={8}>
                                   (Current)
                                 </Text>
                               )}
                             </Text>
                           </Row>
                           {version.selfAssessedAt && (
-                            <Row gap="$2" alignItems="center">
-                              <Calendar size={14} color="$color10" />
-                              <Text fontSize="$2" color="$color10">
+                            <Row gap={8} align="center">
+                              <Calendar size={14} color="gray" />
+                              <Text color="gray">
                                 {formatDate(version.selfAssessedAt)}
                                 {daysAgo && ` • ${daysAgo}`}
                               </Text>
@@ -291,13 +291,13 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     </Row>
 
                     {/* Category Averages */}
-                    <Row gap="$3" flexWrap="wrap">
+                    <Row gap={12} flexWrap="wrap">
                       {Object.entries(version.categoryAverages).map(([category, average]) => (
-                        <Stack key={category} gap="$1" style={{ minWidth: 120 }}>
-                          <Text fontSize="$2" color="$color10" textTransform="capitalize">
+                        <Stack key={category} gap={4} style={{ minWidth: 120 }}>
+                          <Text color="gray" textTransform="capitalize">
                             {category}
                           </Text>
-                          <Text fontSize="$4" fontWeight="600" color="$color12">
+                          <Text color="gray">
                             {average.toFixed(1)}/5
                           </Text>
                         </Stack>
@@ -308,8 +308,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     {isSelected && selectedVersionData && !(!isCurrent && currentVersionData) && (
                       <>
                         <Separator />
-                        <Stack gap="$2" alignItems="center">
-                          <Text fontSize="$4" fontWeight="600" color="$blue11">
+                        <Stack gap={8} align="center">
+                          <Text color="$blue11">
                             Version {version.version} Radar Chart
                           </Text>
                           <SkillsChart
@@ -341,13 +341,13 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     {isSelected && !isCurrent && currentVersionData && selectedVersionData && (
                       <>
                         <Separator />
-                        <Stack gap="$3" alignItems="center">
-                          <Text fontSize="$4" fontWeight="600" color="$color12">
+                        <Stack gap={12} align="center">
+                          <Text color="gray">
                             Comparison: Version {version.version} vs Current (Version{' '}
                             {currentVersion})
                           </Text>
 
-                          <Row gap="$4" flexWrap="wrap" justifyContent="center">
+                          <Row gap={16} flexWrap="wrap" justify="center">
                             <Stack flex={1} style={{ minWidth: 250 }}>
                               <SkillsChart
                                 datasets={[
@@ -379,20 +379,20 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
                           {/* Legend */}
                           <Row
-                            gap="$4"
-                            alignItems="center"
-                            justifyContent="center"
-                            paddingVertical="$2"
+                            gap={16}
+                            align="center"
+                            justify="center"
+                            paddingVertical={8}
                           >
-                            <Row gap="$2" alignItems="center">
+                            <Row gap={8} align="center">
                               <Stack width={20} height={3} backgroundColor="$blue9" />
-                              <Text fontSize="$2" color="$color11">
+                              <Text color="gray">
                                 Version {version.version}
                               </Text>
                             </Row>
-                            <Row gap="$2" alignItems="center">
+                            <Row gap={8} align="center">
                               <Stack width={20} height={3} backgroundColor="$green9" />
-                              <Text fontSize="$2" color="$color11">
+                              <Text color="gray">
                                 Current
                               </Text>
                             </Row>
@@ -405,7 +405,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
                 {/* Timeline Connector */}
                 {index < versions.length - 1 && (
-                  <Stack alignItems="center" paddingVertical="$2">
+                  <Stack align="center" paddingVertical={8}>
                     <Stack width={2} height={20} backgroundColor="$borderColor" />
                   </Stack>
                 )}

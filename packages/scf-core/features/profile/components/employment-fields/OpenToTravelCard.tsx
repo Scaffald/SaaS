@@ -39,7 +39,7 @@ export function OpenToTravelCard({
 }: OpenToTravelCardProps) {
   return (
     <ToggleCard
-      icon={<Plane size="$2" color="$color11" />}
+      icon={<Plane size={8} color="gray" />}
       title="Open to travel"
       description={description}
       checked={checked}
@@ -47,7 +47,7 @@ export function OpenToTravelCard({
       disabled={disabled}
       expandedContent={
         checked && onTravelDistanceChange ? (
-          <Stack gap="$2" paddingTop="$3">
+          <Stack gap={8} paddingTop={12}>
             <MaximumTravelDistanceCard
               value={travelDistanceValue}
               onValueChange={onTravelDistanceChange}

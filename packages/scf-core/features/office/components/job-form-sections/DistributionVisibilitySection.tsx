@@ -40,25 +40,25 @@ export function DistributionVisibilitySection({
 
   return (
     <Stack
-      gap="$4"
-      padding="$4"
+      gap={16}
+      padding={16}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Text fontSize="$6" fontWeight="600">
+      <Text>
         Distribution & Visibility
       </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text color="gray">
         Control job posting visibility and distribution
       </Text>
 
       {/* Is Featured */}
-      <Row gap="$3" alignItems="center" justifyContent="space-between">
-        <Stack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Featured job</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Highlight this job in listings
           </Text>
         </Stack>
@@ -70,21 +70,21 @@ export function DistributionVisibilitySection({
       </Row>
 
       {localState.is_featured && (
-        <Stack gap="$2">
+        <Stack gap={8}>
           <Label>Featured until</Label>
           <Input
             placeholder="YYYY-MM-DD"
             value={localState.featured_until || ''}
             onChangeText={(text) => handleChange('featured_until', text || undefined)}
           />
-          <Text fontSize="$2" color="$color10">
+          <Text color="gray">
             Date when featured status expires
           </Text>
         </Stack>
       )}
 
       {/* SEO Keywords */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>SEO keywords</Label>
         <Input
           placeholder="e.g. construction, foreman, supervisor"
@@ -97,20 +97,20 @@ export function DistributionVisibilitySection({
             handleChange('seo_keywords', keywords.length > 0 ? keywords : undefined)
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Comma-separated keywords for search optimization
         </Text>
       </Stack>
 
       {/* External Application URL */}
-      <Stack gap="$2">
+      <Stack gap={8}>
         <Label>External application URL</Label>
         <Input
           placeholder="https://example.com/apply"
           value={localState.external_application_url || ''}
           onChangeText={(text) => handleChange('external_application_url', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text color="gray">
           Redirect to external ATS for applications
         </Text>
       </Stack>

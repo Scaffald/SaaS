@@ -1,10 +1,11 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
+import { ScrollView } from 'react-native'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { ScrollView, useWindowDimensions, Row, Stack } from '@unicornlove/beyond-ui'
+import { useWindowDimensions, Row, Stack } from '@unicornlove/beyond-ui'
 import type { StackProps } from '@unicornlove/beyond-ui'
 import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/beyond-ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
@@ -194,10 +195,10 @@ export const OfficeLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <Stack gap="$3" paddingTop="$3" paddingBottom="$5">
+      <Stack gap={12} paddingTop={12} paddingBottom={20}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal="$3" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+          <Row paddingHorizontal={12} paddingTop={12}>
             <Breadcrumb items={displayBreadcrumbs} />
           </Row>
         )}
@@ -205,7 +206,7 @@ export const OfficeLayout = ({
         {/* TabGroup Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
           <>
-            <Row paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
+            <Row paddingHorizontal={12}>
               <TabGroup
                 value={activeTabValue}
                 onValueChange={handleTabChange}
@@ -219,7 +220,7 @@ export const OfficeLayout = ({
               </TabGroup>
             </Row>
             {secondaryTabItems.length > 0 && (
-              <Row paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
+              <Row paddingHorizontal={12}>
                 <TabGroup
                   value={activeSecondaryValue}
                   onValueChange={handleTabChange}
@@ -238,32 +239,17 @@ export const OfficeLayout = ({
 
         {/* Content Area - Use programmatic responsive flexDirection */}
         <Row
-          gap="$3"
-          padding="$3"
+          gap={12}
+          padding={12}
           flexDirection="column"
           {...restContentProps}
-          $md={{
-            gap: '$8',
-            padding: '$7',
-            flexDirection: 'row',
-            ...(contentMdProps ?? {}),
-          }}
         >
           {hasLeftContent && (
             <Stack
               minWidth="100%"
               width="100%"
               maxWidth="100%"
-              flexBasis="auto"
               {...restLeftContainerProps}
-              $md={{
-                minWidth: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? undefined : '100%',
-                maxWidth: hasBothColumns ? undefined : '100%',
-                flexBasis: hasBothColumns ? undefined : 'auto',
-                flex: hasBothColumns ? 3 : undefined,
-                ...(leftMdProps ?? {}),
-              }}
             >
               {leftContent}
             </Stack>
@@ -273,16 +259,7 @@ export const OfficeLayout = ({
               minWidth="100%"
               width="100%"
               maxWidth="100%"
-              flexBasis="auto"
               {...restRightContainerProps}
-              $md={{
-                minWidth: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? undefined : '100%',
-                maxWidth: hasBothColumns ? undefined : '100%',
-                flexBasis: hasBothColumns ? undefined : 'auto',
-                flex: hasBothColumns ? 2 : undefined,
-                ...(rightMdProps ?? {}),
-              }}
             >
               {rightContent}
             </Stack>

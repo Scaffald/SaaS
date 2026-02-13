@@ -7,8 +7,8 @@ import { Text, Stack } from '@unicornlove/beyond-ui'
 export function ProfileEmploymentRight() {
   return (
     <Stack>
-      <Stack gap="$4" padding="$4">
-        <Text color="$color11" fontSize="$3">
+      <Stack gap={16} padding={16}>
+        <Text color="gray">
           Update your employment preferences including location, travel willingness, availability,
           and compensation.
         </Text>

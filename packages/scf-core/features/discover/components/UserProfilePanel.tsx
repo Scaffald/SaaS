@@ -82,8 +82,8 @@ export function UserProfilePanel({
       zIndex={1000}
       elevate
       bordered
-      padding="$4"
-      gap="$3"
+      padding={16}
+      gap={12}
       minWidth={280}
       maxWidth={320}
       backgroundColor="$background"
@@ -92,9 +92,9 @@ export function UserProfilePanel({
       exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
     >
       {/* Close button */}
-      <Row justifyContent="flex-end">
+      <Row justify="flex-end">
         <Button
-          size="$2"
+          size={8}
           circular
           chromeless
           icon={X}
@@ -105,50 +105,50 @@ export function UserProfilePanel({
       </Row>
 
       {isLoading ? (
-        <Stack paddingVertical="$4" alignItems="center" gap="$3">
-          <Spinner size="small" color="$blue10" />
-          <Text fontSize="$3" color="$color11">
+        <Stack paddingVertical={16} align="center" gap={12}>
+          <Spinner size="sm" color="$blue10" />
+          <Text color="gray">
             Loading...
           </Text>
         </Stack>
       ) : !preview ? (
-        <Stack paddingVertical="$4" alignItems="center">
-          <Text fontSize="$3" color="$red10">
+        <Stack paddingVertical={16} align="center">
+          <Text color="$red10">
             Profile not found
           </Text>
         </Stack>
       ) : (
         <>
           {/* Profile Header */}
-          <Row gap="$3" alignItems="flex-start">
+          <Row gap={12} align="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
-              <Avatar circular size="$4">
+              <Avatar circular size={16}>
                 <Avatar.Image source={{ uri: avatarUrl }} />
                 <Avatar.Fallback backgroundColor="$color3">
-                  <User size={24} color="$color10" />
+                  <User size={24} color="gray" />
                 </Avatar.Fallback>
               </Avatar>
             ) : (
-              <Avatar circular size="$4" backgroundColor="$color3">
-                <User size={24} color="$color10" />
+              <Avatar circular size={16} backgroundColor="$color3">
+                <User size={24} color="gray" />
               </Avatar>
             )}
 
             {/* Name and Title */}
-            <Stack flex={1} gap="$1">
-              <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
+            <Stack flex={1} gap={4}>
+              <Text color="gray" numberOfLines={1}>
                 {preview.displayName}
               </Text>
               {preview.headline && (
-                <Text fontSize="$3" color="$color11" numberOfLines={2}>
+                <Text color="gray" numberOfLines={2}>
                   {preview.headline}
                 </Text>
               )}
               {preview.location && (
-                <Row gap="$1" alignItems="center" marginTop="$1">
-                  <MapPin size={14} color="$color10" />
-                  <Text fontSize="$2" color="$color10" numberOfLines={1}>
+                <Row gap={4} align="center" marginTop={4}>
+                  <MapPin size={14} color="gray" />
+                  <Text color="gray" numberOfLines={1}>
                     {preview.location}
                   </Text>
                 </Row>
@@ -158,22 +158,22 @@ export function UserProfilePanel({
 
           {/* Top Skills */}
           {topSkills.length > 0 && (
-            <Stack gap="$2">
-              <Text fontSize="$2" fontWeight="600" color="$color11" textTransform="uppercase">
+            <Stack gap={8}>
+              <Text color="gray" textTransform="uppercase">
                 Top Skills
               </Text>
-              <Row gap="$2" flexWrap="wrap">
+              <Row gap={8} flexWrap="wrap">
                 {topSkills.slice(0, 3).map((skill) => (
                   <Stack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
                     backgroundColor="$color3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="gray">
                       Skill {skill.proficiency > 0 ? `(${skill.proficiency})` : ''}
                     </Text>
                   </Stack>
@@ -181,13 +181,13 @@ export function UserProfilePanel({
                 {topSkills.length > 3 && (
                   <Stack
                     backgroundColor="$color3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="gray">
                       +{topSkills.length - 3} more
                     </Text>
                   </Stack>
@@ -197,7 +197,7 @@ export function UserProfilePanel({
           )}
 
           {/* Action Button */}
-          <Row gap="$2" paddingTop="$2">
+          <Row gap={8} paddingTop={8}>
             <Button flex={1} theme="info" onPress={handleViewProfile} icon={ExternalLink}>
               View Profile
             </Button>

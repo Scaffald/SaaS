@@ -22,7 +22,7 @@ export const DrawerSection = ({
     ])
 
     return (
-      <Stack gap="$2">
+      <Stack gap={8}>
         {items.map(({ item, depth }) => (
           <DrawerLink
             key={`${section.key}-${item.key}-${depth}`}
@@ -41,7 +41,7 @@ export const DrawerSection = ({
 
   // For expanded mode, show items with expandable functionality
   return (
-    <Stack gap="$1" flex={1}>
+    <Stack gap={4} flex={1}>
       {section.items.map((item) => (
         <DrawerLink
           key={`${section.key}-${item.key}`}

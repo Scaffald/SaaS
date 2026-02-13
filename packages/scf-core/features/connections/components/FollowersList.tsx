@@ -47,19 +47,19 @@ export function FollowersList() {
           const avatar = follower?.avatar_url
 
           return (
-            <Row alignItems="center" gap="$2">
+            <Row align="center" gap={8}>
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
                   <Avatar.Fallback backgroundColor="$green4">
-                    <Text fontSize="$3" fontWeight="600" color="$green10">
+                    <Text color="$green10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
                   </Avatar.Fallback>
                 )}
               </Avatar>
-              <Text fontSize="$3" fontWeight="500">
+              <Text>
                 {name}
               </Text>
             </Row>
@@ -72,7 +72,7 @@ export function FollowersList() {
         cell: ({ row }) => {
           const date = row.original.created_at
           return (
-            <Text fontSize="$3" color="$color10">
+            <Text color="gray">
               {date ? new Date(date).toLocaleDateString() : '-'}
             </Text>
           )
@@ -84,36 +84,36 @@ export function FollowersList() {
 
   if (isLoading) {
     return (
-      <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading followers…</Text>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading followers…</Text>
       </Stack>
     )
   }
 
   return (
-    <Stack gap="$4">
+    <Stack gap={16}>
       <Input
         placeholder="Search followers..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size="$4"
+        size={16}
       />
 
       {filteredFollowers.length === 0 ? (
         <Stack
-          gap="$3"
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding={16}
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ minHeight: 300 }}
         >
-          <Text fontWeight="600">No followers yet</Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text>No followers yet</Text>
+          <Text color="gray" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No followers match your search.'
               : "You don't have any followers yet. Build your profile to attract followers."}

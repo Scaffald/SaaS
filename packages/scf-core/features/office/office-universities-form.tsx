@@ -180,13 +180,13 @@ export function OfficeUniversitiesForm({
 
   return (
     <DashboardWidget>
-      <Stack gap="$4" padding="$4">
-        <Row justifyContent="space-between" alignItems="center">
+      <Stack gap={16} padding={16}>
+        <Row justify="space-between" align="center">
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
             <Button
-              size="$2"
-              variant="outlined"
+              size={8}
+              variant="outline"
               onPress={onCancel}
               icon={X}
               data-testid="cancel-button"
@@ -196,10 +196,10 @@ export function OfficeUniversitiesForm({
           )}
         </Row>
 
-        <Stack gap="$4">
+        <Stack gap={16}>
           {/* Name */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Name <Text color="$red10">*</Text>
             </Text>
             <Controller
@@ -216,18 +216,18 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.name && (
-              <Text data-testid="name-error" color="$red10" fontSize="$2">
+              <Text data-testid="name-error" color="$red10">
                 {errors.name.message}
               </Text>
             )}
           </Stack>
 
           {/* Vanity URL */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Vanity URL <Text color="$red10">*</Text>
             </Text>
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               URL-friendly username (auto-generated from name)
             </Text>
             <Controller
@@ -244,15 +244,15 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.slug && (
-              <Text data-testid="slug-error" color="$red10" fontSize="$2">
+              <Text data-testid="slug-error" color="$red10">
                 {errors.slug.message}
               </Text>
             )}
           </Stack>
 
           {/* Country */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Country <Text color="$red10">*</Text>
             </Text>
             <Controller
@@ -269,18 +269,18 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.country && (
-              <Text data-testid="country-error" color="$red10" fontSize="$2">
+              <Text data-testid="country-error" color="$red10">
                 {errors.country.message}
               </Text>
             )}
           </Stack>
 
           {/* Alpha Two Code */}
-          <Stack gap="$2">
-            <Text fontWeight="600">
+          <Stack gap={8}>
+            <Text>
               Country Code <Text color="$red10">*</Text>
             </Text>
-            <Text fontSize="$2" color="$color11">
+            <Text color="gray">
               2-letter ISO country code (e.g. US, CA, GB)
             </Text>
             <Controller
@@ -298,16 +298,16 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.alpha_two_code && (
-              <Text data-testid="country-code-error" color="$red10" fontSize="$2">
+              <Text data-testid="country-code-error" color="$red10">
                 {errors.alpha_two_code.message}
               </Text>
             )}
           </Stack>
 
           {/* State/Province */}
-          <Stack gap="$2">
-            <Text fontWeight="600">State/Province</Text>
-            <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Text>State/Province</Text>
+            <Text color="gray">
               Optional state or province (e.g. Massachusetts, Ontario)
             </Text>
             <Controller
@@ -325,9 +325,9 @@ export function OfficeUniversitiesForm({
           </Stack>
 
           {/* Domains */}
-          <Stack gap="$2">
-            <Text fontWeight="600">Domains</Text>
-            <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Text>Domains</Text>
+            <Text color="gray">
               Email domains (comma-separated, e.g. harvard.edu, hbs.edu)
             </Text>
             <Controller
@@ -346,9 +346,9 @@ export function OfficeUniversitiesForm({
           </Stack>
 
           {/* Web Pages */}
-          <Stack gap="$2">
-            <Text fontWeight="600">Web Pages</Text>
-            <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Text>Web Pages</Text>
+            <Text color="gray">
               Official websites (comma-separated URLs)
             </Text>
             <Controller
@@ -368,20 +368,16 @@ export function OfficeUniversitiesForm({
 
           {/* Submit Button */}
           <Row
-            justifyContent="flex-end"
-            paddingTop="$4"
-            gap="$2"
-            $sm={{ flexDirection: 'column' }}
-            $md={{ flexDirection: 'row' }}
+            justify="flex-end"
+            paddingTop={16}
+            gap={8}}
           >
             {isEditing && (
               <Button
-                variant="outlined"
+                variant="outline"
                 onPress={onCancel}
                 disabled={isLoading}
-                data-testid="cancel-button"
-                $sm={{ height: 44, width: '100%' }}
-                $md={{ height: undefined, width: undefined }}
+                data-testid="cancel-button"}}
               >
                 Cancel
               </Button>
@@ -391,9 +387,7 @@ export function OfficeUniversitiesForm({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
-              $sm={{ height: 44, width: '100%' }}
-              $md={{ height: undefined, width: undefined }}
+              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}}}
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>

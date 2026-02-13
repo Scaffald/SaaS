@@ -76,17 +76,15 @@ export const MapSearchInput = ({
           position="absolute"
           top={100}
           left={0}
-          $sm={{ right: 0 }}
-          $md={{ right: railVisible ? 440 : 0 }}
           zIndex={60}
           animation="quick"
           enterStyle={{ opacity: 0, y: 20 }}
           exitStyle={{ opacity: 0, y: 20 }}
           opacity={1}
           y={0}
-          justifyContent="flex-start"
-          alignItems="center"
-          paddingHorizontal="$4"
+          justify="flex-start"
+          align="center"
+          paddingHorizontal={16}
         >
           {tokenValidation.valid ? (
             <AddressAutocomplete
@@ -116,23 +114,23 @@ export const MapSearchInput = ({
             <Stack
               style={{ minWidth: 250, width: '100%' }}
               backgroundColor="$background"
-              padding="$4"
-              borderRadius="$8"
+              padding={16}
+              borderRadius={32}
               borderWidth={1}
               borderColor="$red8"
               shadowColor="$shadowColor"
               shadowOffset={{ width: 0, height: 4 }}
               shadowOpacity={0.15}
               shadowRadius={12}
-              gap="$2"
+              gap={8}
             >
-              <Row alignItems="center" gap="$2">
+              <Row align="center" gap={8}>
                 <AlertCircle size={18} color="$red10" />
-                <Text fontSize="$3" color="$red10" fontWeight="600">
+                <Text color="$red10">
                   Map Search Unavailable
                 </Text>
               </Row>
-              <Text fontSize="$2" color="$color10">
+              <Text color="gray">
                 {tokenValidation.error}
               </Text>
             </Stack>

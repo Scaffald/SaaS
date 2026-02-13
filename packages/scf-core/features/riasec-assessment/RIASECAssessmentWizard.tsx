@@ -75,7 +75,7 @@ export function RIASECAssessmentWizard() {
       error={queryError}
       showNext={false}
     >
-      <Stack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack gap={16} width="100%" maxWidth={800} marginHorizontal="auto">
         <RiasecQuickAssessment
           value={scores}
           onChange={setScores}
@@ -83,7 +83,7 @@ export function RIASECAssessmentWizard() {
         />
 
         <Button
-          size="$5"
+          size={20}
           themeInverse
           onPress={handleComplete}
           disabled={!allRated || saveMutation.isPending}

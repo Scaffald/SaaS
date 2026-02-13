@@ -108,7 +108,7 @@ export function SimpleSkillAutocomplete({
   )
 
   return (
-    <Stack gap="$2" style={{ zIndex: 1000 }}>
+    <Stack gap={8} style={{ zIndex: 1000 }}>
       <Stack position="relative">
         <Input
           value={value}
@@ -118,7 +118,7 @@ export function SimpleSkillAutocomplete({
           }}
           placeholder={placeholder}
           paddingRight={40}
-          size="$4"
+          size={16}
           borderColor="$borderColor"
           focusStyle={{ borderColor: '$blue9' }}
         />
@@ -129,7 +129,7 @@ export function SimpleSkillAutocomplete({
             right={4}
             top={4}
             bottom={4}
-            size="$2"
+            size={8}
             circular
             chromeless
             onPress={() => {
@@ -158,9 +158,9 @@ export function SimpleSkillAutocomplete({
           <ScrollView>
             <Stack>
               {isLoading || isSearching ? (
-                <Stack padding="$4" alignItems="center" justifyContent="center">
-                  <Spinner size="small" />
-                  <Text fontSize="$2" color="$color11" marginTop="$2">
+                <Stack padding={16} align="center" justify="center">
+                  <Spinner size="sm" />
+                  <Text color="gray" marginTop={8}>
                     Searching...
                   </Text>
                 </Stack>
@@ -170,24 +170,24 @@ export function SimpleSkillAutocomplete({
                   return (
                     <Stack
                       key={skill.id}
-                      padding="$3"
+                      padding={12}
                       pressStyle={{ backgroundColor: '$backgroundHover' }}
                       onPress={() => handleSelect(skill)}
                       borderBottomWidth={1}
                       borderBottomColor="$borderColor"
                       opacity={isExisting ? 0.6 : 1}
                     >
-                      <Row justifyContent="space-between" alignItems="center">
+                      <Row justify="space-between" align="center">
                         <Stack flex={1}>
-                          <Text fontWeight="600">{skill.name}</Text>
+                          <Text>{skill.name}</Text>
                           {skill.code && (
-                            <Text fontSize="$2" color="$color11">
+                            <Text color="gray">
                               {skill.code}
                             </Text>
                           )}
                         </Stack>
                         {isExisting && (
-                          <Text fontSize="$2" color="$blue9" fontWeight="600">
+                          <Text color="$blue9">
                             Added
                           </Text>
                         )}
@@ -196,8 +196,8 @@ export function SimpleSkillAutocomplete({
                   )
                 })
               ) : (
-                <Stack padding="$4" alignItems="center">
-                  <Text color="$color11">No skills found</Text>
+                <Stack padding={16} align="center">
+                  <Text color="gray">No skills found</Text>
                 </Stack>
               )}
             </Stack>
