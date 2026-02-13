@@ -476,6 +476,29 @@ export type {
   GetWorkerByIdParams,
 } from './resources/workers.js'
 
+export type {
+  PersonalityAssessment,
+  IPIPAnswer,
+  AssessmentStatus,
+  IPIPStatus,
+  LuscherTest1Status,
+  LuscherTest2Status,
+  LuscherTestAvailability,
+  SaveLuscher1Params,
+  SaveLuscher2Params,
+  SaveIPIPProgressParams,
+  SaveLuscherTestSessionParams,
+  UpdateCurrentStepParams,
+  GenerateReportParams,
+  GenerateShareTokenParams,
+  RevokeShareTokenParams,
+  SaveProgressResponse,
+  GenerateReportResponse,
+  GenerateShareTokenResponse,
+  SaveLuscherTestSessionResponse,
+  AwardResultsViewXPResponse,
+} from './resources/personality-assessment.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

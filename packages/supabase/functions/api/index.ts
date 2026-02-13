@@ -37,6 +37,7 @@ import projectsRouter from "./routes/projects.ts";
 import employersRouter from "./routes/employers.ts";
 import onetRouter from "./routes/onet.ts";
 import workersRouter from "./routes/workers.ts";
+import personalityAssessmentRouter from "./routes/personality-assessment.ts";
 import openapi from "./openapi.ts";
 import { authMiddleware } from "./middleware/auth.ts";
 import {
@@ -105,6 +106,7 @@ app.route("/v1/projects", projectsRouter); // Projects
 app.route("/v1/employers", employersRouter); // Employers
 app.route("/v1/onet", onetRouter); // O*NET data
 app.route("/v1/workers", workersRouter); // Workers discovery
+app.route("/v1/personality-assessment", personalityAssessmentRouter); // Personality assessments
 
 // OpenAPI documentation
 app.route("/", openapi);

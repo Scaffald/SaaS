@@ -32,6 +32,7 @@ import { Projects } from './resources/projects.js'
 import { ProfileViews } from './resources/profile-views.js'
 import { UserProfiles } from './resources/user-profiles.js'
 import { Workers } from './resources/workers.js'
+import { PersonalityAssessments } from './resources/personality-assessment.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -68,6 +69,7 @@ export class Scaffald {
   public readonly profileViews: ProfileViews
   public readonly userProfiles: UserProfiles
   public readonly workers: Workers
+  public readonly personalityAssessments: PersonalityAssessments
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -112,6 +114,7 @@ export class Scaffald {
     this.profileViews = new ProfileViews(this.http)
     this.userProfiles = new UserProfiles(this.http)
     this.workers = new Workers(this.http)
+    this.personalityAssessments = new PersonalityAssessments(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {
