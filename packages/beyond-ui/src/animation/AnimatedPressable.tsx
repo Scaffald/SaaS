@@ -41,9 +41,7 @@ import {
 } from './reanimated.types'
 
 // Create animated Pressable component if Reanimated is available
-const AnimatedPressableBase = isReanimatedLoaded
-  ? createAnimatedComponent(Pressable)
-  : null
+const AnimatedPressableBase = isReanimatedLoaded ? createAnimatedComponent(Pressable) : null
 
 export interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
   /**
@@ -203,46 +201,47 @@ function ReanimatedPressable({
 /**
  * Fallback Pressable using built-in opacity feedback
  */
-const FallbackPressable = forwardRef<View, Omit<AnimatedPressableProps, 'animateOnPress' | 'pressScale' | 'springConfig'>>(
-  function FallbackPressable({ style, disabled, children, ...props }, ref) {
-    const [isPressed, setIsPressed] = useState(false)
+const FallbackPressable = forwardRef<
+  View,
+  Omit<AnimatedPressableProps, 'animateOnPress' | 'pressScale' | 'springConfig'>
+>(function FallbackPressable({ style, disabled, children, onPressIn, onPressOut, ...props }, ref) {
+  const [isPressed, setIsPressed] = useState(false)
 
-    const handlePressIn = useCallback(
-      (event: GestureResponderEvent) => {
-        setIsPressed(true)
-        props.onPressIn?.(event)
-      },
-      [props.onPressIn]
-    )
+  const handlePressIn = useCallback(
+    (event: GestureResponderEvent) => {
+      setIsPressed(true)
+      onPressIn?.(event)
+    },
+    [onPressIn]
+  )
 
-    const handlePressOut = useCallback(
-      (event: GestureResponderEvent) => {
-        setIsPressed(false)
-        props.onPressOut?.(event)
-      },
-      [props.onPressOut]
-    )
+  const handlePressOut = useCallback(
+    (event: GestureResponderEvent) => {
+      setIsPressed(false)
+      onPressOut?.(event)
+    },
+    [onPressOut]
+  )
 
-    const combinedStyle = useMemo(() => {
-      const baseStyle = typeof style === 'function' ? style({ pressed: isPressed }) : style
-      const pressedStyle = isPressed && !disabled ? { opacity: 0.8 } : {}
-      return [baseStyle, pressedStyle]
-    }, [style, isPressed, disabled])
+  const combinedStyle = useMemo(() => {
+    const baseStyle = typeof style === 'function' ? style({ pressed: isPressed }) : style
+    const pressedStyle = isPressed && !disabled ? { opacity: 0.8 } : {}
+    return [baseStyle, pressedStyle]
+  }, [style, isPressed, disabled])
 
-    return (
-      <Pressable
-        ref={ref}
-        disabled={disabled}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={combinedStyle}
-        {...props}
-      >
-        {children}
-      </Pressable>
-    )
-  }
-)
+  return (
+    <Pressable
+      ref={ref}
+      disabled={disabled}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={combinedStyle}
+      {...props}
+    >
+      {children}
+    </Pressable>
+  )
+})
 
 /**
  * Check if animated press is available (Reanimated installed)

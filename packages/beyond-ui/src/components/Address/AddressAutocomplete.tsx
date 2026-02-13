@@ -3,7 +3,7 @@
  * Provider-agnostic: pass a GeocodingProvider (e.g. from your Mapbox adapter).
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { View, ScrollView, Pressable, Text } from 'react-native'
 import { Input } from '../Input'
 import { useAddressAutocomplete } from './useAddressAutocomplete'
@@ -25,7 +25,13 @@ export function AddressAutocomplete({
 }: AddressAutocompleteProps) {
   const [inputValue, setInputValue] = useState(controlledValue ?? '')
   const [open, setOpen] = useState(false)
-  const { results, loading, error: searchError, search, clearResults } = useAddressAutocomplete({
+  const {
+    results,
+    loading,
+    error: searchError,
+    search,
+    clearResults,
+  } = useAddressAutocomplete({
     provider: provider ?? null,
     searchOptions,
     debounceMs,
@@ -60,7 +66,8 @@ export function AddressAutocomplete({
   )
 
   const showList = open && (results.length > 0 || loading)
-  const displayError = typeof error === 'string' ? error : errorMessage ?? searchError ?? undefined
+  const displayError =
+    typeof error === 'string' ? error : (errorMessage ?? searchError ?? undefined)
 
   return (
     <View style={{ position: 'relative' }}>
@@ -96,7 +103,16 @@ export function AddressAutocomplete({
         >
           {loading ? (
             <View style={{ padding: 16, alignItems: 'center' }}>
-              <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#3b82f6', borderTopColor: 'transparent' }} />
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: '#3b82f6',
+                  borderTopColor: 'transparent',
+                }}
+              />
             </View>
           ) : (
             <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: 236 }}>

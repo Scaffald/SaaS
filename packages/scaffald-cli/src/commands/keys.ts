@@ -43,7 +43,7 @@ export const keysCommand = new Command('keys')
             formatJson(response.data)
           } else {
             const headers = ['ID', 'Name', 'Prefix', 'Status', 'Last Used', 'Created']
-            const rows = response.data.map((key: any) => [
+            const rows = response.data.map((key: Record<string, unknown>) => [
               key.id.slice(0, 8),
               key.name,
               key.key_prefix,
@@ -69,7 +69,7 @@ export const keysCommand = new Command('keys')
       .description('View API key details')
       .argument('<id>', 'API Key ID')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching API key...').start()
 
         try {
@@ -133,7 +133,7 @@ export const keysCommand = new Command('keys')
       .argument('<id>', 'API Key ID')
       .option('-d, --days <days>', 'Number of days to look back', '7')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching usage statistics...').start()
 
         try {
@@ -152,8 +152,8 @@ export const keysCommand = new Command('keys')
 
             // Calculate metrics from usage array
             const totalRequests = usage.length
-            const successRequests = usage.filter((u: any) => u.status_code < 400).length
-            const errorRequests = usage.filter((u: any) => u.status_code >= 400).length
+            const successRequests = usage.filter((u: Record<string, unknown>) => u.status_code < 400).length
+            const errorRequests = usage.filter((u: Record<string, unknown>) => u.status_code >= 400).length
             const avgResponseTime =
               usage.reduce((sum: number, u: any) => sum + (u.response_time_ms || 0), 0) / totalRequests || 0
 

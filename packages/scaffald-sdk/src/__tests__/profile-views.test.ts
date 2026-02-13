@@ -10,6 +10,7 @@ describe('ProfileViews', () => {
     client = new Scaffald({
       apiKey: 'test_key',
       baseUrl: 'https://api.scaffald.com',
+      maxRetries: 0,
     })
   })
 
@@ -337,8 +338,14 @@ describe('ProfileViews', () => {
     })
 
     it('should handle 500 server error', async () => {
+      const errorClient = new Scaffald({
+        apiKey: 'test_key_server_error',
+        baseUrl: 'https://api.scaffald.com',
+        maxRetries: 0,
+      })
+
       await expect(
-        client.profileViews.getViewAnalytics()
+        errorClient.profileViews.getViewAnalytics()
       ).rejects.toThrow()
     })
 

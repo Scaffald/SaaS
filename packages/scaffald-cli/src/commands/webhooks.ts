@@ -43,7 +43,7 @@ export const webhooksCommand = new Command('webhooks')
             formatJson(response.data)
           } else {
             const headers = ['ID', 'URL', 'Status', 'Events', 'Created']
-            const rows = response.data.map((webhook: any) => [
+            const rows = response.data.map((webhook: Record<string, unknown>) => [
               webhook.id.slice(0, 8),
               webhook.url.slice(0, 40) + (webhook.url.length > 40 ? '...' : ''),
               webhook.is_active ? chalk.green('Active') : chalk.gray('Inactive'),
@@ -66,7 +66,7 @@ export const webhooksCommand = new Command('webhooks')
       .description('View webhook details')
       .argument('<id>', 'Webhook ID')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching webhook...').start()
 
         try {
@@ -165,7 +165,7 @@ export const webhooksCommand = new Command('webhooks')
       .argument('<id>', 'Webhook ID')
       .option('-l, --limit <number>', 'Number of deliveries to fetch', '20')
       .option('--format <format>', 'Output format (table, json)', 'table')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching deliveries...').start()
 
         try {
@@ -185,7 +185,7 @@ export const webhooksCommand = new Command('webhooks')
             formatJson(response.data)
           } else {
             const headers = ['ID', 'Event', 'Status', 'Response', 'Attempts', 'Delivered']
-            const rows = response.data.map((delivery: any) => [
+            const rows = response.data.map((delivery: Record<string, unknown>) => [
               delivery.id.slice(0, 8),
               delivery.event_type,
               delivery.status === 'success'

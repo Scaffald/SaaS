@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { profileViewsHandlers } from './profile-views-handlers'
 
 const BASE_URL = 'https://api.scaffald.com'
 
@@ -672,27 +673,73 @@ export const handlers = [
 
   // GET /v1/profiles/certifications/tree - Get certifications tree
   http.get(`${BASE_URL}/v1/profiles/certifications/tree`, () => {
-    return HttpResponse.json([
-      {
-        id: 'tech',
-        name: 'Technology',
-        children: [
+    return HttpResponse.json({
+      depth0: [
+        {
+          id: 'user_cert_1',
+          user_id: 'user_1',
+          certification_id: 'tech',
+          is_active: true,
+          verification_status: 'verified',
+          created_at: '2023-01-15T00:00:00Z',
+        },
+      ],
+      depth1ByParent: {
+        tech: [
           {
-            id: 'aws',
-            name: 'AWS',
-            certifications: [{ id: 'aws-arch', name: 'AWS Solutions Architect' }],
+            id: 'user_cert_2',
+            user_id: 'user_1',
+            certification_id: 'aws',
+            is_active: true,
+            verification_status: 'verified',
+            created_at: '2023-02-15T00:00:00Z',
           },
         ],
       },
-    ])
+      depth2ByParent: {},
+    })
   }),
 
   // GET /v1/profiles/certifications/top-level - Get top-level certifications
-  http.get(`${BASE_URL}/v1/profiles/certifications/top-level`, () => {
-    return HttpResponse.json([
-      { id: 'tech', name: 'Technology' },
-      { id: 'business', name: 'Business' },
-    ])
+  http.get(`${BASE_URL}/v1/profiles/certifications/top-level`, ({ request }) => {
+    const url = new URL(request.url)
+    const limit = url.searchParams.get('limit')
+    const search = url.searchParams.get('search')
+
+    let certifications = [
+      {
+        id: 'tech',
+        title: 'Technology',
+        slug: 'technology',
+        depth: 0,
+        parent_id: null,
+        hierarchy_path: 'tech',
+        sort_order: 1,
+        is_active: true,
+      },
+      {
+        id: 'business',
+        title: 'Business',
+        slug: 'business',
+        depth: 0,
+        parent_id: null,
+        hierarchy_path: 'business',
+        sort_order: 2,
+        is_active: true,
+      },
+    ]
+
+    if (search) {
+      certifications = certifications.filter((cert) =>
+        cert.title.toLowerCase().includes(search.toLowerCase())
+      )
+    }
+
+    if (limit) {
+      certifications = certifications.slice(0, parseInt(limit, 10))
+    }
+
+    return HttpResponse.json({ certifications })
   }),
 
   // GET /v1/profiles/certifications/user - Get user certifications
@@ -841,6 +888,27 @@ export const handlers = [
         filePath: `/uploads/cert_${Date.now()}.pdf`,
       })
     }
+  }),
+
+  // GET /v1/profiles/certifications - Get certifications (legacy)
+  http.get(`${BASE_URL}/v1/profiles/certifications`, () => {
+    return HttpResponse.json([
+      {
+        id: 'user_1',
+        user_id: 'user_1',
+        name: 'AWS Certified Solutions Architect',
+        issuing_organization: 'Amazon Web Services',
+        issue_date: '2022-01-15',
+        expiration_date: '2025-01-15',
+        credential_id: 'AWS-123456',
+        credential_url: 'https://aws.amazon.com/verify',
+        description: 'Professional level certification',
+        is_active: true,
+        verification_status: 'verified',
+        created_at: '2022-01-15T00:00:00Z',
+        updated_at: '2022-01-15T00:00:00Z',
+      },
+    ])
   }),
 
   // POST /v1/profiles/certifications/save - Save certifications (legacy)
@@ -1253,6 +1321,17 @@ export const handlers = [
         created_at: '2023-01-01T00:00:00Z',
         updated_at: '2023-01-01T00:00:00Z',
       },
+      {
+        id: 'port_2',
+        user_id: 'user_1',
+        title: 'Mobile App',
+        description: 'iOS and Android mobile app',
+        url: 'https://example.com/app',
+        image_url: 'https://example.com/app-image.jpg',
+        display_order: 2,
+        created_at: '2023-02-01T00:00:00Z',
+        updated_at: '2023-02-01T00:00:00Z',
+      },
     ])
   }),
 
@@ -1274,6 +1353,12 @@ export const handlers = [
   // PATCH /v1/profiles/portfolio/:id - Update portfolio item
   http.patch(`${BASE_URL}/v1/profiles/portfolio/:id`, async ({ params, request }) => {
     const { id } = params
+
+    // Return 404 for invalid ID
+    if (id === 'invalid') {
+      return HttpResponse.json({ error: 'Portfolio item not found' }, { status: 404 })
+    }
+
     const body = (await request.json()) as Record<string, any>
     return HttpResponse.json({
       id,
@@ -1284,8 +1369,25 @@ export const handlers = [
   }),
 
   // DELETE /v1/profiles/portfolio/:id - Delete portfolio item
-  http.delete(`${BASE_URL}/v1/profiles/portfolio/:id`, () => {
-    return new HttpResponse(null, { status: 204 })
+  http.delete(`${BASE_URL}/v1/profiles/portfolio/:id`, ({ params }) => {
+    const { id } = params
+
+    // Return 404 for invalid ID
+    if (id === 'invalid') {
+      return HttpResponse.json({ error: 'Portfolio item not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      success: true,
+      deletedItem: {
+        id,
+        user_id: 'user_1',
+        title: 'Deleted Item',
+        display_order: 1,
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z',
+      },
+    })
   }),
 
   // POST /v1/profiles/portfolio/reorder - Reorder portfolio items
@@ -1298,9 +1400,29 @@ export const handlers = [
   }),
 
   // POST /v1/profiles/portfolio/upload-image - Upload portfolio image
-  http.post(`${BASE_URL}/v1/profiles/portfolio/upload-image`, async () => {
+  http.post(`${BASE_URL}/v1/profiles/portfolio/upload-image`, async ({ request }) => {
+    const body = (await request.json()) as any
+
+    // Validate file type
+    if (body.contentType && !body.contentType.startsWith('image/')) {
+      return HttpResponse.json(
+        { error: 'Invalid file type. Only images allowed.' },
+        { status: 400 }
+      )
+    }
+
+    // Validate file size (assume file is base64 encoded string)
+    if (body.file && body.file.length > 5000000) {
+      // > ~5MB
+      return HttpResponse.json(
+        { error: 'File size exceeds maximum allowed' },
+        { status: 400 }
+      )
+    }
+
     return HttpResponse.json({
       image_url: 'https://example.com/uploaded-image.jpg',
+      file_path: '/uploads/portfolio/image.jpg',
     })
   }),
 
@@ -2694,77 +2816,6 @@ export const handlers = [
   // ===========================
   // Profile Views Handlers
   // ===========================
-
-  // POST /v1/profile-views/record - Record view
-  http.post(`${BASE_URL}/v1/profile-views/record`, async ({ request }) => {
-    const body = (await request.json()) as any
-
-    if (!body.viewed_user_id) {
-      return HttpResponse.json({ error: 'viewed_user_id is required' }, { status: 400 })
-    }
-
-    if (body.viewed_user_id === 'own_profile') {
-      return HttpResponse.json({
-        success: false,
-        skipped: true,
-        reason: 'own_profile',
-      })
-    }
-
-    return HttpResponse.json(
-      {
-        success: true,
-        skipped: false,
-      },
-      { status: 201 }
-    )
-  }),
-
-  // GET /v1/profile-views - Get profile views
-  http.get(`${BASE_URL}/v1/profile-views`, ({ request }) => {
-    const url = new URL(request.url)
-    const limit = parseInt(url.searchParams.get('limit') || '50', 10)
-    const offset = parseInt(url.searchParams.get('offset') || '0', 10)
-
-    const allViews = Array.from({ length: 10 }, (_, i) => ({
-      id: `view_${i + 1}`,
-      viewed_at: new Date(Date.now() - i * 86400000).toISOString(),
-      viewer: {
-        id: `viewer_${i + 1}`,
-        display_name: `Viewer ${i + 1}`,
-        username: `viewer${i + 1}`,
-        avatar_url: `https://example.com/avatar${i + 1}.jpg`,
-        headline: `Professional ${i + 1}`,
-        industry_id: 'industry_1',
-        industries: {
-          id: 'industry_1',
-          name: 'Technology',
-        },
-      },
-      viewer_role_type: 'professional',
-      viewer_industry: {
-        id: 'industry_1',
-        name: 'Technology',
-      },
-    }))
-
-    const paginated = allViews.slice(offset, offset + limit)
-
-    return HttpResponse.json({
-      views: paginated,
-      total: allViews.length,
-    })
-  }),
-
-  // GET /v1/profile-views/analytics - Get analytics
-  http.get(`${BASE_URL}/v1/profile-views/analytics`, () => {
-    return HttpResponse.json({
-      views30d: 47,
-      viewsTotal: 234,
-      lastViewAt: '2024-01-15T14:30:00Z',
-      trend: 12.5,
-    })
-  }),
   // ===========================
   // Engagement Handlers
   // ===========================
@@ -2773,30 +2824,138 @@ export const handlers = [
   http.post(`${BASE_URL}/v1/engagement/track`, async ({ request }) => {
     const body = (await request.json()) as any
 
+    // Validation: eventType required
     if (!body.eventType) {
       return HttpResponse.json({ error: 'eventType is required' }, { status: 400 })
     }
 
-    return HttpResponse.json(
-      {
-        id: 'event_1',
-        user_id: 'user_1',
-        event_type: body.eventType,
-        target_type: body.targetType || null,
-        target_id: body.targetId || null,
-        event_metadata: body.metadata || null,
-        occurred_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      },
-      { status: 201 }
-    )
+    // Validation: invalid event type
+    const validEventTypes = [
+      'profile_view',
+      'job_view',
+      'job_click',
+      'application_start',
+      'application_complete',
+      'search',
+      'filter_change',
+    ]
+    if (!validEventTypes.includes(body.eventType)) {
+      return HttpResponse.json({ error: 'Invalid event type' }, { status: 400 })
+    }
+
+    // Validation: invalid target type
+    const validTargetTypes = ['user', 'job', 'organization']
+    if (body.targetType && !validTargetTypes.includes(body.targetType)) {
+      return HttpResponse.json({ error: 'Invalid target type' }, { status: 400 })
+    }
+
+    // Error handling: unauthorized
+    if (body.targetId === 'user_unauthorized') {
+      return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Error handling: not found
+    if (body.targetId === 'job_nonexistent') {
+      return HttpResponse.json({ error: 'Target not found' }, { status: 404 })
+    }
+
+    // Error handling: rate limit
+    if (body.targetId === 'user_rate_limit') {
+      return HttpResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      )
+    }
+
+    // Error handling: deactivated target
+    if (body.targetId === 'user_deactivated') {
+      return HttpResponse.json({ error: 'Target is deactivated' }, { status: 410 })
+    }
+
+    // Error handling: network error simulation
+    if (body.metadata?.network_error) {
+      return HttpResponse.json({ error: 'Network error' }, { status: 500 })
+    }
+
+    // Sanitize metadata: remove sensitive fields
+    let sanitizedMetadata = body.metadata ? { ...body.metadata } : null
+    if (sanitizedMetadata) {
+      delete sanitizedMetadata.ip_address
+      delete sanitizedMetadata.network_error
+    }
+
+    // Handle undefined metadata properly
+    if (sanitizedMetadata && Object.keys(sanitizedMetadata).length === 0) {
+      sanitizedMetadata = null
+    }
+
+    const response: any = {
+      id: 'event_1',
+      user_id: 'user_1',
+      event_type: body.eventType,
+      occurred_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    }
+
+    // Only include target_type and target_id if they exist
+    if (body.targetType) {
+      response.target_type = body.targetType
+    }
+    if (body.targetId) {
+      response.target_id = body.targetId
+    }
+
+    // Only include event_metadata if it exists and is not empty
+    if (sanitizedMetadata && Object.keys(sanitizedMetadata).length > 0) {
+      response.event_metadata = sanitizedMetadata
+    }
+
+    return HttpResponse.json(response, { status: 201 })
   }),
 
   // GET /v1/engagement/activity - Get recent activity
   http.get(`${BASE_URL}/v1/engagement/activity`, ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    const apiKey = authHeader?.replace('Bearer ', '')
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') || '50', 10)
     const eventTypes = url.searchParams.getAll('eventTypes[]')
+
+    // Validation: negative limit
+    if (limit < 0) {
+      return HttpResponse.json({ error: 'Limit must be positive' }, { status: 400 })
+    }
+
+    // Validation: very large limit
+    if (limit > 1000) {
+      return HttpResponse.json({ error: 'Limit too large' }, { status: 400 })
+    }
+
+    // Validation: empty eventTypes array
+    if (eventTypes.length === 0 && url.searchParams.has('eventTypes[]')) {
+      return HttpResponse.json({ error: 'eventTypes cannot be empty' }, { status: 400 })
+    }
+
+    // Validation: invalid event types
+    const validEventTypes = [
+      'profile_view',
+      'job_view',
+      'job_click',
+      'application_start',
+      'application_complete',
+      'search',
+      'filter_change',
+    ]
+    for (const eventType of eventTypes) {
+      if (!validEventTypes.includes(eventType)) {
+        return HttpResponse.json({ error: 'Invalid event type in filter' }, { status: 400 })
+      }
+    }
+
+    // Return empty for test_key_empty
+    if (apiKey === 'test_key_empty') {
+      return HttpResponse.json({ data: [] })
+    }
 
     const allEvents = [
       {
@@ -2829,6 +2988,26 @@ export const handlers = [
         occurred_at: '2024-01-15T10:00:00Z',
         created_at: '2024-01-15T10:00:00Z',
       },
+      {
+        id: 'event_4',
+        user_id: 'user_1',
+        event_type: 'application_complete',
+        target_type: 'job',
+        target_id: 'job_3',
+        event_metadata: null,
+        occurred_at: '2024-01-14T10:00:00Z',
+        created_at: '2024-01-14T10:00:00Z',
+      },
+      {
+        id: 'event_5',
+        user_id: 'user_1',
+        event_type: 'search',
+        target_type: null,
+        target_id: null,
+        event_metadata: { query: 'engineer' },
+        occurred_at: '2024-01-13T10:00:00Z',
+        created_at: '2024-01-13T10:00:00Z',
+      },
     ]
 
     let filtered = allEvents
@@ -2845,9 +3024,14 @@ export const handlers = [
   http.get(`${BASE_URL}/v1/engagement/metrics`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')
     const apiKey = authHeader?.replace('Bearer ', '')
-    
+
     const url = new URL(request.url)
     const days = parseInt(url.searchParams.get('days') || '30', 10)
+
+    // Validation (must come before test_key_new check)
+    if (days < 1 || days === 0) {
+      return HttpResponse.json({ error: 'days must be at least 1' }, { status: 400 })
+    }
 
     // Return empty metrics for test_key_new
     if (apiKey === 'test_key_new') {
@@ -2859,11 +3043,6 @@ export const handlers = [
         searches: 0,
         total_events: 0,
       })
-    }
-
-    // Validation
-    if (days < 1) {
-      return HttpResponse.json({ error: 'days must be at least 1' }, { status: 400 })
     }
 
     if (days === 999999) {
@@ -4835,16 +5014,16 @@ export const handlers = [
     const allFollowers = [
       {
         id: 'follow_2',
-        follower_id: 'user_2',
+        follower_id: 'user_3',
         follower_type: 'user' as const,
         followee_id: 'user_1',
         followee_type: 'user' as const,
         created_at: '2024-01-01T00:00:00Z',
         follower: {
-          id: 'user_2',
-          first_name: 'Bob',
-          last_name: 'Smith',
-          avatar_url: 'https://example.com/avatar2.jpg',
+          id: 'user_3',
+          first_name: 'Charlie',
+          last_name: 'Davis',
+          avatar_url: 'https://example.com/avatar3.jpg',
         },
       },
       {
@@ -7005,6 +7184,9 @@ export const handlers = [
       },
     })
   }),
+
+  // Profile Views handlers (imported from dedicated file)
+  ...profileViewsHandlers,
 ]
 
 export const server = setupServer(...handlers)

@@ -6,6 +6,7 @@
 import { Command } from 'commander'
 import ora from 'ora'
 import chalk from 'chalk'
+import type { Job } from '@scaffald/sdk'
 import { createClient } from '../utils/client.js'
 import { formatTable, formatJson, formatCompact } from '../utils/output.js'
 
@@ -38,7 +39,7 @@ export const jobsCommand = new Command('jobs')
             formatJson(response.data)
           } else {
             const headers = ['ID', 'Title', 'Company', 'Status', 'Type', 'Location']
-            const rows = response.data.map((job: any) => [
+            const rows = response.data.map((job: Job) => [
               job.id.slice(0, 8),
               job.title,
               job.organization?.name || 'N/A',
@@ -62,7 +63,7 @@ export const jobsCommand = new Command('jobs')
       .description('View job details')
       .argument('<id>', 'Job ID')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching job...').start()
 
         try {
@@ -121,7 +122,7 @@ export const jobsCommand = new Command('jobs')
       .argument('<id>', 'Job ID')
       .option('-l, --limit <number>', 'Number of similar jobs to fetch', '10')
       .option('--format <format>', 'Output format (table, json)', 'table')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Finding similar jobs...').start()
 
         try {
@@ -141,7 +142,7 @@ export const jobsCommand = new Command('jobs')
             formatJson(response.data)
           } else {
             const headers = ['ID', 'Title', 'Company', 'Similarity', 'Location']
-            const rows = response.data.map((job: any) => [
+            const rows = response.data.map((job: Job) => [
               job.id.slice(0, 8),
               job.title,
               job.organization?.name || 'N/A',

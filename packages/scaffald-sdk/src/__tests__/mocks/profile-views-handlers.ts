@@ -47,7 +47,7 @@ export const profileViewsHandlers = [
       return HttpResponse.json({ error: 'Invalid userId format' }, { status: 400 })
     }
 
-    // Deduplication logic
+    // Deduplication logic - check special user IDs first
     if (viewedUserId === 'user_self') {
       return HttpResponse.json({
         success: true,
@@ -56,10 +56,15 @@ export const profileViewsHandlers = [
       })
     }
 
-    // Check rapid duplicate prevention
-    const now = Date.now()
-    const lastView = rapidViewPrevention.get(viewedUserId)
-    if (viewedUserId === 'user_rapid' || (lastView && now - lastView < 1000)) {
+    if (viewedUserId === 'user_session') {
+      return HttpResponse.json({
+        success: true,
+        skipped: true,
+        reason: 'already_viewed_session',
+      })
+    }
+
+    if (viewedUserId === 'user_rapid') {
       return HttpResponse.json({
         success: true,
         skipped: true,
@@ -74,7 +79,23 @@ export const profileViewsHandlers = [
     }
     const sessionViews = viewedInSession.get(sessionKey) ?? new Set()
 
-    if (viewedUserId === 'user_session' || sessionViews.has(viewedUserId)) {
+    // Initialize today views
+    if (!viewedToday.has(sessionKey)) {
+      viewedToday.set(sessionKey, new Set())
+    }
+    const todayViews = viewedToday.get(sessionKey) ?? new Set()
+
+    // Check today deduplication for user_duplicate (before session check)
+    if (viewedUserId === 'user_duplicate' && todayViews.has(viewedUserId)) {
+      return HttpResponse.json({
+        success: true,
+        skipped: true,
+        reason: 'already_viewed_today',
+      })
+    }
+
+    // Special user that simulates being viewed in the same session
+    if (viewedUserId === 'user_same_session') {
       return HttpResponse.json({
         success: true,
         skipped: true,
@@ -82,17 +103,22 @@ export const profileViewsHandlers = [
       })
     }
 
-    // Check today deduplication
-    if (!viewedToday.has(sessionKey)) {
-      viewedToday.set(sessionKey, new Set())
-    }
-    const todayViews = viewedToday.get(sessionKey) ?? new Set()
-
-    if (viewedUserId === 'user_duplicate' && todayViews.has(viewedUserId)) {
+    if (viewedUserId !== 'user_duplicate' && sessionViews.has(viewedUserId)) {
       return HttpResponse.json({
         success: true,
         skipped: true,
-        reason: 'already_viewed_today',
+        reason: 'already_viewed_session',
+      })
+    }
+
+    // Check rapid duplicate prevention for normal users (after other checks)
+    const now = Date.now()
+    const lastView = rapidViewPrevention.get(viewedUserId)
+    if (viewedUserId !== 'user_duplicate' && lastView && now - lastView < 1000) {
+      return HttpResponse.json({
+        success: true,
+        skipped: true,
+        reason: 'duplicate_prevented',
       })
     }
 
@@ -167,6 +193,14 @@ export const profileViewsHandlers = [
       }
     })
 
+    // Return unpaginated for default requests
+    if (limit === 50 && offset === 0) {
+      return HttpResponse.json({
+        views: allViews,
+        total: allViews.length,
+      })
+    }
+
     // Apply pagination
     const cappedLimit = Math.min(limit, 100) // Cap at 100
     const paginated = allViews.slice(offset, offset + cappedLimit)
@@ -180,6 +214,11 @@ export const profileViewsHandlers = [
   // GET /v1/profile-views/analytics - Get analytics
   http.get(`${BASE_URL}/v1/profile-views/analytics`, ({ request }) => {
     const apiKey = request.headers.get('Authorization')?.replace('Bearer ', '')
+
+    // Handle server error
+    if (apiKey === 'test_key_server_error') {
+      return HttpResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
 
     // Handle new profiles with zero views
     if (apiKey === 'test_key_new') {
