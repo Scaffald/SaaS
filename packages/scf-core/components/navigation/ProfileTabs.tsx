@@ -3,7 +3,7 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { useMemo } from 'react'
 import { useWindowDimensions } from '@scaffald/ui'
-import { Tab, TabGroup, type TabGroupProps } from '@scaffald/ui'
+import { Tabs, type TabsProps } from '@scaffald/ui'
 
 export type ProfileTabsItem = {
   key: string
@@ -15,7 +15,7 @@ export type ProfileTabsItem = {
 
 export type ProfileTabsProps = {
   ariaLabel?: string
-} & Omit<TabGroupProps, 'value' | 'onValueChange' | 'children' | 'ariaLabel'>
+} & Omit<TabsProps, 'value' | 'onValueChange' | 'children'>
 
 const isPathActive = (currentPath: string, targetHref: string) => {
   if (!targetHref) return false
@@ -54,7 +54,7 @@ const isPathActive = (currentPath: string, targetHref: string) => {
 
 export const ProfileTabs = ({
   ariaLabel = 'Profile navigation',
-  ...tabGroupProps
+  ...tabsProps
 }: ProfileTabsProps) => {
   const pathname = usePathname()
   const currentPath = pathname ?? ''
@@ -107,29 +107,23 @@ export const ProfileTabs = ({
   }
 
   const handleValueChange = (_value: string) => {
-    // Navigation is handled by Link components in Tab
+    // Navigation is handled by Link components
     // This is just for state management
   }
 
   return (
-    <TabGroup
+    <Tabs
       value={activeValue}
       onValueChange={handleValueChange}
-      ariaLabel={ariaLabel}
-      scrollable={isSmallScreen}
-      bordered={false}
-      variant="underlined"
-      {...tabGroupProps}
+      type="line"
+      orientation="horizontal"
+      {...tabsProps}
     >
       {items.map((item) => (
-        <Tab
-          key={item.key}
-          value={item.key}
-          label={item.label}
-          href={item.href}
-          badge={item.badge}
-        />
+        <Tabs.Item key={item.key} value={item.key}>
+          <Tabs.Trigger>{item.label}</Tabs.Trigger>
+        </Tabs.Item>
       ))}
-    </TabGroup>
+    </Tabs>
   )
 }

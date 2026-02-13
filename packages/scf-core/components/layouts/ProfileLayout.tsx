@@ -35,13 +35,16 @@ export const ProfileLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  // Calculate current index (last item is always active)
+  const currentIndex = displayBreadcrumbs.length - 1
+
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
       <Stack gap={12} paddingTop={12} paddingBottom={20}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={8} paddingTop={12}>
-            <Breadcrumb items={displayBreadcrumbs} />
+            <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
 

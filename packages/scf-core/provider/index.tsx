@@ -5,6 +5,7 @@ import type { FC, ReactNode } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
+import { ScaffaldProviderFromSession } from './scaffald/ScaffaldProviderFromSession'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
 import { ScaffaldJobsSdkProviderFromSession } from '../utils/jobs-sdk-context'
@@ -23,7 +24,9 @@ export function Provider({
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <Providers>
         <AuthProvider initialSession={initialSession}>
-          <ScaffaldJobsSdkProviderFromSession>{children}</ScaffaldJobsSdkProviderFromSession>
+          <ScaffaldProviderFromSession>
+            <ScaffaldJobsSdkProviderFromSession>{children}</ScaffaldJobsSdkProviderFromSession>
+          </ScaffaldProviderFromSession>
         </AuthProvider>
       </Providers>
     </DatePickerProvider>

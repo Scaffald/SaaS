@@ -2,20 +2,27 @@ import { flattenRoutes, matchesRoute, type RouteConfig, ROUTES } from '@scf/core
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { usePathname } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
-import type { BreadcrumbItem, BreadcrumbSibling } from '@scaffald/ui'
+import type { BreadcrumbItemData } from '@scaffald/ui'
+
+// Breadcrumb sibling type
+export interface BreadcrumbSibling {
+  label: string
+  href: string
+  isActive?: boolean
+}
 
 export interface UseBreadcrumbsOptions {
   /** Whether to auto-generate breadcrumbs from route (default: false) */
   autoGenerate?: boolean
   /** Manual breadcrumb items to override auto-generation */
-  customItems?: BreadcrumbItem[]
+  customItems?: BreadcrumbItemData[]
 }
 
 export interface UseBreadcrumbsReturn {
   /** Array of breadcrumb items */
-  breadcrumbs: BreadcrumbItem[]
+  breadcrumbs: BreadcrumbItemData[]
   /** Update a specific breadcrumb item by index */
-  updateBreadcrumb: (index: number, updates: Partial<BreadcrumbItem>) => void
+  updateBreadcrumb: (index: number, updates: Partial<BreadcrumbItemData>) => void
   /** Reset breadcrumbs to auto-generated state (if autoGenerate is true) */
   resetBreadcrumbs: () => void
 }
@@ -81,7 +88,7 @@ export interface UseBreadcrumbsReturn {
 export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcrumbsReturn {
   const { autoGenerate = false, customItems } = options
   const pathname = usePathname()
-  const [manualItems, setManualItems] = useState<BreadcrumbItem[] | null>(null)
+  const [manualItems, setManualItems] = useState<BreadcrumbItemData[] | null>(null)
   const { t } = useTranslation()
   const translateRoute = useCallback(
     (route?: RouteConfig | null) => {
@@ -225,7 +232,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
   // Generate breadcrumbs from pathname (fallback when no route match)
   // Define this first so it can be used in generateBreadcrumbsFromRoute
   const generateBreadcrumbsFromPath = useCallback(
-    (path: string): BreadcrumbItem[] => {
+    (path: string): BreadcrumbItemData[] => {
       if (path === '/') {
         // Check if dashboard route exists
         const dashboardRoute = findMatchingRoute('/dashboard')
@@ -248,7 +255,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
       }
 
       const segments = path.split('/').filter(Boolean)
-      const items: BreadcrumbItem[] = []
+      const items: BreadcrumbItemData[] = []
 
       // For dashboard routes, start with Dashboard instead of Home
       if (segments[0] === 'dashboard') {
@@ -285,12 +292,10 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ')
 
-        // Add segment (no siblings - simplified breadcrumbs)
+        // Add segment
         items.push({
           label,
           href: currentPath,
-          isActive: isLast,
-          siblings: undefined,
         })
       })
 
@@ -301,8 +306,8 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
   // Generate breadcrumbs from route configuration
   const generateBreadcrumbsFromRoute = useCallback(
-    (path: string): BreadcrumbItem[] => {
-      const items: BreadcrumbItem[] = []
+    (path: string): BreadcrumbItemData[] => {
+      const items: BreadcrumbItemData[] = []
       const visitedPaths = new Set<string>()
       const isDashboardRoute = path.startsWith('/dashboard')
 
@@ -358,8 +363,6 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
                     items.push({
                       label: intermediateLabel,
                       href: intermediatePath,
-                      isActive: false,
-                      siblings: siblings.length > 0 ? siblings : undefined,
                     })
                     visitedPaths.add(intermediatePath)
                   } else {
@@ -384,12 +387,10 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ')
 
-                  // Add intermediate breadcrumb (no siblings - simplified breadcrumbs)
+                  // Add intermediate breadcrumb
                   items.push({
                     label: intermediateLabel,
                     href: parentPath,
-                    isActive: false,
-                    siblings: undefined,
                   })
                   visitedPaths.add(parentPath)
                 } else {
@@ -399,12 +400,10 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             }
           }
 
-          // Add current route (no siblings - simplified breadcrumbs)
+          // Add current route
           items.push({
             label: translateRoute(route),
             href: currentPath,
-            isActive: isLast,
-            siblings: undefined,
           })
         } else {
           // Fallback: generate from path segments
@@ -416,13 +415,11 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
               items.push({
                 label: translateRoute(dashboardRoute),
                 href: dashboardRoute.path,
-                isActive: path === '/',
               })
             } else {
               items.push({
                 label: t(ROUTES.DASHBOARD.titleKey),
                 href: '/dashboard',
-                isActive: path === '/',
               })
             }
             return
@@ -446,32 +443,16 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             buildHierarchy(parentPath || '/', depth + 1)
           }
 
-          // Add current segment - check if it's terminal
+          // Add current segment
           const segment = segments[segments.length - 1]
           const label = segment
             .split('-')
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ')
 
-          // For intermediate segments (not terminal), find siblings
-          let segmentSiblings: BreadcrumbSibling[] | undefined
-          if (!isLast) {
-            const siblingRoutes = findRoutesAtPath(currentPath)
-            segmentSiblings =
-              siblingRoutes.length > 0
-                ? siblingRoutes.map((r) => ({
-                    label: translateRoute(r),
-                    href: r.path,
-                    isActive: false,
-                  }))
-                : undefined
-          }
-
           items.push({
             label,
             href: currentPath,
-            isActive: isLast,
-            siblings: segmentSiblings,
           })
         }
       }
@@ -506,12 +487,6 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             label: t(ROUTES.DASHBOARD.titleKey),
             href: '/dashboard',
           })
-        }
-
-        // Ensure Dashboard is not active unless we're on the dashboard page
-        const dashboardItem = items.find((item) => item.href === '/dashboard')
-        if (dashboardItem && path !== '/dashboard') {
-          dashboardItem.isActive = false
         }
       }
 
@@ -553,7 +528,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
   // Update a specific breadcrumb item
   const updateBreadcrumb = useCallback(
-    (index: number, updates: Partial<BreadcrumbItem>) => {
+    (index: number, updates: Partial<BreadcrumbItemData>) => {
       setManualItems((prev) => {
         const baseItems = prev ?? customItems ?? autoGeneratedBreadcrumbs
         const newItems = [...baseItems]

@@ -10,10 +10,10 @@ import {
   type TableColumnVisibilityModalProps,
   Row,
   Stack,
+  type BreadcrumbItemData,
 } from '@scaffald/ui'
 import { DataTable } from '@scf/core/components/ui/DataTable'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
-import type { BreadcrumbItem } from '@scaffald/ui'
 import { Plus } from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
@@ -60,7 +60,7 @@ interface OfficePageLayoutProps<TData> {
   /** Breadcrumb visibility override for wrapped layout */
   showBreadcrumb?: boolean
   /** Custom breadcrumb items when wrapped */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Override auto breadcrumb generation when wrapped */
   autoGenerateBreadcrumbs?: boolean
   /** Optional content rendered before the built-in header block */

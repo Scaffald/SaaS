@@ -89,6 +89,9 @@ export const OfficeLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  // Calculate current index (last item is always active)
+  const currentIndex = displayBreadcrumbs.length - 1
+
   // Get top-level office routes (direct children of /office)
   const childRoutes = useMemo(() => getChildRoutes('/office'), [])
 
@@ -199,39 +202,41 @@ export const OfficeLayout = ({
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={12} paddingTop={12}>
-            <Breadcrumb items={displayBreadcrumbs} />
+            <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
 
-        {/* TabGroup Navigation - Top-level office routes */}
+        {/* Tabs Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
           <>
             <Row paddingHorizontal={12}>
-              <TabGroup
+              <Tabs
                 value={activeTabValue}
                 onValueChange={handleTabChange}
-                ariaLabel="Office navigation"
-                scrollable={isSmallScreen}
-                bordered={true}
+                type="line"
+                orientation="horizontal"
               >
                 {tabItems.map((item: TabItem) => (
-                  <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+                  <Tabs.Item key={item.key} value={item.key}>
+                    <Tabs.Trigger>{item.label}</Tabs.Trigger>
+                  </Tabs.Item>
                 ))}
-              </TabGroup>
+              </Tabs>
             </Row>
             {secondaryTabItems.length > 0 && (
               <Row paddingHorizontal={12}>
-                <TabGroup
+                <Tabs
                   value={activeSecondaryValue}
                   onValueChange={handleTabChange}
-                  ariaLabel="Office subsection navigation"
-                  scrollable={isSmallScreen}
-                  bordered={false}
+                  type="default"
+                  orientation="horizontal"
                 >
                   {secondaryTabItems.map((item: TabItem) => (
-                    <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+                    <Tabs.Item key={item.key} value={item.key}>
+                      <Tabs.Trigger>{item.label}</Tabs.Trigger>
+                    </Tabs.Item>
                   ))}
-                </TabGroup>
+                </Tabs>
               </Row>
             )}
           </>

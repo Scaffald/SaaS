@@ -31,6 +31,9 @@ export const DashboardLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  // Calculate current index (last item is always active)
+  const currentIndex = displayBreadcrumbs.length - 1
+
   const _hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
@@ -39,7 +42,7 @@ export const DashboardLayout = ({
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={8} paddingTop={12}>
-            <Breadcrumb items={displayBreadcrumbs} />
+            <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
 

@@ -9,7 +9,7 @@ import {
 } from '@scf/core/features/profile/widgets'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { type BreadcrumbItem, DashboardWidget } from '@scaffald/ui'
+import { type BreadcrumbItemData, DashboardWidget } from '@scaffald/ui'
 import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
@@ -25,7 +25,7 @@ interface DiscoverWorkerProfileScreenOptions {
 interface DiscoverWorkerProfileScreenResult {
   left: ReactNode
   right: ReactNode
-  breadcrumbItems: BreadcrumbItem[]
+  breadcrumbItems: BreadcrumbItemData[]
 }
 
 function SkeletonBlock({

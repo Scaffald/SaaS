@@ -6,7 +6,7 @@ import {
   type DashboardBreadcrumbSegment,
 } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import type { BreadcrumbItem } from '@scaffald/ui'
+import type { BreadcrumbItemData } from '@scaffald/ui'
 import { usePathname } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'
@@ -17,7 +17,7 @@ type DashboardPageProps = Omit<DashboardLayoutProps, 'breadcrumbItems'> & {
   /** Custom breadcrumb segments to build Dashboard hierarchy */
   breadcrumbs?: DashboardBreadcrumbSegment[]
   /** Provide fully computed breadcrumb items (takes precedence over breadcrumbs) */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Static string or callback for page title (falls back to route title) */
   pageTitle?: string | (() => string | null)
   /** Dependency list for re-computing dynamic page titles */
