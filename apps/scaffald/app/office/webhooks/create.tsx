@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 import { api } from '@scf/core/utils/api'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { Button, Card, Checkbox, Row, Stack, Text, Input, TextArea } from '@scaffald/ui'
+import { Button, Card, Checkbox, Row, Stack, Text, Input } from '@scaffald/ui'
 import { ROUTES } from '@scf/core/constants/routes'
 import type { WebhookEventType } from '@scf/schemas'
 
@@ -177,10 +177,12 @@ export default function CreateWebhookPage() {
 
           <Stack gap={8}>
             <Text>Description (Optional)</Text>
-            <TextArea
+            <Input
               value={description}
               onChangeText={setDescription}
               placeholder="Production webhook for order notifications"
+              multiline
+              numberOfLines={3}
             />
           </Stack>
         </Card>
