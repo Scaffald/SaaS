@@ -149,7 +149,9 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             </Box>
 
             {error && (
-              <Paragraph style={{ color: colors.text[theme].error, textAlign: 'center', fontSize: 14 }}>
+              <Paragraph
+                style={{ color: colors.text[theme].error, textAlign: 'center', fontSize: 14 }}
+              >
                 {error}
               </Paragraph>
             )}

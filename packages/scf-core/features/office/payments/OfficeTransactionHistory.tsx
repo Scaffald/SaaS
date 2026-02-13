@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { DataTable } from '@scf/core/components/ui'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { Download, FileText, RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
@@ -150,7 +150,9 @@ export function OfficeTransactionHistory() {
         header: 'Status',
         cell: (info) => {
           const status = info.getValue()
-          return <Text style={{ color: getStatusColor(status, theme) }}>{formatStatus(status)}</Text>
+          return (
+            <Text style={{ color: getStatusColor(status, theme) }}>{formatStatus(status)}</Text>
+          )
         },
       }),
       columnHelper.accessor('stripePaymentIntentId', {
@@ -183,7 +185,9 @@ export function OfficeTransactionHistory() {
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Transaction History</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>View and export payment transaction records.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            View and export payment transaction records.
+          </Text>
         </Stack>
         <Row gap={8}>
           <Button
@@ -208,7 +212,12 @@ export function OfficeTransactionHistory() {
       </Row>
 
       {/* Filters */}
-      <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm">
+      <Card
+        borderWidth={1}
+        borderColor={colors.border[theme].default}
+        style={{ backgroundColor: colors.bg[theme].subtle }}
+        padding="sm"
+      >
         <Row gap={12} flexWrap="wrap">
           <Stack gap={4} width={200}>
             <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
@@ -255,7 +264,12 @@ export function OfficeTransactionHistory() {
           <Text style={{ color: colors.text[theme].secondary }}>Loading transactions…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
+        <Card
+          borderWidth={1}
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          padding="md"
+        >
           <DataTable
             columns={transactionsColumns}
             data={transactionsQuery.data?.items ?? []}

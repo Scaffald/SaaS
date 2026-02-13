@@ -55,9 +55,7 @@ export default function SharedIPIPResultsRoute() {
   if (isLoading) {
     return (
       <Stack gap={16} padding={32} align="center">
-        <Text color="gray">
-          Loading shared results...
-        </Text>
+        <Text color="gray">Loading shared results...</Text>
       </Stack>
     )
   }
@@ -68,9 +66,7 @@ export default function SharedIPIPResultsRoute() {
         <Text color="red" style={{ fontWeight: '600' }}>
           {error?.message || 'Results Not Found'}
         </Text>
-        <Text color="gray">
-          This share link may be invalid, expired, or revoked.
-        </Text>
+        <Text color="gray">This share link may be invalid, expired, or revoked.</Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
       </Stack>
     )
@@ -83,9 +79,7 @@ export default function SharedIPIPResultsRoute() {
         <Text style={{ fontWeight: 'bold' }} color="gray">
           Shared Personality Results
         </Text>
-        <Text color="gray">
-          Viewing shared Big Five personality assessment results.
-        </Text>
+        <Text color="gray">Viewing shared Big Five personality assessment results.</Text>
       </Stack>
 
       {/* Tab Navigation */}
@@ -93,7 +87,6 @@ export default function SharedIPIPResultsRoute() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
         orientation="horizontal"
-       
       >
         <Tabs.List
           separator={<Stack />}
@@ -101,25 +94,15 @@ export default function SharedIPIPResultsRoute() {
           aria-label="Manage your personality results view"
         >
           <Tabs.Tab value="narrative">
-            <Text>
-              Narrative View
-            </Text>
+            <Text>Narrative View</Text>
           </Tabs.Tab>
           <Tabs.Tab value="chart">
-            <Text>
-              Chart View
-            </Text>
+            <Text>Chart View</Text>
           </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Content value="narrative" padding={16}>
-          <Stack
-           
-           
-           
-           
-            padding={16}
-          >
+          <Stack padding={16}>
             {processedResults ? (
               <NarrativeView
                 scores={processedResults.scores}
@@ -130,22 +113,14 @@ export default function SharedIPIPResultsRoute() {
               />
             ) : (
               <Stack align="center" padding={16}>
-                <Text color="gray">
-                  Processing results...
-                </Text>
+                <Text color="gray">Processing results...</Text>
               </Stack>
             )}
           </Stack>
         </Tabs.Content>
 
         <Tabs.Content value="chart" padding={16}>
-          <Stack
-           
-           
-           
-           
-            padding={16}
-          >
+          <Stack padding={16}>
             {processedResults ? (
               <ChartView
                 scores={processedResults.scores}
@@ -164,9 +139,7 @@ export default function SharedIPIPResultsRoute() {
               />
             ) : (
               <Stack align="center" padding={16}>
-                <Text color="gray">
-                  Processing results...
-                </Text>
+                <Text color="gray">Processing results...</Text>
               </Stack>
             )}
           </Stack>

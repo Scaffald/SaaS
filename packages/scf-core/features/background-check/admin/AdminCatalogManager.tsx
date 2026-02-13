@@ -839,9 +839,7 @@ export function AdminCatalogManager() {
                             <Checkbox
                               size="sm"
                               checked={selected}
-                              onChange={(value) =>
-                                handleTogglePackageType(type.id, value === true)
-                              }
+                              onChange={(value) => handleTogglePackageType(type.id, value === true)}
                             >
                               <Checkbox.Indicator>
                                 <Check size="md" />
@@ -864,9 +862,7 @@ export function AdminCatalogManager() {
                 <Row gap={8} align="center">
                   <Checkbox
                     checked={packageForm.isActive}
-                    onChange={(value) =>
-                      handlePackageFieldChange('isActive', value === true)
-                    }
+                    onChange={(value) => handlePackageFieldChange('isActive', value === true)}
                   >
                     <Checkbox.Indicator>
                       <Check size="md" />
@@ -1019,9 +1015,7 @@ export function AdminCatalogManager() {
                 <Row gap={8} align="center">
                   <Checkbox
                     checked={checkTypeForm.isActive}
-                    onChange={(value) =>
-                      handleCheckTypeFieldChange('isActive', value === true)
-                    }
+                    onChange={(value) => handleCheckTypeFieldChange('isActive', value === true)}
                   >
                     <Checkbox.Indicator>
                       <Check size="md" />

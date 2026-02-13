@@ -5,7 +5,6 @@ import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Eye } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, H4, Image, Spinner, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
   id: string
@@ -27,8 +26,7 @@ interface PortfolioItem {
  * @param variant - Display variant (compact or full)
  */
 export function PortfolioGallery() {
-  const { theme } = useThemeContext()
-{ userId, variant = 'full' }: ProfileWidgetProps) {
+  const { theme } = useThemeContext()userId, variant = 'full' : ProfileWidgetProps) {
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 

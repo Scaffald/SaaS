@@ -37,16 +37,12 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       <Stack gap={4}>
         <Row align="center" gap={8}>
           <Briefcase size="md" color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color={isSelected ? '$yellow11' : '$color12'} >
-            {job.title}
-          </Text>
+          <Text color={isSelected ? '$yellow11' : '$color12'}>{job.title}</Text>
         </Row>
         {job.organization_name && (
           <Row align="center" gap={6} marginLeft={24}>
             <Building2 size="md" color="$gray11" />
-            <Text color="$gray11" >
-              {job.organization_name}
-            </Text>
+            <Text color="$gray11">{job.organization_name}</Text>
           </Row>
         )}
       </Stack>
@@ -55,9 +51,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {job.location && (
         <Row align="center" gap={6}>
           <MapPin size="md" color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color="$gray11" >
-            {job.location}
-          </Text>
+          <Text color="$gray11">{job.location}</Text>
         </Row>
       )}
 

@@ -26,7 +26,6 @@ export function EmailHeader({ email }: EmailHeaderProps) {
             color: colors.text[theme].primary,
             maxWidth: '100%',
           }}
-
           ellipsizeMode="middle"
         >
           {email}

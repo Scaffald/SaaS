@@ -4,7 +4,7 @@ import {
   TEAM_INVITATION_TTL_MIN,
 } from '@scf/schemas'
 import { useInviteTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useThemeContext } from '@unicornlove/beyond-ui'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { Mail, UserPlus } from 'lucide-react-native'
@@ -231,7 +231,9 @@ export function TeamInviteModal({
               <Text style={{ color: colors.text[theme].secondary }}>Loading roles…</Text>
             </Row>
           ) : roleOptions.length === 0 ? (
-            <Text style={{ color: colors.text[theme].secondary }}>No roles are configured for this organization.</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No roles are configured for this organization.
+            </Text>
           ) : (
             <ResponsiveSelect
               value={selectedRoleId || defaultRoleId || roleOptions[0]?.id || ''}
@@ -299,7 +301,11 @@ export function TeamInviteModal({
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >
-            {inviteMutation.isPending ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Send Invitation'}
+            {inviteMutation.isPending ? (
+              <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
+            ) : (
+              'Send Invitation'
+            )}
           </Button>
         </Row>
       </Stack>

@@ -28,7 +28,6 @@ export interface OpenToTravelCardProps
  */
 export function OpenToTravelCard() {
   const { theme } = useThemeContext()
-{
   description = 'I am willing to travel for work opportunities',
   checked,
   onCheckedChange,
@@ -38,8 +37,7 @@ export function OpenToTravelCard() {
   maxTravelDistance = 250,
   travelDistanceStep = 5,
   disabled = false,
-  ...toggleCardProps
-}: OpenToTravelCardProps) {
+  ...toggleCardProps: OpenToTravelCardProps) 
   return (
     <ToggleCard
       iconStart={<Plane size="xs" style={{ color: colors.text[theme].secondary }} />}
@@ -65,4 +63,3 @@ export function OpenToTravelCard() {
       {...toggleCardProps}
     />
   )
-}

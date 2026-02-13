@@ -137,14 +137,7 @@ export const FilterPopup = ({
               borderBottomColor="$borderColor"
             >
               <Text>Filters</Text>
-              <Button
-                size="xs"
-                
-                variant="outline"
-                onPress={onClose}
-                iconStart={X}
-                scaleIcon={1.2}
-              />
+              <Button size="xs" variant="outline" onPress={onClose} iconStart={X} scaleIcon={1.2} />
             </Row>
 
             {/* Scrollable Content */}

@@ -201,7 +201,6 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                 <Row gap={4}>
                   <Button
                     size="xs"
-                    
                     chromeless
                     width={32}
                     height={32}
@@ -214,7 +213,6 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                   />
                   <Button
                     size="xs"
-                    
                     chromeless
                     width={32}
                     height={32}
@@ -278,7 +276,6 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                       width={20}
                       height={20}
                       padding={0}
-                      
                       chromeless
                       disabled={isBenefitLoading}
                       accessibilityLabel={`View profile suggestion ${dotIndex + 1} of ${totalBenefits}`}

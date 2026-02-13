@@ -141,7 +141,9 @@ export function CheckStatusDashboard() {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="$gray11">We couldn’t load your background checks. Please try again.</Text>
+              <Text color="$gray11">
+                We couldn’t load your background checks. Please try again.
+              </Text>
               <Button
                 size="sm"
                 variant="outline"

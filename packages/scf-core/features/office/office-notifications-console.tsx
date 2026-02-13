@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { NotificationTag , useThemeContext} from '@unicornlove/beyond-ui'
+import { NotificationTag, useThemeContext } from '@unicornlove/beyond-ui'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -132,10 +132,17 @@ export function OfficeNotificationsConsole() {
         ) : deliveries.length === 0 ? (
           <Stack gap={12} align="center" marginTop={16}>
             <AlertCircle size={32} style={{ color: colors.text[theme].secondary }} />
-            <Text style={{ color: colors.text[theme].secondary }}>No deliveries match this filter.</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No deliveries match this filter.
+            </Text>
           </Stack>
         ) : (
-          <Stack borderWidth={1} borderColor={colors.border[theme].default} borderRadius={16} overflow="hidden">
+          <Stack
+            borderWidth={1}
+            borderColor={colors.border[theme].default}
+            borderRadius={16}
+            overflow="hidden"
+          >
             <Row style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" gap={12}>
               <Text flex={2}>Notification</Text>
               <Text flex={1}>Channel</Text>
@@ -153,20 +160,20 @@ export function OfficeNotificationsConsole() {
               return (
                 <Stack
                   key={delivery.id}
-                  backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
+                  style={{ backgroundColor: index % 2 === 0 ? colors.bg[theme].onPrimary : colors.bg[theme].subtle }}
                   padding="sm"
                 >
                   <Row gap={12} align="center">
                     <Stack flex={2} gap={4}>
                       <Row gap={8} align="center">
-                        <Text style={{ color: colors.text[theme].secondary }} >
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
-                        <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
+                        <NotificationTag size="sm" themeName={tagTheme} textColorToken={colors.text[theme].primary}>
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text style={{ color: colors.text[theme].secondary }} >
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
                     </Stack>
@@ -178,14 +185,14 @@ export function OfficeNotificationsConsole() {
                       themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                       flex={1}
                       justify="center"
-                      textColorToken="$color12"
+                      textColorToken={colors.text[theme].primary}
                     >
                       {delivery.status}
                     </NotificationTag>
                     <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                       {delivery.attempts}
                     </Text>
-                    <Text flex={2} style={{ color: colors.text[theme].secondary }} >
+                    <Text flex={2} style={{ color: colors.text[theme].secondary }}>
                       {delivery.last_error ?? '—'}
                     </Text>
                     <Text flex={1} style={{ color: colors.text[theme].secondary }}>
@@ -226,7 +233,12 @@ export function OfficeNotificationsConsole() {
             <Text style={{ color: colors.text[theme].secondary }}>Digest queue is empty.</Text>
           </Stack>
         ) : (
-          <Stack borderWidth={1} borderColor={colors.border[theme].default} borderRadius={16} overflow="hidden">
+          <Stack
+            borderWidth={1}
+            borderColor={colors.border[theme].default}
+            borderRadius={16}
+            overflow="hidden"
+          >
             <Row style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" gap={12}>
               <Text flex={1}>User ID</Text>
               <Text flex={1}>Type</Text>
@@ -241,10 +253,10 @@ export function OfficeNotificationsConsole() {
                 key={item.id}
                 gap={12}
                 padding="sm"
-                backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
+                style={{ backgroundColor: index % 2 === 0 ? colors.bg[theme].onPrimary : colors.bg[theme].subtle }}
                 align="flex-start"
               >
-                <Text flex={1} style={{ color: colors.text[theme].secondary }} >
+                <Text flex={1} style={{ color: colors.text[theme].secondary }}>
                   {item.user_id}
                 </Text>
                 <Text flex={1} style={{ color: colors.text[theme].secondary }}>

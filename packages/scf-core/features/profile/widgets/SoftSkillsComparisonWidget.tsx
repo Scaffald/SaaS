@@ -29,12 +29,10 @@ import type { ProfileWidgetProps } from './types'
  */
 export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = () => {
   const { theme } = useThemeContext()
-{
   userId,
   showEdit = false,
   variant = 'full',
-  showCTA = false,
-}) => {
+  showCTA = false,) => {
   const router = useRouter()
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
@@ -153,7 +151,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = () => {
     }
 
     return datasets
-  }, [data, skills, activeCategory, comparisonData])
+  }, [data, skills, activeCategory, comparisonData, theme])
 
   if (isLoading) {
     return (

@@ -10,7 +10,15 @@
  */
 
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import {
+  Button,
+  ScrollView,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { api } from '@scf/core/utils/api'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
@@ -50,7 +58,7 @@ interface AdminCCPARequest {
  */
 const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = {
   pending: { bg: colors.bg[theme].warningSubtle, text: colors.text[theme].warning },
-  processing: { bg: '$blue3', text: '$blue11' },
+  processing: { bg: colors.bg[theme].info, text: colors.text[theme].info },
   completed: { bg: colors.bg[theme].successSubtle, text: colors.text[theme].success },
   failed: { bg: colors.bg[theme].errorSubtle, text: colors.text[theme].error },
   cancelled: { bg: '$color4', text: colors.text[theme].secondary },
@@ -116,14 +124,15 @@ function MetricCard({
   label,
   value,
   trend,
-  color = '$color12',
+  color = colors.text[theme].primary,
 }: {
   label: string
   value: string | number
   trend?: 'up' | 'down' | 'neutral'
   color?: string
 }) {
-  const trendColor = trend === 'up' ? '$green10' : trend === 'down' ? '$red10' : colors.text[theme].secondary
+  const trendColor =
+    trend === 'up' ? '$green10' : trend === 'down' ? '$red10' : colors.text[theme].secondary
 
   return (
     <Stack
@@ -164,10 +173,10 @@ function RequestRow({
   return (
     <Row
       padding="sm"
-      backgroundColor={request.is_overdue ? '$red2' : '$color2'}
+      style={{ backgroundColor: request.is_overdue ? colors.bg[theme].errorSubtle : colors.bg[theme].subtle }}
       borderRadius={8}
       borderWidth={1}
-      borderColor={request.is_overdue ? '$red6' : '$borderColor'}
+      borderColor={request.is_overdue ? colors.border[theme].error : colors.border[theme].default}
       align="center"
       gap={12}
       flexWrap="wrap"
@@ -208,7 +217,7 @@ function RequestRow({
         <Text style={{ color: colors.text[theme].secondary }}>Days</Text>
         <Text
           color={
-            request.is_overdue ? '$red10' : request.days_elapsed > 30 ? '$orange10' : '$color12'
+            request.is_overdue ? colors.text[theme].error : request.days_elapsed > 30 ? colors.text[theme].warning : colors.text[theme].primary
           }
         >
           {request.days_elapsed}
@@ -410,7 +419,7 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Pending"
                 value={metrics?.pending_requests || 0}
-                color={metrics?.pending_requests ? '$orange10' : '$color12'}
+                style={{ color: metrics?.pending_requests ? colors.text[theme].warning : colors.text[theme].primary }}
               />
               <MetricCard
                 label="Processing"
@@ -426,7 +435,7 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Avg Processing Days"
                 value={`${metrics?.average_processing_days?.toFixed(1) || 0}`}
-                color={(metrics?.average_processing_days || 0) > 30 ? '$orange10' : '$green10'}
+                style={{ color: (metrics?.average_processing_days || 0) > 30 ? colors.text[theme].warning : colors.text[theme].success }}
               />
               <MetricCard
                 label="Compliance Rate"
@@ -442,7 +451,7 @@ export function CCPAAdminDashboard() {
               <MetricCard
                 label="Overdue Requests"
                 value={metrics?.overdue_count || 0}
-                color={metrics?.overdue_count ? '$red10' : '$green10'}
+                style={{ color: metrics?.overdue_count ? colors.text[theme].error : colors.text[theme].success }}
               />
             </Row>
           )}
@@ -495,7 +504,9 @@ export function CCPAAdminDashboard() {
               align="center"
               gap={8}
             >
-              <Text style={{ color: colors.text[theme].secondary }}>No requests match the current filters</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                No requests match the current filters
+              </Text>
             </Stack>
           ) : (
             requests?.requests?.map((request: AdminCCPARequest) => (
@@ -539,7 +550,7 @@ export function CCPAAdminDashboard() {
           <Text>CCPA Timeline Requirements</Text>
           <Stack gap={8}>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
+              <Stack width={8} height={8} borderRadius={4} style={{ backgroundColor: colors.text[theme].info }} />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>10 days</Text> - Acknowledge receipt of request
               </Text>
@@ -551,13 +562,23 @@ export function CCPAAdminDashboard() {
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} style={{ backgroundColor: colors.text[theme].success }} />
+              <Stack
+                width={8}
+                height={8}
+                borderRadius={4}
+                style={{ backgroundColor: colors.text[theme].success }}
+              />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>12 months</Text> - Retain request records
               </Text>
             </Row>
             <Row gap={8} align="center">
-              <Stack width={8} height={8} borderRadius={4} style={{ backgroundColor: colors.text[theme].error }} />
+              <Stack
+                width={8}
+                height={8}
+                borderRadius={4}
+                style={{ backgroundColor: colors.text[theme].error }}
+              />
               <Text style={{ color: colors.text[theme].secondary }}>
                 <Text>72 hours</Text> - Notify users of data breaches
               </Text>

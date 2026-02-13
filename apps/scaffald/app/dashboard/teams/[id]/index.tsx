@@ -159,7 +159,6 @@ export default function DashboardTeamDetailPage() {
       </Button>
       <Button
         size="md"
-       
         color="$color1"
         iconStart={UserPlus}
         onPress={() => setIsInviteModalOpen(true)}
@@ -185,23 +184,11 @@ export default function DashboardTeamDetailPage() {
     <Stack gap={16}>
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
-      <Card
-        padding={16}
-       
-       
-       
-        gap={16}
-      >
+      <Card padding={16} gap={16}>
         <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
-      <Card
-        padding={16}
-       
-       
-       
-        gap={16}
-      >
+      <Card padding={16} gap={16}>
         <TeamAutomationSettings
           teamId={teamId}
           allowSelfJoin={team.allowSelfJoin ?? false}
@@ -213,13 +200,7 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card
-        padding={16}
-       
-       
-       
-        gap={16}
-      >
+      <Card padding={16} gap={16}>
         <TeamActivityFeed
           teamId={teamId}
           mentionOptions={mentionOptions}
@@ -227,30 +208,17 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card
-        padding={16}
-       
-       
-       
-        gap={16}
-      >
+      <Card padding={16} gap={16}>
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
       </Card>
 
-      <Card
-        padding={16}
-       
-       
-       
-        gap={16}
-      >
+      <Card padding={16} gap={16}>
         <TeamInvitationsList
           teamId={teamId}
           refreshKey={invitationRefreshKey}
           headerAction={
             <Button
               size="md"
-             
               color="$color1"
               iconStart={UserPlus}
               onPress={() => setIsInviteModalOpen(true)}
@@ -307,18 +275,10 @@ function ErrorCard({
   onAction: () => void
 }) {
   return (
-    <Card
-      padding={16}
-     
-     
-      gap={12}
-     
-    >
+    <Card padding={16} gap={12}>
       <Row gap={8} align="center">
         <AlertTriangle size={20} color="$yellow10" />
-        <Text>
-          {title}
-        </Text>
+        <Text>{title}</Text>
       </Row>
       <Text color="gray">{message}</Text>
       <Button size="md" onPress={onAction}>

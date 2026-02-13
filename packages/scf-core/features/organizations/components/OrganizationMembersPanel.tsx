@@ -92,7 +92,9 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                   placeholder="teammate@example.com"
                 />
                 {fieldState.error ? (
-                  <Text style={{ color: colors.text[theme].error }}>{fieldState.error?.message}</Text>
+                  <Text style={{ color: colors.text[theme].error }}>
+                    {fieldState.error?.message}
+                  </Text>
                 ) : null}
               </Stack>
             )}
@@ -204,7 +206,9 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         {invitesLoading ? (
           <Paragraph>Loading invitations…</Paragraph>
         ) : pendingInvites.length === 0 ? (
-          <Paragraph style={{ color: colors.text[theme].secondary }}>No pending invitations</Paragraph>
+          <Paragraph style={{ color: colors.text[theme].secondary }}>
+            No pending invitations
+          </Paragraph>
         ) : (
           <Stack gap={8}>
             {pendingInvites.map(

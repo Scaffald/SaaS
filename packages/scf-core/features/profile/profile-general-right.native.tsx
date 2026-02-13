@@ -8,7 +8,7 @@ import { H3, Text, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
  */
 export function ProfileGeneralRight() {
   const { theme } = useThemeContext()
-) {
+) 
   return (
     <Stack gap={16}>
       <DashboardWidget>
@@ -19,4 +19,3 @@ export function ProfileGeneralRight() {
       </DashboardWidget>
     </Stack>
   )
-}

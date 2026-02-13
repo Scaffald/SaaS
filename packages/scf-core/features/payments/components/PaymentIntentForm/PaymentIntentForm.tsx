@@ -45,7 +45,14 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (config.isLoading || !options || !stripePromise) {
     return (
-      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderColor: colors.border[theme].default }} borderWidth={1}>
+      <Card
+        padding="sm"
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderColor: colors.border[theme].default,
+        }}
+        borderWidth={1}
+      >
         <Text style={{ color: colors.text[theme].secondary }}>Preparing secure payment form…</Text>
       </Card>
     )
@@ -53,7 +60,11 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (!config.publishableKey) {
     return (
-      <Card padding="sm" style={{ backgroundColor: colors.bg[theme].error, borderColor: colors.border[theme].error }} borderWidth={1}>
+      <Card
+        padding="sm"
+        style={{ backgroundColor: colors.bg[theme].error, borderColor: colors.border[theme].error }}
+        borderWidth={1}
+      >
         <Text style={{ color: colors.text[theme].error }}>
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -126,22 +137,38 @@ function PaymentIntentFormInner({
   const amountLabel = currencyFormatter.format(amountCents / 100)
 
   return (
-    <Card padding="md" style={{ borderColor: colors.border[theme].default }} borderWidth={1} gap={12}>
+    <Card
+      padding="md"
+      style={{ borderColor: colors.border[theme].default }}
+      borderWidth={1}
+      gap={12}
+    >
       <Stack gap={4}>
         <Row justify="space-between" align="center">
           <Text>Charge amount</Text>
           <Text>{amountLabel}</Text>
         </Row>
-        {description ? <Text style={{ color: colors.text[theme].secondary }}>{description}</Text> : null}
+        {description ? (
+          <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
+        ) : null}
         {testMode && (
-          <Text style={{ color: colors.text[theme].warning }}>Stripe test mode is active. Use test card numbers only.</Text>
+          <Text style={{ color: colors.text[theme].warning }}>
+            Stripe test mode is active. Use test card numbers only.
+          </Text>
         )}
       </Stack>
 
       <PaymentElement />
 
       {errorMessage ? (
-        <Card padding="sm" style={{ backgroundColor: colors.bg[theme].error, borderColor: colors.border[theme].error }} borderWidth={1}>
+        <Card
+          padding="sm"
+          style={{
+            backgroundColor: colors.bg[theme].error,
+            borderColor: colors.border[theme].error,
+          }}
+          borderWidth={1}
+        >
           <Row gap={8} align="center">
             <Text style={{ color: colors.text[theme].error }} flex={1}>
               {errorMessage}

@@ -1,6 +1,6 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
-import { DraggableCard, DroppableColumn, KanbanCard , useThemeContext} from '@unicornlove/beyond-ui'
+import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/beyond-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useQueryClient } from '@tanstack/react-query'
@@ -274,7 +274,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             >
               {STATUSES.map((status) => (
                 <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
-                  <Text >{STATUS_LABELS[status]}</Text>
+                  <Text>{STATUS_LABELS[status]}</Text>
                   <Stack
                     style={{ backgroundColor: colors.bg[theme].inactive }}
                     paddingHorizontal={8}
@@ -282,7 +282,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     borderRadius={8}
                     marginTop={4}
                   >
-                    <Text style={{ color: colors.text[theme].secondary }}>{groupedApplications[status].length}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {groupedApplications[status].length}
+                    </Text>
                   </Stack>
                 </Tabs.Tab>
               ))}

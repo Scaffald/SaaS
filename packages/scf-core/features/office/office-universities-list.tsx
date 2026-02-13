@@ -26,11 +26,7 @@ const columnHelper = createColumnHelper<University>()
 const createColumns = () => [
   columnHelper.accessor('name', {
     header: 'Name',
-    cell: (info) => (
-      <Text  ellipsizeMode="tail">
-        {info.getValue()}
-      </Text>
-    ),
+    cell: (info) => <Text ellipsizeMode="tail">{info.getValue()}</Text>,
   }),
   columnHelper.accessor('country', {
     header: 'Country',

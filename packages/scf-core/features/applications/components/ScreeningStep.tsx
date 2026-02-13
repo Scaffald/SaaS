@@ -160,11 +160,17 @@ export function ScreeningStep({
                 setErrors({ ...errors, current_location: undefined })
               }
             }}
-            style={{ borderColor: errors.current_location ? colors.border[theme].error : colors.border[theme].default }}
+            style={{
+              borderColor: errors.current_location
+                ? colors.border[theme].error
+                : colors.border[theme].default,
+            }}
             disabled={isSubmitting}
           />
         )}
-        {errors.current_location && <Text style={{ color: colors.text[theme].error }}>{errors.current_location}</Text>}
+        {errors.current_location && (
+          <Text style={{ color: colors.text[theme].error }}>{errors.current_location}</Text>
+        )}
       </Stack>
 
       {/* Willing to Relocate */}
@@ -216,10 +222,16 @@ export function ScreeningStep({
           }))}
           triggerProps={{
             id: 'years_experience',
-            style: { borderColor: errors.years_experience ? colors.border[theme].error : colors.border[theme].default },
+            style: {
+              borderColor: errors.years_experience
+                ? colors.border[theme].error
+                : colors.border[theme].default,
+            },
           }}
         />
-        {errors.years_experience && <Text style={{ color: colors.text[theme].error }}>{errors.years_experience}</Text>}
+        {errors.years_experience && (
+          <Text style={{ color: colors.text[theme].error }}>{errors.years_experience}</Text>
+        )}
         <Text style={{ color: colors.text[theme].secondary }}>
           Include all relevant work experience, including internships and part-time roles
         </Text>
@@ -260,7 +272,8 @@ export function ScreeningStep({
       {/* Work Authorization */}
       <Stack gap={8}>
         <Label>
-          Are you authorized to work legally in the US? <Text style={{ color: colors.text[theme].error }}>*</Text>
+          Are you authorized to work legally in the US?{' '}
+          <Text style={{ color: colors.text[theme].error }}>*</Text>
         </Label>
         <Row gap={12}>
           <Button
@@ -294,7 +307,9 @@ export function ScreeningStep({
             No
           </Button>
         </Row>
-        {errors.is_authorized_to_work && <Text style={{ color: colors.text[theme].error }}>{errors.is_authorized_to_work}</Text>}
+        {errors.is_authorized_to_work && (
+          <Text style={{ color: colors.text[theme].error }}>{errors.is_authorized_to_work}</Text>
+        )}
       </Stack>
 
       {/* Earliest Start Date */}

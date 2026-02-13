@@ -312,13 +312,17 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                   {job.minimum_education_level && (
                     <Row gap={8} align="center">
                       <Award size={20} color="$red10" />
-                      <Text color="$gray11">{formatEducationLevel(job.minimum_education_level)}</Text>
+                      <Text color="$gray11">
+                        {formatEducationLevel(job.minimum_education_level)}
+                      </Text>
                     </Row>
                   )}
                   {job.minimum_years_experience && (
                     <Row gap={8} align="center">
                       <Clock size={20} color="$blue10" />
-                      <Text color="$gray11">{job.minimum_years_experience}+ years of experience</Text>
+                      <Text color="$gray11">
+                        {job.minimum_years_experience}+ years of experience
+                      </Text>
                     </Row>
                   )}
                   {job.require_background_check && (

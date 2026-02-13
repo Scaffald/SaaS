@@ -15,7 +15,11 @@ import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 export default function PublicJobDetailPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
 
-  const { data: jobData, isLoading, error } = useJobBySlug(slug, {
+  const {
+    data: jobData,
+    isLoading,
+    error,
+  } = useJobBySlug(slug, {
     enabled: !!slug,
   })
 
@@ -37,9 +41,7 @@ export default function PublicJobDetailPage() {
         leftContent={
           <Stack align="center" justify="center" style={{ minHeight: 400 }}>
             <Spinner size="lg" />
-            <Text color="gray">
-              Loading job...
-            </Text>
+            <Text color="gray">Loading job...</Text>
           </Stack>
         }
         rightContent={null}
@@ -54,9 +56,7 @@ export default function PublicJobDetailPage() {
         breadcrumbItems={breadcrumbItems}
         leftContent={
           <Stack align="center" justify="center" style={{ minHeight: 400 }} gap={16}>
-            <Text color="gray">
-              Job Not Found
-            </Text>
+            <Text color="gray">Job Not Found</Text>
             <Text color="gray" style={{ textAlign: 'center' }}>
               The job you're looking for doesn't exist, is no longer available, or has been removed.
             </Text>

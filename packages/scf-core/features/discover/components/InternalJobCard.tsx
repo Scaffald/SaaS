@@ -285,11 +285,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         </Stack>
 
         {/* Description preview */}
-        {descriptionText && (
-          <Text color="$gray11" >
-            {descriptionText}
-          </Text>
-        )}
+        {descriptionText && <Text color="$gray11">{descriptionText}</Text>}
 
         {/* Pay range and certifications */}
         <Row justify="space-between" align="center" flexWrap="wrap" gap={8}>

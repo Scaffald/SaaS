@@ -1,5 +1,5 @@
 import { Download } from 'lucide-react-native'
-import { Button, Card, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
@@ -47,7 +47,11 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                 <Text>{qa.question}</Text>
                 <Text opacity={0.8}>{qa.answer}</Text>
                 {index < application.customAnswers.length - 1 && (
-                  <Stack height={1} style={{ backgroundColor: colors.bg[theme].inactive }} marginTop={8} />
+                  <Stack
+                    height={1}
+                    style={{ backgroundColor: colors.bg[theme].inactive }}
+                    marginTop={8}
+                  />
                 )}
               </Stack>
             ))}
@@ -128,7 +132,11 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
         <Stack gap={12}>
           {application.stageHistory.map((history, index) => (
             <Row key={`history-${history.changedAt}-${index}`} gap={12}>
-              <Stack width={3} style={{ backgroundColor: colors.bg[theme].primary }} borderRadius={8} />
+              <Stack
+                width={3}
+                style={{ backgroundColor: colors.bg[theme].primary }}
+                borderRadius={8}
+              />
               <Stack flex={1} gap={4}>
                 <Text textTransform="capitalize">{history.toStage}</Text>
                 <Text opacity={0.7}>

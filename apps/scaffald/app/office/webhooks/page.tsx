@@ -31,7 +31,9 @@ export default function WebhooksPage() {
       ]}
       actions={
         <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
-          <Button variant="filled" size="md">Create Webhook</Button>
+          <Button variant="filled" size="md">
+            Create Webhook
+          </Button>
         </Link>
       }
     >
@@ -63,7 +65,9 @@ export default function WebhooksPage() {
               Create your first webhook endpoint to start receiving real-time event notifications.
             </Text>
             <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
-              <Button variant="filled" size="md">Create Your First Webhook</Button>
+              <Button variant="filled" size="md">
+                Create Your First Webhook
+              </Button>
             </Link>
           </Card>
         ) : (
@@ -74,7 +78,9 @@ export default function WebhooksPage() {
                 webhook={webhook}
                 isSelected={selectedWebhook === webhook.id}
                 onPress={() => setSelectedWebhook(webhook.id)}
-                onViewDetails={() => router.push(buildPath(ROUTES.OFFICE.WEBHOOKS.DETAIL, { id: webhook.id }))}
+                onViewDetails={() =>
+                  router.push(buildPath(ROUTES.OFFICE.WEBHOOKS.DETAIL, { id: webhook.id }))
+                }
               />
             ))}
           </Stack>
@@ -84,9 +90,7 @@ export default function WebhooksPage() {
         {webhooks.length > 0 && (
           <Card padding="lg">
             <Text>Available Event Types</Text>
-            <Text color="$gray11">
-              Subscribe to these events to receive notifications:
-            </Text>
+            <Text color="$gray11">Subscribe to these events to receive notifications:</Text>
             <Row gap={8}>
               <EventTypeBadge label="job.created" category="Jobs" />
               <EventTypeBadge label="job.published" category="Jobs" />
@@ -112,17 +116,14 @@ interface WebhookCardProps {
   onViewDetails: () => void
 }
 
-function WebhookCard({ webhook, isSelected: _isSelected, onPress, onViewDetails }: WebhookCardProps) {
+function WebhookCard({
+  webhook,
+  isSelected: _isSelected,
+  onPress,
+  onViewDetails,
+}: WebhookCardProps) {
   return (
-    <Card
-      padding={16}
-     
-      
-     
-      pressStyle={{ scale: 0.98 }}
-      onPress={onPress}
-     
-    >
+    <Card padding={16} pressStyle={{ scale: 0.98 }} onPress={onPress}>
       <Stack gap={16}>
         <Stack gap={8}>
           <Row gap={12} align="center" justify="space-between">
@@ -132,11 +133,7 @@ function WebhookCard({ webhook, isSelected: _isSelected, onPress, onViewDetails 
               label={webhook.is_active ? 'Active' : 'Inactive'}
             />
           </Row>
-          {webhook.description && (
-            <Text color="$gray11">
-              {webhook.description}
-            </Text>
-          )}
+          {webhook.description && <Text color="$gray11">{webhook.description}</Text>}
         </Stack>
 
         <Row gap={24}>
@@ -163,7 +160,9 @@ function WebhookCard({ webhook, isSelected: _isSelected, onPress, onViewDetails 
         </Row>
 
         <Row>
-          <Button variant="ghost" size="sm" onPress={onViewDetails}>View Details</Button>
+          <Button variant="ghost" size="sm" onPress={onViewDetails}>
+            View Details
+          </Button>
         </Row>
       </Stack>
     </Card>
@@ -178,7 +177,9 @@ interface EventTypeBadgeProps {
 function EventTypeBadge({ label, category }: EventTypeBadgeProps) {
   return (
     <Stack padding={8} gap={4}>
-      <Text fontFamily="monospace" color="$gray12">{label}</Text>
+      <Text fontFamily="monospace" color="$gray12">
+        {label}
+      </Text>
       <Text color="$gray10">{category}</Text>
     </Stack>
   )

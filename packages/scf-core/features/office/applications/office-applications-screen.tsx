@@ -1,4 +1,4 @@
-import { Button, H2, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, H2, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
@@ -170,7 +170,12 @@ export const OfficeApplicationsScreen = () => {
   // Loading state
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" style={{ backgroundColor: colors.bg[theme].default }}>
+      <Stack
+        flex={1}
+        align="center"
+        justify="center"
+        style={{ backgroundColor: colors.bg[theme].default }}
+      >
         <Spinner size="lg" />
         <Text marginTop={16} style={{ color: colors.text[theme].secondary }}>
           Loading applications...
@@ -199,7 +204,9 @@ export const OfficeApplicationsScreen = () => {
       <Row justify="space-between" align="center" marginBottom={16}>
         <Stack>
           <H2>Applications</H2>
-          <Text style={{ color: colors.text[theme].secondary }}>{filteredApplications.length} total applications</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {filteredApplications.length} total applications
+          </Text>
         </Stack>
 
         <Row gap={8}>

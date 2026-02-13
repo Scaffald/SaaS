@@ -1,5 +1,5 @@
 import { useSoftSkillsByCategory } from '@scf/core/utils/reviews-sdk-hooks'
-import { Button, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, Spinner } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
@@ -110,7 +110,9 @@ export function SoftSkillsRequirementsSection({
         borderColor={colors.border[theme].default}
       >
         <Text>Soft Skills Requirements</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>Soft skills catalog is not available.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Soft skills catalog is not available.
+        </Text>
       </Stack>
     )
   }
@@ -202,7 +204,9 @@ export function SoftSkillsRequirementsSection({
           borderWidth={1}
           borderColor={colors.border[theme].info}
         >
-          <Text style={{ color: colors.text[theme].info }}>Preview: How candidates will see this</Text>
+          <Text style={{ color: colors.text[theme].info }}>
+            Preview: How candidates will see this
+          </Text>
           <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               type SoftSkill = {

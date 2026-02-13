@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { BarChart, LineChart, PieChart , useThemeContext} from '@unicornlove/beyond-ui'
+import { BarChart, LineChart, PieChart, useThemeContext } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
@@ -241,7 +241,9 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         summary={workloadSummary ?? undefined}
       >
         {workloadBreakdown.length === 0 ? (
-          <Text style={{ color: colors.text[theme].secondary }}>No workload snapshots available.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            No workload snapshots available.
+          </Text>
         ) : (
           <ScrollView
             horizontal={isSmallScreen}
@@ -303,10 +305,14 @@ function AnalyticsCard({
     >
       <Stack gap={4}>
         <Text accessibilityRole="header">{title}</Text>
-        {description ? <Text style={{ color: colors.text[theme].secondary }}>{description}</Text> : null}
+        {description ? (
+          <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
+        ) : null}
         {summary ? <Text style={{ color: colors.text[theme].secondary }}>{summary}</Text> : null}
       </Stack>
-      {emptyMessage ? <Text style={{ color: colors.text[theme].secondary }}>{emptyMessage}</Text> : null}
+      {emptyMessage ? (
+        <Text style={{ color: colors.text[theme].secondary }}>{emptyMessage}</Text>
+      ) : null}
       {children}
     </Card>
   )

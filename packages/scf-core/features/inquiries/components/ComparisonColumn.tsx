@@ -136,7 +136,7 @@ export function ComparisonColumn({
       {/* Candidate Header */}
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Avatar  size="md">
+          <Avatar size="md">
             <Avatar.Image src={candidateAvatar || undefined} />
             <Avatar.Fallback backgroundColor="$blue9">
               <Text color="white">{candidateName.charAt(0).toUpperCase()}</Text>

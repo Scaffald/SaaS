@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useThemeContext } from '@unicornlove/beyond-ui'
 import { extractPlainText } from '@unicornlove/beyond-ui'
 import {
   Award,
@@ -139,7 +139,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 {job.organization && (
                   <Row gap={8} align="center">
                     <Building2 size="md" style={{ color: colors.text[theme].secondary }} />
-                    <Text style={{ color: colors.text[theme].secondary }}>{job.organization.name}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {job.organization.name}
+                    </Text>
                   </Row>
                 )}
               </Stack>
@@ -156,7 +158,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     align="center"
                   >
                     <Briefcase size="md" style={{ color: colors.text[theme].info }} />
-                    <Text style={{ color: colors.text[theme].info }}>{formatEmploymentType(job.employment_type ?? null)}</Text>
+                    <Text style={{ color: colors.text[theme].info }}>
+                      {formatEmploymentType(job.employment_type ?? null)}
+                    </Text>
                   </Row>
                 )}
                 {formatRemoteOption(job.remote_option ?? null) && (
@@ -169,7 +173,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     align="center"
                   >
                     <MapPin size="md" style={{ color: colors.text[theme].success }} />
-                    <Text style={{ color: colors.text[theme].success }}>{formatRemoteOption(job.remote_option ?? null)}</Text>
+                    <Text style={{ color: colors.text[theme].success }}>
+                      {formatRemoteOption(job.remote_option ?? null)}
+                    </Text>
                   </Row>
                 )}
               </Row>
@@ -266,7 +272,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Stack gap={8}>
                 <Row gap={8} align="center">
                   <Award size="md" style={{ color: colors.text[theme].secondary }} />
-                  <Text style={{ color: colors.text[theme].secondary }}>Required Certifications</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    Required Certifications
+                  </Text>
                 </Row>
                 <Stack gap={8}>
                   {job.job_certifications.map(
@@ -280,7 +288,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                           <Text style={{ color: colors.text[theme].secondary }}>
                             {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
-                          {jobCert.is_required && <Text style={{ color: colors.text[theme].error }}>(Required)</Text>}
+                          {jobCert.is_required && (
+                            <Text style={{ color: colors.text[theme].error }}>(Required)</Text>
+                          )}
                         </Row>
                       )
                     }

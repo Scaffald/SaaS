@@ -14,7 +14,6 @@ import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'
 import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
 import type { CertificationWidgetEntry } from '@scaffald/sdk'
 
 type UserCertification = CertificationWidgetEntry
@@ -29,11 +28,9 @@ type UserCertification = CertificationWidgetEntry
  */
 export function CertificationsWidget() {
   const { theme } = useThemeContext()
-{
   userId,
   showEdit = false,
-  variant = 'full',
-}: ProfileWidgetProps) {
+  variant = 'full',: ProfileWidgetProps) {
   const router = useRouter()
   const { data, isLoading, error, refetch, isFetching } = useCertificationsWidget(
     { userId },

@@ -133,7 +133,9 @@ export function ProfileExperienceRight() {
             Career Level: <Text>{experienceSummaryQuery.data.career_level}</Text>
           </Text>
         ) : (
-          <Text style={{ color: colors.text[theme].secondary }}>Add a career level to highlight your experience level</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Add a career level to highlight your experience level
+          </Text>
         )}
       </Stack>
 
@@ -173,7 +175,9 @@ export function ProfileExperienceRight() {
                     {exp.employment_type && (
                       <>
                         <Text style={{ color: colors.text[theme].secondary }}>•</Text>
-                        <Text style={{ color: colors.text[theme].secondary }}>{exp.employment_type}</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          {exp.employment_type}
+                        </Text>
                       </>
                     )}
                   </Row>

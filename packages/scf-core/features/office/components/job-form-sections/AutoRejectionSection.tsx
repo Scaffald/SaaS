@@ -1,4 +1,4 @@
-import { Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Text, ToggleSwitch, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { HelpCircle } from 'lucide-react-native'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
@@ -65,7 +65,9 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           aria-label="Enable auto-rejection"
         />
       </Row>
-      <Text style={{ color: colors.text[theme].secondary }}>Based on Elevate score, work authorization and required skills</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
+        Based on Elevate score, work authorization and required skills
+      </Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
@@ -95,9 +97,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
             </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_skills || false}
-              onChange={(checked: boolean) =>
-                handleCriteriaChange('require_all_skills', checked)
-              }
+              onChange={(checked: boolean) => handleCriteriaChange('require_all_skills', checked)}
               aria-label="All skills required"
             />
           </Row>

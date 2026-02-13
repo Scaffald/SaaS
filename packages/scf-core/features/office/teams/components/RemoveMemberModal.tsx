@@ -1,6 +1,14 @@
 import { useRemoveTeamMember } from '@scaffald/sdk/react'
 import { useEffect, useState } from 'react'
-import { ResponsiveModal, useToast, Button, Text, TextArea, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import {
+  ResponsiveModal,
+  useToast,
+  Button,
+  Text,
+  TextArea,
+  Stack,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 interface RemoveMemberModalProps {
@@ -86,11 +94,22 @@ export function RemoveMemberModal({
           />
         </Stack>
 
-        <Stack gap={8} style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" borderRadius={16}>
+        <Stack
+          gap={8}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          padding="sm"
+          borderRadius={16}
+        >
           <Text>What happens next?</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>• The member loses access to the team immediately.</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>• Their review history is preserved for auditing.</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>• You can re-add them later if needed.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            • The member loses access to the team immediately.
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            • Their review history is preserved for auditing.
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            • You can re-add them later if needed.
+          </Text>
         </Stack>
 
         <Stack gap={12}>

@@ -35,7 +35,6 @@ export function CertificationChip({
       <Text color="$blue11">{certification.title}</Text>
       <Button
         size="xs"
-        
         chromeless
         onPress={() => !disabled && onRemove(certification.id)}
         disabled={disabled}

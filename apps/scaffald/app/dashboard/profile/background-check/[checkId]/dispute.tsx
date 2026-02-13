@@ -55,13 +55,7 @@ export default function BackgroundCheckDisputeScreen() {
             )}
 
             {checksQuery.isError && (
-              <Stack
-                gap={12}
-                padding={16}
-               
-               
-                style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
-              >
+              <Stack gap={12} padding={16} style={{ borderWidth: 1, borderColor: '#e5e7eb' }}>
                 <Text size="sm" color="gray">
                   We couldn't load your background checks. Please try again.
                 </Text>
@@ -80,13 +74,7 @@ export default function BackgroundCheckDisputeScreen() {
             )}
 
             {!checksQuery.isLoading && !checksQuery.isError && !selectedCheck && (
-              <Stack
-                gap={12}
-                padding={16}
-               
-               
-                style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
-              >
+              <Stack gap={12} padding={16} style={{ borderWidth: 1, borderColor: '#e5e7eb' }}>
                 <Text size="sm" color="gray">
                   We couldn't find that background check or your access has expired.
                 </Text>

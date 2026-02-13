@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { CreditCard, DollarSign, Plus } from 'lucide-react-native'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Card, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
@@ -95,17 +95,29 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Account Credits</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>Pre-funded balance for automatic payments</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Pre-funded balance for automatic payments
+          </Text>
         </Stack>
         {!showDepositForm && (
-          <Button size="sm" color="primary" iconStart={Plus} onPress={() => setShowDepositForm(true)}>
+          <Button
+            size="sm"
+            color="primary"
+            iconStart={Plus}
+            onPress={() => setShowDepositForm(true)}
+          >
             Add Credits
           </Button>
         )}
       </Row>
 
       {/* Balance Display */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }} borderColor={colors.border[theme].default} borderWidth={1}>
+      <Card
+        padding="md"
+        style={{ backgroundColor: colors.bg[theme].subtle }}
+        borderColor={colors.border[theme].default}
+        borderWidth={1}
+      >
         <Row gap={12} align="center">
           <DollarSign size={32} style={{ color: colors.text[theme].success }} />
           <Stack flex={1}>
@@ -128,7 +140,9 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
               keyboardType="decimal-pad"
               size="md"
             />
-            <Text style={{ color: colors.text[theme].secondary }}>Enter the amount you want to add to your account credits.</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Enter the amount you want to add to your account credits.
+            </Text>
           </Stack>
           <Row gap={8}>
             <Button
@@ -195,9 +209,18 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                       >
                         <Stack flex={1}>
                           <Text>{entry.description ?? entry.transactionType}</Text>
-                          <Text style={{ color: colors.text[theme].secondary }}>{new Date(entry.createdAt).toLocaleDateString()}</Text>
+                          <Text style={{ color: colors.text[theme].secondary }}>
+                            {new Date(entry.createdAt).toLocaleDateString()}
+                          </Text>
                         </Stack>
-                        <Text style={{ color: entry.direction === 'credit' ? colors.text[theme].success : colors.text[theme].error }}>
+                        <Text
+                          style={{
+                            color:
+                              entry.direction === 'credit'
+                                ? colors.text[theme].success
+                                : colors.text[theme].error,
+                          }}
+                        >
                           {entry.direction === 'credit' ? '+' : '-'}
                           {formatCurrency(entry.amountCents, entry.currency)}
                         </Text>

@@ -33,14 +33,11 @@ export default function PublicUserProfilePage() {
     data: profileData,
     isLoading,
     error,
-  } = useProfileBySlug(
-    slug || undefined,
-    {
-      enabled: !!slug,
-      retry: false, // Don't retry on 404
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  } = useProfileBySlug(slug || undefined, {
+    enabled: !!slug,
+    retry: false, // Don't retry on 404
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
 
   // Profile view tracking
   const recordViewMutation = useRecordViewMutation()
@@ -103,9 +100,7 @@ export default function PublicUserProfilePage() {
         leftContent={
           <Stack align="center" justify="center" style={{ minHeight: 400 }}>
             <Spinner size="lg" />
-            <Text color="gray">
-              Loading profile...
-            </Text>
+            <Text color="gray">Loading profile...</Text>
           </Stack>
         }
         rightContent={null}
@@ -120,9 +115,7 @@ export default function PublicUserProfilePage() {
         breadcrumbItems={breadcrumbItems}
         leftContent={
           <Stack align="center" justify="center" style={{ minHeight: 400 }} gap={16}>
-            <Text color="gray">
-              Profile Not Found
-            </Text>
+            <Text color="gray">Profile Not Found</Text>
             <Text color="gray" style={{ textAlign: 'center' }}>
               The profile you're looking for doesn't exist or has been removed.
             </Text>

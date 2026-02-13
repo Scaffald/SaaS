@@ -8,7 +8,7 @@ import {
   teamRoleKeySchema,
 } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -288,7 +288,9 @@ export function TeamForm({
               placeholder="Field Ops Team"
               borderColor={errors.name ? colors.border[theme].error : colors.border[theme].default}
             />
-            {errors.name && <Text style={{ color: colors.text[theme].error }}>{errors.name.message}</Text>}
+            {errors.name && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.name.message}</Text>
+            )}
           </Stack>
         )}
       />
@@ -307,8 +309,12 @@ export function TeamForm({
               placeholder="field-ops-team"
               borderColor={errors.slug ? colors.border[theme].error : colors.border[theme].default}
             />
-            <Text style={{ color: colors.text[theme].secondary }}>Lowercase, URL-friendly username for the team</Text>
-            {errors.slug && <Text style={{ color: colors.text[theme].error }}>{errors.slug.message}</Text>}
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Lowercase, URL-friendly username for the team
+            </Text>
+            {errors.slug && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.slug.message}</Text>
+            )}
           </Stack>
         )}
       />
@@ -326,7 +332,9 @@ export function TeamForm({
               onChangeText={(value) => field.onChange(value)}
               placeholder="e.g. Hiring for Southeast operations"
             />
-            {errors.purpose && <Text style={{ color: colors.text[theme].error }}>{errors.purpose.message}</Text>}
+            {errors.purpose && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.purpose.message}</Text>
+            )}
           </Stack>
         )}
       />
@@ -348,7 +356,9 @@ export function TeamForm({
                 label: option.label,
               }))}
             />
-            {errors.visibility && <Text style={{ color: colors.text[theme].error }}>{errors.visibility.message}</Text>}
+            {errors.visibility && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.visibility.message}</Text>
+            )}
           </Stack>
         )}
       />
@@ -371,7 +381,9 @@ export function TeamForm({
               }))}
             />
             {errors.invitationPolicy && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.invitationPolicy.message}</Text>
+              <Text style={{ color: colors.text[theme].error }}>
+                {errors.invitationPolicy.message}
+              </Text>
             )}
           </Stack>
         )}
@@ -392,7 +404,9 @@ export function TeamForm({
               rows={4}
             />
             {errors.description && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.description.message as string}</Text>
+              <Text style={{ color: colors.text[theme].error }}>
+                {errors.description.message as string}
+              </Text>
             )}
           </Stack>
         )}
@@ -422,7 +436,9 @@ export function TeamForm({
               }))}
             />
             {errors.defaultRoleId && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.defaultRoleId.message as string}</Text>
+              <Text style={{ color: colors.text[theme].error }}>
+                {errors.defaultRoleId.message as string}
+              </Text>
             )}
           </Stack>
         )}

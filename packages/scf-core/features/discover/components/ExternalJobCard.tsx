@@ -152,7 +152,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
 
       {/* Description */}
       {job.description && (
-        <Text color="$gray11"  ellipsizeMode="tail">
+        <Text color="$gray11" ellipsizeMode="tail">
           {job.description}
         </Text>
       )}

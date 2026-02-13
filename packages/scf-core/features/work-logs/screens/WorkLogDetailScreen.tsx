@@ -406,7 +406,12 @@ export function WorkLogDetailScreen() {
                 Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
             </Stack>
-            <Button size="sm" variant="outline" iconStart={Edit} onPress={() => workLogQuery.refetch()}>
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={Edit}
+              onPress={() => workLogQuery.refetch()}
+            >
               Refresh
             </Button>
           </Row>
@@ -718,7 +723,6 @@ export function WorkLogDetailScreen() {
               <Text>Add message</Text>
               <Input
                 multiline
-                
                 value={commentDraft}
                 onChangeText={setCommentDraft}
                 placeholder="Share an update or ask a question…"

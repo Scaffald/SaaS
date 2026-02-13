@@ -369,7 +369,9 @@ export function AdminCheckReviewDialog({
                 borderWidth={1}
                 borderColor="$borderColor"
               >
-                <Text color="$gray11">We couldn't load this background check. Please try again.</Text>
+                <Text color="$gray11">
+                  We couldn't load this background check. Please try again.
+                </Text>
                 <Button size="sm" variant="outline" onPress={() => detailQuery.refetch()}>
                   <Row gap={8} align="center">
                     <RefreshCcw size="md" />
@@ -413,7 +415,9 @@ export function AdminCheckReviewDialog({
                       return <Text color="$gray11">Completed: {formatDateTime(completedAt)}</Text>
                     })()}
                     {detailedCheck.expires_at ? (
-                      <Text color="$gray11">Expires: {formatDateTime(detailedCheck.expires_at)}</Text>
+                      <Text color="$gray11">
+                        Expires: {formatDateTime(detailedCheck.expires_at)}
+                      </Text>
                     ) : null}
                   </Row>
                   {statusMeta && statusColors ? (
@@ -677,7 +681,9 @@ export function AdminCheckReviewDialog({
                             borderColor="$borderColor"
                           >
                             <Text color="$gray11">{dispute.status}</Text>
-                            <Text color="$gray11">Submitted {formatDateTime(dispute.created_at)}</Text>
+                            <Text color="$gray11">
+                              Submitted {formatDateTime(dispute.created_at)}
+                            </Text>
                             {dispute.resolved_at ? (
                               <Text color="$gray11">
                                 Resolved {formatDateTime(dispute.resolved_at)}

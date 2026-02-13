@@ -17,18 +17,16 @@ interface SkillCompletionProgressProps {
  */
 export function SkillCompletionProgress() {
   const { theme } = useThemeContext()
-{
   skillCount,
   hasMinimumSkills,
-  completionPercent,
-}: SkillCompletionProgressProps) {
+  completionPercent,: SkillCompletionProgressProps) 
   return (
     <Stack
       padding="md"
       gap={12}
       style={{ backgroundColor: colors.bg[theme].info }}
       borderWidth={1}
-      borderColor="$blue5"
+      style={{ borderColor: colors.border[theme].subtle }}
       borderRadius={16}
     >
       <Row gap={12} align="center">
@@ -50,10 +48,9 @@ export function SkillCompletionProgress() {
           <Text style={{ color: colors.text[theme].info }}>Skill section completeness</Text>
           <Text style={{ color: colors.text[theme].info }}>{completionPercent}%</Text>
         </Row>
-        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="xs">
-          <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : colors.bg[theme].primary} />
+        <Progress value={completionPercent} max={100} backgroundColor={colors.bg[theme].info} size="xs">
+          <Progress.Indicator backgroundColor={completionPercent >= 100 ? colors.bg[theme].success : colors.bg[theme].primary} />
         </Progress>
       </Stack>
     </Stack>
   )
-}

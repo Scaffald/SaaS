@@ -17,7 +17,6 @@ import { useCallback, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { H4, Image, Input, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
-import type { ProfileWidgetProps } from './types'
 
 type PortfolioDescription = JSONContent | string | null
 
@@ -158,8 +157,7 @@ const parsePortfolioItems = (data: unknown): PortfolioItem[] => {
  * @param variant - Display variant (always 'full' for manager)
  */
 export function PortfolioManager() {
-  const { theme } = useThemeContext()
-{ userId }: ProfileWidgetProps) {
+  const { theme } = useThemeContext()userId : ProfileWidgetProps) {
   const toast = useToast()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)

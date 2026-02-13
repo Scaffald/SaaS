@@ -227,11 +227,7 @@ export function CertificationSearch({
                             <Text style={{ flex: 1 }}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
-                          {cert.description && (
-                            <Text color="gray" >
-                              {cert.description}
-                            </Text>
-                          )}
+                          {cert.description && <Text color="gray">{cert.description}</Text>}
                         </Stack>
                       </Card>
                     ))}
@@ -279,11 +275,7 @@ export function CertificationSearch({
                             <Text style={{ flex: 1 }}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
-                          {cert.description && (
-                            <Text color="gray" >
-                              {cert.description}
-                            </Text>
-                          )}
+                          {cert.description && <Text color="gray">{cert.description}</Text>}
                         </Stack>
                       </Card>
                     ))}
@@ -340,11 +332,7 @@ export function CertificationSearch({
                               </Stack>
                               <DepthBadge depth={cert.depth} />
                             </Row>
-                            {cert.description && (
-                              <Text color="gray" >
-                                {cert.description}
-                              </Text>
-                            )}
+                            {cert.description && <Text color="gray">{cert.description}</Text>}
                           </Stack>
                         </Card>
                       )

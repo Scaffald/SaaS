@@ -15,7 +15,13 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@scf/core/components/certifications'
-import { Button, DashboardWidget, MonthYearPicker, ToggleCard, useThemeContext } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  DashboardWidget,
+  MonthYearPicker,
+  ToggleCard,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 import { Award, PlusCircle, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -646,7 +652,9 @@ export function ProfileCertificationsLeft({
                     onChangeText={(text) => setCustomForm((prev) => ({ ...prev, name: text }))}
                     disabled={isSavingCustom}
                   />
-                  {customErrors.name && <Text style={{ color: colors.text[theme].error }}>{customErrors.name}</Text>}
+                  {customErrors.name && (
+                    <Text style={{ color: colors.text[theme].error }}>{customErrors.name}</Text>
+                  )}
                 </Stack>
 
                 <Stack gap={8}>
@@ -660,7 +668,9 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
-                    <Text style={{ color: colors.text[theme].error }}>{customErrors.organization}</Text>
+                    <Text style={{ color: colors.text[theme].error }}>
+                      {customErrors.organization}
+                    </Text>
                   )}
                 </Stack>
 
@@ -712,7 +722,9 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                     {customErrors.credentialUrl && (
-                      <Text style={{ color: colors.text[theme].error }}>{customErrors.credentialUrl}</Text>
+                      <Text style={{ color: colors.text[theme].error }}>
+                        {customErrors.credentialUrl}
+                      </Text>
                     )}
                   </Stack>
                 </Row>
@@ -931,7 +943,11 @@ function Depth2Certifications({
   const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
 
   if (depth2Certs.length === 0) {
-    return <Text style={{ color: colors.text[theme].secondary }}>No specific certifications available</Text>
+    return (
+      <Text style={{ color: colors.text[theme].secondary }}>
+        No specific certifications available
+      </Text>
+    )
   }
 
   // Create a map of saved certifications
@@ -959,16 +975,18 @@ function Depth2Certifications({
             borderWidth={1}
             animation="quick"
             style={{
-              backgroundColor: changeStatus === 'added'
-                ? colors.bg[theme].success
-                : changeStatus === 'removed'
-                  ? colors.bg[theme].error
-                  : colors.bg[theme].default,
-              borderColor: changeStatus === 'added'
-                ? colors.border[theme].success
-                : changeStatus === 'removed'
-                  ? colors.border[theme].error
-                  : colors.border[theme].default,
+              backgroundColor:
+                changeStatus === 'added'
+                  ? colors.bg[theme].success
+                  : changeStatus === 'removed'
+                    ? colors.bg[theme].error
+                    : colors.bg[theme].default,
+              borderColor:
+                changeStatus === 'added'
+                  ? colors.border[theme].success
+                  : changeStatus === 'removed'
+                    ? colors.border[theme].error
+                    : colors.border[theme].default,
             }}
           >
             <CertificationCheckbox

@@ -275,7 +275,9 @@ export function StripeSettingsPage() {
               {data?.hasWebhookSecret ? (
                 <Text style={{ color: colors.text[theme].success }}>✓ Webhook secret stored</Text>
               ) : (
-                <Text style={{ color: colors.text[theme].error }}>Webhook secret not configured</Text>
+                <Text style={{ color: colors.text[theme].error }}>
+                  Webhook secret not configured
+                </Text>
               )}
             </Stack>
           </Stack>
@@ -330,7 +332,9 @@ export function StripeSettingsPage() {
           </Stack>
 
           <Stack gap={8}>
-            <Text style={{ color: colors.text[theme].secondary }}>Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
+            </Text>
             {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
               <Paragraph size="sm" style={{ color: colors.text[theme].error }}>
                 {data.lastTestedError}

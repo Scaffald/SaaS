@@ -4,7 +4,7 @@ import { OfficeLayout } from '@scf/core/components/layouts'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useState } from 'react'
-import { Button, H2, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export function OfficeCMSList() {
@@ -104,7 +104,9 @@ export function OfficeCMSList() {
                     <Stack flex={1} gap={8}>
                       <Row gap={8} align="center">
                         <Text>{slide.title}</Text>
-                        {!slide.is_active && <Text style={{ color: colors.text[theme].error }}>(Inactive)</Text>}
+                        {!slide.is_active && (
+                          <Text style={{ color: colors.text[theme].error }}>(Inactive)</Text>
+                        )}
                       </Row>
                       <Text opacity={0.7}>{slide.description}</Text>
                       <Row gap={8}>

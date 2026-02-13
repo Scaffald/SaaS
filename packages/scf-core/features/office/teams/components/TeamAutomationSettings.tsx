@@ -1,5 +1,5 @@
 import { useUpdateTeam } from '@scaffald/sdk/react'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -221,7 +221,9 @@ export function TeamAutomationSettings({
               )
             }
           />
-          <Text style={{ color: colors.text[theme].secondary }}>Invitations expire automatically after this number of days.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Invitations expire automatically after this number of days.
+          </Text>
         </Stack>
 
         <Stack gap={8}>
@@ -244,10 +246,17 @@ export function TeamAutomationSettings({
         </Stack>
 
         {formState.workloadStrategy === 'load_balance' ? (
-          <Stack gap={12} paddingLeft={8} borderLeftWidth={2} borderColor={colors.border[theme].default}>
+          <Stack
+            gap={12}
+            paddingLeft={8}
+            borderLeftWidth={2}
+            borderColor={colors.border[theme].default}
+          >
             <Text>Load balance settings</Text>
             <Stack gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>Maximum active assignments</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Maximum active assignments
+              </Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxActiveAssignments ?? 10)}
@@ -262,7 +271,9 @@ export function TeamAutomationSettings({
               />
             </Stack>
             <Stack gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>Maximum pending assignments</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Maximum pending assignments
+              </Text>
               <Input
                 keyboardType="numeric"
                 value={String(formState.workloadSettings.maxPendingAssignments ?? 15)}

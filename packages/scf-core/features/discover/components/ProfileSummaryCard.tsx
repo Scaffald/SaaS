@@ -49,7 +49,9 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
               {skill}
             </Text>
           ))}
-          {profile.skills.length > 3 && <Text color="$gray11">+{profile.skills.length - 3} more</Text>}
+          {profile.skills.length > 3 && (
+            <Text color="$gray11">+{profile.skills.length - 3} more</Text>
+          )}
         </Row>
       )}
     </Card>

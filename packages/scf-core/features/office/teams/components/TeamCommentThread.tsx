@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from 'lucide-react-native'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
@@ -102,7 +102,9 @@ export function TeamCommentThread({
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
           <Text accessibilityRole="header">Team discussion</Text>
         </Row>
-        <Text style={{ color: colors.text[theme].secondary }}>Share updates with your team. Mentions notify teammates instantly.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Share updates with your team. Mentions notify teammates instantly.
+        </Text>
       </Stack>
 
       <Stack gap={12}>
@@ -140,7 +142,9 @@ export function TeamCommentThread({
           </Row>
         ) : null}
 
-        {mentionLabel ? <Text style={{ color: colors.text[theme].secondary }}>Mentioning @{mentionLabel}</Text> : null}
+        {mentionLabel ? (
+          <Text style={{ color: colors.text[theme].secondary }}>Mentioning @{mentionLabel}</Text>
+        ) : null}
 
         <Row justify="flex-end">
           <Button
@@ -154,7 +158,11 @@ export function TeamCommentThread({
             accessibilityHint="Shares this comment with the team"
             width="100%"
           >
-            {isSubmitting ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Post comment'}
+            {isSubmitting ? (
+              <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
+            ) : (
+              'Post comment'
+            )}
           </Button>
         </Row>
       </Stack>
@@ -167,7 +175,9 @@ export function TeamCommentThread({
       ) : comments.length === 0 ? (
         <Stack gap={4}>
           <Text>No comments yet</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>Start the conversation by leaving the first comment.</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Start the conversation by leaving the first comment.
+          </Text>
         </Stack>
       ) : (
         <Stack gap={12}>
@@ -203,7 +213,9 @@ export function TeamCommentThread({
                 <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
                 <Text>{comment.body}</Text>
                 {mentionNames.length ? (
-                  <Text style={{ color: colors.text[theme].secondary }}>Mentions: {mentionNames.join(', ')}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    Mentions: {mentionNames.join(', ')}
+                  </Text>
                 ) : null}
               </Stack>
             )

@@ -665,11 +665,7 @@ export function InquiryCreateForm({
                         control={control}
                         name="scheduleShifts"
                         render={({ field }) => (
-                          <Switch
-                            checked={field.value}
-                            onChange={field.onChange}
-                            size="md"
-                          />
+                          <Switch checked={field.value} onChange={field.onChange} size="md" />
                         )}
                       />
                     </Row>
@@ -970,23 +966,13 @@ export function InquiryCreateForm({
                     <Row justify="space-between" align="center">
                       <Row align="center" gap={8}>
                         <Text>Endurance</Text>
-                        <Button
-                          size="xs"
-                          
-                          chromeless
-                          iconStart={Info}
-                          aria-label="Endurance info"
-                        />
+                        <Button size="xs" chromeless iconStart={Info} aria-label="Endurance info" />
                       </Row>
                       <Controller
                         control={control}
                         name="enduranceRequired"
                         render={({ field }) => (
-                          <Switch
-                            checked={field.value}
-                            onChange={field.onChange}
-                            size="md"
-                          />
+                          <Switch checked={field.value} onChange={field.onChange} size="md" />
                         )}
                       />
                     </Row>
@@ -1175,7 +1161,6 @@ export function InquiryCreateForm({
               placeholder="Describe when to use this template..."
               value={templateDescription}
               onChangeText={setTemplateDescription}
-              
             />
           </Stack>
           <Row gap={12} justify="flex-end">
@@ -1230,7 +1215,9 @@ export function InquiryCreateForm({
                       <Row gap={12} align="center" justify="space-between">
                         <Stack flex={1} gap={4}>
                           <Text>{template.name}</Text>
-                          {template.description && <Text color="$gray11">{template.description}</Text>}
+                          {template.description && (
+                            <Text color="$gray11">{template.description}</Text>
+                          )}
                           <Text color="$gray11">
                             {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
                             {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}

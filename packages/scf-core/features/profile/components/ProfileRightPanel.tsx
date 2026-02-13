@@ -13,8 +13,7 @@ interface ProfileRightPanelProps {
  * Simplified right column with title, description, and optional stats
  */
 export function ProfileRightPanel() {
-  const { theme } = useThemeContext()
-{ title, description, stats }: ProfileRightPanelProps) {
+  const { theme } = useThemeContext()title, description, stats : ProfileRightPanelProps) 
   return (
     <DashboardWidget>
       <H3>{title}</H3>
@@ -22,4 +21,3 @@ export function ProfileRightPanel() {
       <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
     </DashboardWidget>
   )
-}

@@ -3,7 +3,16 @@
  * Self-service app registration form
  */
 
-import { Button, Card, Input, Paragraph, SizableText, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Card,
+  Input,
+  Paragraph,
+  SizableText,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
@@ -75,7 +84,12 @@ export function AppRegistrationForm() {
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
 
-            <Stack gap={8} padding="md" style={{ backgroundColor: colors.bg[theme].info }} borderRadius={8}>
+            <Stack
+              gap={8}
+              padding="md"
+              style={{ backgroundColor: colors.bg[theme].info }}
+              borderRadius={8}
+            >
               <Stack gap={4}>
                 <SizableText size="xs">Client ID</SizableText>
                 <SizableText size="sm" style={{ fontFamily: 'monospace' }}>
@@ -84,7 +98,10 @@ export function AppRegistrationForm() {
               </Stack>
               <Stack gap={4}>
                 <SizableText size="xs">Client Secret</SizableText>
-                <SizableText size="sm" style={{ fontFamily: 'monospace', color: colors.text[theme].error }}>
+                <SizableText
+                  size="sm"
+                  style={{ fontFamily: 'monospace', color: colors.text[theme].error }}
+                >
                   {credentials.client_secret}
                 </SizableText>
               </Stack>
@@ -139,7 +156,6 @@ export function AppRegistrationForm() {
                 onChangeText={setDescription}
                 placeholder="Brief description of your application"
                 multiline
-                
                 maxLength={500}
               />
             </Stack>

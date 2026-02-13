@@ -152,11 +152,7 @@ function AppCard({
         <AppIconPlaceholder name={app.app_name} />
         <Stack flex={1} gap={4}>
           <Text>{app.app_name}</Text>
-          {app.description && (
-            <Text color="$gray11" >
-              {app.description}
-            </Text>
-          )}
+          {app.description && <Text color="$gray11">{app.description}</Text>}
         </Stack>
       </Row>
 

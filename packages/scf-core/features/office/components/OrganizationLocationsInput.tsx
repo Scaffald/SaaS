@@ -1,6 +1,6 @@
 import type { OrganizationLocation } from '@scf/schemas'
 import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete , useThemeContext} from '@unicornlove/beyond-ui'
+import { AddressAutocomplete, useThemeContext } from '@unicornlove/beyond-ui'
 import { Plus, X } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
@@ -193,7 +193,9 @@ export function OrganizationLocationsInput({
                   <Button.Icon>
                     <X size="md" style={{ color: colors.text[theme].error }} />
                   </Button.Icon>
-                  <Button.Text style={{ color: colors.text[theme].error }}>Remove Location</Button.Text>
+                  <Button.Text style={{ color: colors.text[theme].error }}>
+                    Remove Location
+                  </Button.Text>
                 </Button>
               </Row>
             </Stack>
@@ -213,7 +215,9 @@ export function OrganizationLocationsInput({
               <Button.Icon>
                 <Plus size="md" style={{ color: colors.text[theme].secondary }} />
               </Button.Icon>
-              <Button.Text style={{ color: colors.text[theme].secondary }}>Add First Location</Button.Text>
+              <Button.Text style={{ color: colors.text[theme].secondary }}>
+                Add First Location
+              </Button.Text>
             </Button>
           </Stack>
         )}
@@ -233,7 +237,9 @@ export function OrganizationLocationsInput({
           <Button.Icon>
             <Plus size="md" style={{ color: colors.text[theme].secondary }} />
           </Button.Icon>
-          <Button.Text style={{ color: colors.text[theme].secondary }}>Add Another Location</Button.Text>
+          <Button.Text style={{ color: colors.text[theme].secondary }}>
+            Add Another Location
+          </Button.Text>
         </Button>
       )}
 

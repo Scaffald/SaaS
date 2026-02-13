@@ -1,5 +1,5 @@
 import { useUser } from '@scf/core/utils/useUser'
-import { Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { Check, MessageSquare } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { colors } from '@unicornlove/beyond-ui/tokens'
@@ -83,28 +83,48 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
 
       {/* Pending sections badge */}
       {pendingSections > 0 && !allAccepted && (
-        <Stack style={{ backgroundColor: colors.bg[theme].muted }} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+        <Stack
+          style={{ backgroundColor: colors.bg[theme].muted }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+        >
           <Text style={{ color: colors.text[theme].secondary }}>{pendingSections} Pending</Text>
         </Stack>
       )}
 
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
-        <Stack style={{ backgroundColor: colors.bg[theme].successSubtle }} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+        <Stack
+          style={{ backgroundColor: colors.bg[theme].successSubtle }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+        >
           <Text style={{ color: colors.text[theme].success }}>{acceptedSections} Completed</Text>
         </Stack>
       )}
 
       {/* Pending checks badge */}
       {hasPendingChecks && (
-        <Stack style={{ backgroundColor: colors.bg[theme].muted }} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+        <Stack
+          style={{ backgroundColor: colors.bg[theme].muted }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+        >
           <Text style={{ color: colors.text[theme].secondary }}>Pending checks</Text>
         </Stack>
       )}
 
       {/* Progress indicator */}
       {!allAccepted && (
-        <Stack style={{ backgroundColor: colors.bg[theme].info }} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+        <Stack
+          style={{ backgroundColor: colors.bg[theme].info }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+        >
           <Text style={{ color: colors.text[theme].info }}>
             {acceptedSections}/{totalSections}
           </Text>

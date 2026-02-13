@@ -1,7 +1,12 @@
 import { useCreateJobApplicationMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import type { ScreeningAnswers } from '@scf/schemas'
 import type { AddressResult } from '@unicornlove/beyond-ui'
-import { AddressAutocomplete, Dialog, ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
+import {
+  AddressAutocomplete,
+  Dialog,
+  ResponsiveSelect,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { CheckCircle2, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
@@ -270,11 +275,13 @@ export function QuickApplyModal({
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Stack flex={1} gap={4}>
-                <Text style={{ color: colors.text[theme].secondary }}>Apply to {organizationName}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Apply to {organizationName}
+                </Text>
                 <Text style={{ color: colors.text[theme].secondary }}>{jobTitle}</Text>
               </Stack>
               <Dialog.Close asChild>
-                <Button size="sm"  iconStart={X} chromeless />
+                <Button size="sm" iconStart={X} chromeless />
               </Dialog.Close>
             </Row>
           </Stack>
@@ -334,13 +341,18 @@ export function QuickApplyModal({
                       </Text>
                     </Stack>
                   )}
-                  {errors.current_location && <Text style={{ color: colors.text[theme].error }}>{errors.current_location}</Text>}
+                  {errors.current_location && (
+                    <Text style={{ color: colors.text[theme].error }}>
+                      {errors.current_location}
+                    </Text>
+                  )}
                 </Stack>
 
                 {/* Willing to Relocate */}
                 <Stack gap={8}>
                   <Label>
-                    Are you willing to relocate? <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    Are you willing to relocate?{' '}
+                    <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   <Row gap={12}>
                     <Button
@@ -386,7 +398,11 @@ export function QuickApplyModal({
                     }))}
                     triggerProps={{
                       id: 'years_experience',
-                      style: { borderColor: errors.years_experience ? colors.border[theme].error : colors.border[theme].default },
+                      style: {
+                        borderColor: errors.years_experience
+                          ? colors.border[theme].error
+                          : colors.border[theme].default,
+                      },
                     }}
                   />
                 </Stack>
@@ -402,7 +418,9 @@ export function QuickApplyModal({
                       borderWidth={1}
                       style={{ borderColor: colors.border[theme].default }}
                     >
-                      <Text style={{ color: colors.text[theme].secondary }}>{requiredSkills.join(', ')}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {requiredSkills.join(', ')}
+                      </Text>
                     </Stack>
                   </Stack>
                 )}
@@ -418,7 +436,9 @@ export function QuickApplyModal({
                       borderWidth={1}
                       style={{ borderColor: colors.border[theme].default }}
                     >
-                      <Text style={{ color: colors.text[theme].secondary }}>{optionalSkills.join(', ')}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {optionalSkills.join(', ')}
+                      </Text>
                     </Stack>
                   </Stack>
                 )}
@@ -426,7 +446,8 @@ export function QuickApplyModal({
                 {/* Work Authorization */}
                 <Stack gap={8}>
                   <Label>
-                    Are you authorized to work legally in the US? <Text style={{ color: colors.text[theme].error }}>*</Text>
+                    Are you authorized to work legally in the US?{' '}
+                    <Text style={{ color: colors.text[theme].error }}>*</Text>
                   </Label>
                   <Row gap={12}>
                     <Button
@@ -457,7 +478,9 @@ export function QuickApplyModal({
                     </Button>
                   </Row>
                   {errors.is_authorized_to_work && (
-                    <Text style={{ color: colors.text[theme].error }}>{errors.is_authorized_to_work}</Text>
+                    <Text style={{ color: colors.text[theme].error }}>
+                      {errors.is_authorized_to_work}
+                    </Text>
                   )}
                 </Stack>
 
@@ -477,7 +500,11 @@ export function QuickApplyModal({
                     }))}
                     triggerProps={{
                       id: 'earliest_start_date',
-                      style: { borderColor: errors.earliest_start_date ? colors.border[theme].error : colors.border[theme].default },
+                      style: {
+                        borderColor: errors.earliest_start_date
+                          ? colors.border[theme].error
+                          : colors.border[theme].default,
+                      },
                     }}
                   />
                 </Stack>

@@ -13,8 +13,7 @@ import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
  * @param showEdit - Show edit button for own profile
  */
 export function PreferencesWidget() {
-  const { theme } = useThemeContext()
-{ showEdit = false }: { showEdit?: boolean }) {
+  const { theme } = useThemeContext()showEdit = false : showEdit?: boolean ) {
   const router = useRouter()
   const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes

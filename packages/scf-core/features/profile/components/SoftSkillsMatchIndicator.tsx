@@ -18,19 +18,17 @@ export interface SoftSkillsMatchIndicatorProps {
  */
 export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = () => {
   const { theme } = useThemeContext()
-{
   skillName,
   userRating,
   requiredImportance,
-  meetsRequirement,
-}) => {
+  meetsRequirement,) => 
   return (
     <Row gap={12} align="center" paddingVertical={8}>
       {/* Indicator Icon */}
       {meetsRequirement ? (
         <CheckCircle2 size={18} style={{ color: colors.text[theme].success }} />
       ) : userRating !== null && userRating > 0 ? (
-        <AlertCircle size={18} color="$yellow10" />
+        <AlertCircle size={18} style={{ color: colors.text[theme].warning }} />
       ) : (
         <XCircle size={18} style={{ color: colors.text[theme].error }} />
       )}
@@ -51,4 +49,3 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = () =>
       </Stack>
     </Row>
   )
-}

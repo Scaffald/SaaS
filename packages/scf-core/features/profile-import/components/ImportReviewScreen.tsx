@@ -436,7 +436,12 @@ export function ImportReviewScreen() {
 
       <Row justify="space-between" align="center" flexWrap="wrap" gap={12}>
         <Row gap={8} flexWrap="wrap">
-          <Button size="sm" variant="outline" iconStart={RotateCcw} onPress={() => setSelectedItems({})}>
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={RotateCcw}
+            onPress={() => setSelectedItems({})}
+          >
             Clear selections
           </Button>
           <Button

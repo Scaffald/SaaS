@@ -194,9 +194,7 @@ export function WorkLogListScreen() {
                   </Row>
 
                   {item.descriptionPreview && (
-                    <Paragraph  color="$gray11">
-                      {item.descriptionPreview}
-                    </Paragraph>
+                    <Paragraph color="$gray11">{item.descriptionPreview}</Paragraph>
                   )}
 
                   <Row justify="space-between" align="center">

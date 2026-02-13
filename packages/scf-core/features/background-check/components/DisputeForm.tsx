@@ -1,4 +1,9 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface, useThemeContext } from '@unicornlove/beyond-ui'
+import {
+  ResponsiveSelect,
+  type UploadSelection,
+  UploadSurface,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 import { AlertCircle, Upload, X } from 'lucide-react-native'
 import { useMemo } from 'react'
@@ -128,9 +133,15 @@ export function DisputeForm({
                     value={value ?? ''}
                     onChangeText={onChange}
                     placeholder="Share a short summary…"
-                    style={{ borderColor: error ? colors.border[theme].error : colors.border[theme].default }}
+                    style={{
+                      borderColor: error
+                        ? colors.border[theme].error
+                        : colors.border[theme].default,
+                    }}
                   />
-                  {error ? <Text style={{ color: colors.text[theme].error }}>{error.message}</Text> : null}
+                  {error ? (
+                    <Text style={{ color: colors.text[theme].error }}>{error.message}</Text>
+                  ) : null}
                 </Stack>
               )}
             />
@@ -148,17 +159,25 @@ export function DisputeForm({
                   value={value}
                   onChangeText={onChange}
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
-                  style={{ borderColor: error ? colors.border[theme].error : colors.border[theme].default }}
+                  style={{
+                    borderColor: error ? colors.border[theme].error : colors.border[theme].default,
+                  }}
                 />
-                <Text style={{ color: colors.text[theme].secondary }}>Minimum 20 characters. Max 2000 characters.</Text>
-                {error ? <Text style={{ color: colors.text[theme].error }}>{error.message}</Text> : null}
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Minimum 20 characters. Max 2000 characters.
+                </Text>
+                {error ? (
+                  <Text style={{ color: colors.text[theme].error }}>{error.message}</Text>
+                ) : null}
               </Stack>
             )}
           />
         </Fieldset>
 
         <Stack gap={8}>
-          <Text style={{ color: colors.text[theme].secondary }}>Supporting documents (optional)</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Supporting documents (optional)
+          </Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Upload up to five files (PDF, JPG, or PNG, 10MB each) to help us verify your dispute.
           </Text>
@@ -176,26 +195,34 @@ export function DisputeForm({
               <Stack
                 {...getRootProps()}
                 borderWidth={1}
-                borderColor={isDragActive ? '$blue8' : '$borderColor'}
+                style={{
+                  borderColor: isDragActive
+                    ? colors.border[theme].info
+                    : colors.border[theme].default,
+                }}
                 borderStyle="dashed"
                 borderRadius={16}
                 paddingHorizontal={16}
                 paddingVertical={20}
                 gap={8}
-                backgroundColor="$color2"
+                style={{ backgroundColor: colors.bg[theme].subtle }}
                 align="center"
                 justify="center"
               >
                 <input {...getInputProps()} />
-                <Upload size={24} color="$blue10" />
-                <Text style={{ color: colors.text[theme].secondary }}>{isProcessing ? 'Processing…' : 'Drag a file here'}</Text>
+                <Upload size={24} style={{ color: colors.text[theme].info }} />
                 <Text style={{ color: colors.text[theme].secondary }}>
-                  or <Text color="$blue11">browse your device</Text>
+                  {isProcessing ? 'Processing…' : 'Drag a file here'}
+                </Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  or <Text style={{ color: colors.text[theme].info }}>browse your device</Text>
                 </Text>
                 <Button size="xs" variant="outline" onPress={open} iconStart={Upload}>
                   Choose file
                 </Button>
-                <Text style={{ color: colors.text[theme].secondary }}>Accepted: PDF, PNG, JPG • Max 10MB each</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Accepted: PDF, PNG, JPG • Max 10MB each
+                </Text>
               </Stack>
             )}
           </UploadSurface>
@@ -206,7 +233,7 @@ export function DisputeForm({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$red3"
+              style={{ backgroundColor: colors.bg[theme].error }}
               borderRadius={12}
             >
               <AlertCircle size="md" style={{ color: colors.text[theme].error }} />
@@ -220,8 +247,8 @@ export function DisputeForm({
               {attachments.map((attachment) => (
                 <Row
                   key={attachment.id}
-                  backgroundColor="$color2"
-                  borderColor="$borderColor"
+                  style={{ backgroundColor: colors.bg[theme].subtle }}
+                  style={{ borderColor: colors.border[theme].default }}
                   borderWidth={1}
                   borderRadius={12}
                   paddingHorizontal={12}
@@ -231,9 +258,7 @@ export function DisputeForm({
                   justify="space-between"
                 >
                   <Stack flex={1} gap={4}>
-                    <Text style={{ color: colors.text[theme].secondary }} >
-                      {attachment.name}
-                    </Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{attachment.name}</Text>
                     <Text style={{ color: colors.text[theme].secondary }}>
                       {attachment.mimeType.toUpperCase()} • {formatFileSize(attachment.size)}
                     </Text>
@@ -258,7 +283,7 @@ export function DisputeForm({
             align="center"
             paddingHorizontal={12}
             paddingVertical={8}
-            backgroundColor="$red3"
+            style={{ backgroundColor: colors.bg[theme].error }}
             borderRadius={12}
           >
             <AlertCircle size="md" style={{ color: colors.text[theme].error }} />

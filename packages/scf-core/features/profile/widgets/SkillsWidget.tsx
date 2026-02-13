@@ -27,7 +27,6 @@ import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
-import type { ProfileWidgetProps } from './types'
 
 // EnrichedUserSkill type from skill-enrichment.ts
 interface EnrichedUserSkill {
@@ -51,8 +50,7 @@ interface EnrichedUserSkill {
  * @param variant - Display variant (compact or full)
  */
 export function SkillsWidget() {
-  const { theme } = useThemeContext()
-{ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
+  const { theme } = useThemeContext()userId, showEdit = false, variant = 'full' : ProfileWidgetProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'technical' | 'soft-skills'>('technical')
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
@@ -125,13 +123,13 @@ export function SkillsWidget() {
       {
         label: categoryLabels[activeCategory],
         data: chartData,
-        fillColor: '$blue3',
+        fillColor: colors.bg[theme].info,
         strokeColor: '#1B6B93',
         strokeWidth: 2,
         fillOpacity: 0.3,
       },
     ]
-  }, [softSkills, activeCategory])
+  }, [softSkills, activeCategory, theme])
 
   if (isLoading) {
     return (

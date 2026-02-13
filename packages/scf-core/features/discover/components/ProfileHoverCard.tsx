@@ -145,19 +145,12 @@ export function ProfileHoverCard({
               </View>
             )}
             <Stack flex={1} gap={4}>
-              <Text color="$gray11" >
-                {workerPreview.displayName}
-              </Text>
-              {workerPreview.headline && (
-                <Text color="$gray11" >
-                  {workerPreview.headline}
-                </Text>
-              )}
+              <Text color="$gray11">{workerPreview.displayName}</Text>
+              {workerPreview.headline && <Text color="$gray11">{workerPreview.headline}</Text>}
             </Stack>
             {profileUrl ? (
               <Button
                 size="xs"
-                
                 variant="outline"
                 iconStart={ExternalLink}
                 aria-label="View full profile in new tab"
@@ -170,9 +163,7 @@ export function ProfileHoverCard({
           {workerPreview.location && (
             <Row gap={8} align="center">
               <MapPin size="md" color="$gray11" />
-              <Text color="$gray11" >
-                {workerPreview.location}
-              </Text>
+              <Text color="$gray11">{workerPreview.location}</Text>
             </Row>
           )}
 
@@ -220,19 +211,14 @@ export function ProfileHoverCard({
               <Building2 size={24} color="$blue10" />
             </View>
             <Stack flex={1} gap={4}>
-              <Text color="$gray11" >
-                {organization.name}
-              </Text>
+              <Text color="$gray11">{organization.name}</Text>
               {organization.industry_name && (
-                <Text color="$gray11" >
-                  {organization.industry_name}
-                </Text>
+                <Text color="$gray11">{organization.industry_name}</Text>
               )}
             </Stack>
             {profileUrl ? (
               <Button
                 size="xs"
-                
                 variant="outline"
                 iconStart={ExternalLink}
                 aria-label="View organization in new tab"
@@ -247,7 +233,7 @@ export function ProfileHoverCard({
             'city' in organization.address && (
               <Row gap={8} align="center">
                 <MapPin size="md" color="$gray11" />
-                <Text color="$gray11" >
+                <Text color="$gray11">
                   {[
                     (organization.address as { city?: string }).city,
                     (organization.address as { state?: string }).state,

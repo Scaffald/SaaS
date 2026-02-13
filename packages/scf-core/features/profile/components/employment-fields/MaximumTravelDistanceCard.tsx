@@ -32,14 +32,12 @@ export interface MaximumTravelDistanceCardProps
  */
 export function MaximumTravelDistanceCard() {
   const { theme } = useThemeContext()
-{
   description = 'Select your maximum travel distance to find opportunities that match your preferences',
   min = 10,
   max = 250,
   step = 5,
   value = 25,
-  ...rangeSliderCardProps
-}: MaximumTravelDistanceCardProps) {
+  ...rangeSliderCardProps: MaximumTravelDistanceCardProps) 
   return (
     <RangeSliderCard
       iconStart={<Plane size="xs" style={{ color: colors.text[theme].secondary }} />}
@@ -55,4 +53,3 @@ export function MaximumTravelDistanceCard() {
       {...rangeSliderCardProps}
     />
   )
-}

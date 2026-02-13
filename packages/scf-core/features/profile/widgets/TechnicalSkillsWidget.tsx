@@ -13,7 +13,6 @@ import { CheckCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
-import type { ProfileWidgetProps } from './types'
 import type { SkillWidgetEntry } from '@scaffald/sdk'
 
 type EnrichedUserSkill = SkillWidgetEntry
@@ -28,11 +27,9 @@ type EnrichedUserSkill = SkillWidgetEntry
  */
 export function TechnicalSkillsWidget() {
   const { theme } = useThemeContext()
-{
   userId,
   showEdit = false,
-  variant = 'full',
-}: ProfileWidgetProps) {
+  variant = 'full',: ProfileWidgetProps) {
   const router = useRouter()
 
   // Fetch technical skills

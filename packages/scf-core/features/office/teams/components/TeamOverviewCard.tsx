@@ -2,7 +2,7 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { Briefcase, Mail, Shield, Users } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { Card, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Card, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']

@@ -162,7 +162,9 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text color="$gray11">No organizations currently have access to view your results.</Text>
+              <Text color="$gray11">
+                No organizations currently have access to view your results.
+              </Text>
             </Stack>
           )}
 

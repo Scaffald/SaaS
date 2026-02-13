@@ -111,7 +111,9 @@ export const ResultsViewer = memo(function ResultsViewer({
     >
       <Row justify="space-between" align="center">
         <Stack gap={4}>
-          <Text color="$gray11">{summary?.package?.display_name ?? 'Background check results'}</Text>
+          <Text color="$gray11">
+            {summary?.package?.display_name ?? 'Background check results'}
+          </Text>
           <Row gap={8} align="center">
             <Stack
               paddingHorizontal={12}

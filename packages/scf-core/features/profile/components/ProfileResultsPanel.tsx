@@ -39,7 +39,6 @@ interface ProfileResultsPanelProps extends YStackProps {
  */
 export function ProfileResultsPanel() {
   const { theme } = useThemeContext()
-{
   children,
   title,
   isLoading = false,
@@ -47,8 +46,7 @@ export function ProfileResultsPanel() {
   emptyIcon: EmptyIcon,
   emptyMessage,
   showScrollbar = false,
-  ...props
-}: ProfileResultsPanelProps) {
+  ...props: ProfileResultsPanelProps) 
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
@@ -74,4 +72,3 @@ export function ProfileResultsPanel() {
       </DashboardWidget>
     </ScrollView>
   )
-}

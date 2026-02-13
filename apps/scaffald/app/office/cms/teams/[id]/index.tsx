@@ -10,14 +10,7 @@ import { api } from '@scf/core/utils/api'
 import { useTeam, useTeamMembers, useTeamInvitations } from '@scaffald/sdk/react'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@scf/supabase/client-types'
-import {
-  ArrowLeft,
-  BarChart3,
-  Briefcase,
-  Pencil,
-  RefreshCcw,
-  UserPlus,
-} from 'lucide-react-native'
+import { ArrowLeft, BarChart3, Briefcase, Pencil, RefreshCcw, UserPlus } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
@@ -144,15 +137,26 @@ export default function OfficeTeamDetailPage() {
           variant="outline"
           iconStart={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
-        >Edit team</Button>,
+        >
+          Edit team
+        </Button>,
         <Button
           key="analytics"
           size="md"
           variant="outline"
           iconStart={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
-        >View analytics</Button>,
-        <Button key="invite" size="md" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
+        >
+          View analytics
+        </Button>,
+        <Button
+          key="invite"
+          size="md"
+          iconStart={UserPlus}
+          onPress={() => setIsInviteModalOpen(true)}
+        >
+          Invite member
+        </Button>,
         <Button
           key="assign"
           size="md"
@@ -163,7 +167,9 @@ export default function OfficeTeamDetailPage() {
               pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
             })
           }
-        >Assign job</Button>,
+        >
+          Assign job
+        </Button>,
       ]
     : null
 
@@ -179,7 +185,9 @@ export default function OfficeTeamDetailPage() {
               variant="outline"
               iconStart={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
-            >Back to teams</Button>
+            >
+              Back to teams
+            </Button>
           </Row>
 
           <TeamOverviewCard
@@ -203,7 +211,9 @@ export default function OfficeTeamDetailPage() {
             variant="outline"
             iconStart={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
-          >View analytics</Button>
+          >
+            View analytics
+          </Button>
 
           <Stack gap={16}>
             <TeamMembersList teamId={team.id} organizationId={team.organizationId} />
@@ -229,7 +239,9 @@ export default function OfficeTeamDetailPage() {
               refreshKey={inviteRefreshKey}
               headerAction={
                 canManageTeam ? (
-                  <Button size="md" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
+                  <Button size="md" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
+                    Invite member
+                  </Button>
                 ) : null
               }
             />
@@ -251,13 +263,7 @@ export default function OfficeTeamDetailPage() {
           )}
 
           {isInvitationsLoading && (
-            <Stack
-              gap={8}
-             
-             
-             
-              padding={12}
-            >
+            <Stack gap={8} padding={12}>
               <Spinner size="sm" />
               <Text color="gray">Updating invitation statistics…</Text>
             </Stack>
@@ -294,16 +300,8 @@ function CenteredMessageCard({
 }) {
   return (
     <Stack align="center" justify="center" gap={12}>
-      <Card
-        padding={16}
-       
-       
-       
-        gap={12}
-      >
-        <Text>
-          {title}
-        </Text>
+      <Card padding={16} gap={12}>
+        <Text>{title}</Text>
         <Text color="gray">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
@@ -323,21 +321,15 @@ function InfoBanner({
   onAction: () => void
 }) {
   return (
-    <Card
-     
-     
-     
-      padding={16}
-      gap={12}
-    >
+    <Card padding={16} gap={12}>
       <Row gap={8} align="center">
         <Icon size={18} />
-        <Text>
-          {title}
-        </Text>
+        <Text>{title}</Text>
       </Row>
       <Text color="gray">{message}</Text>
-      <Button size="md" onPress={onAction}>Refresh</Button>
+      <Button size="md" onPress={onAction}>
+        Refresh
+      </Button>
     </Card>
   )
 }

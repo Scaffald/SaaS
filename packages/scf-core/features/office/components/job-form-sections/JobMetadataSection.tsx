@@ -1,4 +1,12 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import {
+  Input,
+  ResponsiveSelect,
+  Text,
+  ToggleSwitch,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
@@ -94,7 +102,9 @@ export function JobMetadataSection({
       borderColor={colors.border[theme].default}
     >
       <Text>Job Metadata & Management</Text>
-      <Text style={{ color: colors.text[theme].secondary }}>Internal tracking and management information</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
+        Internal tracking and management information
+      </Text>
 
       {/* Internal Job Code */}
       <Stack gap={8}>
@@ -208,7 +218,9 @@ export function JobMetadataSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Confidential posting</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Hide company name and details from job listings</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Hide company name and details from job listings
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_confidential || false}
@@ -225,7 +237,9 @@ export function JobMetadataSection({
           value={localState.application_deadline || ''}
           onChangeText={(text) => handleChange('application_deadline', text || undefined)}
         />
-        <Text style={{ color: colors.text[theme].secondary }}>Last date to accept applications</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Last date to accept applications
+        </Text>
       </Stack>
 
       <Stack gap={8}>

@@ -137,7 +137,9 @@ export function PrerequisiteWidget() {
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
           <Text color="$gray11">Complete Your Profile</Text>
-          <Text color="$gray11">Please complete these required fields to continue using Scaffald</Text>
+          <Text color="$gray11">
+            Please complete these required fields to continue using Scaffald
+          </Text>
         </Stack>
 
         {isCheckingStatus ? (

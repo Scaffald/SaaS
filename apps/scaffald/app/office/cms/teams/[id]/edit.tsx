@@ -35,13 +35,13 @@ export default function EditTeamPage() {
   if (!teamId) {
     return (
       <Stack align="center" justify="center" gap={16} padding={24}>
-        <Text>
-          Missing team identifier
-        </Text>
+        <Text>Missing team identifier</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           We couldn&apos;t determine which team you want to edit.
         </Text>
-        <Button onPress={() => router.back()} variant="outline">Go Back</Button>
+        <Button onPress={() => router.back()} variant="outline">
+          Go Back
+        </Button>
       </Stack>
     )
   }
@@ -58,14 +58,14 @@ export default function EditTeamPage() {
   if (error || !data?.team) {
     return (
       <Stack align="center" justify="center" gap={12} padding={24}>
-        <Text>
-          Unable to load team
-        </Text>
+        <Text>Unable to load team</Text>
         <Text color="gray" style={{ textAlign: 'center' }}>
           {error?.message ?? 'We ran into a problem retrieving this team. Please try again.'}
         </Text>
         <Row gap={8}>
-          <Button onPress={() => router.back()} variant="outline">Go Back</Button>
+          <Button onPress={() => router.back()} variant="outline">
+            Go Back
+          </Button>
           <Button onPress={() => refetch()}>Try Again</Button>
         </Row>
       </Stack>
@@ -125,12 +125,9 @@ export default function EditTeamPage() {
         teamId={team.id}
         refreshKey={inviteRefreshKey}
         headerAction={
-          <Button
-           
-            color="$color1"
-            size="md"
-            onPress={() => setIsInviteModalOpen(true)}
-          >Invite member</Button>
+          <Button color="$color1" size="md" onPress={() => setIsInviteModalOpen(true)}>
+            Invite member
+          </Button>
         }
       />
 

@@ -120,7 +120,9 @@ export function InquiryComparisonView({
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
           {summary && summary.uniqueStatuses.size > 1 && (
-            <Text color="$gray11">Highlighted rows indicate differing terms between candidates.</Text>
+            <Text color="$gray11">
+              Highlighted rows indicate differing terms between candidates.
+            </Text>
           )}
         </Stack>
         {onClose && (

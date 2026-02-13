@@ -237,7 +237,12 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             </Stack>
           </Row>
 
-          <Card padding="md" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderColor={colors.border[theme].warning} borderWidth={1}>
+          <Card
+            padding="md"
+            style={{ backgroundColor: colors.bg[theme].warningSubtle }}
+            borderColor={colors.border[theme].warning}
+            borderWidth={1}
+          >
             <Stack gap={16}>
               <Text>Location Visibility Settings</Text>
 
@@ -252,8 +257,15 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               </Row>
 
               {formData.location_visibility_override && (
-                <Stack gap={8} padding="xs" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderRadius={8}>
-                  <Text style={{ color: colors.text[theme].warning }}>⚠️ This overrides your organization's global setting</Text>
+                <Stack
+                  gap={8}
+                  padding="xs"
+                  style={{ backgroundColor: colors.bg[theme].warningSubtle }}
+                  borderRadius={8}
+                >
+                  <Text style={{ color: colors.text[theme].warning }}>
+                    ⚠️ This overrides your organization's global setting
+                  </Text>
                 </Stack>
               )}
 

@@ -41,7 +41,6 @@ interface ProfileResultCardProps extends CardProps {
  */
 export function ProfileResultCard() {
   const { theme } = useThemeContext()
-{
   children,
   onRemove,
   removeDisabled = false,
@@ -50,14 +49,13 @@ export function ProfileResultCard() {
   isNew = false,
   actions,
   bordered = true,
-  ...props
-}: ProfileResultCardProps) {
+  ...props: ProfileResultCardProps) 
   return (
     <Card
       bordered={bordered}
       size="md"
       backgroundColor={isNew ? colors.bg[theme].success : undefined}
-      borderColor={isNew ? '$green9' : undefined}
+      borderColor={isNew ? colors.border[theme].success : undefined}
       borderWidth={isNew ? 2 : undefined}
       animation={isNew ? 'quick' : undefined}
       {...props}
@@ -94,4 +92,3 @@ export function ProfileResultCard() {
       </Card.Header>
     </Card>
   )
-}

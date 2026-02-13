@@ -6,7 +6,7 @@ import { isSlugValid } from '@scf/core/utils/slugify'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { organizationCreateSchema, type OrganizationCreate } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -296,7 +296,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               placeholder="organization-username"
               autoCapitalize="none"
               autoCorrect={false}
-              borderColor={slugHasAvailabilityError || errors.slug ? colors.border[theme].error : colors.border[theme].default}
+              borderColor={
+                slugHasAvailabilityError || errors.slug
+                  ? colors.border[theme].error
+                  : colors.border[theme].default
+              }
             />
             <Text opacity={0.7}>Lowercase, URL-friendly username (hyphens only)</Text>
             {errors.slug && (
@@ -307,13 +311,19 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
             {slugStatus.state === 'checking' && slugNeedsValidation && (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
-                <Text style={{ color: colors.text[theme].secondary }}>Checking availability...</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Checking availability...
+                </Text>
               </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
-              <Text style={{ color: colors.text[theme].success }}>This vanity URL is available.</Text>
+              <Text style={{ color: colors.text[theme].success }}>
+                This vanity URL is available.
+              </Text>
             )}
-            {slugStatus.state === 'invalid' && <Text style={{ color: colors.text[theme].error }}>{slugStatus.message}</Text>}
+            {slugStatus.state === 'invalid' && (
+              <Text style={{ color: colors.text[theme].error }}>{slugStatus.message}</Text>
+            )}
             {slugStatus.state === 'taken' && (
               <Stack gap={8}>
                 <Text style={{ color: colors.text[theme].error }}>{slugStatus.message}</Text>
@@ -373,7 +383,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               value={field.value || ''}
               onChangeText={field.onChange}
               placeholder="https://example.com/logo.png"
-              borderColor={errors.logo_url ? colors.border[theme].error : colors.border[theme].default}
+              borderColor={
+                errors.logo_url ? colors.border[theme].error : colors.border[theme].default
+              }
             />
             {errors.logo_url && (
               <Text data-testid="logo-error" style={{ color: colors.text[theme].error }}>
@@ -402,7 +414,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 { value: 'private', label: 'Private' },
               ]}
             />
-            {errors.visibility && <Text style={{ color: colors.text[theme].error }}>{errors.visibility.message}</Text>}
+            {errors.visibility && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.visibility.message}</Text>
+            )}
           </Stack>
         )}
       />

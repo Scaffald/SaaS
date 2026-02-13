@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type ViolationReportsOutput =
@@ -34,7 +34,7 @@ const getStatusColor = (status: string) => {
     case 'pending':
       return '$orange11' as const
     case 'under_review':
-      return '$blue11' as const
+      return colors.text[theme].info
     case 'confirmed':
       return colors.text[theme].error as const
     case 'dismissed':
@@ -42,7 +42,7 @@ const getStatusColor = (status: string) => {
     case 'resolved':
       return colors.text[theme].success as const
     default:
-      return '$color11' as const
+      return colors.text[theme].secondary
   }
 }
 
@@ -82,7 +82,7 @@ export function OfficeViolationReports() {
       }),
       columnHelper.accessor('description', {
         header: 'Description',
-        cell: (info) => <Text >{info.getValue()}</Text>,
+        cell: (info) => <Text>{info.getValue()}</Text>,
       }),
       columnHelper.accessor('status', {
         header: 'Status',
@@ -148,7 +148,12 @@ export function OfficeViolationReports() {
           <Text style={{ color: colors.text[theme].secondary }}>Loading violation reports…</Text>
         </Stack>
       ) : (
-        <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
+        <Card
+          borderWidth={1}
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          padding="md"
+        >
           <DataTable
             columns={reportsColumns}
             data={reportsQuery.data?.items ?? []}

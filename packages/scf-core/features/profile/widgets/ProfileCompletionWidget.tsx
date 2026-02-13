@@ -6,7 +6,6 @@ import { useToast } , useThemeContext } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { Button, H4, Progress, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
-import type { ProfileWidgetProps } from './types'
 
 /**
  * ProfileCompletionWidget Component
@@ -20,10 +19,8 @@ import type { ProfileWidgetProps } from './types'
  */
 export function ProfileCompletionWidget() {
   const { theme } = useThemeContext()
-{
   showEdit = false,
-  variant = 'full',
-}: ProfileWidgetProps) {
+  variant = 'full',: ProfileWidgetProps) {
   const router = useRouter()
   const toast = useToast()
   const { completionData, isLoading } = useProfileCompletion()
@@ -42,7 +39,7 @@ export function ProfileCompletionWidget() {
         duration: 8000,
       })
     }
-  }, [completionData, isLoading, variant, toast])
+  }, [completionData, isLoading, toast])
 
   if (isLoading) {
     return (
@@ -87,12 +84,12 @@ export function ProfileCompletionWidget() {
           <Progress
             value={completionData.completionPercentage}
             max={100}
-            backgroundColor="$color4"
+            backgroundColor={colors.bg[theme].default}
             size={4}
           >
             <Progress.Indicator
               animation="bouncy"
-              backgroundColor={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
+              backgroundColor={completionData.completionPercentage === 100 ? colors.bg[theme].success : '$blue10'}
             />
           </Progress>
         </Stack>

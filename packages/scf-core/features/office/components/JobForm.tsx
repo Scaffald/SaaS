@@ -662,7 +662,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 <Text>{skill.name}</Text>
                 <Button
                   size={4}
-                  
                   unstyled
                   onPress={() => handleRemoveSkill(skill.id)}
                   disabled={disabled}
@@ -824,7 +823,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 <Text>{cert.name}</Text>
                 <Button
                   size={4}
-                  
                   unstyled
                   onPress={() => handleRemoveCertification(cert.id)}
                   disabled={disabled}
@@ -974,11 +972,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           <Stack gap={8}>
             <Text>Elevate Teams</Text>
             {!formData.organization_id ? (
-              <Text style={{ color: colors.text[theme].secondary }}>Select an organization to load available teams.</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Select an organization to load available teams.
+              </Text>
             ) : teamsLoading ? (
               <Text style={{ color: colors.text[theme].secondary }}>Loading teams…</Text>
             ) : teams.length === 0 ? (
-              <Text style={{ color: colors.text[theme].secondary }}>No teams available for this organization.</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                No teams available for this organization.
+              </Text>
             ) : (
               <ResponsiveSelect
                 value={primaryTeamId || ''}
@@ -1171,7 +1173,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           <Row gap={12} align="center" justify="space-between">
             <Stack flex={1} gap={4}>
               <Text style={{ color: colors.text[theme].secondary }}>Schedule Publish</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>Set a date and time to automatically publish this job</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Set a date and time to automatically publish this job
+              </Text>
             </Stack>
             <Switch
               checked={!!formData.scheduled_publish_at}

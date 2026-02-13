@@ -44,9 +44,7 @@ export default function DashboardTeamInvitationsScreen() {
   const content = (
     <Stack padding={16} gap={20}>
       <Stack gap={8}>
-        <Text>
-          Team invitations
-        </Text>
+        <Text>Team invitations</Text>
         <Text color="gray">
           Review pending invitations from team administrators. Accept to join collaborative hiring
           spaces or decline to keep your dashboard focused.

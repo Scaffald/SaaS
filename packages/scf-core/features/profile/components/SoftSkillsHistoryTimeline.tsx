@@ -18,8 +18,7 @@ interface SoftSkillsHistoryTimelineProps {
  * the ability to view radar charts and compare versions.
  */
 export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = () => {
-  const { theme } = useThemeContext()
-{ userId }) => {
+  const { theme } = useThemeContext()userId ) => {
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null)
 
   // Fetch version history
@@ -369,7 +368,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = () 
                 {/* Timeline Connector */}
                 {index < versions.length - 1 && (
                   <Stack align="center" paddingVertical={8}>
-                    <Stack width={2} height={20} backgroundColor="$borderColor" />
+                    <Stack width={2} height={20} style={{ backgroundColor: colors.border[theme].default }} />
                   </Stack>
                 )}
               </Stack>

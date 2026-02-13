@@ -54,11 +54,9 @@ interface EmploymentSectionProps {
  */
 export function EmploymentSection() {
   const { theme } = useThemeContext()
-{
   userId,
   mode = 'user',
-  readOnly = false,
-}: EmploymentSectionProps) {
+  readOnly = false,: EmploymentSectionProps) {
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
 

@@ -120,7 +120,9 @@ export function OfficeStorageDashboard() {
           return (
             <Stack gap={4}>
               <Text>{row.displayName}</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>{row.username ? `@${row.username}` : row.userId.slice(0, 8)}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {row.username ? `@${row.username}` : row.userId.slice(0, 8)}
+              </Text>
             </Stack>
           )
         },
@@ -154,10 +156,15 @@ export function OfficeStorageDashboard() {
 
           return (
             <Stack gap={4}>
-              <Progress value={clamped} max={100} style={{ backgroundColor: colors.bg[theme].muted }} size={4}>
+              <Progress
+                value={clamped}
+                max={100}
+                style={{ backgroundColor: colors.bg[theme].muted }}
+                size={4}
+              >
                 <Progress.Indicator
                   animation="bouncy"
-                  backgroundColor={percent > 100 ? '$red10' : '$green10'}
+                  style={{ backgroundColor: percent > 100 ? colors.text[theme].error : colors.text[theme].success }}
                 />
               </Progress>
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -179,7 +186,7 @@ export function OfficeStorageDashboard() {
       }),
     ]
     return defs as ColumnDef<StorageTableRow, unknown>[]
-  }, [])
+  }, [theme])
 
   const totals = analytics?.totals
   const breakdown = (analytics?.breakdown ?? []) as StorageAnalytics['breakdown']
@@ -266,13 +273,20 @@ export function OfficeStorageDashboard() {
                 <Stack gap={8}>
                   <Text style={{ color: colors.text[theme].secondary }}>{card.label}</Text>
                   <Text>{card.value}</Text>
-                  {card.subtext ? <Text style={{ color: colors.text[theme].secondary }}>{card.subtext}</Text> : null}
+                  {card.subtext ? (
+                    <Text style={{ color: colors.text[theme].secondary }}>{card.subtext}</Text>
+                  ) : null}
                 </Stack>
               </Card>
             ))}
           </Row>
 
-          <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
+          <Card
+            borderWidth={1}
+            borderColor={colors.border[theme].default}
+            style={{ backgroundColor: colors.bg[theme].subtle }}
+            padding="md"
+          >
             <Stack gap={12}>
               <Text>Usage breakdown</Text>
               <Stack gap={12}>
@@ -284,8 +298,13 @@ export function OfficeStorageDashboard() {
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
                     </Row>
-                    <Progress value={entry.percent} max={100} style={{ backgroundColor: colors.bg[theme].muted }} size={4}>
-                      <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
+                    <Progress
+                      value={entry.percent}
+                      max={100}
+                      style={{ backgroundColor: colors.bg[theme].muted }}
+                      size={4}
+                    >
+                      <Progress.Indicator animation="bouncy" style={{ backgroundColor: colors.text[theme].info }} />
                     </Progress>
                   </Stack>
                 ))}
@@ -293,7 +312,12 @@ export function OfficeStorageDashboard() {
             </Stack>
           </Card>
 
-          <Card borderWidth={1} borderColor={colors.border[theme].default} style={{ backgroundColor: colors.bg[theme].subtle }} padding="md">
+          <Card
+            borderWidth={1}
+            borderColor={colors.border[theme].default}
+            style={{ backgroundColor: colors.bg[theme].subtle }}
+            padding="md"
+          >
             <Stack gap={12}>
               <Row justify="space-between" align="center">
                 <Text>Top users by storage consumption</Text>

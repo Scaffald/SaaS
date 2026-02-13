@@ -4,7 +4,7 @@ import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -166,8 +166,17 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   })
 
   const scoreColor =
-    application.score >= 80 ? colors.text[theme].success : application.score >= 60 ? colors.text[theme].info : colors.text[theme].error
-  const scoreBg = application.score >= 80 ? colors.bg[theme].successSubtle : application.score >= 60 ? '$blue3' : colors.bg[theme].errorSubtle
+    application.score >= 80
+      ? colors.text[theme].success
+      : application.score >= 60
+        ? colors.text[theme].info
+        : colors.text[theme].error
+  const scoreBg =
+    application.score >= 80
+      ? colors.bg[theme].successSubtle
+      : application.score >= 60
+        ? '$blue3'
+        : colors.bg[theme].errorSubtle
 
   const inquiryFormValues = useMemo(() => {
     if (!inquiryData?.inquiry) {
@@ -192,7 +201,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
     >
       {/* Candidate Header */}
       <Row gap={12} align="center">
-        <Avatar  size={24}>
+        <Avatar size={24}>
           <Avatar.Image src={application.candidate.photo} />
           <Avatar.Fallback style={{ backgroundColor: colors.bg[theme].primary }}>
             <Text color="white">{application.candidate.name.charAt(0)}</Text>
@@ -290,7 +299,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         flexDirection="column"
         flex={1}
       >
-        <Tabs.List gap={8} style={{ backgroundColor: colors.bg[theme].subtle }} padding={4} borderRadius={12}>
+        <Tabs.List
+          gap={8}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          padding={4}
+          borderRadius={12}
+        >
           <Tabs.Tab value="profile" flex={1}>
             <Text>Profile</Text>
           </Tabs.Tab>
@@ -373,7 +387,9 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
           {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
             <Stack padding="md" gap={12}>
-              <Text style={{ color: colors.text[theme].secondary }}>No inquiry has been created for this candidate yet.</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                No inquiry has been created for this candidate yet.
+              </Text>
               <Button color="primary" onPress={() => setInquiryMode('create')}>
                 Start Inquiry
               </Button>

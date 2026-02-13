@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget, Dialog , useThemeContext} from '@unicornlove/beyond-ui'
+import { DashboardWidget, Dialog, useThemeContext } from '@unicornlove/beyond-ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
@@ -297,7 +297,9 @@ export function OfficeOrganizationsList() {
                 style={{ minHeight: 120 }}
                 autoFocus
               />
-              {rejectError ? <Text style={{ color: colors.text[theme].error }}>{rejectError}</Text> : null}
+              {rejectError ? (
+                <Text style={{ color: colors.text[theme].error }}>{rejectError}</Text>
+              ) : null}
             </Stack>
             <Row gap={12} justify="flex-end">
               <Dialog.Close asChild>
@@ -359,11 +361,15 @@ export function OfficeOrganizationsList() {
                 </Stack>
                 <Stack gap={4}>
                   <Text style={{ color: colors.text[theme].secondary }}>Approved</Text>
-                  <Text style={{ color: colors.text[theme].success }}>{moderationCounts.approved}</Text>
+                  <Text style={{ color: colors.text[theme].success }}>
+                    {moderationCounts.approved}
+                  </Text>
                 </Stack>
                 <Stack gap={4}>
                   <Text style={{ color: colors.text[theme].secondary }}>Rejected</Text>
-                  <Text style={{ color: colors.text[theme].error }}>{moderationCounts.rejected}</Text>
+                  <Text style={{ color: colors.text[theme].error }}>
+                    {moderationCounts.rejected}
+                  </Text>
                 </Stack>
               </Row>
             </DashboardWidget>
@@ -375,26 +381,38 @@ export function OfficeOrganizationsList() {
                   <Spinner size="lg" />
                 </Row>
               ) : pendingRequests.length === 0 ? (
-                <Text style={{ color: colors.text[theme].secondary }}>No pending organization requests. Check back soon!</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  No pending organization requests. Check back soon!
+                </Text>
               ) : (
                 <Stack gap={16}>
                   {pendingRequests.map((request, index) => (
                     <Stack key={request.id} gap={12}>
                       <Stack gap={6}>
                         <Text>{request.name}</Text>
-                        <Text style={{ color: colors.text[theme].secondary }}>Vanity URL: {request.slug}</Text>
-                        {request.website ? <Text style={{ color: colors.text[theme].info }}>{request.website}</Text> : null}
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Vanity URL: {request.slug}
+                        </Text>
+                        {request.website ? (
+                          <Text style={{ color: colors.text[theme].info }}>{request.website}</Text>
+                        ) : null}
                         <Text style={{ color: colors.text[theme].secondary }}>
                           Submitted {new Date(request.created_at).toLocaleString()}
                         </Text>
                         {request.notes ? (
-                          <Paragraph style={{ color: colors.text[theme].secondary }}>Notes: {request.notes}</Paragraph>
+                          <Paragraph style={{ color: colors.text[theme].secondary }}>
+                            Notes: {request.notes}
+                          </Paragraph>
                         ) : null}
                         {request.message ? (
-                          <Paragraph style={{ color: colors.text[theme].secondary }}>Message: {request.message}</Paragraph>
+                          <Paragraph style={{ color: colors.text[theme].secondary }}>
+                            Message: {request.message}
+                          </Paragraph>
                         ) : null}
                         {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
-                          <Text style={{ color: colors.text[theme].secondary }}>Resent {request.resent_count} time(s)</Text>
+                          <Text style={{ color: colors.text[theme].secondary }}>
+                            Resent {request.resent_count} time(s)
+                          </Text>
                         ) : null}
                       </Stack>
                       <Row gap={8}>

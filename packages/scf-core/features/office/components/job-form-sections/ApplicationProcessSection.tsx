@@ -131,13 +131,17 @@ export function ApplicationProcessSection({
       borderColor={colors.border[theme].default}
     >
       <Text>Application Process</Text>
-      <Text style={{ color: colors.text[theme].secondary }}>Configure the application process and requirements</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
+        Configure the application process and requirements
+      </Text>
 
       {/* Requires Assessment */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Requires assessment</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Skills or aptitude test required</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Skills or aptitude test required
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.requires_assessment || false}
@@ -161,7 +165,9 @@ export function ApplicationProcessSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Requires video interview</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Pre-recorded video interview required</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Pre-recorded video interview required
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.requires_video_interview || false}
@@ -182,7 +188,9 @@ export function ApplicationProcessSection({
             handleChange('estimated_application_time_minutes', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text style={{ color: colors.text[theme].secondary }}>How long it takes to complete the application</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          How long it takes to complete the application
+        </Text>
       </Stack>
 
       {/* Application Expiry */}
@@ -197,7 +205,9 @@ export function ApplicationProcessSection({
             handleChange('application_expiry_days', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text style={{ color: colors.text[theme].secondary }}>Days after which started applications expire</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Days after which started applications expire
+        </Text>
       </Stack>
 
       {/* Inquiry Capability Questions */}
@@ -220,14 +230,27 @@ export function ApplicationProcessSection({
           localState.inquiry_capability_questions.length > 0 && (
             <Stack gap={8}>
               {localState.inquiry_capability_questions.map((question, index) => (
-                <Card key={question.name} padding="sm" gap={8} style={{ backgroundColor: colors.bg[theme].subtle }}>
+                <Card
+                  key={question.name}
+                  padding="sm"
+                  gap={8}
+                  style={{ backgroundColor: colors.bg[theme].subtle }}
+                >
                   <Row justify="space-between" align="center">
                     <Stack flex={1} gap={4}>
                       <Text>{question.label}</Text>
                       <Row gap={8}>
-                        <Text style={{ color: colors.text[theme].secondary }}>Type: {question.type}</Text>
-                        {question.unit && <Text style={{ color: colors.text[theme].secondary }}>Unit: {question.unit}</Text>}
-                        {question.required && <Text style={{ color: colors.text[theme].info }}>Required</Text>}
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Type: {question.type}
+                        </Text>
+                        {question.unit && (
+                          <Text style={{ color: colors.text[theme].secondary }}>
+                            Unit: {question.unit}
+                          </Text>
+                        )}
+                        {question.required && (
+                          <Text style={{ color: colors.text[theme].info }}>Required</Text>
+                        )}
                       </Row>
                     </Stack>
                     <Button
@@ -318,9 +341,7 @@ export function ApplicationProcessSection({
               <Row gap={8} align="center">
                 <Switch
                   checked={newQuestion.required || false}
-                  onChange={(checked) =>
-                    setNewQuestion({ ...newQuestion, required: checked })
-                  }
+                  onChange={(checked) => setNewQuestion({ ...newQuestion, required: checked })}
                 />
                 <Text>Required</Text>
               </Row>

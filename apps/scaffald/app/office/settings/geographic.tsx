@@ -86,9 +86,7 @@ export default function GeographicSettingsPage() {
   if (isLoading) {
     return (
       <Stack padding={16} gap={16} align="center" justify="center">
-        <Text>
-          Geographic Settings
-        </Text>
+        <Text>Geographic Settings</Text>
         <Spinner />
       </Stack>
     )
@@ -97,20 +95,14 @@ export default function GeographicSettingsPage() {
   return (
     <Stack padding={16} gap={16}>
       <Stack gap={8}>
-        <Text>
-          Geographic Settings
-        </Text>
-        <Text color="$gray11">
-          Configure geographic validation settings for site boundaries
-        </Text>
+        <Text>Geographic Settings</Text>
+        <Text color="$gray11">Configure geographic validation settings for site boundaries</Text>
       </Stack>
       <Stack gap={16} style={{ maxWidth: 600 }}>
         <Card padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
-              <Text>
-                Site Overlap Threshold
-              </Text>
+              <Text>Site Overlap Threshold</Text>
               <Text color="$gray11">
                 When site boundaries overlap by more than this percentage, admins will receive
                 notifications. This helps identify potential data quality issues or survey
@@ -126,24 +118,17 @@ export default function GeographicSettingsPage() {
                   onChangeText={setThreshold}
                   placeholder="2.0"
                   keyboardType="numeric"
-                 
                   maxLength={5}
                 />
                 <Text>%</Text>
               </Row>
-              <Text color="$gray10">
-                Range: 0.1% - 10% (Default: 2.0%)
-              </Text>
+              <Text color="$gray10">Range: 0.1% - 10% (Default: 2.0%)</Text>
             </Stack>
 
             <Card padding="md">
               <Stack gap={8}>
-                <Text>
-                  Current Setting
-                </Text>
-                <Text color="$blue11">
-                  {threshold}%
-                </Text>
+                <Text>Current Setting</Text>
+                <Text color="$blue11">{threshold}%</Text>
                 <Text color="$gray11">
                   Site overlaps exceeding {threshold}% will trigger admin notifications.
                 </Text>
@@ -158,7 +143,9 @@ export default function GeographicSettingsPage() {
                   setThreshold('2.0')
                 }}
                 disabled={isSaving}
-              >Reset to Default</Button>
+              >
+                Reset to Default
+              </Button>
               <Button
                 theme="blue"
                 onPress={handleSave}
@@ -167,16 +154,16 @@ export default function GeographicSettingsPage() {
                   Number.parseFloat(threshold) < 0.1 ||
                   Number.parseFloat(threshold) > 10
                 }
-              >{isSaving ? <Spinner /> : 'Save Threshold'}</Button>
+              >
+                {isSaving ? <Spinner /> : 'Save Threshold'}
+              </Button>
             </Row>
           </Stack>
         </Card>
 
         <Card padding="md">
           <Stack gap={8}>
-            <Text>
-              About Site Overlaps
-            </Text>
+            <Text>About Site Overlaps</Text>
             <Text color="$gray11">
               Site overlaps can occur when:
               {'\n'}• Multiple projects are assigned to adjacent or overlapping geographic areas

@@ -84,12 +84,20 @@ export function AuthorizedAppsList() {
                         {app?.display_name || 'Unknown App'}
                       </SizableText>
                       {app?.description && (
-                        <Paragraph size="sm" color="$gray11" data-testid="authorized-app-description">
+                        <Paragraph
+                          size="sm"
+                          color="$gray11"
+                          data-testid="authorized-app-description"
+                        >
                           {app.description}
                         </Paragraph>
                       )}
                       {app?.homepage_url && (
-                        <SizableText size="xs" color="$blue10" data-testid="authorized-app-homepage">
+                        <SizableText
+                          size="xs"
+                          color="$blue10"
+                          data-testid="authorized-app-homepage"
+                        >
                           {app.homepage_url}
                         </SizableText>
                       )}

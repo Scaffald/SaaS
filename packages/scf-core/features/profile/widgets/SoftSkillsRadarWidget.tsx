@@ -31,11 +31,9 @@ import type { ProfileWidgetProps } from './types'
  */
 export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = () => {
   const { theme } = useThemeContext()
-{
   userId,
   showEdit = false,
-  variant = 'full',
-}) => {
+  variant = 'full',) => {
   const router = useRouter()
   const toast = useToast()
   const [drillDownOpen, setDrillDownOpen] = useState(false)

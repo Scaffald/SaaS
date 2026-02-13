@@ -4,15 +4,7 @@ import { useAggregatedNews } from '@scf/core/features/news/hooks/useNewsFeed'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
-import {
-  Button,
-  spacing,
-  Paragraph,
-  Spinner,
-  Text,
-  Row,
-  Stack,
-} from '@unicornlove/beyond-ui'
+import { Button, spacing, Paragraph, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect, useState, type ReactNode } from 'react'
@@ -34,7 +26,15 @@ interface NewsCardProps {
   minHeight?: number
 }
 
-const NewsCard = ({ title, description, image, footer, onPress, fullCardClickable, minHeight = 220 }: NewsCardProps) => {
+const NewsCard = ({
+  title,
+  description,
+  image,
+  footer,
+  onPress,
+  fullCardClickable,
+  minHeight = 220,
+}: NewsCardProps) => {
   const { theme } = useThemeContext()
   const [imageError, setImageError] = useState(false)
   const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`
@@ -57,24 +57,19 @@ const NewsCard = ({ title, description, image, footer, onPress, fullCardClickabl
       <View style={styles.newsCardOverlay} />
       <Stack padding={spacing[6]} style={styles.newsCardContent}>
         <Stack gap={spacing[4]}>
-          <Text
-            size="lg"
-            weight="bold"
-            color={colors.text[theme].primary}
-           
-          >
+          <Text size="lg" weight="bold" color={colors.text[theme].primary}>
             {title}
           </Text>
           {description && (
-            <Text
-              size="sm"
-              color={colors.text[theme].secondary}
-             
-            >
+            <Text size="sm" color={colors.text[theme].secondary}>
               {description}
             </Text>
           )}
-          {footer && <Row gap={spacing[4]} style={styles.newsCardFooter}>{footer}</Row>}
+          {footer && (
+            <Row gap={spacing[4]} style={styles.newsCardFooter}>
+              {footer}
+            </Row>
+          )}
         </Stack>
       </Stack>
     </Pressable>
@@ -183,9 +178,7 @@ export default function NewsPage() {
   const content = (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="gray">
-          Industry News
-        </Text>
+        <Text color="gray">Industry News</Text>
         <Paragraph size="lg" color="gray">
           Curated headlines across construction, safety, technology, and workforce development.
         </Paragraph>
@@ -212,9 +205,7 @@ export default function NewsPage() {
       {isLoading && newsItems.length === 0 ? (
         <Stack align="center" gap={12}>
           <Spinner size="lg" color="primary" />
-          <Text color="gray">
-            Loading latest news…
-          </Text>
+          <Text color="gray">Loading latest news…</Text>
         </Stack>
       ) : null}
 
@@ -242,9 +233,7 @@ export default function NewsPage() {
 
       {!isLoading && !isError && newsItems.length === 0 ? (
         <Stack align="center" gap={12}>
-          <Text color="gray">
-            No articles found
-          </Text>
+          <Text color="gray">No articles found</Text>
           <Text color="gray" style={{ textAlign: 'center' }}>
             Please check again soon for more industry updates.
           </Text>
@@ -263,27 +252,17 @@ export default function NewsPage() {
             minHeight={220}
             footer={
               <Row gap={12} align="center">
-                <Text color="gray">
-                  {formatTimeAgo(item.pubDate)}
-                </Text>
+                <Text color="gray">{formatTimeAgo(item.pubDate)}</Text>
                 {item.readTime && (
                   <>
-                    <Text color="gray">
-                      •
-                    </Text>
-                    <Text color="gray">
-                      {item.readTime}
-                    </Text>
+                    <Text color="gray">•</Text>
+                    <Text color="gray">{item.readTime}</Text>
                   </>
                 )}
                 {item.author && (
                   <>
-                    <Text color="gray">
-                      •
-                    </Text>
-                    <Text color="gray">
-                      {item.author}
-                    </Text>
+                    <Text color="gray">•</Text>
+                    <Text color="gray">{item.author}</Text>
                   </>
                 )}
                 <ExternalLink size="lg" color="gray" />

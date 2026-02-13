@@ -177,7 +177,9 @@ export function ResultsStep({
                       </Text>
                     </Row>
                   </Row>
-                  <Text style={{ color: colors.text[theme].secondary }}>{domainResult.summary}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    {domainResult.summary}
+                  </Text>
                   <Stack gap={8} style={{ marginTop: 8 }}>
                     <Text style={{ color: colors.text[theme].secondary }}>Your Result:</Text>
                     <Text style={{ color: colors.text[theme].secondary, lineHeight: 16 }}>

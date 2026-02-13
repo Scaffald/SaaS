@@ -144,28 +144,10 @@ export default function OnboardingPage() {
 
   return (
     <ScrollView>
-      <Stack
-       
-        justify="center"
-        align="center"
-        padding={16}
-       
-        minHeight="100vh"
-      >
-        <Stack
-          maxWidth={600}
-          width="100%"
-          gap={spacing.md}
-         
-          padding={24}
-         
-         
-         
-        >
+      <Stack justify="center" align="center" padding={16} minHeight="100vh">
+        <Stack maxWidth={600} width="100%" gap={spacing.md} padding={24}>
           <Stack gap={spacing.xs}>
-            <Text color="gray">
-              Complete Your Profile
-            </Text>
+            <Text color="gray">Complete Your Profile</Text>
             <Text color="gray">
               Please complete these required fields to continue using Scaffald
             </Text>
@@ -191,15 +173,10 @@ export default function OnboardingPage() {
                           placeholder="First name"
                           value={field.value}
                           onChangeText={field.onChange}
-                          
                         />
                       )}
                     />
-                    {errors.first_name && (
-                      <Text color="red">
-                        {errors.first_name.message}
-                      </Text>
-                    )}
+                    {errors.first_name && <Text color="red">{errors.first_name.message}</Text>}
                   </Stack>
 
                   <Stack gap={8}>
@@ -212,15 +189,10 @@ export default function OnboardingPage() {
                           placeholder="Last name"
                           value={field.value}
                           onChangeText={field.onChange}
-                          
                         />
                       )}
                     />
-                    {errors.last_name && (
-                      <Text color="red">
-                        {errors.last_name.message}
-                      </Text>
-                    )}
+                    {errors.last_name && <Text color="red">{errors.last_name.message}</Text>}
                   </Stack>
                 </Row>
               </Stack>
@@ -230,9 +202,7 @@ export default function OnboardingPage() {
               {/* 2. Address */}
               <Stack gap={12}>
                 <Text>Address *</Text>
-                <Text color="gray">
-                  Search and select your home address
-                </Text>
+                <Text color="gray">Search and select your home address</Text>
                 <ControlledAddressForm
                   control={control}
                   name="address"
@@ -301,11 +271,7 @@ export default function OnboardingPage() {
                     </Stack>
                   )}
                 />
-                {errors.user_types && (
-                  <Text color="red">
-                    {errors.user_types.message}
-                  </Text>
-                )}
+                {errors.user_types && <Text color="red">{errors.user_types.message}</Text>}
               </Stack>
 
               <Separator />
@@ -336,18 +302,12 @@ export default function OnboardingPage() {
                           )}
                         />
                       ) : (
-                        <Text color="gray">
-                          No industries available
-                        </Text>
+                        <Text color="gray">No industries available</Text>
                       )}
                     </Stack>
                   )}
                 />
-                {errors.industry_id && (
-                  <Text color="red">
-                    {errors.industry_id.message}
-                  </Text>
-                )}
+                {errors.industry_id && <Text color="red">{errors.industry_id.message}</Text>}
               </Stack>
 
               <Separator />
@@ -374,7 +334,9 @@ export default function OnboardingPage() {
                         <Pressable
                           onPress={() => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue('accepts_privacy_policy', !field.value, { shouldValidate: false })
+                            setValue('accepts_privacy_policy', !field.value, {
+                              shouldValidate: false,
+                            })
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
@@ -386,7 +348,6 @@ export default function OnboardingPage() {
                             I accept the{' '}
                             <Text
                               color="blue"
-                             
                               onPress={(event) => {
                                 event.stopPropagation?.()
                                 if (typeof window !== 'undefined') {
@@ -400,9 +361,7 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_privacy_policy && (
-                        <Text color="red">
-                          {errors.accepts_privacy_policy.message}
-                        </Text>
+                        <Text color="red">{errors.accepts_privacy_policy.message}</Text>
                       )}
                     </Stack>
                   )}
@@ -426,7 +385,9 @@ export default function OnboardingPage() {
                         <Pressable
                           onPress={() => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue('accepts_terms_of_service', !field.value, { shouldValidate: false })
+                            setValue('accepts_terms_of_service', !field.value, {
+                              shouldValidate: false,
+                            })
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
@@ -438,7 +399,6 @@ export default function OnboardingPage() {
                             I accept the{' '}
                             <Text
                               color="blue"
-                             
                               onPress={(event) => {
                                 event.stopPropagation?.()
                                 if (typeof window !== 'undefined') {
@@ -452,9 +412,7 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_terms_of_service && (
-                        <Text color="red">
-                          {errors.accepts_terms_of_service.message}
-                        </Text>
+                        <Text color="red">{errors.accepts_terms_of_service.message}</Text>
                       )}
                     </Stack>
                   )}

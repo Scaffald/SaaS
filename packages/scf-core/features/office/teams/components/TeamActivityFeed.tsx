@@ -1,7 +1,7 @@
 import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { MessageCircle, Send } from 'lucide-react-native'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
@@ -133,7 +133,9 @@ export function TeamActivityFeed({
               <Text>{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
-                <Text style={{ color: colors.text[theme].secondary }}>Mentions: {mentionNames.join(', ')}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Mentions: {mentionNames.join(', ')}
+                </Text>
               ) : null}
               <Text style={{ color: colors.text[theme].secondary }}>{occurredAt}</Text>
             </Stack>
@@ -306,7 +308,9 @@ export function TeamActivityFeed({
 
         {mentionOptions.length > 0 ? (
           <Stack gap={8}>
-            <Text style={{ color: colors.text[theme].secondary }}>Mention a teammate (optional)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Mention a teammate (optional)
+            </Text>
             <Row gap={8} flexWrap="wrap" flexDirection="column" align="stretch">
               {mentions.map((mention) => (
                 <Button
@@ -351,7 +355,11 @@ export function TeamActivityFeed({
             accessibilityHint="Shares your message with the team"
             width="100%"
           >
-            {isPosting ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Post update'}
+            {isPosting ? (
+              <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
+            ) : (
+              'Post update'
+            )}
           </Button>
         </Row>
       </Stack>

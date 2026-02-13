@@ -108,7 +108,9 @@ export function OrganizationRequestForm({
             />
           )}
         />
-        {formState.errors.name ? <Text style={{ color: colors.text[theme].error }}>{formState.errors.name.message}</Text> : null}
+        {formState.errors.name ? (
+          <Text style={{ color: colors.text[theme].error }}>{formState.errors.name.message}</Text>
+        ) : null}
       </Stack>
 
       <Stack gap={8}>
@@ -129,11 +131,16 @@ export function OrganizationRequestForm({
             />
           )}
         />
-        {formState.errors.slug ? <Text style={{ color: colors.text[theme].error }}>{formState.errors.slug.message}</Text> : null}
+        {formState.errors.slug ? (
+          <Text style={{ color: colors.text[theme].error }}>{formState.errors.slug.message}</Text>
+        ) : null}
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="organization-request-website" style={{ color: colors.text[theme].secondary }}>
+        <Label
+          htmlFor="organization-request-website"
+          style={{ color: colors.text[theme].secondary }}
+        >
           Website (optional)
         </Label>
         <Controller
@@ -151,7 +158,9 @@ export function OrganizationRequestForm({
           )}
         />
         {formState.errors.website ? (
-          <Text style={{ color: colors.text[theme].error }}>{formState.errors.website.message}</Text>
+          <Text style={{ color: colors.text[theme].error }}>
+            {formState.errors.website.message}
+          </Text>
         ) : null}
       </Stack>
 
@@ -191,7 +200,9 @@ export function OrganizationRequestForm({
         <Card bordered theme="success" padding="md" gap={12}>
           <Row gap={12} align="center">
             <CheckCircle2 size="lg" style={{ color: colors.text[theme].success }} />
-            <Text style={{ color: colors.text[theme].success }}>Request submitted successfully</Text>
+            <Text style={{ color: colors.text[theme].success }}>
+              Request submitted successfully
+            </Text>
           </Row>
           <Text style={{ color: colors.text[theme].secondary }}>
             We&apos;ve logged your request. Our team will review it and follow up if we need

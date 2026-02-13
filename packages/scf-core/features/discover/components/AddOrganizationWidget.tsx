@@ -251,9 +251,7 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
       justify="space-between"
     >
       <Stack flex={1}>
-        <Text color="$gray11" >
-          {name}
-        </Text>
+        <Text color="$gray11">{name}</Text>
       </Stack>
     </Button>
   )

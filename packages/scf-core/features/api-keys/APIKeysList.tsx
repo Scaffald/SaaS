@@ -173,7 +173,7 @@ export function APIKeysList({
                   </Stack>
 
                   {/* Actions Menu */}
-                  <Button size="sm" chromeless  iconStart={MoreVertical} />
+                  <Button size="sm" chromeless iconStart={MoreVertical} />
                 </Row>
 
                 {/* Key Metadata */}

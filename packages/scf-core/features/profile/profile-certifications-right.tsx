@@ -171,7 +171,9 @@ export function ProfileCertificationsRight() {
           <Award size={48} style={{ color: colors.text[theme].secondary }} />
           <Stack gap={8} align="center">
             <H4>Your Certifications</H4>
-            <Text style={{ color: colors.text[theme].secondary }}>Search and add certifications on the left</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Search and add certifications on the left
+            </Text>
           </Stack>
         </Stack>
       </DashboardWidget>
@@ -198,16 +200,18 @@ export function ProfileCertificationsRight() {
                       bordered
                       animation="quick"
                       style={{
-                        backgroundColor: changeStatus === 'added'
-                          ? colors.bg[theme].success
-                          : changeStatus === 'removed'
-                            ? colors.bg[theme].error
-                            : colors.bg[theme].default,
-                        borderColor: changeStatus === 'added'
-                          ? colors.border[theme].success
-                          : changeStatus === 'removed'
-                            ? colors.border[theme].error
-                            : colors.border[theme].default,
+                        backgroundColor:
+                          changeStatus === 'added'
+                            ? colors.bg[theme].success
+                            : changeStatus === 'removed'
+                              ? colors.bg[theme].error
+                              : colors.bg[theme].default,
+                        borderColor:
+                          changeStatus === 'added'
+                            ? colors.border[theme].success
+                            : changeStatus === 'removed'
+                              ? colors.border[theme].error
+                              : colors.border[theme].default,
                       }}
                     >
                       <Row justify="space-between" align="center">
@@ -227,7 +231,9 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text style={{ color: colors.text[theme].secondary }}>{cert.catalog.description}</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>
+                              {cert.catalog.description}
+                            </Text>
                           )}
                         </Stack>
                       </Row>
@@ -255,16 +261,18 @@ export function ProfileCertificationsRight() {
                       bordered
                       animation="quick"
                       style={{
-                        backgroundColor: changeStatus === 'added'
-                          ? colors.bg[theme].success
-                          : changeStatus === 'removed'
-                            ? colors.bg[theme].error
-                            : colors.bg[theme].default,
-                        borderColor: changeStatus === 'added'
-                          ? colors.border[theme].success
-                          : changeStatus === 'removed'
-                            ? colors.border[theme].error
-                            : colors.border[theme].default,
+                        backgroundColor:
+                          changeStatus === 'added'
+                            ? colors.bg[theme].success
+                            : changeStatus === 'removed'
+                              ? colors.bg[theme].error
+                              : colors.bg[theme].default,
+                        borderColor:
+                          changeStatus === 'added'
+                            ? colors.border[theme].success
+                            : changeStatus === 'removed'
+                              ? colors.border[theme].error
+                              : colors.border[theme].default,
                       }}
                     >
                       <Row justify="space-between" align="center">
@@ -284,7 +292,9 @@ export function ProfileCertificationsRight() {
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text style={{ color: colors.text[theme].secondary }}>{cert.catalog.description}</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>
+                              {cert.catalog.description}
+                            </Text>
                           )}
                         </Stack>
                       </Row>
@@ -315,16 +325,18 @@ export function ProfileCertificationsRight() {
                       bordered
                       animation="quick"
                       style={{
-                        backgroundColor: changeStatus === 'added'
-                          ? colors.bg[theme].success
-                          : changeStatus === 'removed'
-                            ? colors.bg[theme].error
-                            : undefined,
-                        borderColor: changeStatus === 'added'
-                          ? colors.border[theme].success
-                          : changeStatus === 'removed'
-                            ? colors.border[theme].error
-                            : colors.border[theme].default,
+                        backgroundColor:
+                          changeStatus === 'added'
+                            ? colors.bg[theme].success
+                            : changeStatus === 'removed'
+                              ? colors.bg[theme].error
+                              : undefined,
+                        borderColor:
+                          changeStatus === 'added'
+                            ? colors.border[theme].success
+                            : changeStatus === 'removed'
+                              ? colors.border[theme].error
+                              : colors.border[theme].default,
                       }}
                     >
                       {/* Header - Always Visible */}
@@ -357,12 +369,18 @@ export function ProfileCertificationsRight() {
                               Certification
                             </Text>
                           </Row>
-                          {hasProof && <Text style={{ color: colors.text[theme].success }}>✓ Proof added</Text>}
+                          {hasProof && (
+                            <Text style={{ color: colors.text[theme].success }}>✓ Proof added</Text>
+                          )}
                           {changeStatus === 'added' && (
-                            <Text style={{ color: colors.text[theme].success }}>✓ Added to profile</Text>
+                            <Text style={{ color: colors.text[theme].success }}>
+                              ✓ Added to profile
+                            </Text>
                           )}
                           {changeStatus === 'removed' && (
-                            <Text style={{ color: colors.text[theme].error }}>Removed from profile</Text>
+                            <Text style={{ color: colors.text[theme].error }}>
+                              Removed from profile
+                            </Text>
                           )}
                         </Stack>
 
@@ -426,7 +444,9 @@ export function ProfileCertificationsRight() {
                                   input.click()
                                 }}
                                 style={{
-                                  backgroundColor: selectedFiles[cert.id] ? colors.bg[theme].primary : undefined
+                                  backgroundColor: selectedFiles[cert.id]
+                                    ? colors.bg[theme].primary
+                                    : undefined,
                                 }}
                               >
                                 {selectedFiles[cert.id]
@@ -472,7 +492,9 @@ export function ProfileCertificationsRight() {
                               </Button>
                             </Row>
                             {cert.credential_url && (
-                              <Text style={{ color: colors.text[theme].secondary }}>Current: {cert.credential_url}</Text>
+                              <Text style={{ color: colors.text[theme].secondary }}>
+                                Current: {cert.credential_url}
+                              </Text>
                             )}
                           </Stack>
                         </Stack>

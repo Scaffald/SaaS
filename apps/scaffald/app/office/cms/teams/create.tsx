@@ -36,11 +36,11 @@ export default function CreateTeamPage() {
   if (!organizations.length) {
     return (
       <Stack align="center" justify="center" gap={8}>
-        <Text>
-          No organizations available
-        </Text>
+        <Text>No organizations available</Text>
         <Text color="gray">Create an organization before adding teams.</Text>
-        <Button onPress={() => router.back()} variant="outline">Go Back</Button>
+        <Button onPress={() => router.back()} variant="outline">
+          Go Back
+        </Button>
       </Stack>
     )
   }
@@ -94,16 +94,8 @@ export default function CreateTeamPage() {
           onCancel={() => router.back()}
         />
       ) : (
-        <Stack
-          padding={24}
-         
-         
-          align="center"
-          gap={8}
-        >
-          <Text>
-            Choose an organization to continue
-          </Text>
+        <Stack padding={24} align="center" gap={8}>
+          <Text>Choose an organization to continue</Text>
           <Text color="gray" style={{ textAlign: 'center' }}>
             Teams belong to a single organization. Select one above to configure the team.
           </Text>

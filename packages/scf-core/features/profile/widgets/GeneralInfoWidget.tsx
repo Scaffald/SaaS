@@ -31,12 +31,10 @@ interface GeneralInfoWidgetProps extends ProfileWidgetProps {
  */
 export function GeneralInfoWidget() {
   const { theme } = useThemeContext()
-{
   userId,
   variant = 'full',
   showButtons = false,
-  isOwnProfile = false,
-}: GeneralInfoWidgetProps) {
+  isOwnProfile = false,: GeneralInfoWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
   const { user: currentUser } = useUser()
   const { data, isLoading, error, refetch, isFetching } = useGeneralInfoWidget(

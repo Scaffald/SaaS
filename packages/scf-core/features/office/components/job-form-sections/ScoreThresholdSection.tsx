@@ -1,4 +1,4 @@
-import { Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, Slider } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
@@ -34,7 +34,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
           <Slider.Track>
             <Slider.TrackActive />
           </Slider.Track>
-          <Slider.Thumb  index={0} />
+          <Slider.Thumb index={0} />
         </Slider>
 
         <Row gap={8}>

@@ -1,5 +1,5 @@
 import { useUpdateTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
 import { Text, Stack } from '@unicornlove/beyond-ui'

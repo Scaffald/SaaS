@@ -20,8 +20,7 @@ interface SkillGuidanceWidgetProps {
  * Displays skill recommendations, examples, and tips for an industry
  */
 export function SkillGuidanceWidget() {
-  const { theme } = useThemeContext()
-{ skillGuidance }: SkillGuidanceWidgetProps) {
+  const { theme } = useThemeContext()skillGuidance : SkillGuidanceWidgetProps) 
   // Don't render if there are no tips
   if (skillGuidance.tips.length === 0) {
     return null
@@ -38,4 +37,3 @@ export function SkillGuidanceWidget() {
       </Stack>
     </Stack>
   )
-}

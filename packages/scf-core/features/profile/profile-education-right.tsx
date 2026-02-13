@@ -22,8 +22,7 @@ interface ProfileEducationRightProps {
  * Displays saved education entries in the right column
  */
 export function ProfileEducationRight() {
-  const { theme } = useThemeContext()
-{ onEditEntry }: ProfileEducationRightProps = {}) {
+  const { theme } = useThemeContext()onEditEntry : ProfileEducationRightProps = ) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
   const toast = useToast()
   const queryClient = useQueryClient()

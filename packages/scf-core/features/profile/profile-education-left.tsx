@@ -107,10 +107,8 @@ interface ProfileEducationLeftProps {
  */
 export function ProfileEducationLeft() {
   const { theme } = useThemeContext()
-{
   editingEntryId,
-  onEditComplete,
-}: ProfileEducationLeftProps = {}) {
+  onEditComplete,: ProfileEducationLeftProps = ) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
@@ -353,7 +351,7 @@ export function ProfileEducationLeft() {
         })
       }
     }
-  }, [fields, educationQuery.data, editingEntryId, watch])
+  }, [fields, educationQuery.data, watch])
 
   // Scroll to editing entry when editingEntryId changes
   useEffect(() => {
@@ -410,7 +408,7 @@ export function ProfileEducationLeft() {
         }, 100)
       }
     }
-  }, [editingEntryId, fields, watch, handleUniversitySearch])
+  }, [fields, watch, handleUniversitySearch])
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {

@@ -76,17 +76,13 @@ export default function OfficeTeamSettingsPage() {
             variant="outline"
             iconStart={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
-          >Back to teams</Button>
+          >
+            Back to teams
+          </Button>
         </Row>
 
         {team.isArchived ? (
-          <Card
-           
-           
-           
-            padding={12}
-            gap={8}
-          >
+          <Card padding={12} gap={8}>
             <Text>Archived team</Text>
             <Text color="gray">
               This team has been archived. Update its settings after restoring the team.
@@ -119,16 +115,8 @@ function CenteredMessage({
 }) {
   return (
     <Stack align="center" justify="center" gap={12}>
-      <Card
-        padding={16}
-       
-       
-       
-        gap={12}
-      >
-        <Text>
-          {title}
-        </Text>
+      <Card padding={16} gap={12}>
+        <Text>{title}</Text>
         <Text color="gray">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>

@@ -213,7 +213,12 @@ export function ApplicationWizard({
 
       {/* Error Display */}
       {submitError && (
-        <Stack padding="md" style={{ backgroundColor: colors.bg[theme].error }} borderBottomWidth={1} style={{ borderBottomColor: colors.border[theme].error }}>
+        <Stack
+          padding="md"
+          style={{ backgroundColor: colors.bg[theme].error }}
+          borderBottomWidth={1}
+          style={{ borderBottomColor: colors.border[theme].error }}
+        >
           <Row gap={8} align="center">
             <AlertCircle size="lg" style={{ color: colors.text[theme].error }} />
             <Text style={{ color: colors.text[theme].error }} flex={1}>

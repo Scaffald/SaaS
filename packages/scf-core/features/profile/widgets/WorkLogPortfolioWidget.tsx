@@ -11,8 +11,7 @@ interface WorkLogPortfolioWidgetProps {
 }
 
 export function WorkLogPortfolioWidget() {
-  const { theme } = useThemeContext()
-{ userId }: WorkLogPortfolioWidgetProps) {
+  const { theme } = useThemeContext()userId : WorkLogPortfolioWidgetProps) {
   const { data, isLoading } = usePublicWorkLogsFeed(userId ? { userId, limit: 12 } : undefined, {
     enabled: Boolean(userId),
     staleTime: 60_000,

@@ -6,7 +6,7 @@ import {
 import type { TeamInvitation } from '@scaffald/sdk'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
 import { Clock, RefreshCw, XCircle } from 'lucide-react-native'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
@@ -190,7 +190,8 @@ export function TeamInvitationsList({
           {invitations.map((invitation) => {
             const statusLabel =
               STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status
-            const statusColor = STATUS_COLORS[invitation.status as InvitationStatus] ?? colors.text[theme].secondary
+            const statusColor =
+              STATUS_COLORS[invitation.status as InvitationStatus] ?? colors.text[theme].secondary
 
             const sentAt = invitation.sentAt ? new Date(invitation.sentAt).toLocaleString() : null
             const expiresAt = invitation.expiresAt
@@ -261,14 +262,21 @@ export function TeamInvitationsList({
                 {lastDeliveryStatus ? (
                   <Stack gap={4}>
                     <Text style={{ color: colors.text[theme].secondary }}>
-                      Delivery status: <Text style={{ color: colors.text[theme].secondary }}>{lastDeliveryStatus}</Text>
+                      Delivery status:{' '}
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {lastDeliveryStatus}
+                      </Text>
                       {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
                     </Text>
                     {deliveryChannels && deliveryChannels.length > 0 ? (
-                      <Text style={{ color: colors.text[theme].secondary }}>Channels: {deliveryChannels.join(', ')}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Channels: {deliveryChannels.join(', ')}
+                      </Text>
                     ) : null}
                     {lastDeliveryError ? (
-                      <Text style={{ color: colors.text[theme].error }}>Last error: {lastDeliveryError}</Text>
+                      <Text style={{ color: colors.text[theme].error }}>
+                        Last error: {lastDeliveryError}
+                      </Text>
                     ) : null}
                   </Stack>
                 ) : null}

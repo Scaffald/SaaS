@@ -126,7 +126,7 @@ export function InquiryCommentThread({
                 borderWidth={1}
                 borderColor={isUnread ? '$blue9' : '$borderColor'}
               >
-                <Avatar  size="sm">
+                <Avatar size="sm">
                   <Avatar.Fallback backgroundColor="$blue9">
                     <Text color="white">{comment.sender_id.charAt(0).toUpperCase()}</Text>
                   </Avatar.Fallback>

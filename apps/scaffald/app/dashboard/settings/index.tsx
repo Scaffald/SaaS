@@ -288,30 +288,17 @@ export default function NotificationsCenterScreen() {
     <ScrollView>
       <Stack gap={24}>
         <Stack gap={8}>
-          <Text>
-            Notifications
-          </Text>
+          <Text>Notifications</Text>
           <Text color="gray">
             Stay up to date with applications, opportunities, and platform updates.
           </Text>
         </Stack>
 
-        <Stack
-          gap={16}
-         
-         
-         
-          padding={16}
-         
-        >
+        <Stack gap={16} padding={16}>
           <Row justify="space-between" align="center">
             <Stack gap={4}>
-              <Text>
-                Preferences
-              </Text>
-              <Text color="gray">
-                Control how and when we reach you.
-              </Text>
+              <Text>Preferences</Text>
+              <Text color="gray">Control how and when we reach you.</Text>
             </Stack>
             <Button
               variant="filled"
@@ -329,7 +316,6 @@ export default function NotificationsCenterScreen() {
             <Row align="center" justify="space-between">
               <Label
                 color="gray"
-               
                 onPress={() =>
                   setPreferences((prev) => ({
                     ...prev,
@@ -341,9 +327,7 @@ export default function NotificationsCenterScreen() {
               </Label>
               <Toggle
                 checked={preferences.globalEnabled}
-                onChange={(value) =>
-                  setPreferences((prev) => ({ ...prev, globalEnabled: value }))
-                }
+                onChange={(value) => setPreferences((prev) => ({ ...prev, globalEnabled: value }))}
                 aria-label="Enable notifications"
               />
             </Row>
@@ -389,12 +373,8 @@ export default function NotificationsCenterScreen() {
             <Separator />
 
             <Stack gap={8}>
-              <Text color="gray">
-                Quiet hours
-              </Text>
-              <Text color="gray">
-                We’ll queue non-critical alerts during these hours.
-              </Text>
+              <Text color="gray">Quiet hours</Text>
+              <Text color="gray">We’ll queue non-critical alerts during these hours.</Text>
               <Row gap={8} align="center">
                 <Input
                   placeholder="22:00"
@@ -405,7 +385,6 @@ export default function NotificationsCenterScreen() {
                       quietHours: { end: prev.quietHours?.end ?? '', start: text },
                     }))
                   }
-                 
                 />
                 <Text color="gray">to</Text>
                 <Input
@@ -417,7 +396,6 @@ export default function NotificationsCenterScreen() {
                       quietHours: { end: text, start: prev.quietHours?.start ?? '' },
                     }))
                   }
-                 
                 />
                 <Button
                   size="md"
@@ -431,9 +409,7 @@ export default function NotificationsCenterScreen() {
             <Separator />
 
             <Stack gap={8}>
-              <Text color="gray">
-                Digest frequency
-              </Text>
+              <Text color="gray">Digest frequency</Text>
               <Row gap={8}>
                 {(
                   [
@@ -465,66 +441,34 @@ export default function NotificationsCenterScreen() {
               </Row>
             </Stack>
 
-            {savePreferencesMutation.isSuccess && (
-              <Text color="green">
-                Preferences saved.
-              </Text>
-            )}
+            {savePreferencesMutation.isSuccess && <Text color="green">Preferences saved.</Text>}
             {savePreferencesMutation.isError && (
-              <Text color="red">
-                Failed to save preferences.
-              </Text>
+              <Text color="red">Failed to save preferences.</Text>
             )}
           </Stack>
 
           <Separator />
 
           <Stack gap={8}>
-            <Text color="gray">
-              Registered devices
-            </Text>
+            <Text color="gray">Registered devices</Text>
             {devicesQuery.isLoading ? (
               <Row gap={8} align="center">
                 <Spinner size="sm" color="gray" />
-                <Text color="gray">
-                  Checking devices…
-                </Text>
+                <Text color="gray">Checking devices…</Text>
               </Row>
             ) : deviceRows.length === 0 ? (
-              <Text color="gray">
-                No devices registered yet.
-              </Text>
+              <Text color="gray">No devices registered yet.</Text>
             ) : (
-              <Stack
-               
-               
-               
-               
-              >
+              <Stack>
                 <Row padding={8}>
-                  <Text>
-                    Token
-                  </Text>
-                  <Text>
-                    Platform
-                  </Text>
-                  <Text>
-                    Last seen
-                  </Text>
+                  <Text>Token</Text>
+                  <Text>Platform</Text>
+                  <Text>Last seen</Text>
                 </Row>
                 {deviceRows.map((device, _index) => (
-                  <Row
-                    key={device.id}
-                    padding={8}
-                   
-                    gap={8}
-                  >
-                    <Text color="gray">
-                      {device.token}
-                    </Text>
-                    <Text color="gray">
-                      {device.platform}
-                    </Text>
+                  <Row key={device.id} padding={8} gap={8}>
+                    <Text color="gray">{device.token}</Text>
+                    <Text color="gray">{device.platform}</Text>
                     <Text color="gray">
                       {formatDate(
                         device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
@@ -553,9 +497,7 @@ export default function NotificationsCenterScreen() {
               >
                 {item.label}
                 {item.value === 'unread' && unreadCount > 0 && (
-                  <NotificationTag>
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </NotificationTag>
+                  <NotificationTag>{unreadCount > 99 ? '99+' : unreadCount}</NotificationTag>
                 )}
               </Button>
             )
@@ -570,9 +512,7 @@ export default function NotificationsCenterScreen() {
         ) : isEmpty ? (
           <Stack gap={12} align="center">
             <Info size={48} color="$color8" />
-            <Text color="gray">
-              You're all caught up!
-            </Text>
+            <Text color="gray">You're all caught up!</Text>
             <Text color="gray">
               New alerts will show up here when there's something you need to review.
             </Text>
@@ -584,40 +524,24 @@ export default function NotificationsCenterScreen() {
                 size?: number
                 color?: string
               }>
-              const severityTheme = getSeverityTheme(notification.severity)
+              const _severityTheme = getSeverityTheme(notification.severity)
 
               return (
-                <Stack
-                  key={notification.id}
-                 
-                 
-                 
-                 
-                >
+                <Stack key={notification.id}>
                   <Row padding={16} gap={12} align="flex-start">
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
                     <Stack gap={8}>
                       <Row justify="space-between" align="center">
-                        <Text color="gray">
-                          {notification.title}
-                        </Text>
-                        <NotificationTag
-                          size="md"
-                        >
+                        <Text color="gray">{notification.title}</Text>
+                        <NotificationTag size="md">
                           {notification.severity.toUpperCase()}
                         </NotificationTag>
                       </Row>
-                      <Text color="gray">
-                        {notification.preview}
-                      </Text>
+                      <Text color="gray">{notification.preview}</Text>
                       <Row gap={12} align="center">
-                        <Text color="gray">
-                          {formatRelativeTime(notification.createdAt)}
-                        </Text>
+                        <Text color="gray">{formatRelativeTime(notification.createdAt)}</Text>
                         {notification.channels.length > 0 && (
-                          <NotificationTag>
-                            {notification.channels.join(', ')}
-                          </NotificationTag>
+                          <NotificationTag>{notification.channels.join(', ')}</NotificationTag>
                         )}
                       </Row>
                     </Stack>
@@ -680,11 +604,13 @@ export default function NotificationsCenterScreen() {
                       )}
 
                       {notification.ctaUrl && (
-                        <Button size="md" color="primary" onPress={() => handleNavigate(notification)}>
+                        <Button
+                          size="md"
+                          color="primary"
+                          onPress={() => handleNavigate(notification)}
+                        >
                           <Row gap={8} align="center">
-                            <Text color="gray">
-                              {notification.ctaLabel ?? 'Open'}
-                            </Text>
+                            <Text color="gray">{notification.ctaLabel ?? 'Open'}</Text>
                             <ExternalLink size="lg" color="#ffffff" />
                           </Row>
                         </Button>
@@ -697,7 +623,6 @@ export default function NotificationsCenterScreen() {
 
             {notificationsQuery.hasNextPage && (
               <Button
-               
                 color="primary"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}

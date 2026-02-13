@@ -47,11 +47,9 @@ interface GeneralProfileSectionProps {
  */
 export function GeneralProfileSection() {
   const { theme } = useThemeContext()
-{
   userId,
   mode = 'user',
-  readOnly = false,
-}: GeneralProfileSectionProps) {
+  readOnly = false,: GeneralProfileSectionProps) {
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
 

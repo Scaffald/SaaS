@@ -312,7 +312,7 @@ export const SoftSkillsRatingForm: FC = () => {
                             marginTop={16}
                             marginBottom={8}
                           >
-                            <Slider.Track backgroundColor="$color4" height={6} borderRadius={10}>
+                            <Slider.Track backgroundColor={colors.bg[theme].default} height={6} borderRadius={10}>
                               <Slider.TrackActive style={{ backgroundColor: colors.bg[theme].primary }} borderRadius={10} />
                             </Slider.Track>
                             <Slider.Thumb
@@ -321,7 +321,7 @@ export const SoftSkillsRatingForm: FC = () => {
                               size={4}
                               style={{ backgroundColor: colors.bg[theme].primary }}
                               borderWidth={2}
-                              borderColor="$blue11"
+                              style={{ borderColor: colors.border[theme].info }}
                             />
                           </Slider>
 
@@ -383,7 +383,7 @@ export const SoftSkillsRatingForm: FC = () => {
             borderRadius="$12"
             style={{ backgroundColor: colors.bg[theme].success }}
             borderWidth={2}
-            borderColor="$green9"
+            style={{ borderColor: colors.border[theme].success }}
             align="center"
             justify="center"
           >

@@ -1,4 +1,4 @@
-import { Input, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label, TextArea } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
@@ -47,13 +47,17 @@ export function LocationSchedulingSection({
       borderColor={colors.border[theme].default}
     >
       <Text>Location & Scheduling</Text>
-      <Text style={{ color: colors.text[theme].secondary }}>Work location and schedule information</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
+        Work location and schedule information
+      </Text>
 
       {/* Relocation Assistance */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Relocation assistance offered</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Company provides relocation support</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Company provides relocation support
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.relocation_assistance_offered || false}

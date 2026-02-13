@@ -21,9 +21,7 @@ export default function DashboardTeamsIndexPage() {
     <Stack gap={16}>
       <Row justify="space-between" align="center">
         <Stack gap={4}>
-          <Text>
-            Teams
-          </Text>
+          <Text>Teams</Text>
           <Text color="gray">
             View the teams you collaborate with and access shared hiring workspaces.
           </Text>
@@ -43,17 +41,8 @@ export default function DashboardTeamsIndexPage() {
           <Text color="gray">Loading your teams…</Text>
         </Stack>
       ) : error ? (
-        <Stack
-          gap={12}
-         
-         
-         
-          padding={16}
-         
-        >
-          <Text color="red">
-            Unable to load teams
-          </Text>
+        <Stack gap={12} padding={16}>
+          <Text color="red">Unable to load teams</Text>
           <Text color="red">
             {error.message ?? 'An unexpected error occurred while loading your teams.'}
           </Text>
@@ -62,14 +51,7 @@ export default function DashboardTeamsIndexPage() {
           </Button>
         </Stack>
       ) : teams.length === 0 ? (
-        <Stack
-          gap={12}
-         
-         
-         
-          padding={16}
-         
-        >
+        <Stack gap={12} padding={16}>
           <Text>No teams yet</Text>
           <Text color="gray">
             You&apos;re not part of any teams yet. Accept invitations from your inbox or reach out
@@ -94,9 +76,7 @@ export default function DashboardTeamsIndexPage() {
               <Card key={team.id} padding={16} gap={12}>
                 <Row gap={12} align="center">
                   <Users size={20} />
-                  <Text>
-                    {team.name || 'Untitled team'}
-                  </Text>
+                  <Text>{team.name || 'Untitled team'}</Text>
                 </Row>
                 {team.description ? (
                   <Text color="gray">{team.description}</Text>
@@ -104,9 +84,7 @@ export default function DashboardTeamsIndexPage() {
                   <Text color="gray">No description provided for this team.</Text>
                 )}
                 <Row gap={12} align="center">
-                  <Text color="gray">
-                    {formattedPurpose}
-                  </Text>
+                  <Text color="gray">{formattedPurpose}</Text>
                   <Text color="gray">
                     Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
                   </Text>

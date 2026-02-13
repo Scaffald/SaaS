@@ -15,7 +15,6 @@ import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-re
 import { useState } from 'react'
 import { Card, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
-import type { ProfileWidgetProps } from './types'
 
 interface CategoryRating {
   category: string
@@ -39,8 +38,7 @@ interface Review {
  * @param variant - Display variant (compact shows fewer reviews)
  */
 export function ReviewsWidget() {
-  const { theme } = useThemeContext()
-{ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
+  const { theme } = useThemeContext()userId, showEdit = false, variant = 'full' : ProfileWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
   const { user: currentUser } = useUser()
 
@@ -213,7 +211,7 @@ export function ReviewsWidget() {
                         key={randomUUID()}
                         size="md"
                         color="$yellow10"
-                        fill={i < Math.floor(overallRating) ? '$yellow10' : 'transparent'}
+                        fill={i < Math.floor(overallRating) ? colors.text[theme].warning : 'transparent'}
                       />
                     ))}
                   </Row>
@@ -321,7 +319,7 @@ export function ReviewsWidget() {
                             key={randomUUID()}
                             size="md"
                             color="$yellow10"
-                            fill={i < Math.floor(avgRating) ? '$yellow10' : 'transparent'}
+                            fill={i < Math.floor(avgRating) ? colors.text[theme].warning : 'transparent'}
                           />
                         )
                       })}

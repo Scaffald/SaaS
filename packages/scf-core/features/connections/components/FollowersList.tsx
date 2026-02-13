@@ -48,7 +48,7 @@ export function FollowersList() {
 
           return (
             <Row align="center" gap={8}>
-              <Avatar  size={32}>
+              <Avatar size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (

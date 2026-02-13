@@ -163,9 +163,7 @@ export default function RootIndex() {
   if (verificationError) {
     return (
       <Stack justify="center" align="center" padding={16}>
-        <Text color="red">
-          Verification failed: {verificationError}
-        </Text>
+        <Text color="red">Verification failed: {verificationError}</Text>
         <Text>Please try requesting a new magic link.</Text>
       </Stack>
     )

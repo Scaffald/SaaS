@@ -3,7 +3,7 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
@@ -169,7 +169,9 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
                 : '—'}
             </StatTile>
           </Row>
-          {trendDescription ? <Text style={{ color: colors.text[theme].secondary }}>{trendDescription}</Text> : null}
+          {trendDescription ? (
+            <Text style={{ color: colors.text[theme].secondary }}>{trendDescription}</Text>
+          ) : null}
         </Stack>
       )}
     </Stack>

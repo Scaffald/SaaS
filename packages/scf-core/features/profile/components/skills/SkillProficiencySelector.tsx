@@ -24,14 +24,12 @@ interface SkillProficiencySelectorProps {
  */
 export function SkillProficiencySelector() {
   const { theme } = useThemeContext()
-{
   skill,
   taxonomy,
   proficiency,
   onProficiencyChange,
   onAdd,
-  onCancel,
-}: SkillProficiencySelectorProps) {
+  onCancel,: SkillProficiencySelectorProps) {
   const currentLevel = getProficiencyLevel(proficiency)
 
   return (
@@ -66,7 +64,7 @@ export function SkillProficiencySelector() {
           step={1}
           size="sm"
         >
-          <Slider.Track backgroundColor="$color4" height={6}>
+          <Slider.Track backgroundColor={colors.bg[theme].default} height={6}>
             <Slider.TrackActive style={{ backgroundColor: colors.bg[theme].success }} />
           </Slider.Track>
           <Slider.Thumb index={0}  size={4} />

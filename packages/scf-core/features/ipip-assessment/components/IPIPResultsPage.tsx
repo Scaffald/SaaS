@@ -183,7 +183,13 @@ export function IPIPResultsPage() {
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
-          <Button size="sm" variant="outline" iconStart={RefreshCcw} onPress={handleRetry} marginTop={8}>
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
+            onPress={handleRetry}
+            marginTop={8}
+          >
             Refresh Data
           </Button>
         </Stack>

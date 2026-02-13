@@ -263,7 +263,7 @@ export const JobCard = memo(
 
           {/* Description */}
           {description && (
-            <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'} >
+            <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'}>
               {description}
             </Paragraph>
           )}

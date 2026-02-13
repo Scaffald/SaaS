@@ -1,6 +1,14 @@
 import { api } from '@scf/core/utils/api'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button, Input, ScrollView, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Input,
+  ScrollView,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { Card } from '@unicornlove/beyond-ui'
@@ -161,7 +169,6 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 onChangeText={setBio}
                 placeholder="Bio"
                 multiline
-                
               />
             </Stack>
           </Stack>

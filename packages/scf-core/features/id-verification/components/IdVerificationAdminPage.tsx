@@ -125,7 +125,9 @@ export function IdVerificationAdminPage({
         cell: ({ row }: CellContext<VerificationItem, unknown>) => (
           <Stack>
             <Text color="$gray11">{row.original.workerName}</Text>
-            {row.original.workerEmail ? <Text color="$gray11">{row.original.workerEmail}</Text> : null}
+            {row.original.workerEmail ? (
+              <Text color="$gray11">{row.original.workerEmail}</Text>
+            ) : null}
           </Stack>
         ),
         meta: { width: '$20' },

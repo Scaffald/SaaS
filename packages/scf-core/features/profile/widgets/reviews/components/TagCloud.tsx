@@ -14,8 +14,7 @@ interface TagCloudProps {
  * Used for showing strengths and areas for improvement from reviews
  */
 export function TagCloud() {
-  const { theme } = useThemeContext()
-{ title, tags, variant, maxTags = 20 }: TagCloudProps) {
+  const { theme } = useThemeContext()title, tags, variant, maxTags = 20 : TagCloudProps) {
   if (!tags || tags.length === 0) {
     return null
   }

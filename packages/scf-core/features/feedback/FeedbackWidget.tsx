@@ -113,7 +113,6 @@ export function FeedbackWidget() {
       <Stack position="absolute" bottom={16} right={16} style={{ zIndex: 1000 }}>
         <Button
           size={24}
-          
           iconStart={MessageCircle}
           backgroundColor="$blue9"
           color="$gray11"
@@ -194,7 +193,6 @@ export function FeedbackWidget() {
                 render={({ field: { value, onBlur, onChange } }) => (
                   <Input
                     multiline
-                    
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -250,7 +248,9 @@ export function FeedbackWidget() {
                   >
                     <input {...getInputProps()} />
                     <Text>{isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}</Text>
-                    <Text color="$gray11">Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)</Text>
+                    <Text color="$gray11">
+                      Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
+                    </Text>
                     <Button size="xs" marginTop={8} onPress={open}>
                       Choose File
                     </Button>
@@ -283,7 +283,7 @@ export function FeedbackWidget() {
                     gap={8}
                   >
                     <Stack flex={1}>
-                      <Text >
+                      <Text>
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
                       <Text color="$gray11">

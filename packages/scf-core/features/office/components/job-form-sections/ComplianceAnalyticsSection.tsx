@@ -1,4 +1,4 @@
-import { Input, Text, ToggleSwitch, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Label } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
@@ -51,7 +51,9 @@ export function ComplianceAnalyticsSection({
       borderColor={colors.border[theme].default}
     >
       <Text>Compliance & Analytics</Text>
-      <Text style={{ color: colors.text[theme].secondary }}>EEO compliance and tracking settings</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
+        EEO compliance and tracking settings
+      </Text>
 
       {/* EEO Job Category */}
       <Stack gap={8}>
@@ -61,14 +63,18 @@ export function ComplianceAnalyticsSection({
           value={localState.eeo_job_category || ''}
           onChangeText={(text) => handleChange('eeo_job_category', text || undefined)}
         />
-        <Text style={{ color: colors.text[theme].secondary }}>Equal Employment Opportunity category</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Equal Employment Opportunity category
+        </Text>
       </Stack>
 
       {/* Veteran Friendly */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Veteran friendly</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Position suitable for veterans</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Position suitable for veterans
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_veteran_friendly || false}
@@ -81,7 +87,9 @@ export function ComplianceAnalyticsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Disability friendly</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Accommodations available for disabilities</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Accommodations available for disabilities
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.is_disability_friendly || false}
@@ -94,7 +102,9 @@ export function ComplianceAnalyticsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Affirmative action plan</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Part of affirmative action hiring</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Part of affirmative action hiring
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.affirmative_action_plan || false}
@@ -107,7 +117,9 @@ export function ComplianceAnalyticsSection({
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={4} flex={1}>
           <Label>Source tracking enabled</Label>
-          <Text style={{ color: colors.text[theme].secondary }}>Track where applicants find this job</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Track where applicants find this job
+          </Text>
         </Stack>
         <ToggleSwitch
           checked={localState.source_tracking_enabled || false}

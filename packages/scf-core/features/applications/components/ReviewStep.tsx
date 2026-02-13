@@ -1,7 +1,15 @@
 import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@scf/schemas'
 import { Check, Edit3, FileText } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Checkbox, Separator, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import {
+  Button,
+  Checkbox,
+  Separator,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 export interface ReviewStepProps {
@@ -68,7 +76,9 @@ export function ReviewStep({
       {/* Header */}
       <Stack gap={8}>
         <Text style={{ color: colors.text[theme].secondary }}>Review Your Application</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>Please review your information carefully before submitting.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Please review your information carefully before submitting.
+        </Text>
       </Stack>
 
       {/* Screening Information Section */}
@@ -314,7 +324,9 @@ function DocumentRow({
         </Row>
         <Text style={{ color: colors.text[theme].secondary }}>{metadata.filename}</Text>
         <Row gap={8} align="center">
-          <Text style={{ color: colors.text[theme].secondary }}>{formatFileSize(metadata.size)}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {formatFileSize(metadata.size)}
+          </Text>
           <Text style={{ color: colors.text[theme].secondary }}>•</Text>
           <Text style={{ color: colors.text[theme].secondary }}>Uploaded {formattedDate}</Text>
         </Row>

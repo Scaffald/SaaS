@@ -210,7 +210,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Separator />
               <Stack gap={8}>
                 <Text color="$gray11">Description</Text>
-                <Text color="$gray11" lineHeight={4} >
+                <Text color="$gray11" lineHeight={4}>
                   {job.description}
                 </Text>
               </Stack>

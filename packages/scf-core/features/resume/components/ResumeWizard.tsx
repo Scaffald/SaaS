@@ -667,7 +667,6 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           <Text>Summary</Text>
           <Input
             multiline
-            
             value={generalForm.summary}
             onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, summary: value }))}
           />
@@ -830,9 +829,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         </Paragraph>
         <OpenToTravelCard
           checked={employmentForm.openToTravel}
-          onChange={(checked) =>
-            setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))
-          }
+          onChange={(checked) => setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))}
           travelDistanceValue={employmentForm.travelDistanceMiles ?? 25}
           onTravelDistanceChange={(value) =>
             setEmploymentForm((prev) => ({

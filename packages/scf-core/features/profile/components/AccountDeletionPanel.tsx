@@ -57,7 +57,7 @@ export function AccountDeletionPanel() {
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
+    <Card borderWidth={1} style={{ borderColor: colors.border[theme].error }} backgroundColor: colors.bg[theme].error }} padding="md">
       <Stack gap={12}>
         <Row align="center" gap={8}>
           <AlertTriangle style={{ color: colors.text[theme].error }} size="lg" />
@@ -112,7 +112,7 @@ export function AccountDeletionPanel() {
                     value={confirmText}
                     onChangeText={setConfirmText}
                     placeholder="DELETE"
-                    borderColor={confirmText === 'DELETE' ? '$green8' : colors.border[theme].error}
+                    borderColor={confirmText === 'DELETE' ? colors.border[theme].success : colors.border[theme].error}
                   />
                 </Stack>
 
@@ -129,7 +129,7 @@ export function AccountDeletionPanel() {
                     Cancel
                   </Button>
                   <Button
-                    backgroundColor="$red9"
+                    style={{ backgroundColor: colors.bg[theme].error }}
                     color="white"
                     iconStart={Trash2}
                     onPress={handleDelete}

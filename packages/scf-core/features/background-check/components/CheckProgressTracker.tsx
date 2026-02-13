@@ -189,7 +189,9 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   >
                     <Text color={colors.text}>{historyMeta.label}</Text>
                     <Row gap={8} align="center">
-                      {entry.occurredAt && <Text color="$gray11">{formatDate(entry.occurredAt)}</Text>}
+                      {entry.occurredAt && (
+                        <Text color="$gray11">{formatDate(entry.occurredAt)}</Text>
+                      )}
                       {entry.actor && (
                         <>
                           <Separator vertical />

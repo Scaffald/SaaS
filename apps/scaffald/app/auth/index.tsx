@@ -11,12 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 function AuthHeaderThemeToggle() {
   const { theme, toggleTheme } = useThemeContext()
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onPress={toggleTheme}
-      color="gray"
-    >
+    <Button variant="outline" size="sm" onPress={toggleTheme} color="gray">
       {theme === 'light' ? 'Dark' : 'Light'}
     </Button>
   )

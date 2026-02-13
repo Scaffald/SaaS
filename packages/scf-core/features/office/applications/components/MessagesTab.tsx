@@ -1,6 +1,6 @@
 import { Send } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
 import {
   useApplicationMessages,
   useSendApplicationMessageMutation,
@@ -107,7 +107,10 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
             <Card
               key={message.id}
               padding="md"
-              style={{ backgroundColor: message.sender === 'recruiter' ? colors.bg[theme].info : colors.bg[theme].subtle }}
+              style={{
+                backgroundColor:
+                  message.sender === 'recruiter' ? colors.bg[theme].info : colors.bg[theme].subtle,
+              }}
               alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
             >
@@ -143,7 +146,6 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           placeholder="Type your message..."
           value={newMessage}
           onChangeText={setNewMessage}
-          
           marginBottom={12}
         />
 

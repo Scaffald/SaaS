@@ -63,7 +63,7 @@ export function CertificationProofCard({
       <Stack gap={16}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Add Proof</Text>
-          <Button size="xs"  chromeless onPress={onClose}>
+          <Button size="xs" chromeless onPress={onClose}>
             <X size="lg" />
           </Button>
         </Row>
@@ -96,10 +96,7 @@ export function CertificationProofCard({
               value={urlInput}
               onChangeText={setUrlInput}
             />
-            <Button
-              onPress={handleUrlSave}
-              disabled={!urlInput.trim() || uploading}
-            >
+            <Button onPress={handleUrlSave} disabled={!urlInput.trim() || uploading}>
               <Row gap={8} align="center">
                 <LinkIcon size="lg" />
                 <Text>{uploading ? 'Saving...' : 'Save Link'}</Text>

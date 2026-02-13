@@ -302,7 +302,7 @@ export function VanityUrlSection() {
                     availabilityStatus.available === false
                       ? colors.border[theme].error
                       : availabilityStatus.available === true
-                        ? '$green8'
+                        ? colors.border[theme].success
                         : colors.border[theme].default
                   }
                 />
@@ -397,15 +397,15 @@ export function VanityUrlSection() {
             gap={8}
             align="center"
             padding="sm"
-            backgroundColor="$yellow3"
+            style={{ backgroundColor: colors.bg[theme].warning }}
             borderRadius={16}
             borderWidth={1}
-            borderColor="$yellow7"
+            style={{ borderColor: colors.border[theme].warning }}
           >
             <Clock size="md" color="$orange10" />
             <Stack flex={1} gap={4}>
-              <Text color="$yellow11">Vanity URL Change Cooldown</Text>
-              <Text color="$yellow10">
+              <Text style={{ color: colors.text[theme].warning }}>Vanity URL Change Cooldown</Text>
+              <Text style={{ color: colors.text[theme].warning }}>
                 You can change your vanity URL again in {daysRemaining} day
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
                 )

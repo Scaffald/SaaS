@@ -1,5 +1,10 @@
 import { api } from '@scf/core/utils/api'
-import { CustomCheckbox, DashboardWidget, ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import {
+  CustomCheckbox,
+  DashboardWidget,
+  ResponsiveSelect,
+  useThemeContext,
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -210,11 +215,15 @@ export function OfficeCertificationsLeft({
                   placeholder="e.g. OSHA 30-Hour Construction"
                   value={field.value}
                   onChangeText={(text) => handleNameChange(text, field.onChange)}
-                  borderColor={errors.name ? colors.border[theme].error : colors.border[theme].default}
+                  borderColor={
+                    errors.name ? colors.border[theme].error : colors.border[theme].default
+                  }
                 />
               )}
             />
-            {errors.name && <Text style={{ color: colors.text[theme].error }}>{errors.name.message}</Text>}
+            {errors.name && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.name.message}</Text>
+            )}
           </Stack>
 
           {/* Vanity URL */}
@@ -222,7 +231,9 @@ export function OfficeCertificationsLeft({
             <Text>
               Vanity URL <Text style={{ color: colors.text[theme].error }}>*</Text>
             </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>URL-friendly username (auto-generated from name)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              URL-friendly username (auto-generated from name)
+            </Text>
             <Controller
               name="slug"
               control={control}
@@ -231,11 +242,15 @@ export function OfficeCertificationsLeft({
                   placeholder="e.g. osha-30-hour-construction"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.slug ? colors.border[theme].error : colors.border[theme].default}
+                  borderColor={
+                    errors.slug ? colors.border[theme].error : colors.border[theme].default
+                  }
                 />
               )}
             />
-            {errors.slug && <Text style={{ color: colors.text[theme].error }}>{errors.slug.message}</Text>}
+            {errors.slug && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.slug.message}</Text>
+            )}
           </Stack>
 
           {/* Category */}
@@ -343,7 +358,9 @@ export function OfficeCertificationsLeft({
           {requiresRenewal && (
             <Stack gap={8}>
               <Text>Renewal Period (months)</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>How often this certification must be renewed</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                How often this certification must be renewed
+              </Text>
               <Controller
                 name="renewal_period_months"
                 control={control}

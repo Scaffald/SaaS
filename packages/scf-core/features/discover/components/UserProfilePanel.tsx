@@ -95,7 +95,6 @@ export function UserProfilePanel({
       <Row justify="flex-end">
         <Button
           size="xs"
-          
           chromeless
           iconStart={X}
           onPress={handleClose}
@@ -119,34 +118,26 @@ export function UserProfilePanel({
           <Row gap={12} align="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
-              <Avatar  size="md">
+              <Avatar size="md">
                 <Avatar.Image source={{ uri: avatarUrl }} />
                 <Avatar.Fallback backgroundColor="$color3">
                   <User size={24} color="$gray11" />
                 </Avatar.Fallback>
               </Avatar>
             ) : (
-              <Avatar  size="md" backgroundColor="$color3">
+              <Avatar size="md" backgroundColor="$color3">
                 <User size={24} color="$gray11" />
               </Avatar>
             )}
 
             {/* Name and Title */}
             <Stack flex={1} gap={4}>
-              <Text color="$gray11" >
-                {preview.displayName}
-              </Text>
-              {preview.headline && (
-                <Text color="$gray11" >
-                  {preview.headline}
-                </Text>
-              )}
+              <Text color="$gray11">{preview.displayName}</Text>
+              {preview.headline && <Text color="$gray11">{preview.headline}</Text>}
               {preview.location && (
                 <Row gap={4} align="center" marginTop={4}>
                   <MapPin size="md" color="$gray11" />
-                  <Text color="$gray11" >
-                    {preview.location}
-                  </Text>
+                  <Text color="$gray11">{preview.location}</Text>
                 </Row>
               )}
             </Stack>

@@ -15,10 +15,8 @@ export interface USPassportToggleProps
  */
 export function USPassportToggle() {
   const { theme } = useThemeContext()
-{
   description = 'I have a valid United States passport',
-  ...toggleCardProps
-}: USPassportToggleProps) {
+  ...toggleCardProps: USPassportToggleProps) 
   return (
     <ToggleCard
       iconStart={<MapPin size="xs" style={{ color: colors.text[theme].secondary }} />}
@@ -27,4 +25,3 @@ export function USPassportToggle() {
       {...toggleCardProps}
     />
   )
-}

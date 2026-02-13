@@ -35,7 +35,9 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
             <Card key={cert.id} bordered backgroundColor="$color2">
               <Stack gap={8} padding="md">
                 <Text color="$gray11">{cert.name}</Text>
-                {cert.issuing_organization && <Text color="$gray11">{cert.issuing_organization}</Text>}
+                {cert.issuing_organization && (
+                  <Text color="$gray11">{cert.issuing_organization}</Text>
+                )}
                 {(cert.issue_date || cert.expiration_date) && (
                   <Row gap={8} align="center">
                     <Calendar size="md" color="$gray11" />

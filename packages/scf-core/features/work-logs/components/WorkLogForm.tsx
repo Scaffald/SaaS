@@ -169,7 +169,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 <Input {...field} {...getDateInputProps()} placeholder="YYYY-MM-DD" />
               )}
             />
-            {errors.logDate?.message && <Text style={{ color: colors.text[theme].error }}>{errors.logDate.message}</Text>}
+            {errors.logDate?.message && (
+              <Text style={{ color: colors.text[theme].error }}>{errors.logDate.message}</Text>
+            )}
           </Stack>
 
           <Stack gap={12}>
@@ -193,7 +195,11 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
             <Row gap={8} align="center">
               <Text>Total Hours: {totalHours.toFixed(2)}</Text>
-              {overlapDetected && <Text style={{ color: colors.text[theme].error }}>Overlapping time entries detected.</Text>}
+              {overlapDetected && (
+                <Text style={{ color: colors.text[theme].error }}>
+                  Overlapping time entries detected.
+                </Text>
+              )}
             </Row>
           </Stack>
 
@@ -207,13 +213,14 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   {...field}
                   placeholder="Describe the work that was completed during this period"
                   multiline
-                  
                   textAlignVertical="top"
                 />
               )}
             />
             {errors.workDescription?.message && (
-              <Text style={{ color: colors.text[theme].error }}>{errors.workDescription.message}</Text>
+              <Text style={{ color: colors.text[theme].error }}>
+                {errors.workDescription.message}
+              </Text>
             )}
           </Stack>
 
@@ -232,7 +239,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             </Row>
 
             <Stack gap={8}>
-              {tasksWithKeys.length === 0 && <Text style={{ color: colors.text[theme].secondary }}>No tasks added yet.</Text>}
+              {tasksWithKeys.length === 0 && (
+                <Text style={{ color: colors.text[theme].secondary }}>No tasks added yet.</Text>
+              )}
 
               {tasksWithKeys.map(({ task, key, index }) => (
                 <Row
@@ -266,10 +275,16 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               </Row>
             )}
 
-            {skillsQuery.error && <Text style={{ color: colors.text[theme].error }}>Unable to load skills at this time.</Text>}
+            {skillsQuery.error && (
+              <Text style={{ color: colors.text[theme].error }}>
+                Unable to load skills at this time.
+              </Text>
+            )}
 
             {skillOptions.length === 0 && !skillsQuery.isLoading && (
-              <Text style={{ color: colors.text[theme].secondary }}>You do not have any skills associated with your profile yet.</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                You do not have any skills associated with your profile yet.
+              </Text>
             )}
 
             <Stack gap={8}>
@@ -299,7 +314,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               >
                 {location.isLoading ? 'Capturing…' : 'Capture Location'}
               </Button>
-              {location.error && <Text style={{ color: colors.text[theme].error }}>{location.error}</Text>}
+              {location.error && (
+                <Text style={{ color: colors.text[theme].error }}>{location.error}</Text>
+              )}
             </Row>
 
             {form.watch('gpsCapture') && (
@@ -331,7 +348,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
           <Stack gap={8}>
             <Text>Draft Status</Text>
-            {autoSaveStatus.state === 'saving' && <Text style={{ color: colors.text[theme].secondary }}>Saving draft…</Text>}
+            {autoSaveStatus.state === 'saving' && (
+              <Text style={{ color: colors.text[theme].secondary }}>Saving draft…</Text>
+            )}
             {autoSaveStatus.state === 'saved' && (
               <Text style={{ color: colors.text[theme].success }}>
                 {autoSaveStatus.message ?? 'Draft saved'}{' '}

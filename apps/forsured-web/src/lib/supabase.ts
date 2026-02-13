@@ -1,47 +1,40 @@
 /**
  * Supabase Client Configuration
-<<<<<<< HEAD
- * Shared database architecture
-=======
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
  *
  * This module provides the Supabase client configured for the forsured.* schema.
  * All ForSured data lives in the forsured.* schema -- no core.* dependencies.
  */
 
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Environment variables - support both Vite client (import.meta.env) and Node server (process.env)
-const getEnvVar = (
-  viteKey: string,
-  processKey?: string,
-): string | undefined => {
+const getEnvVar = (viteKey: string, processKey?: string): string | undefined => {
   // Check Vite client-side env first
-  if (typeof import.meta !== "undefined" && import.meta.env) {
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
     return import.meta.env[viteKey];
   }
   // Fall back to process.env for server-side (tRPC middleware)
-  if (typeof process !== "undefined" && process.env) {
+  if (typeof process !== 'undefined' && process.env) {
     return process.env[processKey || viteKey];
   }
   return undefined;
 };
 
-const supabaseUrl = getEnvVar("VITE_SUPABASE_URL");
-const supabaseAnonKey = getEnvVar("VITE_SUPABASE_ANON_KEY");
-const supabaseServiceRoleKey = getEnvVar("VITE_SUPABASE_SERVICE_ROLE_KEY");
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+const supabaseServiceRoleKey = getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY');
 
 // Check for missing env vars - warn instead of throw for E2E testing with mocks
 const isMissingEnvVars = !supabaseUrl || !supabaseAnonKey;
 if (isMissingEnvVars) {
   console.error(
-    "Missing Supabase environment variables. Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.",
+    'Missing Supabase environment variables. Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.'
   );
 }
 
 // Use placeholder values when env vars are missing (for E2E tests with mock data)
-const effectiveSupabaseUrl = supabaseUrl || "https://mock.supabase.co";
-const effectiveSupabaseAnonKey = supabaseAnonKey || "mock-anon-key";
+const effectiveSupabaseUrl = supabaseUrl || 'https://mock.supabase.co';
+const effectiveSupabaseAnonKey = supabaseAnonKey || 'mock-anon-key';
 
 /**
  * Supabase client instance (uses anon key)
@@ -52,42 +45,38 @@ const effectiveSupabaseAnonKey = supabaseAnonKey || "mock-anon-key";
  * - Cross-schema queries to core.* for users/orgs
  * - Subject to RLS policies
  */
-export const supabase: SupabaseClient = createClient(
-  effectiveSupabaseUrl,
-  effectiveSupabaseAnonKey,
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      // Handle auth state changes and errors
-      storage: typeof window !== "undefined" ? window.localStorage : undefined,
-      storageKey: "sb-auth-token",
-      flowType: "pkce",
-    },
-    db: {
-      schema: "public", // Supabase requires this, but we'll specify schema in queries
-    },
-    global: {
-      // Handle auth errors gracefully
-      headers: {
-        "x-client-info": "forsured-web",
-      },
+export const supabase: SupabaseClient = createClient(effectiveSupabaseUrl, effectiveSupabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    // Handle auth state changes and errors
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storageKey: 'sb-auth-token',
+    flowType: 'pkce',
+  },
+  db: {
+    schema: 'public', // Supabase requires this, but we'll specify schema in queries
+  },
+  global: {
+    // Handle auth errors gracefully
+    headers: {
+      'x-client-info': 'forsured-web',
     },
   },
-);
+});
 
 // Set up error handler for auth refresh failures
 // This handles cases where stale refresh tokens exist in localStorage
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   // Listen for auth state changes and handle errors
   supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === "TOKEN_REFRESHED") {
-      console.log("[Supabase] Token refreshed successfully");
-    } else if (event === "SIGNED_OUT") {
-      console.log("[Supabase] User signed out");
-    } else if (event === "SIGNED_IN") {
-      console.log("[Supabase] User signed in");
+    if (event === 'TOKEN_REFRESHED') {
+      console.log('[Supabase] Token refreshed successfully');
+    } else if (event === 'SIGNED_OUT') {
+      console.log('[Supabase] User signed out');
+    } else if (event === 'SIGNED_IN') {
+      console.log('[Supabase] User signed in');
     }
   });
 
@@ -97,17 +86,15 @@ if (typeof window !== "undefined") {
     if (error) {
       // If there's an error getting the session (e.g., invalid refresh token),
       // clear the session to prevent repeated refresh attempts
-      const errorMessage = error.message || "";
+      const errorMessage = error.message || '';
       if (
-        errorMessage.includes("refresh_token") ||
-        errorMessage.includes("Invalid") ||
-        errorMessage.includes("Refresh Token Not Found")
+        errorMessage.includes('refresh_token') ||
+        errorMessage.includes('Invalid') ||
+        errorMessage.includes('Refresh Token Not Found')
       ) {
-        console.log(
-          "[Supabase] Clearing invalid session due to refresh token error",
-        );
+        console.log('[Supabase] Clearing invalid session due to refresh token error');
         // Clear the session silently to prevent error loops
-        supabase.auth.signOut({ scope: "local" }).catch(() => {
+        supabase.auth.signOut({ scope: 'local' }).catch(() => {
           // Ignore errors - session might already be cleared
         });
       }
@@ -115,12 +102,9 @@ if (typeof window !== "undefined") {
   }).catch((error) => {
     // Handle errors during initial session check (e.g., network issues)
     // Don't log these as errors since they might be expected in some scenarios
-    if (
-      error.message?.includes("refresh_token") ||
-      error.message?.includes("Invalid")
-    ) {
-      console.log("[Supabase] Clearing invalid session due to refresh error");
-      supabase.auth.signOut({ scope: "local" }).catch(() => {
+    if (error.message?.includes('refresh_token') || error.message?.includes('Invalid')) {
+      console.log('[Supabase] Clearing invalid session due to refresh error');
+      supabase.auth.signOut({ scope: 'local' }).catch(() => {
         // Ignore errors
       });
     }
@@ -135,14 +119,14 @@ if (typeof window !== "undefined") {
  */
 export const supabaseServiceRole: SupabaseClient | null = supabaseServiceRoleKey
   ? createClient(effectiveSupabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-    db: {
-      schema: "public",
-    },
-  })
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+      db: {
+        schema: 'public',
+      },
+    })
   : null;
 
 /**
@@ -150,48 +134,32 @@ export const supabaseServiceRole: SupabaseClient | null = supabaseServiceRoleKey
  */
 export const table = {
   // Forsured schema tables
-  auditLog: "forsured.audit_log",
-  auditLogArchiveIndex: "forsured.audit_log_archive_index",
-  projects: "forsured.projects",
-  subcontractors: "forsured.subcontractors",
-  documents: "forsured.documents",
-  policies: "forsured.policies", // OLD - deprecated, use insurancePolicies
-  endorsements: "forsured.endorsements", // OLD - deprecated, use policyEndorsements
-  requirements: "forsured.requirements", // OLD - deprecated
-  complianceScores: "forsured.compliance_scores",
-  tasks: "forsured.tasks",
-  // Task documents
-  taskDocuments: "forsured.task_documents",
-  // Insurance policy parent-child model
-  insurancePolicies: "forsured.insurance_policies",
-  policyProvisions: "forsured.policy_provisions",
-  policyEndorsements: "forsured.policy_endorsements",
-  // Coverage requirements
-  coverageRequirements: "forsured.coverage_requirements",
-  // Coverage request workflow
-  coverageRequests: "forsured.coverage_requests",
-  // User set types (multi-industry support)
-  userSetTypes: "forsured.user_set_types",
-  userSetTypeLexicon: "forsured.user_set_type_lexicon",
+  auditLog: 'forsured.audit_log',
+  auditLogArchiveIndex: 'forsured.audit_log_archive_index',
+  projects: 'forsured.projects',
+  subcontractors: 'forsured.subcontractors',
+  documents: 'forsured.documents',
+  policies: 'forsured.policies', // OLD - deprecated, use insurancePolicies
+  endorsements: 'forsured.endorsements', // OLD - deprecated, use policyEndorsements
+  requirements: 'forsured.requirements', // OLD - deprecated
+  complianceScores: 'forsured.compliance_scores',
+  tasks: 'forsured.tasks',
+  // Task Documents (REQ-265)
+  taskDocuments: 'forsured.task_documents',
+  // NEW: Insurance Policy Parent-Child Model (REQ-262)
+  insurancePolicies: 'forsured.insurance_policies',
+  policyProvisions: 'forsured.policy_provisions',
+  policyEndorsements: 'forsured.policy_endorsements',
+  // Coverage Requirements (REQ-271)
+  coverageRequirements: 'forsured.coverage_requirements',
+  // Coverage Request Workflow (REQ-273)
+  coverageRequests: 'forsured.coverage_requests',
+  // User Set Types (REQ-4: Multi-Industry Support)
+  userSetTypes: 'forsured.user_set_types',
+  userSetTypeLexicon: 'forsured.user_set_type_lexicon',
   // Project-Subcontractor relationship
-  projectSubcontractors: "forsured.project_subcontractors",
+  projectSubcontractors: 'forsured.project_subcontractors',
 
-<<<<<<< HEAD
-  // Core schema tables (Uni-Construct/Scaffald - read-only)
-  coreUsers: "core.users",
-  coreOrganizations: "core.organizations",
-  coreProjects: "core.projects",
-  coreRoleAssignments: "core.role_assignments",
-  // Legacy aliases (deprecated - use core* versions)
-  /** @deprecated Use coreUsers instead */
-  scaffaldUsers: "core.users",
-  /** @deprecated Use coreOrganizations instead */
-  scaffaldOrganizations: "core.organizations",
-  /** @deprecated Use coreProjects instead */
-  scaffaldProjects: "core.projects",
-  /** @deprecated Use coreRoleAssignments instead */
-  scaffaldRoleAssignments: "core.role_assignments",
-=======
   // Forsured schema tables (previously in core.*)
   users: 'forsured.users',
   organizations: 'forsured.organizations',
@@ -205,7 +173,6 @@ export const table = {
   ccpaRequestHistory: 'forsured.ccpa_request_history',
   oauthApps: 'forsured.oauth_apps',
   ccpaOauthAppRegistry: 'forsured.ccpa_oauth_app_registry',
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 };
 
 /**
@@ -230,7 +197,7 @@ export const table = {
  * ```
  */
 export function forsured(tableName: string, client: SupabaseClient = supabase) {
-  return client.schema("forsured").from(tableName);
+  return client.schema('forsured').from(tableName);
 }
 
 /**
@@ -238,19 +205,7 @@ export function forsured(tableName: string, client: SupabaseClient = supabase) {
  * Kept temporarily for reference during migration.
  */
 export function core(tableName: string, client: SupabaseClient = supabase) {
-<<<<<<< HEAD
-  return client.schema("core").from(tableName);
-}
-
-/**
- * @deprecated Use core() instead. This function is maintained for backward compatibility.
- * Type-safe query builder for core schema (legacy name)
- */
-export function scaffald(tableName: string, client: SupabaseClient = supabase) {
-  return core(tableName, client);
-=======
   return client.schema('forsured').from(tableName);
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 }
 
 /**
@@ -263,7 +218,7 @@ export async function getCurrentUser() {
   } = await supabase.auth.getUser();
 
   if (error) {
-    console.error("[Supabase] Error getting current user:", error);
+    console.error('[Supabase] Error getting current user:', error);
     return null;
   }
 
@@ -274,41 +229,17 @@ export async function getCurrentUser() {
  * Helper to get user's organization ID from role_assignments
  * Uses scope_org_id from role_assignments table where user has a role
  */
-<<<<<<< HEAD
-export async function getUserOrganizationId(
-  userId: string,
-): Promise<string | null> {
-  // Query role_assignments to find user's organization
-  // Get the first organization where user has any role assignment
-  const { data, error } = await core("role_assignments")
-    .select("scope_org_id")
-    .eq("user_id", userId)
-    .not("scope_org_id", "is", null)
-=======
 export async function getUserOrganizationId(userId: string): Promise<string | null> {
   // Query forsured.role_assignments to find user's organization
   const { data, error } = await forsured('role_assignments')
     .select('scope_org_id')
     .eq('user_id', userId)
     .not('scope_org_id', 'is', null)
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
     .limit(1)
     .maybeSingle();
 
   if (error) {
-<<<<<<< HEAD
-    // PGRST116 means no rows found - user has no org assignment
-    if (error.code === "PGRST116") {
-      console.log(
-        "[Supabase] No organization assignment found for user:",
-        userId,
-      );
-      return null;
-    }
-    console.error("[Supabase] Error getting user organization:", error);
-=======
     console.error('[Supabase] Error getting user organization:', error);
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
     return null;
   }
 
@@ -321,26 +252,17 @@ export async function getUserOrganizationId(userId: string): Promise<string | nu
 export async function userHasRole(
   userId: string,
   organizationId: string,
-  allowedRoles: string[],
+  allowedRoles: string[]
 ): Promise<boolean> {
-<<<<<<< HEAD
-  const { data, error } = await core("role_assignments")
-    .select("role_type")
-    .eq("user_id", userId)
-    .eq("organization_id", organizationId)
-    .in("role_type", allowedRoles)
-    .single();
-=======
   const { data, error } = await forsured('role_assignments')
     .select('role_type')
     .eq('user_id', userId)
     .eq('organization_id', organizationId)
     .in('role_type', allowedRoles)
     .maybeSingle();
->>>>>>> 264530c73bf14a52195cd0553c9391f21eeccac1
 
   if (error) {
-    console.error("[Supabase] Error checking user role:", error);
+    console.error('[Supabase] Error checking user role:', error);
     return false;
   }
 

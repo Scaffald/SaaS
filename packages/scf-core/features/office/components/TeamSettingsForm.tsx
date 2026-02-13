@@ -2,7 +2,7 @@ import { useUpdateTeam } from '@scaffald/sdk/react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Info } from 'lucide-react-native'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
@@ -210,7 +210,8 @@ export function TeamSettingsForm({
     }
   })()
 
-  const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : colors.text[theme].secondary
+  const statusColor =
+    status === 'error' ? colors.text[theme].error : status === 'saved' ? colors.text[theme].success : colors.text[theme].secondary
 
   return (
     <Card
@@ -434,7 +435,9 @@ function PermissionBanner() {
       <Info size={18} style={{ color: colors.text[theme].secondary }} />
       <Stack gap={4}>
         <Text>View only</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>You need team admin permissions to update settings for this team.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          You need team admin permissions to update settings for this team.
+        </Text>
       </Stack>
     </Row>
   )

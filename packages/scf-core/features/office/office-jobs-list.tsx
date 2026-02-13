@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -334,7 +334,9 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                 <Row justify="space-between" align="center">
                   <Stack>
                     <H2>Jobs</H2>
-                    <Text style={{ color: colors.text[theme].secondary }}>{filteredAndSortedJobs.length} total jobs</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {filteredAndSortedJobs.length} total jobs
+                    </Text>
                   </Stack>
                   <Row gap={8}>
                     <Button size="sm" onPress={() => setViewMode('kanban')} variant="outline">

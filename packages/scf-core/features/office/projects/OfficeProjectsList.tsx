@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useProjects } from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { Eye, EyeOff, Pencil } from 'lucide-react-native'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
@@ -129,7 +129,9 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
           {showHeader && (
             <Stack gap={8}>
               <H2>Projects</H2>
-              <Text style={{ color: colors.text[theme].secondary }}>Manage construction projects with geographic data</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Manage construction projects with geographic data
+              </Text>
             </Stack>
           )}
           <Stack gap={16}>

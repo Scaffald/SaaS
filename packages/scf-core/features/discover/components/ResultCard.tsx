@@ -64,7 +64,7 @@ export const ResultCard = memo(
             </Row>
           </Row>
 
-          <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'} >
+          <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'}>
             {profile.title}
           </Paragraph>
 

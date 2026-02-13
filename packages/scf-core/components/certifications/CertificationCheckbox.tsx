@@ -31,12 +31,7 @@ export function CertificationCheckbox({
   return (
     <Stack gap={8}>
       <Row gap={12} style={{ alignItems: 'flex-start' }}>
-        <Checkbox
-          checked={checked}
-          onChange={onCheckedChange}
-          disabled={disabled}
-          size="md"
-        />
+        <Checkbox checked={checked} onChange={onCheckedChange} disabled={disabled} size="md" />
 
         <Stack style={{ flex: 1 }} gap={4}>
           <Text>{certification.title}</Text>

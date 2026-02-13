@@ -12,8 +12,7 @@ interface ProfileEmptyStateProps {
  * Displays a consistent empty state across all profile sections
  */
 export function ProfileEmptyState() {
-  const { theme } = useThemeContext()
-{ icon: Icon, message }: ProfileEmptyStateProps) {
+  const { theme } = useThemeContext()icon: Icon, message : ProfileEmptyStateProps) 
   return (
     <Stack
       padding="md"
@@ -28,4 +27,3 @@ export function ProfileEmptyState() {
       <Text style={{ color: colors.text[theme].secondary }}>{message}</Text>
     </Stack>
   )
-}

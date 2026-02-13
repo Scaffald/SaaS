@@ -331,7 +331,7 @@ export function UserProfileHeaderEnhanced({
             zIndex: 10,
           }}
         >
-          <Avatar  size={isMobile ? 120 : 160} borderWidth={4} borderColor="$background">
+          <Avatar size={isMobile ? 120 : 160} borderWidth={4} borderColor="$background">
             {avatarUrl ? (
               <Avatar.Image source={{ uri: avatarUrl }} />
             ) : (
@@ -395,7 +395,12 @@ export function UserProfileHeaderEnhanced({
                 )}
 
                 {connectionButtonState.type === 'pending_sent' && (
-                  <Button size={isMobile ? '$3' : '$4'} variant="outline" iconStart={Loader2} disabled>
+                  <Button
+                    size={isMobile ? '$3' : '$4'}
+                    variant="outline"
+                    iconStart={Loader2}
+                    disabled
+                  >
                     Pending
                   </Button>
                 )}
@@ -477,7 +482,7 @@ export function UserProfileHeaderEnhanced({
                 Leave Review
               </Button>
             )}
-            <Button size={isMobile ? '$3' : '$4'} variant="outline"  iconStart={MoreVertical} />
+            <Button size={isMobile ? '$3' : '$4'} variant="outline" iconStart={MoreVertical} />
           </Row>
         </Row>
 

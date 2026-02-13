@@ -7,7 +7,7 @@ import { colors } from '@unicornlove/beyond-ui/tokens'
  */
 export function ProfileEmploymentRight() {
   const { theme } = useThemeContext()
-) {
+) 
   return (
     <Stack>
       <Stack gap={16} padding="md">
@@ -18,4 +18,3 @@ export function ProfileEmploymentRight() {
       </Stack>
     </Stack>
   )
-}

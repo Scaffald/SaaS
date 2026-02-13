@@ -1,6 +1,6 @@
 import { api } from '@scf/core/utils/api'
 import { CreditCard, Plus, Trash2 } from 'lucide-react-native'
-import { useToast , useThemeContext} from '@unicornlove/beyond-ui'
+import { useToast, useThemeContext } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { SetupIntentForm } from './SetupIntentForm'
@@ -123,7 +123,9 @@ export function OrganizationPaymentMethodsPanel({
                 <Text>
                   {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                 </Text>
-                {paymentMethod.isDefault && <Text style={{ color: colors.text[theme].info }}>Default</Text>}
+                {paymentMethod.isDefault && (
+                  <Text style={{ color: colors.text[theme].info }}>Default</Text>
+                )}
               </Row>
               <Text style={{ color: colors.text[theme].secondary }}>
                 Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
@@ -147,7 +149,12 @@ export function OrganizationPaymentMethodsPanel({
           </Button>
         </Stack>
       ) : (
-        <Stack gap={8} padding="sm" style={{ backgroundColor: colors.bg[theme].subtle }} borderRadius={16}>
+        <Stack
+          gap={8}
+          padding="sm"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          borderRadius={16}
+        >
           <Text style={{ color: colors.text[theme].secondary }}>No payment method on file</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Add a payment method to enable automatic billing for this organization.

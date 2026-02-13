@@ -165,7 +165,6 @@ export function GeneralInfoStep({
               placeholder="Share a quick summary of your experience, strengths, and goals."
               onChangeText={field.onChange}
               minHeight={120}
-              
             />
           )}
         />

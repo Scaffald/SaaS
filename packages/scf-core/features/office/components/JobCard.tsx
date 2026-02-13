@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DiscoverCard , useThemeContext} from '@unicornlove/beyond-ui'
+import { DiscoverCard, useThemeContext } from '@unicornlove/beyond-ui'
 import {
   Briefcase,
   Building2,
@@ -29,27 +29,27 @@ const getStatusColors = (status: string, theme: 'light' | 'dark') => {
     draft: {
       backgroundColor: colors.bg[theme].muted,
       text: colors.text[theme].secondary,
-      border: colors.border[theme].subtle
+      border: colors.border[theme].subtle,
     },
     open: {
       backgroundColor: colors.bg[theme].successSubtle,
       text: colors.text[theme].success,
-      border: colors.border[theme].success
+      border: colors.border[theme].success,
     },
     paused: {
       backgroundColor: colors.bg[theme].warningSubtle,
       text: colors.text[theme].warning,
-      border: colors.border[theme].warning
+      border: colors.border[theme].warning,
     },
     closed: {
       backgroundColor: colors.bg[theme].errorSubtle,
       text: colors.text[theme].error,
-      border: colors.border[theme].error
+      border: colors.border[theme].error,
     },
     reviewing: {
       backgroundColor: colors.bg[theme].info,
       text: colors.text[theme].info,
-      border: colors.border[theme].info
+      border: colors.border[theme].info,
     },
   }
   return STATUS_COLORS[status] || STATUS_COLORS.draft
@@ -94,17 +94,23 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row justify="space-between" align="flex-start" gap={12}>
         <Stack gap={8} flex={1}>
           <Row align="center" gap={8} flexWrap="wrap">
-            <Briefcase size={18} color={isSelected ? colors.text[theme].warning : colors.text[theme].tertiary} />
-            <Text style={{ color: isSelected ? colors.text[theme].warning : colors.text[theme].primary }}  flex={1}>
+            <Briefcase
+              size={18}
+              color={isSelected ? colors.text[theme].warning : colors.text[theme].tertiary}
+            />
+            <Text
+              style={{
+                color: isSelected ? colors.text[theme].warning : colors.text[theme].primary,
+              }}
+              flex={1}
+            >
               {job.title}
             </Text>
           </Row>
           {job.organization && (
             <Row align="center" gap={6} marginLeft="$7">
               <Building2 size="md" style={{ color: colors.text[theme].secondary }} />
-              <Text style={{ color: colors.text[theme].secondary }} >
-                {job.organization.name}
-              </Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{job.organization.name}</Text>
             </Row>
           )}
         </Stack>
@@ -131,7 +137,9 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             value={applicationCount.toString()}
           />
         )}
-        {teamName && <MetricItem iconStart={<Briefcase size="md" />} label="Team" value={teamName} />}
+        {teamName && (
+          <MetricItem iconStart={<Briefcase size="md" />} label="Team" value={teamName} />
+        )}
         {postedDate && (
           <MetricItem iconStart={<Calendar size="md" />} label="Posted" value={postedDate} />
         )}
@@ -149,9 +157,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         {job.location && (
           <Row align="center" gap={6}>
             <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
-            <Text style={{ color: colors.text[theme].secondary }} >
-              {job.location}
-            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
           </Row>
         )}
         {job.remote_option && (

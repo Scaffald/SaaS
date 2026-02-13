@@ -225,7 +225,9 @@ export function CustomQuestionsStep({
       {/* Header */}
       <Stack gap={8}>
         <Text style={{ color: colors.text[theme].secondary }}>Additional Questions</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>The employer has requested additional information</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          The employer has requested additional information
+        </Text>
       </Stack>
 
       {/* Validation Summary */}
@@ -282,7 +284,11 @@ export function CustomQuestionsStep({
                     )
                   }
                   placeholder="Type your answer here..."
-                  style={{ borderColor: errors[question.id] ? colors.border[theme].error : colors.border[theme].default }}
+                  style={{
+                    borderColor: errors[question.id]
+                      ? colors.border[theme].error
+                      : colors.border[theme].default,
+                  }}
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
@@ -313,7 +319,12 @@ export function CustomQuestionsStep({
                     )
                   }
                   placeholder="Type your answer here..."
-                  style={{ minHeight: 120, borderColor: errors[question.id] ? colors.border[theme].error : colors.border[theme].default }}
+                  style={{
+                    minHeight: 120,
+                    borderColor: errors[question.id]
+                      ? colors.border[theme].error
+                      : colors.border[theme].default,
+                  }}
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
@@ -341,12 +352,16 @@ export function CustomQuestionsStep({
                     borderRadius={16}
                     borderWidth={1}
                     style={{
-                      borderColor: getAnswer(question.id) === option
-                        ? colors.border[theme].info
-                        : errors[question.id]
-                          ? colors.border[theme].error
-                          : colors.border[theme].default,
-                      backgroundColor: getAnswer(question.id) === option ? colors.bg[theme].info : colors.bg[theme].default
+                      borderColor:
+                        getAnswer(question.id) === option
+                          ? colors.border[theme].info
+                          : errors[question.id]
+                            ? colors.border[theme].error
+                            : colors.border[theme].default,
+                      backgroundColor:
+                        getAnswer(question.id) === option
+                          ? colors.bg[theme].info
+                          : colors.bg[theme].default,
                     }}
                     pressStyle={{ scale: 0.98 }}
                     onPress={() =>
@@ -361,14 +376,22 @@ export function CustomQuestionsStep({
                       borderRadius="$12"
                       borderWidth={2}
                       style={{
-                        borderColor: getAnswer(question.id) === option ? colors.border[theme].info : colors.border[theme].default,
-                        backgroundColor: colors.bg[theme].default
+                        borderColor:
+                          getAnswer(question.id) === option
+                            ? colors.border[theme].info
+                            : colors.border[theme].default,
+                        backgroundColor: colors.bg[theme].default,
                       }}
                       justify="center"
                       align="center"
                     >
                       {getAnswer(question.id) === option && (
-                        <Stack width={12} height={12} borderRadius="$12" style={{ backgroundColor: colors.bg[theme].primary }} />
+                        <Stack
+                          width={12}
+                          height={12}
+                          borderRadius="$12"
+                          style={{ backgroundColor: colors.bg[theme].primary }}
+                        />
                       )}
                     </Stack>
                     <Text style={{ color: colors.text[theme].secondary }} flex={1}>
@@ -395,8 +418,14 @@ export function CustomQuestionsStep({
                       borderRadius={16}
                       borderWidth={1}
                       style={{
-                        borderColor: isSelected ? colors.border[theme].info : errors[question.id] ? colors.border[theme].error : colors.border[theme].default,
-                        backgroundColor: isSelected ? colors.bg[theme].info : colors.bg[theme].default
+                        borderColor: isSelected
+                          ? colors.border[theme].info
+                          : errors[question.id]
+                            ? colors.border[theme].error
+                            : colors.border[theme].default,
+                        backgroundColor: isSelected
+                          ? colors.bg[theme].info
+                          : colors.bg[theme].default,
                       }}
                       pressStyle={{ scale: 0.98 }}
                       onPress={() => {
@@ -414,8 +443,12 @@ export function CustomQuestionsStep({
                         borderRadius={8}
                         borderWidth={2}
                         style={{
-                          borderColor: isSelected ? colors.border[theme].info : colors.border[theme].default,
-                          backgroundColor: isSelected ? colors.bg[theme].primary : colors.bg[theme].default
+                          borderColor: isSelected
+                            ? colors.border[theme].info
+                            : colors.border[theme].default,
+                          backgroundColor: isSelected
+                            ? colors.bg[theme].primary
+                            : colors.bg[theme].default,
                         }}
                         justify="center"
                         align="center"
@@ -442,12 +475,16 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   aria-label={`${question.question} toggle`}
                 />
-                <Text style={{ color: colors.text[theme].secondary }}>{(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
+                </Text>
               </Row>
             )}
 
             {/* Error Message */}
-            {errors[question.id] && <Text style={{ color: colors.text[theme].error }}>{errors[question.id]}</Text>}
+            {errors[question.id] && (
+              <Text style={{ color: colors.text[theme].error }}>{errors[question.id]}</Text>
+            )}
           </Stack>
         ))}
       </Stack>

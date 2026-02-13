@@ -113,13 +113,13 @@ export default function TeamAnalyticsPage() {
               variant="outline"
               iconStart={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
-            >Back to team</Button>
+            >
+              Back to team
+            </Button>
             <Row gap={8} align="center">
               <BarChart3 size={20} />
               <Stack>
-                <Text>
-                  {team.name ?? 'Team analytics'}
-                </Text>
+                <Text>{team.name ?? 'Team analytics'}</Text>
                 <Text color="gray">
                   Insights for collaboration, hiring throughput, and workload.
                 </Text>
@@ -131,7 +131,9 @@ export default function TeamAnalyticsPage() {
             size="md"
             variant="outline"
             onPress={() => router.push(RouteBuilder.officeTeamsSettings(team.id))}
-          >Team settings</Button>
+          >
+            Team settings
+          </Button>
         </Row>
 
         <TeamAnalyticsSummary teamId={team.id} />
@@ -161,16 +163,8 @@ function FallbackCard({
 }) {
   return (
     <Stack align="center" justify="center">
-      <Card
-       
-       
-       
-        padding={16}
-        gap={12}
-      >
-        <Text>
-          {title}
-        </Text>
+      <Card padding={16} gap={12}>
+        <Text>{title}</Text>
         <Text color="gray">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>

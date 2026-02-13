@@ -88,8 +88,15 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
               <Text style={{ color: colors.text[theme].secondary }}>Loading receipt…</Text>
             </Stack>
           ) : receiptQuery.error ? (
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].error }} borderColor={colors.border[theme].error} borderWidth={1}>
-              <Text style={{ color: colors.text[theme].error }}>Failed to load receipt: {receiptQuery.error.message}</Text>
+            <Card
+              padding="md"
+              style={{ backgroundColor: colors.bg[theme].error }}
+              borderColor={colors.border[theme].error}
+              borderWidth={1}
+            >
+              <Text style={{ color: colors.text[theme].error }}>
+                Failed to load receipt: {receiptQuery.error.message}
+              </Text>
             </Card>
           ) : receiptQuery.data ? (
             <Stack gap={16}>
@@ -102,7 +109,9 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                 <Stack gap={12}>
                   <Row justify="space-between" align="center">
                     <Text>{receiptQuery.data.receiptNumber}</Text>
-                    <Text style={{ color: colors.text[theme].success }}>{receiptQuery.data.amount}</Text>
+                    <Text style={{ color: colors.text[theme].success }}>
+                      {receiptQuery.data.amount}
+                    </Text>
                   </Row>
                   <Stack gap={8}>
                     <Row justify="space-between">
@@ -132,10 +141,20 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
               </Card>
 
               <Row gap={8} justify="flex-end">
-                <Button size="md" variant="outline" iconStart={Download} onPress={handleDownloadReceipt}>
+                <Button
+                  size="md"
+                  variant="outline"
+                  iconStart={Download}
+                  onPress={handleDownloadReceipt}
+                >
                   Download Receipt
                 </Button>
-                <Button size="md" variant="outline" iconStart={X} onPress={() => onOpenChange(false)}>
+                <Button
+                  size="md"
+                  variant="outline"
+                  iconStart={X}
+                  onPress={() => onOpenChange(false)}
+                >
                   Close
                 </Button>
               </Row>

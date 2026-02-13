@@ -1,4 +1,4 @@
-import { ResponsiveModal , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveModal, useThemeContext } from '@unicornlove/beyond-ui'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { UserSearch } from '@scf/core/components/user'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -142,7 +142,11 @@ export function AddTeamMemberModal({
             style={{ color: colors.text[theme].secondary }}
             disabled={addMemberMutation.isPending}
           >
-            {addMemberMutation.isPending ? <Spinner size="sm" style={{ color: colors.text[theme].secondary }} /> : 'Add Member'}
+            {addMemberMutation.isPending ? (
+              <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
+            ) : (
+              'Add Member'
+            )}
           </Button>
         </Row>
       </Stack>

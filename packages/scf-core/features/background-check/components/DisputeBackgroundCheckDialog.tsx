@@ -141,7 +141,9 @@ export function DisputeBackgroundCheckDialog({
               </>
             ) : (
               <Stack gap={12} align="center" paddingVertical={24}>
-                <Text color="$gray11">Select a background check to review dispute information.</Text>
+                <Text color="$gray11">
+                  Select a background check to review dispute information.
+                </Text>
               </Stack>
             )}
           </Stack>

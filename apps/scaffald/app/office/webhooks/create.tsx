@@ -102,9 +102,7 @@ export default function CreateWebhookPage() {
       >
         <ScrollView padding={16}>
           <Card padding={32} gap={20} align="center">
-            <Text>
-              ⚠️ Save Your Webhook Secret
-            </Text>
+            <Text>⚠️ Save Your Webhook Secret</Text>
             <Text color="$gray11" maxWidth={400}>
               This is the only time you will see this secret. Store it securely.
             </Text>
@@ -115,7 +113,13 @@ export default function CreateWebhookPage() {
               </Text>
             </Stack>
 
-            <Button variant="filled" size="md" onPress={() => router.push(ROUTES.OFFICE.WEBHOOKS.path)}>I've Saved My Secret</Button>
+            <Button
+              variant="filled"
+              size="md"
+              onPress={() => router.push(ROUTES.OFFICE.WEBHOOKS.path)}
+            >
+              I've Saved My Secret
+            </Button>
           </Card>
         </ScrollView>
       </OfficePageLayout>
@@ -138,13 +142,17 @@ export default function CreateWebhookPage() {
             size="md"
             onPress={() => router.back()}
             disabled={createWebhook.isPending}
-          >Cancel</Button>
+          >
+            Cancel
+          </Button>
           <Button
             variant="filled"
             size="md"
             onPress={handleSubmit}
             disabled={createWebhook.isPending}
-          >{createWebhook.isPending ? 'Creating...' : 'Create Webhook'}</Button>
+          >
+            {createWebhook.isPending ? 'Creating...' : 'Create Webhook'}
+          </Button>
         </Row>
       }
     >
@@ -173,7 +181,6 @@ export default function CreateWebhookPage() {
               value={description}
               onChangeText={setDescription}
               placeholder="Production webhook for order notifications"
-             
             />
           </Stack>
         </Card>
@@ -198,13 +205,8 @@ export default function CreateWebhookPage() {
                       gap={12}
                       align="center"
                       padding={12}
-                     
-                     
-                     
-                     
                       pressStyle={{ backgroundColor: '$gray3' }}
                       onPress={() => handleToggleEvent(event.value as WebhookEventType)}
-                     
                     >
                       <Checkbox
                         checked={selectedEvents.has(event.value as WebhookEventType)}
@@ -228,9 +230,7 @@ export default function CreateWebhookPage() {
 
         {/* Configuration Info */}
         <Card padding="lg">
-          <Text>
-            Configuration Details
-          </Text>
+          <Text>Configuration Details</Text>
           <Stack gap={8}>
             <Row justify="space-between">
               <Text color="$gray11">Max Retries:</Text>

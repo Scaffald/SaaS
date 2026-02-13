@@ -40,10 +40,7 @@ export const DrawerLink = ({
   const renderIcon = useCallback(() => {
     if (!Icon) return null
     return (
-      <Icon
-        size="lg"
-        color={active ? colors.icon[theme].active : colors.icon[theme].primary}
-      />
+      <Icon size="lg" color={active ? colors.icon[theme].active : colors.icon[theme].primary} />
     )
   }, [Icon, active, theme])
 

@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowRight, RefreshCcw } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
@@ -125,7 +125,9 @@ export function TeamJobsList({
               >
                 <Stack gap={4} flex={1} width="100%">
                   <Text>{job.title}</Text>
-                  <Text style={{ color: colors.text[theme].secondary }}>{job.organization?.name ?? 'No organization'}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    {job.organization?.name ?? 'No organization'}
+                  </Text>
                 </Stack>
                 <StatusChip status={job.status ?? 'draft'} />
               </Row>

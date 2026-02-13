@@ -1,5 +1,5 @@
 import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect , useThemeContext} from '@unicornlove/beyond-ui'
+import { ResponsiveSelect, useThemeContext } from '@unicornlove/beyond-ui'
 import { ExternalLink } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useState } from 'react'
@@ -88,7 +88,12 @@ export function OrganizationProjectPrivacySettings({
   }
 
   return (
-    <Card padding="md" style={{ backgroundColor: colors.bg[theme].info }} borderColor={colors.border[theme].info} borderWidth={1}>
+    <Card
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].info }}
+      borderColor={colors.border[theme].info}
+      borderWidth={1}
+    >
       <Stack gap={16}>
         <Text>Project Location Privacy</Text>
         <Text style={{ color: colors.text[theme].secondary }}>
@@ -109,7 +114,12 @@ export function OrganizationProjectPrivacySettings({
           />
         </Stack>
 
-        <Card padding="sm" style={{ backgroundColor: colors.bg[theme].warningSubtle }} borderColor={colors.border[theme].warning} borderWidth={1}>
+        <Card
+          padding="sm"
+          style={{ backgroundColor: colors.bg[theme].warningSubtle }}
+          borderColor={colors.border[theme].warning}
+          borderWidth={1}
+        >
           <Stack gap={8}>
             <Text>Project Override Statistics</Text>
             <Text style={{ color: colors.text[theme].secondary }}>

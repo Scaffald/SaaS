@@ -96,9 +96,7 @@ export default function AcceptTeamInvitationScreen() {
     if (!session?.user) {
       return (
         <Stack gap={16}>
-          <Text>
-            Sign in to continue
-          </Text>
+          <Text>Sign in to continue</Text>
           <Text color="gray">
             You&apos;ll need to sign in so we can confirm your identity and add you to the team.
           </Text>
@@ -119,9 +117,7 @@ export default function AcceptTeamInvitationScreen() {
         <Stack gap={16} align="center">
           <CheckCircle size={48} color="$green9" />
           <Stack gap={8} align="center">
-            <Text>
-              You&apos;re in!
-            </Text>
+            <Text>You&apos;re in!</Text>
             <Text color="gray">
               You now have access to the team workspace. We&apos;ve added it to your dashboard.
             </Text>
@@ -138,9 +134,7 @@ export default function AcceptTeamInvitationScreen() {
         <Stack gap={16} align="center">
           <XCircle size={48} color="$red9" />
           <Stack gap={8} align="center">
-            <Text>
-              Invitation declined
-            </Text>
+            <Text>Invitation declined</Text>
             <Text color="gray">
               You can always accept later from your dashboard if you change your mind.
             </Text>
@@ -159,9 +153,7 @@ export default function AcceptTeamInvitationScreen() {
     return (
       <Stack gap={20}>
         <Stack gap={8}>
-          <Text>
-            Join this team
-          </Text>
+          <Text>Join this team</Text>
           <Text color="gray">
             Accepting will give you access to the team workspace, shared jobs, and collaborative
             tools.
@@ -197,21 +189,8 @@ export default function AcceptTeamInvitationScreen() {
   }
 
   return (
-    <Stack
-     
-      padding={16}
-     
-      justify="center"
-      align="center"
-    >
-      <Card
-        width="100%"
-        maxWidth={480}
-        padding={20}
-        gap={20}
-       
-       
-      >
+    <Stack padding={16} justify="center" align="center">
+      <Card width="100%" maxWidth={480} padding={20} gap={20}>
         {renderContent()}
       </Card>
     </Stack>
@@ -223,9 +202,7 @@ function ErrorState({ title, message }: { title: string; message: string }) {
     <Stack gap={12} align="center">
       <AlertTriangle size={48} color="$yellow9" />
       <Stack gap={8} align="center">
-        <Text>
-          {title}
-        </Text>
+        <Text>{title}</Text>
         <Text color="gray">{message}</Text>
       </Stack>
     </Stack>

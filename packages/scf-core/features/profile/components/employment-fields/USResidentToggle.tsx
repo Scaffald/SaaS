@@ -15,10 +15,8 @@ export interface USResidentToggleProps
  */
 export function USResidentToggle() {
   const { theme } = useThemeContext()
-{
   description = 'I am a resident of the United States',
-  ...toggleCardProps
-}: USResidentToggleProps) {
+  ...toggleCardProps: USResidentToggleProps) 
   return (
     <ToggleCard
       iconStart={<Flag size="xs" style={{ color: colors.text[theme].secondary }} />}
@@ -27,4 +25,3 @@ export function USResidentToggle() {
       {...toggleCardProps}
     />
   )
-}

@@ -15,10 +15,8 @@ export interface OpenToTravelToggleProps
  */
 export function OpenToTravelToggle() {
   const { theme } = useThemeContext()
-{
   description = 'I am willing to travel for work opportunities',
-  ...toggleCardProps
-}: OpenToTravelToggleProps) {
+  ...toggleCardProps: OpenToTravelToggleProps) 
   return (
     <ToggleCard
       iconStart={<Plane size="xs" style={{ color: colors.text[theme].secondary }} />}
@@ -27,4 +25,3 @@ export function OpenToTravelToggle() {
       {...toggleCardProps}
     />
   )
-}

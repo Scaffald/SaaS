@@ -37,15 +37,13 @@ interface SimpleSkillAutocompleteProps {
  */
 export function SimpleSkillAutocomplete() {
   const { theme } = useThemeContext()
-{
   value,
   onChangeText,
   onSearch,
   onSelect,
   isLoading = false,
   placeholder = 'Search for a skill...',
-  existingSkillIds = [],
-}: SimpleSkillAutocompleteProps) {
+  existingSkillIds = [],: SimpleSkillAutocompleteProps) {
   const [results, setResults] = useState<ParentSkill[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debouncedValue = useDebounceValue(value, 300)
@@ -55,7 +53,7 @@ export function SimpleSkillAutocomplete() {
   const onSearchRef = useRef(onSearch)
   useEffect(() => {
     onSearchRef.current = onSearch
-  }, [onSearch])
+  }, [])
 
   // Handle search
   useEffect(() => {
@@ -99,7 +97,7 @@ export function SimpleSkillAutocomplete() {
     if (!value) {
       setShowResults(false)
     }
-  }, [value])
+  }, [])
 
   const handleSelect = useCallback(
     (skill: ParentSkill) => {
@@ -107,7 +105,7 @@ export function SimpleSkillAutocomplete() {
       setShowResults(false)
       onChangeText('') // Clear input after selection
     },
-    [onSelect, onChangeText]
+    []
   )
 
   return (
@@ -185,7 +183,7 @@ export function SimpleSkillAutocomplete() {
                           <Text>{skill.name}</Text>
                           {skill.code && <Text style={{ color: colors.text[theme].secondary }}>{skill.code}</Text>}
                         </Stack>
-                        {isExisting && <Text color="$blue9">Added</Text>}
+                        {isExisting && <Text style={{ color: colors.text[theme].info }}>Added</Text>}
                       </Row>
                     </Stack>
                   )

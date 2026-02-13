@@ -13,7 +13,6 @@ import { GraduationCap } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Separator, Text, Row, Stack } , useThemeContext } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
 import type { EducationWidgetEntry } from '@scaffald/sdk'
 
 type UserEducation = EducationWidgetEntry
@@ -28,11 +27,9 @@ type UserEducation = EducationWidgetEntry
  */
 export function EducationWidget() {
   const { theme } = useThemeContext()
-{
   userId,
   showEdit = false,
-  variant = 'full',
-}: ProfileWidgetProps) {
+  variant = 'full',: ProfileWidgetProps) {
   const router = useRouter()
   const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },

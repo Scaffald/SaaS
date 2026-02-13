@@ -26,8 +26,7 @@ interface SkillProgression {
  * declined, or stayed stable between versions.
  */
 export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = () => {
-  const { theme } = useThemeContext()
-{ userId }) => {
+  const { theme } = useThemeContext()userId ) => {
   // Fetch version history
   const {
     data: historyData,
@@ -171,13 +170,13 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const getTrendColor = (trend: SkillProgression['trend']) => {
     switch (trend) {
       case 'improved':
-        return '$green11'
+        return colors.text[theme].success
       case 'declined':
-        return '$red11'
+        return colors.text[theme].error
       case 'stable':
         return colors.text[theme].secondary
       default:
-        return '$color10'
+        return colors.text[theme].tertiary
     }
   }
 

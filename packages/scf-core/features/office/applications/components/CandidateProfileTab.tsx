@@ -1,4 +1,4 @@
-import { Card, Text, Row, Stack , useThemeContext} from '@unicornlove/beyond-ui'
+import { Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
@@ -69,29 +69,31 @@ export const CandidateProfileTab = ({
             <Row key={`skill-${skill.name}-${index}`} justify="space-between" align="center">
               <Text>{skill.name}</Text>
               <Stack
-                backgroundColor={
-                  skill.proficiency === 'expert'
-                    ? colors.bg[theme].successSubtle
-                    : skill.proficiency === 'advanced'
-                      ? '$blue3'
-                      : skill.proficiency === 'intermediate'
-                        ? colors.bg[theme].warningSubtle
-                        : '$color3'
-                }
+                style={{
+                  backgroundColor:
+                    skill.proficiency === 'expert'
+                      ? colors.bg[theme].successSubtle
+                      : skill.proficiency === 'advanced'
+                        ? colors.bg[theme].info
+                        : skill.proficiency === 'intermediate'
+                          ? colors.bg[theme].warningSubtle
+                          : colors.bg[theme].muted,
+                }}
                 paddingHorizontal={12}
                 paddingVertical={4}
                 borderRadius={8}
               >
                 <Text
-                  color={
-                    skill.proficiency === 'expert'
-                      ? '$green10'
-                      : skill.proficiency === 'advanced'
-                        ? '$blue10'
-                        : skill.proficiency === 'intermediate'
-                          ? '$yellow10'
-                          : '$color10'
-                  }
+                  style={{
+                    color:
+                      skill.proficiency === 'expert'
+                        ? colors.text[theme].success
+                        : skill.proficiency === 'advanced'
+                          ? colors.text[theme].info
+                          : skill.proficiency === 'intermediate'
+                            ? colors.text[theme].warning
+                            : colors.text[theme].tertiary,
+                  }}
                   textTransform="capitalize"
                 >
                   {skill.proficiency}
@@ -131,7 +133,11 @@ export const CandidateProfileTab = ({
               <Text opacity={0.6}>{exp.duration}</Text>
               <Text marginTop={4}>{exp.description}</Text>
               {index < candidate.experience.length - 1 && (
-                <Stack height={1} style={{ backgroundColor: colors.bg[theme].inactive }} marginTop={8} />
+                <Stack
+                  height={1}
+                  style={{ backgroundColor: colors.bg[theme].inactive }}
+                  marginTop={8}
+                />
               )}
             </Stack>
           ))}
