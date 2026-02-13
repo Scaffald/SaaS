@@ -10,7 +10,6 @@ import {
   ModalHeader,
   ModalContent,
   ModalActions,
-  H3,
   H4,
   Paragraph,
   Separator,
