@@ -39,8 +39,14 @@ test.describe('Dashboard browser check', () => {
 
   test('Scaffald: /dashboard after Forsured session (shared Supabase)', async ({
     page,
-    context,
+    request,
   }) => {
+    // Skip if Scaffald (port 8081) is not running
+    const scaffaldRes = await request.get(SCAFFALD_BASE).catch(() => null);
+    if (!scaffaldRes || !scaffaldRes.ok()) {
+      test.skip(true, 'Scaffald not running on 8081');
+      return;
+    }
     // First login at Forsured
     await page.goto(FORSURED_BASE + '/');
     await page.getByRole('button', { name: /Test as GC \/ Manager/ }).click();
@@ -61,7 +67,16 @@ test.describe('Dashboard browser check', () => {
     ).toBeTruthy();
   });
 
-  test('Scaffald: /dashboard direct (unauthenticated)', async ({ page }) => {
+  test('Scaffald: /dashboard direct (unauthenticated)', async ({
+    page,
+    request,
+  }) => {
+    // Skip if Scaffald is not running
+    const scaffaldRes = await request.get(SCAFFALD_BASE).catch(() => null);
+    if (!scaffaldRes || !scaffaldRes.ok()) {
+      test.skip(true, 'Scaffald not running on 8081');
+      return;
+    }
     await page.goto(SCAFFALD_BASE + '/dashboard');
     await page.waitForTimeout(3000);
 

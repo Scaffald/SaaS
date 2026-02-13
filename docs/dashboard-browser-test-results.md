@@ -78,12 +78,12 @@ Error: <svg> attribute height: Expected length, "lg".
 
 ## Recommended Fixes
 
-### High priority (Scaffald dashboard crash)
-1. **ProfileSnapshotWidget undefined component:** Inspect `ProfileSnapshotWidget` and its imports from `@scaffald/ui` (`DashboardWidget`, `ProgressBarBase`, `Spinner`, etc.). Ensure all are exported and correctly imported for web.
+### High priority (Scaffald dashboard crash) – FIXED
+1. **ProfileSnapshotWidget undefined component:** **Resolved.** `DashboardWidget` was missing from `@scaffald/ui`. Added [packages/scaffald-ui/src/components/Widgets/DashboardWidget](packages/scaffald-ui/src/components/Widgets/DashboardWidget) and exported it.
 2. **SVG width/height "lg":** Find where `size="lg"` is passed to an icon/SVG and map it to a numeric value (e.g., `24` for `lg`) before rendering.
 
-### Medium priority
-3. **401 Unauthorized (both apps):** Identify failing requests and fix auth or endpoint configuration.
+### Medium priority (deferred)
+3. **401 Unauthorized (both apps):** Identify failing requests and fix auth or endpoint configuration. May be tRPC or Supabase requests requiring auth for protected routes.
 4. **404 (Scaffald):** Fix the missing resource or route.
 
 ### Low priority (tech debt)
