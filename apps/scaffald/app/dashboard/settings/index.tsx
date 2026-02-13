@@ -602,9 +602,7 @@ export default function NotificationsCenterScreen() {
                           {notification.title}
                         </Text>
                         <NotificationTag
-                          themeName={severityTheme}
                           size="md"
-                          textColorToken="$color12"
                         >
                           {notification.severity.toUpperCase()}
                         </NotificationTag>
@@ -648,7 +646,7 @@ export default function NotificationsCenterScreen() {
                       {!notification.read ? (
                         <Button
                           size="md"
-                          theme="info"
+                          color="info"
                           onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
                         >
                           Mark as read
@@ -656,7 +654,7 @@ export default function NotificationsCenterScreen() {
                       ) : (
                         <Button
                           size="md"
-                          theme="gray"
+                          color="gray"
                           onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
                         >
                           Mark unread
@@ -666,7 +664,7 @@ export default function NotificationsCenterScreen() {
                       {filter === 'archived' ? (
                         <Button
                           size="md"
-                          theme="success"
+                          color="success"
                           onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
                         >
                           Restore
@@ -674,7 +672,7 @@ export default function NotificationsCenterScreen() {
                       ) : (
                         <Button
                           size="md"
-                          theme="gray"
+                          color="gray"
                           onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
                         >
                           Archive
@@ -682,7 +680,7 @@ export default function NotificationsCenterScreen() {
                       )}
 
                       {notification.ctaUrl && (
-                        <Button size="md" theme="info" onPress={() => handleNavigate(notification)}>
+                        <Button size="md" color="info" onPress={() => handleNavigate(notification)}>
                           <Row gap={8} align="center">
                             <Text color="gray">
                               {notification.ctaLabel ?? 'Open'}
@@ -700,7 +698,7 @@ export default function NotificationsCenterScreen() {
             {notificationsQuery.hasNextPage && (
               <Button
                
-                theme="info"
+                color="info"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}
               >
