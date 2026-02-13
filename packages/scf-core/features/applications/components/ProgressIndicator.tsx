@@ -82,41 +82,43 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 <Stack
                   width={32}
                   height={32}
-                  borderRadius="$10"
+                  borderRadius={16}
                   style={{
-                    backgroundColor: colors.bg[theme].primary,
+                    backgroundColor: colors.bg[theme].default,
                     borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                    shadowColor: colors.bg[theme].primary,
+                    shadowColor: colors.bg[theme].default,
+                    borderWidth: 2,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
                   }}
                   align="center"
                   justify="center"
-                  borderWidth={2}
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.2}
-                  shadowRadius={4}
                 >
-                  <CheckCircle2 size="lg" style={{ color: colors.text[theme].secondary }} />
+                  <CheckCircle2 size={20} color={colors.text[theme].secondary} />
                 </Stack>
               ) : (
                 <Stack
                   width={32}
                   height={32}
-                  borderRadius="$10"
+                  borderRadius={16}
                   style={{
                     backgroundColor:
-                      status === 'current' ? colors.bg[theme].primary : colors.bg[theme].muted,
+                      status === 'current' ? colors.bg[theme].default : colors.bg[theme].muted,
                     borderColor:
                       status === 'current'
                         ? theme === "light" ? colors.blue[300] : colors.blue[700]
                         : colors.border[theme].subtle,
-                    shadowColor: status === 'current' ? colors.bg[theme].primary : undefined,
+                    shadowColor: status === 'current' ? colors.bg[theme].default : undefined,
+                    borderWidth: status === 'current' ? 2 : 1,
+                    ...(status === 'current' && {
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 4,
+                    }),
                   }}
                   align="center"
                   justify="center"
-                  borderWidth={status === 'current' ? 2 : 1}
-                  shadowOffset={status === 'current' ? { width: 0, height: 2 } : undefined}
-                  shadowOpacity={status === 'current' ? 0.2 : undefined}
-                  shadowRadius={status === 'current' ? 4 : undefined}
                 >
                   <Text
                     style={{
@@ -140,9 +142,9 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                       : status === 'completed'
                         ? colors.text[theme].secondary
                         : colors.text[theme].tertiary,
+                  maxWidth: 100,
                 }}
-                textAlign="center"
-                maxWidth={100}
+                align="center"
                 ellipsizeMode="tail"
               >
                 {step.label}
@@ -156,7 +158,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 height={2}
                 style={{
                   backgroundColor: isLineCompleted
-                    ? colors.bg[theme].primary
+                    ? colors.bg[theme].default
                     : colors.bg[theme].muted,
                 }}
                 marginHorizontal={8}

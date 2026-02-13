@@ -1,8 +1,9 @@
 import type { CustomQuestionAnswer } from '@scf/schemas'
-import { ToggleSwitch, useThemeContext } from '@scaffald/ui'
+import { Toggle, useThemeContext } from '@scaffald/ui'
 import { ArrowLeft } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Input, Label, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Pressable } from 'react-native'
+import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 export interface CustomQuestion {
@@ -235,12 +236,12 @@ export function CustomQuestionsStep({
         <Stack
           padding="md"
           borderRadius={16}
+          gap={8}
           style={{
             backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
             borderColor: theme === "light" ? colors.error[300] : colors.error[700],
+            borderWidth: 1,
           }}
-          borderWidth={1}
-          gap={8}
         >
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Please complete the following:</Text>
           <Stack gap={4}>
@@ -265,7 +266,7 @@ export function CustomQuestionsStep({
             <Label>
               {index + 1}. {question.question}
               {question.required && (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} marginLeft={4}>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginLeft: 4 }}>
                   *
                 </Text>
               )}
@@ -291,7 +292,7 @@ export function CustomQuestionsStep({
                       ? theme === "light" ? colors.error[300] : colors.error[700]
                       : colors.border[theme].default,
                   }}
-                  disabled={isSubmitting}
+                  editable={!isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
                 <Row justify="flex-end">
@@ -312,9 +313,10 @@ export function CustomQuestionsStep({
             {/* Long Text Input */}
             {question.type === 'long_text' && (
               <Stack gap={8}>
-                <TextArea
+                <Input
+                  multiline
                   value={(getAnswer(question.id) as string) || ''}
-                  onChangeText={(text) =>
+                  onChangeText={(text: string) =>
                     handleTextChange(
                       question.id,
                       question.question,
@@ -330,7 +332,7 @@ export function CustomQuestionsStep({
                       ? theme === "light" ? colors.error[300] : colors.error[700]
                       : colors.border[theme].default,
                   }}
-                  disabled={isSubmitting}
+                  editable={!isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
                 <Row justify="flex-end">
@@ -352,14 +354,20 @@ export function CustomQuestionsStep({
             {question.type === 'single_choice' && question.options && (
               <Stack gap={8}>
                 {question.options.map((option) => (
-                  <Row
+                  <Pressable
                     key={option}
+                    onPress={() =>
+                      updateAnswer(question.id, question.question, 'single_choice', option)
+                    }
+                    disabled={isSubmitting}
+                  >
+                  <Row
                     gap={12}
                     align="center"
                     padding="sm"
                     borderRadius={16}
-                    borderWidth={1}
                     style={{
+                      borderWidth: 1,
                       borderColor:
                         getAnswer(question.id) === option
                           ? theme === "light" ? colors.blue[300] : colors.blue[700]
@@ -371,19 +379,13 @@ export function CustomQuestionsStep({
                           ? theme === "light" ? colors.blue[50] : colors.blue[900]
                           : colors.bg[theme].default,
                     }}
-                    pressStyle={{ scale: 0.98 }}
-                    onPress={() =>
-                      updateAnswer(question.id, question.question, 'single_choice', option)
-                    }
-                    cursor="pointer"
-                    disabled={isSubmitting}
                   >
                     <Stack
                       width={20}
                       height={20}
-                      borderRadius="$12"
-                      borderWidth={2}
+                      borderRadius={12}
                       style={{
+                        borderWidth: 2,
                         borderColor:
                           getAnswer(question.id) === option
                             ? theme === "light" ? colors.blue[300] : colors.blue[700]
@@ -397,15 +399,16 @@ export function CustomQuestionsStep({
                         <Stack
                           width={12}
                           height={12}
-                          borderRadius="$12"
-                          style={{ backgroundColor: colors.bg[theme].primary }}
+                          borderRadius={12}
+                          style={{ backgroundColor: theme === "light" ? colors.blue[500] : colors.blue[400] }}
                         />
                       )}
                     </Stack>
-                    <Text style={{ color: colors.text[theme].secondary }} flex={1}>
+                    <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
                       {option}
                     </Text>
                   </Row>
+                  </Pressable>
                 ))}
               </Stack>
             )}
@@ -418,14 +421,23 @@ export function CustomQuestionsStep({
                   const isSelected = currentAnswers.includes(option)
 
                   return (
-                    <Row
+                    <Pressable
                       key={option}
+                      onPress={() => {
+                        const newAnswers = isSelected
+                          ? currentAnswers.filter((a) => a !== option)
+                          : [...currentAnswers, option]
+                        updateAnswer(question.id, question.question, 'multiple_choice', newAnswers)
+                      }}
+                      disabled={isSubmitting}
+                    >
+                    <Row
                       gap={12}
                       align="center"
                       padding="sm"
                       borderRadius={16}
-                      borderWidth={1}
                       style={{
+                        borderWidth: 1,
                         borderColor: isSelected
                           ? theme === "light" ? colors.blue[300] : colors.blue[700]
                           : errors[question.id]
@@ -435,38 +447,30 @@ export function CustomQuestionsStep({
                           ? theme === "light" ? colors.blue[50] : colors.blue[900]
                           : colors.bg[theme].default,
                       }}
-                      pressStyle={{ scale: 0.98 }}
-                      onPress={() => {
-                        const newAnswers = isSelected
-                          ? currentAnswers.filter((a) => a !== option)
-                          : [...currentAnswers, option]
-                        updateAnswer(question.id, question.question, 'multiple_choice', newAnswers)
-                      }}
-                      cursor="pointer"
-                      disabled={isSubmitting}
                     >
                       <Stack
                         width={20}
                         height={20}
                         borderRadius={8}
-                        borderWidth={2}
                         style={{
+                          borderWidth: 2,
                           borderColor: isSelected
                             ? theme === "light" ? colors.blue[300] : colors.blue[700]
                             : colors.border[theme].default,
                           backgroundColor: isSelected
-                            ? colors.bg[theme].primary
+                            ? theme === "light" ? colors.blue[500] : colors.blue[400]
                             : colors.bg[theme].default,
                         }}
                         justify="center"
                         align="center"
                       >
-                        {isSelected && <Text color="white">✓</Text>}
+                        {isSelected && <Text style={{ color: colors.white }}>✓</Text>}
                       </Stack>
-                      <Text style={{ color: colors.text[theme].secondary }} flex={1}>
+                      <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
                         {option}
                       </Text>
                     </Row>
+                    </Pressable>
                   )
                 })}
               </Stack>
@@ -475,13 +479,14 @@ export function CustomQuestionsStep({
             {/* Yes/No Toggle */}
             {question.type === 'yes_no' && (
               <Row gap={16} align="center">
-                <ToggleSwitch
+                <Toggle
                   checked={(getAnswer(question.id) as boolean) || false}
-                  onChange={(checked) =>
+                  onChange={(checked: boolean) =>
                     updateAnswer(question.id, question.question, 'yes_no', checked)
                   }
                   disabled={isSubmitting}
-                  aria-label={`${question.question} toggle`}
+                  label=""
+                  optional
                 />
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
@@ -503,17 +508,17 @@ export function CustomQuestionsStep({
           padding="xl"
           align="center"
           gap={8}
+          borderRadius={16}
           style={{
             backgroundColor: colors.bg[theme].default,
             borderColor: colors.border[theme].default,
+            borderWidth: 1,
           }}
-          borderRadius={16}
-          borderWidth={1}
         >
-          <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+          <Text style={{ color: colors.text[theme].secondary }} align="center">
             This position has no additional questions.
           </Text>
-          <Text style={{ color: colors.text[theme].secondary }} textAlign="center">
+          <Text style={{ color: colors.text[theme].secondary }} align="center">
             You can proceed to the next step.
           </Text>
         </Stack>
@@ -532,7 +537,7 @@ export function CustomQuestionsStep({
         </Button>
         <Button
           size="md"
-          theme="info"
+          color="primary"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
         >
