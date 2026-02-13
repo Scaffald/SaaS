@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useAssessmentStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -16,7 +16,8 @@ export function PersonalityAssessmentWidget() {
   const router = useRouter()
 
   // Get assessment status
-  const { data: assessment, isLoading } = api.personalityAssessment.getAssessmentStatus.useQuery()
+  const { data: assessmentData, isLoading } = useAssessmentStatus()
+  const assessment = assessmentData?.data
 
   // Don't show widget if already completed
   if (isLoading) {

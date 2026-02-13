@@ -227,8 +227,8 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
             selected
           </Text>
-          <Row gap={8} flexWrap="wrap"}>
-            <Button size={12} variant="outline" onPress={clearSelection}}>
+          <Row gap={8} flexWrap="wrap">
+            <Button size={12} variant="outline" onPress={clearSelection}>
               Clear
             </Button>
             {selectedApplications.length >= 2 &&
@@ -242,7 +242,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     if (comparisonInquiryIds.length >= 2 && comparisonInquiryIds.length <= 5) {
                       setShowComparison(true)
                     }
-                  }}}
+                  }}
                 >
                   Compare {comparisonInquiryIds.length}
                 </Button>

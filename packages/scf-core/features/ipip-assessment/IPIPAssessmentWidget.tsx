@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { IPIPAnswer } from '@scf/core/features/personality-assessment/lib/ipip'
-import { api } from '@scf/core/utils/api'
+import { useAssessmentStatus, useIPIPStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -14,9 +14,12 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/do
 export function IPIPAssessmentWidget() {
   const router = useRouter()
 
-  const { data: status, isLoading } = api.personalityAssessment.getIPIPStatus.useQuery()
-  const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
+  const { data: statusData, isLoading } = useIPIPStatus()
+  const { data: assessmentData } = useAssessmentStatus()
   const results = useIPIPResults()
+
+  const status = statusData?.data
+  const assessment = assessmentData?.data
 
   if (isLoading) {
     return (

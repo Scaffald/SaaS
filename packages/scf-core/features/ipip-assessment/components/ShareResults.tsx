@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useGenerateShareTokenMutation,
+  useRevokeShareTokenMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
@@ -22,7 +25,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
   const [includeArchetype, setIncludeArchetype] = useState(true)
   const [includeScores, setIncludeScores] = useState(true)
 
-  const generateShareToken = api.personalityAssessment.generateShareToken.useMutation({
+  const generateShareToken = useGenerateShareTokenMutation({
     onSuccess: (data: { token: string }) => {
       // Build share URL
       const baseUrl = typeof window !== 'undefined' && window.location ? window.location.origin : ''
@@ -32,7 +35,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           title: 'Share link created!',
           message: 'Your results are now shareable. Copy the link to share.',
         })
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
       toast.show({
@@ -43,14 +46,14 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     },
   })
 
-  const revokeShareToken = api.personalityAssessment.revokeShareToken.useMutation({
+  const revokeShareToken = useRevokeShareTokenMutation({
     onSuccess: () => {
       setShareLink(null)
       toast.show({
           title: 'Share link revoked',
           message: 'Your share link has been deactivated.',
         })
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
       toast.show({

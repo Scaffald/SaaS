@@ -464,7 +464,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       <Row
         justify="flex-end"
         gap={8}
-        marginTop={16}}}
+        marginTop={16}
       >
         <Button
           testID="org-form-cancel-btn"

@@ -1,6 +1,11 @@
 import { AssessmentProgress, AssessmentWizard } from '@scf/core/features/assessments'
 import { LuscherTestStep } from '@scf/core/features/personality-assessment/components/LuscherTestStep'
-import { api } from '@scf/core/utils/api'
+import {
+  useAssessmentStatus,
+  useLuscherTestAvailability,
+  useSaveLuscher1Mutation,
+  useSaveLuscherTestSessionMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -24,22 +29,26 @@ export function LuscherTestWizard() {
   const [cooldownEndTime, setCooldownEndTime] = useState<string>('')
 
   // Get assessment status and availability
-  const { data: availability, isLoading: isLoadingAvailability } =
-    api.personalityAssessment.getLuscherTestAvailability.useQuery()
+  const { data: availabilityData, isLoading: isLoadingAvailability } = useLuscherTestAvailability()
 
   // Get existing assessment if available
-  const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
+  const { data: assessmentData } = useAssessmentStatus()
 
   const queryClient = useQueryClient()
 
+  const availability = availabilityData?.data
+  const assessment = assessmentData?.data
+
   // Save Part 1 mutation
-  const savePart1Mutation = api.personalityAssessment.saveLuscher1.useMutation({
+  const savePart1Mutation = useSaveLuscher1Mutation({
     onSuccess: async () => {
       // Fetch the updated assessment to get the cooldown_end_time from the database
-      await queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
-      const updated = await queryClient.fetchQuery({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] }) as { cooldown_end_time?: string } | undefined
-      if (updated?.cooldown_end_time) {
-        setCooldownEndTime(updated.cooldown_end_time)
+      await queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      const updated = (await queryClient.fetchQuery({
+        queryKey: ['personality-assessment', 'status'],
+      })) as { data?: { cooldown_end_time?: string } } | undefined
+      if (updated?.data?.cooldown_end_time) {
+        setCooldownEndTime(updated.data.cooldown_end_time)
       } else {
         // Fallback: calculate cooldown end time (60 seconds from now)
         const endTime = new Date(Date.now() + 60 * 1000).toISOString()
@@ -49,29 +58,29 @@ export function LuscherTestWizard() {
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to save test. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to save test. Please try again.',
+        variant: 'error',
+      })
     },
   })
 
   // Save Part 2 mutation (completes test)
-  const savePart2Mutation = api.personalityAssessment.saveLuscherTestSession.useMutation({
+  const savePart2Mutation = useSaveLuscherTestSessionMutation({
     onSuccess: () => {
       // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getLuscherTestAvailability']] })
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getLuscherTest1Status']] })
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getLuscherTest2Status']] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher', 'availability'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-1', 'status'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-2', 'status'] })
       setCurrentStep('results')
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to save test. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to save test. Please try again.',
+        variant: 'error',
+      })
     },
   })
 

@@ -1,4 +1,9 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useLuscherTest1Status,
+  useLuscherTest2Status,
+  useLuscherTestAvailability,
+  useIPIPStatus,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useRIASECStatus, useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
 
 /**
@@ -7,31 +12,31 @@ import { useRIASECStatus, useOccupationStatus } from '@scf/core/utils/onet-sdk-h
  */
 export function useAssessmentStatus() {
   // Personality assessment queries
-  const luscher1Query = api.personalityAssessment.getLuscherTest1Status.useQuery()
-  const luscherAvailabilityQuery = api.personalityAssessment.getLuscherTestAvailability.useQuery()
-  const ipipQuery = api.personalityAssessment.getIPIPStatus.useQuery()
-  const luscher2Query = api.personalityAssessment.getLuscherTest2Status.useQuery()
+  const luscher1Query = useLuscherTest1Status()
+  const luscherAvailabilityQuery = useLuscherTestAvailability()
+  const ipipQuery = useIPIPStatus()
+  const luscher2Query = useLuscherTest2Status()
 
   // Career assessment queries
   const riasecQuery = useRIASECStatus()
   const occupationQuery = useOccupationStatus()
 
-  const luscher1Completed = luscher1Query.data?.isCompleted ?? false
-  const luscher1OnCooldown = luscherAvailabilityQuery.data?.isOnCooldown ?? false
+  const luscher1Completed = luscher1Query.data?.data?.isCompleted ?? false
+  const luscher1OnCooldown = luscherAvailabilityQuery.data?.data?.isOnCooldown ?? false
 
   return {
     luscher1: {
       isCompleted: luscher1Completed,
       isLoading: luscher1Query.isLoading || luscherAvailabilityQuery.isLoading,
       isOnCooldown: luscher1OnCooldown,
-      nextAvailableAt: luscherAvailabilityQuery.data?.nextAvailableAt ?? null,
+      nextAvailableAt: luscherAvailabilityQuery.data?.data?.nextAvailableAt ?? null,
     },
     ipip: {
-      isCompleted: ipipQuery.data?.isCompleted ?? false,
+      isCompleted: ipipQuery.data?.data?.isCompleted ?? false,
       isLoading: ipipQuery.isLoading,
     },
     luscher2: {
-      isCompleted: luscher2Query.data?.isCompleted ?? false,
+      isCompleted: luscher2Query.data?.data?.isCompleted ?? false,
       isLoading: luscher2Query.isLoading,
     },
     riasec: {

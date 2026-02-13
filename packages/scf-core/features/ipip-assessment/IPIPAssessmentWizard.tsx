@@ -2,7 +2,11 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { AssessmentWizard } from '@scf/core/features/assessments'
 import { IPIPTestStep } from '@scf/core/features/personality-assessment/components/IPIPTestStep'
 import type { IPIPAnswer, IPIPDomain } from '@scf/core/features/personality-assessment/lib/ipip'
-import { api } from '@scf/core/utils/api'
+import {
+  useAssessmentStatus,
+  useIPIPStatus,
+  useSaveIPIPProgressMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
@@ -23,15 +27,18 @@ export function IPIPAssessmentWizard() {
   const toast = useToast()
   const [completedDomain, setCompletedDomain] = useState<IPIPDomain | null>(null)
 
-  const { data: status, isLoading, error } = api.personalityAssessment.getIPIPStatus.useQuery()
-  const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
+  const { data: statusData, isLoading, error } = useIPIPStatus()
+  const { data: assessmentData } = useAssessmentStatus()
   const queryClient = useQueryClient()
 
-  const saveMutation = api.personalityAssessment.saveIPIPProgress.useMutation({
+  const status = statusData?.data
+  const assessment = assessmentData?.data
+
+  const saveMutation = useSaveIPIPProgressMutation({
     onSuccess: (result: SaveIPIPProgressResult) => {
       // Invalidate status queries to update drawer checkmarks
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getIPIPStatus']] })
-      queryClient.invalidateQueries({ queryKey: [['personalityAssessment', 'getAssessmentStatus']] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'ipip', 'status'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       if (result.isComplete) {
         toast.show({
           title: 'Questions Complete',
