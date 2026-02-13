@@ -117,7 +117,7 @@ function WebhookCard({ webhook, isSelected, onPress, onViewDetails }: WebhookCar
     <Card
       padding={16}
      
-      borderColor={isSelected ? '$blue8' : '$borderColor'}
+      
      
       pressStyle={{ scale: 0.98 }}
       onPress={onPress}

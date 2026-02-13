@@ -191,7 +191,7 @@ export default function OnboardingPage() {
                           placeholder="First name"
                           value={field.value}
                           onChangeText={field.onChange}
-                          borderColor={errors.first_name ? '$red8' : '$borderColor'}
+                          
                         />
                       )}
                     />
@@ -212,7 +212,7 @@ export default function OnboardingPage() {
                           placeholder="Last name"
                           value={field.value}
                           onChangeText={field.onChange}
-                          borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                          
                         />
                       )}
                     />

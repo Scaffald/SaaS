@@ -7240,6 +7240,48 @@ export const handlers = [
     ])
   }),
 
+  // GET /v1/user-profiles/:userId/reviews-summary - Reviews summary
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/reviews-summary`, ({ params }) => {
+    return HttpResponse.json({
+      totalReviews: 15,
+      averageRating: 4.7,
+      categoryBreakdown: {
+        reliability: 4.8,
+        collaboration: 4.6,
+        professionalism: 4.9,
+        technical: 4.5,
+      },
+      recentReviews: [
+        {
+          id: 'review_1',
+          reviewer_name: 'Alice Johnson',
+          rating: 5,
+          comment: 'Excellent work!',
+          created_at: '2024-01-15T00:00:00Z',
+        },
+        {
+          id: 'review_2',
+          reviewer_name: 'Bob Smith',
+          rating: 4,
+          comment: 'Great professional',
+          created_at: '2024-01-10T00:00:00Z',
+        },
+      ],
+      strengths: ['Technical expertise', 'Communication', 'Reliability'],
+      improvements: ['Could improve documentation'],
+    })
+  }),
+
+  // GET /v1/user-profiles/:userId/contact-info - Contact info
+  http.get(`${BASE_URL}/v1/user-profiles/:userId/contact-info`, ({ params }) => {
+    return HttpResponse.json({
+      accessible: true,
+      email: 'test@example.com',
+      phone_number: '+1-555-0100',
+      linkedin_url: 'https://linkedin.com/in/testuser',
+    })
+  }),
+
   // GET /v1/workers - List workers
   http.get(`${BASE_URL}/v1/workers`, ({ request }) => {
     const url = new URL(request.url)
@@ -7300,6 +7342,10 @@ export const handlers = [
       id: 'assessment_1',
       user_id: 'test-user-123',
       current_step: 'luscher1',
+      overall_status: 'in_progress',
+      luscher_test_1_completed: false,
+      ipip_test_completed: false,
+      can_retake: false,
       completion_score: 25,
       started_at: '2024-01-01T00:00:00Z',
       last_updated_at: '2024-01-01T00:00:00Z',
@@ -7320,18 +7366,15 @@ export const handlers = [
       next_available_at: null,
       next_luscher_test_available_at: null,
       diary_response: null,
-      completed: false,
-      total_questions: 100,
-      answered_questions: 25,
     })
   }),
 
   // GET /v1/personality-assessment/ipip/status - IPIP status
   http.get(`${BASE_URL}/v1/personality-assessment/ipip/status`, () => {
     return HttpResponse.json({
-      isCompleted: false,
-      completedAt: null,
-      progress: 0.25,
+      completed: false,
+      total_questions: 100,
+      answered_questions: 25,
     })
   }),
 
