@@ -1,5 +1,5 @@
 import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/normalizeOrganizationSlug'
-import { api } from '@scf/core/utils/api'
+import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizations-sdk-hooks'
 import { type OrganizationRequest, organizationRequestSchema } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, Loader2 } from 'lucide-react-native'
@@ -53,27 +53,25 @@ export function OrganizationRequestForm({
 
   const slugValue = watch('slug')
 
-  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation(
-    {
-      onSuccess: ({ request }: CreateOrganizationRequestResult) => {
-        toast.show({
-          title: 'Request submitted',
-          message: 'We received your organization details and will follow up after review.',
-          variant: 'success',
-        })
-        if (request?.slug) {
-          setValue('slug', request.slug, { shouldValidate: false })
-        }
-      },
-      onError: (error: { message?: string }) => {
-        toast.show({
-          title: 'Unable to submit request',
-          message: error?.message ?? 'Please try again shortly.',
-          variant: 'error',
-        })
-      },
-    }
-  )
+  const createOrganizationRequestMutation = useCreateOrganizationRequestMutation({
+    onSuccess: ({ request }: CreateOrganizationRequestResult) => {
+      toast.show({
+        title: 'Request submitted',
+        message: 'We received your organization details and will follow up after review.',
+        variant: 'success',
+      })
+      if (request?.slug) {
+        setValue('slug', request.slug, { shouldValidate: false })
+      }
+    },
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Unable to submit request',
+        message: error?.message ?? 'Please try again shortly.',
+        variant: 'error',
+      })
+    },
+  })
 
   const onSubmit = handleSubmit((values) => {
     createOrganizationRequestMutation.mutate(values)

@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
+import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizations-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
@@ -76,26 +76,24 @@ export function AddOrganizationWidget() {
     candidateSlug.length === 0 ||
     Boolean(submittedRequest)
 
-  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation(
-    {
-      onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
-        setSubmittedRequest(request)
-        toast.show({
-          title: 'Request submitted',
-          message:
-            'Thanks for the submission! Our team will review your organization and follow up shortly.',
-          variant: 'success',
-        })
-      },
-      onError: (error: { message?: string }) => {
-        toast.show({
-          title: 'Unable to submit organization',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
-      },
-    }
-  )
+  const createOrganizationRequestMutation = useCreateOrganizationRequestMutation({
+    onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
+      setSubmittedRequest(request)
+      toast.show({
+        title: 'Request submitted',
+        message:
+          'Thanks for the submission! Our team will review your organization and follow up shortly.',
+        variant: 'success',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Unable to submit organization',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
+    },
+  })
 
   const handleCreatePress = () => {
     if (!isQueryReady || candidateSlug.length === 0) return

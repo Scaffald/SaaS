@@ -270,4 +270,90 @@ export class Organizations extends Resource {
   async updateSettings(id: string, params: UpdateSettingsParams): Promise<OrganizationSettings> {
     return this.patch<OrganizationSettings>(`/v1/organizations/${id}/settings`, params)
   }
+
+  // ===== Organization Requests =====
+
+  /**
+   * Create a request to add a new organization
+   *
+   * @param params - Organization request parameters
+   * @returns Organization request object with status
+   *
+   * @example
+   * ```typescript
+   * const { request } = await client.organizations.createRequest({
+   *   name: 'Acme Corporation',
+   *   slug: 'acme-corp',
+   *   website: 'https://acme.com',
+   *   notes: 'B2B SaaS company'
+   * })
+   * console.log(`Request ${request.id} is ${request.status}`)
+   * ```
+   */
+  async createRequest(params: {
+    name: string
+    slug: string
+    website?: string
+    notes?: string
+  }): Promise<{
+    request: {
+      id: string
+      name: string
+      slug: string
+      status: string
+      created_at: string
+    }
+  }> {
+    return this.post('/v1/organizations/requests', params)
+  }
+
+  // ===== Reminder Settings =====
+
+  /**
+   * Get inquiry reminder settings for an organization
+   *
+   * @param id - The organization ID
+   * @returns Reminder settings (enabled flag and days)
+   *
+   * @example
+   * ```typescript
+   * const settings = await client.organizations.getReminderSettings('org_123')
+   * console.log(`Reminders ${settings.reminderEnabled ? 'enabled' : 'disabled'}`)
+   * console.log(`Send after ${settings.reminderDays} days`)
+   * ```
+   */
+  async getReminderSettings(id: string): Promise<{
+    reminderEnabled: boolean
+    reminderDays: number
+  }> {
+    return this.get(`/v1/organizations/${id}/reminder-settings`)
+  }
+
+  /**
+   * Update inquiry reminder settings for an organization
+   *
+   * @param id - The organization ID
+   * @param params - Reminder settings to update
+   * @returns Updated reminder settings
+   *
+   * @example
+   * ```typescript
+   * const updated = await client.organizations.updateReminderSettings('org_123', {
+   *   reminderEnabled: true,
+   *   reminderDays: 5
+   * })
+   * ```
+   */
+  async updateReminderSettings(
+    id: string,
+    params: {
+      reminderEnabled: boolean
+      reminderDays: number
+    }
+  ): Promise<{
+    reminderEnabled: boolean
+    reminderDays: number
+  }> {
+    return this.put(`/v1/organizations/${id}/reminder-settings`, params)
+  }
 }

@@ -265,3 +265,100 @@ export function useUpdateOrganizationSettingsMutation(
     ...options,
   })
 }
+
+// ============================================================================
+// ORGANIZATION REQUESTS
+// ============================================================================
+
+/** Create a request to add a new organization */
+export function useCreateOrganizationRequestMutation(
+  options?: UseMutationOptions<
+    {
+      request: {
+        id: string
+        name: string
+        slug: string
+        status: string
+        created_at: string
+      }
+    },
+    Error,
+    {
+      name: string
+      slug: string
+      website?: string
+      notes?: string
+    }
+  >
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (params: {
+      name: string
+      slug: string
+      website?: string
+      notes?: string
+    }) => {
+      if (!client) throw new Error('Missing client')
+      return client.organizations.createRequest(params)
+    },
+    ...options,
+  })
+}
+
+// ============================================================================
+// REMINDER SETTINGS
+// ============================================================================
+
+/** Get inquiry reminder settings for an organization */
+export function useOrganizationReminderSettings(
+  organizationId: string | undefined,
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['organizations', 'reminderSettings', organizationId],
+    queryFn: async () => {
+      if (!client || !organizationId) throw new Error('Missing client or organizationId')
+      return client.organizations.getReminderSettings(organizationId)
+    },
+    enabled: !!client && !!organizationId && options?.enabled !== false,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+/** Update inquiry reminder settings for an organization */
+export function useUpdateOrganizationReminderSettingsMutation(
+  options?: UseMutationOptions<
+    {
+      reminderEnabled: boolean
+      reminderDays: number
+    },
+    Error,
+    {
+      organizationId: string
+      reminderEnabled: boolean
+      reminderDays: number
+    }
+  >
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({
+      organizationId,
+      reminderEnabled,
+      reminderDays,
+    }: {
+      organizationId: string
+      reminderEnabled: boolean
+      reminderDays: number
+    }) => {
+      if (!client) throw new Error('Missing client')
+      return client.organizations.updateReminderSettings(organizationId, {
+        reminderEnabled,
+        reminderDays,
+      })
+    },
+    ...options,
+  })
+}

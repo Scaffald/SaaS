@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useOrganizationReminderSettings,
+  useUpdateOrganizationReminderSettingsMutation,
+} from '@scf/core/utils/organizations-sdk-hooks'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useState } from 'react'
 import {
@@ -20,11 +23,10 @@ type InquiryReminderSettingsProps = {
 
 export function InquiryReminderSettings({ organizationId }: InquiryReminderSettingsProps) {
   const toast = useToast()
-  const { data: settings, isLoading } = api.organizations.getReminderSettings.useQuery(
-    { organizationId },
-    { enabled: !!organizationId }
-  )
-  const updateMutation = api.organizations.updateReminderSettings.useMutation({
+  const { data: settings, isLoading } = useOrganizationReminderSettings(organizationId, {
+    enabled: !!organizationId,
+  })
+  const updateMutation = useUpdateOrganizationReminderSettingsMutation({
     onSuccess: () => {
       toast.show({
         title: 'Settings saved',
