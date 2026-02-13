@@ -256,9 +256,9 @@ export async function sendTemplatedEmail(
 
 /**
  * Track an email event for audit logging
- * Called from the webhook handler
+ * Called from the webhook handler - logs to forsured.audit_log
  */
-export function trackEmailEvent(
+export async function trackEmailEvent(
   eventType:
     | "delivered"
     | "opened"
@@ -269,16 +269,31 @@ export function trackEmailEvent(
   messageId: string,
   recipient: string,
   metadata?: Record<string, unknown>,
-): void {
-  // Log the event for audit trail
-  console.log("[email] Tracking email event", {
-    eventType,
-    messageId,
-    recipient,
-    metadata,
-    timestamp: new Date().toISOString(),
-  });
+): Promise<void> {
+  const { auditService } = await import("../audit/AuditService");
 
-  // TODO: Store in audit log table when available
-  // This would integrate with the AuditService from src/lib/audit/
+  try {
+    await auditService.log({
+      category: "system",
+      action: `email_${eventType}`,
+      severity:
+        eventType === "bounced" || eventType === "dropped" || eventType === "spam_report"
+          ? "medium"
+          : "info",
+      status:
+        eventType === "bounced" || eventType === "dropped" || eventType === "spam_report"
+          ? "failure"
+          : "success",
+      resource_type: "email",
+      resource_name: messageId,
+      metadata: {
+        messageId,
+        recipient,
+        ...metadata,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("[email] Failed to log email event to audit trail:", error);
+  }
 }

@@ -364,29 +364,52 @@ export const taskService = {
   },
 
   /**
-   * Upload attachment
+   * Upload attachment to Supabase Storage and create task_attachments record
    */
   async uploadAttachment(
     task_id: string,
     file: File,
     uploaded_by: string,
   ): Promise<TaskAttachment> {
-    // TODO: Implement Supabase Storage upload for file
-    // For now, this is a placeholder that needs proper storage integration
+    const timestamp = Date.now();
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const filePath = `tasks/${task_id}/${timestamp}_${sanitizedName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw new Error(`Failed to upload attachment: ${uploadError.message}`);
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("documents")
+      .getPublicUrl(filePath);
+
     const attachment = {
       task_id,
       file_name: file.name,
       file_size: file.size,
       file_type: file.type,
       uploaded_by,
-      url: URL.createObjectURL(file), // Temporary mock URL - replace with storage URL
+      url: urlData.publicUrl,
     };
 
     const { data, error } = await supabase.schema("forsured").from(
       "task_attachments",
-    ).insert(attachment).select().single();
+    )
+      .insert(attachment)
+      .select()
+      .single();
 
-    if (error) throw error;
+    if (error) {
+      await supabase.storage.from("documents").remove([filePath]);
+      throw error;
+    }
     return data as TaskAttachment;
   },
 

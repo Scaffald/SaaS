@@ -1,13 +1,35 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
-import { useProject } from '@scf/core/utils/projects-sdk-hooks'
+import {
+  useApproveWorkerMutation,
+  useClaimWorkMutation,
+  useProject,
+  useRejectWorkerMutation,
+} from '@scf/core/utils/projects-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
 import { useLocalSearchParams } from 'expo-router'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = useProject(id as string, { enabled: !!id })
+  const approveWorker = useApproveWorkerMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'projects', 'detail', id] })
+    },
+  })
+  const rejectWorker = useRejectWorkerMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'projects', 'detail', id] })
+    },
+  })
+  const claimWork = useClaimWorkMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'projects', 'detail', id] })
+    },
+  })
 
   if (!id) {
     return (
@@ -196,7 +218,7 @@ export default function ProjectDetailPage() {
                   </Stack>
                 )}
 
-                {/* TODO: Add Mapbox map display here */}
+                {/* Mapbox map display - see SiteBoundaryDrawer for polygon drawing integration */}
                 <Text color="$gray10">
                   Map display coming soon - will show site boundaries and address pins
                 </Text>
@@ -251,20 +273,20 @@ export default function ProjectDetailPage() {
                             <Button
                               size="md"
                               color="success"
-                              onPress={async () => {
-                                // TODO: Implement approve
-                                console.log('Approve worker', worker.id)
-                              }}
+                              onPress={() =>
+                                approveWorker.mutate({ projectWorkerId: worker.id })
+                              }
+                              disabled={approveWorker.isPending}
                             >
                               Approve
                             </Button>
                             <Button
                               size="md"
                               color="error"
-                              onPress={async () => {
-                                // TODO: Implement reject
-                                console.log('Reject worker', worker.id)
-                              }}
+                              onPress={() =>
+                                rejectWorker.mutate({ projectWorkerId: worker.id })
+                              }
+                              disabled={rejectWorker.isPending}
                             >
                               Reject
                             </Button>
@@ -280,10 +302,10 @@ export default function ProjectDetailPage() {
             {/* Claim Work Button for current user */}
             <Button
               color="primary"
-              onPress={async () => {
-                // TODO: Implement claim work
-                console.log('Claim work on project', project.id)
-              }}
+              onPress={() =>
+                claimWork.mutate({ projectId: project.id })
+              }
+              disabled={claimWork.isPending}
             >
               Claim I Worked Here
             </Button>

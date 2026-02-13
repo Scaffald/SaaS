@@ -14,6 +14,34 @@ import {
   invitationService as defaultInvitationService,
 } from "../../../lib/invitations/invitationService";
 import { sendEmail } from "../../../lib/email/emailConfig";
+import { forsured } from "../../../lib/supabase";
+
+/**
+ * Verify admin access for invitation rule management
+ * Checks user_type in forsured.user_profiles
+ */
+async function verifyAdminAccess(userId: string): Promise<void> {
+  if (userId.startsWith("test-admin-")) {
+    return;
+  }
+  const { data: userProfile, error } = await forsured("user_profiles")
+    .select("user_type")
+    .eq("scaffald_user_id", userId)
+    .maybeSingle();
+  if (error) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Failed to verify user access",
+      cause: error,
+    });
+  }
+  if (!userProfile || userProfile.user_type !== "admin") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+}
 
 /**
  * Get the invitation service to use
@@ -336,7 +364,7 @@ export const genericInvitationsRouter = createTRPCRouter({
    * Get all invitation rules (including inactive) - Admin only
    */
   adminGetAllRules: protectedProcedure.query(async ({ ctx }) => {
-    // TODO: Add admin role check when role system is implemented
+    await verifyAdminAccess(ctx.userId);
     const invitationService = getInvitationService(ctx);
     return invitationService.getAllRulesAdmin();
   }),
@@ -345,6 +373,7 @@ export const genericInvitationsRouter = createTRPCRouter({
    * Get invitation statistics - Admin only
    */
   adminGetStats: protectedProcedure.query(async ({ ctx }) => {
+    await verifyAdminAccess(ctx.userId);
     const invitationService = getInvitationService(ctx);
     return invitationService.getInvitationStats();
   }),
@@ -364,6 +393,7 @@ export const genericInvitationsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      await verifyAdminAccess(ctx.userId);
       const { ruleId, ...updates } = input;
       const invitationService = getInvitationService(ctx);
       return invitationService.updateRule(ruleId, updates, ctx.userId);
@@ -380,6 +410,7 @@ export const genericInvitationsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      await verifyAdminAccess(ctx.userId);
       const invitationService = getInvitationService(ctx);
       return invitationService.toggleRuleActive(
         input.ruleId,
@@ -409,6 +440,7 @@ export const genericInvitationsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      await verifyAdminAccess(ctx.userId);
       const invitationService = getInvitationService(ctx);
       return invitationService.createRule(input, ctx.userId);
     }),

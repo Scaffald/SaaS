@@ -3,6 +3,7 @@
  * Form for creating a new webhook endpoint
  */
 
+import * as Clipboard from 'expo-clipboard'
 import { Alert } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
@@ -35,8 +36,8 @@ export default function CreateWebhookPage() {
         [
           {
             text: 'Copy Secret & Continue',
-            onPress: () => {
-              // TODO: Implement clipboard copy
+            onPress: async () => {
+              await Clipboard.setStringAsync(data.data.secret)
               router.push(ROUTES.OFFICE.WEBHOOKS.path)
             },
           },
