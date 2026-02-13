@@ -359,21 +359,17 @@ pnpm supa status
 - **AWS CloudWatch**: https://console.aws.amazon.com/cloudwatch/
 - **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Scaffald/actions
 
-## Legacy Scripts Archive
+## Archived Scripts
 
-Legacy deployment scripts have been archived to `scripts/archive/`:
-- `deploy.sh.legacy` - Original safe deployment script
-- `deploy-preview.sh.legacy` - Original preview deployment script (replaced by `deploy.sh preview`)
-- `deploy-production.sh.legacy` - Original production deployment script (replaced by `deploy.sh production`)
-
-These scripts are kept for reference but are superseded by the unified `deploy.sh` script. The following scripts remain available for specific use cases:
+One-off codemods and setup scripts live in [scripts/archive/](archive/). Use standard workflows (e.g. `pnpm supa db push`, `pnpm test:api`) for ongoing work. Remaining scripts for specific use cases:
 - `deploy-reset.sh` - Standalone database reset script (`pnpm deploy:reset`)
 - `deploy-aws.sh` - Standalone AWS deployment script (`pnpm deploy:aws`)
 - `verify-prod-deployment.sh` - Production deployment verification (`pnpm deploy:verify`)
 - `test-api.sh` - Quick REST API health checks (see [API Testing Guide](../docs/API_TESTING_GUIDE.md))
-- `test-api-keys.mjs` / `test-api-keys.sh` - API key validation
-- `apply-inbound-email-migration.sh` - Inbound email setup
-- `setup-docs-domain.sh` / `setup-docs-domain-github-pages.sh` - Docs site domain setup
+- `test-api-keys.mjs` / `test-api-keys.sh` - API key validation (local Supabase)
+- `test-api-local.ts` - Deno-based API test (health + auth flows)
+
+One-off codemods and setup scripts: [archive/](archive/)
 
 ## Security Notes
 
