@@ -59,7 +59,7 @@ export function SkillProficiencySelector({
 
         <Slider
           value={[proficiency]}
-          onValueChange={(value) => onProficiencyChange(value[0])}
+          onValueChange={(value) => onProficiencyChange(value.at(0) ?? proficiency)}
           min={1}
           max={5}
           step={1}

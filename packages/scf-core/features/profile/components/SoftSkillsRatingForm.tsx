@@ -305,7 +305,7 @@ export const SoftSkillsRatingForm: FC = () => {
                         <Stack gap={8}>
                           <Slider
                             value={[sliderValue]}
-                            onValueChange={(newValue) => onChange(newValue[0])}
+                            onValueChange={(newValue) => onChange(newValue.at(0) ?? sliderValue)}
                             min={1}
                             max={5}
                             step={1}

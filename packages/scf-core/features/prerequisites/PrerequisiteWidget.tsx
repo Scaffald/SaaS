@@ -146,7 +146,7 @@ export function PrerequisiteWidget() {
         </Stack>
 
         {isCheckingStatus ? (
-          <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
+          <Stack gap={spacing.sm} align="center" paddingVertical={spacing.xl}>
             <Spinner size="lg" style={{ color: colors.text[theme].info }} />
             <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
           </Stack>

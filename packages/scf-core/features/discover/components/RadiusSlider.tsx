@@ -35,7 +35,7 @@ export const RadiusSlider = ({
       <Slider
         value={[value]}
         onValueChange={(values) => {
-          const newValue = values[0]
+          const newValue = values.at(0) ?? value
           onValueChange(newValue)
         }}
         min={min}

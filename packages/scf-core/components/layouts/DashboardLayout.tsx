@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ScrollView } from 'react-native'
 import { Row, Stack } from '@scaffald/ui'
-import { Breadcrumb, type BreadcrumbItem } from '@scaffald/ui'
+import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type DashboardLayoutProps = {
@@ -10,7 +10,7 @@ type DashboardLayoutProps = {
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
 }

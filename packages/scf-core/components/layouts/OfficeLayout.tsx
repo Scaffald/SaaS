@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { useWindowDimensions, Row, Stack } from '@scaffald/ui'
 import type { StackProps } from '@scaffald/ui'
-import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@scaffald/ui'
+import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type OfficeLayoutProps = {
@@ -16,7 +16,7 @@ type OfficeLayoutProps = {
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
   /** Optional props for the main content wrapper */

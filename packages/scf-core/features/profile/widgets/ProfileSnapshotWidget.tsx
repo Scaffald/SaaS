@@ -55,7 +55,7 @@ export function ProfileSnapshotWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md} align="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.md} align="center" paddingVertical={spacing.xl}>
           <Spinner size="lg" style={{ color: colors.text[theme].info }} />
           <Text style={{ color: colors.text[theme].secondary }}>Loading profile...</Text>
         </Stack>
@@ -66,7 +66,7 @@ export function ProfileSnapshotWidget() {
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md} align="center" paddingVertical={spacing['2xl']}>
+        <Stack gap={spacing.md} align="center" paddingVertical={spacing.xl}>
           <Text style={{ color: colors.text[theme].secondary }}>Profile data unavailable</Text>
         </Stack>
       </DashboardWidget>

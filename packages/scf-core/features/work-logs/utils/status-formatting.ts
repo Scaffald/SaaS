@@ -14,16 +14,18 @@ export const getStatusLabel = (status: string | null | undefined): string => {
 }
 
 export const getStatusColor = (status: string | null | undefined, theme: Theme): string => {
+  const resolvedTheme = theme as 'light' | 'dark'
+
   if (!status) {
-    return colors.text[theme].secondary
+    return colors.text[resolvedTheme].secondary
   }
 
   const STATUS_COLORS: Record<string, string> = {
-    draft: colors.text[theme].tertiary,
-    pending_verification: colors.text[theme].warning,
-    verified: colors.text[theme].success,
-    disputed: colors.text[theme].error,
+    draft: colors.text[resolvedTheme].tertiary,
+    pending_verification: colors.text[resolvedTheme].warning,
+    verified: colors.text[resolvedTheme].success,
+    disputed: colors.text[resolvedTheme].error,
   }
 
-  return STATUS_COLORS[status] ?? colors.text[theme].tertiary
+  return STATUS_COLORS[status] ?? colors.text[resolvedTheme].tertiary
 }

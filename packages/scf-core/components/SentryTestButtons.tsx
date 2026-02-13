@@ -72,7 +72,7 @@ export function SentryTestButtons() {
           Test Critical Error
         </Button>
 
-        <Button onPress={testUnhandledError} color="error" variant="ghost">
+        <Button onPress={testUnhandledError} color="error" variant="text">
           Test Unhandled Error (Crashes Component)
         </Button>
       </Stack>
