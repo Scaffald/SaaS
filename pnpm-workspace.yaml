@@ -6,6 +6,7 @@ packages:
   - packages/scf-trpc
   - packages/ui
   - packages/scaffald-ui
+  - packages/scaffald-ui/docs-site
   - packages/scaffald-sdk
   - packages/scaffald-cli
   - packages/forsured

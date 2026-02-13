@@ -57,9 +57,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install docs-site dependencies
-        run: cd packages/scaffald-ui/docs-site && pnpm install
-
       - name: Build UI library
         run: pnpm --filter @scaffald/ui build
 
