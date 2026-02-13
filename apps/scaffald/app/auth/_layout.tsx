@@ -1,3 +1,4 @@
+import { ScaffaldLogo } from '@scf/core/assets'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { Box, Text, ThemeProvider, ToastContainer, ToastProvider } from '@scaffald/ui'
 import { Stack } from 'expo-router'
@@ -18,7 +19,12 @@ export default function Layout() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Stack />
+        <Stack
+          screenOptions={{
+            headerTitle: () => <ScaffaldLogo width={140} height={23} />,
+            headerTitleAlign: 'center',
+          }}
+        />
         <ToastContainer />
       </ToastProvider>
     </ThemeProvider>

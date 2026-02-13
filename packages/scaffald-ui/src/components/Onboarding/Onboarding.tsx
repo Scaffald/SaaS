@@ -12,7 +12,7 @@ import { OnboardingControls } from './OnboardingControls'
 
 const AUTO_SWIPE_THRESHOLD = 15_000
 
-export function Onboarding({ onOnboarded, autoSwipe, steps }: OnboardingProps) {
+export function Onboarding({ onOnboarded, autoSwipe, steps, staticMode = false }: OnboardingProps) {
   const [stepIdx, setStepIdxState] = useState(0)
   const [key, setKey] = useState(0)
   const { height } = useWindowDimensions()
@@ -31,12 +31,12 @@ export function Onboarding({ onOnboarded, autoSwipe, steps }: OnboardingProps) {
   }, [])
 
   useEffect(() => {
-    if (!autoSwipe) return
+    if (!autoSwipe || staticMode) return
     const t = setTimeout(() => {
       setStepIdx(stepIdx >= stepsCount - 1 ? 0 : stepIdx + 1)
     }, AUTO_SWIPE_THRESHOLD)
     return () => clearTimeout(t)
-  }, [autoSwipe, stepIdx, stepsCount, setStepIdx])
+  }, [autoSwipe, staticMode, stepIdx, stepsCount, setStepIdx])
 
   return (
     <Box
@@ -94,27 +94,31 @@ export function Onboarding({ onOnboarded, autoSwipe, steps }: OnboardingProps) {
           <currentStep.Content />
         </Box>
 
-        <Row gap={10} justify="center" style={{ marginVertical: 16 }}>
-          {Array.from({ length: stepsCount }, (_, idx) => (
-            <Pressable key={`point-${idx}-${stepsCount}`} onPress={() => setStepIdx(idx)}>
-              <Box
-                style={{
-                  width: idx === stepIdx ? 30 : 10,
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: idx === stepIdx ? colors.gray[600] : colors.gray[400],
-                }}
-              />
-            </Pressable>
-          ))}
-        </Row>
+        {!staticMode && (
+          <Row gap={10} justify="center" style={{ marginVertical: 16 }}>
+            {Array.from({ length: stepsCount }, (_, idx) => (
+              <Pressable key={`point-${idx}-${stepsCount}`} onPress={() => setStepIdx(idx)}>
+                <Box
+                  style={{
+                    width: idx === stepIdx ? 30 : 10,
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: idx === stepIdx ? colors.gray[600] : colors.gray[400],
+                  }}
+                />
+              </Pressable>
+            ))}
+          </Row>
+        )}
 
-        <OnboardingControls
-          currentIdx={stepIdx}
-          onChange={setStepIdx}
-          stepsCount={stepsCount}
-          onFinish={onOnboarded}
-        />
+        {!staticMode && (
+          <OnboardingControls
+            currentIdx={stepIdx}
+            onChange={setStepIdx}
+            stepsCount={stepsCount}
+            onFinish={onOnboarded}
+          />
+        )}
       </Stack>
     </Box>
   )

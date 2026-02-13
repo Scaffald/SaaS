@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@babel/runtime": "catalog:",
+    "@expo-google-fonts/roboto-serif": "^0.4.2",
     "@hookform/resolvers": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@react-native-community/netinfo": "catalog:",

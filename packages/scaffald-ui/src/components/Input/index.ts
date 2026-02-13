@@ -6,23 +6,28 @@
  */
 
 // Main Input component
-export { Input } from './Input'
-export type { InputProps, InputState, InputType } from './Input.types'
+export { Input } from "./Input";
+export { PasswordInput } from "./PasswordInput";
+export type { InputProps, InputState, InputType } from "./Input.types";
+export type { PasswordInputProps } from "./PasswordInput";
 
 // Composable sub-components (can be used independently)
-export { InputLabel } from './InputLabel'
-export type { InputLabelProps, InputLabelType } from './InputLabel'
+export { InputLabel } from "./InputLabel";
+export type { InputLabelProps, InputLabelType } from "./InputLabel";
 
-export { InputHelperText } from './InputHelperText'
-export type { InputHelperTextProps, InputHelperTextType } from './InputHelperText'
+export { InputHelperText } from "./InputHelperText";
+export type {
+  InputHelperTextProps,
+  InputHelperTextType,
+} from "./InputHelperText";
 
 export {
   InputExternalAddon,
   InputLeftSide,
   InputRightSide,
-} from './InputAddon'
+} from "./InputAddon";
 export type {
   InputExternalAddonProps,
   InputLeftSideProps,
   InputRightSideProps,
-} from './InputAddon'
+} from "./InputAddon";

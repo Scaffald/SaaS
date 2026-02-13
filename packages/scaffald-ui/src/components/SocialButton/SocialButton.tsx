@@ -20,19 +20,22 @@
 import { Button } from '../Button'
 import type { ButtonColor, ButtonVariant } from '../Button'
 import type { SocialButtonProps, SocialBrand, BrandConfig } from './SocialButton.types'
+import { IconApple } from '../Icons/IconApple'
+import { IconGoogle } from '../Icons/IconGoogle'
 
 /**
- * Brand configurations
- * Icons should be provided by the consumer as we don't include brand assets
+ * Brand configurations with built-in icons for Apple and Google
  */
 const brandConfigs: Record<SocialBrand, BrandConfig> = {
   apple: {
     name: 'Apple',
     defaultText: 'Continue with Apple',
+    icon: IconApple,
   },
   google: {
     name: 'Google',
     defaultText: 'Continue with Google',
+    icon: IconGoogle,
   },
   microsoft: {
     name: 'Microsoft',
@@ -84,12 +87,14 @@ export function SocialButton({
     return 'gray'
   }
 
+  const iconToUse = icon ?? config.icon
+
   return (
     <Button
       {...buttonProps}
       variant={getButtonVariant()}
       color={getButtonColor()}
-      iconStart={icon}
+      iconStart={iconToUse}
       iconOnly={iconOnly}
     >
       {!iconOnly && displayText}

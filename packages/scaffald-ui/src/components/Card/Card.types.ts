@@ -3,75 +3,76 @@
  * Card is a container component for grouping related content
  */
 
-import type { ReactNode } from 'react'
-import type { ViewStyle, ImageStyle, StyleProp } from 'react-native'
+import type { ReactNode } from "react";
+import type { ImageStyle, StyleProp, ViewStyle } from "react-native";
 
 /**
- * Card variant determines the visual style
+ * Card variant determines the visual style.
+ * Use "surface" for form containers (elevated with shadow); same as elevated.
  */
-export type CardVariant = 'elevated' | 'outlined' | 'filled'
+export type CardVariant = "elevated" | "surface" | "outlined" | "filled";
 
 /**
  * Card padding size
  */
-export type CardPadding = 'none' | 'sm' | 'md' | 'lg' | 'xl'
+export type CardPadding = "none" | "sm" | "md" | "lg" | "xl";
 
 /**
  * Card border radius size
  */
-export type CardRadius = 'sm' | 'md' | 'lg' | 'xl'
+export type CardRadius = "sm" | "md" | "lg" | "xl";
 
 /**
  * Card elevation level (for elevated variant)
  */
-export type CardElevation = 'sm' | 'md' | 'lg'
+export type CardElevation = "sm" | "md" | "lg";
 
 /**
  * Card component props
  */
 export interface CardProps {
   /** Card content */
-  children: ReactNode
+  children: ReactNode;
   /** Visual variant */
-  variant?: CardVariant
+  variant?: CardVariant;
   /** Internal padding */
-  padding?: CardPadding
+  padding?: CardPadding;
   /** Border radius */
-  radius?: CardRadius
+  radius?: CardRadius;
   /** Elevation level (only for 'elevated' variant) */
-  elevation?: CardElevation
+  elevation?: CardElevation;
   /** Whether the card is pressable/interactive */
-  pressable?: boolean
+  pressable?: boolean;
   /** Callback when card is pressed (requires pressable=true) */
-  onPress?: () => void
+  onPress?: () => void;
   /** Callback when press is released */
-  onPressOut?: () => void
+  onPressOut?: () => void;
   /** Callback when press starts */
-  onPressIn?: () => void
+  onPressIn?: () => void;
   /** Whether the card is disabled (only affects pressable cards) */
-  disabled?: boolean
+  disabled?: boolean;
   /** Additional styles */
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>;
   /** Test ID for testing */
-  testID?: string
+  testID?: string;
   /** Accessibility label */
-  accessibilityLabel?: string
+  accessibilityLabel?: string;
 }
 
 /**
  * CardHeader component props
  */
 export interface CardHeaderProps {
-  /** Header content */
-  children: ReactNode
+  /** Header content (optional when title/action provided) */
+  children?: ReactNode;
   /** Title text (alternative to children) */
-  title?: string
+  title?: string;
   /** Subtitle text */
-  subtitle?: string
+  subtitle?: string;
   /** Action element (e.g., button, icon) */
-  action?: ReactNode
+  action?: ReactNode;
   /** Additional styles */
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -79,11 +80,11 @@ export interface CardHeaderProps {
  */
 export interface CardContentProps {
   /** Content */
-  children: ReactNode
+  children: ReactNode;
   /** Additional padding adjustment */
-  padding?: CardPadding
+  padding?: CardPadding;
   /** Additional styles */
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -91,11 +92,11 @@ export interface CardContentProps {
  */
 export interface CardFooterProps {
   /** Footer content */
-  children: ReactNode
+  children: ReactNode;
   /** Horizontal alignment of footer content */
-  align?: 'left' | 'center' | 'right' | 'space-between'
+  align?: "left" | "center" | "right" | "space-between";
   /** Additional styles */
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -103,13 +104,13 @@ export interface CardFooterProps {
  */
 export interface CardMediaProps {
   /** Image source URI */
-  source: { uri: string } | number
+  source: { uri: string } | number;
   /** Alt text for accessibility */
-  alt?: string
+  alt?: string;
   /** Media height */
-  height?: number
+  height?: number;
   /** Position of media within card */
-  position?: 'top' | 'bottom'
+  position?: "top" | "bottom";
   /** Additional styles */
-  style?: StyleProp<ImageStyle>
+  style?: StyleProp<ImageStyle>;
 }

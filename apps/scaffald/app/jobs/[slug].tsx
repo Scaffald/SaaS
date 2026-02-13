@@ -28,7 +28,6 @@ export default function PublicJobDetailPage() {
     { href: '/', label: 'Home' },
     { href: ROUTES.DASHBOARD.DISCOVER.JOBS.path, label: 'Jobs' },
     {
-      isActive: true,
       label: jobData?.title || 'Loading...',
     },
   ]

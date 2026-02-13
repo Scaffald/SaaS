@@ -25,7 +25,7 @@
  */
 
 import type React from 'react'
-import { View, Text, type ViewStyle, type TextStyle } from 'react-native'
+import { View, Text, Pressable, type ViewStyle, type TextStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
@@ -170,6 +170,16 @@ export interface InputRightSideProps {
   color?: string
 
   /**
+   * When provided, makes the icon pressable (e.g. password visibility toggle)
+   */
+  onPress?: () => void
+
+  /**
+   * Accessibility label for pressable icon
+   */
+  accessibilityLabel?: string
+
+  /**
    * Custom container style
    */
   style?: ViewStyle
@@ -177,22 +187,38 @@ export interface InputRightSideProps {
 
 /**
  * Right Side (Trailing) component
- * Displays icon on the right side of the input
+ * Displays icon on the right side of the input.
+ * When onPress is provided, the icon is wrapped in a Pressable.
  */
 export function InputRightSide({
   icon: Icon,
   color = colors.icon.light.muted,
+  onPress,
+  accessibilityLabel,
   style,
 }: InputRightSideProps) {
   const iconSize = 20
 
-  return (
-    <View style={[{ justifyContent: 'center', alignItems: 'center' }, style]}>
-      {Icon && (
-        <View style={{ width: iconSize, height: iconSize }}>
-          <Icon size={iconSize} color={color} />
-        </View>
-      )}
+  const iconContent = Icon ? (
+    <View style={{ width: iconSize, height: iconSize }}>
+      <Icon size={iconSize} color={color} />
     </View>
-  )
+  ) : null
+
+  const containerStyle: ViewStyle = { justifyContent: 'center', alignItems: 'center' }
+
+  if (onPress && iconContent) {
+    return (
+      <Pressable
+        onPress={onPress}
+        accessibilityLabel={accessibilityLabel ?? 'Toggle'}
+        accessibilityRole="button"
+        style={({ pressed }) => [containerStyle, style, pressed && { opacity: 0.7 }]}
+      >
+        {iconContent}
+      </Pressable>
+    )
+  }
+
+  return <View style={[containerStyle, style]}>{iconContent}</View>
 }

@@ -5,8 +5,8 @@ import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
 import { ThemeProvider } from '@scaffald/ui'
+import { RobotoSerif_400Regular, useFonts } from '@expo-google-fonts/roboto-serif'
 import type { Session } from '@supabase/auth-js'
-import { useFonts } from 'expo-font'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
@@ -19,8 +19,9 @@ SplashScreen.preventAutoHideAsync()
 
 export default function DashboardLayout() {
   const segments = useSegments()
-  // Using system fonts (Inter is a system font on modern platforms)
-  const [fontLoaded] = useFonts({})
+  const [fontLoaded] = useFonts({
+    RobotoSerif_400Regular,
+  })
 
   const [themeLoaded, setThemeLoaded] = useState(false)
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)

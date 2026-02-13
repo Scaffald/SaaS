@@ -74,33 +74,38 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { useThemeContext } from '../../theme'
 
-export const Input = forwardRef<TextInputType, InputProps>(function Input({
-  label,
-  required = false,
-  helperText,
-  error = false,
-  errorMessage,
-  showError = true,
-  validateOnBlur = false,
-  state: controlledState,
-  type = 'classic',
-  externalAddon,
-  iconStart: IconStart,
-  iconEnd: IconEnd,
-  disabled = false,
-  fullWidth = true,
-  style,
-  contentStyle,
-  labelStyle,
-  helperTextStyle,
-  showPasswordStrength = false,
-  passwordStrength = 'too-weak',
-  passwordRequirements,
-  onFocus,
-  onBlur,
-  value,
-  ...textInputProps
-}, ref) {
+export const Input = forwardRef<TextInputType, InputProps>(function Input(
+  {
+    label,
+    required = false,
+    helperText,
+    error = false,
+    errorMessage,
+    showError = true,
+    validateOnBlur = false,
+    state: controlledState,
+    type = 'classic',
+    externalAddon,
+    iconStart: IconStart,
+    iconEnd: IconEnd,
+    iconEndOnPress,
+    iconEndAccessibilityLabel,
+    disabled = false,
+    fullWidth = true,
+    style,
+    contentStyle,
+    labelStyle,
+    helperTextStyle,
+    showPasswordStrength = false,
+    passwordStrength = 'too-weak',
+    passwordRequirements,
+    onFocus,
+    onBlur,
+    value,
+    ...textInputProps
+  },
+  ref
+) {
   const [internalFocused, setInternalFocused] = useState(false)
   const { theme } = useThemeContext()
 
@@ -145,18 +150,20 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
   const focusShadowStyle = getFocusShadowStyle(actualState || 'default')
 
   return (
-    <View style={[
-      styles.container,
-      fullWidth && {
-        width: '100%',
-        minWidth: '100%',
-        maxWidth: '100%',
-        alignSelf: 'stretch',
-        flexShrink: 0,
-        flexGrow: 1,
-      },
-      style
-    ]}>
+    <View
+      style={[
+        styles.container,
+        fullWidth && {
+          width: '100%',
+          minWidth: '100%',
+          maxWidth: '100%',
+          alignSelf: 'stretch',
+          flexShrink: 0,
+          flexGrow: 1,
+        },
+        style,
+      ]}
+    >
       {/* Label */}
       {label && (
         <InputLabel
@@ -225,17 +232,23 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
             onBlur={handleBlur}
           />
 
-          {/* Right Side - Trailing Icon */}
-          {IconEnd && <InputRightSide icon={IconEnd} color={styles.iconColor} />}
+          {/* Right Side - Trailing Icon (pressable when iconEndOnPress provided) */}
+          {IconEnd && (
+            <InputRightSide
+              icon={IconEnd}
+              color={styles.iconColor}
+              onPress={iconEndOnPress}
+              accessibilityLabel={
+                iconEndOnPress ? (iconEndAccessibilityLabel ?? 'Toggle visibility') : undefined
+              }
+            />
+          )}
         </View>
       </View>
 
       {/* Helper Text / Error Message */}
       {(helperText || errorMessage) && !showPasswordStrength && (
-        <InputHelperText
-          type={shouldShowError ? 'error' : 'default'}
-          textStyle={helperTextStyle}
-        >
+        <InputHelperText type={shouldShowError ? 'error' : 'default'} textStyle={helperTextStyle}>
           {shouldShowError && errorMessage ? errorMessage : helperText || ''}
         </InputHelperText>
       )}
@@ -244,25 +257,16 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
       {showPasswordStrength && !shouldShowError && (
         <View style={{ marginTop: spacing[8] }}>
           {passwordRequirements && passwordRequirements.length > 0 ? (
-            <PasswordStrength
-              variant="checklist"
-              requirements={passwordRequirements}
-            />
+            <PasswordStrength variant="checklist" requirements={passwordRequirements} />
           ) : (
-            <PasswordStrength
-              variant="bar"
-              strength={passwordStrength}
-            />
+            <PasswordStrength variant="bar" strength={passwordStrength} />
           )}
         </View>
       )}
 
       {/* Error message when password strength is shown */}
       {showPasswordStrength && error && errorMessage && (
-        <InputHelperText
-          type="error"
-          textStyle={helperTextStyle}
-        >
+        <InputHelperText type="error" textStyle={helperTextStyle}>
           {errorMessage}
         </InputHelperText>
       )}

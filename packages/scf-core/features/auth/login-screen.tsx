@@ -1,4 +1,3 @@
-import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
 import { i18n } from '@scf/core/locales'
 import { captureEvent } from '@scf/core/utils/analytics/client'
@@ -133,7 +132,6 @@ export const LoginScreen = () => {
       >
         <Card variant="elevated" radius="lg" elevation="md" padding="lg" style={{ width: '100%' }}>
           <Stack gap={spacing[20]} align="center">
-            <ScaffaldLogo width={200} height={33} />
             <Stack gap={spacing[2]} align="center">
               <H5
                 serif

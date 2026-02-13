@@ -28,7 +28,16 @@ import {
 // ============================================================================
 
 /**
- * Card - A container for grouping related content
+ * Card - A container for grouping related content with visual separation.
+ * Canonical component for elevated surfaces (forms, auth screens). Use
+ * variant="surface" or variant="elevated" with radius="lg", elevation="md",
+ * padding="lg" for form containers.
+ *
+ * @example
+ * // Form container (elevated surface)
+ * <Card variant="elevated" radius="lg" elevation="md" padding="lg">
+ *   <Form>...</Form>
+ * </Card>
  *
  * @example
  * // Basic elevated card
@@ -231,4 +240,3 @@ export function CardMedia({
     />
   )
 }
-
