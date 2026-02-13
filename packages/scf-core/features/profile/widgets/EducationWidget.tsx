@@ -53,7 +53,7 @@ export function EducationWidget({
           <Text color="$red10">Failed to load education</Text>
           <Text color="$gray11">{error.message}</Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="xs"
             onPress={() => {
               void refetch()
@@ -95,7 +95,7 @@ export function EducationWidget({
             action={
               showEdit ? (
                 <Button
-                  variant="primary"
+                  variant="filled" color="primary"
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
                 >
                   Add Education

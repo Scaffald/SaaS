@@ -123,7 +123,7 @@ export function IPIPAssessmentWidget() {
             )}
           </Stack>
 
-          <Button variant="primary" onPress={handleViewResults} size="lg">
+          <Button variant="filled" color="primary" onPress={handleViewResults} size="lg">
             <Button.Text>View Full Results</Button.Text>
             <ArrowRight size={4} />
           </Button>
@@ -169,7 +169,7 @@ export function IPIPAssessmentWidget() {
           </Stack>
         )}
 
-        <Button variant="primary" onPress={handleStart} size="lg">
+        <Button variant="filled" color="primary" onPress={handleStart} size="lg">
           <Button.Text>{hasStarted ? 'Continue Questions' : 'Start Questions'}</Button.Text>
         </Button>
 

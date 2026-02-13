@@ -66,7 +66,7 @@ export const AssessmentsLandingLeft = () => {
               </Stack>
 
               <Button
-                variant="primary"
+                variant="filled" color="primary"
                 size="lg"
                 onPress={() => {
                   router.push(route.path)

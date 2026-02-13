@@ -223,7 +223,7 @@ export const SoftSkillsRatingForm: FC = () => {
       <Stack gap={16} align="center" paddingVertical={32}>
         <Text style={{ color: colors.text[theme].error }}>Failed to load assessment</Text>
         <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
-        <Button variant="primary" size="xs" onPress={() => void refetch()}>
+        <Button variant="filled" color="primary" size="xs" onPress={() => void refetch()}>
           Retry
         </Button>
       </Stack>
@@ -357,7 +357,7 @@ export const SoftSkillsRatingForm: FC = () => {
       {/* Submit Button */}
       <Row justify="flex-end" paddingTop={8}>
         <Button
-          variant="primary"
+          variant="filled" color="primary"
           size="md"
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
@@ -405,7 +405,7 @@ export const SoftSkillsRatingForm: FC = () => {
               View Profile
             </Button>
             <Button
-              variant="primary"
+              variant="filled" color="primary"
               onPress={() => {
                 setShowSuccessModal(false)
                 router.push(ROUTES.DASHBOARD.DISCOVER.MAP.path)

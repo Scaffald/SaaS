@@ -607,7 +607,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         </Row>
 
         <Button
-          variant="primary"
+          variant="filled" color="primary"
           size="md"
           iconStart={isSaving ? Spinner : UploadCloud}
           disabled={isSaving}

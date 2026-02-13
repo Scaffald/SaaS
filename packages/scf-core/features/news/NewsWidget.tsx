@@ -475,7 +475,7 @@ export function NewsWidget({
             {error?.message || 'Please check your connection and try again.'}
           </Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             onPress={() => {
               void refetch()
             }}

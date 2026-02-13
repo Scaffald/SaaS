@@ -43,7 +43,7 @@ export function OccupationAssessmentWidget() {
           </Text>
         </Stack>
 
-        <Button variant="primary" onPress={handleStart} size="lg">
+        <Button variant="filled" color="primary" onPress={handleStart} size="lg">
           <Button.Text>Add Occupations</Button.Text>
         </Button>
 

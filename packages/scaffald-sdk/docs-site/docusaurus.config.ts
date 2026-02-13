@@ -68,8 +68,10 @@ const config: Config = {
     navbar: {
       title: 'Scaffald SDK',
       logo: {
-        alt: 'Scaffald SDK Logo',
-        src: 'img/logo.svg',
+        alt: 'Scaffald Logo',
+        src: 'img/scaffald-logo.png',
+        width: 32,
+        height: 32,
       },
       items: [
         {

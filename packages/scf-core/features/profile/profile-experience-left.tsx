@@ -672,7 +672,7 @@ export function ProfileExperienceLeft() {
             </Button>
           )}
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || saveState === 'saving'}
             opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}

@@ -460,7 +460,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="filled" color="primary"
                 onPress={handleSave}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >

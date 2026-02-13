@@ -357,7 +357,7 @@ export function VanityUrlSection() {
                   Cancel
                 </Button>
                 <Button
-                  variant="primary"
+                  variant="filled" color="primary"
                   size="sm"
                   onPress={handleSave}
                   disabled={

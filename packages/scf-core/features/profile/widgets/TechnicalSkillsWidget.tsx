@@ -55,7 +55,7 @@ export function TechnicalSkillsWidget({
           <Text color="$red10">Failed to load skills</Text>
           <Text color="$gray11">{error.message}</Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="xs"
             onPress={() => {
               void refetch()
@@ -122,7 +122,7 @@ export function TechnicalSkillsWidget({
             action={
               showEdit ? (
                 <Button
-                  variant="primary"
+                  variant="filled" color="primary"
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                 >
                   Add Skills

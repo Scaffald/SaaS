@@ -54,7 +54,7 @@ export function CertificationsWidget({
           <Text color="$red10">Failed to load certifications</Text>
           <Text color="$gray11">{error.message}</Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="xs"
             onPress={() => {
               void refetch()
@@ -107,7 +107,7 @@ export function CertificationsWidget({
             action={
               showEdit ? (
                 <Button
-                  variant="primary"
+                  variant="filled" color="primary"
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
                 >
                   Add Certification

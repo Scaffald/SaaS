@@ -428,7 +428,7 @@ export function ProfileGeneralLeft() {
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             onPress={handleSubmit(onSubmit, onError)}
             disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
             opacity={!isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1}

@@ -765,7 +765,7 @@ export function ProfileCertificationsLeft({
                     Cancel
                   </Button>
                   <Button
-                    variant="primary"
+                    variant="filled" color="primary"
                     onPress={handleCustomFormSubmit}
                     disabled={
                       isSavingCustom ||

@@ -172,7 +172,7 @@ export function LuscherTestStep({
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
         <Row justify="center">
-          <Button variant="primary" size="md" onPress={() => onSave(selectedOrder)}>
+          <Button variant="filled" color="primary" size="md" onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>
         </Row>

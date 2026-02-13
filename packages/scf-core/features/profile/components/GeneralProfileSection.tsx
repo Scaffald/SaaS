@@ -409,7 +409,7 @@ export function GeneralProfileSection({
         {!readOnly && (
           <Row justify="flex-end" paddingTop={16}>
             <Button
-              variant="primary"
+              variant="filled" color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}

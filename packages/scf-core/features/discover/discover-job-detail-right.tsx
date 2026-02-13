@@ -528,7 +528,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                       requirements.
                     </Text>
                     <Button
-                      variant="primary"
+                      variant="filled" color="primary"
                       size="sm"
                       onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                     >

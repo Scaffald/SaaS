@@ -58,7 +58,7 @@ export function GeneralInfoWidget({
           <Text color="$red10">Failed to load profile information</Text>
           <Text color="$gray11">{error.message}</Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="xs"
             onPress={() => {
               void refetch()

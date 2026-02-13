@@ -5,7 +5,8 @@
     "@hono/zod-openapi": "npm:@hono/zod-openapi@0.18.2",
     "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.0",
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
-    "@hono/zod-validator": "npm:@hono/zod-validator@0.4.2"
+    "@hono/zod-validator": "npm:@hono/zod-validator@0.4.2",
+    "@scf/supabase/types": "../../types.ts"
   },
   "tasks": {
     "dev": "deno run --allow-all --watch index.ts",

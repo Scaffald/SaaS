@@ -94,7 +94,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           <Text color="$red10">Failed to load reviews</Text>
           <Text color="$gray11">{error.message}</Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="xs"
             onPress={() => {
               void refetch()
@@ -117,7 +117,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               <Heading variant="h4">Reviews & Ratings</Heading>
               {canLeaveReview && (
                 <Button
-                  variant="primary"
+                  variant="filled" color="primary"
                   size="xs"
                   iconStart={<MessageSquarePlus size="md" />}
                   onPress={handleLeaveReview}
@@ -188,7 +188,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             <Heading variant="h4">Reviews & Ratings</Heading>
             {canLeaveReview && (
               <Button
-                variant="primary"
+                variant="filled" color="primary"
                 size="xs"
                 iconStart={<MessageSquarePlus size="md" />}
                 onPress={handleLeaveReview}

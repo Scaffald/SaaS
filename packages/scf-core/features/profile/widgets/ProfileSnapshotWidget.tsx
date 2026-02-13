@@ -281,7 +281,7 @@ export function ProfileSnapshotWidget() {
         {/* Quick Actions */}
         <Stack gap={spacing.xs}>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="sm"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
             width="100%"

@@ -467,7 +467,7 @@ export function ProfileCertificationsRight() {
                                 }
                               />
                               <Button
-                                variant="primary"
+                                variant="filled" color="primary"
                                 iconStart={<ExternalLink size="md" />}
                                 onPress={() => handleSaveUrl(cert.id)}
                                 disabled={!urlInputs[cert.id] || updateProof.isPending}

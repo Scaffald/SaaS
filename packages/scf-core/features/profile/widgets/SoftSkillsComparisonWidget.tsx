@@ -185,7 +185,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             iconStart={undefined}
           />
           {showCTA && (
-            <Button variant="primary" onPress={handleNavigateToAssessment}>
+            <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
             </Button>
           )}
@@ -210,7 +210,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               </Text>
               <Text color="$gray11">{completionCount} of 25 skills rated</Text>
             </Stack>
-            <Button variant="primary" onPress={handleNavigateToAssessment}>
+            <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
             </Button>
           </Stack>

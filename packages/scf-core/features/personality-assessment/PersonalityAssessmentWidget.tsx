@@ -92,7 +92,7 @@ export function PersonalityAssessmentWidget() {
 
         {/* Action Button */}
         <Button
-          variant="primary"
+          variant="filled" color="primary"
           onPress={handleStart}
           size="lg"
           marginTop={hasStarted ? spacing.xs : spacing.md}

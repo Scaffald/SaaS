@@ -542,7 +542,7 @@ export function ProfileEmploymentLeft() {
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="filled" color="primary"
                 onPress={handleSubmit(onSubmit, onFormError)}
                 disabled={!isDirty || isLoading}
                 opacity={!isDirty || isLoading ? 0.5 : 1}

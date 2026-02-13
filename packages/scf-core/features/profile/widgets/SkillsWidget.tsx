@@ -144,7 +144,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           <Text color="$red10">Failed to load skills</Text>
           <Text color="$gray11">{error.message}</Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             size="xs"
             onPress={() => {
               void refetch()
@@ -230,7 +230,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               <Text color="$red10">Failed to load skills</Text>
               <Text color="$gray11">{(error as unknown as Record<string, unknown>).message}</Text>
               <Button
-                variant="primary"
+                variant="filled" color="primary"
                 size="xs"
                 onPress={() => {
                   void (refetch as unknown as () => Promise<unknown>)()
@@ -247,7 +247,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               action={
                 showEdit ? (
                   <Button
-                    variant="primary"
+                    variant="filled" color="primary"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
                     Add Skills
@@ -326,7 +326,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               <Text color="$red10">Failed to load soft skills</Text>
               <Text color="$gray11">{softSkillsError.message}</Text>
               <Button
-                variant="primary"
+                variant="filled" color="primary"
                 size="xs"
                 onPress={() => {
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
@@ -342,7 +342,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               action={
                 showEdit ? (
                   <Button
-                    variant="primary"
+                    variant="filled" color="primary"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
                     Start Assessment
@@ -393,7 +393,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     View History
                   </Button>
                   <Button
-                    variant="primary"
+                    variant="filled" color="primary"
                     size="sm"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
