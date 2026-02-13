@@ -449,7 +449,7 @@ export default function NotificationsCenterScreen() {
                     <Button
                       key={option.value}
                       size={8}
-                      theme={isSelected ? 'blue' : 'gray'}
+                      color={isSelected ? 'blue' : 'gray'}
                       {...(!isSelected ? { variant: 'outlined' as const } : {})}
                       onPress={() =>
                         setPreferences((prev) => ({
@@ -544,7 +544,7 @@ export default function NotificationsCenterScreen() {
             return (
               <Button
                 key={item.value}
-                theme={isActive ? 'blue' : 'gray'}
+                color={isActive ? 'blue' : 'gray'}
                 {...(!isActive ? { variant: 'outline' as const } : {})}
                 onPress={() => {
                   setFilter(item.value)
@@ -553,7 +553,7 @@ export default function NotificationsCenterScreen() {
               >
                 {item.label}
                 {item.value === 'unread' && unreadCount > 0 && (
-                  <NotificationTag themeName="error">
+                  <NotificationTag>
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </NotificationTag>
                 )}
@@ -617,7 +617,7 @@ export default function NotificationsCenterScreen() {
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
                         {notification.channels.length > 0 && (
-                          <NotificationTag themeName="gray">
+                          <NotificationTag>
                             {notification.channels.join(', ')}
                           </NotificationTag>
                         )}
