@@ -17,8 +17,7 @@ import {
   ResponsiveModal,
   SkillsChart,
   spacing,
-  Tab,
-  TabGroup,
+  Tabs,
   type SkillsChartDataset,
 } from '@scaffald/ui'
 import { CheckCircle } from 'lucide-react-native'
@@ -207,13 +206,18 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         </Row>
 
         {/* Tabs */}
-        <TabGroup
+        <Tabs
           value={activeTab}
           onValueChange={(value) => setActiveTab(value as 'technical' | 'soft-skills')}
+          type="line"
         >
-          <Tab value="technical" label="Technical Skills" />
-          <Tab value="soft-skills" label="Soft Skills" />
-        </TabGroup>
+          <Tabs.Item value="technical">
+            <Tabs.Trigger>Technical Skills</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="soft-skills">
+            <Tabs.Trigger>Soft Skills</Tabs.Trigger>
+          </Tabs.Item>
+        </Tabs>
 
         <Separator />
 

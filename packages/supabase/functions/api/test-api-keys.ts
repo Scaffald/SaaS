@@ -3,7 +3,7 @@
  * Run with: deno run --allow-net --allow-env test-api-keys.ts
  */
 
-import { generateApiKey, hashApiKey, validateApiKeyFormat } from '../_shared/utils/api-key.ts'
+import { generateApiKey, hashApiKey, validateApiKeyFormat } from '../../_shared/utils/api-key.ts'
 
 async function runTests() {
   console.log('=========================================')

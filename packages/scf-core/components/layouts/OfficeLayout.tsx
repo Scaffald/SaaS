@@ -198,10 +198,10 @@ export const OfficeLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop={12} paddingBottom={20}>
+      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal={12} paddingTop={12}>
+          <Row paddingHorizontal="sm" paddingTop="sm">
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
@@ -209,7 +209,7 @@ export const OfficeLayout = ({
         {/* Tabs Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
           <>
-            <Row paddingHorizontal={12}>
+            <Row paddingHorizontal="sm">
               <Tabs
                 value={activeTabValue}
                 onValueChange={handleTabChange}
@@ -224,7 +224,7 @@ export const OfficeLayout = ({
               </Tabs>
             </Row>
             {secondaryTabItems.length > 0 && (
-              <Row paddingHorizontal={12}>
+              <Row paddingHorizontal="sm">
                 <Tabs
                   value={activeSecondaryValue}
                   onValueChange={handleTabChange}
@@ -243,7 +243,7 @@ export const OfficeLayout = ({
         )}
 
         {/* Content Area - Use programmatic responsive flexDirection */}
-        <Row gap={12} padding={12} flexDirection="column" {...restContentProps}>
+        <Row gap={12} padding="sm" {...restContentProps}>
           {hasLeftContent && (
             <Stack minWidth="100%" width="100%" maxWidth="100%" {...restLeftContainerProps}>
               {leftContent}

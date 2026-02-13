@@ -181,10 +181,10 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
 }
 
 function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
-  const skeletonBreadcrumbs: BreadcrumbItem[] = [
+  const skeletonBreadcrumbs: BreadcrumbItemData[] = [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
-    { label: 'Loading…', isActive: true },
+    { label: 'Loading…' },
   ]
 
   return {
@@ -209,7 +209,7 @@ export function DiscoverWorkerProfileScreen({
     }
   )
 
-  const baseBreadcrumbs: BreadcrumbItem[] = [
+  const baseBreadcrumbs: BreadcrumbItemData[] = [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
   ]
@@ -227,7 +227,7 @@ export function DiscoverWorkerProfileScreen({
     return {
       left: errorWidget,
       right: errorWidget,
-      breadcrumbItems: [...baseBreadcrumbs, { label: 'Worker not found', isActive: true }],
+      breadcrumbItems: [...baseBreadcrumbs, { label: 'Worker not found' }],
     }
   }
 
@@ -252,7 +252,7 @@ export function DiscoverWorkerProfileScreen({
     return {
       left: unavailableWidget,
       right: unavailableWidget,
-      breadcrumbItems: [...baseBreadcrumbs, { label: 'Profile unavailable', isActive: true }],
+      breadcrumbItems: [...baseBreadcrumbs, { label: 'Profile unavailable' }],
     }
   }
 

@@ -5,7 +5,7 @@
 
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { generateApiKey, getKeyPrefix, hashApiKey } from '../_shared/utils/api-key.ts'
+import { generateApiKey, getKeyPrefix, hashApiKey } from '../../_shared/utils/api-key.ts'
 import { requireAuth } from '../middleware/auth.ts'
 
 const app = new Hono()

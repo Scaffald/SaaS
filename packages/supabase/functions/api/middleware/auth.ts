@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Context, Next } from 'hono'
-import { hashApiKey, validateApiKeyFormat } from '../_shared/utils/api-key.ts'
+import { hashApiKey, validateApiKeyFormat } from '../../_shared/utils/api-key.ts'
 
 /**
  * Authentication middleware - verifies JWT tokens OR API keys and adds context
@@ -21,6 +21,13 @@ import { hashApiKey, validateApiKeyFormat } from '../_shared/utils/api-key.ts'
  * - Enforces rate limits by tier
  */
 export async function authMiddleware(c: Context, next: Next) {
+  // Skip auth for health checks (monitoring/liveness probes)
+  const path = new URL(c.req.url).pathname
+  if (path.endsWith('/health')) {
+    await next()
+    return
+  }
+
   const authHeader = c.req.header('Authorization')
   const token = authHeader?.replace('Bearer ', '')?.trim()
 

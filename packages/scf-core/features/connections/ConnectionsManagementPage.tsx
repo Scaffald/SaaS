@@ -1,5 +1,4 @@
 import { usePendingConnections } from '@scf/core/utils/engagement-sdk-hooks'
-import { Tab, TabGroup } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import { Tabs, Text, Stack } from '@scaffald/ui'
 import { ConnectionsList } from './components/ConnectionsList'
@@ -29,37 +28,42 @@ export function ConnectionsManagementPage() {
         </Text>
       </Stack>
 
-      <TabGroup value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>
-        <Tab value="connections" label="Connections" />
-        <Tab value="followers" label="Followers" />
-        <Tab value="following" label="Following" />
-        <Tab
-          value="pending"
-          label="Pending Requests"
-          badge={pendingReceivedCount > 0 ? pendingReceivedCount : undefined}
-        />
-
-        <Tabs.Content value="connections">
-          <Stack paddingTop={16}>
-            <ConnectionsList />
-          </Stack>
-        </Tabs.Content>
-        <Tabs.Content value="followers">
-          <Stack paddingTop={16}>
-            <FollowersList />
-          </Stack>
-        </Tabs.Content>
-        <Tabs.Content value="following">
-          <Stack paddingTop={16}>
-            <FollowingList />
-          </Stack>
-        </Tabs.Content>
-        <Tabs.Content value="pending">
-          <Stack paddingTop={16}>
-            <PendingRequestsList />
-          </Stack>
-        </Tabs.Content>
-      </TabGroup>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} type="line">
+        <Tabs.Item value="connections">
+          <Tabs.Trigger>Connections</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <ConnectionsList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+        <Tabs.Item value="followers">
+          <Tabs.Trigger>Followers</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <FollowersList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+        <Tabs.Item value="following">
+          <Tabs.Trigger>Following</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <FollowingList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+        <Tabs.Item value="pending">
+          <Tabs.Trigger>
+            Pending Requests{pendingReceivedCount > 0 ? ` (${pendingReceivedCount})` : ''}
+          </Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <PendingRequestsList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+      </Tabs>
     </Stack>
   )
 }

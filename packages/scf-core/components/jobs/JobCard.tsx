@@ -283,7 +283,7 @@ export const JobCard = memo(
 
           {/* Certifications and Skills */}
           {badges.length > 0 && (
-            <CardBadges badges={badges} isSelected={isSelected} maxVisible={5} />
+            <CardBadges badges={badges} isSelected={isSelected} maxBadges={5} />
           )}
 
           {/* Actions - Only show when card is used for selection, not navigation */}

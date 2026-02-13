@@ -353,7 +353,6 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
                     const siblings: BreadcrumbSibling[] = siblingRoutes.map((r) => ({
                       label: translateRoute(r),
                       href: r.path,
-                      isActive: false,
                     }))
 
                     // Add intermediate breadcrumb

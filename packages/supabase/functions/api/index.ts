@@ -1,7 +1,4 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { logger } from "hono/logger";
-import { prettyJSON } from "hono/pretty-json";
 
 import jobsRouter from "./routes/jobs.ts";
 import oauthRouter from "./routes/oauth.ts";
@@ -39,6 +36,7 @@ import onetRouter from "./routes/onet.ts";
 import workersRouter from "./routes/workers.ts";
 import personalityAssessmentRouter from "./routes/personality-assessment.ts";
 import openapi from "./openapi.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
 import {
   rateLimitMiddleware,
@@ -47,26 +45,20 @@ import {
 
 const app = new Hono();
 
-// Middleware
-app.use(
-  "*",
-  cors({
-    origin: "*", // TODO: Configure allowed origins
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    exposeHeaders: [
-      "Content-Length",
-      "X-Request-Id",
-      "X-RateLimit-Limit",
-      "X-RateLimit-Remaining",
-      "X-RateLimit-Reset",
-    ],
-    maxAge: 600,
-    credentials: true,
-  }),
-);
-app.use("*", logger());
-app.use("*", prettyJSON());
+// CORS middleware - handle preflight and add headers to all responses
+app.use("*", async (c, next) => {
+  if (c.req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+  for (const [k, v] of Object.entries(corsHeaders)) {
+    c.header(k, v);
+  }
+  await next();
+});
+app.use("*", async (c, next) => {
+  console.log(`[API] ${c.req.method} ${c.req.url}`);
+  await next();
+});
 app.use("*", authMiddleware); // Global auth middleware (handles both JWT and API keys)
 app.use("*", rateLimitMiddleware); // Rate limit API key requests
 app.use("*", trackApiKeyUsage); // Track API key usage

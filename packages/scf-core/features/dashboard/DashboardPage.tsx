@@ -78,8 +78,7 @@ export function DashboardPage({
       // Fallback to breadcrumb trail, then matched route, then Dashboard
       const trail = computedBreadcrumbItems
       if (trail && trail.length > 0) {
-        const activeItem =
-          [...trail].reverse().find((item) => item.isActive) ?? trail[trail.length - 1]
+        const activeItem = trail[trail.length - 1]
         if (activeItem?.label) {
           return activeItem.label
         }

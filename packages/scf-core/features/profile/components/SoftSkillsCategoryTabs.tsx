@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { Tab, TabGroup } from '@scaffald/ui'
+import { Tabs } from '@scaffald/ui'
 
 export type SoftSkillCategory = 'reliability' | 'collaboration' | 'professionalism' | 'technical'
 
@@ -56,19 +56,19 @@ export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({
   ]
 
   return (
-    <TabGroup
+    <Tabs
       value={activeCategory}
       onValueChange={(value) => {
         onCategoryChange(value as SoftSkillCategory)
       }}
-      ariaLabel="Soft skills categories"
-      scrollable
-      bordered={false}
-      variant="underlined"
+      type="line"
+      orientation="horizontal"
     >
       {categories.map((category) => (
-        <Tab key={category} value={category} label={CATEGORY_LABELS[category]} />
+        <Tabs.Item key={category} value={category}>
+          <Tabs.Trigger>{CATEGORY_LABELS[category]}</Tabs.Trigger>
+        </Tabs.Item>
       ))}
-    </TabGroup>
+    </Tabs>
   )
 }

@@ -38,16 +38,16 @@ export const DashboardLayout = ({
 
   return (
     <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop={12} paddingBottom={20}>
+      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal={8} paddingTop={12}>
+          <Row paddingHorizontal="xs" paddingTop="sm">
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
 
         {/* Content Area - Responsive two-column or single-column layout */}
-        <Row gap={12} flexDirection="column">
+        <Row gap={12}>
           {leftContent && <Stack width="100%">{leftContent}</Stack>}
           {rightContent && <Stack width="100%">{rightContent}</Stack>}
         </Row>

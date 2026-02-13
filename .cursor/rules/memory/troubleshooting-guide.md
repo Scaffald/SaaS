@@ -377,8 +377,25 @@ pnpm dev
 # Check service status
 pnpm supa status
 curl http://localhost:8081
-curl http://localhost:54321/health
+curl http://localhost:54321/functions/v1/api/health
 ```
+
+### 4. Supabase Port Conflict (54322 already allocated)
+If `pnpm supa start` fails with "Bind for 0.0.0.0:54322 failed: port is already allocated":
+```bash
+# Stop the running Supabase project (use project-id from error message)
+pnpm supa stop --project-id UNI-Construct
+# Or: pnpx supabase --workdir packages stop --project-id UNI-Construct
+
+# Then start fresh
+pnpm supa start
+```
+
+### 5. Network Request Failures
+If the app shows network errors or requests fail to 127.0.0.1:54321:
+1. **Ensure Supabase is running**: `pnpm supa status` – if containers are down, run `pnpm supa start`
+2. **Check API health**: `curl http://127.0.0.1:54321/functions/v1/api/health` (should return 200)
+3. **Auth redirects**: `packages/supabase/config.toml` includes `http://localhost:8081` and `http://127.0.0.1:8081` in `additional_redirect_urls`
 
 ## Getting Help
 

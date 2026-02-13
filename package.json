@@ -149,11 +149,13 @@
     "web:build": "pnpm --filter scaffald-app web:build"
   },
   "dependencies": {
+    "@scaffald/ui": "link:packages/scaffald-ui",
     "@stripe/react-stripe-js": "^5.6.0",
     "@stripe/stripe-js": "^8.7.0",
     "@tiptap/core": "^2.27.2",
     "date-fns": "^4.1.0",
-    "html2canvas": "^1.4.1"
+    "html2canvas": "^1.4.1",
+    "ui": "link:../../Library/pnpm/global/5/node_modules/@scaffald/ui"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
@@ -176,6 +178,7 @@
     "@vitejs/plugin-react": "^5.1.3",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
+    "baseline-browser-mapping": "^2.9.19",
     "check-dependency-version-consistency": "^5.0.1",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^7.4.2",
@@ -189,8 +192,7 @@
     "typescript": "catalog:",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.18",
-    "vitest-mock-extended": "^3.1.0",
-    "baseline-browser-mapping": "^2.9.19"
+    "vitest-mock-extended": "^3.1.0"
   },
   "packageManager": "pnpm@10.20.0",
   "pnpm": {
