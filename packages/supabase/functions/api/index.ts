@@ -10,6 +10,13 @@ import profilesRouter from "./routes/profiles.ts";
 import apiKeysRouter from "./routes/api-keys.ts";
 import authRouter from "./routes/auth.ts";
 import industriesRouter from "./routes/industries.ts";
+import prerequisitesRouter from "./routes/prerequisites.ts";
+import teamsRouter from "./routes/teams.ts";
+import connectionsRouter from "./routes/connections.ts";
+import followsRouter from "./routes/follows.ts";
+import engagementRouter from "./routes/engagement.ts";
+import notificationsRouter from "./routes/notifications.ts";
+import userProfilesRouter from "./routes/user-profiles.ts";
 import openapi from "./openapi.ts";
 import { authMiddleware } from "./middleware/auth.ts";
 import {
@@ -51,6 +58,13 @@ app.route("/v1/profiles", profilesRouter);
 app.route("/v1/api-keys", apiKeysRouter); // API key management
 app.route("/v1/auth", authRouter); // Authentication endpoints
 app.route("/v1/industries", industriesRouter); // Industry lookup
+app.route("/v1/prerequisites", prerequisitesRouter); // Prerequisites/onboarding
+app.route("/v1/teams", teamsRouter); // Teams management
+app.route("/v1/connections", connectionsRouter); // User connections/networking
+app.route("/v1/follows", followsRouter); // User follows
+app.route("/v1/engagement", engagementRouter); // Engagement tracking/analytics
+app.route("/v1/notifications", notificationsRouter); // User notifications
+app.route("/v1/user-profiles", userProfilesRouter); // User profile data
 
 // OpenAPI documentation
 app.route("/", openapi);
