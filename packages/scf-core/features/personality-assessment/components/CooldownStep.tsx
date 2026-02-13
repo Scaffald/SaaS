@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Progress, Text, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { getChoices, getQuestions, type IPIPAnswer, type IPIPChoice } from '../lib/ipip'
 
 export interface CooldownStepProps {
@@ -26,6 +27,7 @@ export function CooldownStep({
   onCooldownComplete,
   isLoading = false,
 }: CooldownStepProps) {
+  const { theme } = useThemeContext()
   const questions = getQuestions()
   const choices = getChoices()
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex)
@@ -104,19 +106,21 @@ export function CooldownStep({
       <Stack
         gap={16}
         padding="xl"
-        backgroundColor="$color3"
-        borderRadius={16}
-        borderWidth={1}
-        borderColor="$color7"
+        style={{
+          backgroundColor: colors.bg[theme].muted,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: colors.border[theme].subtle,
+        }}
       >
         <Stack gap={8} align="center">
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Cooldown Period
           </Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Please wait 60 seconds before taking the second color test
           </Text>
-          <Text color="$blue10">{formatTime(timeRemaining)}</Text>
+          <Text style={{ color: colors.text[theme].info }}>{formatTime(timeRemaining)}</Text>
         </Stack>
         <Progress value={cooldownProgress} max={100} size="xs">
           <Progress.Indicator animation="quick" />
@@ -126,17 +130,25 @@ export function CooldownStep({
       {/* IPIP Questions Section */}
       <Stack gap={16}>
         <Stack gap={8} align="center">
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Progress: {currentIndex} / 120 ({progress}%)
           </Text>
         </Stack>
 
         {currentQuestion && (
-          <Stack gap={16} padding="md" borderRadius={16} borderWidth={1} borderColor="$borderColor">
-            <Text color="$gray11">{currentQuestion.text}</Text>
+          <Stack
+            gap={16}
+            padding="md"
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border[theme].default,
+            }}
+          >
+            <Text style={{ color: colors.text[theme].secondary }}>{currentQuestion.text}</Text>
 
             <Stack gap={12}>
               {currentChoices.map((choice) => (
@@ -157,7 +169,7 @@ export function CooldownStep({
 
         {!currentQuestion && !isCooldownActive && (
           <Stack gap={8} align="center" padding="md">
-            <Text color="$green10" style={{ textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].success, textAlign: 'center' }}>
               All questions answered! You can continue to the next step.
             </Text>
           </Stack>

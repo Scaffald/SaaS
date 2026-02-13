@@ -1,6 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useAssessmentStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, spacing } from '@unicornlove/beyond-ui'
+import { Button, DashboardWidget, spacing, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { useRouter } from 'expo-router'
 import { Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
@@ -13,6 +14,7 @@ import { Progress, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
  * - Links to assessment wizard
  */
 export function PersonalityAssessmentWidget() {
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   // Get assessment status
@@ -24,8 +26,8 @@ export function PersonalityAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={spacing.sm} align="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="lg" color="$blue7" />
-          <Text color="$gray11">Loading...</Text>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -63,8 +65,8 @@ export function PersonalityAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={spacing.md}>
         <Stack gap={spacing.xs}>
-          <Text color="$gray11">Personality Assessment</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>Personality Assessment</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Discover your personality traits through a comprehensive assessment including color
             psychology and personality questions.
           </Text>
@@ -74,13 +76,15 @@ export function PersonalityAssessmentWidget() {
         {hasStarted && (
           <Stack gap={spacing.xs}>
             <Row justify="space-between" align="center">
-              <Text color="$gray11">{getStepLabel(currentStep)}</Text>
-              <Text color="$blue8">{completionScore}%</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {getStepLabel(currentStep)}
+              </Text>
+              <Text style={{ color: colors.text[theme].info }}>{completionScore}%</Text>
             </Row>
             <Progress value={completionScore} max={100}>
-              <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
+              <Progress.Indicator animation="bouncy" />
             </Progress>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
             </Text>
           </Stack>
@@ -97,7 +101,7 @@ export function PersonalityAssessmentWidget() {
         </Button>
 
         {!hasStarted && (
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             This assessment takes about 10-15 minutes and includes color tests and 120 personality
             questions.
           </Text>

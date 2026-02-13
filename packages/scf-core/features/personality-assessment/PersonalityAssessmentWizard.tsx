@@ -1,6 +1,7 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, ScrollView, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import { CooldownStep } from './components/CooldownStep'
 import { IPIPTestStep } from './components/IPIPTestStep'
 import { LuscherTestStep } from './components/LuscherTestStep'
@@ -21,6 +22,7 @@ import { getNextStep, getPreviousStep, STEP_INFO } from './utils/assessment-step
  * - Resume from last step
  */
 export function PersonalityAssessmentWizard() {
+  const { theme } = useThemeContext()
   const {
     assessment,
     isLoading,
@@ -48,7 +50,7 @@ export function PersonalityAssessmentWizard() {
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading assessment...</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading assessment...</Text>
       </Stack>
     )
   }
@@ -57,9 +59,9 @@ export function PersonalityAssessmentWizard() {
   if (error) {
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
-        <AlertCircle size={48} color="$red10" />
-        <Text color="$red11">Error loading assessment</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <AlertCircle size={48} color={colors.text[theme].error} />
+        <Text style={{ color: colors.text[theme].error }}>Error loading assessment</Text>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           {error.message || 'An unexpected error occurred'}
         </Text>
       </Stack>
@@ -86,18 +88,20 @@ export function PersonalityAssessmentWizard() {
   const canGoPrevious = currentStep !== 'luscher1' && currentStep !== 'cooldown'
 
   return (
-    <Stack flex={1} backgroundColor="$background">
+    <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
       {/* Header */}
       <Stack
         padding="md"
-        backgroundColor="$background"
-        borderBottomWidth={1}
-        borderBottomColor="$borderColor"
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border[theme].default,
+        }}
         gap={12}
       >
         <Stack gap={4}>
-          <Text color="$gray11">Personality Assessment</Text>
-          <Text color="$gray11">{stepInfo.description}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Personality Assessment</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{stepInfo.description}</Text>
         </Stack>
 
         {/* Progress Indicator */}
@@ -220,8 +224,8 @@ export function PersonalityAssessmentWizard() {
 
           {currentStep === 'completed' && (
             <Stack gap={16} align="center" padding={32}>
-              <Text color="$green10">✓ Assessment Complete!</Text>
-              <Text color="$gray11" style={{ textAlign: 'center' }}>
+              <Text style={{ color: colors.text[theme].success }}>✓ Assessment Complete!</Text>
+              <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                 Your personality assessment has been completed. You can view your results below.
               </Text>
               {assessment && <ResultsStep assessment={assessment} isReadOnly />}
@@ -232,7 +236,10 @@ export function PersonalityAssessmentWizard() {
 
       {/* Navigation Footer */}
       {currentStep !== 'completed' && (
-        <Stack padding="md" borderTopWidth={1} borderTopColor="$borderColor">
+        <Stack
+          padding="md"
+          style={{ borderTopWidth: 1, borderTopColor: colors.border[theme].default }}
+        >
           <Row gap={12} justify="space-between">
             <Button
               size="md"

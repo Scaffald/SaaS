@@ -1,4 +1,5 @@
-import { Circle, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Circle, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { AssessmentStep } from '../utils/assessment-steps'
 import { STEP_INFO } from '../utils/assessment-steps'
 
@@ -18,6 +19,7 @@ export interface ProgressIndicatorProps {
  * ProgressIndicator - Visual progress tracker for personality assessment wizard
  */
 export function ProgressIndicator({ currentStep, completionScore }: ProgressIndicatorProps) {
+  const { theme } = useThemeContext()
   const steps: AssessmentStep[] = ['luscher1', 'ipip', 'luscher2', 'acute']
 
   const getStepStatus = (stepId: AssessmentStep): 'completed' | 'current' | 'upcoming' => {
@@ -34,15 +36,24 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
       {/* Completion Percentage */}
       <Stack gap={4}>
         <Row justify="space-between" align="center">
-          <Text color="$gray11">Progress</Text>
-          <Text color="$blue10">{completionScore}%</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
+          <Text style={{ color: colors.text[theme].info }}>{completionScore}%</Text>
         </Row>
-        <Stack height={8} backgroundColor="$color5" borderRadius="$10" overflow="hidden">
+        <Stack
+          style={{
+            height: 8,
+            backgroundColor: colors.bg[theme].inactive,
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}
+        >
           <Stack
-            height="100%"
-            backgroundColor="$blue9"
-            width={`${completionScore}%`}
-            transition="width 0.3s ease"
+            style={{
+              height: '100%',
+              backgroundColor: colors.bg[theme].primary,
+              width: `${completionScore}%`,
+              transition: 'width 0.3s ease',
+            }}
           />
         </Stack>
       </Stack>
@@ -60,32 +71,50 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
               <Stack gap={4} align="center">
                 <Circle
                   size={40}
-                  backgroundColor={
-                    status === 'completed' ? '$green9' : status === 'current' ? '$blue9' : '$color5'
-                  }
-                  borderWidth={2}
-                  borderColor={
-                    status === 'completed'
-                      ? '$green10'
-                      : status === 'current'
-                        ? '$blue10'
-                        : '$color7'
-                  }
+                  style={{
+                    backgroundColor:
+                      status === 'completed'
+                        ? colors.bg[theme].success
+                        : status === 'current'
+                          ? colors.bg[theme].primary
+                          : colors.bg[theme].inactive,
+                    borderWidth: 2,
+                    borderColor:
+                      status === 'completed'
+                        ? colors.border[theme].success
+                        : status === 'current'
+                          ? colors.border[theme].info
+                          : colors.border[theme].subtle,
+                  }}
                   justify="center"
                   align="center"
                 >
                   {status === 'completed' ? (
-                    <Text color="$gray11">✓</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>✓</Text>
                   ) : (
-                    <Text color={status === 'current' ? '$color12' : '$color10'}>{index + 1}</Text>
+                    <Text
+                      style={{
+                        color:
+                          status === 'current'
+                            ? colors.text[theme].primary
+                            : colors.text[theme].tertiary,
+                      }}
+                    >
+                      {index + 1}
+                    </Text>
                   )}
                 </Circle>
 
                 {/* Step Label */}
                 <Text
-                  color={status === 'completed' || status === 'current' ? '$color12' : '$color10'}
-                  textAlign="center"
-                  maxWidth={80}
+                  style={{
+                    color:
+                      status === 'completed' || status === 'current'
+                        ? colors.text[theme].primary
+                        : colors.text[theme].tertiary,
+                    textAlign: 'center',
+                    maxWidth: 80,
+                  }}
                 >
                   {stepInfo.label}
                 </Text>
@@ -94,10 +123,13 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
               {/* Connector Line */}
               {!isLast && (
                 <Stack
-                  width={40}
-                  height={2}
-                  backgroundColor={status === 'completed' ? '$green9' : '$color5'}
-                  marginBottom={24}
+                  style={{
+                    width: 40,
+                    height: 2,
+                    backgroundColor:
+                      status === 'completed' ? colors.bg[theme].success : colors.bg[theme].inactive,
+                    marginBottom: 24,
+                  }}
                 />
               )}
             </Row>

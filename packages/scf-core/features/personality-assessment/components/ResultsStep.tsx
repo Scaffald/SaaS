@@ -1,6 +1,7 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { IPIPAnswer } from '../lib/ipip'
 import { getResults, getScore, type IPIPScores } from '../lib/ipip'
 
@@ -29,6 +30,7 @@ export function ResultsStep({
   isLoading = false,
   isReadOnly = false,
 }: ResultsStepProps) {
+  const { theme } = useThemeContext()
   const [ipipScores, setIpipScores] = useState<IPIPScores | null>(
     assessment.ipip_scores as IPIPScores | null
   )
@@ -77,21 +79,26 @@ export function ResultsStep({
         <Stack
           gap={16}
           padding="xl"
-          backgroundColor="$color2"
-          borderRadius={16}
-          borderWidth={1}
-          borderColor="$borderColor"
+          style={{
+            backgroundColor: colors.bg[theme].subtle,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: colors.border[theme].default,
+          }}
         >
-          <Text color="$gray11">Personality Report</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Personality Report</Text>
           <Stack gap={12}>
             {assessment.ai_report?.split('\n').map((line, index) => (
-              <Text key={`report-line-${index}-${line.slice(0, 10)}`} color="$gray11" lineHeight={20}>
+              <Text
+                key={`report-line-${index}-${line.slice(0, 10)}`}
+                style={{ color: colors.text[theme].secondary, lineHeight: 20 }}
+              >
                 {line}
               </Text>
             ))}
           </Stack>
           {assessment.ai_report_generated_at && (
-            <Text color="$gray11" marginTop={8}>
+            <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>
               Generated on {new Date(assessment.ai_report_generated_at).toLocaleDateString()}
             </Text>
           )}
@@ -103,13 +110,15 @@ export function ResultsStep({
         <Stack
           gap={16}
           padding="xl"
-          backgroundColor="$blue2"
-          borderRadius={16}
-          borderWidth={1}
-          borderColor="$blue8"
+          style={{
+            backgroundColor: colors.bg[theme].info,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: colors.border[theme].info,
+          }}
         >
-          <Text color="$blue11">Generate Your Personality Report</Text>
-          <Text color="$blue10">
+          <Text style={{ color: colors.text[theme].info }}>Generate Your Personality Report</Text>
+          <Text style={{ color: colors.text[theme].info }}>
             Based on your color test results, we'll generate a personalized personality report.
           </Text>
           <Button
@@ -127,7 +136,7 @@ export function ResultsStep({
       {/* IPIP Scores Section */}
       {ipipScores && (
         <Stack gap={16}>
-          <Text color="$gray11">Personality Traits (Big Five)</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Personality Traits (Big Five)</Text>
           <Stack gap={16}>
             {Object.entries(results).map(([domain, domainResult]) => {
               const domainKey = domain as keyof typeof results
@@ -139,32 +148,39 @@ export function ResultsStep({
                   key={domain}
                   gap={12}
                   padding="md"
-                  backgroundColor="$color2"
-                  borderRadius={16}
-                  borderWidth={1}
-                  borderColor="$borderColor"
+                  style={{
+                    backgroundColor: colors.bg[theme].subtle,
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: colors.border[theme].default,
+                  }}
                 >
                   <Row justify="space-between" align="center">
-                    <Text color="$gray11">{domainResult.title}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {domainResult.title}
+                    </Text>
                     <Row gap={8} align="center">
-                      <Text color="$gray11">Score: {score.score}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Score: {score.score}
+                      </Text>
                       <Text
-                        color={
-                          score.result === 'high'
-                            ? '$green10'
-                            : score.result === 'low'
-                              ? '$red10'
-                              : '$color10'
-                        }
+                        style={{
+                          color:
+                            score.result === 'high'
+                              ? colors.text[theme].success
+                              : score.result === 'low'
+                                ? colors.text[theme].error
+                                : colors.text[theme].tertiary,
+                        }}
                       >
                         ({score.result})
                       </Text>
                     </Row>
                   </Row>
-                  <Text color="$gray11">{domainResult.summary}</Text>
-                  <Stack gap={8} marginTop={8}>
-                    <Text color="$gray11">Your Result:</Text>
-                    <Text color="$gray11" lineHeight={16}>
+                  <Text style={{ color: colors.text[theme].secondary }}>{domainResult.summary}</Text>
+                  <Stack gap={8} style={{ marginTop: 8 }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>Your Result:</Text>
+                    <Text style={{ color: colors.text[theme].secondary, lineHeight: 16 }}>
                       {domainResult.results[score.result].text}
                     </Text>
                   </Stack>
@@ -178,7 +194,7 @@ export function ResultsStep({
       {/* No Results State */}
       {!ipipScores && !hasReport && (
         <Stack gap={16} align="center" padding={32}>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Complete the assessment to see your results.
           </Text>
         </Stack>

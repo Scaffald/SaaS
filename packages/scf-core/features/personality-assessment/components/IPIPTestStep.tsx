@@ -7,7 +7,8 @@ import {
   QUESTIONS_PER_DOMAIN,
 } from '@scf/core/features/ipip-assessment/utils/domainGrouping'
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { Button, Progress, Text, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 import {
   getChoices,
   getQuestions,
@@ -38,6 +39,7 @@ export function IPIPTestStep({
   onDomainComplete,
   isLoading = false,
 }: IPIPTestStepProps) {
+  const { theme } = useThemeContext()
   const allQuestions = getQuestions()
   const choices = getChoices()
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex)
@@ -147,8 +149,8 @@ export function IPIPTestStep({
         padding={32}
         style={{ maxWidth: 800, alignSelf: 'center' }}
       >
-        <Text color="$green10">✓ All Questions Complete!</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: colors.text[theme].success }}>✓ All Questions Complete!</Text>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
       </Stack>
@@ -158,7 +160,7 @@ export function IPIPTestStep({
   if (!currentQuestion) {
     return (
       <Stack gap={16} align="center" padding={32}>
-        <Text color="$gray11">Loading question...</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading question...</Text>
       </Stack>
     )
   }
@@ -170,28 +172,32 @@ export function IPIPTestStep({
         <Row
           gap={8}
           padding="md"
-          backgroundColor="$blue2"
-          borderRadius={16}
-          borderWidth={1}
-          borderColor="$blue7"
+          style={{
+            backgroundColor: colors.bg[theme].info,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: colors.border[theme].info,
+          }}
           justify="space-between"
           align="center"
         >
           <Stack gap={4}>
-            <Text color="$blue11">{DOMAIN_NAMES[currentDomain]}</Text>
-            <Text color="$blue10">
+            <Text style={{ color: colors.text[theme].info }}>{DOMAIN_NAMES[currentDomain]}</Text>
+            <Text style={{ color: colors.text[theme].info }}>
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
           </Stack>
-          <Text color="$blue11">{domainProgress}%</Text>
+          <Text style={{ color: colors.text[theme].info }}>{domainProgress}%</Text>
         </Row>
       )}
 
       {/* Progress Bar */}
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text color="$gray11">Question {currentIndex + 1} of 120</Text>
-          <Text color="$gray11">{overallProgress}%</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Question {currentIndex + 1} of 120
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{overallProgress}%</Text>
         </Row>
         <Progress value={overallProgress} max={100}>
           <Progress.Indicator animation="bouncy" />
@@ -202,12 +208,14 @@ export function IPIPTestStep({
       <Stack
         gap={16}
         padding="xl"
-        backgroundColor="$color2"
-        borderRadius={16}
-        borderWidth={1}
-        borderColor="$borderColor"
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: colors.border[theme].default,
+        }}
       >
-        <Text color="$gray11" style={{ textAlign: 'center' }} lineHeight={24}>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center', lineHeight: 24 }}>
           I {currentQuestion.text.toLowerCase()}
         </Text>
       </Stack>
@@ -222,10 +230,15 @@ export function IPIPTestStep({
             onPress={() => handleAnswer(choice)}
             disabled={isLoading}
             pressStyle={{ scale: 0.98 }}
-            borderColor="$borderColor"
-            hoverStyle={{ borderColor: '$blue8', backgroundColor: '$blue2' }}
+            style={{
+              borderColor: colors.border[theme].default,
+            }}
+            hoverStyle={{
+              borderColor: colors.border[theme].info,
+              backgroundColor: colors.bg[theme].info,
+            }}
           >
-            <Text color="$gray11">{choice.text}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{choice.text}</Text>
           </Button>
         ))}
       </Stack>
@@ -240,7 +253,7 @@ export function IPIPTestStep({
         >
           Previous
         </Button>
-        <Text color="$gray11" style={{ alignSelf: 'center' }}>
+        <Text style={{ color: colors.text[theme].secondary, alignSelf: 'center' }}>
           {answers.length} answers saved
         </Text>
       </Row>
