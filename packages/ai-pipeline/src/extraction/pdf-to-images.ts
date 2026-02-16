@@ -13,7 +13,7 @@ export interface PageImage {
  * @returns Array of PageImage objects with base64 PNG strings
  */
 export async function convertPdfToImages(pdfBuffer: Buffer): Promise<PageImage[]> {
-  const pngPages = await pdfToPng(pdfBuffer, {
+  const pngPages = await pdfToPng(pdfBuffer.buffer.slice(pdfBuffer.byteOffset, pdfBuffer.byteOffset + pdfBuffer.byteLength), {
     viewportScale: 1.5, // ~150 DPI (balances quality vs token cost for GPT-4o Vision)
   });
 
@@ -23,6 +23,6 @@ export async function convertPdfToImages(pdfBuffer: Buffer): Promise<PageImage[]
 
   return pngPages.map((page) => ({
     pageNumber: page.pageNumber,
-    base64: page.content.toString('base64'),
+    base64: page.content!.toString('base64'),
   }));
 }

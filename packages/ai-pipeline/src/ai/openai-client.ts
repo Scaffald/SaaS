@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import type { ZodType } from 'zod';
 import { ExtractedCertificateSchema, type ExtractedCertificate } from './schemas/extracted-certificate.js';
 import type { PageImage } from '../extraction/pdf-to-images.js';
 
@@ -47,7 +48,7 @@ export class AIExtractionService {
       },
     }));
 
-    const completion = await this.client.chat.completions.parse({
+    const completion = await this.client.beta.chat.completions.parse({
       model: this.model,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -62,7 +63,7 @@ export class AIExtractionService {
           ],
         },
       ],
-      response_format: zodResponseFormat(ExtractedCertificateSchema, 'certificate_extraction'),
+      response_format: zodResponseFormat(ExtractedCertificateSchema as unknown as ZodType, 'certificate_extraction'),
       temperature: 0,
     });
 
@@ -79,7 +80,7 @@ export class AIExtractionService {
     }
 
     return {
-      data: message.parsed,
+      data: message.parsed as ExtractedCertificate,
       model: completion.model,
       usage: completion.usage
         ? {
