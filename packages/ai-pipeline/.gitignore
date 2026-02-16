@@ -1,0 +1,7 @@
+# Real PDFs contain PII — never commit
+poc/fixtures/input/
+# Extraction results may contain PII
+poc/fixtures/results/
+# Node
+node_modules/
+dist/
