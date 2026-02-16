@@ -80,6 +80,7 @@ const GCInsuranceSettings = lazy(() => import('./pages/gc/settings/InsuranceSett
 const GCNotificationSettings = lazy(() => import('./pages/gc/settings/NotificationSettings'));
 const GCTeamSettings = lazy(() => import('./pages/gc/settings/TeamSettings'));
 const GCIntegrationSettings = lazy(() => import('./pages/gc/settings/IntegrationSettings'));
+const ProcoreCallback = lazy(() => import('./pages/gc/settings/ProcoreCallback'));
 
 // Contractor Settings
 const ContractorProfileSettings = lazy(() => import('./pages/contractor/settings/ProfileSettings'));
@@ -347,6 +348,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['manager']}>
               <GCIntegrationSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manager/settings/integrations/procore/callback"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <ProcoreCallback />
             </ProtectedRoute>
           }
         />
