@@ -40,20 +40,28 @@ COMMENT ON COLUMN core.organizations.renewal_reminder_intervals IS
   'Days before expiration to send renewal reminders (e.g. {30,60,90})';
 
 -- Add constraint: each interval must be between 1 and 365
+-- CHECK constraints cannot use subqueries, so we use a validation function
+CREATE OR REPLACE FUNCTION core.validate_renewal_reminder_intervals(intervals INTEGER[])
+RETURNS BOOLEAN
+LANGUAGE plpgsql IMMUTABLE
+AS $fn$
+DECLARE
+  v INTEGER;
+BEGIN
+  IF intervals IS NULL THEN RETURN true; END IF;
+  IF array_length(intervals, 1) IS NULL OR array_length(intervals, 1) = 0 THEN RETURN false; END IF;
+  FOREACH v IN ARRAY intervals LOOP
+    IF v < 1 OR v > 365 THEN RETURN false; END IF;
+  END LOOP;
+  RETURN true;
+END;
+$fn$;
+
 ALTER TABLE core.organizations
   DROP CONSTRAINT IF EXISTS organizations_renewal_reminder_intervals_check;
 ALTER TABLE core.organizations
   ADD CONSTRAINT organizations_renewal_reminder_intervals_check
-  CHECK (
-    renewal_reminder_intervals IS NULL
-    OR (
-      array_length(renewal_reminder_intervals, 1) > 0
-      AND (
-        (SELECT MIN(v) FROM unnest(renewal_reminder_intervals) AS v) >= 1
-        AND (SELECT MAX(v) FROM unnest(renewal_reminder_intervals) AS v) <= 365
-      )
-    )
-  );
+  CHECK (core.validate_renewal_reminder_intervals(renewal_reminder_intervals));
 
 -- =========================================================
 -- Section C: Create forsured.renewal_reminders table
