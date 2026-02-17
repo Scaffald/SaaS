@@ -57,6 +57,9 @@ CREATE INDEX IF NOT EXISTS idx_conversations_organization_id
 CREATE INDEX IF NOT EXISTS idx_conversations_created_by_user_id
     ON forsured.conversations(created_by_user_id);
 
+CREATE INDEX IF NOT EXISTS idx_conversations_inbound_email_address
+    ON forsured.conversations(inbound_email_address);
+
 -- updated_at trigger
 CREATE TRIGGER update_conversations_updated_at
     BEFORE UPDATE ON forsured.conversations
