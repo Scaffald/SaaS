@@ -28,11 +28,13 @@ describe('conversationRouter', () => {
     expect(procedureKeys).toContain('archive');
     expect(procedureKeys).toContain('sendMessage');
     expect(procedureKeys).toContain('getMessages');
+    expect(procedureKeys).toContain('getAttachmentUrl');
+    expect(procedureKeys).toContain('promoteAttachment');
   });
 
-  it('should have exactly 7 procedures', () => {
+  it('should have exactly 9 procedures', () => {
     const procedureKeys = Object.keys(conversationRouter._def.procedures);
-    expect(procedureKeys).toHaveLength(7);
+    expect(procedureKeys).toHaveLength(9);
   });
 
   it('should have sendMessage procedure defined', () => {
@@ -43,5 +45,15 @@ describe('conversationRouter', () => {
   it('should have getMessages procedure defined', () => {
     const procedureKeys = Object.keys(conversationRouter._def.procedures);
     expect(procedureKeys).toContain('getMessages');
+  });
+
+  it('should have getAttachmentUrl procedure defined', () => {
+    const procedureKeys = Object.keys(conversationRouter._def.procedures);
+    expect(procedureKeys).toContain('getAttachmentUrl');
+  });
+
+  it('should have promoteAttachment procedure defined', () => {
+    const procedureKeys = Object.keys(conversationRouter._def.procedures);
+    expect(procedureKeys).toContain('promoteAttachment');
   });
 });

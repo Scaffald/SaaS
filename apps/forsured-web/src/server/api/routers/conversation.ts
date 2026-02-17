@@ -12,7 +12,8 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { nanoid } from 'nanoid';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { forsured } from '../../../lib/supabase';
+import { forsured, supabaseServiceRole } from '../../../lib/supabase';
+import { uploadTaskDocument } from '../../../lib/api/taskDocumentService';
 import { FieldEncryptionService } from '../../../lib/encryption/fieldEncryption';
 import type { IVaultClient, EncryptedField } from '../../../lib/encryption/types';
 
@@ -525,5 +526,206 @@ export const conversationRouter = createTRPCRouter({
       );
 
       return decryptedMessages;
+    }),
+
+  /**
+   * Get a signed URL for downloading a conversation attachment.
+   * Verifies the caller is an active participant in the attachment's conversation.
+   */
+  getAttachmentUrl: protectedProcedure
+    .input(
+      z.object({
+        attachmentId: z.string().uuid(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Get the attachment record
+      const { data: attachment, error: attachmentError } = await forsured('conversation_attachments')
+        .select('*')
+        .eq('id', input.attachmentId)
+        .maybeSingle();
+
+      if (attachmentError || !attachment) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Attachment not found',
+          cause: attachmentError,
+        });
+      }
+
+      // Verify caller is an active participant of the attachment's conversation
+      const { data: participant } = await forsured('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', attachment.conversation_id)
+        .eq('user_id', ctx.userId)
+        .is('left_at', null)
+        .maybeSingle();
+
+      if (!participant) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You are not a participant in this conversation',
+        });
+      }
+
+      // Generate a signed URL (1 hour)
+      if (!supabaseServiceRole) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Storage service not available',
+        });
+      }
+
+      const { data: signedUrlData, error: signedUrlError } = await supabaseServiceRole.storage
+        .from('conversation-attachments')
+        .createSignedUrl(attachment.storage_path, 3600);
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to generate signed URL',
+          cause: signedUrlError,
+        });
+      }
+
+      return {
+        url: signedUrlData.signedUrl,
+        filename: attachment.original_filename,
+        mimeType: attachment.mime_type,
+      };
+    }),
+
+  /**
+   * Promote a conversation attachment to a task document.
+   * Downloads the file from conversation-attachments, uploads it to task-documents,
+   * and creates a task document record via the canonical pipeline.
+   */
+  promoteAttachment: protectedProcedure
+    .input(
+      z.object({
+        attachmentId: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Get the attachment with its parent conversation (need task_id, organization_id)
+      const { data: attachment, error: attachmentError } = await forsured('conversation_attachments')
+        .select(
+          `
+          *,
+          conversation:conversation_id (
+            task_id,
+            organization_id
+          )
+        `
+        )
+        .eq('id', input.attachmentId)
+        .maybeSingle();
+
+      if (attachmentError || !attachment) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Attachment not found',
+          cause: attachmentError,
+        });
+      }
+
+      // Throw CONFLICT if already promoted
+      if (attachment.promoted_to_document_id) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Attachment has already been promoted to a document',
+        });
+      }
+
+      // Verify caller is an active participant
+      const { data: participant } = await forsured('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', attachment.conversation_id)
+        .eq('user_id', ctx.userId)
+        .is('left_at', null)
+        .maybeSingle();
+
+      if (!participant) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You are not a participant in this conversation',
+        });
+      }
+
+      if (!supabaseServiceRole) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Storage service not available',
+        });
+      }
+
+      // Download the file from conversation-attachments bucket
+      const { data: fileData, error: downloadError } = await supabaseServiceRole.storage
+        .from('conversation-attachments')
+        .download(attachment.storage_path);
+
+      if (downloadError || !fileData) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to download attachment file',
+          cause: downloadError,
+        });
+      }
+
+      // Extract conversation details (joined relation)
+      const conversation = attachment.conversation as unknown as {
+        task_id: string;
+        organization_id: string;
+      };
+
+      // Upload to task-documents storage bucket
+      const taskDocStoragePath = `${conversation.organization_id}/${conversation.task_id}/${attachment.original_filename}`;
+      const { error: uploadError } = await supabaseServiceRole.storage
+        .from('task-documents')
+        .upload(taskDocStoragePath, fileData, {
+          contentType: attachment.mime_type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to upload file to task documents storage',
+          cause: uploadError,
+        });
+      }
+
+      // Get the public URL for the uploaded document
+      const { data: publicUrlData } = supabaseServiceRole.storage
+        .from('task-documents')
+        .getPublicUrl(taskDocStoragePath);
+
+      // Create task document via the canonical pipeline
+      const document = await uploadTaskDocument(
+        {
+          task_id: conversation.task_id,
+          organization_id: conversation.organization_id,
+          document_url: publicUrlData.publicUrl,
+          document_name: attachment.original_filename,
+          mime_type: attachment.mime_type,
+          file_size_bytes: attachment.file_size_bytes,
+        },
+        ctx.userId
+      );
+
+      // Update the attachment record with the promoted document ID
+      const { error: updateError } = await forsured('conversation_attachments')
+        .update({ promoted_to_document_id: document.id })
+        .eq('id', input.attachmentId);
+
+      if (updateError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update attachment with promoted document ID',
+          cause: updateError,
+        });
+      }
+
+      return document;
     }),
 });
