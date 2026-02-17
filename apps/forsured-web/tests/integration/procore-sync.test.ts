@@ -175,24 +175,25 @@ describeWithDB('Procore Sync Integration', () => {
 
       // Get existing projects for this org
       const { data: projects } = await forsured('projects', db!)
-        .select('id, name')
+        .select('id, name, procore_id')
         .eq('organization_id', testOrgId);
 
-      const existingNames = (projects ?? []).filter(
+      const existingRecords = (projects ?? []).filter(
         (p) => p.name != null,
       ).map((p) => ({
         id: p.id as string,
         name: p.name as string,
+        procore_id: p.procore_id as string | null,
       }));
 
       const result = detectCollision(
-        'Completely Unique Project Name XYZ123',
-        existingNames,
-        null,
+        { id: 999999, name: 'Completely Unique Project Name XYZ123' },
+        existingRecords,
+        'procore_id',
       );
 
       expect(result.matchStatus).toBe('no_match');
-      expect(result.resolution).toBe('create_new');
+      expect(result.resolution).toBe('pending');
     });
 
     it('should detect exact_match when project name matches', async () => {
@@ -200,7 +201,7 @@ describeWithDB('Procore Sync Integration', () => {
 
       // Get an existing project with a non-null name
       const { data: projects } = await forsured('projects', db!)
-        .select('id, name')
+        .select('id, name, procore_id')
         .eq('organization_id', testOrgId)
         .not('name', 'is', null)
         .limit(1);
@@ -213,8 +214,16 @@ describeWithDB('Procore Sync Integration', () => {
 
       testProjectId = project.id;
 
-      const existingRecords = [{ id: project.id as string, name: project.name as string }];
-      const result = detectCollision(project.name as string, existingRecords, null);
+      const existingRecords = [{
+        id: project.id as string,
+        name: project.name as string,
+        procore_id: project.procore_id as string | null,
+      }];
+      const result = detectCollision(
+        { id: 88888, name: project.name as string },
+        existingRecords,
+        'procore_id',
+      );
 
       expect(result.matchStatus).toBe('exact_match');
       expect(result.confidence).toBe(1.0);
