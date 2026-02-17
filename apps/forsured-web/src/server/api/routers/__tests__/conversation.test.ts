@@ -26,10 +26,22 @@ describe('conversationRouter', () => {
     expect(procedureKeys).toContain('create');
     expect(procedureKeys).toContain('addParticipant');
     expect(procedureKeys).toContain('archive');
+    expect(procedureKeys).toContain('sendMessage');
+    expect(procedureKeys).toContain('getMessages');
   });
 
-  it('should have exactly 5 procedures', () => {
+  it('should have exactly 7 procedures', () => {
     const procedureKeys = Object.keys(conversationRouter._def.procedures);
-    expect(procedureKeys).toHaveLength(5);
+    expect(procedureKeys).toHaveLength(7);
+  });
+
+  it('should have sendMessage procedure defined', () => {
+    const procedureKeys = Object.keys(conversationRouter._def.procedures);
+    expect(procedureKeys).toContain('sendMessage');
+  });
+
+  it('should have getMessages procedure defined', () => {
+    const procedureKeys = Object.keys(conversationRouter._def.procedures);
+    expect(procedureKeys).toContain('getMessages');
   });
 });

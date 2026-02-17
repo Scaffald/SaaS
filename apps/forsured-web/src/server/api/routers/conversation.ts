@@ -1,9 +1,11 @@
 /**
  * Conversation Router
  * Task 4: tRPC Router - Conversation CRUD
+ * Task 5: tRPC Router - Messages (Send & List with Encryption)
  *
  * Implements conversation management procedures for the messaging feature.
  * Provides CRUD operations for conversations with participant management.
+ * Includes encrypted message sending and retrieval with field-level encryption.
  */
 
 import { z } from 'zod';
@@ -11,6 +13,55 @@ import { TRPCError } from '@trpc/server';
 import { nanoid } from 'nanoid';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { forsured } from '../../../lib/supabase';
+import { FieldEncryptionService } from '../../../lib/encryption/fieldEncryption';
+import type { IVaultClient, EncryptedField } from '../../../lib/encryption/types';
+
+/**
+ * Simple vault client that derives the encryption key from an environment variable.
+ * In production, this would be replaced with a proper vault integration (e.g. Supabase Vault).
+ * The key is expected to be a 64-character hex string (32 bytes) stored in MESSAGING_ENCRYPTION_KEY.
+ */
+class EnvVaultClient implements IVaultClient {
+  async getDataKey(_keyId: string): Promise<Buffer> {
+    const keyHex =
+      (typeof process !== 'undefined' && process.env?.MESSAGING_ENCRYPTION_KEY) || '';
+    if (!keyHex || keyHex.length !== 64) {
+      throw new Error(
+        'MESSAGING_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)'
+      );
+    }
+    return Buffer.from(keyHex, 'hex');
+  }
+
+  async createDataKey() {
+    throw new Error('Key creation not supported via env vault client');
+  }
+
+  async rotateKey() {
+    throw new Error('Key rotation not supported via env vault client');
+  }
+
+  async listKeys() {
+    return [];
+  }
+
+  async keyExists() {
+    return true;
+  }
+}
+
+/**
+ * Lazily-initialized encryption service singleton.
+ * Uses EnvVaultClient to source the data encryption key from environment variables.
+ */
+let encryptionService: FieldEncryptionService | null = null;
+
+function getEncryptionService(): FieldEncryptionService {
+  if (!encryptionService) {
+    encryptionService = new FieldEncryptionService(new EnvVaultClient());
+  }
+  return encryptionService;
+}
 
 /**
  * Inbound email domain for generated conversation email addresses.
@@ -314,5 +365,165 @@ export const conversationRouter = createTRPCRouter({
       }
 
       return data;
+    }),
+
+  /**
+   * Send a message in a conversation.
+   * Encrypts the content using FieldEncryptionService before storing.
+   * Verifies the caller is an active participant.
+   */
+  sendMessage: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string().uuid(),
+        content: z.string().min(1).max(10000),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verify caller is an active participant (left_at IS NULL)
+      const { data: participant } = await forsured('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', input.conversationId)
+        .eq('user_id', ctx.userId)
+        .is('left_at', null)
+        .maybeSingle();
+
+      if (!participant) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You are not a participant in this conversation',
+        });
+      }
+
+      // Encrypt message content
+      const encryption = getEncryptionService();
+      const encryptedContent = await encryption.encrypt(input.content, 'message_content');
+
+      // Insert message record
+      const { data: message, error } = await forsured('conversation_messages')
+        .insert({
+          conversation_id: input.conversationId,
+          sender_user_id: ctx.userId,
+          encrypted_content: encryptedContent as unknown as Record<string, unknown>,
+          source: 'app',
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (error || !message) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to send message',
+          cause: error,
+        });
+      }
+
+      return message;
+    }),
+
+  /**
+   * Get messages for a conversation with keyset pagination.
+   * Decrypts each message's encrypted_content before returning.
+   * Verifies the caller is an active participant.
+   */
+  getMessages: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string().uuid(),
+        limit: z.number().min(1).max(100).default(50),
+        cursor: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Verify caller is an active participant (left_at IS NULL)
+      const { data: participant } = await forsured('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', input.conversationId)
+        .eq('user_id', ctx.userId)
+        .is('left_at', null)
+        .maybeSingle();
+
+      if (!participant) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You are not a participant in this conversation',
+        });
+      }
+
+      // If cursor provided, get the cursor message's created_at for keyset pagination
+      let cursorCreatedAt: string | null = null;
+      if (input.cursor) {
+        const { data: cursorMessage } = await forsured('conversation_messages')
+          .select('created_at')
+          .eq('id', input.cursor)
+          .single();
+
+        if (cursorMessage) {
+          cursorCreatedAt = cursorMessage.created_at;
+        }
+      }
+
+      // Build query for messages with nested sender user and attachments
+      let query = forsured('conversation_messages')
+        .select(
+          `
+          *,
+          sender:sender_user_id (
+            id,
+            name,
+            email,
+            display_name
+          ),
+          conversation_attachments (
+            id,
+            original_filename,
+            mime_type,
+            file_size_bytes,
+            promoted_to_document_id
+          )
+        `
+        )
+        .eq('conversation_id', input.conversationId)
+        .order('created_at', { ascending: true })
+        .limit(input.limit);
+
+      // Apply cursor filter for keyset pagination
+      if (cursorCreatedAt) {
+        query = query.gt('created_at', cursorCreatedAt);
+      }
+
+      const { data: messages, error } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch messages',
+          cause: error,
+        });
+      }
+
+      if (!messages || messages.length === 0) {
+        return [];
+      }
+
+      // Decrypt each message's encrypted_content
+      const encryption = getEncryptionService();
+      const decryptedMessages = await Promise.all(
+        messages.map(async (msg) => {
+          let content: string;
+          try {
+            content = await encryption.decrypt(msg.encrypted_content as unknown as EncryptedField);
+          } catch {
+            content = '[Unable to decrypt message]';
+          }
+
+          // Return message with decrypted content, removing encrypted_content
+          const { encrypted_content: _removed, ...rest } = msg;
+          return { ...rest, content };
+        })
+      );
+
+      return decryptedMessages;
     }),
 });
