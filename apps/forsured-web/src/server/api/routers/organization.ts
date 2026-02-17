@@ -280,4 +280,89 @@ export const organizationRouter = createTRPCRouter({
         users: users,
       };
     }),
+
+  /**
+   * Get organization renewal reminder settings
+   *
+   * Returns the renewal reminder configuration for the specified organization.
+   * User must belong to the requested organization.
+   */
+  getRenewalSettings: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid('Organization ID must be a valid UUID'),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Verify user has access to this organization
+      verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      const { data, error } = await forsured('organizations')
+        .select('renewal_reminder_enabled, renewal_reminder_intervals')
+        .eq('id', input.organizationId)
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch renewal settings',
+          cause: error,
+        });
+      }
+
+      return {
+        enabled: data.renewal_reminder_enabled ?? true,
+        intervals: data.renewal_reminder_intervals ?? [30, 60, 90],
+      };
+    }),
+
+  /**
+   * Update organization renewal reminder settings
+   *
+   * Updates the renewal reminder configuration for the specified organization.
+   * At least one setting (enabled or intervals) must be provided.
+   * User must belong to the requested organization.
+   */
+  updateRenewalSettings: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid('Organization ID must be a valid UUID'),
+        enabled: z.boolean().optional(),
+        intervals: z.array(z.number().int().min(1).max(365)).min(1).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verify user has access to this organization
+      verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      const updates: Record<string, unknown> = {};
+      if (input.enabled !== undefined) updates.renewal_reminder_enabled = input.enabled;
+      if (input.intervals !== undefined) updates.renewal_reminder_intervals = input.intervals;
+
+      if (Object.keys(updates).length === 0) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'At least one setting must be provided',
+        });
+      }
+
+      const { data, error } = await forsured('organizations')
+        .update(updates)
+        .eq('id', input.organizationId)
+        .select('renewal_reminder_enabled, renewal_reminder_intervals')
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update renewal settings',
+          cause: error,
+        });
+      }
+
+      return {
+        enabled: data.renewal_reminder_enabled,
+        intervals: data.renewal_reminder_intervals,
+      };
+    }),
 });
