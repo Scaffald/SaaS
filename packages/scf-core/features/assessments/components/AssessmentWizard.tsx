@@ -1,6 +1,7 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { Button, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
 export interface AssessmentWizardProps {
@@ -175,7 +176,7 @@ export function AssessmentWizard({
       )}
 
       {/* Main Content */}
-      <ScrollView flex={1}>
+      <ScrollView style={{ flex: 1 }}>
         <Stack padding="md" gap={16}>
           {children}
         </Stack>
@@ -183,7 +184,10 @@ export function AssessmentWizard({
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <Stack padding="md" borderTopWidth={1} borderTopColor="$borderColor">
+        <Stack
+          padding="md"
+          style={{ borderTopWidth: 1, borderTopColor: colors.gray[300] }}
+        >
           <Row gap={12} justify="space-between">
             {showPrevious && (
               <Button size="md" variant="outline" iconStart={ChevronLeft} onPress={onPrevious}>
@@ -192,7 +196,7 @@ export function AssessmentWizard({
             )}
 
             {showNext && (
-              <Button size="md" iconAfter={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
+              <Button size="md" iconEnd={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
                 Next
               </Button>
             )}

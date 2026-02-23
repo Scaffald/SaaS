@@ -28,7 +28,7 @@
 
 import { forwardRef } from 'react'
 import { View, type ViewProps } from 'react-native'
-import { ReanimatedView as ReanimatedViewComponent, isReanimatedLoaded } from './reanimated.types'
+import { ReanimatedView as ReanimatedViewComponent, isReanimatedLoaded, LinearTransition, FadeIn, FadeOut } from './reanimated.types'
 
 export interface AnimatedViewProps extends ViewProps {
   /**
@@ -36,6 +36,18 @@ export interface AnimatedViewProps extends ViewProps {
    * Useful for conditional animation or performance optimization.
    */
   disableAnimation?: boolean
+  /**
+   * Optional Reanimated layout transition
+   */
+  layout?: any
+  /**
+   * Optional Reanimated entering animation
+   */
+  entering?: any
+  /**
+   * Optional Reanimated exiting animation
+   */
+  exiting?: any
 }
 
 /**
@@ -43,7 +55,7 @@ export interface AnimatedViewProps extends ViewProps {
  * Falls back to regular View if Reanimated is not installed.
  */
 export const AnimatedView = forwardRef<View, AnimatedViewProps>(
-  function AnimatedView({ disableAnimation = false, ...props }, ref) {
+  function AnimatedView({ disableAnimation = false, layout, entering, exiting, ...props }, ref) {
     // Use regular View if animation is disabled or Reanimated is not available
     if (disableAnimation || !isReanimatedLoaded || !ReanimatedViewComponent) {
       return <View ref={ref} {...props} />
@@ -51,8 +63,16 @@ export const AnimatedView = forwardRef<View, AnimatedViewProps>(
 
     // Use Reanimated's Animated.View
     // Cast is needed because Reanimated's View has slightly different props signature
-    const AnimatedComponent = ReanimatedViewComponent as typeof View
-    return <AnimatedComponent ref={ref} {...props} />
+    const AnimatedComponent = ReanimatedViewComponent as any
+    return (
+      <AnimatedComponent 
+        ref={ref} 
+        layout={layout} 
+        entering={entering} 
+        exiting={exiting} 
+        {...props} 
+      />
+    )
   }
 )
 

@@ -43,7 +43,7 @@ export function RIASECAssessmentWidget() {
         </Stack>
 
         <Button variant="filled" color="primary" onPress={handleStart} size="lg">
-          <Button.Text>Start Interest Assessment</Button.Text>
+          Start Interest Assessment
         </Button>
 
         <Text color="$gray11">Takes about 2-3 minutes</Text>

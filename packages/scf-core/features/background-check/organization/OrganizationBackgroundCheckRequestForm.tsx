@@ -167,6 +167,7 @@ export function OrganizationBackgroundCheckRequestForm() {
       const _message = error instanceof Error ? error.message : 'Unable to confirm payment.'
       toast.show({
         title: 'Payment confirmation failed',
+        message: 'Please try again.',
         variant: 'error',
       })
     }
@@ -229,6 +230,7 @@ export function OrganizationBackgroundCheckRequestForm() {
       setRequestError(message)
       toast.show({
         title: 'Unable to start payment',
+        message: error instanceof Error ? error.message : 'Please try again.',
         variant: 'error',
       })
     }

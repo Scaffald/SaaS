@@ -143,7 +143,7 @@ export function OccupationAssessmentWizard() {
         </Stack>
 
         <Button size="lg" themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
-          <Button.Text>Save Preferences</Button.Text>
+          Save Preferences
         </Button>
       </Stack>
     </AssessmentWizard>

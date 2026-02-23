@@ -419,6 +419,7 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
       setSubmissionError(message)
       toast.show({
         title: 'Unable to submit dispute',
+        message: error instanceof Error ? error.message : 'Please try again shortly.',
         variant: 'error',
       })
     } finally {

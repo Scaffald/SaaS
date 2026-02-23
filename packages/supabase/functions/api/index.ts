@@ -103,6 +103,7 @@ app.route("/v1/onet", onetRouter); // O*NET data
 app.route("/v1/workers", workersRouter); // Workers discovery
 app.route("/v1/personality-assessment", personalityAssessmentRouter);
 app.route("/v1/cms", cmsRouter); // Personality assessments
+app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 
 // OpenAPI documentation
 app.route("/", openapi);

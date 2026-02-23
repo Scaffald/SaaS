@@ -520,6 +520,17 @@ export type {
 } from './resources/background-checks.js'
 
 export type {
+  FeedbackType,
+  FeedbackSubmitParams,
+  FeedbackSubmitResponse,
+  FeedbackGetUploadUrlParams,
+  FeedbackGetUploadUrlResponse,
+  FeedbackHistoryItem,
+  GetUserFeedbackParams,
+  GetUserFeedbackResponse,
+} from './resources/feedback.js'
+
+export type {
   PersonalityAssessment,
   IPIPAnswer,
   AssessmentStatus,

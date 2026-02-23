@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useFeedbackSubmitMutation,
+  useFeedbackGetUploadUrlMutation,
+} from '@scf/core/utils/feedback-sdk-hooks'
 import { supabase } from '@scf/core/utils/supabase/client'
 import {
   type FeedbackPendingScreenshot,
@@ -100,8 +103,8 @@ async function convertScreenshotToBase64(
 
 export function useFeedbackSubmit(): UseFeedbackSubmitResult {
   const toast = useToast()
-  const submitMutation = api.feedback.submit.useMutation()
-  const uploadUrlMutation = api.feedback.getUploadUrl.useMutation()
+  const submitMutation = useFeedbackSubmitMutation()
+  const uploadUrlMutation = useFeedbackGetUploadUrlMutation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isProcessingQueue, setIsProcessingQueue] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)

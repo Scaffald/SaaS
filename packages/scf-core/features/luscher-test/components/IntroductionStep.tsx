@@ -75,7 +75,7 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
       </Stack>
 
       <Button size="lg" themeInverse onPress={onBegin}>
-        <Button.Text>Begin Test</Button.Text>
+        Begin Test
       </Button>
     </Stack>
   )

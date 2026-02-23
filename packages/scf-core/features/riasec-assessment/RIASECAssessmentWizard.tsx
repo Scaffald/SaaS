@@ -88,7 +88,7 @@ export function RIASECAssessmentWizard() {
           onPress={handleComplete}
           disabled={!allRated || saveMutation.isPending}
         >
-          <Button.Text>Complete Assessment</Button.Text>
+          Complete Assessment
         </Button>
       </Stack>
     </AssessmentWizard>

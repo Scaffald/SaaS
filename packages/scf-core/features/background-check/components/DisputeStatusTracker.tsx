@@ -4,12 +4,12 @@ import { useMemo } from 'react'
 import {
   Button,
   Card,
-  type ColorTokens,
   Separator,
   Spinner,
   Text,
   Row,
   Stack,
+  colors,
 } from '@scaffald/ui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
@@ -41,27 +41,22 @@ const STATUS_METADATA: Record<
     description: 'The dispute has been resolved and any updates are reflected in your results.',
     tone: 'success',
   },
-  upheld: {
-    label: 'Upheld',
+  rejected: {
+    label: 'Rejected',
     description: 'The original findings were confirmed after review.',
-    tone: 'neutral',
-  },
-  cancelled: {
-    label: 'Cancelled',
-    description: 'This dispute was cancelled. You can file a new one if needed.',
     tone: 'neutral',
   },
 }
 
 const TONE_COLORS: Record<
   DisputeStatusTone,
-  { background: ColorTokens; border: ColorTokens; text: ColorTokens }
+  { background: string; border: string; text: string }
 > = {
-  info: { background: '$blue3', border: '$blue7', text: '$blue11' },
-  warning: { background: '$yellow3', border: '$yellow8', text: '$yellow11' },
-  success: { background: '$green3', border: '$green8', text: '$green11' },
-  danger: { background: '$red3', border: '$red8', text: '$red11' },
-  neutral: { background: '$color3', border: '$color6', text: '$color11' },
+  info: { background: colors.info[50], border: colors.info[400], text: colors.info[700] },
+  warning: { background: colors.warning[50], border: colors.warning[400], text: colors.warning[700] },
+  success: { background: colors.success[50], border: colors.success[400], text: colors.success[700] },
+  danger: { background: colors.error[50], border: colors.error[400], text: colors.error[700] },
+  neutral: { background: colors.gray[100], border: colors.gray[300], text: colors.gray[700] },
 }
 
 function getStatusMetadata(status: BackgroundCheckDispute['status']) {
@@ -179,7 +174,7 @@ export function DisputeStatusTracker({
         <Stack gap={8}>
           {disputes.map((dispute) => {
             const meta = getStatusMetadata(dispute.status)
-            const colors = TONE_COLORS[meta.tone]
+            const toneColors = TONE_COLORS[meta.tone]
             return (
               <Stack
                 key={dispute.id}
@@ -193,7 +188,7 @@ export function DisputeStatusTracker({
               >
                 <Row gap={8} align="center" wrap>
                   <Text color="$gray11">{meta.label}</Text>
-                  <Text color={colors.text}>
+                  <Text color={toneColors.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>

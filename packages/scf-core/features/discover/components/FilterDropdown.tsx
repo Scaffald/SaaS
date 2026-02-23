@@ -1,4 +1,4 @@
-import { Popover, ToggleSwitch } from '@scaffald/ui'
+import { Popover, Switch } from '@scaffald/ui'
 import { ChevronDown, SlidersHorizontal } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
@@ -60,7 +60,7 @@ export const FilterDropdown = ({
           hoverStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
           pressStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue11' : '$backgroundPress' }}
           iconStart={SlidersHorizontal}
-          iconAfter={ChevronDown}
+          iconEnd={ChevronDown}
           scaleIcon={1.2}
         >
           {getButtonLabel()}
@@ -83,16 +83,16 @@ export const FilterDropdown = ({
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       >
         <Stack gap={12}>
-          <Text marginBottom={4}>Display on Map</Text>
+          <Text style={{ marginBottom: 4 }}>Display on Map</Text>
 
           {/* Workers Toggle */}
           <Stack gap={4}>
             <Row justify="space-between" align="center">
               <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
-              <ToggleSwitch
+              <Switch
                 checked={showWorkers}
                 onChange={(checked) => onShowWorkersChange?.(checked)}
-                aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
+                accessibilityLabel={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
               />
             </Row>
             <Text color="$gray11" paddingLeft={4}>
@@ -106,10 +106,10 @@ export const FilterDropdown = ({
               <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                 Employers
               </Label>
-              <ToggleSwitch
+              <Switch
                 checked={showOrganizations}
                 onChange={(checked) => onShowOrganizationsChange?.(checked)}
-                aria-label={
+                accessibilityLabel={
                   showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
                 }
               />
@@ -123,10 +123,10 @@ export const FilterDropdown = ({
           <Stack gap={4}>
             <Row justify="space-between" align="center">
               <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
-              <ToggleSwitch
+              <Switch
                 checked={showJobs}
                 onChange={(checked) => onShowJobsChange?.(checked)}
-                aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+                accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
               />
             </Row>
             <Text color="$gray11" paddingLeft={4}>

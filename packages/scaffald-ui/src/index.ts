@@ -400,6 +400,7 @@ export {
 } from "./components/Maps";
 export type {
   MapContainerProps,
+  MapContainerRef,
   MapCoordinate,
   MapFallbackProps,
   MapPinProps,
@@ -468,12 +469,15 @@ export type {
   ButtonGroupSize,
 } from "./components/ButtonGroup";
 
-export { Input, PasswordInput } from "./components/Input";
+export { Input, PasswordInput, TextArea } from "./components/Input";
+export { UploadSurface } from "./components/UploadSurface";
+export type { UploadSelection, UploadSurfaceProps } from "./components/UploadSurface";
 export type {
   InputProps,
   InputState,
   InputType,
   PasswordInputProps,
+  TextAreaProps,
 } from "./components/Input";
 
 // Input composable sub-components
@@ -558,6 +562,7 @@ export type {
 
 export { Toggle } from "./components/Toggle";
 export { Toggle as Switch } from "./components/Toggle";
+export { Toggle as ToggleSwitch } from "./components/Toggle";
 export type {
   ToggleColor,
   ToggleProps,
@@ -925,6 +930,7 @@ export {
   EcommerceCartPreviewModal,
   EcommerceShippingModal,
   Modal,
+  Modal as Dialog,
   ModalActions,
   ModalContent,
   ModalHeader,

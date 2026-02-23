@@ -82,7 +82,8 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
-    "lucide-react-native": "^0.562.0"
+    "lucide-react-native": "^0.562.0",
+    "react-dropzone": "catalog:"
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",

@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ProfileWizard } from '@scf/core/features/profile-wizard/components/ProfileWizard'
 import { useDismissNudgeMutation } from '@scf/core/utils/profile-completion-sdk-hooks'
-import { Sheet } from '@scaffald/ui'
+import { Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Text, Stack } from '@scaffald/ui'
@@ -259,13 +259,25 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
   onViewProfile,
 }: ProfileCompletionWizardSheetProps) {
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} snapPoints={[90]} modal dismissOnSnapToBottom>
-      <Sheet.Overlay />
-      <Sheet.Frame backgroundColor="$background" aria-label="Profile completion wizard">
-        <Sheet.Handle />
+    <Sheet
+      visible={open}
+      onClose={() => {
+        onOpenChange?.(false)
+        onClose?.()
+      }}
+      height="three-quarters"
+    >
+      <SheetHeader
+        title="Complete Your Profile"
+        onClose={() => {
+          onOpenChange?.(false)
+          onClose?.()
+        }}
+        showCloseButton
+      />
+      <SheetContent>
         <Stack padding="md" gap={16} flex={1}>
           <Stack gap={8}>
-            <Text>Complete Your Profile</Text>
             <Text color="$gray11">We’ll auto-save as you go. You can exit anytime.</Text>
           </Stack>
           {open ? (
@@ -280,7 +292,7 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
             Close
           </Button>
         </Stack>
-      </Sheet.Frame>
+      </SheetContent>
     </Sheet>
   )
 })

@@ -97,8 +97,11 @@ export interface ReanimatedModule {
   withSpring: WithSpring
   withTiming: WithTiming
   Easing: EasingFunctions
+  LinearTransition: any
+  FadeIn: any
+  FadeOut: any
   default?: {
-    View: React.ComponentType<unknown>
+    View: React.ComponentType<any>
     createAnimatedComponent: <T>(component: T) => T
   }
 }
@@ -132,6 +135,9 @@ export const useAnimatedStyle: UseAnimatedStyle | null = reanimated?.useAnimated
 export const withSpring: WithSpring | null = reanimated?.withSpring ?? null
 export const withTiming: WithTiming | null = reanimated?.withTiming ?? null
 export const Easing: EasingFunctions | null = reanimated?.Easing ?? null
+export const LinearTransition: any = reanimated?.LinearTransition ?? null
+export const FadeIn: any = reanimated?.FadeIn ?? null
+export const FadeOut: any = reanimated?.FadeOut ?? null
 
 /**
  * Get Reanimated's Animated.View component

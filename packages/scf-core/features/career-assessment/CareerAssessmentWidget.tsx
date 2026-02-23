@@ -160,10 +160,10 @@ export function CareerAssessmentWidget() {
           {isSubmitting ? (
             <Row gap={spacing.xs} align="center">
               <Spinner size="sm" color="white" />
-              <Button.Text>Saving Assessment...</Button.Text>
+              Saving Assessment...
             </Row>
           ) : (
-            <Button.Text>Complete Assessment</Button.Text>
+            'Complete Assessment'
           )}
         </Button>
 

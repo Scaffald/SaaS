@@ -1,6 +1,6 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, DashboardWidget, spacing, Text, Stack } from '@scaffald/ui'
+import { Button, DashboardWidget, gap, Text, Stack } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {
@@ -55,25 +55,24 @@ export const AssessmentsLandingLeft = () => {
   const router = useRouter()
 
   return (
-    <Stack gap={spacing.lg}>
+    <Stack gap={gap.lg}>
       {ASSESSMENT_LANDING_CARDS.map(
         ({ key, title, description, ctaLabel, route, estimatedTime }) => (
-          <DashboardWidget key={key} gap={spacing.md}>
-            <Stack gap={spacing.sm}>
-              <Stack gap={spacing.xs}>
+          <DashboardWidget key={key} gap={gap.md}>
+            <Stack gap={gap.sm}>
+              <Stack gap={gap.xs}>
                 <Text color="$gray11">{title}</Text>
                 <Text color="$gray11">{description}</Text>
               </Stack>
 
               <Button
-                variant="filled" color="primary"
+                variant="filled"
+                color="primary"
                 size="lg"
-                onPress={() => {
-                  router.push(route.path)
-                }}
+                onPress={() => router.push(route.path)}
                 accessibilityLabel={ctaLabel}
               >
-                <Button.Text>{ctaLabel}</Button.Text>
+                {ctaLabel}
               </Button>
 
               {estimatedTime ? <Text color="$gray11">{estimatedTime}</Text> : null}

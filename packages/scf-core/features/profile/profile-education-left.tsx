@@ -1120,7 +1120,7 @@ function SmartSelect({
             ref={triggerRef}
             variant="outline"
             justify="space-between"
-            iconAfter={ChevronDown}
+            iconEnd={ChevronDown}
             disabled={disabled}
             borderColor={error ? '$red9' : '$borderColor'}
             color={selectedOption ? '$color12' : '$color11'}

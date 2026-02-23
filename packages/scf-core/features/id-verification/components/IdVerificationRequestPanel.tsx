@@ -87,6 +87,7 @@ export function IdVerificationRequestPanel({
       const _message = error instanceof Error ? error.message : 'Unable to create payment'
       toast.show({
         title: 'Unable to create payment',
+        message: error instanceof Error ? error.message : 'Please try again.',
         variant: 'error',
       })
     },
@@ -106,6 +107,7 @@ export function IdVerificationRequestPanel({
       const _message = error instanceof Error ? error.message : 'Payment confirmation failed'
       toast.show({
         title: 'Payment confirmation failed',
+        message: error instanceof Error ? error.message : 'Please try again.',
         variant: 'error',
       })
     },

@@ -114,6 +114,7 @@ export function IdVerificationContent() {
       setRequestError(message)
       toast.show({
         title: 'Payment setup failed',
+        message: error instanceof Error ? error.message : 'Please try again.',
         variant: 'error',
       })
     }
@@ -133,6 +134,7 @@ export function IdVerificationContent() {
         error instanceof Error ? error.message : 'Unable to confirm payment with Stripe.'
       toast.show({
         title: 'Payment confirmation failed',
+        message: error instanceof Error ? error.message : 'Please try again.',
         variant: 'error',
       })
     }

@@ -326,7 +326,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
             <Button
               size="md"
               theme="info"
-              iconAfter={ChevronRight}
+              iconEnd={ChevronRight}
               onPress={handleNext}
               disabled={!canGoForward}
             >

@@ -3,9 +3,10 @@ import {
   type AddressResult,
   MapContainer,
   type MapContainerRef,
-  type MapPinType,
   Sheet,
-  ToggleSwitch,
+  SheetContent,
+  SheetHeader,
+  Switch,
   type ViewportBounds,
 } from '@scaffald/ui'
 import { captureEvent } from '@scf/core/utils/analytics/client'
@@ -38,7 +39,7 @@ import { UserProfilePanel } from './components/UserProfilePanel'
 import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { defaultCenter } from './data/mockProfiles'
 import { useJobs } from './hooks/useJobs'
-import { type ClusterInfo, useMapPinState } from './hooks/useMapPinState'
+import { type ClusterInfo, type MapPinType, useMapPinState } from './hooks/useMapPinState'
 import { useOrganizations } from './hooks/useOrganizations'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
@@ -706,15 +707,16 @@ export const DiscoverMapScreen = () => {
       {/* Mobile Search & Filters Sheet */}
       {isSmallScreen && (
         <Sheet
-          modal
-          open={filtersSheetOpen}
-          onOpenChange={setFiltersSheetOpen}
-          snapPoints={[85, 60]}
-          dismissOnSnapToBottom
+          visible={filtersSheetOpen}
+          onClose={() => setFiltersSheetOpen(false)}
+          height="three-quarters"
         >
-          <Sheet.Overlay />
-          <Sheet.Handle />
-          <Sheet.Frame>
+          <SheetHeader
+            title="Filters"
+            onClose={() => setFiltersSheetOpen(false)}
+            showCloseButton
+          />
+          <SheetContent>
             <MobileFiltersContent
               showWorkers={showWorkers}
               showOrganizations={showOrganizations}
@@ -722,10 +724,9 @@ export const DiscoverMapScreen = () => {
               onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
               onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
               onShowJobsChange={(value) => updateFilters({ showJobs: value })}
-              onClose={() => setFiltersSheetOpen(false)}
               onReset={handleReset}
             />
-          </Sheet.Frame>
+          </SheetContent>
         </Sheet>
       )}
 
@@ -913,7 +914,6 @@ type MobileFiltersContentProps = {
   onShowWorkersChange: (value: boolean) => void
   onShowOrganizationsChange: (value: boolean) => void
   onShowJobsChange: (value: boolean) => void
-  onClose: () => void
   onReset: () => void
 }
 
@@ -924,23 +924,11 @@ const MobileFiltersContent = ({
   onShowWorkersChange,
   onShowOrganizationsChange,
   onShowJobsChange,
-  onClose,
   onReset,
 }: MobileFiltersContentProps) => {
   return (
-    <Stack flex={1} padding="md" gap={16}>
-      <Row justify="space-between" align="center">
-        <Text>Filters</Text>
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={X}
-          aria-label="Close filters"
-          onPress={onClose}
-        />
-      </Row>
-
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+    <Stack flex={1} gap={16}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <Stack gap={16} paddingBottom={24}>
           <FilterToggle
             label="Workers"
@@ -995,7 +983,7 @@ const FilterToggle = ({ label, description, value, onValueChange }: FilterToggle
   >
     <Row justify="space-between" align="center" gap={8}>
       <Text>{label}</Text>
-      <ToggleSwitch checked={value} onChange={onValueChange} aria-label={label} />
+      <Switch checked={value} onChange={onValueChange} accessibilityLabel={label} />
     </Row>
     <Text color="$gray11">{description}</Text>
   </Stack>

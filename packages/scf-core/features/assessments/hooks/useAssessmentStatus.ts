@@ -21,22 +21,22 @@ export function useAssessmentStatus() {
   const riasecQuery = useRIASECStatus()
   const occupationQuery = useOccupationStatus()
 
-  const luscher1Completed = luscher1Query.data?.data?.isCompleted ?? false
-  const luscher1OnCooldown = luscherAvailabilityQuery.data?.data?.isOnCooldown ?? false
+  const luscher1Completed = luscher1Query.data?.isCompleted ?? false
+  const luscher1OnCooldown = luscherAvailabilityQuery.data?.isOnCooldown ?? false
 
   return {
     luscher1: {
       isCompleted: luscher1Completed,
       isLoading: luscher1Query.isLoading || luscherAvailabilityQuery.isLoading,
       isOnCooldown: luscher1OnCooldown,
-      nextAvailableAt: luscherAvailabilityQuery.data?.data?.nextAvailableAt ?? null,
+      nextAvailableAt: luscherAvailabilityQuery.data?.nextAvailableAt ?? null,
     },
     ipip: {
-      isCompleted: ipipQuery.data?.data?.isCompleted ?? false,
+      isCompleted: ipipQuery.data?.isCompleted ?? false,
       isLoading: ipipQuery.isLoading,
     },
     luscher2: {
-      isCompleted: luscher2Query.data?.data?.isCompleted ?? false,
+      isCompleted: luscher2Query.data?.isCompleted ?? false,
       isLoading: luscher2Query.isLoading,
     },
     riasec: {

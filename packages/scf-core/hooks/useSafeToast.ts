@@ -39,7 +39,7 @@ export function useSafeToast() {
 
       toast.show({
         title,
-        message: options?.message,
+        message: options?.message ?? title,
         duration: options?.duration,
         variant,
       })
@@ -67,5 +67,5 @@ export function useSafeToast() {
     }
   }
 
-  return { show, hide: toast.hide }
+  return { show, hide: toast.dismissAll }
 }

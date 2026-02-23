@@ -262,7 +262,7 @@ export function PersonalityAssessmentWizard() {
             {canGoNext && (
               <Button
                 size="md"
-                iconAfter={ChevronRight}
+                iconEnd={ChevronRight}
                 onPress={handleNext}
                 disabled={
                   (currentStep === 'luscher1' &&

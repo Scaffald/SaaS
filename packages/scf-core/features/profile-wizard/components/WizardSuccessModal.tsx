@@ -49,7 +49,7 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
       </Card>
 
       <Stack gap={12} style={{ width: '100%', maxWidth: 440 }}>
-        <Button size="lg" themeInverse iconAfter={ArrowRight} onPress={onViewProfile}>
+        <Button size="lg" themeInverse iconEnd={ArrowRight} onPress={onViewProfile}>
           View My Profile
         </Button>
         <Button size="lg" variant="outline" onPress={onContinueEditing}>

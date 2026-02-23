@@ -3,7 +3,7 @@ import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { Button, Sheet, spacing } from '@scaffald/ui'
+import { Button, Sheet, SheetContent, SheetHeader, spacing } from '@scaffald/ui'
 import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
@@ -535,7 +535,7 @@ export function NewsWidget({
             size="sm"
             variant="outline"
             onPress={handleViewAll}
-            iconAfter={<ExternalLink size="md" />}
+            iconEnd={ExternalLink}
           >
             View All News
           </Button>
@@ -543,16 +543,17 @@ export function NewsWidget({
       )}
 
       <Sheet
-        modal
-        open={preferencesOpen}
-        onOpenChange={setPreferencesOpen}
-        snapPoints={[60]}
-        dismissOnSnapToBottom
+        visible={preferencesOpen}
+        onClose={() => setPreferencesOpen(false)}
+        height="half"
       >
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame padding="md" gap={12}>
-          <Sheet.Handle />
-          <Text>Customise Recommendations</Text>
+        <SheetHeader
+          title="Customise Recommendations"
+          onClose={() => setPreferencesOpen(false)}
+          showCloseButton
+        />
+        <SheetContent>
+          <Stack padding="md" gap={12}>
           <Paragraph color="$gray11" size="sm">
             Tailor the news feed using your profile information.
           </Paragraph>
@@ -594,7 +595,8 @@ export function NewsWidget({
               />
             </Row>
           </Stack>
-        </Sheet.Frame>
+        </Stack>
+        </SheetContent>
       </Sheet>
     </Stack>
   )

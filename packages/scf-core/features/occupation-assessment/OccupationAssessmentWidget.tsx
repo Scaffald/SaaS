@@ -44,7 +44,7 @@ export function OccupationAssessmentWidget() {
         </Stack>
 
         <Button variant="filled" color="primary" onPress={handleStart} size="lg">
-          <Button.Text>Add Occupations</Button.Text>
+          Add Occupations
         </Button>
 
         <Text color="$gray11">Takes about 1-2 minutes (optional)</Text>

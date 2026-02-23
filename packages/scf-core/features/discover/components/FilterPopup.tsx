@@ -1,4 +1,4 @@
-import { ToggleSwitch } from '@scaffald/ui'
+import { Switch } from '@scaffald/ui'
 import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -170,10 +170,10 @@ export const FilterPopup = ({
                       <Stack gap={4}>
                         <Row justify="space-between" align="center">
                           <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
-                          <ToggleSwitch
+                          <Switch
                             checked={showWorkers}
                             onChange={(checked) => onShowWorkersChange?.(checked)}
-                            aria-label={
+                            accessibilityLabel={
                               showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
                             }
                           />
@@ -189,10 +189,10 @@ export const FilterPopup = ({
                           <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                             Employers
                           </Label>
-                          <ToggleSwitch
+                          <Switch
                             checked={showOrganizations}
                             onChange={(checked) => onShowOrganizationsChange?.(checked)}
-                            aria-label={
+                            accessibilityLabel={
                               showOrganizations
                                 ? 'Showing employers on map'
                                 : 'Hiding employers on map'
@@ -208,10 +208,10 @@ export const FilterPopup = ({
                       <Stack gap={4}>
                         <Row justify="space-between" align="center">
                           <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
-                          <ToggleSwitch
+                          <Switch
                             checked={showJobs}
                             onChange={(checked) => onShowJobsChange?.(checked)}
-                            aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+                            accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
                         </Row>
                         <Text color="$gray11" paddingLeft={4}>

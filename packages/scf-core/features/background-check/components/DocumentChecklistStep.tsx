@@ -52,15 +52,15 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
                     size="md"
                     checked={isChecked}
                     onChange={(checked) => onToggleDocument(docType, Boolean(checked))}
-                  >
-                    <Checkbox.Indicator />
-                  </Checkbox>
-                  <Stack gap={4} flex={1}>
-                    <Text color="$gray11">{docType.replace(/_/g, ' ')}</Text>
-                    <Text color="$gray11">
-                      Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
-                    </Text>
-                  </Stack>
+                    labelElement={
+                      <Stack gap={4} flex={1}>
+                        <Text color="$gray11">{docType.replace(/_/g, ' ')}</Text>
+                        <Text color="$gray11">
+                          Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
+                        </Text>
+                      </Stack>
+                    }
+                  />
                 </Row>
               </Card>
             )

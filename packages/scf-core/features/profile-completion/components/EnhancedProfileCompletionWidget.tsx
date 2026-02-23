@@ -310,7 +310,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         </Stack>
 
         <Row gap={12} wrap>
-          <Button size="md" flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
+          <Button size="md" flex={1} themeInverse iconEnd={ChevronRight} onPress={onStartWizard}>
             Complete Profile
           </Button>
           {/* TODO: Uncomment this when we fix the route

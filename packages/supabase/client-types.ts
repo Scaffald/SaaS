@@ -4,7 +4,6 @@
  */
 
 // Re-export AppRouter type - use fallback when Deno router type fails to resolve
-// (e.g. scaffald-app typecheck with excluded functions); runtime tRPC remains correct
 export type { AppRouter } from './app-router-fallback'
 
 // Re-export types from @scf/trpc schemas

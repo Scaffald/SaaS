@@ -87,12 +87,12 @@ export function DisputeForm({
             style={{
               backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
               borderColor: theme === "light" ? colors.yellow[300] : colors.yellow[700],
+              borderWidth: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              gap: 8,
+              borderRadius: 16,
             }}
-            borderWidth={1}
-            paddingHorizontal={12}
-            paddingVertical={8}
-            gap={8}
-            borderRadius={16}
           >
             <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Dispute already in review</Text>
             <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>

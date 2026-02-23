@@ -102,7 +102,8 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       logger.error('Failed to update job status', error, { context: 'JobsKanbanBoard' })
       setUpdatingJobId(null)
       toast.show({
-        title: 'Failed to update job status. Please try again.',
+        title: 'Failed to update job status',
+        message: 'Please try again.',
         variant: 'error',
         duration: 5000,
       })
