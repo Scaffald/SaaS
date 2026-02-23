@@ -125,6 +125,19 @@ export interface AwardResultsViewXPResponse {
   newXP?: number
 }
 
+export interface PersonalityArchetype {
+  archetype: string
+  confidence: number
+  details: {
+    name: string
+    description: string
+    strengths: string[]
+    work_styles: string
+    team_dynamics: string
+    growth_areas: string[]
+  } | null
+}
+
 export class PersonalityAssessments extends Resource {
   /**
    * Get assessment status or create new assessment
@@ -232,5 +245,13 @@ export class PersonalityAssessments extends Resource {
    */
   async awardResultsViewXP(): Promise<AwardResultsViewXPResponse> {
     return this.post<AwardResultsViewXPResponse>('/v1/personality-assessment/xp/results-view', {})
+  }
+
+  /**
+   * Get primary archetype for the current user.
+   * Returns null if the IPIP has not been completed yet.
+   */
+  async getArchetype(): Promise<PersonalityArchetype | null> {
+    return this.get<PersonalityArchetype | null>('/v1/personality-assessment/archetype')
   }
 }

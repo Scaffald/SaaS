@@ -31,7 +31,8 @@ export function ProfileActivityWidget() {
 
   // Fetch data
   const { data: profileViewsData, isLoading: viewsLoading } = useProfileViews({ limit: 10 })
-  const profileViews = profileViewsData?.views
+  const profileViewsList = profileViewsData?.views ?? []
+  const profileViewsTotal = profileViewsData?.total ?? 0
 
   const { data: viewAnalytics, isLoading: analyticsLoading } = useViewAnalytics()
 
@@ -131,20 +132,20 @@ export function ProfileActivityWidget() {
                 <Eye size={18} color="$gray11" />
                 <Text color="$gray11">Recent Views</Text>
               </Row>
-              {profileViews && profileViews.total > 0 && (
+              {profileViewsTotal > 0 && (
                 <Button size="sm" variant="outline" onPress={handleViewAllProfileViews}>
                   View All
                 </Button>
               )}
             </Row>
 
-            {!profileViews || profileViews.views.length === 0 ? (
-              <Text color="$gray11" fontStyle="italic">
+            {profileViewsList.length === 0 ? (
+              <Text color="$gray11" style={{ fontStyle: 'italic' }}>
                 No profile views yet
               </Text>
             ) : (
               <Stack gap={8}>
-                {profileViews.views.slice(0, 5).map(
+                {profileViewsList.slice(0, 5).map(
                   (view: {
                     id: string
                     viewer?: {
@@ -155,20 +156,17 @@ export function ProfileActivityWidget() {
                     viewed_at?: string
                   }) => (
                     <Row key={view.id} align="center" gap={8}>
-                      <Avatar size={32}>
-                        {view.viewer?.avatar_url ? (
-                          <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
-                        ) : (
-                          <Avatar.Fallback backgroundColor="$blue4">
-                            <Text color="$blue10">
-                              {view.viewer?.display_name?.charAt(0) ||
-                                view.viewer?.username?.charAt(0) ||
-                                '?'}
-                            </Text>
-                          </Avatar.Fallback>
-                        )}
-                      </Avatar>
-                      <Stack flex={1} gap={4}>
+                      <Avatar
+                        size={32}
+                        src={view.viewer?.avatar_url ? { uri: view.viewer.avatar_url } : undefined}
+                        initials={
+                          view.viewer?.display_name?.charAt(0) ||
+                          view.viewer?.username?.charAt(0) ||
+                          '?'
+                        }
+                        color="info"
+                      />
+                      <Stack style={{ flex: 1 }} gap={4}>
                         <Text color="$gray11">
                           {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
                         </Text>
@@ -200,7 +198,7 @@ export function ProfileActivityWidget() {
             </Row>
 
             {!followers || followers.length === 0 ? (
-              <Text color="$gray11" fontStyle="italic">
+              <Text color="$gray11" style={{ fontStyle: 'italic' }}>
                 No followers yet
               </Text>
             ) : (
@@ -216,20 +214,17 @@ export function ProfileActivityWidget() {
                     created_at?: string
                   }) => (
                     <Row key={follow.id} align="center" gap={8}>
-                      <Avatar size={32}>
-                        {follow.user?.avatar_url ? (
-                          <Avatar.Image source={{ uri: follow.user.avatar_url }} />
-                        ) : (
-                          <Avatar.Fallback backgroundColor="$green4">
-                            <Text color="$green10">
-                              {follow.user?.display_name?.charAt(0) ||
-                                follow.user?.username?.charAt(0) ||
-                                '?'}
-                            </Text>
-                          </Avatar.Fallback>
-                        )}
-                      </Avatar>
-                      <Stack flex={1} gap={4}>
+                      <Avatar
+                        size={32}
+                        src={follow.user?.avatar_url ? { uri: follow.user.avatar_url } : undefined}
+                        initials={
+                          follow.user?.display_name?.charAt(0) ||
+                          follow.user?.username?.charAt(0) ||
+                          '?'
+                        }
+                        color="success"
+                      />
+                      <Stack style={{ flex: 1 }} gap={4}>
                         <Text color="$gray11">
                           {follow.user?.display_name || follow.user?.username || 'User'}
                         </Text>
@@ -262,7 +257,7 @@ export function ProfileActivityWidget() {
                     backgroundColor="$orange3"
                     paddingHorizontal={8}
                     paddingVertical={2}
-                    borderRadius="$10"
+                    borderRadius={10}
                     align="center"
                     justify="center"
                   >
@@ -276,7 +271,7 @@ export function ProfileActivityWidget() {
             </Row>
 
             {!pendingRequests || pendingRequests.received.length === 0 ? (
-              <Text color="$gray11" fontStyle="italic">
+              <Text color="$gray11" style={{ fontStyle: 'italic' }}>
                 No pending requests
               </Text>
             ) : (
@@ -292,21 +287,20 @@ export function ProfileActivityWidget() {
                     created_at?: string
                   }) => (
                     <Row key={request.id} align="center" gap={8} justify="space-between">
-                      <Row align="center" gap={8} flex={1}>
-                        <Avatar size={32}>
-                          {request.user?.avatar_url ? (
-                            <Avatar.Image source={{ uri: request.user.avatar_url }} />
-                          ) : (
-                            <Avatar.Fallback backgroundColor="$purple4">
-                              <Text color="$purple10">
-                                {request.user?.display_name?.charAt(0) ||
-                                  request.user?.username?.charAt(0) ||
-                                  '?'}
-                              </Text>
-                            </Avatar.Fallback>
-                          )}
-                        </Avatar>
-                        <Stack flex={1} gap={4}>
+                      <Row align="center" gap={8} style={{ flex: 1 }}>
+                        <Avatar
+                          size={32}
+                          src={
+                            request.user?.avatar_url ? { uri: request.user.avatar_url } : undefined
+                          }
+                          initials={
+                            request.user?.display_name?.charAt(0) ||
+                            request.user?.username?.charAt(0) ||
+                            '?'
+                          }
+                          color="primary"
+                        />
+                        <Stack style={{ flex: 1 }} gap={4}>
                           <Text color="$gray11">
                             {request.user?.display_name || request.user?.username || 'User'}
                           </Text>
@@ -324,7 +318,7 @@ export function ProfileActivityWidget() {
                         <Button
                           size="sm"
                           iconStart={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
-                          theme="success"
+                          color="success"
                           onPress={() => handleAcceptRequest(request.id)}
                           disabled={
                             acceptRequestMutation.isPending || declineRequestMutation.isPending

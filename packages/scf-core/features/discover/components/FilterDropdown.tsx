@@ -49,92 +49,77 @@ export const FilterDropdown = ({
     return `Filters (${activeFilterCount})`
   }
 
-  return (
-    <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
-      <Popover.Trigger asChild>
-        <Button
-          size="md"
-          variant="outline"
-          backgroundColor={activeFilterCount < 3 ? '$blue9' : '$background'}
-          color={activeFilterCount < 3 ? 'white' : '$color'}
-          hoverStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue11' : '$backgroundPress' }}
-          iconStart={SlidersHorizontal}
-          iconEnd={ChevronDown}
-          scaleIcon={1.2}
-        >
-          {getButtonLabel()}
-        </Button>
-      </Popover.Trigger>
+  const popoverContent = (
+    <Stack gap={12} style={{ minWidth: 280, maxWidth: 320, padding: 12 }}>
+      <Text style={{ marginBottom: 4 }}>Display on Map</Text>
 
-      <Popover.Content
-        borderRadius={16}
-        padding="sm"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$background"
-        shadowColor="$shadowColor"
-        shadowOffset={{ width: 0, height: 4 }}
-        shadowOpacity={0.15}
-        shadowRadius={12}
-        style={{ minWidth: 280, maxWidth: 320 }}
-        animation="quick"
-        enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      >
-        <Stack gap={12}>
-          <Text style={{ marginBottom: 4 }}>Display on Map</Text>
-
-          {/* Workers Toggle */}
-          <Stack gap={4}>
-            <Row justify="space-between" align="center">
-              <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
-              <Switch
-                checked={showWorkers}
-                onChange={(checked) => onShowWorkersChange?.(checked)}
-                accessibilityLabel={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
-              />
-            </Row>
-            <Text color="$gray11" paddingLeft={4}>
-              Show worker profiles on the map
-            </Text>
-          </Stack>
-
-          {/* Employers Toggle */}
-          <Stack gap={4}>
-            <Row justify="space-between" align="center">
-              <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
-                Employers
-              </Label>
-              <Switch
-                checked={showOrganizations}
-                onChange={(checked) => onShowOrganizationsChange?.(checked)}
-                accessibilityLabel={
-                  showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
-                }
-              />
-            </Row>
-            <Text color="$gray11" paddingLeft={4}>
-              Show employer organizations on the map
-            </Text>
-          </Stack>
-
-          {/* Jobs Toggle */}
-          <Stack gap={4}>
-            <Row justify="space-between" align="center">
-              <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
-              <Switch
-                checked={showJobs}
-                onChange={(checked) => onShowJobsChange?.(checked)}
-                accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
-              />
-            </Row>
-            <Text color="$gray11" paddingLeft={4}>
-              Show job openings on the map
-            </Text>
-          </Stack>
+        {/* Workers Toggle */}
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
+            <Switch
+              checked={showWorkers}
+              onChange={(checked) => onShowWorkersChange?.(checked)}
+              accessibilityLabel={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
+            />
+          </Row>
+          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+            Show worker profiles on the map
+          </Text>
         </Stack>
-      </Popover.Content>
+
+        {/* Employers Toggle */}
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
+              Employers
+            </Label>
+            <Switch
+              checked={showOrganizations}
+              onChange={(checked) => onShowOrganizationsChange?.(checked)}
+              accessibilityLabel={
+                showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
+              }
+            />
+          </Row>
+          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+            Show employer organizations on the map
+          </Text>
+        </Stack>
+
+        {/* Jobs Toggle */}
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
+            <Switch
+              checked={showJobs}
+              onChange={(checked) => onShowJobsChange?.(checked)}
+              accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+            />
+          </Row>
+          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+            Show job openings on the map
+          </Text>
+        </Stack>
+      </Stack>
+  )
+
+  return (
+    <Popover
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      placement="bottom-start"
+      content={popoverContent}
+    >
+      <Button
+        size="md"
+        variant="outline"
+        color={activeFilterCount < 3 ? 'primary' : 'gray'}
+        iconStart={SlidersHorizontal}
+        iconEnd={ChevronDown}
+      >
+        {getButtonLabel()}
+      </Button>
     </Popover>
   )
 }

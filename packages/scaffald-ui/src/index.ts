@@ -39,6 +39,9 @@ export type { IconSize } from "./utils/icon";
 // Export error handling utilities
 export { deprecated, invariant, warning } from "./utils/invariant";
 
+// Export TipTap utilities (JSONContent helpers)
+export { extractPlainText, plainTextToTipTap } from "./utils/tiptap";
+
 // Export hooks
 export { useResponsive, useSidebarState, useWindowDimensions } from "./hooks";
 export type {
@@ -273,6 +276,9 @@ export type {
   MetadataItem,
   SelectableCardProps,
 } from "./components/Card";
+
+export { DiscoverCard } from "./components/DiscoverCard";
+export type { DiscoverCardProps, DiscoverCardVariant } from "./components/DiscoverCard";
 
 // Toast components
 export {
@@ -931,6 +937,7 @@ export {
   EcommerceShippingModal,
   Modal,
   Modal as Dialog,
+  ResponsiveModal,
   ModalActions,
   ModalContent,
   ModalHeader,

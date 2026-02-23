@@ -1,5 +1,6 @@
 import type { AddressResult } from '@scaffald/ui'
 import { AddressAutocomplete } from '@scaffald/ui'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import { List, RotateCcw } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Button, Text, Row, Stack } from '@scaffald/ui'
@@ -93,31 +94,24 @@ export const MapFilterBar = ({
       gap={12}
       align="center"
       backgroundColor="$background"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
+      style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
     >
       {/* Search Input */}
-      {tokenValidation.valid ? (
+      {tokenValidation.valid && mapboxToken ? (
         <Stack flex={1} minWidth={200}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
             onAddressSelect={handleLocationSelect}
             placeholder="Search city, county, or region..."
-            provider="mapbox"
-            apiKey={mapboxToken}
-            zoomLevel="city"
+            provider={createMapboxGeocodingProvider(mapboxToken)}
             searchOptions={{
               types: ['place', 'region', 'district', 'locality'],
+              zoomLevel: 'city',
             }}
             minLength={2}
             maxResults={5}
             debounceMs={300}
-            containerProps={{
-              w: '100%',
-              backgroundColor: 'white',
-              borderRadius: '$4',
-            }}
           />
         </Stack>
       ) : (
@@ -153,9 +147,7 @@ export const MapFilterBar = ({
         size="md"
         variant="outline"
         onPress={onResultsPress}
-        backgroundColor="$background"
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
-        pressStyle={{ backgroundColor: '$backgroundPress' }}
+        color="gray"
         iconStart={resultsCount > 0 ? undefined : List}
       >
         {resultsCount > 0 ? (
@@ -172,12 +164,9 @@ export const MapFilterBar = ({
         size="md"
         variant="outline"
         iconStart={RotateCcw}
-        scaleIcon={1.2}
         onPress={onReset}
-        backgroundColor="$background"
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
-        pressStyle={{ backgroundColor: '$backgroundPress' }}
-        aria-label="Reset filters and search"
+        color="gray"
+        accessibilityLabel="Reset filters and search"
       />
     </Row>
   )

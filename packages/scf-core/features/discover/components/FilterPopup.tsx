@@ -1,15 +1,7 @@
 import { Switch } from '@scaffald/ui'
 import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
-import {
-  AnimatePresence,
-  Button,
-  Label,
-  ScrollView,
-  Text,
-  Row,
-  Stack,
-} from '@scaffald/ui'
+import { Button, Label, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 
 type FilterPopupProps = {
   isOpen: boolean
@@ -95,64 +87,62 @@ export const FilterPopup = ({
     return `Display on Map (${activeFilters.join(', ')})`
   }
 
+  if (!isOpen) return null
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <Row
-          position="absolute"
-          bottom={100}
-          left={0}
-          right={railVisible ? 440 : 0}
-          zIndex={60}
-          animation="quick"
-          enterStyle={{ opacity: 0, y: 20 }}
-          exitStyle={{ opacity: 0, y: 20 }}
-          opacity={1}
-          y={0}
-          justify="center"
-          align="center"
-          paddingHorizontal={16}
-        >
-          <Stack
-            width={300}
-            height={250}
-            flex={1}
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$background"
-            shadowColor="$shadowColor"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.15}
-            shadowRadius={12}
-            borderRadius={16}
-            overflow="hidden"
-          >
+    <Row
+      justify="center"
+      align="center"
+      paddingHorizontal={16}
+      style={{
+        position: 'absolute',
+        bottom: 100,
+        left: 0,
+        right: railVisible ? 440 : 0,
+        zIndex: 60,
+      }}
+    >
+      <Stack
+        width={300}
+        height={250}
+        flex={1}
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$background"
+        borderRadius={16}
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          overflow: 'hidden',
+        }}
+      >
             {/* Header */}
             <Row
               paddingHorizontal={16}
               paddingVertical={12}
               justify="space-between"
               align="center"
-              borderBottomWidth={1}
-              borderBottomColor="$borderColor"
+              style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
             >
               <Text>Filters</Text>
-              <Button size="sm" variant="outline" onPress={onClose} iconStart={X} scaleIcon={1.2} />
+              <Button size="sm" variant="outline" onPress={onClose} iconStart={X} />
             </Row>
 
             {/* Scrollable Content */}
-            <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
               <Stack padding="sm" gap={8}>
                 {/* Show Section */}
                 <Stack>
                   <Button
-                    unstyled
+                    variant="text"
                     onPress={() => toggleSection('show')}
-                    paddingHorizontal={12}
-                    paddingVertical={8}
-                    hoverStyle={{ backgroundColor: '$color3' }}
-                    pressStyle={{ backgroundColor: '$color4' }}
-                    borderRadius={12}
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      borderRadius: 12,
+                    }}
                   >
                     <Row justify="space-between" align="center" flex={1}>
                       <Text>{getSectionHeaderText()}</Text>
@@ -178,7 +168,7 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text color="$gray11" paddingLeft={4}>
+                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
                           Show worker profiles on the map
                         </Text>
                       </Stack>
@@ -199,7 +189,7 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text color="$gray11" paddingLeft={4}>
+                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
                           Show employer organizations on the map
                         </Text>
                       </Stack>
@@ -214,7 +204,7 @@ export const FilterPopup = ({
                             accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
                         </Row>
-                        <Text color="$gray11" paddingLeft={4}>
+                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
                           Show job openings on the map
                         </Text>
                       </Stack>
@@ -230,8 +220,7 @@ export const FilterPopup = ({
               paddingVertical={12}
               gap={8}
               justify="flex-end"
-              borderTopWidth={1}
-              borderTopColor="$borderColor"
+              style={{ borderTopWidth: 1, borderTopColor: '$borderColor' }}
             >
               <Button size="sm" variant="outline" onPress={onClose}>
                 <Text>Close</Text>
@@ -242,7 +231,5 @@ export const FilterPopup = ({
             </Row>
           </Stack>
         </Row>
-      )}
-    </AnimatePresence>
   )
 }

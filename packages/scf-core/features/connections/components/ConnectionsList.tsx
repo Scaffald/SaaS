@@ -1,34 +1,12 @@
 import { useConnections, useRemoveConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import type { Connection } from '@scaffald/sdk/resources/connections'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
-
-interface ConnectionData {
-  id: string
-  requester_id: string
-  addressee_id: string
-  status: string
-  created_at: string
-  updated_at: string
-  requester?: {
-    id: string
-    first_name: string
-    last_name: string
-    avatar_url?: string
-  }
-  addressee?: {
-    id: string
-    first_name: string
-    last_name: string
-    avatar_url?: string
-  }
-}
-
-type Connection = ConnectionData
 
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -145,15 +123,12 @@ export function ConnectionsList() {
 
           return (
             <Row align="center" gap={8}>
-              <Avatar size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$blue4">
-                    <Text color="$blue10">{name.charAt(0).toUpperCase()}</Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="info"
+              />
               <Text>{name}</Text>
             </Row>
           )
@@ -190,7 +165,10 @@ export function ConnectionsList() {
   )
 
   const tableColumns = useMemo(
-    () => columnsFromTanStack<Connection>(columnDefs),
+    () =>
+      columnsFromTanStack<Connection & Record<string, unknown>>(
+        columnDefs as ColumnDef<Connection & Record<string, unknown>>[]
+      ),
     [columnDefs]
   )
 
@@ -207,11 +185,10 @@ export function ConnectionsList() {
     <Stack gap={16}>
       <Row justify="space-between" align="center" gap={8}>
         <Input
-          flex={1}
+          style={{ flex: 1 }}
           placeholder="Search connections..."
           value={searchTerm}
           onChangeText={setSearchTerm}
-          size="md"
         />
         {filteredConnections.length > 0 && (
           <Button size="sm" variant="outline" iconStart={Download} onPress={handleExportCSV}>
@@ -242,7 +219,7 @@ export function ConnectionsList() {
       ) : (
         <Table
           columns={tableColumns}
-          data={filteredConnections}
+          data={filteredConnections as (Connection & Record<string, unknown>)[]}
           pageSize={20}
           emptyMessage="No connections found"
         />

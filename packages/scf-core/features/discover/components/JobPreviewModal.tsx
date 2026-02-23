@@ -97,8 +97,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     >
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="$blue10" />
-          <Text marginTop={16} color="$gray11">
+          <Spinner size="lg" color="primary" />
+          <Text color="$gray11" style={{ marginTop: 16 }}>
             Loading job details...
           </Text>
         </Stack>
@@ -210,7 +210,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Separator />
               <Stack gap={8}>
                 <Text color="$gray11">Description</Text>
-                <Text color="$gray11" lineHeight={4}>
+                <Text color="$gray11" style={{ lineHeight: 16 }}>
                   {job.description}
                 </Text>
               </Stack>
@@ -222,8 +222,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
           {/* CTA Button */}
           <Button
             size="lg"
-            theme="info"
-            iconAfter={<ExternalLink size={18} />}
+            color="primary"
+            iconEnd={ExternalLink}
             onPress={handleViewFullDetails}
           >
             View Full Details & Apply

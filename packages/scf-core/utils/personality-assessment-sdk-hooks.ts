@@ -4,6 +4,7 @@ import {
   useQueryClient,
   type UseMutationOptions,
 } from '@tanstack/react-query'
+import type { PersonalityArchetype } from '@scaffald/sdk'
 import type {
   AwardResultsViewXPResponse,
   GenerateReportParams,

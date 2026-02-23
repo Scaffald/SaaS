@@ -5,6 +5,7 @@ import {
   useCancelConnectionMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import type { ConnectionRequest } from '@scaffald/sdk/resources/connections'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { CheckCircle2, X } from 'lucide-react-native'
@@ -12,22 +13,8 @@ import { useCallback, useMemo } from 'react'
 import { Avatar, Button, Separator, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
-interface PendingRequestBase {
-  id: string
-  requester_id: string
-  addressee_id: string
-  status: 'pending'
-  created_at: string
-  requester: {
-    id: string
-    first_name: string
-    last_name: string
-    avatar_url?: string
-  }
-}
-
-type PendingRequest = PendingRequestBase & { type: 'sent' }
-type ReceivedRequest = PendingRequestBase & { type: 'received' }
+type PendingRequest = ConnectionRequest & { type: 'sent' }
+type ReceivedRequest = ConnectionRequest & { type: 'received' }
 type RequestRow = PendingRequest | ReceivedRequest
 
 export function PendingRequestsList() {
@@ -127,7 +114,7 @@ export function PendingRequestsList() {
     [cancelMutation]
   )
 
-  const columnDefs = useMemo<ColumnDef<RequestRow>[]>(
+  const columnDefs = useMemo<ColumnDef<RequestRow & Record<string, unknown>>[]>(
     () => [
       {
         accessorKey: 'requester',
@@ -140,15 +127,12 @@ export function PendingRequestsList() {
 
           return (
             <Row align="center" gap={8}>
-              <Avatar size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$orange4">
-                    <Text color="$orange10">{name.charAt(0).toUpperCase()}</Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="warning"
+              />
               <Stack gap={4}>
                 <Text>{name}</Text>
                 <Text color="$gray11">{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
@@ -192,7 +176,7 @@ export function PendingRequestsList() {
               <Button
                 size="sm"
                 iconStart={CheckCircle2}
-                theme="success"
+                color="success"
                 onPress={() => handleAccept(request.id)}
                 disabled={isLoading}
               />
@@ -219,7 +203,7 @@ export function PendingRequestsList() {
   )
 
   const tableColumns = useMemo(
-    () => columnsFromTanStack<RequestRow>(columnDefs),
+    () => columnsFromTanStack<RequestRow & Record<string, unknown>>(columnDefs),
     [columnDefs]
   )
 
@@ -264,7 +248,7 @@ export function PendingRequestsList() {
           <Text>Received ({receivedRequests.length})</Text>
           <Table
             columns={tableColumns}
-            data={combinedRequests.filter((r) => r.type === 'received')}
+            data={combinedRequests.filter((r) => r.type === 'received') as unknown as Record<string, unknown>[]}
             pageSize={10}
             emptyMessage="No received requests"
           />
@@ -277,7 +261,7 @@ export function PendingRequestsList() {
           <Text>Sent ({sentRequests.length})</Text>
           <Table
             columns={tableColumns}
-            data={combinedRequests.filter((r) => r.type === 'sent')}
+            data={combinedRequests.filter((r) => r.type === 'sent') as unknown as Record<string, unknown>[]}
             pageSize={10}
             emptyMessage="No sent requests"
           />

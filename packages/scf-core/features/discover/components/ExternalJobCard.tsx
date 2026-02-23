@@ -83,10 +83,10 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
             width={48}
             height={48}
             borderRadius={8}
-            overflow="hidden"
             backgroundColor="$color3"
             align="center"
             justify="center"
+            style={{ overflow: 'hidden' }}
           >
             <img
               src={job.company_logo}
@@ -187,7 +187,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       <Row gap={8} justify="flex-end">
         <Button
           size="sm"
-          theme="info"
+          color="primary"
           onPress={() =>
             router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
           }

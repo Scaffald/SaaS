@@ -60,10 +60,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
         {job.employment_type && (
           <Text
             color="$gray11"
-            backgroundColor="$color3"
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
+            style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
           >
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
@@ -71,10 +68,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
         {job.remote_option && (
           <Text
             color="$gray11"
-            backgroundColor="$color3"
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
+            style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
           >
             {job.remote_option.replace('_', ' ').toUpperCase()}
           </Text>
@@ -82,10 +76,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
         {job.position_level && (
           <Text
             color="$gray11"
-            backgroundColor="$color3"
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
+            style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
           >
             {job.position_level}
           </Text>
@@ -101,17 +92,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       )}
 
       {/* View Details Button */}
-      <Button
-        size="sm"
-        backgroundColor={isSelected ? '$yellow8' : '$color4'}
-        color={isSelected ? '$yellow12' : '$color11'}
-        hoverStyle={{
-          backgroundColor: isSelected ? '$yellow9' : '$color5',
-        }}
-        pressStyle={{
-          backgroundColor: isSelected ? '$yellow10' : '$color6',
-        }}
-      >
+      <Button size="sm" variant="outline" color={isSelected ? 'primary' : 'gray'}>
         View Details
       </Button>
     </DiscoverCard>

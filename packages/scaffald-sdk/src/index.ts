@@ -636,6 +636,7 @@ export type {
   GenerateShareTokenResponse,
   SaveLuscherTestSessionResponse,
   AwardResultsViewXPResponse,
+  PersonalityArchetype,
 } from './resources/personality-assessment.js'
 
 export {

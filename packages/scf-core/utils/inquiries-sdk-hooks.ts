@@ -18,6 +18,7 @@ import type {
   CreateTemplateParams,
   Inquiry,
   InquiryAuditLog,
+  InquiryCapabilityClient,
   InquiryCapabilityResponse,
   InquiryComment,
   InquiryDetails,
@@ -26,7 +27,7 @@ import type {
   SubmitCapabilityResponseParams,
   UpdateInquiryParams,
   UpdateTemplateParams,
-} from '@scaffald/sdk'
+} from './inquiry-capability-types'
 import { useScaffaldJobsClient } from '@scf/core/provider'
 
 /**
@@ -61,7 +62,7 @@ export function useCreateInquiryTemplateMutation(
   return useMutation({
     mutationFn: async (params: CreateTemplateParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.createTemplate(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).createTemplate(params)
     },
     ...options,
   })
@@ -78,7 +79,7 @@ export function useUpdateInquiryTemplateMutation(
   return useMutation({
     mutationFn: async (params: UpdateTemplateParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.updateTemplate(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).updateTemplate(params)
     },
     ...options,
   })
@@ -95,7 +96,7 @@ export function useDeleteInquiryTemplateMutation(
   return useMutation({
     mutationFn: async (templateId: string) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.deleteTemplate(templateId)
+      return (client.inquiries as unknown as InquiryCapabilityClient).deleteTemplate(templateId)
     },
     ...options,
   })
@@ -112,7 +113,7 @@ export function useApplyInquiryTemplateMutation(
   return useMutation({
     mutationFn: async (params: ApplyTemplateParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.applyTemplate(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).applyTemplate(params)
     },
     ...options,
   })
@@ -131,7 +132,7 @@ export function useInquirySmartDefaults(
     queryKey: ['inquiries', 'smart-defaults', applicationId],
     queryFn: async () => {
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
-      return client.inquiries.getSmartDefaults(applicationId)
+      return (client.inquiries as unknown as InquiryCapabilityClient).getSmartDefaults(applicationId)
     },
     enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -150,7 +151,7 @@ export function useCreateInquiryMutation(
   return useMutation({
     mutationFn: async (params: CreateInquiryParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.create(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).create(params)
     },
     ...options,
   })
@@ -167,7 +168,7 @@ export function useCreateBulkInquiriesMutation(
   return useMutation({
     mutationFn: async (params: CreateBulkInquiriesParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.createBulk(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).createBulk(params)
     },
     ...options,
   })
@@ -186,7 +187,7 @@ export function useInquiryByApplication(
     queryKey: ['inquiries', 'by-application', applicationId],
     queryFn: async () => {
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
-      return client.inquiries.getByApplication(applicationId)
+      return (client.inquiries as unknown as InquiryCapabilityClient).getByApplication(applicationId)
     },
     enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
@@ -209,7 +210,7 @@ export function useMultipleInquiries(
       if (!client || !inquiryIds || inquiryIds.length === 0) {
         throw new Error('Missing client or inquiryIds')
       }
-      return client.inquiries.getMultiple(inquiryIds)
+      return (client.inquiries as unknown as InquiryCapabilityClient).getMultiple(inquiryIds)
     },
     enabled: !!client && !!inquiryIds && inquiryIds.length > 0 && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute
@@ -249,7 +250,7 @@ export function useSendInquiryMutation(
   return useMutation({
     mutationFn: async (inquiryId: string) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.send(inquiryId)
+      return (client.inquiries as unknown as InquiryCapabilityClient).send(inquiryId)
     },
     ...options,
   })
@@ -266,7 +267,7 @@ export function useAddInquiryCommentMutation(
   return useMutation({
     mutationFn: async (params: AddCommentParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.addComment(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).addComment(params)
     },
     ...options,
   })
@@ -283,7 +284,7 @@ export function useMarkCommentReadMutation(
   return useMutation({
     mutationFn: async (commentId: string) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.markCommentRead(commentId)
+      return (client.inquiries as unknown as InquiryCapabilityClient).markCommentRead(commentId)
     },
     ...options,
   })
@@ -300,7 +301,7 @@ export function useAcceptInquirySectionMutation(
   return useMutation({
     mutationFn: async (params: AcceptSectionParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.acceptSection(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).acceptSection(params)
     },
     ...options,
   })
@@ -317,7 +318,7 @@ export function useSubmitCapabilityResponseMutation(
   return useMutation({
     mutationFn: async (params: SubmitCapabilityResponseParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.submitCapabilityResponse(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).submitCapabilityResponse(params)
     },
     ...options,
   })
@@ -334,7 +335,7 @@ export function useUpdateInquiryMutation(
   return useMutation({
     mutationFn: async (params: UpdateInquiryParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.update(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).update(params)
     },
     ...options,
   })
@@ -351,7 +352,7 @@ export function useChangeInquiryStatusMutation(
   return useMutation({
     mutationFn: async (params: ChangeStatusParams) => {
       if (!client) throw new Error('Missing client')
-      return client.inquiries.changeStatus(params)
+      return (client.inquiries as unknown as InquiryCapabilityClient).changeStatus(params)
     },
     ...options,
   })

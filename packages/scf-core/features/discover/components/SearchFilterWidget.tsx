@@ -52,23 +52,23 @@ export function SearchFilterWidget({
   activeFiltersContent,
 }: SearchFilterWidgetProps) {
   const headerSection = (
-    <Stack gap={subtitle ? '$2' : '$1'}>
+    <Stack gap={subtitle ? 8 : 4}>
       <Row justify="space-between" align="center">
-        <Text color="$gray11">{title}</Text>
+        <Text color="secondary">{title}</Text>
         {hasActiveFilters && (
-          <Button size="sm" chromeless color="$red10" iconStart={X} onPress={onClearFilters}>
+          <Button size="sm" variant="outline" color="error" iconStart={X} onPress={onClearFilters}>
             Clear
           </Button>
         )}
       </Row>
-      {subtitle && <Text color="$gray11">{subtitle}</Text>}
+      {subtitle && <Text color="secondary">{subtitle}</Text>}
     </Stack>
   )
 
   const searchSection = (
-    <Stack gap={searchLabel ? '$2' : '$2'}>
+    <Stack gap={8}>
       {searchLabel && (
-        <Label htmlFor="search" color="$gray11">
+        <Label htmlFor="search" color="secondary">
           {searchLabel}
         </Label>
       )}
@@ -77,15 +77,14 @@ export function SearchFilterWidget({
         placeholder={searchPlaceholder}
         value={searchQuery}
         onChangeText={onSearchChange}
-        size="md"
       />
     </Stack>
   )
 
   const defaultActiveFiltersContent = searchQuery && (
     <Row gap={8} align="center">
-      <Text color="$gray11">Search:</Text>
-      <Text color="$blue10">{searchQuery}</Text>
+      <Text color="secondary">Search:</Text>
+      <Text color="primary">{searchQuery}</Text>
     </Row>
   )
 
@@ -97,7 +96,7 @@ export function SearchFilterWidget({
     <>
       <Separator />
       <Stack gap={8}>
-        <Text color="$gray11">Active Filters</Text>
+        <Text color="secondary">Active Filters</Text>
         {activeFiltersContent !== undefined ? activeFiltersContent : defaultActiveFiltersContent}
       </Stack>
     </>

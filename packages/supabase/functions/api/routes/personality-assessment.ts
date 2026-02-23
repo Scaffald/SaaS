@@ -1759,4 +1759,80 @@ app.openapi(awardResultsViewXPRoute, async (c) => {
   }
 })
 
+// ============================================================================
+// GET /archetype - Get primary archetype for current user
+// ============================================================================
+
+const archetypeDetailsSchema = z
+  .object({
+    name: z.string(),
+    description: z.string(),
+    strengths: z.array(z.string()),
+    work_styles: z.string(),
+    team_dynamics: z.string(),
+    growth_areas: z.array(z.string()),
+  })
+  .openapi('ArchetypeDetails')
+
+const archetypeResponseSchema = z
+  .object({
+    archetype: z.string(),
+    confidence: z.number(),
+    details: archetypeDetailsSchema.nullable(),
+  })
+  .nullable()
+  .openapi('ArchetypeResponse')
+
+const getArchetypeRoute = createRoute({
+  method: 'get',
+  path: '/archetype',
+  tags: ['Personality Assessment'],
+  summary: 'Get user primary archetype',
+  responses: {
+    200: {
+      description: 'Primary archetype or null if not yet determined',
+      content: { 'application/json': { schema: archetypeResponseSchema } },
+    },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: errorResponseSchema } } },
+    500: { description: 'Server error', content: { 'application/json': { schema: errorResponseSchema } } },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getArchetypeRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { data, error } = await supabase
+    .schema('core')
+    .from('user_archetypes')
+    .select('confidence_score, archetype:archetypes(name, description, strengths, work_styles, team_dynamics, growth_areas)')
+    .eq('user_id', user.id)
+    .eq('is_primary', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error && error.code !== 'PGRST116') {
+    return c.json({ error: 'Failed to load archetype', message: error.message }, 500)
+  }
+
+  if (!data) return c.json(null)
+
+  // Supabase returns joined row as object or array depending on relationship
+  const archetypeRow = Array.isArray(data.archetype) ? data.archetype[0] : data.archetype
+
+  if (!archetypeRow) return c.json(null)
+
+  return c.json({
+    archetype: archetypeRow.name ?? '',
+    confidence: data.confidence_score ?? 0,
+    details: archetypeRow,
+  })
+})
+
 export default app

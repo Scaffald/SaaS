@@ -163,8 +163,8 @@ export function AddOrganizationWidget() {
 
       <Button
         size="md"
-        theme="info"
-        iconAfter={!isSubmitting ? ArrowRight : undefined}
+        color="primary"
+        iconEnd={!isSubmitting ? ArrowRight : undefined}
         disabled={isSubmitDisabled || isSubmitting}
         onPress={handleCreatePress}
       >
@@ -247,8 +247,7 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
       variant="outline"
       size="sm"
       onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id }))}
-      iconAfter={ArrowRight}
-      justify="space-between"
+      iconEnd={ArrowRight}
     >
       <Stack flex={1}>
         <Text color="$gray11">{name}</Text>

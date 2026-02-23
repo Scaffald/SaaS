@@ -1,5 +1,6 @@
+import { Image } from 'react-native'
 import { Building } from 'lucide-react-native'
-import { type GetThemeValueForKey, Image, Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {
@@ -43,7 +44,7 @@ export const ProfileAvatar = ({
     '$yellow10',
     '$color10',
   ]
-  const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
+  const bgColor = bgColors[colorIndex]
 
   // If avatar URL exists and is not empty, show image
   if (avatarUrl && avatarUrl.trim() !== '') {
@@ -51,12 +52,12 @@ export const ProfileAvatar = ({
       <Row
         width={size}
         height={size}
-        borderRadius="$12"
-        overflow="hidden"
+        borderRadius={12}
         borderWidth={1}
         borderColor="$borderColor"
+        style={{ overflow: 'hidden' }}
       >
-        <Image source={{ uri: avatarUrl }} width={size} height={size} resizeMode="cover" />
+        <Image source={{ uri: avatarUrl }} style={{ width: size, height: size }} resizeMode="cover" />
       </Row>
     )
   }
@@ -66,7 +67,7 @@ export const ProfileAvatar = ({
     <Stack
       width={size}
       height={size}
-      borderRadius="$12"
+      borderRadius={12}
       backgroundColor={bgColor}
       align="center"
       justify="center"
@@ -74,7 +75,7 @@ export const ProfileAvatar = ({
       borderColor="$borderColor"
     >
       {isOrganization ? (
-        <Building size={Math.round(size * 0.5)} color="white" />
+        <Building size={Math.round(size * 0.5) as 16 | 20 | 24} color="white" />
       ) : (
         <Text color="white">{initials}</Text>
       )}

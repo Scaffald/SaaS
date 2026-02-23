@@ -221,8 +221,8 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
 
       setAttachmentError(null)
 
-      if (selection.platform === 'web') {
-        const { file } = selection
+      if ('files' in selection && selection.files?.length) {
+        const file = selection.files[0]
 
         if (!SUPPORTED_MIME_TYPES.includes(file.type as SupportedMimeType)) {
           setAttachmentError('Only PDF, JPG, and PNG files are supported.')
@@ -249,66 +249,7 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
         return
       }
 
-      // Native: selection has asset (expo-image-picker or similar)
-      const asset = 'asset' in selection ? selection.asset : null
-      if (!asset) {
-        setAttachmentError('File uploads are not available on this platform.')
-        return
-      }
-
-      const fileSystem = await ensureFileSystem()
-
-      if (!fileSystem) {
-        setAttachmentError('File uploads are not available on this device.')
-        return
-      }
-
-      const info = await fileSystem.getInfoAsync(asset.uri)
-      const infoSize =
-        typeof (info as { size?: number }).size === 'number'
-          ? (info as { size: number }).size
-          : undefined
-      const size = typeof asset.size === 'number' ? asset.size : (infoSize ?? 0)
-
-      if (size === 0) {
-        setAttachmentError('We could not read that file. Try selecting it again.')
-        return
-      }
-
-      if (size > MAX_FILE_SIZE_BYTES) {
-        setAttachmentError('Files must be 10MB or smaller.')
-        return
-      }
-
-      const mimeType = (asset.type ?? 'application/octet-stream').toLowerCase()
-      if (!SUPPORTED_MIME_TYPES.includes(mimeType as SupportedMimeType)) {
-        setAttachmentError('Only PDF, JPG, and PNG files are supported.')
-        return
-      }
-
-      const name =
-        asset.name ??
-        asset.uri.split('/').pop() ??
-        `dispute-supporting-${attachments.length + 1}.${mimeType.split('/')[1] ?? 'bin'}`
-
-      const id = createAttachmentId()
-      setAttachments((prev) => [
-        ...prev,
-        {
-          id,
-          name,
-          mimeType,
-          size,
-          documentType: `dispute_supporting_${prev.length + 1}`,
-          source: {
-            kind: 'native',
-            uri: asset.uri,
-            name,
-            mimeType,
-            size,
-          },
-        },
-      ])
+      setAttachmentError('Please select a file to attach.')
     },
     [attachments.length, checkId]
   )

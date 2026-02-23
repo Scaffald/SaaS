@@ -240,16 +240,17 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             </Stack>
             <Row gap={8} align="center">
               {hasApplied && (
-                <Chip backgroundColor="$green9" color="$green1">
+                <Chip selected style={{ backgroundColor: '$green9' }}>
                   Applied
                 </Chip>
               )}
               {matchData?.score !== null && matchData?.score !== undefined && (
                 <Chip
-                  backgroundColor={
-                    matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9'
-                  }
-                  color="$gray11"
+                  selected
+                  style={{
+                    backgroundColor:
+                      matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9',
+                  }}
                 >
                   {Math.round(matchData.score)}% Match
                 </Chip>
@@ -272,12 +273,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               </Row>
             )}
             {remoteOption && (
-              <Chip
-                backgroundColor="$blue9"
-                color="$blue1"
-                paddingHorizontal={8}
-                paddingVertical={4}
-              >
+              <Chip selected style={{ backgroundColor: '$blue9', paddingHorizontal: 8, paddingVertical: 4 }}>
                 {remoteOption}
               </Chip>
             )}
@@ -313,21 +309,13 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             {job.certifications?.slice(0, 3).map((cert) => (
               <Chip
                 key={cert.id}
-                backgroundColor="$red10"
-                color="$gray11"
-                paddingHorizontal={8}
-                paddingVertical={4}
+                style={{ backgroundColor: '$red10', paddingHorizontal: 8, paddingVertical: 4 }}
               >
                 {cert.name}
               </Chip>
             ))}
             {job.certifications && job.certifications.length > 3 && (
-              <Chip
-                backgroundColor="$color3"
-                color="$gray11"
-                paddingHorizontal={8}
-                paddingVertical={4}
-              >
+              <Chip style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4 }}>
                 +{job.certifications.length - 3} more
               </Chip>
             )}
@@ -341,22 +329,14 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               return (
                 <Chip
                   key={skill.id}
-                  backgroundColor="$blue10"
-                  color="$gray11"
-                  paddingHorizontal={8}
-                  paddingVertical={4}
+                  style={{ backgroundColor: '$blue10', paddingHorizontal: 8, paddingVertical: 4 }}
                 >
                   {label}
                 </Chip>
               )
             })}
             {job.skills && job.skills.length > 2 && (
-              <Chip
-                backgroundColor="$color3"
-                color="$gray11"
-                paddingHorizontal={8}
-                paddingVertical={4}
-              >
+              <Chip style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4 }}>
                 +{job.skills.length - 2} more
               </Chip>
             )}

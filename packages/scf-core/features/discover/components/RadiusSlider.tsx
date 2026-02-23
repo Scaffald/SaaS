@@ -33,32 +33,27 @@ export const RadiusSlider = ({
       </Row>
 
       <Slider
-        value={[value]}
-        onValueChange={(values) => {
-          const newValue = values.at(0) ?? value
-          onValueChange(newValue)
-        }}
+        value={value}
+        onValueChange={onValueChange}
         min={min}
         max={max}
         step={step}
-        flex={1}
-        height={20}
-        backgroundColor="$color3"
-        borderRadius={8}
-      >
-        <Slider.Track>
-          <Slider.TrackActive style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }} />
-        </Slider.Track>
-        <Slider.Thumb
-          index={0}
-          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
-          borderWidth={2}
-          borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
-          borderRadius="$10"
-          width={20}
-          height={20}
-        />
-      </Slider>
+        style={{
+          flex: 1,
+          height: 20,
+          backgroundColor: 'var(--color-3)',
+          borderRadius: 8,
+        }}
+        trackStyle={{ backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900] }}
+        handleStyle={{
+          backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
+          borderWidth: 2,
+          borderColor: theme === 'light' ? colors.blue[300] : colors.blue[700],
+          borderRadius: 10,
+          width: 20,
+          height: 20,
+        }}
+      />
 
       <Row justify="space-between" align="center">
         <Text style={{ color: colors.text[theme].secondary }}>{formatRadius(min)}</Text>

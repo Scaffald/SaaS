@@ -1,25 +1,12 @@
 import { useFollowing, useUnfollowUserMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import type { Follow } from '@scaffald/sdk/resources/follows'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { UserMinus } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
-
-interface Following {
-  id: string
-  follower_id: string
-  follower_type: 'user'
-  followee_id: string
-  followee_type: 'user' | 'organization' | 'job'
-  created_at: string
-  followee?: {
-    id: string
-    name: string
-    avatar_url?: string
-  }
-}
 
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -52,8 +39,9 @@ export function FollowingList() {
     if (!searchTerm.trim()) return following
 
     const search = searchTerm.toLowerCase()
-    return following.filter((follow: Following) => {
-      const name = follow.followee?.name || ''
+    return following.filter((follow: Follow) => {
+      const f = follow.followee
+      const name = f?.name || ''
       return name.toLowerCase().includes(search)
     })
   }, [following, searchTerm])
@@ -67,7 +55,7 @@ export function FollowingList() {
     [unfollowMutation]
   )
 
-  const columnDefs = useMemo<ColumnDef<Following>[]>(
+  const columnDefs = useMemo<ColumnDef<Follow & Record<string, unknown>>[]>(
     () => [
       {
         accessorKey: 'followee',
@@ -80,15 +68,12 @@ export function FollowingList() {
 
           return (
             <Row align="center" gap={8}>
-              <Avatar size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$purple4">
-                    <Text color="$purple10">{name.charAt(0).toUpperCase()}</Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="primary"
+              />
               <Text>{name}</Text>
             </Row>
           )
@@ -125,7 +110,7 @@ export function FollowingList() {
   )
 
   const tableColumns = useMemo(
-    () => columnsFromTanStack<Following>(columnDefs),
+    () => columnsFromTanStack<Follow & Record<string, unknown>>(columnDefs),
     [columnDefs]
   )
 
@@ -144,7 +129,6 @@ export function FollowingList() {
         placeholder="Search following..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size="md"
       />
 
       {filteredFollowing.length === 0 ? (
@@ -169,7 +153,7 @@ export function FollowingList() {
       ) : (
         <Table
           columns={tableColumns}
-          data={filteredFollowing}
+          data={filteredFollowing as (Follow & Record<string, unknown>)[]}
           pageSize={20}
           emptyMessage="No users found"
         />

@@ -3,6 +3,7 @@
  */
 
 export { Modal } from './Modal'
+export { ResponsiveModal } from './ResponsiveModal'
 export { ModalHeader } from './ModalHeader'
 export { ModalActions } from './ModalActions'
 export { ModalContent } from './ModalContent'

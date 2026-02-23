@@ -62,8 +62,8 @@ export function TeamInvitationList({
             padding="md"
             borderWidth={1}
             borderColor="$borderColor"
-            gap={12}
             backgroundColor="$color1"
+            style={{ gap: 12 }}
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
@@ -82,7 +82,7 @@ export function TeamInvitationList({
                   size="sm"
                   iconStart={XCircle}
                   variant="outline"
-                  color="$red10"
+                  color="error"
                   disabled={isProcessing}
                   onPress={async () => {
                     setPendingId(invitation.id)
@@ -98,8 +98,8 @@ export function TeamInvitationList({
                 <Button
                   size="sm"
                   iconStart={CheckCircle}
-                  backgroundColor="$color9"
-                  color="$gray11"
+                  color="gray"
+                  variant="outline"
                   disabled={isProcessing}
                   onPress={async () => {
                     setPendingId(invitation.id)
@@ -110,7 +110,7 @@ export function TeamInvitationList({
                     }
                   }}
                 >
-                  {isPending ? <Spinner size="sm" color="$gray11" /> : 'Accept'}
+                  {isPending ? <Spinner size="sm" color="gray" /> : 'Accept'}
                 </Button>
               </Row>
             </Row>
@@ -146,9 +146,10 @@ export function TeamInvitationsWidget() {
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Unable to respond to invitation'
+      const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
       toast.show({
         title: 'Unable to respond',
+        message,
         variant: 'error',
       })
     },
@@ -178,8 +179,8 @@ export function TeamInvitationsWidget() {
       padding="md"
       borderColor="$borderColor"
       borderWidth={1}
-      gap={16}
       backgroundColor="$color1"
+      style={{ gap: 16 }}
     >
       <Row justify="space-between" align="center">
         <Row gap={8} align="center">

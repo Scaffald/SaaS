@@ -35,6 +35,7 @@ export function ConnectionFollowButtonsInline({
 }: ConnectionFollowButtonsInlineProps) {
   const toast = useToast()
   const queryClient = useQueryClient()
+  const buttonSize = SIZE_TO_BUTTON[size ?? '$4']
 
   // Don't show buttons for own profile
   if (isOwnProfile || !targetUserId) {

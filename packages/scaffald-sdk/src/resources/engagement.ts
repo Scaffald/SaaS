@@ -8,6 +8,7 @@ export type EngagementEventType =
   | 'application_complete'
   | 'search'
   | 'filter_change'
+  | 'occupation.searched'
 
 export type EngagementTargetType = 'user' | 'job' | 'organization'
 

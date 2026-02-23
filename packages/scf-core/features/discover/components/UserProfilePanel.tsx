@@ -41,7 +41,7 @@ export function UserProfilePanel({
   const toast = useToast()
 
   // Fetch lightweight preview data
-  const { data: preview, isLoading } = useUserProfilePreview(userId, {
+  const { data: preview, isLoading } = useUserProfilePreview(userId ?? undefined, {
     enabled: open,
   })
 
@@ -77,40 +77,31 @@ export function UserProfilePanel({
 
   return (
     <Card
-      position="absolute"
-      {...position}
-      zIndex={1000}
       elevate
       bordered
       padding="md"
-      gap={12}
-      minWidth={280}
-      maxWidth={320}
-      backgroundColor="$background"
-      animation="quick"
-      enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+      style={{
+        position: 'absolute',
+        ...position,
+        zIndex: 1000,
+        minWidth: 280,
+        maxWidth: 320,
+      }}
     >
       {/* Close button */}
+      <Stack gap={12}>
       <Row justify="flex-end">
-        <Button
-          size="sm"
-          chromeless
-          iconStart={X}
-          onPress={handleClose}
-          opacity={0.7}
-          hoverStyle={{ opacity: 1 }}
-        />
+        <Button size="sm" variant="outline" iconStart={X} onPress={handleClose} />
       </Row>
 
       {isLoading ? (
         <Stack paddingVertical={16} align="center" gap={12}>
-          <Spinner size="sm" color="$blue10" />
-          <Text color="$gray11">Loading...</Text>
+          <Spinner size="sm" color="primary" />
+          <Text color="secondary">Loading...</Text>
         </Stack>
       ) : !preview ? (
         <Stack paddingVertical={16} align="center">
-          <Text color="$red10">Profile not found</Text>
+          <Text color="error">Profile not found</Text>
         </Stack>
       ) : (
         <>
@@ -118,16 +109,9 @@ export function UserProfilePanel({
           <Row gap={12} align="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
-              <Avatar size="md">
-                <Avatar.Image source={{ uri: avatarUrl }} />
-                <Avatar.Fallback backgroundColor="$color3">
-                  <User size={24} color="$gray11" />
-                </Avatar.Fallback>
-              </Avatar>
+              <Avatar size={40} src={{ uri: avatarUrl }} alt={preview.displayName} />
             ) : (
-              <Avatar size="md" backgroundColor="$color3">
-                <User size={24} color="$gray11" />
-              </Avatar>
+              <Avatar size={40} icon={<User size={24} color="#737373" />} />
             )}
 
             {/* Name and Title */}
@@ -146,7 +130,7 @@ export function UserProfilePanel({
           {/* Top Skills */}
           {topSkills.length > 0 && (
             <Stack gap={8}>
-              <Text color="$gray11" textTransform="uppercase">
+              <Text color="secondary" style={{ textTransform: 'uppercase' }}>
                 Top Skills
               </Text>
               <Row gap={8} wrap>
@@ -160,7 +144,7 @@ export function UserProfilePanel({
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text color="$gray11">
+                    <Text color="secondary">
                       Skill {skill.proficiency > 0 ? `(${skill.proficiency})` : ''}
                     </Text>
                   </Stack>
@@ -174,7 +158,7 @@ export function UserProfilePanel({
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text color="$gray11">+{topSkills.length - 3} more</Text>
+                    <Text color="secondary">+{topSkills.length - 3} more</Text>
                   </Stack>
                 )}
               </Row>
@@ -183,12 +167,18 @@ export function UserProfilePanel({
 
           {/* Action Button */}
           <Row gap={8} paddingTop={8}>
-            <Button flex={1} theme="info" onPress={handleViewProfile} iconStart={ExternalLink}>
+            <Button
+              color="primary"
+              onPress={handleViewProfile}
+              iconStart={ExternalLink}
+              style={{ flex: 1 }}
+            >
               View Profile
             </Button>
           </Row>
         </>
       )}
+      </Stack>
     </Card>
   )
 }

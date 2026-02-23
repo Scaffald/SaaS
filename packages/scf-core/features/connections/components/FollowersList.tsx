@@ -4,19 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { Avatar, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 
-interface Follower {
-  id: string
-  follower_id: string
-  follower_type: 'user'
-  followee_id: string
-  followee_type: 'user' | 'organization' | 'job'
-  created_at: string
-  follower?: {
-    id: string
-    name: string
-    avatar_url?: string
-  }
-}
+import type { Follow } from '@scaffald/sdk/resources/follows'
 
 export function FollowersList() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -29,13 +17,14 @@ export function FollowersList() {
     if (!searchTerm.trim()) return followers
 
     const search = searchTerm.toLowerCase()
-    return followers.filter((follow: Follower) => {
-      const name = follow.follower?.name || ''
+    return followers.filter((follow: Follow) => {
+      const f = follow.follower
+      const name = f ? `${f.first_name || ''} ${f.last_name || ''}`.trim() : ''
       return name.toLowerCase().includes(search)
     })
   }, [followers, searchTerm])
 
-  const columnDefs = useMemo<ColumnDef<Follower>[]>(
+  const columnDefs = useMemo<ColumnDef<Follow>[]>(
     () => [
       {
         accessorKey: 'follower',
@@ -43,20 +32,19 @@ export function FollowersList() {
         cell: ({ row }) => {
           const follow = row.original
           const follower = follow.follower
-          const name = follower?.name || 'Unknown'
+          const name = follower
+            ? `${follower.first_name || ''} ${follower.last_name || ''}`.trim() || 'Unknown'
+            : 'Unknown'
           const avatar = follower?.avatar_url
 
           return (
             <Row align="center" gap={8}>
-              <Avatar size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$green4">
-                    <Text color="$green10">{name.charAt(0).toUpperCase()}</Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="success"
+              />
               <Text>{name}</Text>
             </Row>
           )
@@ -75,7 +63,7 @@ export function FollowersList() {
   )
 
   const tableColumns = useMemo(
-    () => columnsFromTanStack<Follower>(columnDefs),
+    () => columnsFromTanStack<Follow & Record<string, unknown>>(columnDefs as ColumnDef<Follow & Record<string, unknown>>[]),
     [columnDefs]
   )
 
@@ -94,7 +82,6 @@ export function FollowersList() {
         placeholder="Search followers..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size="md"
       />
 
       {filteredFollowers.length === 0 ? (
@@ -119,7 +106,7 @@ export function FollowersList() {
       ) : (
         <Table
           columns={tableColumns}
-          data={filteredFollowers}
+          data={filteredFollowers as (Follow & Record<string, unknown>)[]}
           pageSize={20}
           emptyMessage="No followers found"
         />

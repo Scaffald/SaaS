@@ -152,7 +152,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
     }
 
     return (
-      <Stack flex={1} gap={12} overflow="hidden" width="100%">
+      <Stack flex={1} gap={12} width="100%" style={{ overflow: 'hidden' }}>
         <Row
           justify="space-between"
           align="center"
@@ -164,15 +164,14 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
         </Row>
         <ScrollView
           ref={scrollViewRef}
-          flex={1}
           showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
-          width="100%"
+          style={{ flex: 1, width: '100%' }}
         >
           <Stack gap={12} paddingBottom={24} width="100%">
             {allResults.length === 0 ? (
               <EmptyState
-                iconStart={<Search size={48} color="$gray11" />}
+                icon={Search}
                 title="No results found"
                 description="Try adjusting your search filters or search terms to find more workers."
               />

@@ -22,10 +22,10 @@ export function RiasecQuickAssessment({
   onChange,
   disabled = false,
 }: RiasecQuickAssessmentProps) {
-  const handleSliderChange = (key: keyof RiasecScores, newValue: number[]) => {
+  const handleSliderChange = (key: keyof RiasecScores, newValue: number) => {
     onChange({
       ...value,
-      [key]: newValue[0],
+      [key]: newValue,
     })
   }
 
@@ -42,7 +42,7 @@ export function RiasecQuickAssessment({
       {RIASEC_DIMENSIONS.map((dimension) => (
         <Stack key={dimension.key} gap={12}>
           <Row gap={12} align="center">
-            <Stack flex={1} gap={4}>
+            <Stack style={{ flex: 1 }} gap={4}>
               <Text>{dimension.label}</Text>
               <Text color="$gray11">{dimension.description}</Text>
             </Stack>
@@ -59,25 +59,20 @@ export function RiasecQuickAssessment({
           </Row>
 
           <Row align="center" gap={12}>
-            <Text color="$gray11" width={20}>
+            <Text color="$gray11" style={{ width: 20 }}>
               1
             </Text>
-            <Stack flex={1}>
+            <Stack style={{ flex: 1 }}>
               <Slider
-                value={[value[dimension.key]]}
+                value={value[dimension.key]}
                 onValueChange={(newValue) => handleSliderChange(dimension.key, newValue)}
                 min={1}
                 max={5}
                 step={1}
                 disabled={disabled}
-              >
-                <Slider.Track height={8}>
-                  <Slider.TrackActive />
-                </Slider.Track>
-                <Slider.Thumb index={0} size={24} />
-              </Slider>
+              />
             </Stack>
-            <Text color="$gray11" width={20}>
+            <Text color="$gray11" style={{ width: 20 }}>
               5
             </Text>
           </Row>

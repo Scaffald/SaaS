@@ -2,6 +2,7 @@ import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { useSearchOccupations } from '@scf/core/utils/onet-sdk-hooks'
 import { useEffect, useRef, useState } from 'react'
+import { Pressable } from 'react-native'
 import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface OccupationSearchProps {
@@ -130,10 +131,10 @@ export function OccupationSearch({
     showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
 
   return (
-    <Stack gap={8} position="relative" width="100%">
+    <Stack gap={8} width="100%" style={{ position: 'relative' }}>
       <Row gap={8} align="center">
         <Input
-          flex={1}
+          style={{ flex: 1 }}
           placeholder={placeholder}
           value={searchTerm}
           onChangeText={handleInputChange}
@@ -146,59 +147,54 @@ export function OccupationSearch({
 
       {showDropdown && (
         <Stack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={12}
-          backgroundColor="$background"
-          maxHeight={300}
-          overflow="scroll"
-          zIndex={1000}
-          shadowColor="$shadowColor"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.1}
-          shadowRadius={4}
+          gap={0}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            borderRadius: 12,
+            backgroundColor: 'var(--color-background)',
+            maxHeight: 300,
+            overflow: 'scroll',
+            zIndex: 1000,
+            shadowColor: 'var(--color-shadow)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+          }}
         >
           {occupations.map((occupation: Occupation) => (
-            <Row
-              key={occupation.onetsoc_code}
-              padding="sm"
-              gap={8}
-              hoverStyle={{
-                backgroundColor: '$backgroundHover',
-              }}
-              pressStyle={{
-                backgroundColor: '$backgroundPress',
-              }}
-              cursor="pointer"
-              onPress={() => handleSelect(occupation)}
-            >
-              <Stack flex={1} gap={4}>
+            <Pressable key={occupation.onetsoc_code} onPress={() => handleSelect(occupation)}>
+              <Row padding="sm" gap={8} style={{ cursor: 'pointer' }}>
+              <Stack style={{ flex: 1 }} gap={4}>
                 <Text>{occupation.title}</Text>
                 <Text color="$gray11">{occupation.onetsoc_code}</Text>
               </Stack>
             </Row>
+            </Pressable>
           ))}
         </Stack>
       )}
 
       {debouncedSearch.length >= 2 && queryError && (
         <Stack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={12}
-          backgroundColor="$background"
           padding="sm"
-          zIndex={1000}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            borderRadius: 12,
+            backgroundColor: 'var(--color-background)',
+            zIndex: 1000,
+          }}
         >
           <Text color="$red10">
             {queryError.message || 'Unable to load occupations. Please try again.'}
@@ -208,17 +204,19 @@ export function OccupationSearch({
 
       {debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && showResults && (
         <Stack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={12}
-          backgroundColor="$background"
           padding="sm"
-          zIndex={1000}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            borderRadius: 12,
+            backgroundColor: 'var(--color-background)',
+            zIndex: 1000,
+          }}
         >
           <Text color="$gray11">No occupations found for "{debouncedSearch}"</Text>
         </Stack>

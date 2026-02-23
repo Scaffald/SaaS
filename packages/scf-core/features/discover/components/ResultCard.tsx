@@ -5,7 +5,7 @@ import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import { Button, Paragraph, SizableText, Text, Row } from '@scaffald/ui'
+import { Button, Paragraph, Text, Row } from '@scaffald/ui'
 
 import type { TalentProfile } from '../types'
 
@@ -46,9 +46,9 @@ export const ResultCard = memo(
           onPress={handleCardPress}
         >
           <Row justify="space-between" align="center">
-            <SizableText size="lg" color={isSelected ? '$color1' : '$color12'}>
+            <Text size="lg" color={isSelected ? '$color1' : '$color12'}>
               {profile.name}
-            </SizableText>
+            </Text>
             <Row align="center" gap={8}>
               <Row
                 align="center"
@@ -131,12 +131,12 @@ export const ResultCard = memo(
 
           <Row gap={4} wrap>
             {profile.certifications.slice(0, 2).map((certification) => (
-              <Button key={certification} size="sm" borderRadius={32}>
+              <Button key={certification} size="sm" style={{ borderRadius: 32 }}>
                 {certification}
               </Button>
             ))}
             {profile.skills.slice(0, 3).map((skill) => (
-              <Button key={skill} size="sm" borderRadius={32}>
+              <Button key={skill} size="sm" style={{ borderRadius: 32 }}>
                 {skill}
               </Button>
             ))}
