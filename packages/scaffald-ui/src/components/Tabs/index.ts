@@ -13,6 +13,12 @@ export const Tabs = Object.assign(TabsRoot, {
   Content: TabContent,
 })
 
+export { useTabs } from './useTabs'
+export { useTabItem } from './useTabItem'
+
+export type { UseTabsProps } from './useTabs'
+export type { UseTabItemProps } from './useTabItem'
+
 export type {
   TabsProps,
   TabItemProps,

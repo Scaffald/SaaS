@@ -3,7 +3,6 @@
  * Clickable tab button
  */
 
-import { useState } from 'react'
 import { View, Pressable, Text, Platform } from 'react-native'
 import type { TabTriggerProps } from './Tabs.types'
 import { useTabsContext } from './Tabs'
@@ -24,18 +23,6 @@ export function TabTrigger({
   const tabsContext = useTabsContext()
   const itemContext = useTabItemContext()
   const { theme } = useThemeContext()
-  const [isHovered, setIsHovered] = useState(false)
-
-  const handlePress = () => {
-    if (itemContext.disabled || tabsContext.disabled) return
-
-    // Call custom handler if provided, otherwise use context handler
-    if (onPressProp) {
-      onPressProp()
-    } else {
-      tabsContext.onValueChange(itemContext.value)
-    }
-  }
 
   // Get styles based on current props and theme
   const styles = getTabTriggerStyles(
@@ -45,7 +32,7 @@ export function TabTrigger({
     tabsContext.orientation,
     itemContext.isSelected,
     itemContext.disabled,
-    isHovered,
+    itemContext.isHovered,
     iconOnly,
     theme,
     tabsContext.triggerSizing
@@ -56,17 +43,7 @@ export function TabTrigger({
 
   return (
     <Pressable
-      disabled={itemContext.disabled || tabsContext.disabled}
-      onPress={handlePress}
-      accessibilityRole="tab"
-      accessibilityState={{
-        selected: itemContext.isSelected,
-        disabled: itemContext.disabled || tabsContext.disabled,
-      }}
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      } as any)}
+      {...itemContext.getTriggerProps(onPressProp)}
       style={({ pressed }) => [
         styles.container,
         // Pressed state

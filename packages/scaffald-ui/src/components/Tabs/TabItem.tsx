@@ -8,6 +8,7 @@ import { createContext, useContext } from 'react'
 import { View } from 'react-native'
 import type { TabItemProps, TabItemContextValue } from './Tabs.types'
 import { useTabsContext } from './Tabs'
+import { useTabItem } from './useTabItem'
 
 // TabItem context
 const TabItemContext = createContext<TabItemContextValue | null>(null)
@@ -27,18 +28,7 @@ export function TabItem({
   containerStyle,
 }: TabItemProps) {
   const tabsContext = useTabsContext()
-
-  // Check if this item is selected
-  const isSelected = tabsContext.value === value
-
-  // Item is disabled if parent is disabled or if explicitly disabled
-  const disabled = tabsContext.disabled || disabledProp
-
-  const contextValue: TabItemContextValue = {
-    isSelected,
-    disabled,
-    value,
-  }
+  const tabItem = useTabItem({ value, disabled: disabledProp, context: tabsContext })
 
   // In horizontal layout, we need to prevent content from affecting trigger width
   // TabContent returns null when not selected, but when selected it can affect layout
@@ -55,7 +45,7 @@ export function TabItem({
     : {}
 
   return (
-    <TabItemContext.Provider value={contextValue}>
+    <TabItemContext.Provider value={tabItem}>
       <View style={[itemContainerStyle, containerStyle]}>{children}</View>
     </TabItemContext.Provider>
   )

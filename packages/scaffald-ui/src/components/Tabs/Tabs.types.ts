@@ -304,6 +304,21 @@ export interface TabItemContextValue {
    * Tab value
    */
   value: string
+
+  /**
+   * Whether this tab is hovered
+   */
+  isHovered: boolean
+
+  /**
+   * Set hover state
+   */
+  setIsHovered: (hovered: boolean) => void
+
+  /**
+   * Get props for the trigger button
+   */
+  getTriggerProps: (onPressProp?: () => void) => any
 }
 
 /**

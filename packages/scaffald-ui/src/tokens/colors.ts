@@ -557,5 +557,8 @@ export type ColorTokens =
   | ForegroundColorToken
   | IconColorToken
 
-// Theme mode type
-export type ThemeMode = 'light' | 'dark'
+// Theme mode type - 'system' follows OS preference
+export type ThemeMode = 'light' | 'dark' | 'system'
+
+/** Resolved theme for actual color lookup (no 'system') */
+export type ResolvedThemeMode = 'light' | 'dark'

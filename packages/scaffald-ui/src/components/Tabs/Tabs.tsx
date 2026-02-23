@@ -34,13 +34,14 @@
  * ```
  */
 
-import { createContext, useContext, useState, Children, isValidElement, cloneElement } from 'react'
-import { View, } from 'react-native'
+import { createContext, useContext, Children, isValidElement, cloneElement } from 'react'
+import { View } from 'react-native'
 import type { TabsProps, TabsContextValue } from './Tabs.types'
 import { getTabsStyles, getTabListStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'
 import { TabTrigger } from './TabTrigger'
 import { TabContent } from './TabContent'
+import { useTabs } from './useTabs'
 
 // Tabs context
 const TabsContext = createContext<TabsContextValue | null>(null)
@@ -54,7 +55,7 @@ export function useTabsContext() {
 }
 
 export function Tabs({
-  value: valueProp,
+  value,
   defaultValue,
   onValueChange,
   type = 'default',
@@ -68,27 +69,12 @@ export function Tabs({
   children,
   containerStyle,
 }: TabsProps) {
-  // Support both controlled and uncontrolled mode
-  const [internalValue, setInternalValue] = useState<string>(defaultValue ?? '')
-  const isControlled = valueProp !== undefined
-  const value = isControlled ? valueProp : internalValue
   const { theme } = useThemeContext()
-
-  const handleValueChange = (newValue: string) => {
-    if (disabled) return
-
-    // Update internal state if uncontrolled
-    if (!isControlled) {
-      setInternalValue(newValue)
-    }
-
-    // Always call onChange if provided
-    onValueChange?.(newValue)
-  }
-
-  const contextValue: TabsContextValue = {
+  
+  const tabs = useTabs({
     value,
-    onValueChange: handleValueChange,
+    defaultValue,
+    onValueChange,
     type,
     color,
     size,
@@ -97,7 +83,7 @@ export function Tabs({
     fullWidth,
     contentVariant,
     triggerSizing,
-  }
+  })
 
   const styles = getTabsStyles(orientation, fullWidth, theme)
 
@@ -152,7 +138,7 @@ export function Tabs({
     })
 
     return (
-      <TabsContext.Provider value={contextValue}>
+      <TabsContext.Provider value={tabs}>
         <View style={[{ width: '100%', flexDirection: 'column' }, containerStyle]}>
           {/* Trigger row - only triggers are rendered here, preserving TabItem context */}
           <View style={getTabListStyles(orientation, theme)}>
@@ -184,7 +170,7 @@ export function Tabs({
 
   // Vertical layout - keep original structure
   return (
-    <TabsContext.Provider value={contextValue}>
+    <TabsContext.Provider value={tabs}>
       <View style={[styles, containerStyle]}>{children}</View>
     </TabsContext.Provider>
   )
