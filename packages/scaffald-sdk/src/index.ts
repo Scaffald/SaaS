@@ -260,6 +260,9 @@ export type {
   ExportAuditLogParams,
   AuditLogExportResponse,
   StorageUsageSummary,
+  MemberActivityEntry,
+  DocumentSearchResult,
+  AuditLogListResponse,
 } from './types/organizations.js'
 
 export type {
@@ -631,6 +634,8 @@ export type {
   GetUserEducationParams,
   GetReviewsSummaryParams,
   GetContactInfoParams,
+  UserSkill as UserProfileUserSkill,
+  UserCertification as UserProfileUserCertification,
 } from './resources/user-profiles.js'
 
 export type {

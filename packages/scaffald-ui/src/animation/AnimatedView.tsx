@@ -28,7 +28,7 @@
 
 import { forwardRef } from 'react'
 import { View, type ViewProps } from 'react-native'
-import { ReanimatedView as ReanimatedViewComponent, isReanimatedLoaded, LinearTransition, FadeIn, FadeOut } from './reanimated.types'
+import { ReanimatedView as ReanimatedViewComponent, isReanimatedLoaded } from './reanimated.types'
 
 export interface AnimatedViewProps extends ViewProps {
   /**

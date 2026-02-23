@@ -9,7 +9,7 @@ import {
   Plus,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { RefreshControl, ScrollView } from "react-native";
 import {
   Button,

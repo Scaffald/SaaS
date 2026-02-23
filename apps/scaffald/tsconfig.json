@@ -5,6 +5,8 @@
     "jsx": "react-jsx",
     "noEmit": true,
     "paths": {
+      "@test-helpers": ["tests/infrastructure/vitest/helpers"],
+      "@test-helpers/*": ["tests/infrastructure/vitest/helpers/*"],
       "@scf/core": ["packages/scf-core"],
       "@scf/core/*": ["packages/scf-core/*"],
       "@scf/schemas": ["packages/scf-schemas/src"],
@@ -25,7 +27,9 @@
     "../../packages/supabase/scripts/**/*",
     "../../packages/supabase/types-trpc.ts",
     "../../packages/beyond-ui/src/**/*.stories.ts",
-    "../../packages/beyond-ui/src/**/*.stories.tsx"
+    "../../packages/beyond-ui/src/**/*.stories.tsx",
+    "../../packages/scf-core/**/*.test.ts",
+    "../../packages/scf-core/**/*.test.tsx"
   ],
   "extends": "../../tsconfig.base",
   "include": [
@@ -45,7 +49,6 @@
     "../../packages/supabase/app-router-fallback.ts",
     "../../packages/supabase/helpers.ts",
     "../../vitest.config.ts",
-    "../../tests/infrastructure/vitest/helpers/database.ts",
     "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
   "references": []

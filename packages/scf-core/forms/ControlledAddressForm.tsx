@@ -40,7 +40,7 @@ export function ControlledAddressForm<
   coordinateFields = { lat: "latitude", lng: "longitude" },
   mode = "hybrid",
   provider: _provider = "mapbox",
-  apiKey,
+  apiKey: _apiKey,
   zoomLevel = "street",
   label,
   placeholder = "Search for your address...",

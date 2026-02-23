@@ -7,7 +7,8 @@
     "skipLibCheck": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "exclude": ["supabase/**/*"],
+  "exclude": ["supabase/**/*", "**/dist/**", "**/storybook-static/**", "**/.expo/**", "**/node_modules/**", "packages/supabase/functions/**", "packages/supabase/tests/**", "packages/supabase/**/*.test.ts", "packages/scaffald-cli/dist/**", "tests/performance/**", "tests/responsive/**"],
   "extends": "./tsconfig.base.json",
-  "files": []
+  "files": [],
+  "include": []
 }

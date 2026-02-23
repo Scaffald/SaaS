@@ -10,7 +10,7 @@
     },
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "src/utils/pdf-extract.ts"],
+  "exclude": ["node_modules"],
   "extends": "../../tsconfig.base.json",
   "include": ["src/**/*.ts", "src/types/**/*.d.ts"]
 }

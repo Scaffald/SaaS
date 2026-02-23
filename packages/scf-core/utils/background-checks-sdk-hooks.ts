@@ -19,7 +19,6 @@ import type {
   AdminUpdatePrivacyParams,
   AdminResolveDisputeParams,
   BackgroundCheck,
-  BackgroundCheckPackage,
   BackgroundCheckDocument,
   RequestCheckParams,
   RequestCheckResponse,

@@ -116,14 +116,15 @@ export const buildTalentProfilesQuery = (options: TalentProfilesQueryOptions = {
       if (badgeError) {
         console.warn('[useTalentProfiles] Failed to load ID verification badges', badgeError)
       } else if (badgeRows) {
+        type PartialBadgeRow = { worker_user_id: string | null; badge_status: string | null; badge_expires_at: string | null }
         const rowsWithId = badgeRows.filter(
-            (row: VerificationBadgeRow): row is VerificationBadgeRow & { worker_user_id: string } =>
+            (row: PartialBadgeRow): row is PartialBadgeRow & { worker_user_id: string } =>
               typeof row.worker_user_id === 'string' && row.worker_user_id.length > 0
           )
           badgeMap = new Map(
-            rowsWithId.map((row: VerificationBadgeRow & { worker_user_id: string }): [string, VerificationBadgeRow] => [
+            rowsWithId.map((row: PartialBadgeRow & { worker_user_id: string }): [string, VerificationBadgeRow] => [
               row.worker_user_id,
-              row as VerificationBadgeRow,
+              row as unknown as VerificationBadgeRow,
             ])
           )
       }

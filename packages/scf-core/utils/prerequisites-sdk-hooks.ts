@@ -3,16 +3,20 @@
  * Requires ScaffaldJobsSdkProviderFromSession (client from context).
  */
 
-import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
-import { useScaffaldJobsClient } from './jobs-sdk-context'
+import { useMutation, useQuery, type UseMutationOptions, type UseQueryResult } from '@tanstack/react-query'
+import type { CompletePrerequisitesParams, CompletePrerequisitesResponse, PrerequisitesCheckResponse } from '@scaffald/sdk'
 import type {
   ListPrerequisitesParams,
   ValidatePrerequisitesParams,
   GetMissingParams,
   GetStatsParams,
-  CompletePrerequisitesParams,
-  CompletePrerequisitesResponse,
+  PrerequisitesResponse,
+  Prerequisite,
+  PrerequisiteCheckResult,
+  PrerequisiteValidationResult,
+  CompletionStats,
 } from '@scaffald/sdk/resources/prerequisites'
+import { useScaffaldJobsClient } from './jobs-sdk-context'
 
 // ============================================================================
 // QUERY HOOKS
@@ -24,7 +28,7 @@ export function usePrerequisites(
   options?: { enabled?: boolean }
 ) {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<PrerequisitesResponse>({
     queryKey: ['prerequisites', 'list', params],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
@@ -36,9 +40,12 @@ export function usePrerequisites(
 }
 
 /** Get prerequisite by ID */
-export function usePrerequisite(id: string | undefined, options?: { enabled?: boolean }) {
+export function usePrerequisite(
+  id: string | undefined,
+  options?: { enabled?: boolean }
+): UseQueryResult<{ data: Prerequisite }> {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<{ data: Prerequisite }>({
     queryKey: ['prerequisites', 'get', id],
     queryFn: async () => {
       if (!client || !id) throw new Error('Missing client or id')
@@ -52,7 +59,7 @@ export function usePrerequisite(id: string | undefined, options?: { enabled?: bo
 /** Check overall prerequisites status for current user */
 export function usePrerequisitesCheck(options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<PrerequisitesCheckResponse>({
     queryKey: ['prerequisites', 'check'],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
@@ -66,7 +73,7 @@ export function usePrerequisitesCheck(options?: { enabled?: boolean }) {
 /** Check specific prerequisite completion status */
 export function usePrerequisiteCheck(id: string | undefined, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<{ data: PrerequisiteCheckResult }>({
     queryKey: ['prerequisites', 'check-prerequisite', id],
     queryFn: async () => {
       if (!client || !id) throw new Error('Missing client or id')
@@ -83,7 +90,7 @@ export function useValidatePrerequisites(
   options?: { enabled?: boolean }
 ) {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<{ data: PrerequisiteValidationResult }>({
     queryKey: ['prerequisites', 'validate', params],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
@@ -100,7 +107,7 @@ export function useMissingPrerequisites(
   options?: { enabled?: boolean }
 ) {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<PrerequisitesResponse>({
     queryKey: ['prerequisites', 'missing', params],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
@@ -114,7 +121,7 @@ export function useMissingPrerequisites(
 /** Get completion statistics */
 export function usePrerequisitesStats(params?: GetStatsParams, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
-  return useQuery({
+  return useQuery<{ data: CompletionStats }>({
     queryKey: ['prerequisites', 'stats', params],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')

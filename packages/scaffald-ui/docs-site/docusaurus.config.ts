@@ -93,7 +93,7 @@ const config: Config = {
                 path.join(mockDir, 'codegenNativeComponent.js'),
               ),
             ],
-          };
+          } as unknown as Record<string, unknown>;
         },
       };
     },

@@ -26,7 +26,7 @@ import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Card, Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import { colors } from '@scaffald/ui/tokens'
@@ -496,11 +496,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const searchParentSkillsMutation = useSearchParentSkillsMutation()
   const { data: primaryIndustryData } = usePrimaryIndustry()
   // Certifications search: no SDK hook yet; stub returns empty until office certifications search is available
-  const searchCertificationsQuery = {
-    data: { certifications: [] as Array<{ id: string; name: string; slug: string; parent_slug: string | null }> },
-    isLoading: false,
-    refetch: async () => ({ data: { certifications: [] as Array<{ id: string; name: string; slug: string }> } }),
-  }
+  const searchCertificationsQuery = useMemo(
+    () => ({
+      data: { certifications: [] as Array<{ id: string; name: string; slug: string; parent_slug: string | null }> },
+      isLoading: false,
+      refetch: async () => ({ data: { certifications: [] as Array<{ id: string; name: string; slug: string }> } }),
+    }),
+    []
+  )
 
   const handleSearchSkills = useCallback(
     async (query: string) => {

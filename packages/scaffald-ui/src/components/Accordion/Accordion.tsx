@@ -31,7 +31,7 @@
  */
 
 import { createContext, useContext } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import type { AccordionProps, AccordionContextValue } from './Accordion.types'
 import { spacing } from '../../tokens/spacing'
 import { useAccordion } from './useAccordion'
