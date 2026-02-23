@@ -7,6 +7,8 @@
 
 // Main Dropdown component
 export { Dropdown } from './Dropdown'
+export { useDropdown } from './useDropdown'
+export type { UseDropdownProps } from './useDropdown'
 export type {
   DropdownProps,
   DropdownPosition,
