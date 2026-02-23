@@ -65,6 +65,11 @@ export function useBackgroundChecks(options?: { enabled?: boolean; staleTime?: n
   })
 }
 
+/** Update background check privacy (user's own check). Uses tRPC. */
+export function useUpdateBackgroundCheckPrivacyMutation() {
+  return api.backgroundChecks.updatePrivacy.useMutation()
+}
+
 // ===== Admin SDK hooks =====
 
 /** List admin packages (office/platform) */

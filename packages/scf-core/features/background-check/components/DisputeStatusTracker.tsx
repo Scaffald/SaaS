@@ -108,7 +108,7 @@ export function DisputeStatusTracker({
         borderWidth={1}
         radius="lg"
         padding="sm"
-        gap={8}
+        style={{ gap: 8 }}
       >
         <Text color="$gray11">No disputes filed yet</Text>
         <Text color="$gray11">

@@ -256,10 +256,9 @@ export function ConnectionFollowButtons({
             <Button
               size="md"
               iconStart={UserCheck}
-              theme="success"
-              variant="outline"
+variant="outline"
               disabled={isConnectionMutating}
-              flex={1}
+              style={{ flex: 1 }}
             >
               <Text>Connected</Text>
             </Button>
@@ -267,7 +266,7 @@ export function ConnectionFollowButtons({
               size="md"
               iconStart={UserMinus}
               variant="outline"
-              theme="error"
+"error"
               onPress={handleRemoveConnection}
               disabled={isConnectionMutating}
             >
@@ -282,7 +281,7 @@ export function ConnectionFollowButtons({
             iconStart={Loader2}
             variant="outline"
             disabled={isConnectionMutating}
-            flex={1}
+            style={{ flex: 1 }}
           >
             <Text>Pending</Text>
           </Button>
@@ -293,10 +292,9 @@ export function ConnectionFollowButtons({
             <Button
               size="md"
               iconStart={CheckCircle2}
-              theme="success"
               onPress={handleAcceptRequest}
               disabled={isConnectionMutating}
-              flex={1}
+              style={{ flex: 1 }}
             >
               <Text>Accept</Text>
             </Button>
@@ -304,7 +302,6 @@ export function ConnectionFollowButtons({
               size="md"
               iconStart={X}
               variant="outline"
-              theme="error"
               onPress={handleDeclineRequest}
               disabled={isConnectionMutating}
             >
@@ -320,7 +317,7 @@ export function ConnectionFollowButtons({
             color="primary"
             onPress={handleConnect}
             disabled={isConnectionMutating}
-            flex={1}
+            style={{ flex: 1 }}
           >
             <Text>{isConnectionMutating ? 'Sending...' : 'Connect'}</Text>
           </Button>
@@ -331,11 +328,10 @@ export function ConnectionFollowButtons({
           <Button
             size="md"
             iconStart={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
-            variant={followStatus.isFollowing ? 'outlined' : 'outlined'}
-            theme={followStatus.isFollowing ? 'error' : 'blue'}
+            variant={followStatus.isFollowing ? 'outline' : 'outline'}
             onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}
             disabled={isFollowMutating || followStatus.isLoading}
-            flex={1}
+            style={{ flex: 1 }}
           >
             <Text>
               {isFollowMutating

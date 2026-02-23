@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Circle, Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 import type { BackgroundCheckWizardStep } from '../hooks/useBackgroundCheckForm'
 
@@ -31,16 +31,18 @@ export const ProgressIndicator = memo(function ProgressIndicator({
 
         return (
           <Stack key={step} align="center" gap={4}>
-            <Circle
-              size={36}
+            <Stack
+              width={36}
+              height={36}
               backgroundColor={variant}
               borderWidth={2}
               borderColor={isActive ? '$color12' : '$color7'}
+              borderRadius={18}
               align="center"
               justify="center"
             >
               <Text color="$gray11">{index + 1}</Text>
-            </Circle>
+            </Stack>
             <Text color={isActive ? '$color12' : '$color10'}>{STEP_LABELS[step]}</Text>
           </Stack>
         )

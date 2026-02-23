@@ -86,7 +86,7 @@ export function CareerAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={gap.sm} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="$blue7" />
+          <Spinner size="lg" color="gray" />
           <Text color="$gray11">Loading...</Text>
         </Stack>
       </DashboardWidget>
@@ -150,16 +150,16 @@ export function CareerAssessmentWidget() {
 
         {/* Submit Button */}
         <Button
-          variant="filled" color="primary"
+          variant="filled"
+          color="primary"
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
-          opacity={isSubmitting ? 0.5 : 1}
           size="lg"
-          marginTop={gap.xs}
+          style={{ opacity: isSubmitting ? 0.5 : 1, marginTop: gap.xs }}
         >
           {isSubmitting ? (
             <Row gap={gap.xs} align="center">
-              <Spinner size="sm" color="white" />
+              <Spinner size="sm" color="gray" />
               Saving Assessment...
             </Row>
           ) : (
