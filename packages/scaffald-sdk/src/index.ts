@@ -506,6 +506,17 @@ export type {
   AdminPackage,
   AdminUpsertCheckTypeParams,
   AdminUpsertPackageParams,
+  AdminCheckSummary,
+  AdminCheckDetail,
+  AdminCheckDocument,
+  AdminCheckDispute,
+  AdminDisputeSummary,
+  AdminMetrics,
+  AdminAccessLogEntry,
+  AdminListChecksParams,
+  AdminUpdateStatusParams,
+  AdminUpdatePrivacyParams,
+  AdminResolveDisputeParams,
 } from './resources/background-checks.js'
 
 export type {

@@ -1,9 +1,17 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import {
+  useAdminCheck,
+  useAdminGetDocumentDownloadUrlMutation,
+  useAdminUpdatePrivacyMutation,
+  useAdminUpdateStatusMutation,
+} from '@scf/core/utils/background-checks-sdk-hooks'
+import type {
+  AdminCheckDocument,
+  AdminCheckDispute,
+  AdminCheckSummary,
+} from '@scaffald/sdk'
 import { Button, Dialog } from '@scaffald/ui'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
 import { ResponsiveSelect } from '@scaffald/ui'
@@ -25,13 +33,6 @@ import {
   getStatusMetadata,
   getStatusToneColors,
 } from '../components/status.utils'
-import { useQueryClient } from '@tanstack/react-query'
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
-type AdminCheckDetail = RouterOutputs['backgroundChecks']['adminGetCheck']
-type AdminCheckDocument = AdminCheckDetail['documents'][number]
-type AdminCheckDispute = AdminCheckDetail['disputes'][number]
 
 type StatusHistoryEntry = {
   status?: string | null
@@ -121,16 +122,11 @@ export function AdminCheckReviewDialog({
   onUpdated,
 }: AdminCheckReviewDialogProps) {
   const toast = useToast()
-  const queryClient = useQueryClient()
-  const checkId = check?.id ?? null
+  const checkId = check?.id ?? undefined
 
-  const detailQuery = api.backgroundChecks.adminGetCheck.useQuery(
-    { background_check_id: checkId ?? '' },
-    {
-      enabled: open && Boolean(checkId),
-      refetchOnWindowFocus: false,
-    }
-  )
+  const detailQuery = useAdminCheck(checkId, {
+    enabled: open && Boolean(checkId),
+  })
 
   const detailedCheck = detailQuery.data?.check ?? null
   const documents: AdminCheckDocument[] = detailQuery.data?.documents ?? []
@@ -168,21 +164,12 @@ export function AdminCheckReviewDialog({
     return getStatusToneColors(statusMeta.tone)
   }, [statusMeta])
 
-  const mutation = api.backgroundChecks.adminUpdateStatus.useMutation({
-    onSuccess: async () => {
+  const mutation = useAdminUpdateStatusMutation({
+    onSuccess: () => {
       toast.show({
         title: 'Background check updated',
         message: 'Status changes have been saved and notifications queued.',
       })
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListChecks']] }),
-        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListDisputes']] }),
-        checkId
-          ? queryClient.invalidateQueries({
-              queryKey: [['backgroundChecks', 'adminGetCheck'], { background_check_id: checkId }],
-            })
-          : Promise.resolve(),
-      ])
       onUpdated()
     },
     onError: (error: unknown) => {
@@ -201,7 +188,7 @@ export function AdminCheckReviewDialog({
     if (!detailedCheck || isSubmitting) return
     setIsSubmitting(true)
     mutation.mutate({
-      background_check_id: detailedCheck.id,
+      checkId: detailedCheck.id,
       status,
       summary: summary.trim() ? summary.trim() : null,
       notes: notes.trim() ? notes.trim() : null,
@@ -214,9 +201,9 @@ export function AdminCheckReviewDialog({
     return (detailedCheck?.status_history as StatusHistoryEntry[]) ?? []
   }, [detailedCheck?.status_history])
 
-  const privacyMutation = api.backgroundChecks.adminUpdatePrivacy.useMutation()
+  const privacyMutation = useAdminUpdatePrivacyMutation()
 
-  const documentDownloadMutation = api.backgroundChecks.adminGetDocumentDownloadUrl.useMutation()
+  const documentDownloadMutation = useAdminGetDocumentDownloadUrlMutation()
 
   const handlePrivacyUpdate = useCallback(
     (nextSharePublicly: boolean, nextOrgIds: string[]) => {
@@ -229,21 +216,15 @@ export function AdminCheckReviewDialog({
 
       privacyMutation.mutate(
         {
-          background_check_id: detailedCheck.id,
+          checkId: detailedCheck.id,
           share_publicly: nextSharePublicly,
           shared_with_organization_ids: nextOrgIds,
         },
         {
-          onSuccess: async () => {
+          onSuccess: () => {
             toast.show({
               title: 'Privacy settings updated',
               message: 'Visibility preferences have been saved.',
-            })
-            await queryClient.invalidateQueries({
-              queryKey: [
-                ['backgroundChecks', 'adminGetCheck'],
-                { background_check_id: detailedCheck.id },
-              ],
             })
           },
           onError: (error: unknown) => {
@@ -272,32 +253,29 @@ export function AdminCheckReviewDialog({
   const handleDownloadDocument = useCallback(
     (documentId: string) => {
       if (!detailedCheck) return
-      documentDownloadMutation.mutate(
-        { document_id: documentId },
-        {
-          onSuccess: ({ signedUrl }: { signedUrl: string }) => {
-            toast.show({
-              title: 'Document ready',
-              message: 'Opening the document in a new window.',
-            })
-            openSignedUrl(signedUrl)
-          },
-          onError: (error: unknown) => {
-            toast.show({
-              title: 'Unable to open document',
-              message: error instanceof Error ? error.message : 'Please try again shortly.',
-              variant: 'error',
-            })
-          },
-        }
-      )
+      documentDownloadMutation.mutate(documentId, {
+        onSuccess: ({ url }) => {
+          toast.show({
+            title: 'Document ready',
+            message: 'Opening the document in a new window.',
+          })
+          openSignedUrl(url)
+        },
+        onError: (error: unknown) => {
+          toast.show({
+            title: 'Unable to open document',
+            message: error instanceof Error ? error.message : 'Please try again shortly.',
+            variant: 'error',
+          })
+        },
+      })
     },
     [documentDownloadMutation, detailedCheck, openSignedUrl, toast]
   )
 
   const isPrivacySaving = privacyMutation.isPending
   const isDownloadingDocument = documentDownloadMutation.isPending
-  const downloadingDocumentId = documentDownloadMutation.variables?.document_id
+  const downloadingDocumentId = documentDownloadMutation.variables
 
   const workerName = useMemo(() => {
     if (!detailedCheck?.worker) return 'Worker'

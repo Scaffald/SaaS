@@ -208,6 +208,167 @@ export interface AdminUpsertPackageParams {
   is_active?: boolean
 }
 
+// Admin checks, disputes, metrics, access log
+export interface AdminCheckWorker {
+  id: string | null
+  display_name: string | null
+  username: string | null
+  email: string | null
+  avatar_path?: string | null
+}
+
+export interface AdminCheckOrganization {
+  id: string | null
+  name: string | null
+}
+
+export interface AdminCheckPackage {
+  id: string | null
+  display_name: string | null
+  slug: string | null
+}
+
+export interface AdminCheckSummary {
+  id: string
+  status: string | null
+  user_id: string
+  organization_id: string | null
+  job_id: string | null
+  requested_by_user_id: string | null
+  summary: unknown
+  findings: unknown
+  status_history: unknown
+  created_at: string
+  updated_at: string
+  invited_at: string | null
+  completed_at: string | null
+  expires_at: string | null
+  package: AdminCheckPackage | null
+  worker: AdminCheckWorker | null
+  organization: AdminCheckOrganization | null
+  requester: { id: string | null; display_name: string | null; email: string | null } | null
+}
+
+export interface AdminCheckDocument {
+  id: string
+  document_type: string
+  file_path?: string
+  file_name?: string | null
+  file_size?: number
+  mime_type?: string | null
+  uploaded_at?: string
+  verified?: boolean
+}
+
+export interface AdminCheckDispute {
+  id: string
+  status: string
+  dispute_reason: string | null
+  dispute_details: string | null
+  supporting_documents: unknown
+  created_at: string
+  resolved_at: string | null
+  resolution: string | null
+  resolution_notes: string | null
+}
+
+export interface AdminCheckDetail {
+  check: Record<string, unknown> & {
+    id: string
+    status: string | null
+    worker: AdminCheckWorker | null
+    organization: AdminCheckOrganization | null
+    package: AdminCheckPackage | null
+  }
+  documents: AdminCheckDocument[]
+  disputes: AdminCheckDispute[]
+}
+
+export interface AdminDisputeSummary {
+  id: string
+  background_check_id: string
+  user_id: string
+  dispute_reason: string | null
+  dispute_details: string | null
+  supporting_documents: unknown
+  status: string | null
+  created_at: string
+  updated_at: string
+  resolved_at: string | null
+  resolved_by_user_id: string | null
+  background_check: {
+    id: string | null
+    status: string | null
+    summary: unknown
+    findings: unknown
+    completed_at: string | null
+    expires_at: string | null
+    package: AdminCheckPackage | null
+    worker: AdminCheckWorker | null
+    organization: AdminCheckOrganization | null
+  } | null
+}
+
+export interface AdminMetrics {
+  totals: {
+    checks: number
+    under_review: number
+    disputed: number
+    completed: number
+  }
+  disputes: {
+    pending: number
+    under_review: number
+    resolved: number
+    upheld: number
+  }
+  averageCompletionDays: number | null
+  packageDistribution: Array<{ label: string; count: number }>
+}
+
+export interface AdminAccessLogEntry {
+  id: string
+  background_check_id: string
+  accessed_by_user_id: string
+  access_type: string
+  accessed_at: string
+  ip_address: string | null
+  user_agent: string | null
+  background_check: {
+    id: string | null
+    status: string | null
+    package_name: string | null
+    worker_name: string | null
+  } | null
+  actor: { id: string | null; name: string; email: string | null } | null
+}
+
+export interface AdminListChecksParams {
+  status?: string
+  limit?: number
+  offset?: number
+}
+
+export interface AdminUpdateStatusParams {
+  status: string
+  summary?: string | null
+  findings?: Record<string, unknown> | null
+  component_statuses?: Record<string, unknown>[]
+  expires_at?: string | null
+  notes?: string | null
+}
+
+export interface AdminUpdatePrivacyParams {
+  share_publicly: boolean
+  shared_with_organization_ids: string[]
+}
+
+export interface AdminResolveDisputeParams {
+  status: 'resolved' | 'upheld' | 'cancelled'
+  resolution?: string | null
+  resolution_notes?: string | null
+}
+
 // ============================================================================
 // BACKGROUND CHECKS RESOURCE
 // ============================================================================
@@ -521,6 +682,98 @@ export class BackgroundChecks extends Resource {
       `/v1/background-checks/admin/packages/${id}/active`,
       { is_active }
     )) as { data: { success: boolean } }
+    return response.data
+  }
+
+  // ===== Admin checks, disputes, metrics, access log =====
+
+  async adminListChecks(params?: AdminListChecksParams): Promise<AdminCheckSummary[]> {
+    const query = params
+      ? {
+          ...(params.status && { status: params.status }),
+          ...(params.limit != null && { limit: params.limit }),
+          ...(params.offset != null && { offset: params.offset }),
+        }
+      : undefined
+    const response = (await this.get<{ data: AdminCheckSummary[] }>(
+      '/v1/background-checks/admin/checks',
+      query
+    )) as { data: AdminCheckSummary[] }
+    return response.data
+  }
+
+  async adminGetCheck(checkId: string): Promise<AdminCheckDetail> {
+    const response = (await this.get<{ data: AdminCheckDetail }>(
+      `/v1/background-checks/admin/checks/${checkId}`
+    )) as { data: AdminCheckDetail }
+    return response.data
+  }
+
+  async adminUpdateStatus(
+    checkId: string,
+    params: AdminUpdateStatusParams
+  ): Promise<Record<string, unknown>> {
+    const response = (await this.patch<{ data: Record<string, unknown> }>(
+      `/v1/background-checks/admin/checks/${checkId}/status`,
+      params
+    )) as { data: Record<string, unknown> }
+    return response.data
+  }
+
+  async adminUpdatePrivacy(
+    checkId: string,
+    params: AdminUpdatePrivacyParams
+  ): Promise<{ privacy: AdminUpdatePrivacyParams }> {
+    const response = (await this.patch<{ data: { privacy: AdminUpdatePrivacyParams } }>(
+      `/v1/background-checks/admin/checks/${checkId}/privacy`,
+      params
+    )) as { data: { privacy: AdminUpdatePrivacyParams } }
+    return response.data
+  }
+
+  async adminGetDocumentDownloadUrl(documentId: string): Promise<{
+    url: string
+    expires_at: string
+  }> {
+    const response = (await this.post<{ data: { url: string; expires_at: string } }>(
+      `/v1/background-checks/admin/documents/${documentId}/download-url`
+    )) as { data: { url: string; expires_at: string } }
+    return response.data
+  }
+
+  async adminListDisputes(params?: { status?: string }): Promise<AdminDisputeSummary[]> {
+    const query = params?.status ? { status: params.status } : undefined
+    const response = (await this.get<{ data: AdminDisputeSummary[] }>(
+      '/v1/background-checks/admin/disputes',
+      query
+    )) as { data: AdminDisputeSummary[] }
+    return response.data
+  }
+
+  async adminResolveDispute(
+    disputeId: string,
+    params: AdminResolveDisputeParams
+  ): Promise<Record<string, unknown>> {
+    const response = (await this.patch<{ data: Record<string, unknown> }>(
+      `/v1/background-checks/admin/disputes/${disputeId}/resolve`,
+      params
+    )) as { data: Record<string, unknown> }
+    return response.data
+  }
+
+  async adminGetMetrics(): Promise<AdminMetrics> {
+    const response = (await this.get<{ data: AdminMetrics }>(
+      '/v1/background-checks/admin/metrics'
+    )) as { data: AdminMetrics }
+    return response.data
+  }
+
+  async adminGetAccessLog(params?: { limit?: number }): Promise<AdminAccessLogEntry[]> {
+    const query = params?.limit != null ? { limit: params.limit } : undefined
+    const response = (await this.get<{ data: AdminAccessLogEntry[] }>(
+      '/v1/background-checks/admin/access-log',
+      query
+    )) as { data: AdminAccessLogEntry[] }
     return response.data
   }
 }

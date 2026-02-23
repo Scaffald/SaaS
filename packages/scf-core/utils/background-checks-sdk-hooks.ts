@@ -16,9 +16,18 @@ import type {
   AdminPackage,
   AdminUpsertCheckTypeParams,
   AdminUpsertPackageParams,
+  AdminCheckDetail,
+  AdminCheckSummary,
+  AdminDisputeSummary,
+  AdminMetrics,
+  AdminAccessLogEntry,
+  AdminUpdateStatusParams,
+  AdminUpdatePrivacyParams,
+  AdminResolveDisputeParams,
 } from '@scaffald/sdk'
 
 const ADMIN_CATALOG_KEY = ['backgroundChecks', 'admin'] as const
+const ADMIN_KEY = ['backgroundChecks', 'adminData'] as const
 
 /** List admin packages (office/platform) */
 export function useAdminPackages(options?: { staleTime?: number }) {
@@ -122,6 +131,153 @@ export function useAdminSetCheckTypeActiveMutation(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_CATALOG_KEY })
+    },
+    ...options,
+  })
+}
+
+// Admin checks, disputes, metrics, access log hooks
+
+export function useAdminChecks(params?: { status?: string; limit?: number; offset?: number }, options?: { enabled?: boolean; staleTime?: number }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: [...ADMIN_KEY, 'checks', params?.status, params?.limit, params?.offset],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminListChecks(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 30_000,
+  })
+}
+
+export function useAdminCheck(checkId: string | undefined, options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: [...ADMIN_KEY, 'check', checkId],
+    queryFn: async () => {
+      if (!client || !checkId) throw new Error('Missing client or checkId')
+      return client.backgroundChecks.adminGetCheck(checkId)
+    },
+    enabled: !!client && !!checkId && options?.enabled !== false,
+  })
+}
+
+export function useAdminDisputes(params?: { status?: string }, options?: { enabled?: boolean; staleTime?: number }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: [...ADMIN_KEY, 'disputes', params?.status],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminListDisputes(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 30_000,
+  })
+}
+
+export function useAdminMetrics(options?: { enabled?: boolean; staleTime?: number }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: [...ADMIN_KEY, 'metrics'],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminGetMetrics()
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 60_000,
+  })
+}
+
+export function useAdminAccessLog(params?: { limit?: number }, options?: { enabled?: boolean; staleTime?: number }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: [...ADMIN_KEY, 'accessLog', params?.limit],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminGetAccessLog(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 30_000,
+  })
+}
+
+export function useAdminUpdateStatusMutation(
+  options?: UseMutationOptions<
+    Record<string, unknown>,
+    Error,
+    { checkId: string } & AdminUpdateStatusParams
+  >
+) {
+  const client = useScaffaldJobsClient()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ checkId, ...params }) => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminUpdateStatus(checkId, params)
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_KEY })
+      queryClient.invalidateQueries({ queryKey: [...ADMIN_KEY, 'check', variables.checkId] })
+    },
+    ...options,
+  })
+}
+
+export function useAdminUpdatePrivacyMutation(
+  options?: UseMutationOptions<
+    { privacy: AdminUpdatePrivacyParams },
+    Error,
+    { checkId: string } & AdminUpdatePrivacyParams
+  >
+) {
+  const client = useScaffaldJobsClient()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ checkId, ...params }) => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminUpdatePrivacy(checkId, params)
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: [...ADMIN_KEY, 'check', variables.checkId] })
+    },
+    ...options,
+  })
+}
+
+export function useAdminGetDocumentDownloadUrlMutation(
+  options?: UseMutationOptions<
+    { url: string; expires_at: string },
+    Error,
+    string
+  >
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminGetDocumentDownloadUrl(documentId)
+    },
+    ...options,
+  })
+}
+
+export function useAdminResolveDisputeMutation(
+  options?: UseMutationOptions<
+    Record<string, unknown>,
+    Error,
+    { disputeId: string } & AdminResolveDisputeParams
+  >
+) {
+  const client = useScaffaldJobsClient()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ disputeId, ...params }) => {
+      if (!client) throw new Error('Missing SDK client')
+      return client.backgroundChecks.adminResolveDispute(disputeId, params)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_KEY })
     },
     ...options,
   })

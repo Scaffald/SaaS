@@ -1,8 +1,7 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useAdminResolveDisputeMutation } from '@scf/core/utils/background-checks-sdk-hooks'
+import type { AdminDisputeSummary } from '@scaffald/sdk'
 import { AlertTriangle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
 import {
@@ -16,16 +15,12 @@ import {
   Row,
   Stack,
 } from '@scaffald/ui'
-import { useQueryClient } from '@tanstack/react-query'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
   { value: 'upheld', label: 'Upheld' },
   { value: 'cancelled', label: 'Cancelled' },
 ] as const
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type AdminDisputeSummary = RouterOutputs['backgroundChecks']['adminListDisputes'][number]
 
 interface AdminDisputeResolutionDialogProps {
   dispute: AdminDisputeSummary | null
@@ -48,7 +43,6 @@ export function AdminDisputeResolutionDialog({
   onResolved,
 }: AdminDisputeResolutionDialogProps) {
   const toast = useToast()
-  const queryClient = useQueryClient()
 
   const [resolutionStatus, setResolutionStatus] =
     useState<(typeof RESOLUTION_STATUSES)[number]['value']>('resolved')
@@ -62,16 +56,12 @@ export function AdminDisputeResolutionDialog({
     }
   }, [dispute, open])
 
-  const mutation = api.backgroundChecks.adminResolveDispute.useMutation({
-    onSuccess: async () => {
+  const mutation = useAdminResolveDisputeMutation({
+    onSuccess: () => {
       toast.show({
         title: 'Dispute resolved',
         message: 'The worker and requester will receive notifications shortly.',
       })
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListDisputes']] }),
-        queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListChecks']] }),
-      ])
       onResolved()
     },
     onError: (error: unknown) => {
@@ -90,7 +80,7 @@ export function AdminDisputeResolutionDialog({
     if (!dispute || isSubmitting) return
     setIsSubmitting(true)
     mutation.mutate({
-      dispute_id: dispute.id,
+      disputeId: dispute.id,
       status: resolutionStatus,
       resolution: resolutionNotes.trim() ? resolutionNotes.trim() : null,
       resolution_notes: resolutionNotes.trim() ? resolutionNotes.trim() : null,

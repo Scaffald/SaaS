@@ -1,13 +1,9 @@
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { AdminMetrics } from '@scaffald/sdk'
 import { RefreshCcw } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type MetricsSummary = RouterOutputs['backgroundChecks']['adminGetMetrics']
-
 interface AdminMetricsPanelProps {
-  metrics: MetricsSummary | undefined
+  metrics: AdminMetrics | undefined
   isLoading: boolean
   onRefresh: () => void
 }

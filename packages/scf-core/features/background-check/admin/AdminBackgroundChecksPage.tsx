@@ -1,11 +1,15 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { api } from '@scf/core/utils/api'
+import {
+  useAdminAccessLog,
+  useAdminChecks,
+  useAdminDisputes,
+  useAdminMetrics,
+} from '@scf/core/utils/background-checks-sdk-hooks'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { AdminCheckSummary, AdminDisputeSummary } from '@scaffald/sdk'
 import { AlertTriangle, ClipboardList, RefreshCcw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
@@ -21,11 +25,6 @@ import { AdminCatalogManager } from './AdminCatalogManager'
 import { AdminCheckReviewDialog } from './AdminCheckReviewDialog'
 import { AdminDisputeResolutionDialog } from './AdminDisputeResolutionDialog'
 import { AdminMetricsPanel } from './AdminMetricsPanel'
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-
-type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
-type AdminDisputeSummary = RouterOutputs['backgroundChecks']['adminListDisputes'][number]
 
 type AdminTab = 'checks' | 'disputes' | 'metrics' | 'audit' | 'catalog'
 
@@ -90,35 +89,24 @@ export function AdminBackgroundChecksPage() {
   const [selectedCheck, setSelectedCheck] = useState<AdminCheckSummary | null>(null)
   const [selectedDispute, setSelectedDispute] = useState<AdminDisputeSummary | null>(null)
 
-  const checksQuery = api.backgroundChecks.adminListChecks.useQuery(
-    {
-      status: statusFilter === 'all' ? undefined : statusFilter,
-    },
-    {
-      refetchOnWindowFocus: true,
-      staleTime: 30_000,
-      enabled: isAdmin,
-    }
+  const checksQuery = useAdminChecks(
+    { status: statusFilter === 'all' ? undefined : statusFilter },
+    { enabled: isAdmin, staleTime: 30_000 }
   )
 
-  const disputesQuery = api.backgroundChecks.adminListDisputes.useQuery(undefined, {
+  const disputesQuery = useAdminDisputes(undefined, {
     enabled: isAdmin && activeTab === 'disputes',
-    refetchOnWindowFocus: true,
     staleTime: 30_000,
   })
 
-  const metricsQuery = api.backgroundChecks.adminGetMetrics.useQuery(undefined, {
+  const metricsQuery = useAdminMetrics({
     enabled: isAdmin && activeTab === 'metrics',
     staleTime: 60_000,
   })
 
-  const accessLogQuery = api.backgroundChecks.adminGetAccessLog.useQuery(
+  const accessLogQuery = useAdminAccessLog(
     { limit: 200 },
-    {
-      enabled: isAdmin && activeTab === 'audit',
-      refetchOnWindowFocus: true,
-      staleTime: 30_000,
-    }
+    { enabled: isAdmin && activeTab === 'audit', staleTime: 30_000 }
   )
 
   const checkRows = useMemo<CheckRow[]>(() => {
