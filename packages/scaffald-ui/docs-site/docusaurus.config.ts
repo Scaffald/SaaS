@@ -3,6 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import path from 'path';
 
+/** Docs site: deploy workflow runs on push to main when docs-site/ or src/ change. */
 const config: Config = {
   title: 'Scaffald UI',
   tagline: 'Best-in-class UI framework for Expo (React Native + Web)',
