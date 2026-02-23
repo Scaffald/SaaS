@@ -7,12 +7,16 @@ import {
   Button,
   Card,
   Paragraph,
-  SizableText,
+  Text,
   Row,
   Stack,
-  AlertDialog,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalActions,
   Separator,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import { useUserConsents, useRevokeConsentMutation } from '@scf/core/utils/oauth-sdk-hooks'
 
@@ -33,7 +37,7 @@ export function AuthorizedAppsList() {
   if (consentsQuery.isLoading) {
     return (
       <Stack flex={1} padding="md" gap={16}>
-        <SizableText>Loading authorized apps...</SizableText>
+        <Text>Loading authorized apps...</Text>
       </Stack>
     )
   }
@@ -42,7 +46,7 @@ export function AuthorizedAppsList() {
     <Stack flex={1} gap={16} data-testid="authorized-apps-list">
       {/* Header */}
       <Stack gap={8}>
-        <SizableText size={24}>Authorized Applications</SizableText>
+        <Text size="2xl">Authorized Applications</Text>
         <Paragraph size="sm" color="$gray11">
           These apps have access to your Scaffald account. You can revoke access at any time.
         </Paragraph>
@@ -64,9 +68,7 @@ export function AuthorizedAppsList() {
                     <Stack
                       width={64}
                       height={64}
-                      borderRadius={8}
-                      overflow="hidden"
-                      backgroundColor="$color3"
+                      style={{ borderRadius: 8, overflow: 'hidden', backgroundColor: colors.gray[200] }}
                     >
                       <img
                         src={app.logo_url}
@@ -79,9 +81,9 @@ export function AuthorizedAppsList() {
                   {/* App Info */}
                   <Stack flex={1} gap={12}>
                     <Stack gap={4}>
-                      <SizableText size="lg" data-testid="authorized-app-name">
+                      <Text size="lg" data-testid="authorized-app-name">
                         {app?.display_name || 'Unknown App'}
-                      </SizableText>
+                      </Text>
                       {app?.description && (
                         <Paragraph
                           size="sm"
@@ -92,13 +94,13 @@ export function AuthorizedAppsList() {
                         </Paragraph>
                       )}
                       {app?.homepage_url && (
-                        <SizableText
+                        <Text
                           size="sm"
                           color="$blue10"
                           data-testid="authorized-app-homepage"
                         >
                           {app.homepage_url}
-                        </SizableText>
+                        </Text>
                       )}
                     </Stack>
 
@@ -106,16 +108,16 @@ export function AuthorizedAppsList() {
 
                     {/* Scopes */}
                     <Stack gap={8}>
-                      <SizableText size="sm">Permissions</SizableText>
+                      <Text size="sm">Permissions</Text>
                       <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
                           <Row key={scope} gap={8} align="center">
-                            <SizableText size="sm" color="$gray11">
+                            <Text size="sm" color="$gray11">
                               •
-                            </SizableText>
-                            <SizableText size="sm" color="$gray11">
+                            </Text>
+                            <Text size="sm" color="$gray11">
                               {scope}
-                            </SizableText>
+                            </Text>
                           </Row>
                         ))}
                       </Stack>
@@ -123,13 +125,13 @@ export function AuthorizedAppsList() {
 
                     {/* Metadata */}
                     <Stack gap={4}>
-                      <SizableText size="sm" color="$gray11">
+                      <Text size="sm" color="$gray11">
                         Authorized on {grantedAt.toLocaleDateString()}
-                      </SizableText>
+                      </Text>
                       {expiresAt && (
-                        <SizableText size="sm" color="$gray11">
+                        <Text size="sm" color="$gray11">
                           Expires on {expiresAt.toLocaleDateString()}
-                        </SizableText>
+                        </Text>
                       )}
                     </Stack>
                   </Stack>
@@ -150,8 +152,8 @@ export function AuthorizedAppsList() {
       ) : (
         <Card padding="xl" data-testid="no-authorized-apps">
           <Stack gap={12} align="center">
-            <SizableText size="lg">No Authorized Apps</SizableText>
-            <Paragraph size="sm" color="$gray11" textAlign="center">
+            <Text size="lg">No Authorized Apps</Text>
+            <Paragraph size="sm" color="$gray11" align="center">
               You haven't authorized any third-party applications to access your account yet.
             </Paragraph>
           </Stack>
@@ -159,46 +161,43 @@ export function AuthorizedAppsList() {
       )}
 
       {/* Revoke Confirmation Dialog */}
-      <AlertDialog open={!!revokeAppId} onOpenChange={(open) => !open && setRevokeAppId(null)}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content>
-            <Stack gap={16}>
-              <Stack gap={8}>
-                <AlertDialog.Title>Revoke App Access</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Are you sure you want to revoke access for{' '}
-                  <strong>{appToRevoke?.oauth_app?.display_name}</strong>?
-                  This will:
-                </AlertDialog.Description>
-              </Stack>
-
-              <Stack gap={8} paddingLeft={16}>
-                <Paragraph size="sm">• Immediately invalidate all access tokens</Paragraph>
-                <Paragraph size="sm">• Prevent the app from accessing your data</Paragraph>
-                <Paragraph size="sm">
-                  • Require you to re-authorize if you want to use the app again
-                </Paragraph>
-              </Stack>
-
-              <Row gap={12} justify="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outline">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={() => revokeAppId && revokeConsent.mutate(revokeAppId)}
-                  disabled={revokeConsent.isPending}
-                  loading={revokeConsent.isPending}
-                  backgroundColor="$red10"
-                  data-testid="confirm-revoke-button"
-                >
-                  Revoke Access
-                </Button>
-              </Row>
+      <Modal
+        visible={!!revokeAppId}
+        onClose={() => setRevokeAppId(null)}
+        testID="revoke-app-dialog"
+      >
+        <ModalContent>
+          <ModalHeader title="Revoke App Access" onClose={() => setRevokeAppId(null)} />
+          <Stack gap={16}>
+            <Paragraph size="sm">
+              Are you sure you want to revoke access for{' '}
+              <strong>{appToRevoke?.oauth_app?.display_name}</strong>?
+              This will:
+            </Paragraph>
+            <Stack gap={8} style={{ paddingLeft: 16 }}>
+              <Paragraph size="sm">• Immediately invalidate all access tokens</Paragraph>
+              <Paragraph size="sm">• Prevent the app from accessing your data</Paragraph>
+              <Paragraph size="sm">
+                • Require you to re-authorize if you want to use the app again
+              </Paragraph>
             </Stack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+            <ModalActions
+              primaryAction={{
+                label: 'Revoke Access',
+                onPress: () => revokeAppId && revokeConsent.mutate(revokeAppId),
+                disabled: revokeConsent.isPending,
+                loading: revokeConsent.isPending,
+                color: 'error',
+              }}
+              secondaryAction={{
+                label: 'Cancel',
+                onPress: () => setRevokeAppId(null),
+                variant: 'outline',
+              }}
+            />
+          </Stack>
+        </ModalContent>
+      </Modal>
     </Stack>
   )
 }

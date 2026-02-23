@@ -77,9 +77,9 @@ export function AppRegistrationForm() {
   if (credentials) {
     return (
       <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
-        <Card padding="md" gap={16}>
+        <Card padding="md">
           <Stack gap={12}>
-            <Text size={24}>App Registration Successful!</Text>
+            <Text size="2xl">App Registration Successful!</Text>
             <Paragraph size="sm">
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
@@ -129,10 +129,10 @@ export function AppRegistrationForm() {
 
   return (
     <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
-      <Card padding="md" gap={16}>
+      <Card padding="md">
         <Stack gap={16}>
           <Stack gap={8}>
-            <Text size={24}>Register OAuth Application</Text>
+            <Text size="2xl">Register OAuth Application</Text>
             <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
@@ -175,7 +175,7 @@ export function AppRegistrationForm() {
               {redirectUris.map((uri, index) => (
                 <Row key={index} gap={8}>
                   <Input
-                    flex={1}
+                    style={{ flex: 1 }}
                     value={uri}
                     onChangeText={(value) => updateRedirectUri(index, value)}
                     placeholder="https://example.com/auth/callback"
@@ -231,7 +231,7 @@ export function AppRegistrationForm() {
                 value={developerEmail}
                 onChangeText={setDeveloperEmail}
                 placeholder="developer@example.com"
-                keyboardType="email"
+                keyboardType="email-address"
               />
             </Stack>
           </Stack>

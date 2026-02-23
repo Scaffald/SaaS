@@ -4,16 +4,19 @@
  */
 
 import {
-  Badge,
   Button,
   Card,
+  Chip,
   Paragraph,
-  SizableText,
+  Text,
   Row,
   Stack,
   Separator,
   Checkbox,
-  AlertDialog,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalActions,
   Input,
 } from '@scaffald/ui'
 import { useState } from 'react'
@@ -73,7 +76,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   if (appQuery.isLoading) {
     return (
       <Stack flex={1} padding="md" gap={16}>
-        <SizableText>Loading...</SizableText>
+        <Text>Loading...</Text>
       </Stack>
     )
   }
@@ -81,7 +84,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   if (!app) {
     return (
       <Stack flex={1} padding="md" gap={16}>
-        <SizableText>App not found</SizableText>
+        <Text>App not found</Text>
       </Stack>
     )
   }
@@ -92,12 +95,12 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   const statusColor =
     app.status === 'active' || app.status === 'trusted'
-      ? '$green10'
+      ? '#22c55e'
       : app.status === 'pending'
-        ? '$yellow10'
+        ? '#eab308'
         : app.status === 'suspended'
-          ? '$orange10'
-          : '$red10'
+          ? '#f97316'
+          : '#ef4444'
 
   function handleApprove() {
     approveApp.mutate({
@@ -125,25 +128,25 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       {/* Header */}
       <Row gap={12} align="center" justify="space-between">
         <Stack gap={8} flex={1}>
-          <SizableText size={24} data-testid="oauth-app-detail-name">
+          <Text size="2xl" data-testid="oauth-app-detail-name">
             {app.display_name}
-          </SizableText>
+          </Text>
           <Row gap={8} align="center">
-            <Badge
-              backgroundColor={statusColor}
-              color="white"
+            <Chip
+              style={{ backgroundColor: statusColor }}
+              textStyle={{ color: 'white' }}
               data-testid="oauth-app-detail-status"
             >
               {app.status.toUpperCase()}
-            </Badge>
+            </Chip>
             {app.requires_approval && isPending && (
-              <Badge
-                backgroundColor="$blue10"
-                color="white"
+              <Chip
+                style={{ backgroundColor: '#3b82f6' }}
+                textStyle={{ color: 'white' }}
                 data-testid="oauth-app-requires-approval"
               >
                 REQUIRES APPROVAL
-              </Badge>
+              </Chip>
             )}
           </Row>
         </Stack>
@@ -180,122 +183,127 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Row>
 
       {/* App Details */}
-      <Card padding="md" gap={16}>
+      <Card padding="md">
+        <Stack gap={16}>
         <Stack gap={12}>
-          <SizableText size="lg">Application Details</SizableText>
+          <Text size="lg">Application Details</Text>
 
           <Stack gap={8}>
-            <SizableText size="sm" color="$gray11">
+            <Text size="sm" color="$gray11">
               Description
-            </SizableText>
+            </Text>
             <Paragraph size="sm">{app.description || 'No description provided'}</Paragraph>
           </Stack>
 
           <Separator />
 
           <Stack gap={8}>
-            <SizableText size="sm" color="$gray11">
+            <Text size="sm" color="$gray11">
               Client ID
-            </SizableText>
-            <SizableText size="sm" fontFamily="$mono" data-testid="oauth-app-client-id">
+            </Text>
+            <Text size="sm" mono data-testid="oauth-app-client-id">
               {app.client_id}
-            </SizableText>
+            </Text>
           </Stack>
 
           <Stack gap={8}>
-            <SizableText size="sm" color="$gray11">
+            <Text size="sm" color="$gray11">
               Homepage URL
-            </SizableText>
-            <SizableText size="sm" color="$blue10">
+            </Text>
+            <Text size="sm" color="$blue10">
               {app.homepage_url || 'Not provided'}
-            </SizableText>
+            </Text>
           </Stack>
 
           {app.privacy_policy_url && (
             <Stack gap={8}>
-              <SizableText size="sm" color="$gray11">
+              <Text size="sm" color="$gray11">
                 Privacy Policy URL
-              </SizableText>
-              <SizableText size="sm" color="$blue10">
+              </Text>
+              <Text size="sm" color="$blue10">
                 {app.privacy_policy_url}
-              </SizableText>
+              </Text>
             </Stack>
           )}
 
           {app.terms_of_service_url && (
             <Stack gap={8}>
-              <SizableText size="sm" color="$gray11">
+              <Text size="sm" color="$gray11">
                 Terms of Service URL
-              </SizableText>
-              <SizableText size="sm" color="$blue10">
+              </Text>
+              <Text size="sm" color="$blue10">
                 {app.terms_of_service_url}
-              </SizableText>
+              </Text>
             </Stack>
           )}
 
           <Separator />
 
           <Stack gap={8}>
-            <SizableText size="sm" color="$gray11">
+            <Text size="sm" color="$gray11">
               Owner Email
-            </SizableText>
-            <SizableText size="sm">{app.owner_email || 'Not provided'}</SizableText>
+            </Text>
+            <Text size="sm">{app.owner_email || 'Not provided'}</Text>
           </Stack>
 
           <Stack gap={8}>
-            <SizableText size="sm" color="$gray11">
+            <Text size="sm" color="$gray11">
               Created
-            </SizableText>
-            <SizableText size="sm">{new Date(app.created_at).toLocaleString()}</SizableText>
+            </Text>
+            <Text size="sm">{new Date(app.created_at).toLocaleString()}</Text>
           </Stack>
 
           {app.approved_at && (
             <Stack gap={8}>
-              <SizableText size="sm" color="$gray11">
+              <Text size="sm" color="$gray11">
                 Approved
-              </SizableText>
-              <SizableText size="sm">{new Date(app.approved_at).toLocaleString()}</SizableText>
+              </Text>
+              <Text size="sm">{new Date(app.approved_at).toLocaleString()}</Text>
             </Stack>
           )}
+        </Stack>
         </Stack>
       </Card>
 
       {/* Redirect URIs */}
-      <Card padding="md" gap={16} data-testid="oauth-app-redirect-uris">
+      <Card padding="md" data-testid="oauth-app-redirect-uris">
+        <Stack gap={16}>
         <Stack gap={12}>
-          <SizableText size="lg">Redirect URIs</SizableText>
+          <Text size="lg">Redirect URIs</Text>
           <Stack gap={8}>
             {app.redirect_uris.map((uri, index) => (
               <Stack key={index} gap={4}>
-                <SizableText
+                <Text
                   size="sm"
-                  fontFamily="$mono"
+                  mono
                   color="$blue10"
                   data-testid={`oauth-app-redirect-uri-${index}`}
                 >
                   {uri}
-                </SizableText>
+                </Text>
               </Stack>
             ))}
           </Stack>
         </Stack>
+        </Stack>
       </Card>
 
       {/* Allowed Scopes */}
-      <Card padding="md" gap={16} data-testid="oauth-app-scopes">
+      <Card padding="md" data-testid="oauth-app-scopes">
+        <Stack gap={16}>
         <Stack gap={12}>
-          <SizableText size="lg">Allowed Scopes</SizableText>
+          <Text size="lg">Allowed Scopes</Text>
           {app.allowed_scopes.length > 0 ? (
             <Row gap={8} wrap>
               {app.allowed_scopes.map((scope) => (
-                <Badge
+                <Chip
                   key={scope}
-                  backgroundColor="$blue2"
-                  color="$blue10"
+                  style={{ backgroundColor: '#dbeafe', paddingHorizontal: 8, paddingVertical: 4 }}
+                  textStyle={{ color: '#1d4ed8' }}
                   data-testid={`oauth-app-scope-${scope}`}
                 >
                   {scope}
-                </Badge>
+                </Chip>
               ))}
             </Row>
           ) : (
@@ -304,25 +312,22 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             </Paragraph>
           )}
         </Stack>
+        </Stack>
       </Card>
 
       {/* Approve App Dialog */}
-      <AlertDialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content maxWidth={600}>
-            <Stack gap={16}>
-              <Stack gap={8}>
-                <AlertDialog.Title>Approve OAuth Application</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Select the scopes to grant and the trust level for {app.display_name}.
-                </AlertDialog.Description>
-              </Stack>
-
+      <Modal visible={showApproveDialog} onClose={() => setShowApproveDialog(false)} width={600}>
+        <ModalContent>
+          <ModalHeader
+            title="Approve OAuth Application"
+            description={`Select the scopes to grant and the trust level for ${app.display_name}.`}
+            onClose={() => setShowApproveDialog(false)}
+          />
+          <Stack gap={16}>
               {/* Scope Selection */}
               <Stack gap={12}>
-                <SizableText size="md">Select Scopes</SizableText>
-                <Stack gap={8} maxHeight={300} overflow="scroll">
+                <Text size="md">Select Scopes</Text>
+                <Stack gap={8} style={{ maxHeight: 300, overflow: 'scroll' }}>
                   {scopes.map((scope) => (
                     <Row key={scope.id} gap={8} align="center">
                       <Checkbox
@@ -336,10 +341,10 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                         }}
                       />
                       <Stack flex={1}>
-                        <SizableText size="sm">{scope.display_name}</SizableText>
-                        <SizableText size="sm" color="$gray11">
+                        <Text size="sm">{scope.display_name}</Text>
+                        <Text size="sm" color="$gray11">
                           {scope.description}
-                        </SizableText>
+                        </Text>
                       </Stack>
                     </Row>
                   ))}
@@ -348,19 +353,19 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
               {/* Trust Level */}
               <Stack gap={12}>
-                <SizableText size="md">Trust Level</SizableText>
+                <Text size="md">Trust Level</Text>
                 <Row gap={8}>
                   <Button
-                    variant={trustLevel === 'active' ? 'default' : 'outline'}
+                    variant={trustLevel === 'active' ? 'filled' : 'outline'}
                     onPress={() => setTrustLevel('active')}
-                    flex={1}
+                    style={{ flex: 1 }}
                   >
                     Active
                   </Button>
                   <Button
-                    variant={trustLevel === 'trusted' ? 'default' : 'outline'}
+                    variant={trustLevel === 'trusted' ? 'filled' : 'outline'}
                     onPress={() => setTrustLevel('trusted')}
-                    flex={1}
+                    style={{ flex: 1 }}
                   >
                     Trusted
                   </Button>
@@ -372,40 +377,34 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                 </Paragraph>
               </Stack>
 
-              {/* Actions */}
-              <Row gap={12} justify="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outline">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={handleApprove}
-                  disabled={selectedScopes.length === 0 || approveApp.isPending}
-                  loading={approveApp.isPending}
-                >
-                  Approve Application
-                </Button>
-              </Row>
+              <ModalActions
+                primaryAction={{
+                  label: 'Approve Application',
+                  onPress: handleApprove,
+                  disabled: selectedScopes.length === 0 || approveApp.isPending,
+                  loading: approveApp.isPending,
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setShowApproveDialog(false),
+                  variant: 'outline',
+                }}
+              />
             </Stack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+        </ModalContent>
+      </Modal>
 
       {/* Reject App Dialog */}
-      <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content>
-            <Stack gap={16}>
+      <Modal visible={showRejectDialog} onClose={() => setShowRejectDialog(false)}>
+        <ModalContent>
+          <ModalHeader
+            title="Reject Application"
+            description={`Are you sure you want to reject ${app.display_name}? This will set the status to revoked.`}
+            onClose={() => setShowRejectDialog(false)}
+          />
+          <Stack gap={16}>
               <Stack gap={8}>
-                <AlertDialog.Title>Reject Application</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Are you sure you want to reject {app.display_name}? This will set the status to
-                  revoked.
-                </AlertDialog.Description>
-              </Stack>
-
-              <Stack gap={8}>
-                <SizableText size="sm">Rejection Reason (Optional)</SizableText>
+                <Text size="sm">Rejection Reason (Optional)</Text>
                 <Input
                   value={rejectReason}
                   onChangeText={setRejectReason}
@@ -414,55 +413,50 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                 />
               </Stack>
 
-              <Row gap={12} justify="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outline">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={handleReject}
-                  disabled={rejectApp.isPending}
-                  loading={rejectApp.isPending}
-                  backgroundColor="$red10"
-                >
-                  Reject Application
-                </Button>
-              </Row>
+              <ModalActions
+                primaryAction={{
+                  label: 'Reject Application',
+                  onPress: handleReject,
+                  disabled: rejectApp.isPending,
+                  loading: rejectApp.isPending,
+                  color: 'error',
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setShowRejectDialog(false),
+                  variant: 'outline',
+                }}
+              />
             </Stack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+        </ModalContent>
+      </Modal>
 
       {/* Suspend App Dialog */}
-      <AlertDialog open={showSuspendDialog} onOpenChange={setShowSuspendDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content>
-            <Stack gap={16}>
-              <Stack gap={8}>
-                <AlertDialog.Title>Suspend Application</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Are you sure you want to suspend {app.display_name}? This will revoke all active
-                  tokens and prevent new authorizations.
-                </AlertDialog.Description>
-              </Stack>
-
-              <Row gap={12} justify="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outline">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={handleSuspend}
-                  disabled={suspendApp.isPending}
-                  loading={suspendApp.isPending}
-                  backgroundColor="$orange10"
-                >
-                  Suspend Application
-                </Button>
-              </Row>
+      <Modal visible={showSuspendDialog} onClose={() => setShowSuspendDialog(false)}>
+        <ModalContent>
+          <ModalHeader
+            title="Suspend Application"
+            description={`Are you sure you want to suspend ${app.display_name}? This will revoke all active tokens and prevent new authorizations.`}
+            onClose={() => setShowSuspendDialog(false)}
+          />
+          <Stack gap={16}>
+              <ModalActions
+                primaryAction={{
+                  label: 'Suspend Application',
+                  onPress: handleSuspend,
+                  disabled: suspendApp.isPending,
+                  loading: suspendApp.isPending,
+                  color: 'error',
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setShowSuspendDialog(false),
+                  variant: 'outline',
+                }}
+              />
             </Stack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+        </ModalContent>
+      </Modal>
     </Stack>
   )
 }

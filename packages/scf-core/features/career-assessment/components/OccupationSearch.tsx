@@ -1,6 +1,7 @@
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { useSearchOccupations } from '@scf/core/utils/onet-sdk-hooks'
+import type { Occupation as SDKOccupation } from '@scaffald/sdk'
 import { useEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
 import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -12,9 +13,10 @@ interface OccupationSearchProps {
   disabled?: boolean
 }
 
-interface Occupation {
-  onetsoc_code: string
-  title: string
+/** Normalize API occupation to { onetCode, title } for display */
+function toDisplayOcc(occ: SDKOccupation): { onetCode: string; title: string } {
+  const code = (occ as { onet_code?: string }).onet_code ?? (occ as { onetsoc_code?: string }).onetsoc_code ?? ''
+  return { onetCode: code, title: occ.title }
 }
 
 /**
@@ -49,10 +51,7 @@ export function OccupationSearch({
     isLoading,
     error: queryError,
   } = useSearchOccupations(
-    {
-      query: debouncedSearch,
-      limit: 10,
-    },
+    { query: debouncedSearch, limit: 10 } as { query: string; limit?: number },
     {
       enabled: debouncedSearch.length >= 2,
     }
@@ -71,13 +70,14 @@ export function OccupationSearch({
       lastTrackedSearchRef.current = debouncedSearch
 
       try {
+        const list = (data as { occupations?: SDKOccupation[] }).occupations ?? []
         trackEventMutation.mutate({
           eventType: 'occupation.searched',
           targetType: undefined,
           targetId: undefined,
           metadata: {
             query: debouncedSearch.trim(),
-            results_count: data.occupations.length,
+            results_count: list.length,
           },
         })
       } catch (error) {
@@ -85,13 +85,13 @@ export function OccupationSearch({
         console.warn('Failed to track occupation search:', error)
       }
     }
-  }, [debouncedSearch, data?.occupations, isLoading, trackEventMutation.mutate, trackEventMutation])
+  }, [debouncedSearch, data, isLoading, trackEventMutation.mutate, trackEventMutation])
 
   // Get selected occupation title
   useEffect(() => {
-    if (value && !selectedTitle) {
-      // Try to find the title from current search results
-      const occupation = data?.occupations?.find((occ: Occupation) => occ.onetsoc_code === value)
+    if (value && !selectedTitle && data) {
+      const list = (data as { occupations?: SDKOccupation[] }).occupations ?? (data as { data?: SDKOccupation[] }).data ?? []
+      const occupation = list.find((occ: SDKOccupation) => (occ as { onet_code?: string }).onet_code === value || (occ as { onetsoc_code?: string }).onetsoc_code === value)
       if (occupation) {
         setSelectedTitle(occupation.title)
         setSearchTerm(occupation.title)
@@ -99,11 +99,12 @@ export function OccupationSearch({
     }
   }, [value, data, selectedTitle])
 
-  const handleSelect = (occupation: Occupation) => {
-    setSearchTerm(occupation.title)
-    setSelectedTitle(occupation.title)
+  const handleSelect = (occupation: SDKOccupation) => {
+    const { onetCode, title } = toDisplayOcc(occupation)
+    setSearchTerm(title)
+    setSelectedTitle(title)
     setShowResults(false)
-    onChange(occupation.onetsoc_code, occupation.title)
+    onChange(onetCode, title)
   }
 
   const handleInputChange = (text: string) => {
@@ -126,7 +127,7 @@ export function OccupationSearch({
     setTimeout(() => setShowResults(false), 200)
   }
 
-  const occupations = data?.occupations || []
+  const occupations = (data as { occupations?: SDKOccupation[] } | undefined)?.occupations ?? (data as { data?: SDKOccupation[] } | undefined)?.data ?? []
   const showDropdown =
     showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
 
@@ -167,16 +168,19 @@ export function OccupationSearch({
             shadowRadius: 4,
           }}
         >
-          {occupations.map((occupation: Occupation) => (
-            <Pressable key={occupation.onetsoc_code} onPress={() => handleSelect(occupation)}>
-              <Row padding="sm" gap={8} style={{ cursor: 'pointer' }}>
-              <Stack style={{ flex: 1 }} gap={4}>
-                <Text>{occupation.title}</Text>
-                <Text color="$gray11">{occupation.onetsoc_code}</Text>
-              </Stack>
-            </Row>
-            </Pressable>
-          ))}
+          {occupations.map((occupation: SDKOccupation) => {
+            const { onetCode, title } = toDisplayOcc(occupation)
+            return (
+              <Pressable key={onetCode} onPress={() => handleSelect(occupation)}>
+                <Row padding="sm" gap={8} style={{ cursor: 'pointer' }}>
+                  <Stack style={{ flex: 1 }} gap={4}>
+                    <Text>{title}</Text>
+                    <Text color="$gray11">{onetCode}</Text>
+                  </Stack>
+                </Row>
+              </Pressable>
+            )
+          })}
         </Stack>
       )}
 

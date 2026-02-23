@@ -9,13 +9,13 @@ import {
   Button,
   Card,
   Checkbox,
-  Image,
   Paragraph,
   Separator,
   Text,
   Row,
   Stack,
 } from '@scaffald/ui'
+import { Image } from 'react-native'
 import { useState } from 'react'
 
 interface ConsentScreenProps {
@@ -100,20 +100,18 @@ export function ConsentScreen({
 
   return (
     <Stack flex={1} padding="md" maxWidth={600} alignSelf="center" gap={16}>
-      <Card padding="md" gap={16}>
+      <Card padding="md">
+        <Stack gap={16}>
         <Stack gap={12}>
           <Row gap={12} align="center">
             {app.logo_url && (
               <Image
                 source={{ uri: app.logo_url }}
-                width={64}
-                height={64}
-                borderRadius={8}
-                backgroundColor="$color3"
+                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#f2f4f7' }}
               />
             )}
             <Stack flex={1} gap={4}>
-              <Text size={24}>{app.name} wants to access your Scaffald account</Text>
+              <Text size="2xl">{app.name} wants to access your Scaffald account</Text>
               {app.description && (
                 <Paragraph size="sm" color="$gray11">
                   {app.description}
@@ -130,7 +128,6 @@ export function ConsentScreen({
             </Paragraph>
           )}
         </Stack>
-
         <Separator />
 
         <Stack gap={8}>
@@ -168,7 +165,7 @@ export function ConsentScreen({
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
           <Stack gap={4}>
-            <Text size="sm" color="$gray11" textAlign="center">
+            <Text size="sm" color="$gray11" style={{ textAlign: 'center' }}>
               <a
                 href={app.privacy_policy_url}
                 target="_blank"
@@ -185,6 +182,7 @@ export function ConsentScreen({
             </Text>
           </Stack>
         )}
+        </Stack>
       </Card>
     </Stack>
   )

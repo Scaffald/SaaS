@@ -38,7 +38,7 @@ export const CandidateProfileTab = ({
     <Stack gap={16}>
       {/* Contact Info */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Contact Information</Text>
+        <Text style={{ marginBottom: 12 }}>Contact Information</Text>
         {isContactLocked ? (
           <Stack gap={8}>
             <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Contact details locked</Text>
@@ -47,15 +47,15 @@ export const CandidateProfileTab = ({
         ) : (
           <Stack gap={8}>
             <Row justify="space-between">
-              <Text opacity={0.7}>Email</Text>
+              <Text style={{ opacity: 0.7 }}>Email</Text>
               <Text>{resolvedEmail}</Text>
             </Row>
             <Row justify="space-between">
-              <Text opacity={0.7}>Phone</Text>
+              <Text style={{ opacity: 0.7 }}>Phone</Text>
               <Text>{resolvedPhone}</Text>
             </Row>
             <Row justify="space-between">
-              <Text opacity={0.7}>Location</Text>
+              <Text style={{ opacity: 0.7 }}>Location</Text>
               <Text>{resolvedLocation}</Text>
             </Row>
           </Stack>
@@ -64,7 +64,7 @@ export const CandidateProfileTab = ({
 
       {/* Skills */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Skills</Text>
+        <Text style={{ marginBottom: 12 }}>Skills</Text>
         <Stack gap={12}>
           {candidate.skills.map((skill, index) => (
             <Row key={`skill-${skill.name}-${index}`} justify="space-between" align="center">
@@ -94,8 +94,8 @@ export const CandidateProfileTab = ({
                           : skill.proficiency === 'intermediate'
                             ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
                             : colors.text[theme].tertiary,
+                    textTransform: 'capitalize',
                   }}
-                  textTransform="capitalize"
                 >
                   {skill.proficiency}
                 </Text>
@@ -107,15 +107,15 @@ export const CandidateProfileTab = ({
 
       {/* Certifications */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Certifications</Text>
+        <Text style={{ marginBottom: 12 }}>Certifications</Text>
         <Stack gap={12}>
           {candidate.certifications.map((cert, index) => (
             <Stack key={`cert-${cert.name}-${index}`} gap={4}>
               <Text>{cert.name}</Text>
               <Row gap={8}>
-                {cert.state && <Text opacity={0.7}>State: {cert.state}</Text>}
+                {cert.state && <Text style={{ opacity: 0.7 }}>State: {cert.state}</Text>}
                 {cert.issueDate && (
-                  <Text opacity={0.7}>Issued: {new Date(cert.issueDate).toLocaleDateString()}</Text>
+                  <Text style={{ opacity: 0.7 }}>Issued: {new Date(cert.issueDate).toLocaleDateString()}</Text>
                 )}
               </Row>
             </Stack>
@@ -125,19 +125,18 @@ export const CandidateProfileTab = ({
 
       {/* Experience */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Work Experience</Text>
+        <Text style={{ marginBottom: 12 }}>Work Experience</Text>
         <Stack gap={16}>
           {candidate.experience.map((exp, index) => (
             <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap={8}>
               <Text>{exp.title}</Text>
-              <Text opacity={0.8}>{exp.company}</Text>
-              <Text opacity={0.6}>{exp.duration}</Text>
-              <Text marginTop={4}>{exp.description}</Text>
+              <Text style={{ opacity: 0.8 }}>{exp.company}</Text>
+              <Text style={{ opacity: 0.6 }}>{exp.duration}</Text>
+              <Text style={{ marginTop: 4 }}>{exp.description}</Text>
               {index < candidate.experience.length - 1 && (
                 <Stack
                   height={1}
-                  style={{ backgroundColor: colors.bg[theme].inactive }}
-                  marginTop={8}
+                  style={{ backgroundColor: colors.bg[theme].muted, marginTop: 8 }}
                 />
               )}
             </Stack>

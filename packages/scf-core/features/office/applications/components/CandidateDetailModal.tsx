@@ -195,18 +195,15 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
     >
       {/* Candidate Header */}
       <Row gap={12} align="center">
-        <Avatar size={24}>
-          <Avatar.Image src={application.candidate.photo} />
-          <Avatar.Fallback style={{ backgroundColor: colors.bg[theme].primary }}>
-            <Text color="white">{application.candidate.name.charAt(0)}</Text>
-          </Avatar.Fallback>
-        </Avatar>
+        <Avatar
+          size={24}
+          src={application.candidate.photo}
+          initials={application.candidate.name.charAt(0)}
+        />
 
         <Stack flex={1}>
-          <Text opacity={0.7}>{application.candidate.title}</Text>
-          <Text opacity={0.6} marginTop={4}>
-            {application.candidate.location}
-          </Text>
+          <Text style={{ opacity: 0.7 }}>{application.candidate.title}</Text>
+          <Text style={{ opacity: 0.6, marginTop: 4 }}>{application.candidate.location}</Text>
         </Stack>
       </Row>
 
@@ -219,24 +216,24 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         align="center"
       >
         <Text color={scoreColor}>{application.score}</Text>
-        <Text opacity={0.8}>Application Score</Text>
+        <Text style={{ opacity: 0.8 }}>Application Score</Text>
       </Stack>
 
       {/* Quick Actions */}
       <Row gap={8}>
-        <Button theme="success" flex={1} size="md">
+        <Button color="success" style={{ flex: 1 }} size="md">
           Advance to Interview
         </Button>
-        <Button theme="error" flex={1} size="md">
+        <Button color="error" style={{ flex: 1 }} size="md">
           Reject
         </Button>
       </Row>
-      <Button flex={1} size="md">
+      <Button style={{ flex: 1 }} size="md">
         Send Message
       </Button>
       {teamId && currentUser?.id ? (
         <Button
-          flex={1}
+          style={{ flex: 1 }}
           size="md"
           variant="outline"
           onPress={() =>
@@ -253,7 +250,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       ) : null}
       {teamId ? (
         <Stack gap={4}>
-          <Text opacity={0.6}>Current assignee</Text>
+          <Text style={{ opacity: 0.6 }}>Current assignee</Text>
           <Text>
             {application.team?.assignedUserId
               ? (mentionOptions.find((option) => option.id === application.team?.assignedUserId)
@@ -266,7 +263,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       {/* Application Meta */}
       <Row gap={16} wrap>
         <Stack flex={1} width={150}>
-          <Text opacity={0.6}>Applied</Text>
+          <Text style={{ opacity: 0.6 }}>Applied</Text>
           <Text>
             {new Date(application.appliedAt).toLocaleDateString('en-US', {
               month: 'long',
@@ -276,11 +273,11 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Text>
         </Stack>
         <Stack flex={1} width={150}>
-          <Text opacity={0.6}>Job</Text>
+          <Text style={{ opacity: 0.6 }}>Job</Text>
           <Text>{application.job.title}</Text>
         </Stack>
         <Stack flex={1} width={150}>
-          <Text opacity={0.6}>Experience</Text>
+          <Text style={{ opacity: 0.6 }}>Experience</Text>
           <Text>{application.candidate.yearsExperience} years</Text>
         </Stack>
       </Row>
@@ -297,19 +294,19 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           onValueChange={(value) => setActiveTab(value as typeof activeTab)}
         >
           <Tabs.Item value="profile">
-            <Tabs.Trigger flex={1}>Profile</Tabs.Trigger>
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Profile</Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="application">
-            <Tabs.Trigger flex={1}>Application</Tabs.Trigger>
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Application</Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="notes">
-            <Tabs.Trigger flex={1}>Notes ({application.notes.length})</Tabs.Trigger>
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Notes ({application.notes.length})</Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="messages">
-            <Tabs.Trigger flex={1}>Messages</Tabs.Trigger>
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Messages</Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="inquiry">
-            <Tabs.Trigger flex={1}>Inquiry</Tabs.Trigger>
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Inquiry</Tabs.Trigger>
           </Tabs.Item>
         </Tabs>
       </Stack>
