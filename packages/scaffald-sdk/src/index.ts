@@ -313,6 +313,12 @@ export type {
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export type {
+  RequestDeletionResponse,
+  RequestWorkerDeletionParams,
+  RequestOrganizationDeletionParams,
+} from './resources/account-deletion.js'
+
+export type {
   ViolationReport,
   ListViolationReportsParams,
   ListViolationReportsResponse,

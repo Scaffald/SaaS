@@ -43,6 +43,7 @@ import { News } from './resources/news.js'
 import { DocumentsStorage } from './resources/documents-storage.js'
 import { LegalAgreements } from './resources/legal-agreements.js'
 import { NotificationsAdmin } from './resources/notifications-admin.js'
+import { AccountDeletion } from './resources/account-deletion.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -90,6 +91,7 @@ export class Scaffald {
   public readonly documentsStorage: DocumentsStorage
   public readonly legalAgreements: LegalAgreements
   public readonly notificationsAdmin: NotificationsAdmin
+  public readonly accountDeletion: AccountDeletion
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -145,6 +147,7 @@ export class Scaffald {
     this.documentsStorage = new DocumentsStorage(this.http)
     this.legalAgreements = new LegalAgreements(this.http)
     this.notificationsAdmin = new NotificationsAdmin(this.http)
+    this.accountDeletion = new AccountDeletion(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {
