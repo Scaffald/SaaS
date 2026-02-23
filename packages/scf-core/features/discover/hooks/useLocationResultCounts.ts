@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useLocationCounts } from '@scf/core/utils/map-sdk-hooks'
 import type { ViewportBounds } from '@scaffald/ui'
 
 /**
@@ -45,22 +45,11 @@ export function useLocationResultCounts({
   // Calculate bounds from coordinates if provided
   const bounds = coordinates ? calculateBoundsFromLocation(coordinates.lat, coordinates.lng) : null
 
-  // Use tRPC query to fetch counts
-  const query = api.map.getLocationCounts.useQuery(
-    {
-      city,
-      state,
-      bounds: bounds || {
-        north: 0,
-        south: 0,
-        east: 0,
-        west: 0,
-      },
-    },
-    {
-      enabled: enabled && !!bounds,
-      staleTime: 5 * 60 * 1000, // 5 minutes - counts don't change frequently
-    }
+  const query = useLocationCounts(
+    bounds
+      ? { city, state, north: bounds.north, south: bounds.south, east: bounds.east, west: bounds.west }
+      : null,
+    { enabled: enabled && !!bounds }
   )
 
   return {

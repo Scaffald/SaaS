@@ -322,6 +322,13 @@ export type {
 } from './resources/account-deletion.js'
 
 export type {
+  LocationCounts,
+  NearestResult,
+  GetLocationCountsParams,
+  FindNearestResultsParams,
+} from './resources/map.js'
+
+export type {
   ViolationReport,
   ListViolationReportsParams,
   ListViolationReportsResponse,
