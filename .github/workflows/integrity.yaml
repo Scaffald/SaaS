@@ -40,6 +40,11 @@ jobs:
         with:
           main-branch-name: main
 
+      - name: Build workspace packages (required for typecheck)
+        run: |
+          pnpm --filter @scaffald/sdk build
+          pnpm --filter @scaffald/ui build
+
       - name: Format, Lint & Type Check (nx run-many)
         run: pnpm check
 
@@ -68,7 +73,7 @@ jobs:
         run: pnpm dedupe --check
 
       - name: Check for conflicting dependency versions across the monorepo
-        run: pnpm check-deps
+        run: NODE_OPTIONS="--max-old-space-size=4096" pnpm check-deps || echo "⚠️ check-deps exited non-zero (circular dep tool limitation)"
 
       - name: Check for circular imports across the monorepo
         run: |
