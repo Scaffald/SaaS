@@ -32,28 +32,30 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   const { data: messagesData, isLoading, error } = useApplicationMessages(applicationId)
 
   // Send message mutation
-  const sendMessageMutation = useSendApplicationMessageMutation({
-    onSuccess: () => {
-      setNewMessage('')
-      // Invalidate and refetch messages
-      queryClient.invalidateQueries({ queryKey: ['application', applicationId, 'messages'] })
-    },
-    onError: (error) => {
-      toast.show({
-        title: 'Error',
-        message: error.message || 'Failed to send message',
-        variant: 'error',
-      })
-    },
-  })
+  const sendMessageMutation = useSendApplicationMessageMutation()
 
   const handleSend = () => {
     if (!newMessage.trim()) return
 
-    sendMessageMutation.mutate({
-      applicationId,
-      body: newMessage.trim(),
-    })
+    sendMessageMutation.mutate(
+      {
+        applicationId,
+        body: newMessage.trim(),
+      },
+      {
+        onSuccess: () => {
+          setNewMessage('')
+          queryClient.invalidateQueries({ queryKey: ['application', applicationId, 'messages'] })
+        },
+        onError: (err: Error) => {
+          toast.show({
+            title: 'Error',
+            message: err.message || 'Failed to send message',
+            variant: 'error',
+          })
+        },
+      }
+    )
   }
 
   // Transform API response to UI format
@@ -75,7 +77,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
         <Spinner size="lg" />
-        <Text opacity={0.7}>Loading messages...</Text>
+        <Text style={{ opacity: 0.7 }}>Loading messages...</Text>
       </Stack>
     )
   }
@@ -85,7 +87,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       <Stack gap={12} padding="md">
         <Card padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}>
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading messages</Text>
-          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} marginTop={8}>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginTop: 8 }}>
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
@@ -99,7 +101,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
       <Stack gap={12}>
         {transformedMessages.length === 0 ? (
           <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-            <Text opacity={0.7} textAlign="center">
+            <Text style={{ opacity: 0.7, textAlign: 'center' }}>
               No messages yet. Start the conversation below!
             </Text>
           </Card>
@@ -111,13 +113,13 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
               style={{
                 backgroundColor:
                   message.sender === 'recruiter' ? theme === "light" ? colors.blue[50] : colors.blue[900] : colors.bg[theme].subtle,
+                alignSelf: message.sender === 'recruiter' ? 'flex-end' : 'flex-start',
+                maxWidth: '80%',
               }}
-              alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
-              maxWidth="80%"
             >
-              <Row justify="space-between" align="center" marginBottom={8} gap={12}>
+              <Row justify="space-between" align="center" gap={12} style={{ marginBottom: 8 }}>
                 <Text>{message.senderName}</Text>
-                <Text opacity={0.7}>
+                <Text style={{ opacity: 0.7 }}>
                   {new Date(message.sentAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -130,7 +132,7 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
               <Text>{message.content}</Text>
 
               {!message.isRead && message.sender === 'candidate' && (
-                <Stack marginTop={8}>
+                <Stack style={{ marginTop: 8 }}>
                   <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Unread</Text>
                 </Stack>
               )}
@@ -141,19 +143,19 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
 
       {/* Send Message */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-        <Text marginBottom={12}>Send Message</Text>
+        <Text style={{ marginBottom: 12 }}>Send Message</Text>
 
         <TextArea
           placeholder="Type your message..."
           value={newMessage}
           onChangeText={setNewMessage}
-          marginBottom={12}
+          style={{ marginBottom: 12 }}
         />
 
         <Button
+          color="primary"
           onPress={handleSend}
           disabled={!newMessage.trim() || sendMessageMutation.isPending}
-          theme="info"
           iconStart={Send}
         >
           {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}

@@ -3,13 +3,15 @@
  * Admin OAuth app list
  */
 
-import { Button, Card, SizableText, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
 import { useState } from 'react'
+import { useRouter } from 'expo-router'
 import { useAdminOAuthApps } from '@scf/core/utils/oauth-sdk-hooks'
 
 type AppStatus = 'all' | 'pending' | 'active' | 'trusted' | 'suspended' | 'revoked'
 
 export function OAuthAppList() {
+  const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<AppStatus>('all')
   const [searchQuery] = useState('')
 
@@ -21,10 +23,10 @@ export function OAuthAppList() {
   return (
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
-        <SizableText size={24}>OAuth Applications</SizableText>
-        <SizableText size="sm" color="$gray11">
+        <Text size="2xl">OAuth Applications</Text>
+        <Text size="sm" color="$gray11">
           Manage and approve OAuth applications
-        </SizableText>
+        </Text>
       </Stack>
 
       <Row gap={8}>
@@ -32,7 +34,7 @@ export function OAuthAppList() {
           (status) => (
             <Button
               key={status}
-              variant={statusFilter === status ? 'default' : 'outline'}
+              variant={statusFilter === status ? 'filled' : 'outline'}
               onPress={() => setStatusFilter(status)}
               size="sm"
             >
@@ -47,19 +49,19 @@ export function OAuthAppList() {
           <Card key={app.id} padding="sm" data-testid={`oauth-app-${app.id}`}>
             <Row gap={12} align="center">
               <Stack flex={1} gap={4}>
-                <SizableText size="md" data-testid="oauth-app-name">
+                <Text size="md" data-testid="oauth-app-name">
                   {app.display_name}
-                </SizableText>
-                <SizableText size="sm" color="$gray11" data-testid="oauth-app-description">
+                </Text>
+                <Text size="sm" color="$gray11" data-testid="oauth-app-description">
                   {app.description}
-                </SizableText>
-                <SizableText size="sm" color="$gray11" data-testid="oauth-app-metadata">
+                </Text>
+                <Text size="sm" color="$gray11" data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
-                </SizableText>
+                </Text>
               </Stack>
               <Button
-                href={`/office/oauth-apps/${app.id}`}
                 size="sm"
+                onPress={() => router.push(`/office/oauth-apps/${app.id}`)}
                 data-testid="oauth-app-view-button"
               >
                 View

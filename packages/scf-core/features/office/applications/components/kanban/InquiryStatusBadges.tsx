@@ -61,7 +61,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           align="center"
           gap={4}
         >
-          <MessageSquare size="sm" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+          <MessageSquare size={16} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
           <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{unreadComments}</Text>
         </Row>
       )}
@@ -76,8 +76,8 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           align="center"
           gap={4}
         >
-          <Check size="sm" color="white" />
-          <Text color="white">Check completed</Text>
+          <Check size={16} color="white" />
+          <Text style={{ color: 'white' }}>Check completed</Text>
         </Row>
       )}
 

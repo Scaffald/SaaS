@@ -58,11 +58,11 @@ describeIfHasKey("Office Role Access", () => {
         expect(roleAssignments?.length).toBeGreaterThan(0);
 
         const hasOfficeRole = roleAssignments?.some(
-          (
-            assignment: { role: { name: string; scope: string } | null } | null,
-          ) =>
-            assignment?.role?.name === "office" &&
-            assignment?.role?.scope === "platform",
+          (assignment: { role: { name: string; scope: string }[] | null } | null) => {
+            const role = assignment?.role
+            const r = Array.isArray(role) ? role[0] : role
+            return r?.name === 'office' && r?.scope === 'platform'
+          },
         );
 
         expect(hasOfficeRole).toBe(true);
