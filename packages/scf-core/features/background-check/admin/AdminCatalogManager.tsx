@@ -444,11 +444,11 @@ export function AdminCatalogManager() {
       <Stack gap={16}>
         <Card
           padding="md"
-          gap={16}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius={20}
+          radius="xl"
+          style={{ gap: 16 }}
         >
           <Row justify="space-between" align="center" wrap gap={12}>
             <Stack gap={4}>
@@ -504,11 +504,11 @@ export function AdminCatalogManager() {
                 <Card
                   key={pkg.id}
                   padding="md"
-                  gap={12}
                   backgroundColor="$color1"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  borderRadius={16}
+                  radius="lg"
+                  style={{ gap: 12 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
                     <Stack gap={4} flex={1}>
@@ -596,11 +596,11 @@ export function AdminCatalogManager() {
 
         <Card
           padding="md"
-          gap={16}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius={20}
+          radius="xl"
+          style={{ gap: 16 }}
         >
           <Row justify="space-between" align="center" wrap gap={12}>
             <Stack gap={4}>
@@ -637,11 +637,11 @@ export function AdminCatalogManager() {
                 <Card
                   key={type.id}
                   padding="md"
-                  gap={12}
                   backgroundColor="$color1"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  borderRadius={16}
+                  radius="lg"
+                  style={{ gap: 12 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
                     <Stack gap={4} flex={1}>

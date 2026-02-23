@@ -345,8 +345,7 @@ export function AdminBackgroundChecksPage() {
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
-            flexGrow={1}
-            style={{ flexBasis: 160 }}
+            style={{ flexGrow: 1, flexBasis: 160 }}
           >
             <Text color="$gray11">Active reviews</Text>
             <Text color="$gray11">{summaryStats.underReview}</Text>
@@ -356,8 +355,7 @@ export function AdminBackgroundChecksPage() {
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
-            flexGrow={1}
-            style={{ flexBasis: 160 }}
+            style={{ flexGrow: 1, flexBasis: 160 }}
           >
             <Text color="$gray11">Pending disputes</Text>
             <Text color="$gray11">{summaryStats.pendingDisputes}</Text>
@@ -367,8 +365,7 @@ export function AdminBackgroundChecksPage() {
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
-            flexGrow={1}
-            style={{ flexBasis: 160 }}
+            style={{ flexGrow: 1, flexBasis: 160 }}
           >
             <Text color="$gray11">Total checks in view</Text>
             <Text color="$gray11">{summaryStats.total}</Text>
@@ -378,61 +375,71 @@ export function AdminBackgroundChecksPage() {
         <Row
           gap={12}
           paddingHorizontal={8}
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
           backgroundColor="$background"
+          style={{ borderBottomWidth: 1, borderBottomColor: '#e4e7ec' }}
         >
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as AdminTab)}
-            activationMode="manual"
+            type="line"
+            color="primary"
           >
             <Tabs.Item value="checks">
               <Tabs.Trigger
-                borderBottomWidth={activeTab === 'checks' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal={12}
-                paddingVertical={8}
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'checks' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Checks
               </Tabs.Trigger>
             </Tabs.Item>
             <Tabs.Item value="disputes">
               <Tabs.Trigger
-                borderBottomWidth={activeTab === 'disputes' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal={12}
-                paddingVertical={8}
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'disputes' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Disputes
               </Tabs.Trigger>
             </Tabs.Item>
             <Tabs.Item value="metrics">
               <Tabs.Trigger
-                borderBottomWidth={activeTab === 'metrics' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal={12}
-                paddingVertical={8}
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'metrics' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Metrics
               </Tabs.Trigger>
             </Tabs.Item>
             <Tabs.Item value="catalog">
               <Tabs.Trigger
-                borderBottomWidth={activeTab === 'catalog' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal={12}
-                paddingVertical={8}
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'catalog' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Catalog
               </Tabs.Trigger>
             </Tabs.Item>
             <Tabs.Item value="audit">
               <Tabs.Trigger
-                borderBottomWidth={activeTab === 'audit' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal={12}
-                paddingVertical={8}
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'audit' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Audit Log
               </Tabs.Trigger>
