@@ -89,14 +89,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       return { previous } as FollowMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: FollowMutationContext
-    ) => {
-      if (context?.previous) {
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as FollowMutationContext | undefined
+      if (ctx?.previous) {
         const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
-        queryClient.setQueryData(queryKey, context.previous)
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
       toast.show({
         title: 'Unable to follow',
@@ -132,14 +129,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       return { previous } as FollowMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: FollowMutationContext
-    ) => {
-      if (context?.previous) {
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as FollowMutationContext | undefined
+      if (ctx?.previous) {
         const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
-        queryClient.setQueryData(queryKey, context.previous)
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
       toast.show({
         title: 'Unable to unfollow',
@@ -190,14 +184,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       return { previous } as EmploymentMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: EmploymentMutationContext
-    ) => {
-      if (context?.previous) {
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as EmploymentMutationContext | undefined
+      if (ctx?.previous) {
         const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
-        queryClient.setQueryData(queryKey, context.previous)
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
       toast.show({
         title: 'Unable to link employment',
@@ -252,14 +243,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       return { previous } as EmploymentMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: EmploymentMutationContext
-    ) => {
-      if (context?.previous) {
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as EmploymentMutationContext | undefined
+      if (ctx?.previous) {
         const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
-        queryClient.setQueryData(queryKey, context.previous)
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
       toast.show({
         title: 'Unable to remove link',
@@ -387,10 +375,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <BellPlus size="md" color="$gray11" />
-          <Text color="$gray11">What happens next?</Text>
+          <BellPlus size={20} color="#737373" />
+          <Text color="secondary">What happens next?</Text>
         </Row>
-        <Text color="$gray11">
+        <Text color="secondary">
           Following keeps you updated as teams post new opportunities or updates. Linking your
           employment adds the organization to your profile immediately so recruiters can see your
           affiliation right away.

@@ -25,7 +25,7 @@ export function DiscoverEmployersRight({
   const hasActiveFilters = searchQuery.length > 0 || selectedIndustries.length > 0
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
         <SearchFilterWidget
           title="Search & Filter"

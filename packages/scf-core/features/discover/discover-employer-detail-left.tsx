@@ -27,7 +27,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={12}>
-          <Text color="$gray11">Employer not specified</Text>
+          <Text color="secondary">Employer not specified</Text>
           <Button
             onPress={() => {
               // Try to go back, fallback to employers list if no history
@@ -49,8 +49,8 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={12}>
-          <Spinner size="lg" color="$blue10" />
-          <Text color="$gray11">Loading employer details...</Text>
+          <Spinner size="lg" color="primary" />
+          <Text color="secondary">Loading employer details...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -112,12 +112,12 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       <Separator />
 
       {/* Industry */}
-      {employer.industries && (
+      {employer.industry && (
         <Stack gap={8}>
           <Text>Industry</Text>
           <Row align="center" gap={8}>
-            <Users size="md" color="$gray11" />
-            <Text color="$gray11">{employer.industries.name}</Text>
+            <Users size={20} color="#737373" />
+            <Text color="secondary">{employer.industry}</Text>
           </Row>
         </Stack>
       )}
@@ -135,15 +135,13 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       )}
 
       {/* Location */}
-      {employer.address && (
+      {employer.location && (
         <Stack gap={8}>
           <Row align="center" gap={8}>
-            <MapPin size={18} color="$gray11" />
+            <MapPin size={18} color="#737373" />
             <Text>Location</Text>
           </Row>
-          <Text color="$gray11">
-            {employer.address.street || employer.address.zipCode || 'Not specified'}
-          </Text>
+          <Text color="secondary">{employer.location}</Text>
         </Stack>
       )}
 

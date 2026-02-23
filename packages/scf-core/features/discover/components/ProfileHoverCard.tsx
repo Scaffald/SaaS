@@ -5,14 +5,16 @@ import {
 } from '@scf/core/utils/organizations-sdk-hooks'
 import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
+import type { ComponentType } from 'react'
 import type { ViewProps } from 'react-native'
 import { View, Image } from 'react-native'
+import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
 
 type ViewWithMouseProps = ViewProps & {
   onMouseEnter?: () => void
   onMouseLeave?: () => void
 }
-import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
+const ViewWithMouse = View as ComponentType<ViewWithMouseProps>
 import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface ProfileHoverCardProps {

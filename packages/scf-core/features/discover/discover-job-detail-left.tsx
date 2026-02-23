@@ -43,8 +43,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     job && !isExternal && 'organization' in job
       ? getApplicationFlow({
           id: job.id,
-          title: job.title,
-          organization: job.organization,
+          title: job.title ?? 'Job',
+          organization: job.organization
+            ? { name: job.organization.name ?? 'Unknown Organization' }
+            : null,
           custom_application_questions:
             'custom_application_questions' in job
               ? (job.custom_application_questions as
@@ -132,7 +134,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   if (!job) {
     return (
       <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={8}>
-        <Text color="$gray11">Job not found</Text>
+        <Text color="secondary">Job not found</Text>
       </Stack>
     )
   }
@@ -144,8 +146,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
       return (
         <Stack style={{ flex: 1 }} padding="md" gap={16}>
           <Stack gap={12}>
-            <Text color="$gray11">Apply to {job.title}</Text>
-            <Text color="$gray11" style={{ lineHeight: 20 }}>
+            <Text color="secondary">Apply to {job.title}</Text>
+            <Text color="secondary" style={{ lineHeight: 20 }}>
               This is a quick application. You'll answer a few screening questions and submit your
               application.
             </Text>
@@ -153,13 +155,13 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
           <Button
             size="lg"
-            theme="info"
+            color="primary"
             onPress={() => {
               setShowQuickApply(true)
               // Track application started for quick apply flow
               try {
                 trackEventMutation.mutate({
-                  eventType: 'application.started',
+                  eventType: 'application_start',
                   targetType: 'job',
                   targetId: job.id,
                   metadata: {
@@ -179,7 +181,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
           <Button
             size="md"
-            chromeless
+            variant="outline"
             onPress={() => {
               router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
             }}
@@ -190,15 +192,15 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           {showQuickApply && (
             <QuickApplyModal
               jobId={job.id}
-              jobTitle={job.title}
-              organizationName={job.organization?.name || 'Unknown Organization'}
+              jobTitle={job.title ?? 'Job'}
+              organizationName={job.organization?.name ?? 'Unknown Organization'}
               open={showQuickApply}
               onOpenChange={setShowQuickApply}
               onSuccess={(applicationId) => {
                 // Track application submitted for quick apply flow
                 try {
                   trackEventMutation.mutate({
-                    eventType: 'application.submitted',
+                    eventType: 'application_complete',
                     targetType: 'job',
                     targetId: job.id,
                     metadata: {
@@ -266,8 +268,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     return (
       <Stack style={{ flex: 1 }} padding="md" gap={16}>
         <Stack gap={12}>
-          <Text color="$gray11">Apply to this Position</Text>
-          <Text color="$gray11" style={{ lineHeight: 20 }}>
+          <Text color="secondary">Apply to this Position</Text>
+          <Text color="secondary" style={{ lineHeight: 20 }}>
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.
           </Text>
@@ -297,7 +299,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
         <Button
           size="md"
-          chromeless
+          variant="outline"
           onPress={() => {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
@@ -312,12 +314,12 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   if (isExternal) {
     return (
       <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={12}>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text color="secondary" style={{ textAlign: 'center' }}>
           Application link not available
         </Text>
         <Button
           size="md"
-          theme="info"
+          color="primary"
           onPress={() => {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
