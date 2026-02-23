@@ -34,6 +34,21 @@
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.mjs",
       "require": "./dist/tokens/index.js"
+    },
+    "./chart": {
+      "types": "./dist/chart.d.ts",
+      "import": "./dist/chart.mjs",
+      "require": "./dist/chart.js"
+    },
+    "./rich-text-editor": {
+      "types": "./dist/rich-text-editor.d.ts",
+      "import": "./dist/rich-text-editor.mjs",
+      "require": "./dist/rich-text-editor.js"
+    },
+    "./maps": {
+      "types": "./dist/maps.d.ts",
+      "import": "./dist/maps.mjs",
+      "require": "./dist/maps.js"
     }
   },
   "main": "./dist/index.js",
