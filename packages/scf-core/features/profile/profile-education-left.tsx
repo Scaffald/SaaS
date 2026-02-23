@@ -1,9 +1,10 @@
+import { api } from "@scf/core/utils/api";
 import {
   useEducation,
   useEducationLevel,
   useSaveEducationMutation,
-} from '@scf/core/utils/profile-education-sdk-hooks'
-import { useQueryClient } from '@tanstack/react-query'
+} from "@scf/core/utils/profile-education-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Checkbox,
@@ -12,17 +13,18 @@ import {
   Modal,
   ModalActions,
   ModalHeader,
-  MonthYearPicker,
   Popover,
   PopoverContent,
-} from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { UniversityAutocomplete } from '@scf/core/components/university'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronDown, Plus, X } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
+} from "@scaffald/ui";
+import { MonthYearPicker } from "./components/MonthYearPicker";
+import { colors } from "@scaffald/ui/tokens";
+import { UniversityAutocomplete } from "@scf/core/components/university";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown, Plus, X } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { View } from "react-native";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   H4,
   Input,
@@ -34,8 +36,8 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@scaffald/ui'
-import { useThemeContext } from '@scaffald/ui'
+} from "@scaffald/ui";
+import { useThemeContext } from "@scaffald/ui";
 import {
   createNewEducationEntry,
   DEGREE_TYPE_OPTIONS,
@@ -43,66 +45,69 @@ import {
   type EducationProfileFormData,
   educationProfileDefaults,
   educationProfileSchema,
-} from './config'
-import type { EducationEntry, EducationEntryFormValues } from './types/education'
-import { normalizeEducationEntry } from './utils/education-entry'
-import { invalidateProfileQueries } from './utils/profile-sync'
+} from "./config";
+import type {
+  EducationEntry,
+  EducationEntryFormValues,
+} from "./types/education";
+import { normalizeEducationEntry } from "./utils/education-entry";
+import { invalidateProfileQueries } from "./utils/profile-sync";
 import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
   startProfileSync,
   useAdaptiveProfileSync,
-} from './utils/profile-sync-store'
+} from "./utils/profile-sync-store";
 
 // API response types from tRPC router
-type EducationApiResponse = EducationEntry[]
-type EducationLevelApiResponse = { education_level: string | null }
+type EducationApiResponse = EducationEntry[];
+type EducationLevelApiResponse = { education_level: string | null };
 
 interface SaveEducationInput {
-  education_level?: string | null
-  education_entries?: EducationEntryFormValues[]
+  education_level?: string | null;
+  education_entries?: EducationEntryFormValues[];
 }
 
 interface SaveEducationContext {
-  previousEducation?: EducationApiResponse | undefined
-  previousLevel?: EducationLevelApiResponse | undefined
+  previousEducation?: EducationApiResponse | undefined;
+  previousLevel?: EducationLevelApiResponse | undefined;
 }
 
 interface SaveEducationOutput {
-  success: boolean
-  education_entries: EducationEntry[]
+  success: boolean;
+  education_entries: EducationEntry[];
 }
 
 // University type definition
 interface University {
-  id: string
-  name: string
-  country: string
-  alpha_two_code: string
-  slug: string
+  id: string;
+  name: string;
+  country: string;
+  alpha_two_code: string;
+  slug: string;
 }
 
 const ERROR_FIELD_LABELS: Record<string, string> = {
-  education_level: 'Highest Education Level',
-  institution_name: 'Institution Name',
-  university_id: 'Institution Selection',
-  is_verified: 'Verification Status',
-  degree_type: 'Degree Type',
-  custom_degree_type: 'Custom Degree Type',
-  field_of_study: 'Field of Study',
-  start_date: 'Start Date',
-  end_date: 'End Date',
-  expected_graduation_date: 'Expected Graduation Date',
-  is_current: 'Current Enrollment Status',
-  gpa: 'GPA',
-  description: 'Description',
-  location: 'Location',
-}
+  education_level: "Highest Education Level",
+  institution_name: "Institution Name",
+  university_id: "Institution Selection",
+  is_verified: "Verification Status",
+  degree_type: "Degree Type",
+  custom_degree_type: "Custom Degree Type",
+  field_of_study: "Field of Study",
+  start_date: "Start Date",
+  end_date: "End Date",
+  expected_graduation_date: "Expected Graduation Date",
+  is_current: "Current Enrollment Status",
+  gpa: "GPA",
+  description: "Description",
+  location: "Location",
+};
 
 interface ProfileEducationLeftProps {
-  editingEntryId?: string | null
-  onEditComplete?: () => void
+  editingEntryId?: string | null;
+  onEditComplete?: () => void;
 }
 
 /**
@@ -113,115 +118,153 @@ export function ProfileEducationLeft({
   editingEntryId,
   onEditComplete,
 }: ProfileEducationLeftProps = {}) {
-  const { theme } = useThemeContext()
-  const [isLoading, setIsLoading] = useState(false)
-  const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
-  const originalDataRef = useRef<EducationProfileFormData | null>(null)
-  const entryRefs = useRef<Record<string, HTMLElement | null>>({})
-  const toast = useToast()
-  const syncStatus = useAdaptiveProfileSync(300)
-  const isSyncing = syncStatus === 'syncing'
-  const queryClient = useQueryClient()
+  const { theme } = useThemeContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set());
+  const originalDataRef = useRef<EducationProfileFormData | null>(null);
+  const entryRefs = useRef<Record<string, HTMLElement | null>>({});
+  const toast = useToast();
+  const syncStatus = useAdaptiveProfileSync(300);
+  const isSyncing = syncStatus === "syncing";
+  const queryClient = useQueryClient();
 
   // Queries
-  const educationQuery = useEducation()
-  const educationLevelQuery = useEducationLevel()
-  const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
+  const educationQuery = useEducation();
+  const educationLevelQuery = useEducationLevel();
+  const educationEntries = (educationQuery.data ?? []) as EducationEntry[];
 
   // Mutations
   const saveEducationMutation = useSaveEducationMutation({
     async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
-      resetProfileSyncError()
-      startProfileSync()
+      resetProfileSyncError();
+      startProfileSync();
       await Promise.all([
-        queryClient.cancelQueries({ queryKey: ['profiles', 'education'] }),
-        queryClient.cancelQueries({ queryKey: ['profiles', 'education', 'level'] }),
-      ])
+        queryClient.cancelQueries({ queryKey: ["profiles", "education"] }),
+        queryClient.cancelQueries({
+          queryKey: ["profiles", "education", "level"],
+        }),
+      ]);
 
       const previousEducation = queryClient.getQueryData<EducationApiResponse>([
-        'profiles',
-        'education',
-      ])
-      const previousLevel = queryClient.getQueryData<EducationLevelApiResponse>([
-        'profiles',
-        'education',
-        'level',
-      ])
+        "profiles",
+        "education",
+      ]);
+      const previousLevel = queryClient.getQueryData<EducationLevelApiResponse>(
+        ["profiles", "education", "level"]
+      );
 
       // Type assertion needed because form data has required booleans but API allows null
       // Form data is compatible but has slightly different optionality
       queryClient.setQueryData(
-        ['profiles', 'education'],
+        ["profiles", "education"],
         (input.education_entries ?? []) as EducationApiResponse
-      )
-      queryClient.setQueryData(['profiles', 'education', 'level'], {
+      );
+      queryClient.setQueryData(["profiles", "education", "level"], {
         education_level: input.education_level ?? null,
-      })
+      });
 
       return {
-        previousEducation: previousEducation as EducationApiResponse | undefined,
+        previousEducation: previousEducation as
+          | EducationApiResponse
+          | undefined,
         previousLevel: previousLevel as EducationLevelApiResponse | undefined,
-      }
+      };
     },
-    onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
-      console.error('Error saving education:', error)
+    onError: (
+      error: unknown,
+      _input: SaveEducationInput,
+      context?: SaveEducationContext
+    ) => {
+      console.error("Error saving education:", error);
       if (context?.previousEducation) {
-        queryClient.setQueryData(['profiles', 'education'], context.previousEducation)
+        queryClient.setQueryData(
+          ["profiles", "education"],
+          context.previousEducation
+        );
       }
       if (context?.previousLevel) {
-        queryClient.setQueryData(['profiles', 'education', 'level'], context.previousLevel)
+        queryClient.setQueryData(
+          ["profiles", "education", "level"],
+          context.previousLevel
+        );
       }
-      failProfileSync()
+      failProfileSync();
       toast.show({
-        title: 'Save Failed',
+        title: "Save Failed",
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to save education entry. Please try again.',
-        variant: 'error',
-      })
+            : "Failed to save education entry. Please try again.",
+        variant: "error",
+      });
     },
     onSuccess: () => {
       toast.show({
-        title: 'Education Saved',
-        message: 'Your education history has been updated successfully!',
-        variant: 'success',
-      })
+        title: "Education Saved",
+        message: "Your education history has been updated successfully!",
+        variant: "success",
+      });
     },
     onSettled: (_data: SaveEducationOutput | undefined, error: unknown) => {
       if (!error) {
-        completeProfileSync()
+        completeProfileSync();
       }
-      void invalidateProfileQueries(queryClient)
+      void invalidateProfileQueries(queryClient);
     },
     // Type assertion needed due to tRPC mutation callback type inference limitations
-  } as never)
+  } as never);
 
   // University search state
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Track manual entry mode for each education entry (by index)
-  const [manualEntryMode, setManualEntryMode] = useState<Record<number, boolean>>({})
+  const [manualEntryMode, setManualEntryMode] = useState<
+    Record<number, boolean>
+  >({});
 
-  // University search query (only runs when query is valid)
-  // @ts-ignore - TODO: migrate to SDK
-  const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
-    {
-      query: searchQuery,
-      country: 'United States',
-      limit: 5,
-    },
-    {
-      enabled: searchQuery.length >= 3,
-      placeholderData: (previousData: unknown) => previousData,
+  // University search query (only runs when query is valid). TODO: migrate to SDK
+  const searchUniversitiesQuery = (
+    api as unknown as {
+      office: {
+        universities: {
+          searchUniversities: {
+            useQuery: (
+              input: { query: string; country: string; limit: number },
+              opts?: { enabled?: boolean; placeholderData?: (prev: unknown) => unknown }
+            ) => {
+              data?: { universities?: unknown[] };
+              error?: Error | null;
+              isLoading: boolean;
+              isFetching: boolean;
+              refetch: () => void;
+            }
+          }
+        }
+      }
     }
-  )
+  ).office.universities.searchUniversities.useQuery(
+      {
+        query: searchQuery,
+        country: "United States",
+        limit: 5,
+      },
+      {
+        enabled: searchQuery.length >= 3,
+        placeholderData: (previousData: unknown) => previousData,
+      }
+    ) as {
+      data?: { universities?: unknown[] };
+      error?: Error | null;
+      isLoading: boolean;
+      isFetching: boolean;
+      refetch: () => void;
+    };
 
   // Handle search input changes
   const handleUniversitySearch = useCallback((query: string) => {
-    setSearchQuery(query)
-  }, [])
+    setSearchQuery(query);
+  }, []);
 
   const {
     control,
@@ -233,82 +276,89 @@ export function ProfileEducationLeft({
   } = useForm<EducationProfileFormData>({
     resolver: zodResolver(educationProfileSchema),
     defaultValues: educationProfileDefaults,
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'education_entries',
-  })
+    name: "education_entries",
+  });
 
   const errorSummary = useMemo(() => {
-    const messages: string[] = []
+    const messages: string[] = [];
 
     const ensurePush = (message: string | undefined) => {
       if (message && !messages.includes(message)) {
-        messages.push(message)
+        messages.push(message);
       }
-    }
+    };
 
     const formatLabel = (key: string) => {
       if (ERROR_FIELD_LABELS[key]) {
-        return ERROR_FIELD_LABELS[key]
+        return ERROR_FIELD_LABELS[key];
       }
-      return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
-    }
+      return key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    };
 
     const traverse = (errorNode: unknown, prefix?: string) => {
       if (!errorNode) {
-        return
+        return;
       }
 
       if (Array.isArray(errorNode)) {
         for (const [idx, item] of errorNode.entries()) {
-          const nextPrefix = prefix ? `${prefix} • Item ${idx + 1}` : `Item ${idx + 1}`
-          traverse(item, nextPrefix)
+          const nextPrefix = prefix
+            ? `${prefix} • Item ${idx + 1}`
+            : `Item ${idx + 1}`;
+          traverse(item, nextPrefix);
         }
-        return
+        return;
       }
 
-      if (typeof errorNode === 'object') {
-        const maybeMessage = (errorNode as { message?: unknown }).message
-        if (typeof maybeMessage === 'string' && maybeMessage.length > 0) {
-          ensurePush(prefix ? `${prefix}: ${maybeMessage}` : maybeMessage)
-          return
+      if (typeof errorNode === "object") {
+        const maybeMessage = (errorNode as { message?: unknown }).message;
+        if (typeof maybeMessage === "string" && maybeMessage.length > 0) {
+          ensurePush(prefix ? `${prefix}: ${maybeMessage}` : maybeMessage);
+          return;
         }
 
-        for (const [key, value] of Object.entries(errorNode as Record<string, unknown>)) {
-          const label = formatLabel(key)
-          const nextPrefix = key === '_root' ? prefix : prefix ? `${prefix} • ${label}` : label
-          traverse(value, nextPrefix)
+        for (const [key, value] of Object.entries(
+          errorNode as Record<string, unknown>
+        )) {
+          const label = formatLabel(key);
+          const nextPrefix =
+            key === "_root" ? prefix : prefix ? `${prefix} • ${label}` : label;
+          traverse(value, nextPrefix);
         }
       }
-    }
+    };
 
     ensurePush(
       errors.education_level?.message
         ? `Highest Education Level: ${errors.education_level.message}`
         : undefined
-    )
+    );
 
     const educationEntryErrors = Array.isArray(errors.education_entries)
       ? errors.education_entries
-      : []
+      : [];
     for (let idx = 0; idx < educationEntryErrors.length; idx += 1) {
-      const entryErrors = educationEntryErrors[idx]
+      const entryErrors = educationEntryErrors[idx];
       if (!entryErrors) {
-        continue
+        continue;
       }
-      const entryPrefix = `Education ${idx + 1}`
-      traverse(entryErrors, entryPrefix)
+      const entryPrefix = `Education ${idx + 1}`;
+      traverse(entryErrors, entryPrefix);
     }
 
-    return messages.length > 1 ? messages : []
-  }, [errors])
+    return messages.length > 1 ? messages : [];
+  }, [errors]);
 
   const educationEntryFieldErrors = Array.isArray(errors.education_entries)
     ? errors.education_entries
-    : []
+    : [];
 
   // Load data when queries succeed
   useEffect(() => {
@@ -316,165 +366,171 @@ export function ProfileEducationLeft({
       const entries = educationEntries.map((edu, index) => {
         // Set manual entry mode if no university_id
         if (!edu.university_id) {
-          setManualEntryMode((prev) => ({ ...prev, [index]: true }))
+          setManualEntryMode((prev) => ({ ...prev, [index]: true }));
         }
 
-        return normalizeEducationEntry(edu)
-      })
+        return normalizeEducationEntry(edu);
+      });
 
       const formData = {
         education_level: educationLevelQuery.data.education_level || undefined,
         education_entries: entries,
-      }
+      };
       // Form data from API is compatible with form schema
-      reset(formData as EducationProfileFormData)
-      originalDataRef.current = formData
+      reset(formData as EducationProfileFormData);
+      originalDataRef.current = formData as EducationProfileFormData;
 
       // Clear hidden entries - we'll set them after fields update
-      setHiddenEntryIds(new Set())
+      setHiddenEntryIds(new Set());
     }
-  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries])
+  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries]);
 
   // Hide all existing entries after form data loads
   useEffect(() => {
     if (fields.length > 0 && educationQuery.data) {
-      const existingEntryFieldIds: string[] = []
+      const existingEntryFieldIds: string[] = [];
       fields.forEach((field, index) => {
-        const entryData = watch(`education_entries.${index}`)
+        const entryData = watch(`education_entries.${index}`);
         // Hide if it has an ID (existing entry) and is not being edited
         if (entryData?.id && entryData.id !== editingEntryId) {
-          existingEntryFieldIds.push(field.id)
+          existingEntryFieldIds.push(field.id);
         }
-      })
+      });
 
       if (existingEntryFieldIds.length > 0) {
         setHiddenEntryIds((prev) => {
-          const next = new Set(prev)
+          const next = new Set(prev);
           for (const id of existingEntryFieldIds) {
-            next.add(id)
+            next.add(id);
           }
-          return next
-        })
+          return next;
+        });
       }
     }
-  }, [fields, educationQuery.data, editingEntryId, watch])
+  }, [fields, educationQuery.data, editingEntryId, watch]);
 
   // Scroll to editing entry when editingEntryId changes
   useEffect(() => {
     if (editingEntryId) {
       // Find the entry in the form fields by matching the ID
       const entryIndex = fields.findIndex((_field, idx) => {
-        const entryData = watch(`education_entries.${idx}`)
-        return entryData?.id === editingEntryId
-      })
+        const entryData = watch(`education_entries.${idx}`);
+        return entryData?.id === editingEntryId;
+      });
 
       if (entryIndex !== -1) {
-        const entryId = fields[entryIndex].id
-        const entryData = watch(`education_entries.${entryIndex}`)
+        const entryId = fields[entryIndex].id;
+        const entryData = watch(`education_entries.${entryIndex}`);
 
         // Make sure the entry is visible (remove from hidden set)
         setHiddenEntryIds((prev) => {
-          const next = new Set(prev)
-          next.delete(entryId)
-          return next
-        })
+          const next = new Set(prev);
+          next.delete(entryId);
+          return next;
+        });
 
         // Set manual entry mode based on whether it has a university_id
         if (entryData) {
-          const shouldUseManualMode = !entryData.university_id
+          const shouldUseManualMode = !entryData.university_id;
           setManualEntryMode((prev) => ({
             ...prev,
             [entryIndex]: shouldUseManualMode,
-          }))
+          }));
 
           // If there's an institution name with a university_id (verified institution),
           // trigger a search to populate results so the value displays in autocomplete
-          if (entryData.institution_name && entryData.university_id && !shouldUseManualMode) {
+          if (
+            entryData.institution_name &&
+            entryData.university_id &&
+            !shouldUseManualMode
+          ) {
             // Trigger search with the institution name to populate results
             // This ensures the UniversityAutocomplete can find and display the value
-            setSearchQuery(entryData.institution_name)
-            handleUniversitySearch(entryData.institution_name)
+            setSearchQuery(entryData.institution_name);
+            handleUniversitySearch(entryData.institution_name);
           }
         }
 
         // Scroll to the entry after a short delay to ensure it's rendered
         setTimeout(() => {
-          const element = entryRefs.current[entryId]
-          if (element && typeof window !== 'undefined') {
+          const element = entryRefs.current[entryId];
+          if (element && typeof window !== "undefined") {
             // Scroll to the entry (web only)
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
             // Focus the first input in the entry after another short delay
             setTimeout(() => {
-              const firstInput = element.querySelector('input, textarea, button')
+              const firstInput = element.querySelector(
+                "input, textarea, button"
+              );
               if (firstInput instanceof HTMLElement) {
-                firstInput.focus()
+                firstInput.focus();
               }
-            }, 100)
+            }, 100);
           }
-        }, 100)
+        }, 100);
       }
     }
-  }, [editingEntryId, fields, watch, handleUniversitySearch])
+  }, [editingEntryId, fields, watch, handleUniversitySearch]);
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
-        e.preventDefault()
-        e.returnValue = '' // Required for Chrome
+        e.preventDefault();
+        e.returnValue = ""; // Required for Chrome
       }
-    }
+    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [isDirty])
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (data: EducationProfileFormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     // Track which entries are new (without IDs) before save
-    const newEntryFieldIds: string[] = []
+    const newEntryFieldIds: string[] = [];
     data.education_entries?.forEach((entry, index) => {
       if (!entry.id && fields[index]) {
-        newEntryFieldIds.push(fields[index].id)
+        newEntryFieldIds.push(fields[index].id);
       }
-    })
+    });
 
     try {
       await saveEducationMutation.mutateAsync({
         education_level: data.education_level || null,
         education_entries: data.education_entries || [],
-      })
+      });
 
       // After successful save, hide ALL entries (both new and edited)
       // They'll be visible in the right column instead
-      const allEntryFieldIds = fields.map((field) => field.id)
+      const allEntryFieldIds = fields.map((field) => field.id);
       if (allEntryFieldIds.length > 0) {
         setHiddenEntryIds((prev) => {
-          const next = new Set(prev)
+          const next = new Set(prev);
           for (const id of allEntryFieldIds) {
-            next.add(id)
+            next.add(id);
           }
-          return next
-        })
+          return next;
+        });
       }
 
       // Clear editing state
       if (editingEntryId) {
-        onEditComplete?.()
+        onEditComplete?.();
       }
     } catch (error) {
-      console.error('Error saving education:', error)
+      console.error("Error saving education:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const addEducationEntry = () => {
-    append(createNewEducationEntry())
-  }
+    append(createNewEducationEntry());
+  };
 
   // Show loading state
   if (educationQuery.isLoading || educationLevelQuery.isLoading) {
@@ -482,10 +538,12 @@ export function ProfileEducationLeft({
       <DashboardWidget>
         <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
           <Spinner size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading education data...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading education data...
+          </Text>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   // Show error state
@@ -493,11 +551,13 @@ export function ProfileEducationLeft({
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
-          <Text style={{ color: colors.error[500] }}>Failed to load education data</Text>
+          <Text style={{ color: colors.error[500] }}>
+            Failed to load education data
+          </Text>
           <Button onPress={() => educationQuery.refetch()}>Retry</Button>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   return (
@@ -517,7 +577,9 @@ export function ProfileEducationLeft({
             borderRadius: 16,
           }}
         >
-          <Text style={{ color: colors.error[700] }}>Please resolve the following issues:</Text>
+          <Text style={{ color: colors.error[700] }}>
+            Please resolve the following issues:
+          </Text>
           <Stack gap={4}>
             {errorSummary.map((message) => (
               <Text key={message} style={{ color: colors.error[700] }}>
@@ -562,436 +624,529 @@ export function ProfileEducationLeft({
           </Row>
 
           {fields.map((field, index) => {
-            const entryErrors = educationEntryFieldErrors[index]
-            const hasEntryErrors = entryErrors !== undefined && entryErrors !== null
-            const entryId = field.id
-            const entryData = watch(`education_entries.${index}`)
-            const isEditing = editingEntryId === entryData?.id
-            const hasId = Boolean(entryData?.id)
+            const entryErrors = educationEntryFieldErrors[index];
+            const hasEntryErrors =
+              entryErrors !== undefined && entryErrors !== null;
+            const entryId = field.id;
+            const entryData = watch(`education_entries.${index}`);
+            const isEditing = editingEntryId === entryData?.id;
+            const hasId = Boolean(entryData?.id);
 
             // Hide entry if:
             // 1. It has an ID (existing entry) AND is not being edited
             // 2. OR it's explicitly in the hidden set and not being edited
-            const isHidden = (hasId && !isEditing) || (hiddenEntryIds.has(entryId) && !isEditing)
+            const isHidden =
+              (hasId && !isEditing) ||
+              (hiddenEntryIds.has(entryId) && !isEditing);
 
             // Only show forms for:
             // - New entries (no ID)
             // - Entries being edited (isEditing is true)
             if (isHidden) {
-              return null
+              return null;
             }
 
             return (
-              <Stack
+              <View
                 key={field.id}
                 ref={(el) => {
                   if (el) {
-                    // Stack ref is compatible with HTMLElement for scroll operations
-                    entryRefs.current[entryId] = el as HTMLElement
+                    // View ref is compatible with HTMLElement for scroll operations
+                    entryRefs.current[entryId] = el as unknown as HTMLElement;
                   }
                 }}
-                gap={12}
-                style={{
-                  padding: 12,
-                  borderWidth: 1,
-                  borderColor: isEditing
-                    ? colors.blue[300]
-                    : hasEntryErrors
+              >
+                <Stack
+                  gap={12}
+                  style={{
+                    padding: 12,
+                    borderWidth: 1,
+                    borderColor: isEditing
+                      ? colors.blue[300]
+                      : hasEntryErrors
                       ? colors.error[300]
                       : colors.border[theme].default,
-                  backgroundColor: isEditing
-                    ? theme === 'light' ? colors.blue[50] : colors.blue[900]
-                    : hasEntryErrors
-                      ? theme === 'light' ? colors.error[50] : colors.error[900]
+                    backgroundColor: isEditing
+                      ? theme === "light"
+                        ? colors.blue[50]
+                        : colors.blue[900]
+                      : hasEntryErrors
+                      ? theme === "light"
+                        ? colors.error[50]
+                        : colors.error[900]
                       : colors.bg[theme].default,
-                  borderRadius: 16,
-                }}
-              >
-                <Row justify="space-between" align="center">
-                  <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
-                  <Button size="sm" variant="outline" onPress={() => remove(index)} iconStart={X}>
-                    Remove
-                  </Button>
-                </Row>
+                    borderRadius: 16,
+                  }}
+                >
+                  <Row justify="space-between" align="center">
+                    <Text>
+                      {entryData?.id
+                        ? "Edit Education"
+                        : `Education ${index + 1}`}
+                    </Text>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onPress={() => remove(index)}
+                      iconStart={X}
+                    >
+                      Remove
+                    </Button>
+                  </Row>
 
-                {/* Institution */}
-                <Stack gap={8}>
-                  <Text>Institution *</Text>
-                  <Controller
-                    name={`education_entries.${index}.university_id`}
-                    control={control}
-                    render={({ field: universityField }) => (
-                      <Controller
-                        name={`education_entries.${index}.institution_name`}
-                        control={control}
-                        render={({ field: nameField }) => {
-                          const isManualMode = manualEntryMode[index] ?? false
-                          return (
-                            <Stack gap={8}>
-                              {!isManualMode ? (
-                                <>
-                                  <UniversityAutocomplete
-                                    value={nameField.value || ''}
-                                    // Control input value when editing to display institution name
-                                    // This ensures the value shows even if not in search results yet
-                                    inputValue={
-                                      isEditing && nameField.value ? nameField.value : undefined
-                                    }
-                                    onChange={nameField.onChange}
-                                    onUniversitySelect={(university: University) => {
-                                      universityField.onChange(university.id)
-                                      nameField.onChange(university.name)
-                                      setValue(`education_entries.${index}.is_verified`, true, {
-                                        shouldValidate: false,
-                                      })
-                                      setManualEntryMode((prev) => ({ ...prev, [index]: false }))
-                                    }}
-                                    onSearch={handleUniversitySearch}
-                                    results={searchUniversitiesQuery.data?.universities || []}
-                                    loading={searchUniversitiesQuery.isLoading}
-                                    searchError={searchUniversitiesQuery.error?.message}
-                                    placeholder="Search for institution..."
-                                    error={
-                                      entryErrors?.institution_name?.message ||
-                                      entryErrors?.university_id?.message
-                                    }
-                                  />
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onPress={() => {
-                                      setManualEntryMode((prev) => ({ ...prev, [index]: true }))
-                                      universityField.onChange(null)
-                                      setValue(`education_entries.${index}.is_verified`, false, {
-                                        shouldValidate: false,
-                                      })
-                                    }}
-                                  >
-                                    Can't find your institution? Enter it manually
-                                  </Button>
-                                </>
-                              ) : (
-                                <>
-                                  <Input
-                                    placeholder="Enter institution name"
-                                    value={nameField.value || ''}
-                                    onChangeText={(text) => {
-                                      nameField.onChange(text)
-                                      universityField.onChange(null)
-                                    }}
-                                    aria-label="Institution name"
-                                    accessibilityLabel="Institution name"
-                                    aria-required="true"
-                                  />
-                                  <FieldError message={entryErrors?.institution_name?.message} />
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onPress={() => {
-                                      setManualEntryMode((prev) => ({ ...prev, [index]: false }))
-                                      nameField.onChange('')
-                                      universityField.onChange(undefined)
-                                    }}
-                                  >
-                                    Search from catalog instead
-                                  </Button>
-                                </>
+                  {/* Institution */}
+                  <Stack gap={8}>
+                    <Text>Institution *</Text>
+                    <Controller
+                      name={`education_entries.${index}.university_id`}
+                      control={control}
+                      render={({ field: universityField }) => (
+                        <Controller
+                          name={`education_entries.${index}.institution_name`}
+                          control={control}
+                          render={({ field: nameField }) => {
+                            const isManualMode =
+                              manualEntryMode[index] ?? false;
+                            return (
+                              <Stack gap={8}>
+                                {!isManualMode ? (
+                                  <>
+                                    <UniversityAutocomplete
+                                      value={nameField.value || ""}
+                                      // Control input value when editing to display institution name
+                                      // This ensures the value shows even if not in search results yet
+                                      inputValue={
+                                        isEditing && nameField.value
+                                          ? nameField.value
+                                          : undefined
+                                      }
+                                      onChange={nameField.onChange}
+                                      onUniversitySelect={(
+                                        university: University
+                                      ) => {
+                                        universityField.onChange(university.id);
+                                        nameField.onChange(university.name);
+                                        setValue(
+                                          `education_entries.${index}.is_verified`,
+                                          true,
+                                          {
+                                            shouldValidate: false,
+                                          }
+                                        );
+                                        setManualEntryMode((prev) => ({
+                                          ...prev,
+                                          [index]: false,
+                                        }));
+                                      }}
+                                      onSearch={handleUniversitySearch}
+                                      results={
+                                        (searchUniversitiesQuery.data
+                                          ?.universities || []) as University[]
+                                      }
+                                      loading={
+                                        searchUniversitiesQuery.isLoading
+                                      }
+                                      searchError={
+                                        searchUniversitiesQuery.error?.message
+                                      }
+                                      placeholder="Search for institution..."
+                                      error={
+                                        entryErrors?.institution_name
+                                          ?.message ||
+                                        entryErrors?.university_id?.message
+                                      }
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onPress={() => {
+                                        setManualEntryMode((prev) => ({
+                                          ...prev,
+                                          [index]: true,
+                                        }));
+                                        universityField.onChange(null);
+                                        setValue(
+                                          `education_entries.${index}.is_verified`,
+                                          false,
+                                          {
+                                            shouldValidate: false,
+                                          }
+                                        );
+                                      }}
+                                    >
+                                      Can't find your institution? Enter it
+                                      manually
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Input
+                                      placeholder="Enter institution name"
+                                      value={nameField.value || ""}
+                                      onChangeText={(text) => {
+                                        nameField.onChange(text);
+                                        universityField.onChange(null);
+                                      }}
+                                      aria-label="Institution name"
+                                      accessibilityLabel="Institution name"
+                                      aria-required="true"
+                                    />
+                                    <FieldError
+                                      message={
+                                        entryErrors?.institution_name?.message
+                                      }
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onPress={() => {
+                                        setManualEntryMode((prev) => ({
+                                          ...prev,
+                                          [index]: false,
+                                        }));
+                                        nameField.onChange("");
+                                        universityField.onChange(undefined);
+                                      }}
+                                    >
+                                      Search from catalog instead
+                                    </Button>
+                                  </>
+                                )}
+                              </Stack>
+                            );
+                          }}
+                        />
+                      )}
+                    />
+                  </Stack>
+
+                  {/* Degree Type */}
+                  <Stack gap={8}>
+                    <Text>Degree Type</Text>
+                    <Controller
+                      name={`education_entries.${index}.degree_type`}
+                      control={control}
+                      render={({ field }) => (
+                        <SmartSelect
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            if (value !== "Other") {
+                              setValue(
+                                `education_entries.${index}.custom_degree_type`,
+                                undefined,
+                                {
+                                  shouldValidate: true,
+                                }
+                              );
+                            }
+                          }}
+                          options={DEGREE_TYPE_OPTIONS.map((type) => ({
+                            label: type,
+                            value: type,
+                          }))}
+                          placeholder="Select degree type"
+                          allowClear
+                          error={entryErrors?.degree_type?.message}
+                        />
+                      )}
+                    />
+                    {/* Custom Degree Type Input (shown when "Other" is selected) */}
+                    <Controller
+                      name={`education_entries.${index}.degree_type`}
+                      control={control}
+                      render={({ field: degreeTypeField }) => {
+                        const isOther = degreeTypeField.value === "Other";
+                        return (
+                          <>
+                            {isOther && (
+                              <Controller
+                                name={`education_entries.${index}.custom_degree_type`}
+                                control={control}
+                                render={({ field: customField }) => (
+                                  <>
+                                    <Input
+                                      placeholder="Specify degree type"
+                                      value={customField.value || ""}
+                                      onChangeText={customField.onChange}
+                                      aria-label="Custom degree type"
+                                      accessibilityLabel="Custom degree type"
+                                    />
+                                    <FieldError
+                                      message={
+                                        entryErrors?.custom_degree_type?.message
+                                      }
+                                    />
+                                  </>
+                                )}
+                              />
+                            )}
+                          </>
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Field of Study */}
+                  <Stack gap={8}>
+                    <Text>Field of Study</Text>
+                    <Controller
+                      name={`education_entries.${index}.field_of_study`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          placeholder="e.g. Computer Science"
+                          value={field.value || ""}
+                          onChangeText={field.onChange}
+                          aria-label="Field of study"
+                          accessibilityLabel="Field of study"
+                        />
+                      )}
+                    />
+                  </Stack>
+
+                  {/* GPA */}
+                  <Stack gap={8}>
+                    <Text>GPA (Optional)</Text>
+                    <Controller
+                      name={`education_entries.${index}.gpa`}
+                      control={control}
+                      render={({ field }) => {
+                        // Use local state to track raw input for better decimal handling
+                        const [localValue, setLocalValue] = useState(
+                          field.value?.toString() || ""
+                        );
+
+                        // Sync local value when field value changes externally (e.g., form reset)
+                        useEffect(() => {
+                          setLocalValue(field.value?.toString() || "");
+                        }, [field.value]);
+
+                        return (
+                          <>
+                            <Input
+                              placeholder="e.g. 3.5 (0.0 - 4.0)"
+                              value={localValue}
+                              aria-label="GPA"
+                              accessibilityLabel="GPA"
+                              onChangeText={(text) => {
+                                // Allow empty string
+                                if (text === "") {
+                                  setLocalValue("");
+                                  field.onChange(undefined);
+                                  return;
+                                }
+
+                                // Allow decimal point and digits
+                                // Match pattern: optional digits, optional decimal point, optional single digit after decimal
+                                const decimalPattern = /^\d*\.?\d?$/;
+                                if (!decimalPattern.test(text)) {
+                                  return; // Don't update if invalid pattern
+                                }
+
+                                // Update local display value
+                                setLocalValue(text);
+
+                                // Parse as float
+                                const numValue = Number.parseFloat(text);
+
+                                // Validate range and that it's a valid number
+                                if (
+                                  !Number.isNaN(numValue) &&
+                                  numValue >= 0 &&
+                                  numValue <= 4.0 &&
+                                  // Ensure max 1 decimal place
+                                  (text.split(".")[1]?.length ?? 0) <= 1
+                                ) {
+                                  // Only update form field if we have a complete number (not just "3.")
+                                  if (!text.endsWith(".")) {
+                                    field.onChange(numValue);
+                                  }
+                                }
+                              }}
+                              onBlur={() => {
+                                // On blur, ensure we have a valid number
+                                const currentValue = field.value;
+                                if (
+                                  currentValue !== undefined &&
+                                  currentValue !== null
+                                ) {
+                                  // Round to 1 decimal place
+                                  const rounded =
+                                    Math.round(currentValue * 10) / 10;
+                                  field.onChange(rounded);
+                                  setLocalValue(rounded.toString());
+                                } else {
+                                  setLocalValue("");
+                                }
+                              }}
+                              keyboardType="decimal-pad"
+                            />
+                            <FieldError message={entryErrors?.gpa?.message} />
+                          </>
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Start and End Dates */}
+                  <Stack gap={8}>
+                    <Row gap={12}>
+                      <Stack gap={8} style={{ flex: 1 }}>
+                        <Controller
+                          name={`education_entries.${index}.start_date`}
+                          control={control}
+                          render={({ field }) => (
+                            <MonthYearPicker
+                              value={field.value ? new Date(field.value) : null}
+                              onChange={(date) => {
+                                // Store as YYYY-MM-DD format (first day of month)
+                                const dateStr = date
+                                  ? date.toISOString().split("T")[0]
+                                  : null;
+                                field.onChange(dateStr || undefined);
+                              }}
+                              error={entryErrors?.start_date?.message}
+                              label="Start Date"
+                            />
+                          )}
+                        />
+                      </Stack>
+                      <Stack gap={8} style={{ flex: 1 }}>
+                        <Controller
+                          name={`education_entries.${index}.end_date`}
+                          control={control}
+                          render={({ field }) => (
+                            <MonthYearPicker
+                              value={field.value ? new Date(field.value) : null}
+                              onChange={(date) => {
+                                // Store as YYYY-MM-DD format (first day of month)
+                                const dateStr = date
+                                  ? date.toISOString().split("T")[0]
+                                  : null;
+                                field.onChange(dateStr || undefined);
+                              }}
+                              disabled={watch(
+                                `education_entries.${index}.is_current`
                               )}
-                            </Stack>
-                          )
-                        }}
-                      />
-                    )}
-                  />
-                </Stack>
+                              error={entryErrors?.end_date?.message}
+                              label="End Date"
+                            />
+                          )}
+                        />
+                      </Stack>
+                    </Row>
 
-                {/* Degree Type */}
-                <Stack gap={8}>
-                  <Text>Degree Type</Text>
-                  <Controller
-                    name={`education_entries.${index}.degree_type`}
-                    control={control}
-                    render={({ field }) => (
-                      <SmartSelect
-                        value={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value)
-                          if (value !== 'Other') {
-                            setValue(`education_entries.${index}.custom_degree_type`, undefined, {
-                              shouldValidate: true,
-                            })
+                    {/* Currently Enrolled Checkbox */}
+                    <Controller
+                      name={`education_entries.${index}.is_current`}
+                      control={control}
+                      render={({ field }) => {
+                        const isCurrent = Boolean(field.value);
+                        const handleChange = (next: boolean) => {
+                          field.onChange(next);
+                          if (next) {
+                            setValue(
+                              `education_entries.${index}.end_date`,
+                              undefined,
+                              {
+                                shouldValidate: true,
+                              }
+                            );
+                          } else {
+                            setValue(
+                              `education_entries.${index}.expected_graduation_date`,
+                              undefined,
+                              { shouldValidate: true }
+                            );
                           }
-                        }}
-                        options={DEGREE_TYPE_OPTIONS.map((type) => ({
-                          label: type,
-                          value: type,
-                        }))}
-                        placeholder="Select degree type"
-                        allowClear
-                        error={entryErrors?.degree_type?.message}
-                      />
-                    )}
-                  />
-                  {/* Custom Degree Type Input (shown when "Other" is selected) */}
-                  <Controller
-                    name={`education_entries.${index}.degree_type`}
-                    control={control}
-                    render={({ field: degreeTypeField }) => {
-                      const isOther = degreeTypeField.value === 'Other'
-                      return (
+                        };
+
+                        return (
+                          <Row gap={8} align="center">
+                            <Checkbox
+                              checked={isCurrent}
+                              onChange={handleChange}
+                            />
+                            <Label onPress={() => handleChange(!isCurrent)}>
+                              Currently enrolled
+                            </Label>
+                          </Row>
+                        );
+                      }}
+                    />
+
+                    {/* Expected Graduation Date (shown when is_current is true) */}
+                    <Controller
+                      name={`education_entries.${index}.is_current`}
+                      control={control}
+                      render={({ field: isCurrentField }) => (
                         <>
-                          {isOther && (
+                          {isCurrentField.value && (
                             <Controller
-                              name={`education_entries.${index}.custom_degree_type`}
+                              name={`education_entries.${index}.expected_graduation_date`}
                               control={control}
-                              render={({ field: customField }) => (
-                                <>
-                                  <Input
-                                    placeholder="Specify degree type"
-                                    value={customField.value || ''}
-                                    onChangeText={customField.onChange}
-                                    aria-label="Custom degree type"
-                                    accessibilityLabel="Custom degree type"
-                                  />
-                                  <FieldError message={entryErrors?.custom_degree_type?.message} />
-                                </>
+                              render={({ field: expectedField }) => (
+                                <MonthYearPicker
+                                  value={
+                                    expectedField.value
+                                      ? new Date(expectedField.value)
+                                      : null
+                                  }
+                                  onChange={(date) => {
+                                    // Store as YYYY-MM-DD format (first day of month)
+                                    const dateStr = date
+                                      ? date.toISOString().split("T")[0]
+                                      : null;
+                                    expectedField.onChange(
+                                      dateStr || undefined
+                                    );
+                                  }}
+                                  error={
+                                    entryErrors?.expected_graduation_date
+                                      ?.message
+                                  }
+                                  label="Expected Graduation Date"
+                                />
                               )}
                             />
                           )}
                         </>
-                      )
-                    }}
-                  />
-                </Stack>
+                      )}
+                    />
+                  </Stack>
 
-                {/* Field of Study */}
-                <Stack gap={8}>
-                  <Text>Field of Study</Text>
-                  <Controller
-                    name={`education_entries.${index}.field_of_study`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="e.g. Computer Science"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        aria-label="Field of study"
-                        accessibilityLabel="Field of study"
-                      />
-                    )}
-                  />
-                </Stack>
-
-                {/* GPA */}
-                <Stack gap={8}>
-                  <Text>GPA (Optional)</Text>
-                  <Controller
-                    name={`education_entries.${index}.gpa`}
-                    control={control}
-                    render={({ field }) => {
-                      // Use local state to track raw input for better decimal handling
-                      const [localValue, setLocalValue] = useState(field.value?.toString() || '')
-
-                      // Sync local value when field value changes externally (e.g., form reset)
-                      useEffect(() => {
-                        setLocalValue(field.value?.toString() || '')
-                      }, [field.value])
-
-                      return (
+                  {/* Description */}
+                  <Stack gap={8}>
+                    <Text>Description</Text>
+                    <Controller
+                      name={`education_entries.${index}.description`}
+                      control={control}
+                      render={({ field }) => (
                         <>
-                          <Input
-                            placeholder="e.g. 3.5 (0.0 - 4.0)"
-                            value={localValue}
-                            aria-label="GPA"
-                            accessibilityLabel="GPA"
-                            onChangeText={(text) => {
-                              // Allow empty string
-                              if (text === '') {
-                                setLocalValue('')
-                                field.onChange(undefined)
-                                return
-                              }
-
-                              // Allow decimal point and digits
-                              // Match pattern: optional digits, optional decimal point, optional single digit after decimal
-                              const decimalPattern = /^\d*\.?\d?$/
-                              if (!decimalPattern.test(text)) {
-                                return // Don't update if invalid pattern
-                              }
-
-                              // Update local display value
-                              setLocalValue(text)
-
-                              // Parse as float
-                              const numValue = Number.parseFloat(text)
-
-                              // Validate range and that it's a valid number
-                              if (
-                                !Number.isNaN(numValue) &&
-                                numValue >= 0 &&
-                                numValue <= 4.0 &&
-                                // Ensure max 1 decimal place
-                                (text.split('.')[1]?.length ?? 0) <= 1
-                              ) {
-                                // Only update form field if we have a complete number (not just "3.")
-                                if (!text.endsWith('.')) {
-                                  field.onChange(numValue)
-                                }
-                              }
-                            }}
-                            onBlur={() => {
-                              // On blur, ensure we have a valid number
-                              const currentValue = field.value
-                              if (currentValue !== undefined && currentValue !== null) {
-                                // Round to 1 decimal place
-                                const rounded = Math.round(currentValue * 10) / 10
-                                field.onChange(rounded)
-                                setLocalValue(rounded.toString())
-                              } else {
-                                setLocalValue('')
-                              }
-                            }}
-                            keyboardType="decimal-pad"
+                          <TextArea
+                            placeholder="Describe your education experience, achievements, relevant coursework..."
+                            value={field.value || ""}
+                            onChangeText={field.onChange}
+                            style={{ minHeight: 80 }}
                           />
-                          <FieldError message={entryErrors?.gpa?.message} />
+                          <FieldError
+                            message={entryErrors?.description?.message}
+                          />
                         </>
-                      )
-                    }}
-                  />
+                      )}
+                    />
+                  </Stack>
                 </Stack>
-
-                {/* Start and End Dates */}
-                <Stack gap={8}>
-                  <Row gap={12}>
-                    <Stack gap={8} style={{ flex: 1 }}>
-                      <Controller
-                        name={`education_entries.${index}.start_date`}
-                        control={control}
-                        render={({ field }) => (
-                          <MonthYearPicker
-                            value={field.value ? new Date(field.value) : null}
-                            onChange={(date) => {
-                              // Store as YYYY-MM-DD format (first day of month)
-                              const dateStr = date ? date.toISOString().split('T')[0] : null
-                              field.onChange(dateStr || undefined)
-                            }}
-                            error={entryErrors?.start_date?.message}
-                            label="Start Date"
-                          />
-                        )}
-                      />
-                    </Stack>
-                    <Stack gap={8} style={{ flex: 1 }}>
-                      <Controller
-                        name={`education_entries.${index}.end_date`}
-                        control={control}
-                        render={({ field }) => (
-                          <MonthYearPicker
-                            value={field.value ? new Date(field.value) : null}
-                            onChange={(date) => {
-                              // Store as YYYY-MM-DD format (first day of month)
-                              const dateStr = date ? date.toISOString().split('T')[0] : null
-                              field.onChange(dateStr || undefined)
-                            }}
-                            disabled={watch(`education_entries.${index}.is_current`)}
-                            error={entryErrors?.end_date?.message}
-                            label="End Date"
-                          />
-                        )}
-                      />
-                    </Stack>
-                  </Row>
-
-                  {/* Currently Enrolled Checkbox */}
-                  <Controller
-                    name={`education_entries.${index}.is_current`}
-                    control={control}
-                    render={({ field }) => {
-                      const isCurrent = Boolean(field.value)
-                      const handleChange = (next: boolean) => {
-                        field.onChange(next)
-                        if (next) {
-                          setValue(`education_entries.${index}.end_date`, undefined, {
-                            shouldValidate: true,
-                          })
-                        } else {
-                          setValue(
-                            `education_entries.${index}.expected_graduation_date`,
-                            undefined,
-                            { shouldValidate: true }
-                          )
-                        }
-                      }
-
-                      return (
-                        <Row gap={8} align="center">
-                          <Checkbox
-                            checked={isCurrent}
-                            onChange={handleChange}
-                            testID={`education-current-${index}`}
-                            aria-label="Currently enrolled"
-                          />
-                          <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
-                        </Row>
-                      )
-                    }}
-                  />
-
-                  {/* Expected Graduation Date (shown when is_current is true) */}
-                  <Controller
-                    name={`education_entries.${index}.is_current`}
-                    control={control}
-                    render={({ field: isCurrentField }) => (
-                      <>
-                        {isCurrentField.value && (
-                          <Controller
-                            name={`education_entries.${index}.expected_graduation_date`}
-                            control={control}
-                            render={({ field: expectedField }) => (
-                              <MonthYearPicker
-                                value={expectedField.value ? new Date(expectedField.value) : null}
-                                onChange={(date) => {
-                                  // Store as YYYY-MM-DD format (first day of month)
-                                  const dateStr = date ? date.toISOString().split('T')[0] : null
-                                  expectedField.onChange(dateStr || undefined)
-                                }}
-                                error={entryErrors?.expected_graduation_date?.message}
-                                label="Expected Graduation Date"
-                              />
-                            )}
-                          />
-                        )}
-                      </>
-                    )}
-                  />
-                </Stack>
-
-                {/* Description */}
-                <Stack gap={8}>
-                  <Text>Description</Text>
-                  <Controller
-                    name={`education_entries.${index}.description`}
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <TextArea
-                          placeholder="Describe your education experience, achievements, relevant coursework..."
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
-                          minHeight={80}
-                        />
-                        <FieldError message={entryErrors?.description?.message} />
-                      </>
-                    )}
-                  />
-                </Stack>
-              </Stack>
-            )
+              </View>
+            );
           })}
 
           {fields.length === 0 && (
             <Stack style={{ padding: 16 }} align="center" gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>No education entries added yet</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                No education entries added yet
+              </Text>
             </Stack>
           )}
         </Stack>
@@ -1007,12 +1162,13 @@ export function ProfileEducationLeft({
             Cancel
           </Button>
           <Button
-            variant="filled" color="primary"
+            variant="filled"
+            color="primary"
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || isLoading}
             style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
           >
-            {isSyncing ? 'Saving...' : 'Save Changes'}
+            {isSyncing ? "Saving..." : "Save Changes"}
           </Button>
         </Row>
 
@@ -1029,39 +1185,39 @@ export function ProfileEducationLeft({
           <ModalActions
             orientation="right"
             primaryAction={{
-              label: 'Discard Changes',
-              color: 'error',
+              label: "Discard Changes",
+              color: "error",
               onPress: () => {
                 if (originalDataRef.current) {
-                  reset(originalDataRef.current)
-                  setShowCancelDialog(false)
+                  reset(originalDataRef.current);
+                  setShowCancelDialog(false);
                 }
               },
             }}
             secondaryAction={{
-              label: 'Keep Editing',
+              label: "Keep Editing",
               onPress: () => setShowCancelDialog(false),
             }}
           />
         </Modal>
       </Stack>
     </DashboardWidget>
-  )
+  );
 }
 
 interface SmartSelectOption {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 interface SmartSelectProps {
-  value?: string
-  onValueChange: (value: string | undefined) => void
-  options: SmartSelectOption[]
-  placeholder?: string
-  disabled?: boolean
-  error?: string
-  allowClear?: boolean
+  value?: string;
+  onValueChange: (value: string | undefined) => void;
+  options: SmartSelectOption[];
+  placeholder?: string;
+  disabled?: boolean;
+  error?: string;
+  allowClear?: boolean;
 }
 
 function SmartSelect({
@@ -1073,37 +1229,37 @@ function SmartSelect({
   error,
   allowClear = false,
 }: SmartSelectProps) {
-  const { theme } = useThemeContext()
-  const [open, setOpen] = useState(false)
-  const [contentWidth, setContentWidth] = useState<number | undefined>()
-  const triggerRef = useRef<HTMLButtonElement | null>(null)
+  const { theme } = useThemeContext();
+  const [open, setOpen] = useState(false);
+  const [contentWidth, setContentWidth] = useState<number | undefined>();
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const selectedOption = useMemo(
     () => options.find((option) => option.value === value),
     [options, value]
-  )
+  );
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
-      if (disabled) return
-      setOpen(nextOpen)
+      if (disabled) return;
+      setOpen(nextOpen);
       if (nextOpen && triggerRef.current) {
-        const rect = triggerRef.current.getBoundingClientRect()
-        setContentWidth(rect.width)
+        const rect = triggerRef.current.getBoundingClientRect();
+        setContentWidth(rect.width);
       }
     },
     [disabled]
-  )
+  );
 
   const handleSelect = useCallback(
     (nextValue: string | undefined) => {
-      onValueChange(nextValue)
-      setOpen(false)
+      onValueChange(nextValue);
+      setOpen(false);
     },
     [onValueChange]
-  )
+  );
 
-  const displayLabel = selectedOption?.label ?? placeholder ?? 'Select'
+  const displayLabel = selectedOption?.label ?? placeholder ?? "Select";
 
   const popoverContent = (
     <PopoverContent>
@@ -1121,24 +1277,24 @@ function SmartSelect({
           )}
           {allowClear && options.length > 0 && <Separator />}
           {options.map((option) => {
-            const isSelected = option.value === value
+            const isSelected = option.value === value;
             return (
               <Button
                 key={option.value}
                 size="sm"
-                variant={isSelected ? 'light' : 'text'}
-                color={isSelected ? 'primary' : 'gray'}
+                variant={isSelected ? "light" : "text"}
+                color={isSelected ? "primary" : "gray"}
                 onPress={() => handleSelect(option.value)}
                 disabled={disabled}
               >
                 {option.label}
               </Button>
-            )
+            );
           })}
         </Stack>
       </ScrollView>
     </PopoverContent>
-  )
+  );
 
   return (
     <Stack gap={8}>
@@ -1154,7 +1310,9 @@ function SmartSelect({
           iconEnd={ChevronDown}
           disabled={disabled}
           style={{
-            borderColor: error ? colors.error[500] : colors.border[theme].default,
+            borderColor: error
+              ? colors.error[500]
+              : colors.border[theme].default,
           }}
           onPress={() => handleOpenChange(!open)}
         >
@@ -1163,5 +1321,5 @@ function SmartSelect({
       </Popover>
       {error && <Text style={{ color: colors.error[600] }}>{error}</Text>}
     </Stack>
-  )
+  );
 }

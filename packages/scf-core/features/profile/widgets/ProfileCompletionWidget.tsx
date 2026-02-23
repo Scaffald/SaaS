@@ -1,11 +1,11 @@
-import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
-import { DashboardWidget } from '@scaffald/ui'
-import { CheckCircle, ChevronRight, Circle } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
-import { useRouter } from 'expo-router'
-import { useEffect } from 'react'
-import { Button, H4, ProgressBar, Text, Row, Stack } from '@scaffald/ui'
-import type { ProfileWidgetProps } from './types'
+import { useProfileCompletion } from "@scf/core/features/dashboard/completion/useProfileCompletion";
+import { DashboardWidget } from "@scaffald/ui";
+import { CheckCircle, ChevronRight, Circle } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { Button, H4, ProgressBar, Text, Row, Stack } from "@scaffald/ui";
+import type { ProfileWidgetProps } from "./types";
 
 /**
  * ProfileCompletionWidget Component
@@ -19,44 +19,50 @@ import type { ProfileWidgetProps } from './types'
  */
 export function ProfileCompletionWidget({
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }: ProfileWidgetProps) {
-  const router = useRouter()
-  const toast = useToast()
-  const { completionData, isLoading } = useProfileCompletion()
+  const router = useRouter();
+  const toast = useToast();
+  const { completionData, isLoading } = useProfileCompletion();
 
   // Show toast prompts for incomplete sections
   useEffect(() => {
-    if (!completionData || isLoading || variant !== 'full') return
+    if (!completionData || isLoading || variant !== "full") return;
 
-    const incompleteItems = completionData.items.filter((item) => !item.complete)
+    const incompleteItems = completionData.items.filter(
+      (item) => !item.complete
+    );
 
     // Show toast if profile is less than 50% complete
-    if (completionData.completionPercentage < 50 && incompleteItems.length > 0) {
-      const nextItem = incompleteItems[0]
-      toast.show('Complete Your Profile', {
+    if (
+      completionData.completionPercentage < 50 &&
+      incompleteItems.length > 0
+    ) {
+      const nextItem = incompleteItems[0];
+      toast.show({
+        title: "Complete Your Profile",
         message: `Add your ${nextItem.title.toLowerCase()} to improve your profile visibility.`,
         duration: 8000,
-      })
+      });
     }
-  }, [completionData, isLoading, variant, toast])
+  }, [completionData, isLoading, variant, toast]);
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={16}>
-          <Text style={{ color: '#414e62' }}>Loading completion status...</Text>
+          <Text style={{ color: "#414e62" }}>Loading completion status...</Text>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (!completionData) {
-    return null
+    return null;
   }
 
-  const incompleteItems = completionData.items.filter((item) => !item.complete)
-  const nextIncompleteItem = incompleteItems[0]
+  const incompleteItems = completionData.items.filter((item) => !item.complete);
+  const nextIncompleteItem = incompleteItems[0];
 
   return (
     <DashboardWidget>
@@ -64,9 +70,10 @@ export function ProfileCompletionWidget({
         {/* Header */}
         <Row justify="space-between" align="center">
           <H4>Profile Completion</H4>
-          {variant === 'full' && (
-            <Text style={{ color: '#414e62' }}>
-              {completionData.totalComplete} of {completionData.totalItems} complete
+          {variant === "full" && (
+            <Text style={{ color: "#414e62" }}>
+              {completionData.totalComplete} of {completionData.totalItems}{" "}
+              complete
             </Text>
           )}
         </Row>
@@ -74,47 +81,56 @@ export function ProfileCompletionWidget({
         {/* Progress Bar */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text style={{ color: '#414e62' }}>{completionData.completionPercentage}%</Text>
-            {variant === 'full' && (
-              <Text style={{ color: '#414e62' }}>
-                {completionData.completionPercentage < 100 ? 'Keep going!' : 'Profile complete!'}
+            <Text style={{ color: "#414e62" }}>
+              {completionData.completionPercentage}%
+            </Text>
+            {variant === "full" && (
+              <Text style={{ color: "#414e62" }}>
+                {completionData.completionPercentage < 100
+                  ? "Keep going!"
+                  : "Profile complete!"}
               </Text>
             )}
           </Row>
           <ProgressBar
             value={completionData.completionPercentage}
-            max={100}
-            size="sm"
-          >
-            <ProgressBar.Indicator
-              style={{ backgroundColor: completionData.completionPercentage === 100 ? '#16a34a' : '#2563eb' }}
-            />
-          </ProgressBar>
+            color={
+              completionData.completionPercentage === 100
+                ? "success"
+                : "primary"
+            }
+            showLabel={false}
+            showIndicator={false}
+          />
         </Stack>
 
         {/* Next Steps */}
-        {variant === 'full' && nextIncompleteItem && (
+        {variant === "full" && nextIncompleteItem && (
           <Stack
             gap={12}
             padding="sm"
             borderRadius={12}
-            style={{ borderWidth: 1, borderColor: '#e2e8f0' }}
+            style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
           >
-            <Text style={{ color: '#414e62' }}>Next Step</Text>
+            <Text style={{ color: "#414e62" }}>Next Step</Text>
             <Row gap={8} align="center">
               <Circle size={20} color="#414e62" />
               <Stack flex={1} gap={4}>
                 <Text>{nextIncompleteItem.title}</Text>
                 {nextIncompleteItem.description && (
-                  <Text style={{ color: '#414e62' }}>{nextIncompleteItem.description}</Text>
+                  <Text style={{ color: "#414e62" }}>
+                    {nextIncompleteItem.description}
+                  </Text>
                 )}
               </Stack>
               {showEdit && nextIncompleteItem.actionRoute && (
                 <Button
                   size="sm"
-                  theme="info"
+                  color="primary"
                   iconStart={ChevronRight}
-                  onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
+                  onPress={() =>
+                    router.push(nextIncompleteItem.actionRoute as string)
+                  }
                 >
                   Complete
                 </Button>
@@ -124,9 +140,9 @@ export function ProfileCompletionWidget({
         )}
 
         {/* Checklist (Full variant only) */}
-        {variant === 'full' && (
+        {variant === "full" && (
           <Stack gap={8}>
-            <Text style={{ color: '#414e62' }}>Sections</Text>
+            <Text style={{ color: "#414e62" }}>Sections</Text>
             <Stack gap={8}>
               {completionData.items.map((item) => (
                 <Row
@@ -144,7 +160,11 @@ export function ProfileCompletionWidget({
                   )}
                   <Stack flex={1} gap={4}>
                     <Text>{item.title}</Text>
-                    {item.description && <Text style={{ color: '#414e62' }}>{item.description}</Text>}
+                    {item.description && (
+                      <Text style={{ color: "#414e62" }}>
+                        {item.description}
+                      </Text>
+                    )}
                   </Stack>
                   {!item.complete && showEdit && item.actionRoute && (
                     <Button
@@ -162,13 +182,15 @@ export function ProfileCompletionWidget({
         )}
 
         {/* Compact variant - just show progress and next step */}
-        {variant === 'compact' && nextIncompleteItem && (
+        {variant === "compact" && nextIncompleteItem && (
           <Stack gap={8}>
             {nextIncompleteItem.actionRoute && showEdit && (
               <Button
                 size="sm"
-                theme="info"
-                onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
+                color="primary"
+                onPress={() =>
+                  router.push(nextIncompleteItem.actionRoute as string)
+                }
               >
                 Complete: {nextIncompleteItem.title}
               </Button>
@@ -177,5 +199,5 @@ export function ProfileCompletionWidget({
         )}
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

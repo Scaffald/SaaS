@@ -1,25 +1,39 @@
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { useBackgroundCheck } from '@scf/core/utils/background-checks-sdk-hooks'
-import { AlertTriangle, X as CloseIcon, DownloadCloud } from 'lucide-react-native'
-import { memo } from 'react'
-import { Alert } from 'react-native'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { useDispute } from '../hooks/useDispute'
-import { CheckProgressTracker } from './CheckProgressTracker'
-import { DisputeStatusTracker } from './DisputeStatusTracker'
-import { PrivacyControls } from './PrivacyControls'
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import { useBackgroundCheck } from "@scf/core/utils/background-checks-sdk-hooks";
+import {
+  AlertTriangle,
+  X as CloseIcon,
+  DownloadCloud,
+} from "lucide-react-native";
+import { memo } from "react";
+import { Alert } from "react-native";
+import { Button, Separator, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { useDispute } from "../hooks/useDispute";
+import { CheckProgressTracker } from "./CheckProgressTracker";
+import { DisputeStatusTracker } from "./DisputeStatusTracker";
+import { PrivacyControls } from "./PrivacyControls";
+import type { BackgroundCheck } from "@scaffald/sdk";
 import {
   type BackgroundCheckDocument,
   type BackgroundCheckSummary,
   getStatusMetadata,
   getStatusToneColors,
-} from './status.utils'
+} from "./status.utils";
+
+/** API can return check with extended fields beyond base BackgroundCheck */
+type CheckDetail = BackgroundCheck & {
+  status_history?: unknown;
+  component_statuses?: unknown;
+  estimated_completion_date?: string | null;
+  summary?: unknown;
+  findings?: unknown;
+};
 
 interface ResultsViewerProps {
-  checkId: string | null
-  summary?: BackgroundCheckSummary
-  onClose: () => void
-  onRequestDispute?: (checkId: string) => void
+  checkId: string | null;
+  summary?: BackgroundCheckSummary;
+  onClose: () => void;
+  onRequestDispute?: (checkId: string) => void;
 }
 
 export const ResultsViewer = memo(function ResultsViewer({
@@ -30,15 +44,16 @@ export const ResultsViewer = memo(function ResultsViewer({
 }: ResultsViewerProps) {
   const getCheckQuery = useBackgroundCheck(checkId || undefined, {
     enabled: Boolean(checkId),
-  })
+  });
 
-  const { disputes, isLoadingDisputes, hasActiveDispute, refetchDisputes } = useDispute({
-    checkId: checkId ?? null,
-    enabled: Boolean(checkId),
-  })
+  const { disputes, isLoadingDisputes, hasActiveDispute, refetchDisputes } =
+    useDispute({
+      checkId: checkId ?? null,
+      enabled: Boolean(checkId),
+    });
 
   if (!checkId) {
-    return null
+    return null;
   }
 
   if (getCheckQuery.isLoading || getCheckQuery.isFetching) {
@@ -56,10 +71,19 @@ export const ResultsViewer = memo(function ResultsViewer({
           <Text color="$gray11">Loading background check details…</Text>
         </Row>
       </Stack>
-    )
+    );
   }
 
-  if (getCheckQuery.isError || !getCheckQuery.data?.check) {
+  const data = getCheckQuery.data as typeof getCheckQuery.data & {
+    check?: CheckDetail;
+    documents?: unknown[];
+  };
+  const detail: CheckDetail | undefined = (data?.check ?? data) as
+    | CheckDetail
+    | undefined;
+  const documents = data?.documents ?? [];
+
+  if (getCheckQuery.isError || !detail) {
     return (
       <Stack
         gap={12}
@@ -71,31 +95,37 @@ export const ResultsViewer = memo(function ResultsViewer({
       >
         <Row gap={8} align="center">
           <AlertTriangle size={18} color="$red10" />
-          <Text color="$red11">We couldn't load your background check details. Try again.</Text>
+          <Text color="$red11">
+            We couldn't load your background check details. Try again.
+          </Text>
         </Row>
-        <Button size="sm" variant="outline" onPress={() => getCheckQuery.refetch()}>
+        <Button
+          size="sm"
+          variant="outline"
+          onPress={() => getCheckQuery.refetch()}
+        >
           Retry
         </Button>
       </Stack>
-    )
+    );
   }
+  const statusMeta = getStatusMetadata(detail.status);
+  const statusColors = getStatusToneColors(statusMeta.tone);
 
-  const detail = getCheckQuery.data.check
-  const documents = getCheckQuery.data.documents ?? []
-  const statusMeta = getStatusMetadata(detail.status)
-  const statusColors = getStatusToneColors(statusMeta.tone)
-
-  let completedAtFromHistory: string | null = null
+  let completedAtFromHistory: string | null = null;
   if (Array.isArray(detail.status_history)) {
     for (const entry of detail.status_history as unknown[]) {
-      if (!entry || typeof entry !== 'object') continue
-      const record = entry as Record<string, unknown>
-      const statusValue = typeof record.status === 'string' ? record.status : null
-      if (!statusValue || !statusValue.startsWith('completed')) continue
+      if (!entry || typeof entry !== "object") continue;
+      const record = entry as Record<string, unknown>;
+      const statusValue =
+        typeof record.status === "string" ? record.status : null;
+      if (!statusValue || !statusValue.startsWith("completed")) continue;
       const occurredAt =
-        typeof record.occurred_at === 'string' ? (record.occurred_at as string) : null
+        typeof record.occurred_at === "string"
+          ? (record.occurred_at as string)
+          : null;
       if (occurredAt) {
-        completedAtFromHistory = occurredAt
+        completedAtFromHistory = occurredAt;
       }
     }
   }
@@ -112,7 +142,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       <Row justify="space-between" align="center">
         <Stack gap={4}>
           <Text color="$gray11">
-            {summary?.package?.display_name ?? 'Background check results'}
+            {summary?.package?.display_name ?? "Background check results"}
           </Text>
           <Row gap={8} align="center">
             <Stack
@@ -125,10 +155,17 @@ export const ResultsViewer = memo(function ResultsViewer({
             >
               <Text color={statusColors.text}>{statusMeta.label}</Text>
             </Stack>
-            <Text color="$gray11">Last updated {formatDate(detail.updated_at)}</Text>
+            <Text color="$gray11">
+              Last updated {formatDate(detail.updated_at)}
+            </Text>
           </Row>
         </Stack>
-        <Button size="sm" variant="outline" iconStart={CloseIcon} onPress={onClose}>
+        <Button
+          size="sm"
+          variant="outline"
+          iconStart={CloseIcon}
+          onPress={onClose}
+        >
           Close
         </Button>
       </Row>
@@ -160,7 +197,8 @@ export const ResultsViewer = memo(function ResultsViewer({
         >
           <Text color="$gray11">Notice something inaccurate?</Text>
           <Text color="$gray11">
-            Submit a dispute so our compliance team can review and correct any issues.
+            Submit a dispute so our compliance team can review and correct any
+            issues.
           </Text>
           <Button
             size="sm"
@@ -168,26 +206,34 @@ export const ResultsViewer = memo(function ResultsViewer({
             disabled={hasActiveDispute}
             onPress={() => {
               if (checkId) {
-                onRequestDispute(checkId)
+                onRequestDispute(checkId);
               }
             }}
           >
-            {hasActiveDispute ? 'Dispute in progress' : 'Dispute results'}
+            {hasActiveDispute ? "Dispute in progress" : "Dispute results"}
           </Button>
         </Stack>
       )}
 
-      {detail.summary && (
+      {detail.summary != null && (
         <Stack gap={8}>
           <Text color="$gray11">Summary</Text>
-          <Text color="$gray11">{detail.summary}</Text>
+          <Text color="$gray11">
+            {String(
+              typeof detail.summary === "string"
+                ? detail.summary
+                : JSON.stringify(detail.summary)
+            )}
+          </Text>
         </Stack>
       )}
 
       {detail.findings && (
         <Stack gap={8}>
           <Text color="$gray11">Findings</Text>
-          <Text color="$gray11">{JSON.stringify(detail.findings, null, 2)}</Text>
+          <Text color="$gray11">
+            {JSON.stringify(detail.findings, null, 2)}
+          </Text>
         </Stack>
       )}
 
@@ -200,8 +246,8 @@ export const ResultsViewer = memo(function ResultsViewer({
             iconStart={DownloadCloud}
             onPress={() =>
               Alert.alert(
-                'Download coming soon',
-                'Downloadable reports will be available once signed report URLs are enabled.'
+                "Download coming soon",
+                "Downloadable reports will be available once signed report URLs are enabled."
               )
             }
             disabled={documents.length === 0}
@@ -226,7 +272,9 @@ export const ResultsViewer = memo(function ResultsViewer({
               >
                 <Stack gap={4}>
                   <Text color="$gray11">{document.file_name}</Text>
-                  <Text color="$gray11">Uploaded {formatDate(document.uploaded_at)}</Text>
+                  <Text color="$gray11">
+                    Uploaded {formatDate(document.uploaded_at)}
+                  </Text>
                 </Stack>
                 <Button size="sm" variant="outline" disabled>
                   View
@@ -241,5 +289,5 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       <PrivacyControls checkId={checkId} metadata={detail.metadata} />
     </Stack>
-  )
-})
+  );
+});

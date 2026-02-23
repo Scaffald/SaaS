@@ -1,6 +1,10 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { ControlledAddressForm } from '@scf/core/forms'
-import { usePrerequisites, useCompletePrerequisites, useIndustries } from '@scaffald/sdk/react'
+import { ROUTES } from "@scf/core/constants/routes";
+import { ControlledAddressForm } from "@scf/core/forms";
+import {
+  usePrerequisites,
+  useCompletePrerequisites,
+  useIndustries,
+} from "@scaffald/sdk/react";
 import {
   Button,
   Checkbox,
@@ -13,19 +17,19 @@ import {
   Row,
   Stack,
   useToast,
-} from '@scaffald/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'expo-router'
-import { useEffect, useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Pressable, ScrollView } from 'react-native'
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable, ScrollView } from "react-native";
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
   prerequisitesSchema,
   USER_TYPE_OPTIONS,
   type UserType,
-} from '@scf/core/features/prerequisites/config/prerequisites-schema'
+} from "@scf/core/features/prerequisites/config/prerequisites-schema";
 
 /**
  * OnboardingPage - Full-page prerequisite completion experience
@@ -40,41 +44,42 @@ import {
  * @returns JSX element
  */
 export default function OnboardingPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const toast = useToast()
-  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
 
   // Check prerequisites status
   const {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = usePrerequisites()
+  } = usePrerequisites();
 
   // Fetch industries for dropdown
-  const { data: industriesData, isLoading: isLoadingIndustries } = useIndustries()
+  const { data: industriesData, isLoading: isLoadingIndustries } =
+    useIndustries();
 
   // Complete prerequisites mutation
   const completeMutation = useCompletePrerequisites({
     onSuccess: () => {
       toast.show({
-        title: 'Profile Complete',
-        message: 'Your profile has been set up successfully!',
-        variant: 'success',
-      })
-      refetchStatus()
+        title: "Profile Complete",
+        message: "Your profile has been set up successfully!",
+        variant: "success",
+      });
+      refetchStatus();
       // Redirect to dashboard immediately after completion
-      router.replace(ROUTES.DASHBOARD.path)
+      router.replace(ROUTES.DASHBOARD.path);
     },
     onError: (error: { message?: string }) => {
-      console.error('Error completing prerequisites:', error)
+      console.error("Error completing prerequisites:", error);
       toast.show({
-        title: 'Error',
-        message: error.message || 'Failed to save profile. Please try again.',
-        variant: 'error',
-      })
+        title: "Error",
+        message: error.message || "Failed to save profile. Please try again.",
+        variant: "error",
+      });
     },
-  })
+  });
 
   // Form setup
   const {
@@ -87,66 +92,72 @@ export default function OnboardingPage() {
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
-    mode: 'onSubmit', // Validate on submit instead of onChange to prevent premature validation errors
-  })
+    mode: "onSubmit", // Validate on submit instead of onChange to prevent premature validation errors
+  });
 
-  const previousPrefillHashRef = useRef<string | null>(null)
+  const previousPrefillHashRef = useRef<string | null>(null);
 
   // Populate form with existing data when loaded
   useEffect(() => {
     if (!statusData?.data) {
-      return
+      return;
     }
 
     const prefillData: PrerequisitesFormData = {
-      first_name: statusData.data.first_name ?? '',
-      last_name: statusData.data.last_name ?? '',
+      first_name: statusData.data.first_name ?? "",
+      last_name: statusData.data.last_name ?? "",
       address: {
-        street: statusData.data.address?.street ?? prerequisitesDefaults.address.street,
-        city: statusData.data.address?.city ?? prerequisitesDefaults.address.city,
-        state: statusData.data.address?.state ?? prerequisitesDefaults.address.state,
+        street:
+          statusData.data.address?.street ??
+          prerequisitesDefaults.address.street,
+        city:
+          statusData.data.address?.city ?? prerequisitesDefaults.address.city,
+        state:
+          statusData.data.address?.state ?? prerequisitesDefaults.address.state,
         zip: statusData.data.address?.zip ?? prerequisitesDefaults.address.zip,
-        country: statusData.data.address?.country ?? prerequisitesDefaults.address.country,
+        country:
+          statusData.data.address?.country ??
+          prerequisitesDefaults.address.country,
         latitude: statusData.data.address?.latitude,
         longitude: statusData.data.address?.longitude,
       },
       user_types: statusData.data.user_types ?? [],
-      industry_id: statusData.data.industry_id ?? '',
+      industry_id: statusData.data.industry_id ?? "",
       accepts_privacy_policy:
         (statusData.data as unknown as { accepts_privacy_policy?: boolean })
           .accepts_privacy_policy ?? false,
       accepts_terms_of_service:
         (statusData.data as unknown as { accepts_terms_of_service?: boolean })
           .accepts_terms_of_service ?? false,
-    }
+    };
 
-    const prefillHash = JSON.stringify(prefillData)
+    const prefillHash = JSON.stringify(prefillData);
 
     if (previousPrefillHashRef.current === prefillHash) {
-      return
+      return;
     }
 
-    previousPrefillHashRef.current = prefillHash
-    reset(prefillData)
-  }, [reset, statusData?.data])
+    previousPrefillHashRef.current = prefillHash;
+    reset(prefillData);
+  }, [reset, statusData?.data]);
 
   // Handle form submission
   const onSubmit = async (data: PrerequisitesFormData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await completeMutation.mutateAsync(data)
+      await completeMutation.mutateAsync(data);
     } catch (error) {
-      console.error('Submission error:', error)
+      console.error("Submission error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <ScrollView>
       <Stack justify="center" align="center" padding={16} minHeight="100vh">
-        <Stack maxWidth={600} width="100%" gap={spacing.md} padding={24}>
-          <Stack gap={spacing.xs}>
+        <Stack maxWidth={600} width="100%" gap={12} padding={24}>
+          <Stack gap={8}>
             <Text color="gray">Complete Your Profile</Text>
             <Text color="gray">
               Please complete these required fields to continue using Scaffald
@@ -154,8 +165,8 @@ export default function OnboardingPage() {
           </Stack>
 
           {isCheckingStatus ? (
-            <Stack gap={spacing.sm} align="center">
-              <Spinner size="lg" color="blue" />
+            <Stack gap={10} align="center">
+              <Spinner size="lg" color="primary" />
               <Text color="gray">Loading...</Text>
             </Stack>
           ) : (
@@ -176,7 +187,9 @@ export default function OnboardingPage() {
                         />
                       )}
                     />
-                    {errors.first_name && <Text color="red">{errors.first_name.message}</Text>}
+                    {errors.first_name && (
+                      <Text color="red">{errors.first_name.message}</Text>
+                    )}
                   </Stack>
 
                   <Stack gap={8}>
@@ -192,7 +205,9 @@ export default function OnboardingPage() {
                         />
                       )}
                     />
-                    {errors.last_name && <Text color="red">{errors.last_name.message}</Text>}
+                    {errors.last_name && (
+                      <Text color="red">{errors.last_name.message}</Text>
+                    )}
                   </Stack>
                 </Row>
               </Stack>
@@ -209,7 +224,10 @@ export default function OnboardingPage() {
                   setValue={setValue}
                   trigger={trigger}
                   placeholder="Search for your address..."
-                  error={errors.address?.street?.message || errors.address?.city?.message}
+                  error={
+                    errors.address?.street?.message ||
+                    errors.address?.city?.message
+                  }
                 />
                 {errors.address && (
                   <Text color="red">
@@ -234,35 +252,47 @@ export default function OnboardingPage() {
                       {USER_TYPE_OPTIONS.map((option) => (
                         <Row key={option.value} gap={12} align="center">
                           <Checkbox
-                            checked={field.value?.includes(option.value as UserType)}
+                            checked={field.value?.includes(
+                              option.value as UserType
+                            )}
                             onChange={(checked: boolean) => {
-                              const currentTypes = field.value || []
+                              const currentTypes = field.value || [];
                               const newValue = checked
                                 ? [...currentTypes, option.value]
-                                : currentTypes.filter((t) => t !== option.value)
+                                : currentTypes.filter(
+                                    (t) => t !== option.value
+                                  );
                               // Use setValue with shouldValidate: false to prevent form-wide validation
-                              setValue('user_types', newValue, { shouldValidate: false })
+                              setValue("user_types", newValue, {
+                                shouldValidate: false,
+                              });
                             }}
                             size="md"
                           />
                           <Pressable
                             onPress={() => {
-                              const currentTypes = field.value || []
-                              const isChecked = currentTypes.includes(option.value as UserType)
+                              const currentTypes = field.value || [];
+                              const isChecked = currentTypes.includes(
+                                option.value as UserType
+                              );
                               const newValue = isChecked
                                 ? currentTypes.filter((t) => t !== option.value)
-                                : [...currentTypes, option.value]
+                                : [...currentTypes, option.value];
                               // Use setValue with shouldValidate: false to prevent form-wide validation
-                              setValue('user_types', newValue, { shouldValidate: false })
+                              setValue("user_types", newValue, {
+                                shouldValidate: false,
+                              });
                             }}
                             accessibilityRole="button"
                             style={({ pressed }) => ({
                               flexShrink: 1,
                               opacity: pressed ? 0.7 : 1,
-                              alignSelf: 'flex-start',
+                              alignSelf: "flex-start",
                             })}
                           >
-                            <Text nativeID={`checkbox-user-type-${option.value}-label`}>
+                            <Text
+                              nativeID={`checkbox-user-type-${option.value}-label`}
+                            >
                               {option.label}
                             </Text>
                           </Pressable>
@@ -271,7 +301,9 @@ export default function OnboardingPage() {
                     </Stack>
                   )}
                 />
-                {errors.user_types && <Text color="red">{errors.user_types.message}</Text>}
+                {errors.user_types && (
+                  <Text color="red">{errors.user_types.message}</Text>
+                )}
               </Stack>
 
               <Separator />
@@ -289,9 +321,10 @@ export default function OnboardingPage() {
                           <Spinner size="sm" />
                           <Text color="gray">Loading industries...</Text>
                         </Row>
-                      ) : industriesData?.data && industriesData.data.length > 0 ? (
+                      ) : industriesData?.data &&
+                        industriesData.data.length > 0 ? (
                         <ResponsiveSelect
-                          value={field.value || ''}
+                          value={field.value || ""}
                           onValueChange={field.onChange}
                           placeholder="Select your industry"
                           options={industriesData.data.map(
@@ -307,7 +340,9 @@ export default function OnboardingPage() {
                     </Stack>
                   )}
                 />
-                {errors.industry_id && <Text color="red">{errors.industry_id.message}</Text>}
+                {errors.industry_id && (
+                  <Text color="red">{errors.industry_id.message}</Text>
+                )}
               </Stack>
 
               <Separator />
@@ -327,31 +362,36 @@ export default function OnboardingPage() {
                           checked={field.value}
                           onChange={(checked) => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue('accepts_privacy_policy', checked, { shouldValidate: false })
+                            setValue("accepts_privacy_policy", checked, {
+                              shouldValidate: false,
+                            });
                           }}
                           size="md"
                         />
                         <Pressable
                           onPress={() => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue('accepts_privacy_policy', !field.value, {
+                            setValue("accepts_privacy_policy", !field.value, {
                               shouldValidate: false,
-                            })
+                            });
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
-                            alignSelf: 'flex-start',
+                            alignSelf: "flex-start",
                             opacity: pressed ? 0.7 : 1,
                           })}
                         >
                           <Text nativeID="checkbox-legal-privacy-policy-label">
-                            I accept the{' '}
+                            I accept the{" "}
                             <Text
                               color="blue"
                               onPress={(event) => {
-                                event.stopPropagation?.()
-                                if (typeof window !== 'undefined') {
-                                  window.open('https://scaffald.com/privacy', '_blank')
+                                event.stopPropagation?.();
+                                if (typeof window !== "undefined") {
+                                  window.open(
+                                    "https://scaffald.com/privacy",
+                                    "_blank"
+                                  );
                                 }
                               }}
                             >
@@ -361,7 +401,9 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_privacy_policy && (
-                        <Text color="red">{errors.accepts_privacy_policy.message}</Text>
+                        <Text color="red">
+                          {errors.accepts_privacy_policy.message}
+                        </Text>
                       )}
                     </Stack>
                   )}
@@ -378,31 +420,36 @@ export default function OnboardingPage() {
                           checked={field.value}
                           onChange={(checked) => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue('accepts_terms_of_service', checked, { shouldValidate: false })
+                            setValue("accepts_terms_of_service", checked, {
+                              shouldValidate: false,
+                            });
                           }}
                           size="md"
                         />
                         <Pressable
                           onPress={() => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue('accepts_terms_of_service', !field.value, {
+                            setValue("accepts_terms_of_service", !field.value, {
                               shouldValidate: false,
-                            })
+                            });
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
-                            alignSelf: 'flex-start',
+                            alignSelf: "flex-start",
                             opacity: pressed ? 0.7 : 1,
                           })}
                         >
                           <Text nativeID="checkbox-legal-terms-of-service-label">
-                            I accept the{' '}
+                            I accept the{" "}
                             <Text
                               color="blue"
                               onPress={(event) => {
-                                event.stopPropagation?.()
-                                if (typeof window !== 'undefined') {
-                                  window.open('https://scaffald.com/terms', '_blank')
+                                event.stopPropagation?.();
+                                if (typeof window !== "undefined") {
+                                  window.open(
+                                    "https://scaffald.com/terms",
+                                    "_blank"
+                                  );
                                 }
                               }}
                             >
@@ -412,7 +459,9 @@ export default function OnboardingPage() {
                         </Pressable>
                       </Row>
                       {errors.accepts_terms_of_service && (
-                        <Text color="red">{errors.accepts_terms_of_service.message}</Text>
+                        <Text color="red">
+                          {errors.accepts_terms_of_service.message}
+                        </Text>
                       )}
                     </Stack>
                   )}
@@ -427,14 +476,14 @@ export default function OnboardingPage() {
                 disabled={isSubmitting}
                 loading={isSubmitting}
                 size="lg"
-                style={{ marginTop: spacing.xs }}
+                style={{ marginTop: 8 }}
               >
-                {isSubmitting ? 'Completing...' : 'Complete Profile'}
+                {isSubmitting ? "Completing..." : "Complete Profile"}
               </Button>
             </>
           )}
         </Stack>
       </Stack>
     </ScrollView>
-  )
+  );
 }

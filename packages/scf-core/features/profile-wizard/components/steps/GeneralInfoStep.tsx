@@ -1,27 +1,27 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, TextArea, Row, Stack } from '@scaffald/ui'
-import { z } from 'zod'
-import type { GeneralInfoStepData } from '../../hooks/useProfileWizard'
-import { StepNavigation } from '../StepNavigation'
-import type { WizardStepComponentProps } from './types'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { Input, Paragraph, Text, TextArea, Row, Stack } from "@scaffald/ui";
+import { z } from "zod";
+import type { GeneralInfoStepData } from "../../hooks/useProfileWizard";
+import { StepNavigation } from "../StepNavigation";
+import type { WizardStepComponentProps } from "./types";
 
 const generalInfoSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  headline: z.string().min(1, 'Headline is required'),
-  bio: z.string().max(500, 'Bio should be under 500 characters').optional(),
-})
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  headline: z.string().min(1, "Headline is required"),
+  bio: z.string().max(500, "Bio should be under 500 characters").optional(),
+});
 
-type GeneralInfoFormValues = z.infer<typeof generalInfoSchema>
+type GeneralInfoFormValues = z.infer<typeof generalInfoSchema>;
 
 const DEFAULT_VALUES: GeneralInfoFormValues = {
-  firstName: '',
-  lastName: '',
-  headline: '',
-  bio: '',
-}
+  firstName: "",
+  lastName: "",
+  headline: "",
+  bio: "",
+};
 
 export function GeneralInfoStep({
   initialData,
@@ -32,7 +32,7 @@ export function GeneralInfoStep({
   onSaveForLater,
   onSkip,
   onStepStateChange,
-}: WizardStepComponentProps<'general'>) {
+}: WizardStepComponentProps<"general">) {
   const {
     control,
     handleSubmit,
@@ -41,60 +41,60 @@ export function GeneralInfoStep({
   } = useForm<GeneralInfoFormValues>({
     defaultValues: initialData ?? DEFAULT_VALUES,
     resolver: zodResolver(generalInfoSchema),
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
-  const watchedValues = useWatch({ control })
+  const watchedValues = useWatch({ control });
 
   useEffect(() => {
-    if (!initialData) return
-    reset(initialData, { keepDefaultValues: false })
-  }, [initialData, reset])
+    if (!initialData) return;
+    reset(initialData, { keepDefaultValues: false });
+  }, [initialData, reset]);
 
   useEffect(() => {
     const payload: GeneralInfoStepData = {
-      firstName: watchedValues.firstName ?? '',
-      lastName: watchedValues.lastName ?? '',
-      headline: watchedValues.headline ?? '',
-      bio: watchedValues.bio ?? '',
-    }
+      firstName: watchedValues.firstName ?? "",
+      lastName: watchedValues.lastName ?? "",
+      headline: watchedValues.headline ?? "",
+      bio: watchedValues.bio ?? "",
+    };
 
     onStepStateChange?.({
       data: payload,
       isValid,
       isDirty,
-    })
-  }, [watchedValues, isValid, isDirty, onStepStateChange])
+    });
+  }, [watchedValues, isValid, isDirty, onStepStateChange]);
 
   const submit = handleSubmit(async (values) => {
     await onContinue({
       firstName: values.firstName.trim(),
       lastName: values.lastName.trim(),
       headline: values.headline.trim(),
-      bio: values.bio?.trim() ?? '',
-    })
-  })
+      bio: values.bio?.trim() ?? "",
+    });
+  });
 
   const handleSaveForLater = handleSubmit(async (values) => {
     await onSaveForLater?.({
       firstName: values.firstName.trim(),
       lastName: values.lastName.trim(),
       headline: values.headline.trim(),
-      bio: values.bio?.trim() ?? '',
-    })
-  })
+      bio: values.bio?.trim() ?? "",
+    });
+  });
 
   const handleSkip = async () => {
-    await onSkip?.()
-  }
+    await onSkip?.();
+  };
 
   return (
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Tell us about yourself</Text>
         <Paragraph color="$gray11">
-          Add a friendly introduction. This helps employers quickly understand who you are and what
-          you bring to the table.
+          Add a friendly introduction. This helps employers quickly understand
+          who you are and what you bring to the table.
         </Paragraph>
       </Stack>
 
@@ -114,7 +114,9 @@ export function GeneralInfoStep({
               />
             )}
           />
-          {errors.firstName && <Text color="$red10">{errors.firstName.message}</Text>}
+          {errors.firstName && (
+            <Text color="$red10">{errors.firstName.message}</Text>
+          )}
         </Stack>
 
         <Stack flex={1} minWidth={150} gap={8}>
@@ -132,7 +134,9 @@ export function GeneralInfoStep({
               />
             )}
           />
-          {errors.lastName && <Text color="$red10">{errors.lastName.message}</Text>}
+          {errors.lastName && (
+            <Text color="$red10">{errors.lastName.message}</Text>
+          )}
         </Stack>
       </Row>
 
@@ -150,7 +154,9 @@ export function GeneralInfoStep({
             />
           )}
         />
-        {errors.headline && <Text color="$red10">{errors.headline.message}</Text>}
+        {errors.headline && (
+          <Text color="$red10">{errors.headline.message}</Text>
+        )}
       </Stack>
 
       <Stack gap={8}>
@@ -164,11 +170,13 @@ export function GeneralInfoStep({
               value={field.value}
               placeholder="Share a quick summary of your experience, strengths, and goals."
               onChangeText={field.onChange}
-              minHeight={120}
+              style={{ minHeight: 120 }}
             />
           )}
         />
-        <Text color="$gray11">Keep it short and friendly—1-2 sentences is perfect.</Text>
+        <Text color="$gray11">
+          Keep it short and friendly—1-2 sentences is perfect.
+        </Text>
       </Stack>
 
       <StepNavigation
@@ -183,5 +191,5 @@ export function GeneralInfoStep({
         nextLabel="Next: Skills"
       />
     </Stack>
-  )
+  );
 }

@@ -1,20 +1,23 @@
-import { ResponsiveModal, useThemeContext } from '@scaffald/ui'
-import { ResponsiveSelect } from '@scaffald/ui'
-import { UserSearch } from '@scf/core/components/user'
-import { useToast } from '@scaffald/ui'
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { useAddTeamMember } from '@scaffald/sdk/react'
+import { ResponsiveModal, useThemeContext } from "@scaffald/ui";
+import { ResponsiveSelect } from "@scaffald/ui";
+import { UserSearch } from "@scf/core/components/user";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { useAddTeamMember } from "@scaffald/sdk/react";
 
-import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
-import { colors } from '@scaffald/ui/tokens'
+import {
+  type TeamRoleOption,
+  useTeamFormOptions,
+} from "../hooks/useTeamFormOptions";
+import { colors } from "@scaffald/ui/tokens";
 
 interface AddTeamMemberModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  teamId: string
-  organizationId: string
-  onAdded?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  teamId: string;
+  organizationId: string;
+  onAdded?: () => void;
 }
 
 export function AddTeamMemberModal({
@@ -24,58 +27,62 @@ export function AddTeamMemberModal({
   organizationId,
   onAdded,
 }: AddTeamMemberModalProps) {
-  const { theme } = useThemeContext()
-  const toast = useToast()
-  const [selectedUserId, setSelectedUserId] = useState<string>('')
-  const [selectedUserName, setSelectedUserName] = useState<string>('')
-  const [selectedRoleId, setSelectedRoleId] = useState<string>('')
-  const [formError, setFormError] = useState<string | null>(null)
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserName, setSelectedUserName] = useState<string>("");
+  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
+  const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({
+    organizationId,
+  });
 
   const addMemberMutation = useAddTeamMember({
     onSuccess: () => {
       toast.show({
-        title: 'Member added',
-        message: `${selectedUserName || 'User'} joined the team.`,
-        variant: 'success',
-      })
-      onOpenChange(false)
-      onAdded?.()
+        title: "Member added",
+        message: `${selectedUserName || "User"} joined the team.`,
+        variant: "success",
+      });
+      onOpenChange(false);
+      onAdded?.();
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'An error occurred'
+      const _message =
+        error instanceof Error ? error.message : "An error occurred";
       toast.show({
-        title: 'Unable to add member',
-        variant: 'error',
-      })
+        title: "Unable to add member",
+        message: _message,
+        variant: "error",
+      });
     },
-  })
+  });
 
   useEffect(() => {
     if (open) {
-      setSelectedUserId('')
-      setSelectedUserName('')
-      setSelectedRoleId('')
-      setFormError(null)
+      setSelectedUserId("");
+      setSelectedUserName("");
+      setSelectedRoleId("");
+      setFormError(null);
     }
-  }, [open])
+  }, [open]);
 
-  const roleOptions: TeamRoleOption[] = useMemo(() => roles, [roles])
+  const roleOptions: TeamRoleOption[] = useMemo(() => roles, [roles]);
 
   const handleSubmit = async () => {
     if (!selectedUserId) {
-      setFormError('Select a user to add to the team.')
-      return
+      setFormError("Select a user to add to the team.");
+      return;
     }
 
-    const roleId = selectedRoleId || roleOptions[0]?.id
+    const roleId = selectedRoleId || roleOptions[0]?.id;
     if (!roleId) {
-      setFormError('No team roles are available for this organization.')
-      return
+      setFormError("No team roles are available for this organization.");
+      return;
     }
 
-    setFormError(null)
+    setFormError(null);
 
     await addMemberMutation.mutateAsync({
       teamId,
@@ -83,11 +90,15 @@ export function AddTeamMemberModal({
         userId: selectedUserId,
         roleId,
       },
-    })
-  }
+    });
+  };
 
   return (
-    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Add team member">
+    <ResponsiveModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Add team member"
+    >
       <Stack gap={16}>
         <Text style={{ color: colors.text[theme].secondary }}>
           Invite an existing organization member to collaborate on this team.
@@ -98,9 +109,9 @@ export function AddTeamMemberModal({
           <UserSearch
             value={selectedUserId}
             onUserSelect={(id, name) => {
-              setSelectedUserId(id)
-              setSelectedUserName(name)
-              setFormError(null)
+              setSelectedUserId(id);
+              setSelectedUserName(name);
+              setFormError(null);
             }}
             placeholder="Search organization members…"
             error={formError ?? undefined}
@@ -113,11 +124,13 @@ export function AddTeamMemberModal({
           {isLoadingRoles ? (
             <Row align="center" gap={8}>
               <Spinner size="sm" />
-              <Text style={{ color: colors.text[theme].secondary }}>Loading roles...</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Loading roles...
+              </Text>
             </Row>
           ) : (
             <ResponsiveSelect
-              value={selectedRoleId || roleOptions[0]?.id || ''}
+              value={selectedRoleId || roleOptions[0]?.id || ""}
               onValueChange={setSelectedRoleId}
               placeholder="Select role"
               options={roleOptions.map((role) => ({
@@ -138,20 +151,18 @@ export function AddTeamMemberModal({
           </Button>
           <Button
             onPress={handleSubmit}
-            style={{
-              backgroundColor: colors.bg[theme].primary,
-              color: colors.text[theme].secondary,
-            }}
+            color="primary"
+            variant="filled"
             disabled={addMemberMutation.isPending}
           >
             {addMemberMutation.isPending ? (
-              <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
+              <Spinner size="sm" color="gray" />
             ) : (
-              'Add Member'
+              "Add Member"
             )}
           </Button>
         </Row>
       </Stack>
     </ResponsiveModal>
-  )
+  );
 }

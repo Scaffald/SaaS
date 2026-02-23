@@ -1,109 +1,122 @@
-import { useUpdateBackgroundCheckPrivacyMutation } from '@scf/core/utils/background-checks-sdk-hooks'
-import { Share2 } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
-import { Alert } from 'react-native'
-import { Button, Separator, Switch, Text, Row, Stack } from '@scaffald/ui'
+import { useAdminUpdatePrivacyMutation } from "@scf/core/utils/background-checks-sdk-hooks";
+import { Share2 } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { Alert } from "react-native";
+import { Button, Separator, Switch, Text, Row, Stack } from "@scaffald/ui";
 
-import type { BackgroundCheckDetail } from './status.utils'
+import type { BackgroundCheckDetail } from "./status.utils";
 
 type PrivacySettings = {
-  share_publicly: boolean
-  shared_with_organization_ids: string[]
-}
+  share_publicly: boolean;
+  shared_with_organization_ids: string[];
+};
 
 interface PrivacyControlsProps {
-  checkId: string
-  metadata?: BackgroundCheckDetail['metadata']
+  checkId: string;
+  metadata?: BackgroundCheckDetail["metadata"];
 }
 
-function parsePrivacy(metadata?: BackgroundCheckDetail['metadata']): PrivacySettings {
-  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+function parsePrivacy(
+  metadata?: BackgroundCheckDetail["metadata"]
+): PrivacySettings {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return {
       share_publicly: false,
       shared_with_organization_ids: [],
-    }
+    };
   }
 
-  const record = metadata as Record<string, unknown>
-  if (!('privacy' in record)) {
+  const record = metadata as Record<string, unknown>;
+  if (!("privacy" in record)) {
     return {
       share_publicly: false,
       shared_with_organization_ids: [],
-    }
+    };
   }
 
-  const privacyRecord = record.privacy
-  if (!privacyRecord || typeof privacyRecord !== 'object' || Array.isArray(privacyRecord)) {
+  const privacyRecord = record.privacy;
+  if (
+    !privacyRecord ||
+    typeof privacyRecord !== "object" ||
+    Array.isArray(privacyRecord)
+  ) {
     return {
       share_publicly: false,
       shared_with_organization_ids: [],
-    }
+    };
   }
 
-  const privacy = privacyRecord as Record<string, unknown>
+  const privacy = privacyRecord as Record<string, unknown>;
   return {
     share_publicly: Boolean(privacy.share_publicly),
-    shared_with_organization_ids: Array.isArray(privacy.shared_with_organization_ids)
+    shared_with_organization_ids: Array.isArray(
+      privacy.shared_with_organization_ids
+    )
       ? (privacy.shared_with_organization_ids as string[])
       : [],
-  }
+  };
 }
 
 export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
-  const initialSettings = useMemo(() => parsePrivacy(metadata), [metadata])
-  const [sharePublicly, setSharePublicly] = useState(initialSettings.share_publicly)
+  const initialSettings = useMemo(() => parsePrivacy(metadata), [metadata]);
+  const [sharePublicly, setSharePublicly] = useState(
+    initialSettings.share_publicly
+  );
   const [organizationIds, setOrganizationIds] = useState(
     initialSettings.shared_with_organization_ids
-  )
+  );
 
-  const updatePrivacyMutation = useUpdateBackgroundCheckPrivacyMutation()
+  const updatePrivacyMutation = useAdminUpdatePrivacyMutation();
 
-  const applyUpdate = (nextSharePublicly: boolean, nextOrganizationIds: string[]) => {
-    const previousShare = sharePublicly
-    const previousOrganizations = organizationIds
-    setSharePublicly(nextSharePublicly)
-    setOrganizationIds(nextOrganizationIds)
+  const applyUpdate = (
+    nextSharePublicly: boolean,
+    nextOrganizationIds: string[]
+  ) => {
+    const previousShare = sharePublicly;
+    const previousOrganizations = organizationIds;
+    setSharePublicly(nextSharePublicly);
+    setOrganizationIds(nextOrganizationIds);
 
     updatePrivacyMutation.mutate(
       {
-        background_check_id: checkId,
+        checkId,
         share_publicly: nextSharePublicly,
         shared_with_organization_ids: nextOrganizationIds,
       },
       {
         onError: (error: unknown) => {
-          setSharePublicly(previousShare)
-          setOrganizationIds(previousOrganizations)
+          setSharePublicly(previousShare);
+          setOrganizationIds(previousOrganizations);
           const message =
             error instanceof Error
               ? error.message
-              : 'Could not update privacy settings. Please try again.'
-          Alert.alert('Could not update privacy settings', message)
+              : "Could not update privacy settings. Please try again.";
+          Alert.alert("Could not update privacy settings", message);
         },
       }
-    )
-  }
+    );
+  };
 
   const handleToggleSharePublicly = (value: boolean) => {
-    applyUpdate(value, organizationIds)
-  }
+    applyUpdate(value, organizationIds);
+  };
 
   const handleRevokeAccess = (organizationId: string) => {
     applyUpdate(
       sharePublicly,
       organizationIds.filter((id) => id !== organizationId)
-    )
-  }
+    );
+  };
 
-  const isSaving = updatePrivacyMutation.isPending
+  const isSaving = updatePrivacyMutation.isPending;
 
   return (
     <Stack gap={16}>
       <Stack gap={8}>
         <Text color="$gray11">Privacy controls</Text>
         <Text color="$gray11">
-          Manage who can see your background check results. These settings apply across the
-          platform.
+          Manage who can see your background check results. These settings apply
+          across the platform.
         </Text>
       </Stack>
 
@@ -119,7 +132,8 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           <Stack flex={1} gap={4} paddingRight={12}>
             <Text color="$gray11">Show verified badge</Text>
             <Text color="$gray11">
-              Allow organizations to see a verified badge that your background check is current.
+              Allow organizations to see a verified badge that your background
+              check is current.
             </Text>
           </Stack>
           <Switch
@@ -141,8 +155,8 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
             disabled
             onPress={() =>
               Alert.alert(
-                'Coming soon',
-                'Sharing with specific organizations will be available once invitations are enabled.'
+                "Coming soon",
+                "Sharing with specific organizations will be available once invitations are enabled."
               )
             }
           >
@@ -194,8 +208,9 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
       <Separator />
 
       <Text color="$gray11">
-        Tip: Only share your results with trusted organizations. You can revoke access at any time.
+        Tip: Only share your results with trusted organizations. You can revoke
+        access at any time.
       </Text>
     </Stack>
-  )
+  );
 }

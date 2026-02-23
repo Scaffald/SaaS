@@ -1,7 +1,6 @@
 import { useTransactionReceipt } from '@scf/core/utils/payments-sdk-hooks'
 import { Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
-import { Download } from 'lucide-react-native'
-import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type TransactionReceiptModalProps = {

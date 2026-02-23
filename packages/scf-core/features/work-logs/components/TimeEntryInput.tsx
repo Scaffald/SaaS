@@ -1,30 +1,30 @@
-import { MinusCircle } from 'lucide-react-native'
-import { memo } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
-import { Platform } from 'react-native'
-import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
+import { MinusCircle } from "lucide-react-native";
+import { memo } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { Platform } from "react-native";
+import { Button, Input, Text, Row, Stack } from "@scaffald/ui";
 
-import type { CreateWorkLogInput } from '@scf/schemas'
+import type { CreateWorkLogInput } from "@scf/schemas";
 
 export interface TimeEntryInputProps {
-  index: number
-  onRemove?: () => void
-  disableRemove?: boolean
+  index: number;
+  onRemove?: () => void;
+  disableRemove?: boolean;
 }
 
-const getInputPropsForPlatform = () => {
-  if (Platform.OS === 'web') {
+const getInputPropsForPlatform = (): Record<string, unknown> => {
+  if (Platform.OS === "web") {
     return {
-      type: 'time' as const,
+      type: "time",
       step: 300,
-    }
+    };
   }
 
   return {
-    inputMode: 'numeric' as const,
-    keyboardType: 'numbers-and-punctuation' as const,
-  }
-}
+    inputMode: "numeric" as const,
+    keyboardType: "numbers-and-punctuation" as const,
+  };
+};
 
 export const TimeEntryInput = memo(function TimeEntryInput({
   index,
@@ -34,14 +34,14 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   const {
     control,
     formState: { errors },
-  } = useFormContext<CreateWorkLogInput>()
+  } = useFormContext<CreateWorkLogInput>();
 
-  const rowError = errors.timeEntries?.[index]
+  const rowError = errors.timeEntries?.[index];
 
   return (
     <Stack
       borderWidth={1}
-      style={{ borderColor: '#e2e8f0', borderRadius: 16, padding: 8 }}
+      style={{ borderColor: "#e2e8f0", borderRadius: 16, padding: 8 }}
       gap={8}
     >
       <Row gap={12} align="center">
@@ -60,7 +60,9 @@ export const TimeEntryInput = memo(function TimeEntryInput({
               />
             )}
           />
-          {rowError?.start?.message && <Text style={{ color: '#ef4444' }}>{rowError.start.message}</Text>}
+          {rowError?.start?.message && (
+            <Text style={{ color: "#ef4444" }}>{rowError.start.message}</Text>
+          )}
         </Stack>
 
         <Stack flex={1} gap={4}>
@@ -78,7 +80,9 @@ export const TimeEntryInput = memo(function TimeEntryInput({
               />
             )}
           />
-          {rowError?.end?.message && <Text style={{ color: '#ef4444' }}>{rowError.end.message}</Text>}
+          {rowError?.end?.message && (
+            <Text style={{ color: "#ef4444" }}>{rowError.end.message}</Text>
+          )}
         </Stack>
 
         <Button
@@ -88,11 +92,13 @@ export const TimeEntryInput = memo(function TimeEntryInput({
           disabled={disableRemove}
           iconStart={MinusCircle}
           accessibilityLabel="Remove time entry"
-          style={{ alignSelf: 'flex-end' }}
+          style={{ alignSelf: "flex-end" }}
         />
       </Row>
 
-      {typeof rowError?.message === 'string' && <Text style={{ color: '#ef4444' }}>{rowError.message}</Text>}
+      {typeof rowError?.message === "string" && (
+        <Text style={{ color: "#ef4444" }}>{rowError.message}</Text>
+      )}
     </Stack>
-  )
-})
+  );
+});

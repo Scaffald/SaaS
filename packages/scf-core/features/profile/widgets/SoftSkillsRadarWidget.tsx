@@ -1,26 +1,25 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
-import { SoftSkillsRadarGrid } from '@scf/core/components/ui'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useSoftSkills } from "@scf/core/utils/profile-skills-sdk-hooks";
+import { SoftSkillsRadarGrid } from "@scf/core/components/ui";
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
-} from '../components/SoftSkillsCategoryTabs'
-import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
+} from "../components/SoftSkillsCategoryTabs";
+import type { SoftSkill } from "../components/SoftSkillsCategoryTabs";
 import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
   ResponsiveModal,
-  spacing,
-} from '@scaffald/ui'
-import { Download } from 'lucide-react-native'
-import { useRouter } from 'expo-router'
-import { useToast } from '@scaffald/ui'
-import { useCallback, useMemo, useState, type FC } from 'react'
-import { Separator, Text, Row, Stack } from '@scaffald/ui'
-import type { ProfileWidgetProps } from './types'
+} from "@scaffald/ui";
+import { Download } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useToast } from "@scaffald/ui";
+import { useCallback, useMemo, useState, type FC } from "react";
+import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import type { ProfileWidgetProps } from "./types";
 
 /**
  * SoftSkillsRadarWidget component
@@ -31,13 +30,15 @@ import type { ProfileWidgetProps } from './types'
 export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   userId,
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }) => {
-  const router = useRouter()
-  const toast = useToast()
-  const [drillDownOpen, setDrillDownOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<SoftSkillCategory>('reliability')
-  const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
+  const router = useRouter();
+  const toast = useToast();
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] =
+    useState<SoftSkillCategory>("reliability");
+  const [activeCategory, setActiveCategory] =
+    useState<SoftSkillCategory>("reliability");
 
   // Fetch soft skills data
   const {
@@ -47,11 +48,11 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   } = useSoftSkills(userId ? { userId } : undefined, {
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  })
+  });
 
   // Prepare skills for display
   const skills = useMemo<SoftSkill[]>(() => {
-    if (!data) return []
+    if (!data) return [];
 
     // Note: getSoftSkillsComparison returns category averages, not individual skill ratings
     // So we only show self ratings in the drill-down grid
@@ -64,23 +65,23 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
         selfRating: skill.rating ?? 0,
         peerRating: undefined, // Individual peer ratings not available
         versionHistory: undefined, // Not needed for widget
-      }))
-  }, [data])
+      }));
+  }, [data]);
 
   // Handle export (placeholder for now)
   const handleExport = useCallback(() => {
     toast.show({
-      title: 'Export',
-      message: 'Chart export functionality coming soon!',
-    })
-  }, [toast])
+      title: "Export",
+      message: "Chart export functionality coming soon!",
+    });
+  }, [toast]);
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading soft skills..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
@@ -91,7 +92,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (!data || data.skills.length === 0) {
@@ -100,20 +101,19 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
         <EmptyState
           title="No soft skills assessment"
           description="Complete your soft skills assessment to see your profile"
-          iconStart={undefined}
         />
       </DashboardWidget>
-    )
+    );
   }
 
-  const showCompact = variant === 'compact'
+  const showCompact = variant === "compact";
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
         <Row justify="space-between" align="center">
-          <Heading variant="h4">Soft Skills</Heading>
+          <H4>Soft Skills</H4>
           <Row gap={8} align="center">
             {!showCompact && (
               <Button
@@ -131,7 +131,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
                 variant="outline"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path);
                 }}
               >
                 Edit
@@ -153,7 +153,11 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
 
         {/* Skills Grid */}
         {skills.length > 0 && (
-          <SoftSkillsRadarGrid skills={skills} activeCategory={activeCategory} isLoading={false} />
+          <SoftSkillsRadarGrid
+            skills={skills}
+            activeCategory={activeCategory}
+            isLoading={false}
+          />
         )}
 
         {/* Drill-down Modal */}
@@ -162,7 +166,6 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           onOpenChange={setDrillDownOpen}
           title="Soft Skills Details"
           size="lg"
-          showCloseButton={true}
         >
           <Stack gap={16} padding="md">
             {/* Category Tabs */}
@@ -181,5 +184,5 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
         </ResponsiveModal>
       </Stack>
     </DashboardWidget>
-  )
-}
+  );
+};

@@ -8,19 +8,20 @@ import {
   useSaveCertificationsMutation,
   useUploadCertificationFileMutation,
   useCertificationChildren,
-} from '@scf/core/utils/profile-certifications-sdk-hooks'
-import { useQueryClient } from '@tanstack/react-query'
+} from "@scf/core/utils/profile-certifications-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CertificationCheckbox,
   CertificationChip,
   CertificationSearch,
-} from '@scf/core/components/certifications'
-import { Button, DashboardWidget, MonthYearPicker, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { Award, PlusCircle, UploadCloud } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
-import { useCallback, useEffect, useState } from 'react'
-import { Pressable } from 'react-native'
+} from "@scf/core/components/certifications";
+import { Button, DashboardWidget, useThemeContext } from "@scaffald/ui";
+import { MonthYearPicker } from "./components/MonthYearPicker";
+import { colors } from "@scaffald/ui/tokens";
+import { Award, PlusCircle, UploadCloud } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useCallback, useEffect, useState } from "react";
+import { Pressable } from "react-native";
 import {
   Card,
   H4,
@@ -31,50 +32,50 @@ import {
   TextArea,
   Row,
   Stack,
-} from '@scaffald/ui'
-import { ProfileEmptyState } from './components'
-import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
-import { invalidateProfileQueries } from './utils/profile-sync'
+} from "@scaffald/ui";
+import { ProfileEmptyState } from "./components";
+import { useProfileCertificationsHighlight } from "./profile-certifications-highlight-context";
+import { invalidateProfileQueries } from "./utils/profile-sync";
 import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
   startProfileSync,
   useAdaptiveProfileSync,
-} from './utils/profile-sync-store'
+} from "./utils/profile-sync-store";
 
 interface Certification {
-  id: string
-  slug: string
-  title: string
-  description: string | null
-  depth: number
-  sort_order: number
-  parent_id: string | null
-  parent_title: string | null
-  parent_slug: string | null
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  depth: number;
+  sort_order: number;
+  parent_id: string | null;
+  parent_title: string | null;
+  parent_slug: string | null;
 }
 
 interface CertificationWithParent extends Certification {
-  parent_id: string | null
+  parent_id: string | null;
 }
 
 interface UserCertification {
-  id: string
-  certification_id: string
-  credential_url: string | null
-  certificate_file_path: string | null
-  catalog: Certification
+  id: string;
+  certification_id: string;
+  credential_url: string | null;
+  certificate_file_path: string | null;
+  catalog: Certification;
 }
 
 interface CertificationTree {
-  depth0: UserCertification[]
-  depth1ByParent: Record<string, UserCertification[]>
-  depth2ByParent: Record<string, UserCertification[]>
+  depth0: UserCertification[];
+  depth1ByParent: Record<string, UserCertification[]>;
+  depth2ByParent: Record<string, UserCertification[]>;
 }
 
 interface ProfileCertificationsLeftProps {
-  onSelectCertificationForProof?: (certId: string, certTitle: string) => void
+  onSelectCertificationForProof?: (certId: string, certTitle: string) => void;
 }
 
 /**
@@ -84,164 +85,179 @@ interface ProfileCertificationsLeftProps {
 export function ProfileCertificationsLeft({
   onSelectCertificationForProof,
 }: ProfileCertificationsLeftProps) {
-  const { theme } = useThemeContext()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<Certification[]>([])
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
-  const [showCustomForm, setShowCustomForm] = useState(false)
-  const [customErrors, setCustomErrors] = useState<Record<string, string>>({})
+  const { theme } = useThemeContext();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Certification[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customErrors, setCustomErrors] = useState<Record<string, string>>({});
   const [customForm, setCustomForm] = useState({
-    name: '',
-    organization: '',
+    name: "",
+    organization: "",
     issueDate: null as Date | null,
     expirationDate: null as Date | null,
-    credentialId: '',
-    credentialUrl: '',
-    description: '',
+    credentialId: "",
+    credentialUrl: "",
+    description: "",
     file: null as File | null,
-  })
-  const { highlights: recentlyChangedCerts, triggerHighlight } = useProfileCertificationsHighlight()
-  const toast = useToast()
+  });
+  const { highlights: recentlyChangedCerts, triggerHighlight } =
+    useProfileCertificationsHighlight();
+  const toast = useToast();
 
   const formatMonthYear = useCallback((date: Date | null) => {
-    if (!date) return undefined
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    return `${date.getFullYear()}-${month}-01`
-  }, [])
+    if (!date) return undefined;
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${date.getFullYear()}-${month}-01`;
+  }, []);
 
   const resetCustomForm = useCallback(() => {
     setCustomForm({
-      name: '',
-      organization: '',
+      name: "",
+      organization: "",
       issueDate: null,
       expirationDate: null,
-      credentialId: '',
-      credentialUrl: '',
-      description: '',
+      credentialId: "",
+      credentialUrl: "",
+      description: "",
       file: null,
-    })
-    setCustomErrors({})
-  }, [])
+    });
+    setCustomErrors({});
+  }, []);
 
   const convertFileToBase64 = useCallback((file: File) => {
     return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = () => reject(new Error('Failed to read file'))
-      reader.readAsDataURL(file)
-    })
-  }, [])
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  }, []);
 
   const handleCustomFileSelect = useCallback(() => {
-    if (typeof document === 'undefined') {
+    if (typeof document === "undefined") {
       toast.show({
-        title: 'Upload Unsupported',
-        message: 'File uploads are only available on web right now.',
-      })
-      return
+        title: "Upload Unsupported",
+        message: "File uploads are only available on web right now.",
+      });
+      return;
     }
 
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.pdf,.jpg,.jpeg,.png'
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.jpg,.jpeg,.png";
     input.onchange = (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0] ?? null
-      setCustomForm((prev) => ({ ...prev, file }))
-    }
-    input.click()
-  }, [toast])
+      const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+      setCustomForm((prev) => ({ ...prev, file }));
+    };
+    input.click();
+  }, [toast]);
 
   const handleClearCustomFile = useCallback(() => {
-    setCustomForm((prev) => ({ ...prev, file: null }))
-  }, [])
+    setCustomForm((prev) => ({ ...prev, file: null }));
+  }, []);
 
   // Queries
   const {
     data: certTree,
     refetch: refetchTree,
     isPending: isLoadingTree,
-  } = useUserCertificationTree()
-  const queryClient = useQueryClient()
+  } = useUserCertificationTree();
+  const queryClient = useQueryClient();
 
-  const { data: topLevelResults, isPending: isLoadingSearch } = useTopLevelCertifications(
-    { search: searchQuery },
-    {
-      enabled: searchQuery.length > 0,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (formerly cacheTime)
-    }
-  )
+  const { data: topLevelResults, isPending: isLoadingSearch } =
+    useTopLevelCertifications(
+      { search: searchQuery },
+      {
+        enabled: searchQuery.length > 0,
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+        gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (formerly cacheTime)
+      }
+    );
 
   // Mutations
   // Unified mutation for adding certifications at any depth level
   const addCertification = useAddCertificationMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+      queryClient.invalidateQueries({
+        queryKey: ["profiles", "certifications", "tree"],
+      });
     },
-  })
+  });
 
   // Legacy mutations (kept for backwards compatibility with existing UI flows)
   const addCategory = useAddCategoryCertificationMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+      queryClient.invalidateQueries({
+        queryKey: ["profiles", "certifications", "tree"],
+      });
     },
-  })
+  });
 
   const toggleCert = useToggleSpecificCertificationMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+      queryClient.invalidateQueries({
+        queryKey: ["profiles", "certifications", "tree"],
+      });
     },
-  })
+  });
 
   const removeTopLevel = useRemoveTopLevelCertificationMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profiles', 'certifications', 'tree'] })
+      queryClient.invalidateQueries({
+        queryKey: ["profiles", "certifications", "tree"],
+      });
     },
-  })
+  });
 
-  const saveCustomCertMutation = useSaveCertificationsMutation()
-  const uploadCustomFileMutation = useUploadCertificationFileMutation()
+  const saveCustomCertMutation = useSaveCertificationsMutation();
+  const uploadCustomFileMutation = useUploadCertificationFileMutation();
 
-  const isSavingCustom = saveCustomCertMutation.isPending || uploadCustomFileMutation.isPending
-  const syncStatus = useAdaptiveProfileSync(300)
-  const showAdaptiveCustomSaving = isSavingCustom && syncStatus === 'syncing'
+  const isSavingCustom =
+    saveCustomCertMutation.isPending || uploadCustomFileMutation.isPending;
+  const syncStatus = useAdaptiveProfileSync(300);
+  const showAdaptiveCustomSaving = isSavingCustom && syncStatus === "syncing";
 
   const handleCustomFormSubmit = useCallback(async () => {
-    const errors: Record<string, string> = {}
+    const errors: Record<string, string> = {};
     if (!customForm.name.trim()) {
-      errors.name = 'Certification name is required'
+      errors.name = "Certification name is required";
     }
     if (!customForm.organization.trim()) {
-      errors.organization = 'Issuing organization is required'
+      errors.organization = "Issuing organization is required";
     }
     if (customForm.credentialUrl.trim()) {
       try {
         // Throws if invalid
         // eslint-disable-next-line no-new
-        new URL(customForm.credentialUrl.trim())
+        new URL(customForm.credentialUrl.trim());
       } catch {
-        errors.credentialUrl = 'Enter a valid URL'
+        errors.credentialUrl = "Enter a valid URL";
       }
     }
     if (customForm.issueDate && customForm.expirationDate) {
       if (customForm.issueDate > customForm.expirationDate) {
-        errors.expirationDate = 'Expiration must be after the issue date'
+        errors.expirationDate = "Expiration must be after the issue date";
       }
     }
 
     if (Object.keys(errors).length > 0) {
-      setCustomErrors(errors)
-      return
+      setCustomErrors(errors);
+      return;
     }
 
-    setCustomErrors({})
+    setCustomErrors({});
 
     try {
-      resetProfileSyncError()
-      startProfileSync()
+      resetProfileSyncError();
+      startProfileSync();
       const response = await saveCustomCertMutation.mutateAsync({
         certifications: [
           {
+            id: "",
+            user_id: "",
             name: customForm.name.trim(),
             issuing_organization: customForm.organization.trim(),
             issue_date: formatMonthYear(customForm.issueDate),
@@ -250,41 +266,44 @@ export function ProfileCertificationsLeft({
             credential_url: customForm.credentialUrl.trim() || undefined,
             description: customForm.description.trim() || undefined,
             is_active: true,
-            verification_status: 'unverified',
+            verification_status: "unverified",
           },
         ],
-      })
+      });
 
-      const createdCertification = response.certifications[0]
+      const createdCertification = response.certifications[0];
 
       if (customForm.file && createdCertification?.id) {
-        const base64 = await convertFileToBase64(customForm.file)
+        const base64 = await convertFileToBase64(customForm.file);
         await uploadCustomFileMutation.mutateAsync({
           certificationId: createdCertification.id,
           file: base64,
           fileName: customForm.file.name,
-          contentType: customForm.file.type || 'application/pdf',
-        })
+          contentType: customForm.file.type || "application/pdf",
+        });
       }
 
-      toast.show('Certification Added', {
-        message: `${customForm.name.trim()} saved to your profile.`,
-      })
-
-      resetCustomForm()
-      setShowCustomForm(false)
-      await refetchTree()
-      await invalidateProfileQueries(queryClient)
-      completeProfileSync()
-    } catch (error) {
-      console.error('Error saving custom certification:', error)
       toast.show({
-        title: 'Error',
+        title: "Certification Added",
+        message: `${customForm.name.trim()} saved to your profile.`,
+      });
+
+      resetCustomForm();
+      setShowCustomForm(false);
+      await refetchTree();
+      await invalidateProfileQueries(queryClient);
+      completeProfileSync();
+    } catch (error) {
+      console.error("Error saving custom certification:", error);
+      toast.show({
+        title: "Error",
         message:
-          error instanceof Error ? error.message : 'Unable to save that certification right now.',
-        variant: 'error',
-      })
-      failProfileSync()
+          error instanceof Error
+            ? error.message
+            : "Unable to save that certification right now.",
+        variant: "error",
+      });
+      failProfileSync();
     }
   }, [
     convertFileToBase64,
@@ -296,144 +315,154 @@ export function ProfileCertificationsLeft({
     toast,
     uploadCustomFileMutation,
     queryClient,
-  ])
+  ]);
 
   // Update search results when query returns
   useEffect(() => {
     if (topLevelResults?.certifications) {
-      setSearchResults(topLevelResults.certifications)
+      setSearchResults(
+        topLevelResults.certifications as unknown as Certification[]
+      );
     }
-  }, [topLevelResults])
+  }, [topLevelResults]);
 
   // Auto-expand categories that have checked depth 2 certifications
   useEffect(() => {
-    if (!certTree) return
+    if (!certTree) return;
 
-    const categoriesToExpand = new Set<string>()
-    const typedTree = certTree as unknown as CertificationTree
+    const categoriesToExpand = new Set<string>();
+    const typedTree = certTree as unknown as CertificationTree;
 
     // Check all depth 2 items by parent (depth 1 category)
-    const depth2ByParent = typedTree.depth2ByParent || {}
+    const depth2ByParent = typedTree.depth2ByParent || {};
 
     // If a depth 1 category has any depth 2 items, it should be expanded
     for (const [categoryId, items] of Object.entries(depth2ByParent)) {
       if (Array.isArray(items) && items.length > 0) {
-        categoriesToExpand.add(categoryId)
+        categoriesToExpand.add(categoryId);
       }
     }
 
-    setExpandedCategories(categoriesToExpand)
-  }, [certTree])
+    setExpandedCategories(categoriesToExpand);
+  }, [certTree]);
 
   // Handle search query changes
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query)
-  }
+    setSearchQuery(query);
+  };
 
   // Handle selecting any certification (depth 0, 1, or 2) - immediate add
   const handleSelectTopLevel = async (cert: Certification): Promise<void> => {
     // Check for duplicate optimistically using helper function
-    const allUserCertIds = new Set(getAllSelectedCertIds())
+    const allUserCertIds = new Set(getAllSelectedCertIds());
 
     if (allUserCertIds.has(cert.id)) {
       toast.show({
-        title: 'Already Added',
-        message: 'You already have this certification',
-      })
-      return
+        title: "Already Added",
+        message: "You already have this certification",
+      });
+      return;
     }
 
     try {
-      resetProfileSyncError()
-      startProfileSync()
+      resetProfileSyncError();
+      startProfileSync();
 
       // Use unified mutation that works for any depth level
-      await addCertification.mutateAsync({ certification_id: cert.id })
+      await addCertification.mutateAsync({ certification_id: cert.id });
 
       // Remove from search results state
-      setSearchResults((prev) => prev.filter((c) => c.id !== cert.id))
+      setSearchResults((prev) => prev.filter((c) => c.id !== cert.id));
 
       // Show success toast
-      toast.show('Certification Added', {
+      toast.show({
+        title: "Certification Added",
         message: `${cert.title} added successfully`,
-      })
+      });
 
       // Trigger highlight animation in right panel (will be handled by refetchTree)
-      triggerHighlight(cert.id, 'added')
+      triggerHighlight(cert.id, "added");
 
-      await invalidateProfileQueries(queryClient)
-      await refetchTree()
-      completeProfileSync()
+      await invalidateProfileQueries(queryClient);
+      await refetchTree();
+      completeProfileSync();
     } catch (error) {
-      console.error('Error adding certification:', error)
+      console.error("Error adding certification:", error);
 
       // Handle duplicate error specifically
-      if (error instanceof Error && error.message.includes('already have this certification')) {
+      if (
+        error instanceof Error &&
+        error.message.includes("already have this certification")
+      ) {
         toast.show({
-          title: 'Already Added',
-          message: 'You already have this certification',
-        })
+          title: "Already Added",
+          message: "You already have this certification",
+        });
       } else {
         toast.show({
-          title: 'Error',
+          title: "Error",
           message:
-            error instanceof Error ? error.message : 'Unable to add this certification right now.',
-          variant: 'error',
-        })
+            error instanceof Error
+              ? error.message
+              : "Unable to add this certification right now.",
+          variant: "error",
+        });
       }
-      failProfileSync()
+      failProfileSync();
     }
-  }
+  };
 
   // Handle removing a depth 0 certification
   const handleRemoveTopLevel = async (topLevelId: string) => {
     try {
-      resetProfileSyncError()
-      startProfileSync()
+      resetProfileSyncError();
+      startProfileSync();
       const result = await removeTopLevel.mutateAsync({
         top_level_id: topLevelId,
         confirmed: false,
-      })
+      });
 
       if (result.needsConfirmation) {
         // Show confirmation dialog
         const confirmed = confirm(
           `${result.message}\n\nAre you sure you want to remove this certification and all related items?`
-        )
+        );
 
         if (confirmed) {
           await removeTopLevel.mutateAsync({
             top_level_id: topLevelId,
             confirmed: true,
-          })
+          });
           toast.show({
-            title: 'Category Removed',
-            message: 'Certification category removed from your profile.',
-          })
-          await invalidateProfileQueries(queryClient)
-          completeProfileSync()
+            title: "Category Removed",
+            message: "Certification category removed from your profile.",
+          });
+          await invalidateProfileQueries(queryClient);
+          completeProfileSync();
         } else {
-          completeProfileSync()
+          completeProfileSync();
         }
       } else {
         toast.show({
-          title: 'Category Removed',
-          message: 'Certification category removed from your profile.',
-        })
-        await invalidateProfileQueries(queryClient)
-        completeProfileSync()
+          title: "Category Removed",
+          message: "Certification category removed from your profile.",
+        });
+        await invalidateProfileQueries(queryClient);
+        completeProfileSync();
       }
     } catch (error) {
-      console.error('Error removing top-level certification:', error)
+      console.error("Error removing top-level certification:", error);
       toast.show({
-        title: 'Error',
+        title: "Error",
         message:
-          error instanceof Error ? error.message : 'Unable to remove that certification right now.',
-        variant: 'error',
-      })
-      failProfileSync()
+          error instanceof Error
+            ? error.message
+            : "Unable to remove that certification right now.",
+        variant: "error",
+      });
+      failProfileSync();
     }
-  }
+  };
 
   // Handle toggling a depth 1 category
   const handleToggleCategory = async (
@@ -441,54 +470,57 @@ export function ProfileCertificationsLeft({
     parentId: string,
     categoryTitle: string
   ) => {
-    const isExpanded = expandedCategories.has(categoryId)
+    const isExpanded = expandedCategories.has(categoryId);
 
     if (!isExpanded) {
       // Check if already saved
       const depth1Items = (certTree?.depth1ByParent[parentId] ||
-        []) as unknown as UserCertification[]
+        []) as unknown as UserCertification[];
       const alreadySaved = depth1Items.some(
         (item: UserCertification) => item.certification_id === categoryId
-      )
+      );
 
       if (!alreadySaved) {
         // First time expanding - save to DB
         try {
-          resetProfileSyncError()
-          startProfileSync()
+          resetProfileSyncError();
+          startProfileSync();
           await addCategory.mutateAsync({
             category_id: categoryId,
             parent_id: parentId,
-          })
-          toast.show('Category Saved', {
-            message: `${categoryTitle} added to your certifications.`,
-          })
-          await invalidateProfileQueries(queryClient)
-          completeProfileSync()
-        } catch (error) {
-          console.error('Error adding category:', error)
+          });
           toast.show({
-            title: 'Error',
+            title: "Category Saved",
+            message: `${categoryTitle} added to your certifications.`,
+          });
+          await invalidateProfileQueries(queryClient);
+          completeProfileSync();
+        } catch (error) {
+          console.error("Error adding category:", error);
+          toast.show({
+            title: "Error",
             message:
-              error instanceof Error ? error.message : 'Unable to add that category right now.',
-            variant: 'error',
-          })
-          failProfileSync()
-          return
+              error instanceof Error
+                ? error.message
+                : "Unable to add that category right now.",
+            variant: "error",
+          });
+          failProfileSync();
+          return;
         }
       }
 
       // Expand in UI
-      setExpandedCategories((prev) => new Set([...prev, categoryId]))
+      setExpandedCategories((prev) => new Set([...prev, categoryId]));
     } else {
       // Just collapse UI (don't delete from DB)
       setExpandedCategories((prev) => {
-        const next = new Set(prev)
-        next.delete(categoryId)
-        return next
-      })
+        const next = new Set(prev);
+        next.delete(categoryId);
+        return next;
+      });
     }
-  }
+  };
 
   // Handle checking/unchecking a depth 2 certification
   const handleCheckCertification = async (
@@ -501,75 +533,85 @@ export function ProfileCertificationsLeft({
     try {
       // If checking the first item, auto-expand the parent category
       if (checked) {
-        setExpandedCategories((prev) => new Set([...prev, categoryId]))
+        setExpandedCategories((prev) => new Set([...prev, categoryId]));
       }
 
-      resetProfileSyncError()
-      startProfileSync()
+      resetProfileSyncError();
+      startProfileSync();
       await toggleCert.mutateAsync({
         certification_id: certId,
         parent_id: parentId,
         checked,
-      })
+      });
 
       // After successful toggle, check if we should auto-collapse
       // (This will be handled by the useEffect that watches certTree)
-      triggerHighlight(certId, checked ? 'added' : 'removed')
-      toast.show(checked ? 'Certification Added' : 'Certification Removed', {
+      triggerHighlight(certId, checked ? "added" : "removed");
+      toast.show({
+        title: checked ? "Certification Added" : "Certification Removed",
         message: checked
           ? `${certTitle} added to your profile.`
           : `${certTitle} removed from your profile.`,
-      })
-      await invalidateProfileQueries(queryClient)
-      completeProfileSync()
+      });
+      await invalidateProfileQueries(queryClient);
+      completeProfileSync();
     } catch (error) {
-      console.error('Error toggling certification:', error)
+      console.error("Error toggling certification:", error);
       toast.show({
-        title: 'Error',
+        title: "Error",
         message:
-          error instanceof Error ? error.message : 'Unable to update that certification right now.',
-        variant: 'error',
-      })
-      failProfileSync()
+          error instanceof Error
+            ? error.message
+            : "Unable to update that certification right now.",
+        variant: "error",
+      });
+      failProfileSync();
     }
-  }
+  };
 
   // Get all selected certification IDs (all depth levels)
   const getAllSelectedCertIds = useCallback(() => {
-    const typedTree = certTree as unknown as CertificationTree | undefined
-    const allIds = new Set<string>()
+    const typedTree = certTree as unknown as CertificationTree | undefined;
+    const allIds = new Set<string>();
     if (typedTree) {
       // Add depth 0 certs
       for (const item of typedTree.depth0 || []) {
-        allIds.add(item.certification_id)
+        allIds.add(item.certification_id);
       }
       // Add depth 1 certs
       for (const items of Object.values(typedTree.depth1ByParent || {})) {
         for (const item of items) {
-          allIds.add((item as UserCertification).certification_id)
+          allIds.add((item as UserCertification).certification_id);
         }
       }
       // Add depth 2 certs
       for (const items of Object.values(typedTree.depth2ByParent || {})) {
         for (const item of items) {
-          allIds.add((item as UserCertification).certification_id)
+          allIds.add((item as UserCertification).certification_id);
         }
       }
     }
-    return Array.from(allIds)
-  }, [certTree])
+    return Array.from(allIds);
+  }, [certTree]);
 
-  const selectedTopLevelIds = getAllSelectedCertIds()
+  const selectedTopLevelIds = getAllSelectedCertIds();
 
   if (isLoadingTree) {
     return (
       <DashboardWidget>
-        <Stack gap={16} style={{ alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+        <Stack
+          gap={16}
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 300,
+          }}
+        >
           <Spinner size="lg" />
           <Text>Loading certifications...</Text>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   return (
@@ -616,18 +658,18 @@ export function ProfileCertificationsLeft({
             <Button
               size="sm"
               iconStart={PlusCircle}
-              variant={showCustomForm ? 'outline' : 'filled'}
-              color={showCustomForm ? 'gray' : 'primary'}
+              variant={showCustomForm ? "outline" : "filled"}
+              color={showCustomForm ? "gray" : "primary"}
               onPress={() =>
                 setShowCustomForm((prev) => {
                   if (prev) {
-                    resetCustomForm()
+                    resetCustomForm();
                   }
-                  return !prev
+                  return !prev;
                 })
               }
             >
-              {showCustomForm ? 'Cancel' : 'Add Custom Certification'}
+              {showCustomForm ? "Cancel" : "Add Custom Certification"}
             </Button>
           </Row>
 
@@ -641,8 +683,8 @@ export function ProfileCertificationsLeft({
             >
               <Stack gap={12} style={{ padding: 16 }}>
                 <Text style={{ color: colors.text[theme].secondary }}>
-                  Add certifications that are not in our catalog. These appear alongside saved
-                  certifications on the right panel.
+                  Add certifications that are not in our catalog. These appear
+                  alongside saved certifications on the right panel.
                 </Text>
 
                 <Stack gap={8}>
@@ -650,11 +692,15 @@ export function ProfileCertificationsLeft({
                   <Input
                     placeholder="e.g. OSHA 30-Hour Construction"
                     value={customForm.name}
-                    onChangeText={(text) => setCustomForm((prev) => ({ ...prev, name: text }))}
+                    onChangeText={(text) =>
+                      setCustomForm((prev) => ({ ...prev, name: text }))
+                    }
                     disabled={isSavingCustom}
                   />
                   {customErrors.name && (
-                    <Text style={{ color: colors.error[600] }}>{customErrors.name}</Text>
+                    <Text style={{ color: colors.error[600] }}>
+                      {customErrors.name}
+                    </Text>
                   )}
                 </Stack>
 
@@ -669,7 +715,9 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
-                    <Text style={{ color: colors.error[600] }}>{customErrors.organization}</Text>
+                    <Text style={{ color: colors.error[600] }}>
+                      {customErrors.organization}
+                    </Text>
                   )}
                 </Stack>
 
@@ -678,7 +726,9 @@ export function ProfileCertificationsLeft({
                     <Text>Issue Date</Text>
                     <MonthYearPicker
                       value={customForm.issueDate}
-                      onChange={(date) => setCustomForm((prev) => ({ ...prev, issueDate: date }))}
+                      onChange={(date) =>
+                        setCustomForm((prev) => ({ ...prev, issueDate: date }))
+                      }
                       disabled={isSavingCustom}
                       error={customErrors.issueDate}
                     />
@@ -688,7 +738,10 @@ export function ProfileCertificationsLeft({
                     <MonthYearPicker
                       value={customForm.expirationDate}
                       onChange={(date) =>
-                        setCustomForm((prev) => ({ ...prev, expirationDate: date }))
+                        setCustomForm((prev) => ({
+                          ...prev,
+                          expirationDate: date,
+                        }))
                       }
                       disabled={isSavingCustom}
                       error={customErrors.expirationDate}
@@ -703,7 +756,10 @@ export function ProfileCertificationsLeft({
                       placeholder="Credential ID or number"
                       value={customForm.credentialId}
                       onChangeText={(text) =>
-                        setCustomForm((prev) => ({ ...prev, credentialId: text }))
+                        setCustomForm((prev) => ({
+                          ...prev,
+                          credentialId: text,
+                        }))
                       }
                       disabled={isSavingCustom}
                     />
@@ -714,14 +770,19 @@ export function ProfileCertificationsLeft({
                       placeholder="https://..."
                       value={customForm.credentialUrl}
                       onChangeText={(text) =>
-                        setCustomForm((prev) => ({ ...prev, credentialUrl: text }))
+                        setCustomForm((prev) => ({
+                          ...prev,
+                          credentialUrl: text,
+                        }))
                       }
                       keyboardType="url"
                       autoCapitalize="none"
                       disabled={isSavingCustom}
                     />
                     {customErrors.credentialUrl && (
-                      <Text style={{ color: colors.error[600] }}>{customErrors.credentialUrl}</Text>
+                      <Text style={{ color: colors.error[600] }}>
+                        {customErrors.credentialUrl}
+                      </Text>
                     )}
                   </Stack>
                 </Row>
@@ -749,7 +810,9 @@ export function ProfileCertificationsLeft({
                       onPress={handleCustomFileSelect}
                       disabled={isSavingCustom}
                     >
-                      {customForm.file ? customForm.file.name : 'Upload PDF or image'}
+                      {customForm.file
+                        ? customForm.file.name
+                        : "Upload PDF or image"}
                     </Button>
                     {customForm.file && (
                       <Button
@@ -768,15 +831,16 @@ export function ProfileCertificationsLeft({
                   <Button
                     variant="outline"
                     onPress={() => {
-                      resetCustomForm()
-                      setShowCustomForm(false)
+                      resetCustomForm();
+                      setShowCustomForm(false);
                     }}
                     disabled={isSavingCustom}
                   >
                     Cancel
                   </Button>
                   <Button
-                    variant="filled" color="primary"
+                    variant="filled"
+                    color="primary"
                     onPress={handleCustomFormSubmit}
                     disabled={
                       isSavingCustom ||
@@ -794,7 +858,9 @@ export function ProfileCertificationsLeft({
                           : 1,
                     }}
                   >
-                    {showAdaptiveCustomSaving ? 'Saving...' : 'Save Certification'}
+                    {showAdaptiveCustomSaving
+                      ? "Saving..."
+                      : "Save Certification"}
                   </Button>
                 </Row>
               </Stack>
@@ -809,7 +875,16 @@ export function ProfileCertificationsLeft({
               (topLevel: UserCertification) => {
                 return (
                   <Stack key={topLevel.id} gap={8}>
-                    <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>{topLevel.catalog.title}</Text>
+                    <Text
+                      style={{
+                        color:
+                          theme === "light"
+                            ? colors.blue[700]
+                            : colors.blue[300],
+                      }}
+                    >
+                      {topLevel.catalog.title}
+                    </Text>
 
                     {/* Fetch and display depth 1 categories */}
                     <Depth1Categories
@@ -824,19 +899,19 @@ export function ProfileCertificationsLeft({
                       theme={theme}
                     />
                   </Stack>
-                )
+                );
               }
             )
           ) : (
             <ProfileEmptyState
-              iconStart={Award}
+              icon={Award}
               message="Search and select certification categories above to get started."
             />
           )}
         </Stack>
       </Stack>
     </DashboardWidget>
-  )
+  );
 }
 
 // Component to handle depth 1 categories
@@ -851,41 +926,53 @@ function Depth1Categories({
   recentlyChangedCerts,
   theme,
 }: {
-  parentId: string
-  expandedCategories: Set<string>
-  onToggle: (categoryId: string, parentId: string, categoryTitle: string) => void
-  certTree: unknown
+  parentId: string;
+  expandedCategories: Set<string>;
+  onToggle: (
+    categoryId: string,
+    parentId: string,
+    categoryTitle: string
+  ) => void;
+  certTree: unknown;
   onCheckCertification: (
     certId: string,
     parentId: string,
     checked: boolean,
     categoryId: string,
     certTitle: string
-  ) => void
-  onSelectForProof?: (certId: string, certTitle: string) => void
-  toggleCertMutation: { isPending: boolean }
-  recentlyChangedCerts: Record<string, 'added' | 'removed'>
-  theme: 'light' | 'dark'
+  ) => void;
+  onSelectForProof?: (certId: string, certTitle: string) => void;
+  toggleCertMutation: { isPending: boolean };
+  recentlyChangedCerts: Record<string, "added" | "removed">;
+  theme: "light" | "dark";
 }) {
   const { data: childrenData } = useCertificationChildren(
     { parent_id: parentId },
     { enabled: true }
-  )
+  );
 
-  const depth1Categories: CertificationWithParent[] = childrenData?.certifications || []
-  const typedTree = certTree as unknown as CertificationTree
+  const depth1Categories: CertificationWithParent[] =
+    (childrenData?.certifications ||
+      []) as unknown as CertificationWithParent[];
+  const typedTree = certTree as unknown as CertificationTree;
 
   if (depth1Categories.length === 0) {
-    return <Text style={{ color: colors.text[theme].secondary }}>No sub-categories available</Text>
+    return (
+      <Text style={{ color: colors.text[theme].secondary }}>
+        No sub-categories available
+      </Text>
+    );
   }
 
   return (
     <Stack gap={8}>
       {depth1Categories.map((category: CertificationWithParent) => {
-        const isExpanded = expandedCategories.has(category.id)
-        const depth2Items = typedTree.depth2ByParent[category.id] || []
+        const isExpanded = expandedCategories.has(category.id);
+        const depth2Items = typedTree.depth2ByParent[category.id] || [];
         const categoryDescription =
-          typeof category.description === 'string' ? category.description : undefined
+          typeof category.description === "string"
+            ? category.description
+            : undefined;
 
         return (
           <Card
@@ -896,18 +983,21 @@ function Depth1Categories({
               borderColor: colors.border[theme].default,
             }}
           >
-            <Pressable onPress={() => onToggle(category.id, parentId, category.title)}>
-              <Row
-                justify="space-between"
-                align="center"
-              >
+            <Pressable
+              onPress={() => onToggle(category.id, parentId, category.title)}
+            >
+              <Row justify="space-between" align="center">
                 <Stack style={{ flex: 1 }} gap={2}>
                   <Text>{category.title}</Text>
                   {categoryDescription ? (
-                    <Text style={{ color: colors.text[theme].secondary }}>{categoryDescription}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {categoryDescription}
+                    </Text>
                   ) : null}
                 </Stack>
-                <Text style={{ color: colors.text[theme].secondary }}>{isExpanded ? '▲' : '▼'}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  {isExpanded ? "▲" : "▼"}
+                </Text>
               </Row>
             </Pressable>
 
@@ -926,10 +1016,10 @@ function Depth1Categories({
               </Stack>
             )}
           </Card>
-        )
+        );
       })}
     </Stack>
-  )
+  );
 }
 
 // Component to handle depth 2 certifications
@@ -943,48 +1033,57 @@ function Depth2Certifications({
   recentlyChangedCerts,
   theme,
 }: {
-  categoryId: string
-  parentId: string
-  savedDepth2: UserCertification[]
+  categoryId: string;
+  parentId: string;
+  savedDepth2: UserCertification[];
   onCheck: (
     certId: string,
     parentId: string,
     checked: boolean,
     categoryId: string,
     certTitle: string
-  ) => void
-  onSelectForProof?: (certId: string, certTitle: string) => void
-  toggleMutation: { isPending: boolean }
-  recentlyChangedCerts: Record<string, 'added' | 'removed'>
-  theme: 'light' | 'dark'
+  ) => void;
+  onSelectForProof?: (certId: string, certTitle: string) => void;
+  toggleMutation: { isPending: boolean };
+  recentlyChangedCerts: Record<string, "added" | "removed">;
+  theme: "light" | "dark";
 }) {
   const { data: childrenData } = useCertificationChildren(
     { parent_id: parentId },
     { enabled: true }
-  )
+  );
 
-  const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
+  const depth2Certs: CertificationWithParent[] =
+    (childrenData?.certifications ||
+      []) as unknown as CertificationWithParent[];
 
   if (depth2Certs.length === 0) {
-    return <Text style={{ color: colors.text[theme].secondary }}>No specific certifications available</Text>
+    return (
+      <Text style={{ color: colors.text[theme].secondary }}>
+        No specific certifications available
+      </Text>
+    );
   }
 
   // Create a map of saved certifications
   const savedMap = new Map(
     savedDepth2.map((item: UserCertification) => [item.certification_id, item])
-  )
+  );
 
   return (
     <Stack gap={8} style={{ paddingTop: 8 }}>
       {depth2Certs.map((cert: CertificationWithParent) => {
-        const userCert = savedMap.get(cert.id)
-        const isChecked = !!userCert
-        const hasProof = !!(userCert?.credential_url || userCert?.certificate_file_path)
-        const changeStatus = recentlyChangedCerts[cert.id]
+        const userCert = savedMap.get(cert.id);
+        const isChecked = !!userCert;
+        const hasProof = !!(
+          userCert?.credential_url || userCert?.certificate_file_path
+        );
+        const changeStatus = recentlyChangedCerts[cert.id];
         const sanitizedCert = {
           ...cert,
-          description: typeof cert.description === 'string' ? cert.description : null,
-        }
+          description:
+            typeof cert.description === "string" ? cert.description : null,
+        };
 
         return (
           <Stack
@@ -994,23 +1093,31 @@ function Depth2Certifications({
               borderRadius: 16,
               borderWidth: 1,
               backgroundColor:
-                changeStatus === 'added'
-                  ? theme === 'light' ? colors.green[50] : colors.green[900]
-                  : changeStatus === 'removed'
-                    ? theme === 'light' ? colors.error[50] : colors.error[900]
-                    : colors.bg[theme].default,
+                changeStatus === "added"
+                  ? theme === "light"
+                    ? colors.green[50]
+                    : colors.green[900]
+                  : changeStatus === "removed"
+                  ? theme === "light"
+                    ? colors.error[50]
+                    : colors.error[900]
+                  : colors.bg[theme].default,
               borderColor:
-                changeStatus === 'added'
-                  ? theme === 'light' ? colors.green[300] : colors.green[700]
-                  : changeStatus === 'removed'
-                    ? theme === 'light' ? colors.error[300] : colors.error[700]
-                    : colors.border[theme].default,
+                changeStatus === "added"
+                  ? theme === "light"
+                    ? colors.green[300]
+                    : colors.green[700]
+                  : changeStatus === "removed"
+                  ? theme === "light"
+                    ? colors.error[300]
+                    : colors.error[700]
+                  : colors.border[theme].default,
             }}
           >
             <CertificationCheckbox
               certification={sanitizedCert}
               checked={isChecked}
-              onChange={(checked: boolean) =>
+              onCheckedChange={(checked: boolean) =>
                 onCheck(cert.id, parentId, checked, categoryId, cert.title)
               }
               hasProof={hasProof}
@@ -1021,19 +1128,33 @@ function Depth2Certifications({
               }
               disabled={toggleMutation.isPending}
             />
-            {changeStatus === 'added' && (
-              <Text style={{ marginTop: 8, color: theme === 'light' ? colors.success[700] : colors.success[300] }}>
+            {changeStatus === "added" && (
+              <Text
+                style={{
+                  marginTop: 8,
+                  color:
+                    theme === "light"
+                      ? colors.success[700]
+                      : colors.success[300],
+                }}
+              >
                 ✓ Added to profile
               </Text>
             )}
-            {changeStatus === 'removed' && (
-              <Text style={{ marginTop: 8, color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+            {changeStatus === "removed" && (
+              <Text
+                style={{
+                  marginTop: 8,
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 Removed from profile
               </Text>
             )}
           </Stack>
-        )
+        );
       })}
     </Stack>
-  )
+  );
 }

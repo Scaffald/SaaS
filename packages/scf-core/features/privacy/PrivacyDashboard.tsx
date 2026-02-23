@@ -10,77 +10,87 @@
  * - Quick actions for data requests and opt-outs
  */
 
-import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { useState } from "react";
+import { Button, ScrollView, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import {
   useCCPADataSummary,
   useCCPAMyRequests,
   useCCPAConnectedApps,
   useCCPAMyOptOuts,
-} from '@scf/core/utils/ccpa-sdk-hooks'
-import { DataCategorySummary } from './components/DataCategorySummary'
-import { PrivacyRightsList } from './components/PrivacyRightsList'
-import { RequestHistoryTable } from './components/RequestHistoryTable'
-import { ConnectedAppsPanel } from './components/ConnectedAppsPanel'
+} from "@scf/core/utils/ccpa-sdk-hooks";
+import {
+  DataCategorySummary,
+  type CCPACategory,
+} from "./components/DataCategorySummary";
+import { PrivacyRightsList } from "./components/PrivacyRightsList";
+import { RequestHistoryTable } from "./components/RequestHistoryTable";
+import { ConnectedAppsPanel } from "./components/ConnectedAppsPanel";
 
 /**
  * Main Privacy Dashboard component
  */
 export function PrivacyDashboard() {
-  const [_showRequestForm, setShowRequestForm] = useState(false)
-  const [_showOptOutManager, setShowOptOutManager] = useState(false)
+  const [_showRequestForm, setShowRequestForm] = useState(false);
+  const [_showOptOutManager, setShowOptOutManager] = useState(false);
 
   // Fetch user's data summary
   const {
     data: dataSummary,
     isLoading: isLoadingData,
     error: dataError,
-  } = useCCPADataSummary()
+  } = useCCPADataSummary();
 
   // Fetch request history
   const {
     data: requestHistory,
     isLoading: isLoadingHistory,
     error: historyError,
-  } = useCCPAMyRequests({ limit: 10 })
+  } = useCCPAMyRequests({ limit: 10 });
 
   // Fetch connected OAuth apps
   const {
     data: connectedApps,
     isLoading: isLoadingApps,
     error: appsError,
-  } = useCCPAConnectedApps()
+  } = useCCPAConnectedApps();
 
   // Fetch opt-out status
-  const { data: optOutStatus, isLoading: isLoadingOptOut } = useCCPAMyOptOuts()
+  const { data: optOutStatus, isLoading: isLoadingOptOut } = useCCPAMyOptOuts();
 
-  const isLoading = isLoadingData || isLoadingHistory || isLoadingApps || isLoadingOptOut
-  const hasError = dataError || historyError || appsError
+  const isLoading =
+    isLoadingData || isLoadingHistory || isLoadingApps || isLoadingOptOut;
+  const hasError = dataError || historyError || appsError;
 
   if (hasError) {
     return (
       <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
-        <Text style={{ color: '#ef4444' }}>Error Loading Privacy Dashboard</Text>
-        <Text style={{ color: '#414e62', textAlign: 'center' }}>
+        <Text style={{ color: "#ef4444" }}>
+          Error Loading Privacy Dashboard
+        </Text>
+        <Text style={{ color: "#414e62", textAlign: "center" }}>
           {dataError?.message || historyError?.message || appsError?.message}
         </Text>
         <Button onPress={() => window.location.reload()} variant="outline">
           Retry
         </Button>
       </Stack>
-    )
+    );
   }
 
   return (
     <ScrollView>
-      <Stack padding="md" gap={24} maxWidth={1200} marginHorizontal="auto">
+      <Stack
+        padding="md"
+        gap={24}
+        style={{ maxWidth: 1200, marginHorizontal: "auto" as const }}
+      >
         {/* Page Header */}
         <Stack gap={8}>
           <Text>Privacy & Data</Text>
-          <Text style={{ color: '#414e62' }}>
-            Manage your privacy settings, view your data, and exercise your California Consumer
-            Privacy Act (CCPA) rights.
+          <Text style={{ color: "#414e62" }}>
+            Manage your privacy settings, view your data, and exercise your
+            California Consumer Privacy Act (CCPA) rights.
           </Text>
         </Stack>
 
@@ -95,13 +105,25 @@ export function PrivacyDashboard() {
         >
           <Text>Quick Actions</Text>
           <Row gap={12} wrap>
-            <Button onPress={() => setShowRequestForm(true)} iconStart={undefined} size="md">
+            <Button
+              onPress={() => setShowRequestForm(true)}
+              iconStart={undefined}
+              size="md"
+            >
               Request My Data
             </Button>
-            <Button onPress={() => setShowRequestForm(true)} variant="outline" size="md">
+            <Button
+              onPress={() => setShowRequestForm(true)}
+              variant="outline"
+              size="md"
+            >
               Delete My Data
             </Button>
-            <Button onPress={() => setShowOptOutManager(true)} variant="outline" size="md">
+            <Button
+              onPress={() => setShowOptOutManager(true)}
+              variant="outline"
+              size="md"
+            >
               Manage Opt-Outs
             </Button>
           </Row>
@@ -113,10 +135,10 @@ export function PrivacyDashboard() {
               borderRadius={8}
               align="center"
             >
-              <Text style={{ color: '#2563eb' }}>
-                Your browser&apos;s Global Privacy Control signal has been detected and honored. You
-                have been automatically opted out of the sale and sharing of your personal
-                information.
+              <Text style={{ color: "#2563eb" }}>
+                Your browser&apos;s Global Privacy Control signal has been
+                detected and honored. You have been automatically opted out of
+                the sale and sharing of your personal information.
               </Text>
             </Row>
           )}
@@ -125,21 +147,30 @@ export function PrivacyDashboard() {
         {/* Data Categories Summary */}
         <Stack gap={12}>
           <Text>Your Data Categories</Text>
-          <Text style={{ color: '#414e62' }}>Categories of personal information we collect about you</Text>
+          <Text style={{ color: "#414e62" }}>
+            Categories of personal information we collect about you
+          </Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
-            <DataCategorySummary categories={dataSummary?.categories || []} />
+            <DataCategorySummary
+              categories={(dataSummary?.categories || []).map((c) => ({
+                category: c.id as CCPACategory,
+                record_count: c.itemCount ?? 0,
+                data_types: [],
+              }))}
+            />
           )}
         </Stack>
 
         {/* CCPA Rights */}
         <Stack gap={12}>
           <Text>Your Privacy Rights</Text>
-          <Text style={{ color: '#414e62' }}>
-            Under the California Consumer Privacy Act (CCPA), you have the following rights
+          <Text style={{ color: "#414e62" }}>
+            Under the California Consumer Privacy Act (CCPA), you have the
+            following rights
           </Text>
           <PrivacyRightsList />
         </Stack>
@@ -147,26 +178,40 @@ export function PrivacyDashboard() {
         {/* Request History */}
         <Stack gap={12}>
           <Text>Request History</Text>
-          <Text style={{ color: '#414e62' }}>Your privacy request history and their status</Text>
+          <Text style={{ color: "#414e62" }}>
+            Your privacy request history and their status
+          </Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
-            <RequestHistoryTable requests={requestHistory?.requests || []} />
+            <RequestHistoryTable
+              requests={
+                (requestHistory?.requests ||
+                  []) as import("./components/RequestHistoryTable").PrivacyRequest[]
+              }
+            />
           )}
         </Stack>
 
         {/* Connected Apps */}
         <Stack gap={12}>
           <Text>Connected Applications</Text>
-          <Text style={{ color: '#414e62' }}>Third-party applications that have access to your data</Text>
+          <Text style={{ color: "#414e62" }}>
+            Third-party applications that have access to your data
+          </Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
               <Spinner size="lg" />
             </Row>
           ) : (
-            <ConnectedAppsPanel apps={connectedApps || []} />
+            <ConnectedAppsPanel
+              apps={
+                (connectedApps ||
+                  []) as import("./components/ConnectedAppsPanel").ConnectedApp[]
+              }
+            />
           )}
         </Stack>
 
@@ -182,20 +227,22 @@ export function PrivacyDashboard() {
           <Text>Additional Resources</Text>
           <Stack gap={8}>
             <Text
-              style={{ color: '#2563eb' }}
-              onPress={() => window.open('/privacy-policy', '_blank')}
+              style={{ color: "#2563eb" }}
+              onPress={() => window.open("/privacy-policy", "_blank")}
             >
               Read our full Privacy Policy
             </Text>
             <Text
-              style={{ color: '#2563eb' }}
-              onPress={() => window.open('/terms', '_blank')}
+              style={{ color: "#2563eb" }}
+              onPress={() => window.open("/terms", "_blank")}
             >
               Terms of Service
             </Text>
             <Text
-              style={{ color: '#2563eb' }}
-              onPress={() => window.open('https://oag.ca.gov/privacy/ccpa', '_blank')}
+              style={{ color: "#2563eb" }}
+              onPress={() =>
+                window.open("https://oag.ca.gov/privacy/ccpa", "_blank")
+              }
             >
               Learn more about CCPA
             </Text>
@@ -204,11 +251,11 @@ export function PrivacyDashboard() {
 
         {/* Contact Info */}
         <Stack gap={8} paddingBottom={24}>
-          <Text style={{ color: '#414e62' }}>
-            Questions about your privacy? Contact our Privacy Team at{' '}
+          <Text style={{ color: "#414e62" }}>
+            Questions about your privacy? Contact our Privacy Team at{" "}
             <Text
-              style={{ color: '#2563eb' }}
-              onPress={() => window.open('mailto:privacy@scaffald.com')}
+              style={{ color: "#2563eb" }}
+              onPress={() => window.open("mailto:privacy@scaffald.com")}
             >
               privacy@scaffald.com
             </Text>
@@ -216,7 +263,7 @@ export function PrivacyDashboard() {
         </Stack>
       </Stack>
     </ScrollView>
-  )
+  );
 }
 
-export default PrivacyDashboard
+export default PrivacyDashboard;

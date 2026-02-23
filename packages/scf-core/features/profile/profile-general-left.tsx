@@ -1,41 +1,54 @@
-import { ControlledAddressForm } from '@scf/core/forms'
+import { ControlledAddressForm } from "@scf/core/forms";
+import type { UpdateGeneralInfoParams } from "@scaffald/sdk";
 import {
   useGeneralInfo,
   useUpdateGeneralInfoMutation,
   useUploadAvatarMutation,
-} from '@scf/core/utils/profile-general-sdk-hooks'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { isValidPhoneNumber } from '@scf/schemas/common/phone'
-import { useQueryClient } from '@tanstack/react-query'
+} from "@scf/core/utils/profile-general-sdk-hooks";
+import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
+import { isValidPhoneNumber } from "@scf/schemas/common/phone";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AvatarImagePicker,
   Button,
   DashboardWidget,
+  extractPlainText,
   PhoneNumberInput,
-  plainTextToTipTap,
   RichTextEditor,
   SkeletonForm,
-} from '@scaffald/ui'
-import { useSafeToast } from '@scf/core/hooks/useSafeToast'
-import { zodResolver } from '@hookform/resolvers/zod'
-import type { JSONContent } from '@tiptap/core'
-import { useEffect, useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Input, Spinner, Text, Row, Stack, Modal, ModalHeader, ModalContent, ModalActions } from '@scaffald/ui'
-import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
-import { invalidateProfileQueries } from './utils/profile-sync'
+} from "@scaffald/ui";
+import { useSafeToast } from "@scf/core/hooks/useSafeToast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { JSONContent } from "@tiptap/core";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Input,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
+} from "@scaffald/ui";
+import {
+  type GeneralProfileFormData,
+  generalProfileDefaults,
+  generalProfileSchema,
+} from "./config";
+import { invalidateProfileQueries } from "./utils/profile-sync";
 import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
   startProfileSync,
   useAdaptiveProfileSync,
-} from './utils/profile-sync-store'
-
-type UpdateGeneralInput = GeneralProfileFormData
+} from "./utils/profile-sync-store";
 
 interface UpdateGeneralContext {
-  previousGeneral?: GeneralProfileFormData | undefined
+  previousGeneral?: GeneralProfileFormData | undefined;
 }
 
 /**
@@ -43,84 +56,103 @@ interface UpdateGeneralContext {
  * Form for editing general profile information
  */
 export function ProfileGeneralLeft() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const originalDataRef = useRef<GeneralProfileFormData | null>(null)
-  const toast = useSafeToast()
-  const queryClient = useQueryClient()
-  const syncStatus = useAdaptiveProfileSync(300)
-  const isSyncing = syncStatus === 'syncing'
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const originalDataRef = useRef<GeneralProfileFormData | null>(null);
+  const toast = useSafeToast();
+  const queryClient = useQueryClient();
+  const syncStatus = useAdaptiveProfileSync(300);
+  const isSyncing = syncStatus === "syncing";
 
   // Fetch and update profile data using SDK
-  const { data: profileData, isLoading: isLoadingProfile } = useGeneralInfo()
+  const { data: profileData, isLoading: isLoadingProfile } = useGeneralInfo();
   const updateProfileMutation = useUpdateGeneralInfoMutation({
-    async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
-      resetProfileSyncError()
-      startProfileSync()
-      await queryClient.cancelQueries({ queryKey: ['scaffald', 'profiles', 'general'] })
-      const previousGeneral = queryClient.getQueryData(['scaffald', 'profiles', 'general']) as
-        | GeneralProfileFormData
-        | undefined
+    async onMutate(
+      input: UpdateGeneralInfoParams
+    ): Promise<UpdateGeneralContext> {
+      resetProfileSyncError();
+      startProfileSync();
+      await queryClient.cancelQueries({
+        queryKey: ["scaffald", "profiles", "general"],
+      });
+      const previousGeneral = queryClient.getQueryData([
+        "scaffald",
+        "profiles",
+        "general",
+      ]) as GeneralProfileFormData | undefined;
       queryClient.setQueryData(
-        ['scaffald', 'profiles', 'general'],
+        ["scaffald", "profiles", "general"],
         (current: GeneralProfileFormData | undefined): GeneralProfileFormData =>
           ({
             ...(current ?? {}),
             ...(input as unknown as GeneralProfileFormData),
-          }) as GeneralProfileFormData
-      )
-      return { previousGeneral }
+          } as GeneralProfileFormData)
+      );
+      return { previousGeneral };
     },
-    onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
-      console.error('Error saving profile:', error)
-      if (context?.previousGeneral) {
-        queryClient.setQueryData(['scaffald', 'profiles', 'general'], context.previousGeneral)
+    onError: (
+      error: Error,
+      _input: UpdateGeneralInfoParams,
+      _onMutateResult: unknown,
+      context: unknown
+    ) => {
+      console.error("Error saving profile:", error);
+      const ctx = context as UpdateGeneralContext | undefined;
+      if (ctx?.previousGeneral) {
+        queryClient.setQueryData(
+          ["scaffald", "profiles", "general"],
+          ctx.previousGeneral
+        );
       }
-      failProfileSync()
-      toast.show('Error', {
+      failProfileSync();
+      toast.show("Error", {
         message:
-          error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
-      })
+          error instanceof Error
+            ? error.message
+            : "Failed to save profile. Please try again.",
+      });
     },
     onSuccess: () => {
-      toast.show('Profile Updated', {
-        message: 'Your profile has been saved successfully!',
-      })
+      toast.show("Profile Updated", {
+        message: "Your profile has been saved successfully!",
+      });
     },
     onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
-        completeProfileSync()
+        completeProfileSync();
       }
-      void invalidateProfileQueries(queryClient)
+      void invalidateProfileQueries(queryClient);
     },
-  })
+  });
 
   const uploadAvatarMutation = useUploadAvatarMutation({
     onMutate: () => {
-      resetProfileSyncError()
-      startProfileSync()
+      resetProfileSyncError();
+      startProfileSync();
     },
     onSuccess: async (data: { avatarPath: string }) => {
-      toast.show('Avatar Uploaded', {
-        message: 'Your avatar has been uploaded successfully!',
-      })
-      setValue('avatar_path', data.avatarPath)
-      await invalidateProfileQueries(queryClient)
+      toast.show("Avatar Uploaded", {
+        message: "Your avatar has been uploaded successfully!",
+      });
+      setValue("avatar_path", data.avatarPath);
+      await invalidateProfileQueries(queryClient);
     },
     onError: (error: unknown) => {
-      console.error('Error uploading avatar:', error)
-      failProfileSync()
-      toast.show('Upload Error', {
+      console.error("Error uploading avatar:", error);
+      failProfileSync();
+      toast.show("Upload Error", {
         message:
-          error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.',
-      })
+          error instanceof Error
+            ? error.message
+            : "Failed to upload avatar. Please try again.",
+      });
     },
     onSettled: (_data: { avatarPath: string } | undefined, error: unknown) => {
       if (!error) {
-        completeProfileSync()
+        completeProfileSync();
       }
     },
-  })
+  });
 
   const {
     control,
@@ -135,100 +167,105 @@ export function ProfileGeneralLeft() {
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
-    mode: 'onChange', // Real-time validation
-  })
+    mode: "onChange", // Real-time validation
+  });
 
-  const avatarPath = watch('avatar_path')
+  const avatarPath = watch("avatar_path");
 
   // Reset form when profile data is loaded
   useEffect(() => {
     if (profileData) {
-      reset(profileData)
-      originalDataRef.current = profileData
+      const formData = profileData as unknown as GeneralProfileFormData;
+      reset(formData);
+      originalDataRef.current = formData;
 
       if (profileData.phone && !isValidPhoneNumber(profileData.phone)) {
-        setError('phone', {
-          type: 'manual',
-          message: 'Your current phone number is invalid. Please enter a valid phone number.',
-        })
+        setError("phone", {
+          type: "manual",
+          message:
+            "Your current phone number is invalid. Please enter a valid phone number.",
+        });
       } else {
-        clearErrors('phone')
+        clearErrors("phone");
       }
 
-      void trigger('phone')
+      void trigger("phone");
     }
-  }, [profileData, reset, setError, clearErrors, trigger])
+  }, [profileData, reset, setError, clearErrors, trigger]);
 
-  const phoneValue = watch('phone')
+  const phoneValue = watch("phone");
 
   useEffect(() => {
     if (!phoneValue) {
-      clearErrors('phone')
-      return
+      clearErrors("phone");
+      return;
     }
 
     if (isValidPhoneNumber(phoneValue)) {
-      clearErrors('phone')
+      clearErrors("phone");
     }
-  }, [phoneValue, clearErrors])
+  }, [phoneValue, clearErrors]);
 
   // Debug: Log form state changes
   useEffect(() => {
-    console.log('📊 Form state updated:', {
+    console.log("📊 Form state updated:", {
       isDirty,
       hasErrors: Object.keys(errors).length > 0,
       errorCount: Object.keys(errors).length,
       errors: errors,
-    })
-  }, [isDirty, errors])
+    });
+  }, [isDirty, errors]);
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
-        e.preventDefault()
-        e.returnValue = '' // Required for Chrome
+        e.preventDefault();
+        e.returnValue = ""; // Required for Chrome
       }
-    }
+    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [isDirty])
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (data: GeneralProfileFormData) => {
-    console.log('🟢 Form submission started')
-    console.log('📋 Form data:', JSON.stringify(data, null, 2))
-    console.log('✅ Form validation passed')
+    console.log("🟢 Form submission started");
+    console.log("📋 Form data:", JSON.stringify(data, null, 2));
+    console.log("✅ Form validation passed");
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await updateProfileMutation.mutateAsync(data)
-      console.log('✅ Profile updated successfully')
+      await updateProfileMutation.mutateAsync(data);
+      console.log("✅ Profile updated successfully");
     } catch (error) {
-      console.error('❌ Profile update failed:', error)
+      console.error("❌ Profile update failed:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onError = (validationErrors: typeof errors) => {
-    console.log('❌ Form validation failed')
-    console.log('📋 Validation errors:', JSON.stringify(validationErrors, null, 2))
-    console.log('📊 Form state:', {
+    console.log("❌ Form validation failed");
+    console.log(
+      "📋 Validation errors:",
+      JSON.stringify(validationErrors, null, 2)
+    );
+    console.log("📊 Form state:", {
       isDirty,
       isValid: Object.keys(validationErrors).length === 0,
       errorCount: Object.keys(validationErrors).length,
-    })
-  }
+    });
+  };
 
   if (isLoadingProfile) {
     return (
       <Stack gap={16} padding="md">
         <SkeletonForm fields={6} />
       </Stack>
-    )
+    );
   }
 
   return (
@@ -238,47 +275,51 @@ export function ProfileGeneralLeft() {
         <Stack gap={12} align="center">
           <Text>Profile Photo</Text>
           <AvatarImagePicker
-            value={getAvatarUrl(avatarPath) || ''}
+            value={getAvatarUrl(avatarPath) || ""}
             onImageSelect={async (imageUri) => {
               if (imageUri) {
                 // Convert image to base64 for upload
                 try {
-                  const [metadata] = imageUri.split(',')
-                  const mimeMatch = metadata?.match(/^data:(image\/[a-zA-Z+]+);base64$/)
-                  const contentType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+                  const [metadata] = imageUri.split(",");
+                  const mimeMatch = metadata?.match(
+                    /^data:(image\/[a-zA-Z+]+);base64$/
+                  );
+                  const contentType = mimeMatch ? mimeMatch[1] : "image/jpeg";
 
                   const extension = (() => {
-                    if (contentType === 'image/png') return 'png'
-                    if (contentType === 'image/webp') return 'webp'
-                    return 'jpg'
-                  })()
+                    if (contentType === "image/png") return "png";
+                    if (contentType === "image/webp") return "webp";
+                    return "jpg";
+                  })();
 
                   uploadAvatarMutation.mutate({
                     file: imageUri,
                     fileName: `avatar-${Date.now()}.${extension}`,
                     contentType,
-                  })
+                  });
                 } catch (error) {
-                  console.error('Error processing image:', error)
-                  toast.show('Error', {
-                    message: 'Failed to process image. Please try again.',
-                  })
+                  console.error("Error processing image:", error);
+                  toast.show("Error", {
+                    message: "Failed to process image. Please try again.",
+                  });
                 }
               } else {
                 // Clear avatar
-                setValue('avatar_path', '')
+                setValue("avatar_path", "");
               }
             }}
             size={120}
             disabled={uploadAvatarMutation.isPending}
             onCropError={(message) =>
-              toast.show('Error', {
+              toast.show("Error", {
                 message,
               })
             }
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text style={{ color: '#414e62' }}>Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && (
+            <Text style={{ color: "#414e62" }}>Uploading avatar...</Text>
+          )}
         </Stack>
 
         {/* Name Fields */}
@@ -296,12 +337,18 @@ export function ProfileGeneralLeft() {
                   accessibilityLabel="First name"
                   aria-required="true"
                   aria-invalid={!!errors.first_name}
-                  aria-describedby={errors.first_name ? 'first_name-error' : undefined}
+                  aria-describedby={
+                    errors.first_name ? "first_name-error" : undefined
+                  }
                 />
               )}
             />
             {errors.first_name && (
-              <Text id="first_name-error" style={{ color: '#ef4444' }} role="alert">
+              <Text
+                id="first_name-error"
+                style={{ color: "#ef4444" }}
+                role="alert"
+              >
                 {errors.first_name.message}
               </Text>
             )}
@@ -320,12 +367,18 @@ export function ProfileGeneralLeft() {
                   accessibilityLabel="Last name"
                   aria-required="true"
                   aria-invalid={!!errors.last_name}
-                  aria-describedby={errors.last_name ? 'last_name-error' : undefined}
+                  aria-describedby={
+                    errors.last_name ? "last_name-error" : undefined
+                  }
                 />
               )}
             />
             {errors.last_name && (
-              <Text id="last_name-error" style={{ color: '#ef4444' }} role="alert">
+              <Text
+                id="last_name-error"
+                style={{ color: "#ef4444" }}
+                role="alert"
+              >
                 {errors.last_name.message}
               </Text>
             )}
@@ -339,24 +392,22 @@ export function ProfileGeneralLeft() {
             name="about"
             control={control}
             render={({ field }) => {
-              // Convert plain text to TipTap JSON if needed
-              const value =
-                typeof field.value === 'string'
-                  ? plainTextToTipTap(field.value)
-                  : field.value
-                    ? (field.value as JSONContent)
-                    : null
+              const stringValue =
+                typeof field.value === "string"
+                  ? field.value
+                  : field.value != null
+                  ? extractPlainText(field.value as JSONContent)
+                  : "";
 
               return (
                 <RichTextEditor
-                  value={value}
+                  value={stringValue}
                   onChange={field.onChange}
-                  fieldType="PROFILE_ABOUT"
                   showCharacterCount
                   minHeight={150}
                   error={errors.about?.message}
                 />
-              )
+              );
             }}
           />
         </Stack>
@@ -369,11 +420,10 @@ export function ProfileGeneralLeft() {
             control={control}
             render={({ field }) => (
               <PhoneNumberInput
-                value={field.value || ''}
+                value={field.value || ""}
                 onChange={field.onChange}
                 error={errors.phone?.message}
                 defaultCountry="US"
-                storeFormatted={true}
               />
             )}
           />
@@ -396,7 +446,9 @@ export function ProfileGeneralLeft() {
               />
             )}
           />
-          <Text style={{ color: '#414e62' }}>Email changes must be made through account settings</Text>
+          <Text style={{ color: "#414e62" }}>
+            Email changes must be made through account settings
+          </Text>
         </Stack>
 
         {/* Home Address with Smart Autocomplete */}
@@ -407,7 +459,9 @@ export function ProfileGeneralLeft() {
           trigger={trigger}
           label="Home Address"
           placeholder="Search for your home address..."
-          error={errors.address?.street?.message || errors.address?.city?.message}
+          error={
+            errors.address?.street?.message || errors.address?.city?.message
+          }
         />
 
         {/* Action Buttons */}
@@ -421,44 +475,57 @@ export function ProfileGeneralLeft() {
             Cancel
           </Button>
           <Button
-            variant="filled" color="primary"
+            variant="filled"
+            color="primary"
             onPress={handleSubmit(onSubmit, onError)}
             disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
-            style={{ opacity: !isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1 }}
+            style={{
+              opacity:
+                !isDirty || isLoading || Object.keys(errors).length > 0
+                  ? 0.5
+                  : 1,
+            }}
           >
             {isSyncing ? (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
                 <Text>Saving...</Text>
               </Row>
-            ) : 'Save Changes'}
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </Row>
 
         {/* Cancel Confirmation Dialog */}
-        <Modal visible={showCancelDialog} onClose={() => setShowCancelDialog(false)}>
+        <Modal
+          visible={showCancelDialog}
+          onClose={() => setShowCancelDialog(false)}
+        >
           <ModalHeader title="Discard Changes?" />
           <ModalContent>
-            <Text>You have unsaved changes. Are you sure you want to discard them?</Text>
+            <Text>
+              You have unsaved changes. Are you sure you want to discard them?
+            </Text>
           </ModalContent>
           <ModalActions
             primaryAction={{
-              label: 'Discard Changes',
+              label: "Discard Changes",
               onPress: () => {
                 if (originalDataRef.current) {
-                  reset(originalDataRef.current)
-                  setShowCancelDialog(false)
+                  reset(originalDataRef.current);
+                  setShowCancelDialog(false);
                 }
               },
-              color: 'error',
+              color: "error",
             }}
             secondaryAction={{
-              label: 'Keep Editing',
+              label: "Keep Editing",
               onPress: () => setShowCancelDialog(false),
             }}
           />
         </Modal>
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

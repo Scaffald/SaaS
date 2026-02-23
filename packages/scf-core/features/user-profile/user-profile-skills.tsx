@@ -1,19 +1,19 @@
-import { Award } from 'lucide-react-native'
-import { Card, Text, Row, Stack } from '@scaffald/ui'
+import { Award } from "lucide-react-native";
+import { Card, Text, Row, Stack } from "@scaffald/ui";
 
-interface Skill {
-  id: string
-  name: string
-  proficiency: number
-  displayCode?: string | null
-  taxonomy?: 'csi' | 'onet'
-  yearsExperience?: number | null
-  verified?: boolean
-  label?: string | null
+export interface UserProfileSkill {
+  id: string;
+  name: string;
+  proficiency: number;
+  displayCode?: string | null;
+  taxonomy?: "csi" | "onet";
+  yearsExperience?: number | null;
+  verified?: boolean;
+  label?: string | null;
 }
 
 interface UserProfileSkillsProps {
-  skills: Skill[]
+  skills: UserProfileSkill[];
 }
 
 export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
@@ -31,25 +31,37 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
               <Row justify="space-between" align="center">
                 <Stack flex={1}>
                   <Text color="$gray11">
-                    {typeof skill.label === 'string' && skill.label.length > 0
+                    {typeof skill.label === "string" && skill.label.length > 0
                       ? skill.label
                       : skill.displayCode
-                        ? `${skill.displayCode} · ${skill.name}`
-                        : skill.name}
+                      ? `${skill.displayCode} · ${skill.name}`
+                      : skill.name}
                   </Text>
-                  {typeof skill.yearsExperience === 'number' && (
-                    <Text color="$gray11">{skill.yearsExperience} years experience</Text>
+                  {typeof skill.yearsExperience === "number" && (
+                    <Text color="$gray11">
+                      {skill.yearsExperience} years experience
+                    </Text>
                   )}
                 </Stack>
                 <Text color="$blue11">{skill.proficiency}%</Text>
               </Row>
-              <Row height={8} backgroundColor="$color3" borderRadius={8} overflow="hidden">
-                <Row width={`${skill.proficiency}%`} backgroundColor="$blue10" />
+              <Row
+                style={{
+                  height: 8,
+                  backgroundColor: "$color3",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                }}
+              >
+                <Row
+                  width={`${skill.proficiency}%`}
+                  backgroundColor="$blue10"
+                />
               </Row>
             </Stack>
           ))}
         </Stack>
       </Stack>
     </Card>
-  )
+  );
 }

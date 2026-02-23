@@ -1,27 +1,31 @@
-import { ControlledAddressForm } from '@scf/core/forms'
-import { usePrerequisites, useCompletePrerequisites, useIndustries } from '@scaffald/sdk/react'
+import { ControlledAddressForm } from "@scf/core/forms";
+import {
+  usePrerequisites,
+  useCompletePrerequisites,
+  useIndustries,
+} from "@scaffald/sdk/react";
 import {
   Button,
   Checkbox,
   DashboardWidget,
   ResponsiveSelect,
-  spacing,
+  namedSpacing,
   useThemeContext,
-} from '@scaffald/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@scaffald/ui'
-import { useEffect, useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Pressable } from 'react-native'
-import { Input, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable } from "react-native";
+import { Input, Separator, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
   prerequisitesSchema,
   USER_TYPE_OPTIONS,
   type UserType,
-} from './config/prerequisites-schema'
+} from "./config/prerequisites-schema";
 
 /**
  * PrerequisiteWidget - Dashboard widget for completing required profile prerequisites
@@ -35,39 +39,40 @@ import {
  * @returns JSX element
  */
 export function PrerequisiteWidget() {
-  const { theme } = useThemeContext()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const toast = useToast()
+  const { theme } = useThemeContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   // Check prerequisites status
   const {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = usePrerequisites()
+  } = usePrerequisites();
 
   // Fetch industries for dropdown
-  const { data: industriesData, isLoading: isLoadingIndustries } = useIndustries()
+  const { data: industriesData, isLoading: isLoadingIndustries } =
+    useIndustries();
 
   // Complete prerequisites mutation
   const completeMutation = useCompletePrerequisites({
     onSuccess: () => {
       toast.show({
-        title: 'Profile Complete',
-        message: 'Your profile has been set up successfully!',
-        variant: 'success',
-      })
-      refetchStatus()
+        title: "Profile Complete",
+        message: "Your profile has been set up successfully!",
+        variant: "success",
+      });
+      refetchStatus();
     },
     onError: (error: { message?: string }) => {
-      console.error('Error completing prerequisites:', error)
+      console.error("Error completing prerequisites:", error);
       toast.show({
-        title: 'Error',
-        message: error.message || 'Failed to save profile. Please try again.',
-        variant: 'error',
-      })
+        title: "Error",
+        message: error.message || "Failed to save profile. Please try again.",
+        variant: "error",
+      });
     },
-  })
+  });
 
   // Form setup
   const {
@@ -80,75 +85,89 @@ export function PrerequisiteWidget() {
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
-    mode: 'onSubmit', // Validate on submit instead of onChange to prevent premature validation errors
-  })
+    mode: "onSubmit", // Validate on submit instead of onChange to prevent premature validation errors
+  });
 
-  const previousPrefillHashRef = useRef<string | null>(null)
+  const previousPrefillHashRef = useRef<string | null>(null);
 
   // Populate form with existing data when loaded
   useEffect(() => {
     if (!statusData?.data) {
-      return
+      return;
     }
 
     const prefillData: PrerequisitesFormData = {
-      first_name: statusData.data.first_name ?? '',
-      last_name: statusData.data.last_name ?? '',
+      first_name: statusData.data.first_name ?? "",
+      last_name: statusData.data.last_name ?? "",
       address: {
-        street: statusData.data.address?.street ?? prerequisitesDefaults.address.street,
-        city: statusData.data.address?.city ?? prerequisitesDefaults.address.city,
-        state: statusData.data.address?.state ?? prerequisitesDefaults.address.state,
+        street:
+          statusData.data.address?.street ??
+          prerequisitesDefaults.address.street,
+        city:
+          statusData.data.address?.city ?? prerequisitesDefaults.address.city,
+        state:
+          statusData.data.address?.state ?? prerequisitesDefaults.address.state,
         zip: statusData.data.address?.zip ?? prerequisitesDefaults.address.zip,
-        country: statusData.data.address?.country ?? prerequisitesDefaults.address.country,
+        country:
+          statusData.data.address?.country ??
+          prerequisitesDefaults.address.country,
         latitude: statusData.data.address?.latitude,
         longitude: statusData.data.address?.longitude,
       },
       user_types: statusData.data.user_types ?? [],
-      industry_id: statusData.data.industry_id ?? '',
+      industry_id: statusData.data.industry_id ?? "",
       accepts_privacy_policy:
         (statusData.data as unknown as { accepts_privacy_policy?: boolean })
           .accepts_privacy_policy ?? false,
       accepts_terms_of_service:
         (statusData.data as unknown as { accepts_terms_of_service?: boolean })
           .accepts_terms_of_service ?? false,
-    }
+    };
 
-    const prefillHash = JSON.stringify(prefillData)
+    const prefillHash = JSON.stringify(prefillData);
 
     if (previousPrefillHashRef.current === prefillHash) {
-      return
+      return;
     }
 
-    previousPrefillHashRef.current = prefillHash
-    reset(prefillData)
-  }, [reset, statusData?.data])
+    previousPrefillHashRef.current = prefillHash;
+    reset(prefillData);
+  }, [reset, statusData?.data]);
 
   // Handle form submission
   const onSubmit = async (data: PrerequisitesFormData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await completeMutation.mutateAsync(data)
+      await completeMutation.mutateAsync(data);
     } catch (error) {
-      console.error('Submission error:', error)
+      console.error("Submission error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
-        <Stack gap={spacing.xs}>
-          <Text style={{ color: colors.text[theme].secondary }}>Complete Your Profile</Text>
+      <Stack gap={namedSpacing.md}>
+        <Stack gap={namedSpacing.xs}>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Complete Your Profile
+          </Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Please complete these required fields to continue using Scaffald
           </Text>
         </Stack>
 
         {isCheckingStatus ? (
-          <Stack gap={spacing.sm} align="center" paddingVertical={spacing.xl}>
-            <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
-            <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
+          <Stack
+            gap={namedSpacing.sm}
+            align="center"
+            paddingVertical={namedSpacing.xl}
+          >
+            <Spinner size="lg" color="primary" />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Loading...
+            </Text>
           </Stack>
         ) : (
           <>
@@ -165,11 +184,13 @@ export function PrerequisiteWidget() {
                         placeholder="First name"
                         value={field.value}
                         onChangeText={field.onChange}
-                        borderColor={errors.first_name ? '$red8' : '$borderColor'}
+                        error={!!errors.first_name}
                       />
                     )}
                   />
-                  {errors.first_name && <Text color="$red10">{errors.first_name.message}</Text>}
+                  {errors.first_name && (
+                    <Text color="$red10">{errors.first_name.message}</Text>
+                  )}
                 </Stack>
 
                 <Stack gap={8} flex={1}>
@@ -182,11 +203,13 @@ export function PrerequisiteWidget() {
                         placeholder="Last name"
                         value={field.value}
                         onChangeText={field.onChange}
-                        borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                        error={!!errors.last_name}
                       />
                     )}
                   />
-                  {errors.last_name && <Text color="$red10">{errors.last_name.message}</Text>}
+                  {errors.last_name && (
+                    <Text color="$red10">{errors.last_name.message}</Text>
+                  )}
                 </Stack>
               </Row>
             </Stack>
@@ -196,7 +219,9 @@ export function PrerequisiteWidget() {
             {/* 2. Address */}
             <Stack gap={12}>
               <Text>Address *</Text>
-              <Text style={{ color: colors.text[theme].secondary }} marginBottom={8}>
+              <Text
+                style={{ color: colors.text[theme].secondary, marginBottom: 8 }}
+              >
                 Search and select your home address
               </Text>
               <ControlledAddressForm
@@ -205,7 +230,10 @@ export function PrerequisiteWidget() {
                 setValue={setValue}
                 trigger={trigger}
                 placeholder="Search for your address..."
-                error={errors.address?.street?.message || errors.address?.city?.message}
+                error={
+                  errors.address?.street?.message ||
+                  errors.address?.city?.message
+                }
               />
               {errors.address && (
                 <Text color="$red10">
@@ -230,37 +258,45 @@ export function PrerequisiteWidget() {
                     {USER_TYPE_OPTIONS.map((option) => (
                       <Row key={option.value} gap={12} align="center">
                         <Checkbox
-                          checked={field.value?.includes(option.value as UserType)}
+                          checked={field.value?.includes(
+                            option.value as UserType
+                          )}
                           onChange={(checked: boolean) => {
-                            const currentTypes = field.value || []
+                            const currentTypes = field.value || [];
                             if (checked) {
-                              field.onChange([...currentTypes, option.value])
+                              field.onChange([...currentTypes, option.value]);
                             } else {
-                              field.onChange(currentTypes.filter((t) => t !== option.value))
+                              field.onChange(
+                                currentTypes.filter((t) => t !== option.value)
+                              );
                             }
                           }}
                           size="md"
-                          testID={`checkbox-user-type-${option.value}`}
-                          ariaLabelledBy={`checkbox-user-type-${option.value}-label`}
                         />
                         <Pressable
                           onPress={() => {
-                            const currentTypes = field.value || []
-                            const isChecked = currentTypes.includes(option.value as UserType)
+                            const currentTypes = field.value || [];
+                            const isChecked = currentTypes.includes(
+                              option.value as UserType
+                            );
                             if (isChecked) {
-                              field.onChange(currentTypes.filter((t) => t !== option.value))
+                              field.onChange(
+                                currentTypes.filter((t) => t !== option.value)
+                              );
                             } else {
-                              field.onChange([...currentTypes, option.value])
+                              field.onChange([...currentTypes, option.value]);
                             }
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
                             flexShrink: 1,
                             opacity: pressed ? 0.7 : 1,
-                            alignSelf: 'flex-start',
+                            alignSelf: "flex-start",
                           })}
                         >
-                          <Text nativeID={`checkbox-user-type-${option.value}-label`}>
+                          <Text
+                            nativeID={`checkbox-user-type-${option.value}-label`}
+                          >
                             {option.label}
                           </Text>
                         </Pressable>
@@ -269,7 +305,9 @@ export function PrerequisiteWidget() {
                   </Stack>
                 )}
               />
-              {errors.user_types && <Text color="$red10">{errors.user_types.message}</Text>}
+              {errors.user_types && (
+                <Text color="$red10">{errors.user_types.message}</Text>
+              )}
             </Stack>
 
             <Separator />
@@ -285,11 +323,14 @@ export function PrerequisiteWidget() {
                     {isLoadingIndustries ? (
                       <Row gap={8} align="center">
                         <Spinner size="sm" />
-                        <Text style={{ color: colors.text[theme].secondary }}>Loading industries...</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Loading industries...
+                        </Text>
                       </Row>
-                    ) : industriesData?.data && industriesData.data.length > 0 ? (
+                    ) : industriesData?.data &&
+                      industriesData.data.length > 0 ? (
                       <ResponsiveSelect
-                        value={field.value || ''}
+                        value={field.value || ""}
                         onValueChange={field.onChange}
                         placeholder="Select your industry"
                         options={industriesData.data.map(
@@ -300,12 +341,16 @@ export function PrerequisiteWidget() {
                         )}
                       />
                     ) : (
-                      <Text style={{ color: colors.text[theme].secondary }}>No industries available</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        No industries available
+                      </Text>
                     )}
                   </Stack>
                 )}
               />
-              {errors.industry_id && <Text color="$red10">{errors.industry_id.message}</Text>}
+              {errors.industry_id && (
+                <Text color="$red10">{errors.industry_id.message}</Text>
+              )}
             </Stack>
 
             <Separator />
@@ -325,25 +370,32 @@ export function PrerequisiteWidget() {
                         checked={field.value}
                         onChange={field.onChange}
                         size="md"
-                        testID="checkbox-legal-privacy-policy"
-                        ariaLabelledBy="checkbox-legal-privacy-policy-label"
                       />
                       <Pressable
                         onPress={() => field.onChange(!field.value)}
                         accessibilityRole="button"
                         style={({ pressed }) => ({
-                          alignSelf: 'flex-start',
+                          alignSelf: "flex-start",
                           opacity: pressed ? 0.7 : 1,
                         })}
                       >
                         <Text nativeID="checkbox-legal-privacy-policy-label">
-                          I accept the{' '}
+                          I accept the{" "}
                           <Text
-                            style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300], textDecorationLine: 'underline' }}
+                            style={{
+                              color:
+                                theme === "light"
+                                  ? colors.blue[700]
+                                  : colors.blue[300],
+                              textDecorationLine: "underline",
+                            }}
                             onPress={(event) => {
-                              event.stopPropagation?.()
-                              if (typeof window !== 'undefined') {
-                                window.open('https://scaffald.com/privacy', '_blank')
+                              event.stopPropagation?.();
+                              if (typeof window !== "undefined") {
+                                window.open(
+                                  "https://scaffald.com/privacy",
+                                  "_blank"
+                                );
                               }
                             }}
                           >
@@ -353,7 +405,9 @@ export function PrerequisiteWidget() {
                       </Pressable>
                     </Row>
                     {errors.accepts_privacy_policy && (
-                      <Text color="$red10">{errors.accepts_privacy_policy.message}</Text>
+                      <Text color="$red10">
+                        {errors.accepts_privacy_policy.message}
+                      </Text>
                     )}
                   </Stack>
                 )}
@@ -370,25 +424,32 @@ export function PrerequisiteWidget() {
                         checked={field.value}
                         onChange={field.onChange}
                         size="md"
-                        testID="checkbox-legal-terms-of-service"
-                        ariaLabelledBy="checkbox-legal-terms-of-service-label"
                       />
                       <Pressable
                         onPress={() => field.onChange(!field.value)}
                         accessibilityRole="button"
                         style={({ pressed }) => ({
-                          alignSelf: 'flex-start',
+                          alignSelf: "flex-start",
                           opacity: pressed ? 0.7 : 1,
                         })}
                       >
                         <Text nativeID="checkbox-legal-terms-of-service-label">
-                          I accept the{' '}
+                          I accept the{" "}
                           <Text
-                            style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300], textDecorationLine: 'underline' }}
+                            style={{
+                              color:
+                                theme === "light"
+                                  ? colors.blue[700]
+                                  : colors.blue[300],
+                              textDecorationLine: "underline",
+                            }}
                             onPress={(event) => {
-                              event.stopPropagation?.()
-                              if (typeof window !== 'undefined') {
-                                window.open('https://scaffald.com/terms', '_blank')
+                              event.stopPropagation?.();
+                              if (typeof window !== "undefined") {
+                                window.open(
+                                  "https://scaffald.com/terms",
+                                  "_blank"
+                                );
                               }
                             }}
                           >
@@ -398,7 +459,9 @@ export function PrerequisiteWidget() {
                       </Pressable>
                     </Row>
                     {errors.accepts_terms_of_service && (
-                      <Text color="$red10">{errors.accepts_terms_of_service.message}</Text>
+                      <Text color="$red10">
+                        {errors.accepts_terms_of_service.message}
+                      </Text>
                     )}
                   </Stack>
                 )}
@@ -413,13 +476,13 @@ export function PrerequisiteWidget() {
               disabled={isSubmitting}
               loading={isSubmitting}
               size="lg"
-              style={{ marginTop: spacing.xs }}
+              style={{ marginTop: namedSpacing.xs }}
             >
-              {isSubmitting ? 'Completing...' : 'Complete Profile'}
+              {isSubmitting ? "Completing..." : "Complete Profile"}
             </Button>
           </>
         )}
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

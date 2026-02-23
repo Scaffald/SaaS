@@ -1,7 +1,7 @@
-import { MapPin, Plus, Save } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
-import { Controller, FormProvider } from 'react-hook-form'
-import { Platform } from 'react-native'
+import { MapPin, Plus, Save } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { Controller, FormProvider } from "react-hook-form";
+import { Platform } from "react-native";
 import {
   Button,
   Checkbox,
@@ -13,33 +13,42 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
-import { PhotoUpload } from './PhotoUpload'
-import { ProjectSelector } from './ProjectSelector'
-import { TimeEntryInput } from './TimeEntryInput'
-import { mapExplicitSkillsToOptions, normalizeProjectOptions } from '../utils/data-normalizers'
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import {
+  type UseWorkLogFormOptions,
+  useWorkLogForm,
+} from "../hooks/useWorkLogForm";
+import { PhotoUpload } from "./PhotoUpload";
+import { ProjectSelector } from "./ProjectSelector";
+import { TimeEntryInput } from "./TimeEntryInput";
+import {
+  mapExplicitSkillsToOptions,
+  normalizeProjectOptions,
+} from "../utils/data-normalizers";
 
-const getDateInputProps = () => {
-  if (Platform.OS === 'web') {
-    return { type: 'date' as const }
+const getDateInputProps = (): Record<string, unknown> => {
+  if (Platform.OS === "web") {
+    return { type: "date" };
   }
   return {
-    inputMode: 'numeric' as const,
-    keyboardType: 'numbers-and-punctuation' as const,
-  }
-}
+    inputMode: "numeric" as const,
+    keyboardType: "numbers-and-punctuation" as const,
+  };
+};
 
 export interface WorkLogFormProps extends UseWorkLogFormOptions {
   /**
    * Label for the primary submit button.
    */
-  submitLabel?: string
+  submitLabel?: string;
 }
 
-export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkLogFormProps) {
-  const { theme } = useThemeContext()
+export function WorkLogForm({
+  submitLabel = "Save Work Log",
+  ...options
+}: WorkLogFormProps) {
+  const { theme } = useThemeContext();
   const {
     form,
     timeEntryFields,
@@ -58,71 +67,73 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
     skillsQuery,
     pendingOfflineDraft,
     workLogId,
-  } = useWorkLogForm(options)
+  } = useWorkLogForm(options);
 
   const {
     control,
     watch,
     setValue,
     formState: { errors },
-  } = form
+  } = form;
 
-  const tasksCompleted = watch('tasksCompleted') ?? []
-  const selectedSkills = watch('skillsUsed') ?? []
+  const tasksCompleted = watch("tasksCompleted") ?? [];
+  const selectedSkills = watch("skillsUsed") ?? [];
 
-  const [taskDraft, setTaskDraft] = useState('')
+  const [taskDraft, setTaskDraft] = useState("");
 
-  const projectData = normalizeProjectOptions(projectOptionsQuery.data)
+  const projectData = normalizeProjectOptions(projectOptionsQuery.data);
 
   const projectError = projectOptionsQuery.error
-    ? (projectOptionsQuery.error.message ?? 'Unable to load project options.')
-    : null
+    ? projectOptionsQuery.error.message ?? "Unable to load project options."
+    : null;
 
   const tasksWithKeys = useMemo(() => {
-    const counts = new Map<string, number>()
+    const counts = new Map<string, number>();
     return tasksCompleted.map((task, index) => {
-      const current = counts.get(task) ?? 0
-      counts.set(task, current + 1)
+      const current = counts.get(task) ?? 0;
+      counts.set(task, current + 1);
       return {
         task,
         key: `${task}-${current}`,
         index,
-      }
-    })
-  }, [tasksCompleted])
+      };
+    });
+  }, [tasksCompleted]);
 
   const skillOptions = useMemo(
     () => mapExplicitSkillsToOptions(skillsQuery.data),
     [skillsQuery.data]
-  )
+  );
 
   const addTask = () => {
-    const trimmed = taskDraft.trim()
+    const trimmed = taskDraft.trim();
     if (!trimmed) {
-      return
+      return;
     }
-    setValue('tasksCompleted', [...tasksCompleted, trimmed])
-    setTaskDraft('')
-  }
+    setValue("tasksCompleted", [...tasksCompleted, trimmed]);
+    setTaskDraft("");
+  };
 
   const removeTask = (index: number) => {
-    const nextTasks = tasksCompleted.filter((_, taskIndex) => taskIndex !== index)
-    setValue('tasksCompleted', nextTasks)
-  }
+    const nextTasks = tasksCompleted.filter(
+      (_, taskIndex) => taskIndex !== index
+    );
+    setValue("tasksCompleted", nextTasks);
+  };
 
   const toggleSkill = (skillId: string, checked: boolean) => {
     if (checked) {
       if (selectedSkills.includes(skillId)) {
-        return
+        return;
       }
-      setValue('skillsUsed', [...selectedSkills, skillId])
+      setValue("skillsUsed", [...selectedSkills, skillId]);
     } else {
       setValue(
-        'skillsUsed',
+        "skillsUsed",
         selectedSkills.filter((id) => id !== skillId)
-      )
+      );
     }
-  }
+  };
 
   return (
     <FormProvider {...form}>
@@ -131,7 +142,8 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           <Stack gap={8}>
             <Text>Work Log Details</Text>
             <Text style={{ color: colors.text[theme].secondary }}>
-              Provide information about the work performed, including project, schedule, and skills.
+              Provide information about the work performed, including project,
+              schedule, and skills.
             </Text>
           </Stack>
 
@@ -141,7 +153,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               name="projectId"
               render={({ field }) => (
                 <ProjectSelector
-                  value={field.value}
+                  value={field.value ?? ""}
                   onChange={field.onChange}
                   organizations={projectData.organizations}
                   projects={projectData.projects}
@@ -153,7 +165,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   disabled={projectOptionsQuery.isLoading}
                   helperText={
                     errors.projectId?.message ??
-                    'Projects are filtered to the organizations you belong to.'
+                    "Projects are filtered to the organizations you belong to."
                   }
                 />
               )}
@@ -166,18 +178,34 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               control={control}
               name="logDate"
               render={({ field }) => (
-                <Input {...field} {...getDateInputProps()} placeholder="YYYY-MM-DD" />
+                <Input
+                  {...field}
+                  {...getDateInputProps()}
+                  placeholder="YYYY-MM-DD"
+                />
               )}
             />
             {errors.logDate?.message && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.logDate.message}</Text>
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
+                {errors.logDate.message}
+              </Text>
             )}
           </Stack>
 
           <Stack gap={12}>
             <Row justify="space-between" align="center">
               <Text>Time Entries</Text>
-              <Button size="sm" iconStart={Plus} onPress={addTimeEntry} variant="outline">
+              <Button
+                size="sm"
+                iconStart={Plus}
+                onPress={addTimeEntry}
+                variant="outline"
+              >
                 Add Entry
               </Button>
             </Row>
@@ -196,7 +224,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             <Row gap={8} align="center">
               <Text>Total Hours: {totalHours.toFixed(2)}</Text>
               {overlapDetected && (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+                <Text
+                  style={{
+                    color:
+                      theme === "light" ? colors.error[700] : colors.error[300],
+                  }}
+                >
                   Overlapping time entries detected.
                 </Text>
               )}
@@ -218,7 +251,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               )}
             />
             {errors.workDescription?.message && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 {errors.workDescription.message}
               </Text>
             )}
@@ -231,7 +269,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 value={taskDraft}
                 onChangeText={setTaskDraft}
                 placeholder="Add a task and press the plus icon"
-                flex={1}
+                style={{ flex: 1 }}
               />
               <Button size="sm" iconStart={Plus} onPress={addTask}>
                 Add
@@ -240,7 +278,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
             <Stack gap={8}>
               {tasksWithKeys.length === 0 && (
-                <Text style={{ color: colors.text[theme].secondary }}>No tasks added yet.</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  No tasks added yet.
+                </Text>
               )}
 
               {tasksWithKeys.map(({ task, key, index }) => (
@@ -255,8 +295,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   paddingVertical={8}
                   gap={12}
                 >
-                  <Text flex={1}>{task}</Text>
-                  <Button size="sm" variant="outline" onPress={() => removeTask(index)}>
+                  <Text style={{ flex: 1 }}>{task}</Text>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => removeTask(index)}
+                  >
                     Remove
                   </Button>
                 </Row>
@@ -276,7 +320,12 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             )}
 
             {skillsQuery.error && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 Unable to load skills at this time.
               </Text>
             )}
@@ -312,14 +361,21 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                 variant="outline"
                 disabled={location.isLoading}
               >
-                {location.isLoading ? 'Capturing…' : 'Capture Location'}
+                {location.isLoading ? "Capturing…" : "Capture Location"}
               </Button>
               {location.error && (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{location.error}</Text>
+                <Text
+                  style={{
+                    color:
+                      theme === "light" ? colors.error[700] : colors.error[300],
+                  }}
+                >
+                  {location.error}
+                </Text>
               )}
             </Row>
 
-            {form.watch('gpsCapture') && (
+            {form.watch("gpsCapture") && (
               <Stack
                 borderWidth={1}
                 style={{ borderColor: colors.border[theme].default }}
@@ -330,11 +386,13 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               >
                 <Text>Captured Location</Text>
                 <Text>
-                  Latitude: {form.watch('gpsCapture')?.latitude}, Longitude:{' '}
-                  {form.watch('gpsCapture')?.longitude}
+                  Latitude: {form.watch("gpsCapture")?.latitude}, Longitude:{" "}
+                  {form.watch("gpsCapture")?.longitude}
                 </Text>
-                {form.watch('gpsCapture')?.accuracyMeters && (
-                  <Text>Accuracy: {form.watch('gpsCapture')?.accuracyMeters} meters</Text>
+                {form.watch("gpsCapture")?.accuracyMeters && (
+                  <Text>
+                    Accuracy: {form.watch("gpsCapture")?.accuracyMeters} meters
+                  </Text>
                 )}
               </Stack>
             )}
@@ -348,40 +406,68 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
           <Stack gap={8}>
             <Text>Draft Status</Text>
-            {autoSaveStatus.state === 'saving' && (
-              <Text style={{ color: colors.text[theme].secondary }}>Saving draft…</Text>
+            {autoSaveStatus.state === "saving" && (
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Saving draft…
+              </Text>
             )}
-            {autoSaveStatus.state === 'saved' && (
-              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
-                {autoSaveStatus.message ?? 'Draft saved'}{' '}
+            {autoSaveStatus.state === "saved" && (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.green[700] : colors.green[300],
+                }}
+              >
+                {autoSaveStatus.message ?? "Draft saved"}{" "}
                 {autoSaveStatus.savedAt
                   ? new Date(autoSaveStatus.savedAt).toLocaleTimeString()
-                  : ''}
+                  : ""}
               </Text>
             )}
-            {autoSaveStatus.state === 'error' && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                {autoSaveStatus.message ?? 'Auto-save encountered an error.'}
+            {autoSaveStatus.state === "error" && (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
+                {autoSaveStatus.message ?? "Auto-save encountered an error."}
               </Text>
             )}
-            {autoSaveStatus.state === 'invalid' && (
-              <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+            {autoSaveStatus.state === "invalid" && (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.yellow[700] : colors.yellow[300],
+                }}
+              >
                 {autoSaveStatus.message ??
-                  'Form is incomplete. Fill in required fields to auto-save.'}
+                  "Form is incomplete. Fill in required fields to auto-save."}
               </Text>
             )}
             {pendingOfflineDraft && (
-              <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
-                Offline draft queued. It will sync automatically when you are online.
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.yellow[700] : colors.yellow[300],
+                }}
+              >
+                Offline draft queued. It will sync automatically when you are
+                online.
               </Text>
             )}
           </Stack>
 
-          <Button iconStart={Save} size="lg" onPress={() => submit()} disabled={isSubmitting}>
-            {isSubmitting ? 'Saving…' : submitLabel}
+          <Button
+            iconStart={Save}
+            size="lg"
+            onPress={() => submit()}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Saving…" : submitLabel}
           </Button>
         </Stack>
       </ScrollView>
     </FormProvider>
-  )
+  );
 }

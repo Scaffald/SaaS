@@ -1,22 +1,21 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { useCertificationsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useCertificationsWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
-  spacing,
-} from '@scaffald/ui'
-import { Award, CheckCircle } from 'lucide-react-native'
-import { useRouter } from 'expo-router'
-import { Linking } from 'react-native'
-import { Separator, Text, Row, Stack } from '@scaffald/ui'
-import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
-import type { CertificationWidgetEntry } from '@scaffald/sdk'
+} from "@scaffald/ui";
+import { Award, CheckCircle } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Linking } from "react-native";
+import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { formatDate } from "../utils/date-formatting";
+import type { ProfileWidgetProps } from "./types";
+import type { CertificationWidgetEntry } from "@scaffald/sdk";
 
-type UserCertification = CertificationWidgetEntry
+type UserCertification = CertificationWidgetEntry;
 
 /**
  * CertificationsWidget
@@ -29,35 +28,39 @@ type UserCertification = CertificationWidgetEntry
 export function CertificationsWidget({
   userId,
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }: ProfileWidgetProps) {
-  const router = useRouter()
-  const { data, isLoading, error, refetch, isFetching } = useCertificationsWidget(
-    { userId },
-    {
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  const router = useRouter();
+  const { data, isLoading, error, refetch, isFetching } =
+    useCertificationsWidget(
+      { userId },
+      {
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+      }
+    );
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading certifications..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: '#ef4444' }}>Failed to load certifications</Text>
-          <Text style={{ color: '#414e62' }}>{error.message}</Text>
+          <Text style={{ color: "#ef4444" }}>
+            Failed to load certifications
+          </Text>
+          <Text style={{ color: "#414e62" }}>{error.message}</Text>
           <Button
-            variant="filled" color="primary"
+            variant="filled"
+            color="primary"
             size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
             disabled={isFetching}
           >
@@ -65,34 +68,40 @@ export function CertificationsWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
-  const certifications = data || []
-  const showCompact = variant === 'compact'
+  const certifications = data || [];
+  const showCompact = variant === "compact";
 
   // Helper to check if certification is expired
   const isExpired = (cert: UserCertification): boolean => {
-    if (cert.does_not_expire) return false
-    if (!cert.expiration_date) return false
-    return new Date(cert.expiration_date) < new Date()
-  }
+    if (cert.does_not_expire) return false;
+    if (!cert.expiration_date) return false;
+    return new Date(cert.expiration_date) < new Date();
+  };
 
   // Separate active and expired certifications
-  const activeCerts = certifications.filter((cert: UserCertification) => !isExpired(cert))
-  const expiredCerts = certifications.filter((cert: UserCertification) => isExpired(cert))
+  const activeCerts = certifications.filter(
+    (cert: UserCertification) => !isExpired(cert)
+  );
+  const expiredCerts = certifications.filter((cert: UserCertification) =>
+    isExpired(cert)
+  );
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
         <Row justify="space-between" align="center">
-          <Heading variant="h4">Certifications</Heading>
+          <H4>Certifications</H4>
           {showEdit && (
             <Button
               variant="outline"
               size="sm"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+              }
             >
               Edit
             </Button>
@@ -101,18 +110,17 @@ export function CertificationsWidget({
 
         {certifications.length === 0 ? (
           <EmptyState
-            iconStart={<Award />}
+            icon={Award}
             title="No certifications added yet"
             description="Add your professional certifications and licenses"
             action={
-              showEdit ? (
-                <Button
-                  variant="filled" color="primary"
-                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
-                >
-                  Add Certification
-                </Button>
-              ) : undefined
+              showEdit
+                ? {
+                    label: "Add Certification",
+                    onPress: () =>
+                      router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path),
+                  }
+                : undefined
             }
           />
         ) : (
@@ -132,16 +140,22 @@ export function CertificationsWidget({
                             paddingHorizontal={8}
                             paddingVertical={2}
                             borderRadius={8}
-                            style={{ backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#3b82f6' }}
+                            style={{
+                              backgroundColor: "#eff6ff",
+                              borderWidth: 1,
+                              borderColor: "#3b82f6",
+                            }}
                           >
                             <CheckCircle size={14} color="#1d4ed8" />
-                            <Text style={{ color: '#1d4ed8', marginLeft: 4 }}>
+                            <Text style={{ color: "#1d4ed8", marginLeft: 4 }}>
                               Active
                             </Text>
                           </Row>
                         </Row>
                         {cert.issuing_organization && (
-                          <Text style={{ color: '#414e62' }}>{cert.issuing_organization}</Text>
+                          <Text style={{ color: "#414e62" }}>
+                            {cert.issuing_organization}
+                          </Text>
                         )}
                       </Stack>
 
@@ -149,49 +163,61 @@ export function CertificationsWidget({
                       <Row gap={16} wrap>
                         {cert.issue_date && (
                           <Stack gap={4}>
-                            <Text style={{ color: '#414e62' }}>Issued</Text>
+                            <Text style={{ color: "#414e62" }}>Issued</Text>
                             <Text>{formatDate(cert.issue_date)}</Text>
                           </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
                           <Stack gap={4}>
-                            <Text style={{ color: '#414e62' }}>Expires</Text>
+                            <Text style={{ color: "#414e62" }}>Expires</Text>
                             <Text>{formatDate(cert.expiration_date)}</Text>
                           </Stack>
                         )}
                         {cert.does_not_expire && (
                           <Stack gap={4}>
-                            <Text style={{ color: '#414e62' }}>Validity</Text>
+                            <Text style={{ color: "#414e62" }}>Validity</Text>
                             <Text>No Expiration</Text>
                           </Stack>
                         )}
                       </Row>
 
                       {/* Credential Details */}
-                      {!showCompact && (cert.credential_id || cert.credential_url) && (
-                        <Row gap={16} wrap>
-                          {cert.credential_id && (
-                            <Stack gap={4}>
-                              <Text style={{ color: '#414e62' }}>Credential ID</Text>
-                              <Text>{cert.credential_id}</Text>
-                            </Stack>
-                          )}
-                          {cert.credential_url && (
-                            <Stack gap={4}>
-                              <Text style={{ color: '#414e62' }}>Verification</Text>
-                              <Text
-                                style={{ color: '#3b82f6', textDecorationLine: 'underline' }}
-                                onPress={() => Linking.openURL(cert.credential_url || '')}
-                              >
-                                View Certificate →
-                              </Text>
-                            </Stack>
-                          )}
-                        </Row>
-                      )}
+                      {!showCompact &&
+                        (cert.credential_id || cert.credential_url) && (
+                          <Row gap={16} wrap>
+                            {cert.credential_id && (
+                              <Stack gap={4}>
+                                <Text style={{ color: "#414e62" }}>
+                                  Credential ID
+                                </Text>
+                                <Text>{cert.credential_id}</Text>
+                              </Stack>
+                            )}
+                            {cert.credential_url && (
+                              <Stack gap={4}>
+                                <Text style={{ color: "#414e62" }}>
+                                  Verification
+                                </Text>
+                                <Text
+                                  style={{
+                                    color: "#3b82f6",
+                                    textDecorationLine: "underline",
+                                  }}
+                                  onPress={() =>
+                                    Linking.openURL(cert.credential_url || "")
+                                  }
+                                >
+                                  View Certificate →
+                                </Text>
+                              </Stack>
+                            )}
+                          </Row>
+                        )}
 
                       {/* Separator */}
-                      {index < activeCerts.length - 1 && <Separator style={{ marginVertical: 8 }} />}
+                      {index < activeCerts.length - 1 && (
+                        <Separator style={{ marginVertical: 8 }} />
+                      )}
                     </Stack>
                   ))}
               </Stack>
@@ -200,7 +226,9 @@ export function CertificationsWidget({
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
               <Stack gap={12}>
-                <Text style={{ color: '#414e62' }}>Expired ({expiredCerts.length})</Text>
+                <Text style={{ color: "#414e62" }}>
+                  Expired ({expiredCerts.length})
+                </Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
                   <Stack key={cert.id} gap={4} style={{ opacity: 0.6 }}>
                     <Row gap={8} align="center">
@@ -209,13 +237,15 @@ export function CertificationsWidget({
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
-                        style={{ borderWidth: 1, borderColor: '#e2e8f0' }}
+                        style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
                       >
-                        <Text style={{ color: '#414e62' }}>Expired</Text>
+                        <Text style={{ color: "#414e62" }}>Expired</Text>
                       </Row>
                     </Row>
                     {cert.issuing_organization && (
-                      <Text style={{ color: '#414e62' }}>{cert.issuing_organization}</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        {cert.issuing_organization}
+                      </Text>
                     )}
                   </Stack>
                 ))}
@@ -225,8 +255,10 @@ export function CertificationsWidget({
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
               <Text
-                style={{ color: '#3b82f6' }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
+                style={{ color: "#3b82f6" }}
+                onPress={() =>
+                  router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+                }
               >
                 View all {certifications.length} certifications →
               </Text>
@@ -235,5 +267,5 @@ export function CertificationsWidget({
         )}
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

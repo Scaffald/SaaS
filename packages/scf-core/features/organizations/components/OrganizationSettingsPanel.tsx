@@ -1,6 +1,9 @@
-import { type OrganizationSettingsInput, organizationSettingsSchema } from '@scf/schemas'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, useForm } from 'react-hook-form'
+import {
+  type OrganizationSettingsInput,
+  organizationSettingsSchema,
+} from "@scf/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Card,
@@ -12,21 +15,23 @@ import {
   Text,
   Row,
   Stack,
-} from '@scaffald/ui'
+} from "@scaffald/ui";
 import {
   useOrganizationSettings,
   useOrganizationStorageUsage,
   useUpdateOrganizationSettings,
-} from '../api'
+} from "../api";
 
 type OrganizationSettingsPanelProps = {
-  organizationId: string
-}
+  organizationId: string;
+};
 
-export function OrganizationSettingsPanel({ organizationId }: OrganizationSettingsPanelProps) {
-  const { data: settings, isLoading } = useOrganizationSettings(organizationId)
-  const usage = useOrganizationStorageUsage(organizationId)
-  const updateMutation = useUpdateOrganizationSettings()
+export function OrganizationSettingsPanel({
+  organizationId,
+}: OrganizationSettingsPanelProps) {
+  const { data: settings, isLoading } = useOrganizationSettings(organizationId);
+  const usage = useOrganizationStorageUsage(organizationId);
+  const updateMutation = useUpdateOrganizationSettings();
   const form = useForm<OrganizationSettingsInput>({
     resolver: zodResolver(organizationSettingsSchema),
     values: settings
@@ -42,28 +47,30 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
           privacyPreferences: settings.privacy_preferences ?? {},
         }
       : undefined,
-  })
+  });
 
   const handleSave = form.handleSubmit(async (values) => {
     await updateMutation.mutateAsync({
       organizationId,
-      timezone: values.timezone,
-      locale: values.locale,
-      defaultCurrency: values.defaultCurrency,
-      enforceMfa: values.enforceMfa,
-      sessionTimeoutMinutes: values.sessionTimeoutMinutes,
-      ipAllowList: values.ipAllowList,
-    })
-  })
+      params: {
+        timezone: values.timezone,
+        locale: values.locale,
+        defaultCurrency: values.defaultCurrency,
+        enforceMfa: values.enforceMfa,
+        sessionTimeoutMinutes: values.sessionTimeoutMinutes,
+        ipAllowList: values.ipAllowList,
+      },
+    });
+  });
 
   return (
-    <Card bordered padding="md" gap={12}>
+    <Card bordered padding="md">
       <Row justify="space-between" align="center">
         <H4>Organization Settings</H4>
         {usage.data ? (
           <Text color="$gray11">
-            {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used ({usage.data.documentCount}{' '}
-            docs)
+            {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used (
+            {usage.data.documentCount} docs)
           </Text>
         ) : null}
       </Row>
@@ -78,7 +85,10 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             render={({ field }) => (
               <Stack gap={4}>
                 <Text>Timezone</Text>
-                <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
+                <Input
+                  value={field.value}
+                  onChangeText={(value) => field.onChange(value)}
+                />
               </Stack>
             )}
           />
@@ -88,7 +98,10 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             render={({ field }) => (
               <Stack gap={4}>
                 <Text>Locale</Text>
-                <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
+                <Input
+                  value={field.value}
+                  onChangeText={(value) => field.onChange(value)}
+                />
               </Stack>
             )}
           />
@@ -98,7 +111,10 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             render={({ field }) => (
               <Stack gap={4}>
                 <Text>Default currency</Text>
-                <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
+                <Input
+                  value={field.value}
+                  onChangeText={(value) => field.onChange(value)}
+                />
               </Stack>
             )}
           />
@@ -127,10 +143,10 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             )}
           />
           <Button onPress={handleSave} disabled={updateMutation.isPending}>
-            {updateMutation.isPending ? 'Saving…' : 'Save settings'}
+            {updateMutation.isPending ? "Saving…" : "Save settings"}
           </Button>
         </Stack>
       )}
     </Card>
-  )
+  );
 }

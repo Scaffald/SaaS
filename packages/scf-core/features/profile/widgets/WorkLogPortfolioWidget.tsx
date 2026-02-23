@@ -1,43 +1,49 @@
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
-import { usePublicWorkLogsFeed } from '@scf/core/utils/work-logs-sdk-hooks'
-import { ShieldCheck } from 'lucide-react-native'
-import { useMemo } from 'react'
-import { Card, Image, Paragraph, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import type { PublicWorkLog, PublicWorkLogPhoto } from "@scf/schemas";
+import { usePublicWorkLogsFeed } from "@scf/core/utils/work-logs-sdk-hooks";
+import { ShieldCheck } from "lucide-react-native";
+import { useMemo } from "react";
+import { Image } from "react-native";
+import { Card, Paragraph, Spinner, Text, Row, Stack } from "@scaffald/ui";
 
 interface WorkLogPortfolioWidgetProps {
-  userId: string
+  userId: string;
 }
 
-export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) {
-  const { data, isLoading } = usePublicWorkLogsFeed(userId ? { userId, limit: 12 } : undefined, {
-    enabled: Boolean(userId),
-    staleTime: 60_000,
-  })
+export function WorkLogPortfolioWidget({
+  userId,
+}: WorkLogPortfolioWidgetProps) {
+  const { data, isLoading } = usePublicWorkLogsFeed(
+    userId ? { userId, limit: 12 } : undefined,
+    {
+      enabled: Boolean(userId),
+      staleTime: 60_000,
+    }
+  );
 
-  const workLogs: PublicWorkLog[] = data ?? []
+  const workLogs: PublicWorkLog[] = (data as unknown as PublicWorkLog[]) ?? [];
 
   const groupedLogs = useMemo(() => {
     const groups = new Map<
       string,
       {
-        projectName: string | null
-        organizationName: string | null
-        entries: PublicWorkLog[]
+        projectName: string | null;
+        organizationName: string | null;
+        entries: PublicWorkLog[];
       }
-    >()
+    >();
 
     for (const log of workLogs) {
-      const key = log.projectId ?? log.id
-      const existing = groups.get(key)
+      const key = log.projectId ?? log.id;
+      const existing = groups.get(key);
       if (existing) {
-        existing.entries.push(log)
+        existing.entries.push(log);
       } else {
         groups.set(key, {
           projectName: log.projectName,
           organizationName: log.organizationName,
           entries: [log],
-        })
+        });
       }
     }
 
@@ -46,8 +52,8 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
       projectName: value.projectName,
       organizationName: value.organizationName,
       entries: value.entries,
-    }))
-  }, [workLogs])
+    }));
+  }, [workLogs]);
 
   return (
     <Card borderColor="$color6" borderWidth={1}>
@@ -55,8 +61,8 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
         <Stack gap={8}>
           <Text>Verified work history</Text>
           <Paragraph color="$gray11">
-            Recent verified work logs selected by this worker. Projects appear here only when the
-            worker has chosen to share them publicly.
+            Recent verified work logs selected by this worker. Projects appear
+            here only when the worker has chosen to share them publicly.
           </Paragraph>
         </Stack>
 
@@ -74,28 +80,36 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
             {groupedLogs.map((group) => {
               const allDates = group.entries
                 .map((entry) => entry.logDate)
-                .filter((value): value is string => Boolean(value))
-              const earliest = allDates.reduce<string | null>((current, candidate) => {
-                if (!current) return candidate
-                return current <= candidate ? current : candidate
-              }, null)
-              const latest = allDates.reduce<string | null>((current, candidate) => {
-                if (!current) return candidate
-                return current >= candidate ? current : candidate
-              }, null)
+                .filter((value): value is string => Boolean(value));
+              const earliest = allDates.reduce<string | null>(
+                (current, candidate) => {
+                  if (!current) return candidate;
+                  return current <= candidate ? current : candidate;
+                },
+                null
+              );
+              const latest = allDates.reduce<string | null>(
+                (current, candidate) => {
+                  if (!current) return candidate;
+                  return current >= candidate ? current : candidate;
+                },
+                null
+              );
 
               const dateLabel = (() => {
-                if (!allDates.length) return 'Date hidden by worker'
+                if (!allDates.length) return "Date hidden by worker";
                 if (earliest && latest && earliest !== latest) {
-                  return `${formatDate(earliest)} – ${formatDate(latest)}`
+                  return `${formatDate(earliest)} – ${formatDate(latest)}`;
                 }
                 if (earliest) {
-                  return formatDate(earliest)
+                  return formatDate(earliest);
                 }
-                return 'Date hidden by worker'
-              })()
+                return "Date hidden by worker";
+              })();
 
-              const photos = group.entries.flatMap((entry) => entry.photos) as PublicWorkLogPhoto[]
+              const photos = group.entries.flatMap(
+                (entry) => entry.photos
+              ) as PublicWorkLogPhoto[];
 
               return (
                 <Stack
@@ -110,7 +124,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                 >
                   <Row align="center" justify="space-between">
                     <Stack gap={4}>
-                      <Text>{group.projectName ?? 'Project'}</Text>
+                      <Text>{group.projectName ?? "Project"}</Text>
                       {group.organizationName ? (
                         <Text color="$gray11">{group.organizationName}</Text>
                       ) : null}
@@ -134,20 +148,23 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       {photos.map((photo) => (
                         <Card
                           key={`${group.id}-${photo.id}`}
-                          width="30%"
-                          minWidth={120}
-                          height={90}
-                          overflow="hidden"
                           borderWidth={1}
-                          borderColor="$color5"
+                          style={{
+                            width: "30%",
+                            minWidth: 120,
+                            height: 90,
+                            overflow: "hidden",
+                          }}
                         >
                           {photo.thumbnailSignedUrl || photo.signedUrl ? (
                             <Image
                               source={{
-                                uri: photo.thumbnailSignedUrl ?? photo.signedUrl ?? undefined,
+                                uri:
+                                  photo.thumbnailSignedUrl ??
+                                  photo.signedUrl ??
+                                  undefined,
                               }}
-                              width="100%"
-                              height="100%"
+                              style={{ width: "100%", height: "100%" }}
                               resizeMode="cover"
                             />
                           ) : (
@@ -164,14 +181,16 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       ))}
                     </Row>
                   ) : (
-                    <Paragraph color="$gray11">No photos were shared for this project.</Paragraph>
+                    <Paragraph color="$gray11">
+                      No photos were shared for this project.
+                    </Paragraph>
                   )}
                 </Stack>
-              )
+              );
             })}
           </Stack>
         )}
       </Stack>
     </Card>
-  )
+  );
 }

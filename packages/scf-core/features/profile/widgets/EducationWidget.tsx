@@ -1,21 +1,20 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { useEducationWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useEducationWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
-  spacing,
-} from '@scaffald/ui'
-import { GraduationCap } from 'lucide-react-native'
-import { useRouter } from 'expo-router'
-import { Separator, Text, Row, Stack } from '@scaffald/ui'
-import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
-import type { EducationWidgetEntry } from '@scaffald/sdk'
+} from "@scaffald/ui";
+import { GraduationCap } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { formatDate } from "../utils/date-formatting";
+import type { ProfileWidgetProps } from "./types";
+import type { EducationWidgetEntry } from "@scaffald/sdk";
 
-type UserEducation = EducationWidgetEntry
+type UserEducation = EducationWidgetEntry;
 
 /**
  * EducationWidget
@@ -28,35 +27,36 @@ type UserEducation = EducationWidgetEntry
 export function EducationWidget({
   userId,
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }: ProfileWidgetProps) {
-  const router = useRouter()
+  const router = useRouter();
   const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
-  )
+  );
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading education..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: '#ef4444' }}>Failed to load education</Text>
-          <Text style={{ color: '#414e62' }}>{error.message}</Text>
+          <Text style={{ color: "#ef4444" }}>Failed to load education</Text>
+          <Text style={{ color: "#414e62" }}>{error.message}</Text>
           <Button
-            variant="filled" color="primary"
+            variant="filled"
+            color="primary"
             size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
             disabled={isFetching}
           >
@@ -64,23 +64,25 @@ export function EducationWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
-  const education = data || []
-  const showCompact = variant === 'compact'
+  const education = data || [];
+  const showCompact = variant === "compact";
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
         <Row justify="space-between" align="center">
-          <Heading variant="h4">Education</Heading>
+          <H4>Education</H4>
           {showEdit && (
             <Button
               variant="outline"
               size="sm"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
+              }
             >
               Edit
             </Button>
@@ -89,18 +91,17 @@ export function EducationWidget({
 
         {education.length === 0 ? (
           <EmptyState
-            iconStart={<GraduationCap />}
+            icon={GraduationCap}
             title="No education added yet"
             description="Add your education history to complete your profile"
             action={
-              showEdit ? (
-                <Button
-                  variant="filled" color="primary"
-                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
-                >
-                  Add Education
-                </Button>
-              ) : undefined
+              showEdit
+                ? {
+                    label: "Add Education",
+                    onPress: () =>
+                      router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path),
+                  }
+                : undefined
             }
           />
         ) : (
@@ -112,18 +113,22 @@ export function EducationWidget({
                   {/* Degree & Field */}
                   <Stack gap={4}>
                     <Text>
-                      {edu.degree_type || 'Degree'}
+                      {edu.degree_type || "Degree"}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text style={{ color: '#414e62' }}>{edu.institution_name || 'Institution'}</Text>
+                    <Text style={{ color: "#414e62" }}>
+                      {edu.institution_name || "Institution"}
+                    </Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text style={{ color: '#414e62' }}>{formatDate(edu.start_date)}</Text>
-                    <Text style={{ color: '#414e62' }}>-</Text>
-                    <Text style={{ color: '#414e62' }}>
-                      {edu.is_current ? 'Present' : formatDate(edu.end_date)}
+                    <Text style={{ color: "#414e62" }}>
+                      {formatDate(edu.start_date)}
+                    </Text>
+                    <Text style={{ color: "#414e62" }}>-</Text>
+                    <Text style={{ color: "#414e62" }}>
+                      {edu.is_current ? "Present" : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
                       <Row
@@ -131,33 +136,42 @@ export function EducationWidget({
                         paddingVertical={2}
                         borderRadius={8}
                         borderWidth={1}
-                        style={{ backgroundColor: '#bfdbfe', borderColor: '#1d4ed8' }}
+                        style={{
+                          backgroundColor: "#bfdbfe",
+                          borderColor: "#1d4ed8",
+                        }}
                       >
-                        <Text style={{ color: '#1d4ed8' }}>Current</Text>
+                        <Text style={{ color: "#1d4ed8" }}>Current</Text>
                       </Row>
                     )}
                   </Row>
 
                   {/* Location */}
-                  {edu.location && <Text style={{ color: '#414e62' }}>📍 {edu.location}</Text>}
+                  {edu.location && (
+                    <Text style={{ color: "#414e62" }}>📍 {edu.location}</Text>
+                  )}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text style={{ color: '#414e62', lineHeight: 12 }}>
+                    <Text style={{ color: "#414e62", lineHeight: 12 }}>
                       {edu.description}
                     </Text>
                   )}
 
                   {/* Separator between items */}
-                  {index < education.length - 1 && <Separator marginVertical={8} />}
+                  {index < education.length - 1 && (
+                    <Separator marginVertical={8} />
+                  )}
                 </Stack>
               ))}
 
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                style={{ color: '#1d4ed8', cursor: 'pointer' }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
+                style={{ color: "#1d4ed8", cursor: "pointer" }}
+                onPress={() =>
+                  router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
+                }
               >
                 View all {education.length} entries →
               </Text>
@@ -166,5 +180,5 @@ export function EducationWidget({
         )}
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

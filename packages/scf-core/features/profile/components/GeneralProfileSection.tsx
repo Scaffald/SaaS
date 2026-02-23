@@ -1,46 +1,47 @@
 import {
   useOfficeUserGeneral,
   useOfficeUpdateUserGeneralMutation,
-} from '@scf/core/utils/office-users-sdk-hooks'
+} from "@scf/core/utils/office-users-sdk-hooks";
 import {
   useGeneralInfo,
   useUpdateGeneralInfoMutation,
   useUploadAvatarMutation,
-} from '@scf/core/utils/profile-general-sdk-hooks'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
+} from "@scf/core/utils/profile-general-sdk-hooks";
+import { createMapboxGeocodingProvider } from "@scf/core/utils/mapbox-geocoding-provider";
+import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
 import {
   AddressForm,
   AvatarImagePicker,
   Button,
   DashboardWidget,
   PhoneNumberInput,
-} from '@scaffald/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@scaffald/ui'
-import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,
   generalProfileSchema,
-} from '../config/general-schema'
+} from "../config/general-schema";
 
 interface GeneralProfileSectionProps {
   /**
    * User ID to edit. If not provided, edits the current user's profile.
    */
-  userId?: string
+  userId?: string;
   /**
    * Mode determines which tRPC endpoints to use
    * - 'user': Uses profile.* endpoints (current user)
    * - 'admin': Uses office.* endpoints (any user)
    */
-  mode?: 'user' | 'admin'
+  mode?: "user" | "admin";
   /**
    * Read-only mode (view only)
    */
-  readOnly?: boolean
+  readOnly?: boolean;
 }
 
 /**
@@ -49,97 +50,107 @@ interface GeneralProfileSectionProps {
  */
 export function GeneralProfileSection({
   userId,
-  mode = 'user',
+  mode = "user",
   readOnly = false,
 }: GeneralProfileSectionProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const toast = useToast()
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
 
   const getErrorMessage = (value: unknown): string | undefined => {
-    if (typeof value === 'string') {
-      return value
+    if (typeof value === "string") {
+      return value;
     }
-    if (value && typeof value === 'object' && 'message' in value) {
-      const message = (value as { message?: unknown }).message
-      return typeof message === 'string' ? message : undefined
+    if (value && typeof value === "object" && "message" in value) {
+      const message = (value as { message?: unknown }).message;
+      return typeof message === "string" ? message : undefined;
     }
-    return undefined
-  }
+    return undefined;
+  };
 
   // Determine which endpoints to use based on mode
   // Admin mode uses SDK office-users hooks, user mode uses profile SDK
   const useQuery =
-    mode === 'admin' && userId
+    mode === "admin" && userId
       ? () => useOfficeUserGeneral(userId)
-      : () => useGeneralInfo()
+      : () => useGeneralInfo();
 
   const useMutation =
-    mode === 'admin' && userId
+    mode === "admin" && userId
       ? () =>
           useOfficeUpdateUserGeneralMutation({
             onSuccess: () => {
               toast.show({
-                title: 'Profile Updated',
-                message: 'Profile has been saved successfully!',
-              })
-              refetch()
+                title: "Profile Updated",
+                message: "Profile has been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving profile:', error)
+              console.error("Error saving profile:", error);
               const _message =
-                error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save profile. Please try again.";
               toast.show({
-                title: 'Error',
-                message: '',
-                variant: 'error',
-              })
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
           })
       : () =>
           useUpdateGeneralInfoMutation({
             onSuccess: () => {
               toast.show({
-                title: 'Profile Updated',
-                message: 'Your profile has been saved successfully!',
-              })
-              refetch()
+                title: "Profile Updated",
+                message: "Your profile has been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving profile:', error)
+              console.error("Error saving profile:", error);
               const _message =
-                error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save profile. Please try again.";
               toast.show({
-                title: 'Error',
-                message: '',
-                variant: 'error',
-              })
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
-          })
+          });
 
-  const { data: profileData, isLoading: isLoadingProfile, refetch } = useQuery()
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile,
+    refetch,
+  } = useQuery();
 
-  const updateProfileMutation = useMutation()
+  const updateProfileMutation = useMutation();
 
   const uploadAvatarMutation = useUploadAvatarMutation({
     onSuccess: (data: { avatarPath: string }) => {
       toast.show({
-        title: 'Avatar Uploaded',
-        message: 'Avatar has been uploaded successfully!',
-      })
-      setValue('avatar_path', data.avatarPath)
-      refetch()
+        title: "Avatar Uploaded",
+        message: "Avatar has been uploaded successfully!",
+      });
+      setValue("avatar_path", data.avatarPath);
+      refetch();
     },
     onError: (error: unknown) => {
-      console.error('Error uploading avatar:', error)
+      console.error("Error uploading avatar:", error);
       const _message =
-        error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.'
+        error instanceof Error
+          ? error.message
+          : "Failed to upload avatar. Please try again.";
       toast.show({
-        title: 'Upload Error',
-        message: '',
-        variant: 'error',
-      })
+        title: "Upload Error",
+        message: "",
+        variant: "error",
+      });
     },
-  })
+  });
 
   const {
     control,
@@ -152,39 +163,41 @@ export function GeneralProfileSection({
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
-  const avatarPath = watch('avatar_path')
+  const avatarPath = watch("avatar_path");
 
   // Reset form when profile data is loaded
   useEffect(() => {
     if (profileData) {
-      reset(profileData)
+      reset(profileData as unknown as GeneralProfileFormData);
     }
-  }, [profileData, reset])
+  }, [profileData, reset]);
 
   const onSubmit = async (data: GeneralProfileFormData) => {
-    if (readOnly) return
+    if (readOnly) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      if (mode === 'admin' && userId) {
-        // Form data is compatible with API schema but has slightly different structure
-        await updateProfileMutation.mutateAsync({
-          userId,
-          data: data as unknown as Parameters<typeof updateProfileMutation.mutateAsync>[0]['data'],
-        })
+      if (mode === "admin" && userId) {
+        await (
+          updateProfileMutation.mutateAsync as (arg: {
+            userId: string;
+            data: unknown;
+          }) => Promise<unknown>
+        )({ userId, data });
       } else {
-        // Form data is compatible with API schema but has slightly different structure
-        await updateProfileMutation.mutateAsync(
-          data as unknown as Parameters<typeof updateProfileMutation.mutateAsync>[0]
-        )
+        await (
+          updateProfileMutation.mutateAsync as (
+            arg: unknown
+          ) => Promise<unknown>
+        )(data);
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (isLoadingProfile) {
     return (
@@ -192,7 +205,7 @@ export function GeneralProfileSection({
         <Spinner size="lg" />
         <Text>Loading profile...</Text>
       </Stack>
-    )
+    );
   }
 
   return (
@@ -202,41 +215,43 @@ export function GeneralProfileSection({
         <Stack gap={12} align="center">
           <Text>Profile Photo</Text>
           <AvatarImagePicker
-            value={getAvatarUrl(avatarPath) || ''}
+            value={getAvatarUrl(avatarPath) || ""}
             onImageSelect={async (imageUri) => {
-              if (readOnly) return
+              if (readOnly) return;
 
               if (imageUri) {
                 try {
-                  const response = await fetch(imageUri)
-                  const blob = await response.blob()
-                  const reader = new FileReader()
+                  const response = await fetch(imageUri);
+                  const blob = await response.blob();
+                  const reader = new FileReader();
                   reader.onloadend = () => {
-                    const base64data = reader.result as string
+                    const base64data = reader.result as string;
                     uploadAvatarMutation.mutate({
                       file: base64data,
                       fileName: `avatar-${Date.now()}.jpg`,
-                      contentType: blob.type || 'image/jpeg',
-                    })
-                  }
-                  reader.readAsDataURL(blob)
+                      contentType: blob.type || "image/jpeg",
+                    });
+                  };
+                  reader.readAsDataURL(blob);
                 } catch (error) {
-                  console.error('Error processing image:', error)
+                  console.error("Error processing image:", error);
                   toast.show({
-                    title: 'Error',
-                    message: 'Failed to process image. Please try again.',
-                    variant: 'error',
-                  })
+                    title: "Error",
+                    message: "Failed to process image. Please try again.",
+                    variant: "error",
+                  });
                 }
               } else {
-                setValue('avatar_path', '')
+                setValue("avatar_path", "");
               }
             }}
             size={120}
             disabled={readOnly || uploadAvatarMutation.isPending}
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text style={{ color: '#414e62' }}>Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && (
+            <Text style={{ color: "#414e62" }}>Uploading avatar...</Text>
+          )}
         </Stack>
 
         {/* Name Fields */}
@@ -257,8 +272,9 @@ export function GeneralProfileSection({
               )}
             />
             {errors.first_name && (
-              <Text style={{ color: '#ef4444' }}>
-                {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
+              <Text style={{ color: "#ef4444" }}>
+                {getErrorMessage(errors.first_name.message) ??
+                  "First name is required"}
               </Text>
             )}
           </Stack>
@@ -279,8 +295,9 @@ export function GeneralProfileSection({
               )}
             />
             {errors.last_name && (
-              <Text style={{ color: '#ef4444' }}>
-                {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
+              <Text style={{ color: "#ef4444" }}>
+                {getErrorMessage(errors.last_name.message) ??
+                  "Last name is required"}
               </Text>
             )}
           </Stack>
@@ -295,17 +312,17 @@ export function GeneralProfileSection({
             render={({ field }) => (
               <TextArea
                 placeholder="Tell us about yourself..."
-                value={typeof field.value === 'string' ? field.value : ''}
+                value={typeof field.value === "string" ? field.value : ""}
                 onChangeText={field.onChange}
-                minHeight={100}
                 editable={!readOnly}
-                style={{ opacity: readOnly ? 0.7 : 1 }}
+                style={{ minHeight: 100, opacity: readOnly ? 0.7 : 1 }}
               />
             )}
           />
           {errors.about && (
-            <Text style={{ color: '#ef4444' }}>
-              {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
+            <Text style={{ color: "#ef4444" }}>
+              {getErrorMessage(errors.about.message) ??
+                "Please provide a short bio"}
             </Text>
           )}
         </Stack>
@@ -318,11 +335,10 @@ export function GeneralProfileSection({
             control={control}
             render={({ field }) => (
               <PhoneNumberInput
-                value={field.value || ''}
+                value={field.value || ""}
                 onChange={field.onChange}
                 error={getErrorMessage(errors.phone?.message)}
                 defaultCountry="US"
-                storeFormatted={true}
                 disabled={readOnly}
               />
             )}
@@ -330,7 +346,7 @@ export function GeneralProfileSection({
         </Stack>
 
         <Stack gap={8}>
-          <Text>Email {mode === 'user' ? '(Read-only)' : ''}</Text>
+          <Text>Email {mode === "user" ? "(Read-only)" : ""}</Text>
           <Controller
             name="email"
             control={control}
@@ -346,8 +362,10 @@ export function GeneralProfileSection({
               />
             )}
           />
-          {mode === 'user' && (
-            <Text style={{ color: '#414e62' }}>Email changes must be made through account settings</Text>
+          {mode === "user" && (
+            <Text style={{ color: "#414e62" }}>
+              Email changes must be made through account settings
+            </Text>
           )}
         </Stack>
 
@@ -361,46 +379,49 @@ export function GeneralProfileSection({
               getErrorMessage(errors.address?.street?.message) ??
               getErrorMessage(errors.address?.city?.message)
             }
-            provider="mapbox"
-            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+            provider={createMapboxGeocodingProvider(
+              process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? ""
+            )}
             addressValue={{
-              streetAddress: watch('address.street') || '',
-              locality: watch('address.city') || '',
-              stateAbbreviation: watch('address.state') || '',
-              postalCode: watch('address.zip') || '',
-              country: watch('address.country') || '',
+              streetAddress: watch("address.street") || "",
+              locality: watch("address.city") || "",
+              stateAbbreviation: watch("address.state") || "",
+              postalCode: watch("address.zip") || "",
+              country: watch("address.country") || "",
               formattedAddress: [
-                watch('address.street'),
-                watch('address.city'),
-                watch('address.state'),
-                watch('address.zip'),
+                watch("address.street"),
+                watch("address.city"),
+                watch("address.state"),
+                watch("address.zip"),
               ]
                 .filter(Boolean)
-                .join(', '),
+                .join(", "),
             }}
             onAddressSelect={(address) => {
-              if (readOnly) return
+              if (readOnly) return;
 
-              setValue('address.street', address.streetAddress || '')
-              setValue('address.city', address.locality || '')
+              setValue("address.street", address.streetAddress || "");
+              setValue("address.city", address.locality || "");
               setValue(
-                'address.state',
-                address.stateAbbreviation || address.administrativeAreaLevel1 || ''
-              )
-              setValue('address.zip', address.postalCode || '')
-              setValue('address.country', address.country || 'United States')
+                "address.state",
+                address.stateAbbreviation ||
+                  address.administrativeAreaLevel1 ||
+                  ""
+              );
+              setValue("address.zip", address.postalCode || "");
+              setValue("address.country", address.country || "United States");
 
               if (address.coordinates?.lat !== undefined) {
-                setValue('address.latitude', address.coordinates.lat)
+                setValue("address.latitude", address.coordinates.lat);
               }
               if (address.coordinates?.lng !== undefined) {
-                setValue('address.longitude', address.coordinates.lng)
+                setValue("address.longitude", address.coordinates.lng);
               }
 
-              trigger('address.street')
-              trigger('address.city')
-              trigger('address.state')
-              trigger('address.zip')
+              trigger("address.street");
+              trigger("address.city");
+              trigger("address.state");
+              trigger("address.zip");
             }}
             disabled={readOnly}
           />
@@ -410,7 +431,8 @@ export function GeneralProfileSection({
         {!readOnly && (
           <Row justify="flex-end" paddingTop={16}>
             <Button
-              variant="filled" color="primary"
+              variant="filled"
+              color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
@@ -420,11 +442,13 @@ export function GeneralProfileSection({
                   <Spinner size="sm" />
                   <Text>Saving...</Text>
                 </Row>
-              ) : 'Save Changes'}
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </Row>
         )}
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

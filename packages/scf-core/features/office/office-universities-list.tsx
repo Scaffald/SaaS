@@ -1,78 +1,83 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { useOfficeUniversities, useDeleteUniversityMutation } from '@scf/core/utils/office-universities-sdk-hooks'
-import { Text } from '@scaffald/ui'
-import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
-import { useRouter } from 'expo-router'
-import { useState } from 'react'
-import { OfficePageLayout } from './components/OfficePageLayout'
-import { QuickActionsWidget } from './components/QuickActionsWidget'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import {
+  useOfficeUniversities,
+  useDeleteUniversityMutation,
+} from "@scf/core/utils/office-universities-sdk-hooks";
+import { Text } from "@scaffald/ui";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { OfficePageLayout } from "./components/OfficePageLayout";
+import { QuickActionsWidget } from "./components/QuickActionsWidget";
 
 type University = {
-  id: string
-  name: string
-  slug: string
-  country: string
-  alpha_two_code: string
-  state_province: string | null
-  domains: string[]
-  web_pages: string[]
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
+  id: string;
+  name: string;
+  slug: string;
+  country: string;
+  alpha_two_code: string;
+  state_province: string | null;
+  domains: string[];
+  web_pages: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
 
-const columnHelper = createColumnHelper<University>()
+const columnHelper = createColumnHelper<University>();
 
 const createColumns = () => [
-  columnHelper.accessor('name', {
-    header: 'Name',
+  columnHelper.accessor("name", {
+    header: "Name",
     cell: (info) => <Text ellipsizeMode="tail">{info.getValue()}</Text>,
   }),
-  columnHelper.accessor('country', {
-    header: 'Country',
+  columnHelper.accessor("country", {
+    header: "Country",
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('state_province', {
-    header: 'State/Province',
-    cell: (info) => info.getValue() || '-',
+  columnHelper.accessor("state_province", {
+    header: "State/Province",
+    cell: (info) => info.getValue() || "-",
   }),
   // Actions column removed - using RowActionOverlay instead
-]
+];
 
 export function OfficeUniversitiesList() {
-  const router = useRouter()
-  const [search, setSearch] = useState('')
+  const router = useRouter();
+  const [search, setSearch] = useState("");
 
   const { data, isLoading, refetch } = useOfficeUniversities({
     page: 1,
     pageSize: 100,
     search: search || undefined,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  })
+    sortBy: "name",
+    sortOrder: "asc",
+  });
 
   const deleteMutation = useDeleteUniversityMutation({
     onSuccess: () => {
-      refetch()
+      refetch();
     },
-  })
+  });
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync(id)
-  }
+    await deleteMutation.mutateAsync(id);
+  };
 
-  const universities = data?.universities ?? []
-  const columns = createColumns()
+  const universities = data?.universities ?? [];
+  const columns = createColumns();
 
   const handleRowEdit = (university: University) => {
-    router.push(buildPath(ROUTES.OFFICE.CMS.UNIVERSITIES.EDIT, { id: university.id }))
-  }
+    router.push(
+      buildPath(ROUTES.OFFICE.CMS.UNIVERSITIES.EDIT, { id: university.id })
+    );
+  };
 
   const handleRowDelete = async (university: University) => {
-    await handleDelete(university.id)
-  }
+    await handleDelete(university.id);
+  };
 
-  const getItemName = (university: University) => university.name
+  const getItemName = (university: University) => university.name;
 
   return (
     <OfficePageLayout
@@ -83,9 +88,11 @@ export function OfficeUniversitiesList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create University"
-      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
+      onCreateClick={() =>
+        router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)
+      }
       columns={columns as ColumnDef<University, unknown>[]}
-      data={universities}
+      data={universities as University[]}
       isLoading={isLoading}
       pageSize={50}
       emptyMessage="No universities found"
@@ -97,11 +104,13 @@ export function OfficeUniversitiesList() {
         <QuickActionsWidget
           context="list"
           resourceName="University"
-          onCreate={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
+          onCreate={() =>
+            router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)
+          }
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />
       }
     />
-  )
+  );
 }

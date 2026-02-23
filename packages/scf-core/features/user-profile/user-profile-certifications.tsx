@@ -1,7 +1,7 @@
 import { BadgeCheck, Calendar } from 'lucide-react-native'
 import { Card, Text, Row, Stack } from '@scaffald/ui'
 
-interface Certification {
+export interface UserProfileCertification {
   id: string
   name: string
   issuing_organization: string | null
@@ -10,7 +10,7 @@ interface Certification {
 }
 
 interface UserProfileCertificationsProps {
-  certifications: Certification[]
+  certifications: UserProfileCertification[]
 }
 
 export function UserProfileCertifications({ certifications }: UserProfileCertificationsProps) {

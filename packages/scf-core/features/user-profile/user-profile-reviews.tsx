@@ -1,45 +1,54 @@
-import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { useReviewsBySubject } from '@scf/core/utils/reviews-sdk-hooks'
-import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
-import { randomUUID } from 'expo-crypto'
-import { useEffect, useRef } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useAuth } from "@scf/core/provider/auth/useAuth";
+import { useTrackEngagementMutation } from "@scf/core/utils/engagement-sdk-hooks";
+import { useReviewsBySubject } from "@scf/core/utils/reviews-sdk-hooks";
+import {
+  MessageSquarePlus,
+  Shield,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react-native";
+import { randomUUID } from "expo-crypto";
+import { useEffect, useRef } from "react";
+import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
 
 interface CategoryRating {
-  category: string
-  rating: number
+  category: string;
+  rating: number;
 }
 
 interface Review {
-  id: string
-  created_at: string
-  comment: string | null
-  reaction: number | null
-  review_category_ratings: CategoryRating[]
+  id: string;
+  created_at: string;
+  comment: string | null;
+  reaction: number | null;
+  review_category_ratings: CategoryRating[];
 }
 
 interface UserProfileReviewsProps {
-  userId: string
-  onLeaveReview?: () => void
+  userId: string;
+  onLeaveReview?: () => void;
 }
 
-export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviewsProps) {
-  const { session } = useAuth()
-  const currentUserId = session?.user?.id
-  const hasTrackedViewRef = useRef(false) // Track if we've already recorded a view for this component mount
+export function UserProfileReviews({
+  userId,
+  onLeaveReview,
+}: UserProfileReviewsProps) {
+  const { session } = useAuth();
+  const currentUserId = session?.user?.id;
+  const hasTrackedViewRef = useRef(false); // Track if we've already recorded a view for this component mount
 
   // Track review view for engagement analytics
-  const trackEventMutation = useTrackEngagementMutation()
+  const trackEventMutation = useTrackEngagementMutation();
 
   // Fetch real reviews from database
   const { data: reviewsData, isLoading } = useReviewsBySubject({
     subjectId: userId,
-    subjectType: 'user',
-    status: 'released',
-  })
+    subjectType: "user",
+    status: "released",
+  });
 
-  const reviews = (Array.isArray(reviewsData) ? reviewsData : []) as Review[]
+  const reviews = (Array.isArray(reviewsData) ? reviewsData : []) as Review[];
 
   // Track review view when reviews are loaded (only once per mount, and not for own profile)
   useEffect(() => {
@@ -52,25 +61,25 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
       currentUserId === userId ||
       reviews.length === 0
     ) {
-      return
+      return;
     }
 
     // Mark as tracked
-    hasTrackedViewRef.current = true
+    hasTrackedViewRef.current = true;
 
     // Track review view
     try {
       trackEventMutation.mutate({
-        eventType: 'review.viewed',
-        targetType: 'user',
+        eventType: "review.viewed" as never,
+        targetType: "user",
         targetId: userId,
         metadata: {
           reviews_count: reviews.length,
         },
-      })
+      });
     } catch (error) {
       // Silent error handling - don't impact review display
-      console.warn('Failed to track review view:', error)
+      console.warn("Failed to track review view:", error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -81,17 +90,23 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
     reviews.length,
     trackEventMutation.mutate,
     trackEventMutation,
-  ])
+  ]);
 
   if (isLoading) {
     return (
       <Card elevate bordered>
-        <Stack gap={16} padding="lg" align="center" justify="center" minHeight={400}>
+        <Stack
+          gap={16}
+          padding="lg"
+          align="center"
+          justify="center"
+          minHeight={400}
+        >
           <Spinner size="lg" />
           <Text color="$gray11">Loading reviews...</Text>
         </Stack>
       </Card>
-    )
+    );
   }
 
   if (!reviewsData || reviews.length === 0) {
@@ -104,7 +119,12 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
               <Text color="$gray11">Reviews & Ratings</Text>
             </Row>
             {onLeaveReview && (
-              <Button size="sm" theme="info" iconStart={MessageSquarePlus} onPress={onLeaveReview}>
+              <Button
+                size="sm"
+                color="primary"
+                iconStart={MessageSquarePlus}
+                onPress={onLeaveReview}
+              >
                 Leave Review
               </Button>
             )}
@@ -112,38 +132,49 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
           <Stack align="center" justify="center" minHeight={200} gap={12}>
             <Text color="$gray11">No reviews yet</Text>
             <Stack align="center">
-              <Text color="$gray11">Be the first to leave a review for this user</Text>
+              <Text color="$gray11">
+                Be the first to leave a review for this user
+              </Text>
             </Stack>
           </Stack>
         </Stack>
       </Card>
-    )
+    );
   }
 
   // Calculate statistics from real reviews
-  const totalReviews = reviews.length
-  const recommendCount = reviews.filter((r: Review) => r.reaction === 1).length
-  const notRecommendCount = reviews.filter((r: Review) => r.reaction === -1).length
+  const totalReviews = reviews.length;
+  const recommendCount = reviews.filter((r: Review) => r.reaction === 1).length;
+  const notRecommendCount = reviews.filter(
+    (r: Review) => r.reaction === -1
+  ).length;
 
   // Calculate average ratings from category ratings
-  const categoryRatings = reviews.flatMap((r: Review) => r.review_category_ratings || [])
+  const categoryRatings = reviews.flatMap(
+    (r: Review) => r.review_category_ratings || []
+  );
   const avgByCategory = categoryRatings.reduce(
-    (acc: Record<string, { sum: number; count: number }>, rating: CategoryRating) => {
+    (
+      acc: Record<string, { sum: number; count: number }>,
+      rating: CategoryRating
+    ) => {
       if (!acc[rating.category]) {
-        acc[rating.category] = { sum: 0, count: 0 }
+        acc[rating.category] = { sum: 0, count: 0 };
       }
-      acc[rating.category].sum += rating.rating
-      acc[rating.category].count += 1
-      return acc
+      acc[rating.category].sum += rating.rating;
+      acc[rating.category].count += 1;
+      return acc;
     },
     {} as Record<string, { sum: number; count: number }>
-  )
+  );
 
   const overallRating =
     categoryRatings.length > 0
-      ? categoryRatings.reduce((sum: number, r: CategoryRating) => sum + r.rating, 0) /
-        categoryRatings.length
-      : 0
+      ? categoryRatings.reduce(
+          (sum: number, r: CategoryRating) => sum + r.rating,
+          0
+        ) / categoryRatings.length
+      : 0;
 
   return (
     <Card elevate bordered>
@@ -155,7 +186,12 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             <Text color="$gray11">Reviews & Ratings</Text>
           </Row>
           {onLeaveReview && (
-            <Button size="sm" theme="info" iconStart={MessageSquarePlus} onPress={onLeaveReview}>
+            <Button
+              size="sm"
+              color="primary"
+              iconStart={MessageSquarePlus}
+              onPress={onLeaveReview}
+            >
               Leave Review
             </Button>
           )}
@@ -173,12 +209,16 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                       key={randomUUID()}
                       size="md"
                       color="$yellow10"
-                      fill={i < Math.floor(overallRating) ? '$yellow10' : 'transparent'}
+                      fill={
+                        i < Math.floor(overallRating)
+                          ? "$yellow10"
+                          : "transparent"
+                      }
                     />
                   ))}
                 </Row>
                 <Text color="$gray11">
-                  {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
+                  {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
                 </Text>
               </Stack>
 
@@ -186,22 +226,27 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                 <Stack flex={1} gap={8}>
                   {Object.entries(avgByCategory).map(([category, data]) => (
                     <Row key={category} gap={8} align="center">
-                      <Text color="$gray11" width={100} textTransform="capitalize">
+                      <Text
+                        color="$gray11"
+                        style={{ width: 100, textTransform: "capitalize" }}
+                      >
                         {category}
                       </Text>
                       <Row
                         flex={1}
-                        height={6}
-                        backgroundColor="$color3"
-                        borderRadius={8}
-                        overflow="hidden"
+                        style={{
+                          height: 6,
+                          backgroundColor: "$color3",
+                          borderRadius: 8,
+                          overflow: "hidden",
+                        }}
                       >
                         <Row
                           width={`${(data.sum / data.count / 5) * 100}%`}
                           backgroundColor="$yellow10"
                         />
                       </Row>
-                      <Text color="$gray11" width={30}>
+                      <Text color="$gray11" style={{ width: 30 }}>
                         {(data.sum / data.count).toFixed(1)}
                       </Text>
                     </Row>
@@ -261,32 +306,41 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
                       </Row>
                     </Row>
                   </Stack>
-                  <Text color="$gray11">{new Date(review.created_at).toLocaleDateString()}</Text>
+                  <Text color="$gray11">
+                    {new Date(review.created_at).toLocaleDateString()}
+                  </Text>
                 </Row>
 
                 {/* Overall Rating */}
-                {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                  <Row gap={4}>
-                    {[...Array(5)].map((_, i) => {
-                      const avgRating =
-                        review.review_category_ratings.reduce(
-                          (sum: number, r: CategoryRating) => sum + r.rating,
-                          0
-                        ) / review.review_category_ratings.length
-                      return (
-                        <Star
-                          key={randomUUID()}
-                          size="md"
-                          color="$yellow10"
-                          fill={i < Math.floor(avgRating) ? '$yellow10' : 'transparent'}
-                        />
-                      )
-                    })}
-                  </Row>
-                )}
+                {review.review_category_ratings &&
+                  review.review_category_ratings.length > 0 && (
+                    <Row gap={4}>
+                      {[...Array(5)].map((_, i) => {
+                        const avgRating =
+                          review.review_category_ratings.reduce(
+                            (sum: number, r: CategoryRating) => sum + r.rating,
+                            0
+                          ) / review.review_category_ratings.length;
+                        return (
+                          <Star
+                            key={randomUUID()}
+                            size="md"
+                            color="$yellow10"
+                            fill={
+                              i < Math.floor(avgRating)
+                                ? "$yellow10"
+                                : "transparent"
+                            }
+                          />
+                        );
+                      })}
+                    </Row>
+                  )}
 
                 {/* Comment */}
-                {review.comment && <Text color="$gray11">{review.comment}</Text>}
+                {review.comment && (
+                  <Text color="$gray11">{review.comment}</Text>
+                )}
 
                 {/* Recommendation */}
                 {review.reaction !== null && (
@@ -310,5 +364,5 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
         </Stack>
       </Stack>
     </Card>
-  )
+  );
 }

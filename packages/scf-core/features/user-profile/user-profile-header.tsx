@@ -1,21 +1,28 @@
-import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from 'lucide-react-native'
-import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
+import {
+  Award,
+  Briefcase,
+  DollarSign,
+  MapPin,
+  MessageSquare,
+  Star,
+} from "lucide-react-native";
+import { Button, Card, Text, Row, Stack } from "@scaffald/ui";
 
 interface UserProfileHeaderProps {
   profile: {
-    name: string | null
-    avatar_url: string | null
-    headline: string | null
-    industry_name: string | null
-    years_of_experience: number | null
-    calculatedYearsOfExperience?: number | null
-    gamified_score: number | null
-    location: string | null
-    hourly_rate_cents: number | null
-    open_to_work: boolean | null
-  }
-  onLeaveReview?: () => void
-  canLeaveReview?: boolean
+    name: string | null;
+    avatar_url: string | null;
+    headline: string | null;
+    industry_name: string | null;
+    years_of_experience: number | null;
+    calculatedYearsOfExperience?: number | null;
+    gamified_score: number | null;
+    location: string | null;
+    hourly_rate_cents: number | null;
+    open_to_work: boolean | null;
+  };
+  onLeaveReview?: () => void;
+  canLeaveReview?: boolean;
 }
 
 /**
@@ -28,22 +35,22 @@ export function UserProfileHeader({
   canLeaveReview,
 }: UserProfileHeaderProps) {
   const formatHourlyRate = (cents: number | null) => {
-    if (!cents) return null
-    const dollars = cents / 100
-    return `$${dollars.toFixed(2)}/hr`
-  }
+    if (!cents) return null;
+    const dollars = cents / 100;
+    return `$${dollars.toFixed(2)}/hr`;
+  };
 
   const resolvedYears =
-    typeof profile.calculatedYearsOfExperience === 'number'
+    typeof profile.calculatedYearsOfExperience === "number"
       ? profile.calculatedYearsOfExperience
-      : profile.years_of_experience
+      : profile.years_of_experience;
 
   const formattedYears =
-    typeof resolvedYears === 'number' && !Number.isNaN(resolvedYears)
+    typeof resolvedYears === "number" && !Number.isNaN(resolvedYears)
       ? resolvedYears % 1 !== 0
         ? resolvedYears.toFixed(1)
         : resolvedYears
-      : null
+      : null;
 
   return (
     <Card elevate bordered>
@@ -56,33 +63,35 @@ export function UserProfileHeader({
               <Stack
                 width={120}
                 height={120}
-                borderRadius="$10"
-                overflow="hidden"
+                borderRadius={60}
+                style={{ overflow: "hidden" }}
                 backgroundColor="$color3"
               >
                 <img
                   src={profile.avatar_url}
-                  alt={profile.name || 'User'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  alt={profile.name || "User"}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               </Stack>
             ) : (
               <Stack
                 width={120}
                 height={120}
-                borderRadius="$10"
+                borderRadius={60}
                 backgroundColor="$blue4"
                 align="center"
                 justify="center"
               >
-                <Text color="$blue10">{profile.name?.charAt(0) || '?'}</Text>
+                <Text color="$blue10">{profile.name?.charAt(0) || "?"}</Text>
               </Stack>
             )}
 
             {/* Name and Headline */}
             <Stack flex={1} gap={8} minWidth={200}>
               <Text color="$gray11">{profile.name}</Text>
-              {profile.headline && <Text color="$gray11">{profile.headline}</Text>}
+              {profile.headline && (
+                <Text color="$gray11">{profile.headline}</Text>
+              )}
               {profile.industry_name && (
                 <Row gap={8} align="center">
                   <Briefcase size={18} color="$gray11" />
@@ -114,7 +123,12 @@ export function UserProfileHeader({
 
           {/* Leave Review Button */}
           {canLeaveReview && onLeaveReview && (
-            <Button size="md" theme="info" iconStart={MessageSquare} onPress={onLeaveReview}>
+            <Button
+              size="md"
+              color="primary"
+              iconStart={MessageSquare}
+              onPress={onLeaveReview}
+            >
               Leave Review
             </Button>
           )}
@@ -160,7 +174,9 @@ export function UserProfileHeader({
               borderRadius={12}
             >
               <DollarSign size={18} color="$gray11" />
-              <Text color="$gray11">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              <Text color="$gray11">
+                {formatHourlyRate(profile.hourly_rate_cents)}
+              </Text>
             </Row>
           )}
 
@@ -177,5 +193,5 @@ export function UserProfileHeader({
         </Row>
       </Stack>
     </Card>
-  )
+  );
 }

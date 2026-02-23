@@ -1,124 +1,153 @@
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Briefcase, Mail, Shield, Users } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { ReactNode } from 'react'
-import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import type { AppRouter } from "@scf/supabase/client-types";
+import { Briefcase, Mail, Shield, Users } from "lucide-react-native";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { ReactNode } from "react";
+import { Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
+type TeamDetailOutput = inferRouterOutputs<AppRouter>["teams"]["byId"];
+type TeamRecord = TeamDetailOutput["team"];
 
 interface TeamOverviewStats {
-  memberCount?: number
-  jobCount?: number
-  pendingInvitations?: number
+  memberCount?: number;
+  jobCount?: number;
+  pendingInvitations?: number;
 }
 
 interface TeamOverviewCardProps {
-  team: TeamRecord
-  stats?: TeamOverviewStats
-  actions?: ReactNode
+  team: TeamRecord;
+  stats?: TeamOverviewStats;
+  actions?: ReactNode;
 }
 
 const PURPOSE_LABELS: Record<string, string> = {
-  department: 'Department',
-  project: 'Project',
-  location: 'Location',
-  custom: 'Custom',
-}
+  department: "Department",
+  project: "Project",
+  location: "Location",
+  custom: "Custom",
+};
 
 const VISIBILITY_LABELS: Record<string, string> = {
-  organization: 'Org-wide',
-  private: 'Private',
-}
+  organization: "Org-wide",
+  private: "Private",
+};
 
 const INVITATION_POLICY_LABELS: Record<string, string> = {
-  open: 'Open',
-  request: 'Request access',
-  invite_only: 'Invite only',
-}
+  open: "Open",
+  request: "Request access",
+  invite_only: "Invite only",
+};
 
-export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps) {
-  const { theme } = useThemeContext()
-  const purposeLabel = PURPOSE_LABELS[team.purpose ?? ''] ?? 'General'
-  const visibilityLabel = VISIBILITY_LABELS[team.visibility ?? ''] ?? 'Org-wide'
+export function TeamOverviewCard({
+  team,
+  stats,
+  actions,
+}: TeamOverviewCardProps) {
+  const { theme } = useThemeContext();
+  const purposeLabel = PURPOSE_LABELS[team.purpose ?? ""] ?? "General";
+  const visibilityLabel =
+    VISIBILITY_LABELS[team.visibility ?? ""] ?? "Org-wide";
   const invitationPolicyLabel =
-    INVITATION_POLICY_LABELS[team.invitationPolicy ?? ''] ?? 'Invite only'
+    INVITATION_POLICY_LABELS[team.invitationPolicy ?? ""] ?? "Invite only";
 
-  const memberCount = typeof stats?.memberCount === 'number' ? stats.memberCount : undefined
-  const jobCount = typeof stats?.jobCount === 'number' ? stats.jobCount : undefined
+  const memberCount =
+    typeof stats?.memberCount === "number" ? stats.memberCount : undefined;
+  const jobCount =
+    typeof stats?.jobCount === "number" ? stats.jobCount : undefined;
   const pendingInvitations =
-    typeof stats?.pendingInvitations === 'number' ? stats.pendingInvitations : undefined
+    typeof stats?.pendingInvitations === "number"
+      ? stats.pendingInvitations
+      : undefined;
 
   return (
     <Card
       padding="md"
       borderWidth={1}
       borderColor={colors.border[theme].default}
-      gap={16}
       style={{ backgroundColor: colors.bg[theme].subtle }}
     >
-      <Row gap={16} justify="space-between" wrap>
-        <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
-          <Row gap={8} align="center" wrap>
-            <Text>{team.name || 'Untitled team'}</Text>
-            {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
-          </Row>
+      <Stack gap={16}>
+        <Row gap={16} justify="space-between" wrap>
+          <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
+            <Row gap={8} align="center" wrap>
+              <Text>{team.name || "Untitled team"}</Text>
+              {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
+            </Row>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {team.description?.trim() ||
+                "No description provided. Add context to help team members understand the focus of this team."}
+            </Text>
+          </Stack>
+          {actions ? (
+            <Row gap={8} align="flex-start" flexShrink={0} wrap>
+              {actions}
+            </Row>
+          ) : null}
+        </Row>
+
+        <Row gap={8} wrap>
+          <Chip>{purposeLabel}</Chip>
+          <Chip>{visibilityLabel}</Chip>
+          <Chip>{invitationPolicyLabel}</Chip>
+        </Row>
+
+        <Row gap={16} wrap>
+          <StatItem
+            icon={<Users size={20} />}
+            label="Members"
+            value={memberCount !== undefined ? memberCount.toString() : "—"}
+          />
+          <StatItem
+            icon={<Briefcase size={20} />}
+            label="Active jobs"
+            value={jobCount !== undefined ? jobCount.toString() : "—"}
+          />
+          <StatItem
+            icon={<Mail size={20} />}
+            label="Pending invites"
+            value={
+              pendingInvitations !== undefined
+                ? pendingInvitations.toString()
+                : "—"
+            }
+          />
+          {team.defaultRole?.name ? (
+            <StatItem
+              icon={<Shield size={20} />}
+              label="Default role"
+              value={team.defaultRole.name}
+            />
+          ) : null}
+        </Row>
+
+        <Stack gap={4}>
+          <Text
+            style={{
+              color: colors.text[theme].secondary,
+              textTransform: "uppercase",
+            }}
+          >
+            Team slug
+          </Text>
           <Text style={{ color: colors.text[theme].secondary }}>
-            {team.description?.trim() ||
-              'No description provided. Add context to help team members understand the focus of this team.'}
+            {team.slug || "Not configured"}
           </Text>
         </Stack>
-        {actions ? (
-          <Row gap={8} align="flex-start" flexShrink={0} wrap>
-            {actions}
-          </Row>
-        ) : null}
-      </Row>
-
-      <Row gap={8} wrap>
-        <Chip>{purposeLabel}</Chip>
-        <Chip>{visibilityLabel}</Chip>
-        <Chip>{invitationPolicyLabel}</Chip>
-      </Row>
-
-      <Row gap={16} wrap>
-        <StatItem
-          iconStart={<Users size="md" />}
-          label="Members"
-          value={memberCount !== undefined ? memberCount.toString() : '—'}
-        />
-        <StatItem
-          iconStart={<Briefcase size="md" />}
-          label="Active jobs"
-          value={jobCount !== undefined ? jobCount.toString() : '—'}
-        />
-        <StatItem
-          iconStart={<Mail size="md" />}
-          label="Pending invites"
-          value={pendingInvitations !== undefined ? pendingInvitations.toString() : '—'}
-        />
-        {team.defaultRole?.name ? (
-          <StatItem
-            iconStart={<Shield size="md" />}
-            label="Default role"
-            value={team.defaultRole.name}
-          />
-        ) : null}
-      </Row>
-
-      <Stack gap={4}>
-        <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
-          Team slug
-        </Text>
-        <Text style={{ color: colors.text[theme].secondary }}>{team.slug || 'Not configured'}</Text>
       </Stack>
     </Card>
-  )
+  );
 }
 
-function StatItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
-  const { theme } = useThemeContext()
+function StatItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+}) {
+  const { theme } = useThemeContext();
   return (
     <Row
       gap={8}
@@ -132,26 +161,46 @@ function StatItem({ icon, label, value }: { icon: ReactNode; label: string; valu
     >
       {icon}
       <Stack>
-        <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
+        <Text
+          style={{
+            color: colors.text[theme].secondary,
+            textTransform: "uppercase",
+          }}
+        >
           {label}
         </Text>
         <Text>{value}</Text>
       </Stack>
     </Row>
-  )
+  );
 }
 
 function Chip({
   children,
-  tone = 'surface',
+  tone = "surface",
 }: {
-  children: ReactNode
-  tone?: 'surface' | 'warning'
+  children: ReactNode;
+  tone?: "surface" | "warning";
 }) {
-  const { theme } = useThemeContext()
-  const background = tone === 'warning' ? theme === "light" ? colors.yellow[50] : colors.yellow[900] : colors.bg[theme].muted
-  const border = tone === 'warning' ? theme === "light" ? colors.yellow[300] : colors.yellow[700] : colors.border[theme].default
-  const textColor = tone === 'warning' ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].secondary
+  const { theme } = useThemeContext();
+  const background =
+    tone === "warning"
+      ? theme === "light"
+        ? colors.yellow[50]
+        : colors.yellow[900]
+      : colors.bg[theme].muted;
+  const border =
+    tone === "warning"
+      ? theme === "light"
+        ? colors.yellow[300]
+        : colors.yellow[700]
+      : colors.border[theme].default;
+  const textColor =
+    tone === "warning"
+      ? theme === "light"
+        ? colors.yellow[700]
+        : colors.yellow[300]
+      : colors.text[theme].secondary;
   return (
     <Row
       gap={8}
@@ -164,5 +213,5 @@ function Chip({
     >
       <Text color={textColor}>{children}</Text>
     </Row>
-  )
+  );
 }

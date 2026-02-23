@@ -1,39 +1,42 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
-import { DashboardWidget, spacing } from '@scaffald/ui'
-import { FileText, ShieldCheck } from 'lucide-react-native'
-import { useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
-import { Text, Row, Stack } from '@scaffald/ui'
-import { ResumeUploadButton } from './ResumeUploadButton'
-import { ResumeUploadModal } from './ResumeUploadModal'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useHasUploadedResume } from "@scf/core/utils/resume-sdk-hooks";
+import { DashboardWidget } from "@scaffald/ui";
+import { namedSpacing } from "@scaffald/ui/tokens";
+import { FileText, ShieldCheck } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { Text, Row, Stack } from "@scaffald/ui";
+import { ResumeUploadButton } from "./ResumeUploadButton";
+import { ResumeUploadModal } from "./ResumeUploadModal";
 
 export function ResumeImportWidget() {
-  const router = useRouter()
-  const [modalOpen, setModalOpen] = useState(false)
+  const router = useRouter();
+  const [modalOpen, setModalOpen] = useState(false);
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
-      setModalOpen(false)
+      setModalOpen(false);
       router.push({
         pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
         params: { resumeId },
-      })
+      });
     },
     [router]
-  )
-  const { data, isLoading } = useHasUploadedResume({ refetchOnWindowFocus: false })
+  );
+  const { data, isLoading } = useHasUploadedResume({
+    refetchOnWindowFocus: false,
+  });
 
-  const shouldHideWidget = !isLoading && data?.hasUploaded
+  const shouldHideWidget = !isLoading && data?.hasUploaded;
 
   if (shouldHideWidget) {
-    return null
+    return null;
   }
 
   return (
     <>
       <DashboardWidget>
-        <Stack gap={spacing.md}>
-          <Row gap={spacing.md} align="center">
+        <Stack gap={namedSpacing.md}>
+          <Row gap={namedSpacing.md} align="center">
             <Stack
               width={48}
               height={48}
@@ -47,7 +50,8 @@ export function ResumeImportWidget() {
             <Stack gap={4}>
               <Text color="$gray11">Import Your Resume</Text>
               <Text color="$gray11">
-                Upload a PDF or Word document and we'll auto-fill your profile details for you.
+                Upload a PDF or Word document and we'll auto-fill your profile
+                details for you.
               </Text>
             </Stack>
           </Row>
@@ -55,12 +59,20 @@ export function ResumeImportWidget() {
           <Stack gap={8}>
             <Row gap={8} align="center">
               <ShieldCheck size={18} color="$green10" />
-              <Text color="$green11">Files stay private — only you can access your resume.</Text>
+              <Text color="$green11">
+                Files stay private — only you can access your resume.
+              </Text>
             </Row>
-            <Text color="$gray11">Accepted formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
+            <Text color="$gray11">
+              Accepted formats: PDF, DOC, DOCX. Maximum size: 1MB.
+            </Text>
           </Stack>
 
-          <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size="md" />
+          <ResumeUploadButton
+            onPress={() => setModalOpen(true)}
+            label="Upload Resume"
+            size="md"
+          />
         </Stack>
       </DashboardWidget>
 
@@ -70,5 +82,5 @@ export function ResumeImportWidget() {
         onUploadComplete={handleResumeUploadComplete}
       />
     </>
-  )
+  );
 }

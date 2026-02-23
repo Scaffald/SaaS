@@ -1,5 +1,5 @@
-import { useOfficeUpdateUserMutation } from '@scf/core/utils/office-users-sdk-hooks'
-import { useQueryClient } from '@tanstack/react-query'
+import { useOfficeUpdateUserMutation } from "@scf/core/utils/office-users-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Input,
@@ -8,102 +8,124 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from '@scaffald/ui'
-import { useRouter } from 'expo-router'
-import { useState } from 'react'
-import { Card } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+} from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Card } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface UserFormProps {
-  userId: string
+  userId: string;
   initialProfile: {
-    first_name: string | null
-    last_name: string | null
-    display_name: string | null
-    bio: string | null
-  }
+    first_name: string | null;
+    last_name: string | null;
+    display_name: string | null;
+    bio: string | null;
+  };
   initialPrivateData: {
-    email: string | null
-    phone_number: string | null
-    birth_date: string | null
-    location: string | null
-    employment_status: string | null
-    job_search_status: string | null
-    years_of_experience: number | null
-    current_title: string | null
-    current_employer: string | null
-  } | null
+    email: string | null;
+    phone_number: string | null;
+    birth_date: string | null;
+    location: string | null;
+    employment_status: string | null;
+    job_search_status: string | null;
+    years_of_experience: number | null;
+    current_title: string | null;
+    current_employer: string | null;
+  } | null;
 }
 
-export function UserForm({ userId, initialProfile, initialPrivateData }: UserFormProps) {
-  const { theme } = useThemeContext()
-  const router = useRouter()
-  const queryClient = useQueryClient()
+export function UserForm({
+  userId,
+  initialProfile,
+  initialPrivateData,
+}: UserFormProps) {
+  const { theme } = useThemeContext();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Profile state
-  const [firstName, setFirstName] = useState(initialProfile.first_name || '')
-  const [lastName, setLastName] = useState(initialProfile.last_name || '')
-  const [displayName, setDisplayName] = useState(initialProfile.display_name || '')
-  const [bio, setBio] = useState(initialProfile.bio || '')
+  const [firstName, setFirstName] = useState(initialProfile.first_name || "");
+  const [lastName, setLastName] = useState(initialProfile.last_name || "");
+  const [displayName, setDisplayName] = useState(
+    initialProfile.display_name || ""
+  );
+  const [bio, setBio] = useState(initialProfile.bio || "");
 
   // Private data state
-  const [email, setEmail] = useState(initialPrivateData?.email || '')
-  const [phone, setPhone] = useState(initialPrivateData?.phone_number || '')
-  const [birthDate, setBirthDate] = useState(initialPrivateData?.birth_date || '')
-  const [location, setLocation] = useState(initialPrivateData?.location || '')
+  const [email, setEmail] = useState(initialPrivateData?.email || "");
+  const [phone, setPhone] = useState(initialPrivateData?.phone_number || "");
+  const [birthDate, setBirthDate] = useState(
+    initialPrivateData?.birth_date || ""
+  );
+  const [location, setLocation] = useState(initialPrivateData?.location || "");
   const [employmentStatus, setEmploymentStatus] = useState(
-    initialPrivateData?.employment_status || ''
-  )
+    initialPrivateData?.employment_status || ""
+  );
   const [jobSearchStatus, setJobSearchStatus] = useState(
-    initialPrivateData?.job_search_status || ''
-  )
+    initialPrivateData?.job_search_status || ""
+  );
   const [yearsOfExperience, setYearsOfExperience] = useState(
-    initialPrivateData?.years_of_experience?.toString() || ''
-  )
-  const [currentTitle, setCurrentTitle] = useState(initialPrivateData?.current_title || '')
-  const [currentEmployer, setCurrentEmployer] = useState(initialPrivateData?.current_employer || '')
+    initialPrivateData?.years_of_experience?.toString() || ""
+  );
+  const [currentTitle, setCurrentTitle] = useState(
+    initialPrivateData?.current_title || ""
+  );
+  const [currentEmployer, setCurrentEmployer] = useState(
+    initialPrivateData?.current_employer || ""
+  );
 
   const updateUserMutation = useOfficeUpdateUserMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['office', 'users'] })
-      router.back()
+      queryClient.invalidateQueries({ queryKey: ["office", "users"] });
+      router.back();
     },
-  })
+  });
 
   const handleSubmit = () => {
-    const profileData: Record<string, string> = {}
-    const privateData: Record<string, string | number> = {}
+    const profileData: Record<string, string> = {};
+    const privateData: Record<string, string | number> = {};
 
     // Only include changed profile fields
-    if (firstName !== initialProfile.first_name) profileData.first_name = firstName
-    if (lastName !== initialProfile.last_name) profileData.last_name = lastName
-    if (displayName !== initialProfile.display_name) profileData.display_name = displayName
-    if (bio !== initialProfile.bio) profileData.bio = bio
+    if (firstName !== initialProfile.first_name)
+      profileData.first_name = firstName;
+    if (lastName !== initialProfile.last_name) profileData.last_name = lastName;
+    if (displayName !== initialProfile.display_name)
+      profileData.display_name = displayName;
+    if (bio !== initialProfile.bio) profileData.bio = bio;
 
     // Only include changed private data fields
-    if (email !== initialPrivateData?.email) privateData.email = email
-    if (phone !== initialPrivateData?.phone_number) privateData.phone_number = phone
-    if (birthDate !== initialPrivateData?.birth_date) privateData.birth_date = birthDate
-    if (location !== initialPrivateData?.location) privateData.location = location
+    if (email !== initialPrivateData?.email) privateData.email = email;
+    if (phone !== initialPrivateData?.phone_number)
+      privateData.phone_number = phone;
+    if (birthDate !== initialPrivateData?.birth_date)
+      privateData.birth_date = birthDate;
+    if (location !== initialPrivateData?.location)
+      privateData.location = location;
     if (employmentStatus !== initialPrivateData?.employment_status)
-      privateData.employment_status = employmentStatus
+      privateData.employment_status = employmentStatus;
     if (jobSearchStatus !== initialPrivateData?.job_search_status)
-      privateData.job_search_status = jobSearchStatus
-    if (yearsOfExperience !== initialPrivateData?.years_of_experience?.toString()) {
-      privateData.years_of_experience = Number.parseInt(yearsOfExperience, 10) || 0
+      privateData.job_search_status = jobSearchStatus;
+    if (
+      yearsOfExperience !== initialPrivateData?.years_of_experience?.toString()
+    ) {
+      privateData.years_of_experience =
+        Number.parseInt(yearsOfExperience, 10) || 0;
     }
-    if (currentTitle !== initialPrivateData?.current_title) privateData.current_title = currentTitle
+    if (currentTitle !== initialPrivateData?.current_title)
+      privateData.current_title = currentTitle;
     if (currentEmployer !== initialPrivateData?.current_employer)
-      privateData.current_employer = currentEmployer
+      privateData.current_employer = currentEmployer;
 
     updateUserMutation.mutate({
       id: userId,
       params: {
         profile: Object.keys(profileData).length > 0 ? profileData : undefined,
-        privateData: Object.keys(privateData).length > 0 ? privateData : undefined,
+        privateData:
+          Object.keys(privateData).length > 0 ? privateData : undefined,
       },
-    })
-  }
+    });
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.bg[theme].default }}>
@@ -111,7 +133,11 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         <Row align="center" justify="space-between">
           <Text>Edit User</Text>
           <Row gap={8}>
-            <Button data-testid="cancel-button" onPress={() => router.back()} variant="outline">
+            <Button
+              data-testid="cancel-button"
+              onPress={() => router.back()}
+              variant="outline"
+            >
               Cancel
             </Button>
             <Button
@@ -119,7 +145,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               onPress={handleSubmit}
               disabled={updateUserMutation.isPending}
             >
-              {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+              {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </Row>
         </Row>
@@ -284,7 +310,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         <Row gap={8} paddingBottom={16}>
           <Button
             data-testid="cancel-button"
-            flex={1}
+            style={{ flex: 1 }}
             onPress={() => router.back()}
             variant="outline"
           >
@@ -292,14 +318,14 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
           </Button>
           <Button
             data-testid="save-button"
-            flex={1}
+            style={{ flex: 1 }}
             onPress={handleSubmit}
             disabled={updateUserMutation.isPending}
           >
-            {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+            {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </Row>
       </Stack>
     </ScrollView>
-  )
+  );
 }

@@ -1,37 +1,43 @@
-import { Fragment } from 'react'
-import { Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Fragment } from "react";
+import { Spinner, Text, Row, Stack } from "@scaffald/ui";
 
-import type { ResumeMergeStrategy, ResumeWizardSection } from '../hooks/useResumeWizard'
+import type {
+  ResumeMergeStrategy,
+  ResumeWizardSection,
+} from "../hooks/useResumeWizard";
 
 interface MergeComparisonRow {
-  id: ResumeWizardSection
-  label: string
-  strategy: ResumeMergeStrategy
-  existingItems: string[]
-  incomingItems: string[]
-  hasIncoming: boolean
-  notes?: string
+  id: ResumeWizardSection;
+  label: string;
+  strategy: ResumeMergeStrategy;
+  existingItems: string[];
+  incomingItems: string[];
+  hasIncoming: boolean;
+  notes?: string;
 }
 
 interface MergeComparisonViewProps {
-  sections: MergeComparisonRow[]
-  isLoading?: boolean
+  sections: MergeComparisonRow[];
+  isLoading?: boolean;
 }
 
 const STRATEGY_LABELS: Record<ResumeMergeStrategy, string> = {
-  replace: 'Replace existing data',
-  append: 'Append to existing data',
-  keepExisting: 'Keep existing data',
-}
+  replace: "Replace existing data",
+  append: "Append to existing data",
+  keepExisting: "Keep existing data",
+};
 
-export function MergeComparisonView({ sections, isLoading = false }: MergeComparisonViewProps) {
+export function MergeComparisonView({
+  sections,
+  isLoading = false,
+}: MergeComparisonViewProps) {
   if (isLoading) {
     return (
       <Row gap={8} align="center">
         <Spinner size="sm" />
         <Text color="$gray11">Loading current profile data…</Text>
       </Row>
-    )
+    );
   }
 
   if (sections.length === 0) {
@@ -39,10 +45,11 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
       <Stack gap={8}>
         <Text>Nothing to review</Text>
         <Text color="$gray11">
-          We didn't detect any changes to compare. You can still finish the wizard to exit.
+          We didn't detect any changes to compare. You can still finish the
+          wizard to exit.
         </Text>
       </Stack>
-    )
+    );
   }
 
   return (
@@ -65,17 +72,20 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
           {section.notes ? <Text color="$gray11">{section.notes}</Text> : null}
 
           <Row gap={16} wrap>
-            <SummaryColumn title="Current profile" align={section.existingItems} />
+            <SummaryColumn
+              title="Current profile"
+              items={section.existingItems}
+            />
             <SummaryColumn
               title="Incoming from resume"
-              align={section.incomingItems}
+              items={section.incomingItems}
               highlight={section.hasIncoming}
             />
           </Row>
         </Stack>
       ))}
     </Stack>
-  )
+  );
 }
 
 function SummaryColumn({
@@ -83,16 +93,16 @@ function SummaryColumn({
   items,
   highlight = false,
 }: {
-  title: string
-  items: string[]
-  highlight?: boolean
+  title: string;
+  items: string[];
+  highlight?: boolean;
 }) {
   return (
     <Stack
       gap={8}
       flex={1}
       padding="xs"
-      backgroundColor={highlight ? '$blue3' : 'transparent'}
+      backgroundColor={highlight ? "$blue3" : "transparent"}
       borderRadius={12}
       style={{ minWidth: 220 }}
     >
@@ -107,7 +117,7 @@ function SummaryColumn({
         ))
       )}
     </Stack>
-  )
+  );
 }
 
 function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
@@ -117,14 +127,24 @@ function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
       paddingVertical={4}
       borderRadius={12}
       backgroundColor={
-        strategy === 'replace' ? '$red3' : strategy === 'append' ? '$blue3' : '$gray3'
+        strategy === "replace"
+          ? "$red3"
+          : strategy === "append"
+          ? "$blue3"
+          : "$gray3"
       }
     >
       <Text
-        color={strategy === 'replace' ? '$red11' : strategy === 'append' ? '$blue11' : '$color11'}
+        color={
+          strategy === "replace"
+            ? "$red11"
+            : strategy === "append"
+            ? "$blue11"
+            : "$color11"
+        }
       >
         {STRATEGY_LABELS[strategy]}
       </Text>
     </Stack>
-  )
+  );
 }

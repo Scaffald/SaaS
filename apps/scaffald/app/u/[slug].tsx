@@ -1,5 +1,5 @@
-import { DashboardLayout } from '@scf/core/components/layouts'
-import { buildPath, ROUTES } from '@scf/core/constants/routes'
+import { DashboardLayout } from "@scf/core/components/layouts";
+import { buildPath, ROUTES } from "@scf/core/constants/routes";
 import {
   CertificationsWidget,
   EducationWidget,
@@ -8,14 +8,14 @@ import {
   ReviewsWidget,
   SkillsWidget,
   WorkLogPortfolioWidget,
-} from '@scf/core/features/profile/widgets'
-import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { useProfileBySlug } from '@scf/core/utils/profile-general-sdk-hooks'
-import { useRecordViewMutation } from '@scf/core/utils/profile-views-sdk-hooks'
-import type { BreadcrumbItem } from '@scaffald/ui'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useEffect } from 'react'
-import { Spinner, Text, Stack } from '@scaffald/ui'
+} from "@scf/core/features/profile/widgets";
+import { useAuth } from "@scf/core/provider/auth/useAuth";
+import { useProfileBySlug } from "@scf/core/utils/profile-general-sdk-hooks";
+import { useRecordViewMutation } from "@scf/core/utils/profile-views-sdk-hooks";
+import type { BreadcrumbItemData } from "@scaffald/ui";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { Spinner, Text, Stack } from "@scaffald/ui";
 
 /**
  * Public User Profile Route (Vanity URL)
@@ -23,10 +23,10 @@ import { Spinner, Text, Stack } from '@scaffald/ui'
  * Shows public profile view based on user's slug
  */
 export default function PublicUserProfilePage() {
-  const { slug } = useLocalSearchParams<{ slug: string }>()
-  const router = useRouter()
-  const { session } = useAuth()
-  const currentUserId = session?.user?.id
+  const { slug } = useLocalSearchParams<{ slug: string }>();
+  const router = useRouter();
+  const { session } = useAuth();
+  const currentUserId = session?.user?.id;
 
   // Fetch profile by slug
   const {
@@ -37,23 +37,23 @@ export default function PublicUserProfilePage() {
     enabled: !!slug,
     retry: false, // Don't retry on 404
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  })
+  });
 
   // Profile view tracking
-  const recordViewMutation = useRecordViewMutation()
+  const recordViewMutation = useRecordViewMutation();
 
   // Track profile view automatically (before redirect check)
   useEffect(() => {
     const trackProfileView = () => {
       // Don't track if loading, no profile data, or own profile
       if (isLoading || !profileData || !profileData.id) {
-        return
+        return;
       }
 
       // Don't track own profile views
-      const isOwnProfile = currentUserId && profileData.id === currentUserId
+      const isOwnProfile = currentUserId && profileData.id === currentUserId;
       if (isOwnProfile) {
-        return
+        return;
       }
 
       try {
@@ -61,36 +61,37 @@ export default function PublicUserProfilePage() {
         // The router handles session ID generation and deduplication internally
         recordViewMutation.mutate({
           viewedUserId: profileData.id,
-        })
+        });
       } catch (error) {
         // Silent error handling - don't block page load
-        console.warn('Failed to track profile view:', error)
+        console.warn("Failed to track profile view:", error);
       }
-    }
+    };
 
-    trackProfileView()
-  }, [profileData, currentUserId, isLoading, recordViewMutation])
+    trackProfileView();
+  }, [profileData, currentUserId, isLoading, recordViewMutation]);
 
   // Redirect to dashboard route if viewing own profile
   useEffect(() => {
     if (profileData && currentUserId && profileData.id === currentUserId) {
-      router.replace(buildPath(ROUTES.DASHBOARD.USER, { userId: profileData.id }))
+      router.replace(
+        buildPath(ROUTES.DASHBOARD.USER, { userId: profileData.id })
+      );
     }
-  }, [profileData, currentUserId, router])
+  }, [profileData, currentUserId, router]);
 
   // Calculate display name
   const displayName = profileData
-    ? profileData.display_name || profileData.username || 'User Profile'
-    : null
+    ? profileData.display_name || profileData.username || "User Profile"
+    : null;
 
   // Build breadcrumb items
-  const breadcrumbItems: BreadcrumbItem[] = [
-    { href: ROUTES.HOME.path, label: 'Home' },
+  const breadcrumbItems: BreadcrumbItemData[] = [
+    { href: ROUTES.HOME.path, label: "Home" },
     {
-      isActive: true,
-      label: displayName || 'Loading...',
+      label: displayName || "Loading...",
     },
-  ]
+  ];
 
   // Loading state
   if (isLoading) {
@@ -105,7 +106,7 @@ export default function PublicUserProfilePage() {
         }
         rightContent={null}
       />
-    )
+    );
   }
 
   // Error state (404 or other error)
@@ -114,16 +115,21 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <Stack align="center" justify="center" style={{ minHeight: 400 }} gap={16}>
+          <Stack
+            align="center"
+            justify="center"
+            style={{ minHeight: 400 }}
+            gap={16}
+          >
             <Text color="gray">Profile Not Found</Text>
-            <Text color="gray" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: "center" }}>
               The profile you're looking for doesn't exist or has been removed.
             </Text>
           </Stack>
         }
         rightContent={null}
       />
-    )
+    );
   }
 
   // Get visibility settings
@@ -134,7 +140,7 @@ export default function PublicUserProfilePage() {
     reviews: true,
     skills: true,
     work_experience: true,
-  }
+  };
 
   // Render profile widgets based on visibility settings
   return (
@@ -147,18 +153,24 @@ export default function PublicUserProfilePage() {
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}
           <WorkLogPortfolioWidget userId={profileData.id} />
-          {visibility.education && <EducationWidget userId={profileData.id} showEdit={false} />}
+          {visibility.education && (
+            <EducationWidget userId={profileData.id} showEdit={false} />
+          )}
         </Stack>
       }
       rightContent={
         <Stack gap={16}>
-          {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
+          {visibility.skills && (
+            <SkillsWidget userId={profileData.id} showEdit={false} />
+          )}
           {visibility.certifications && (
             <CertificationsWidget userId={profileData.id} showEdit={false} />
           )}
-          {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
+          {visibility.reviews && (
+            <ReviewsWidget userId={profileData.id} showEdit={false} />
+          )}
         </Stack>
       }
     />
-  )
+  );
 }

@@ -1,29 +1,37 @@
-import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import type { NewsItem } from '@scf/core/features/news'
-import { useAggregatedNews } from '@scf/core/features/news/hooks/useNewsFeed'
-import { redirect } from '@scf/core/utils/redirect'
-import { supabase } from '@scf/core/utils/supabase/client'
-import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
-import { Button, spacing, Paragraph, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { useRouter } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
-import { useEffect, useState, type ReactNode } from 'react'
-import { Platform, Image, Pressable, StyleSheet, View } from 'react-native'
-import { colors } from '@scaffald/ui/tokens'
-import { useThemeContext } from '@scaffald/ui'
+import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
+import type { NewsItem } from "@scf/core/features/news";
+import { useAggregatedNews } from "@scf/core/features/news/hooks/useNewsFeed";
+import { redirect } from "@scf/core/utils/redirect";
+import { supabase } from "@scf/core/utils/supabase/client";
+import { AlertCircle, ExternalLink, RefreshCw } from "lucide-react-native";
+import {
+  Button,
+  spacing,
+  Paragraph,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect, useState, type ReactNode } from "react";
+import { Platform, Image, Pressable, StyleSheet, View } from "react-native";
+import { colors } from "@scaffald/ui/tokens";
+import { useThemeContext } from "@scaffald/ui";
 
-const FULL_PAGE_ITEM_COUNT = 40
-const DEFAULT_INDUSTRY = 'construction'
+const FULL_PAGE_ITEM_COUNT = 40;
+const DEFAULT_INDUSTRY = "construction";
 
 // Simple NewsCard component (temporary inline replacement)
 interface NewsCardProps {
-  title: string
-  description?: string
-  image?: string
-  footer?: ReactNode
-  onPress?: () => void
-  fullCardClickable?: boolean
-  minHeight?: number
+  title: string;
+  description?: string;
+  image?: string;
+  footer?: ReactNode;
+  onPress?: () => void;
+  fullCardClickable?: boolean;
+  minHeight?: number;
 }
 
 const NewsCard = ({
@@ -35,10 +43,12 @@ const NewsCard = ({
   fullCardClickable,
   minHeight = 220,
 }: NewsCardProps) => {
-  const { theme } = useThemeContext()
-  const [imageError, setImageError] = useState(false)
-  const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`
-  const imageSource = imageError ? fallbackImage : image || fallbackImage
+  const { theme } = useThemeContext();
+  const [imageError, setImageError] = useState(false);
+  const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(
+    Math.random() * 1000
+  )}`;
+  const imageSource = imageError ? fallbackImage : image || fallbackImage;
 
   return (
     <Pressable
@@ -73,78 +83,78 @@ const NewsCard = ({
         </Stack>
       </Stack>
     </Pressable>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   newsCard: {
     borderRadius: 16,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   newsCardImage: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   newsCardOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   newsCardContent: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     zIndex: 1,
   },
   newsCardFooter: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   pressed: {
     opacity: 0.8,
   },
-})
+});
 
 const formatTimeAgo = (date: Date) => {
-  const diffMs = Date.now() - date.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffHours / 24)
+  const diffMs = Date.now() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
 
-  if (diffHours < 1) return 'Just now'
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays === 1) return '1 day ago'
-  if (diffDays < 7) return `${diffDays} days ago`
-  return date.toLocaleDateString()
-}
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString();
+};
 
 export default function NewsPage() {
-  const router = useRouter()
-  const [industryId, setIndustryId] = useState<string>('')
+  const router = useRouter();
+  const [industryId, setIndustryId] = useState<string>("");
 
   // Get industry ID from slug
   useEffect(() => {
     async function resolveIndustryId() {
       const { data: industryData } = await supabase
-        .schema('core')
-        .from('industries')
-        .select('id')
-        .eq('slug', DEFAULT_INDUSTRY)
-        .single()
+        .schema("core")
+        .from("industries")
+        .select("id")
+        .eq("slug", DEFAULT_INDUSTRY)
+        .single();
 
       if (industryData?.id) {
-        setIndustryId(industryData.id)
+        setIndustryId(industryData.id);
       }
     }
 
-    void resolveIndustryId()
-  }, [])
+    void resolveIndustryId();
+  }, []);
 
   const {
     data: newsItems = [],
@@ -155,32 +165,36 @@ export default function NewsPage() {
   } = useAggregatedNews({
     industryId,
     maxTotalItems: FULL_PAGE_ITEM_COUNT,
-  })
+  });
 
   const handleOpenArticle = async (article: NewsItem) => {
     try {
-      if (Platform.OS === 'web') {
-        window.open(article.link, '_blank', 'noopener,noreferrer')
+      if (Platform.OS === "web") {
+        window.open(article.link, "_blank", "noopener,noreferrer");
       } else {
         await WebBrowser.openBrowserAsync(article.link, {
-          controlsColor: '#2563eb',
-          dismissButtonStyle: 'close',
+          controlsColor: "#2563eb",
+          dismissButtonStyle: "close",
           enableBarCollapsing: true,
-          toolbarColor: '#0f172a',
-        })
+          toolbarColor: "#0f172a",
+        });
       }
     } catch (browserError) {
-      console.warn('Failed to open article, using redirect fallback:', browserError)
-      redirect(article.link)
+      console.warn(
+        "Failed to open article, using redirect fallback:",
+        browserError
+      );
+      redirect(article.link);
     }
-  }
+  };
 
   const content = (
     <Stack gap={16}>
       <Stack gap={8}>
         <Text color="gray">Industry News</Text>
         <Paragraph size="lg" color="gray">
-          Curated headlines across construction, safety, technology, and workforce development.
+          Curated headlines across construction, safety, technology, and
+          workforce development.
         </Paragraph>
       </Stack>
 
@@ -191,13 +205,18 @@ export default function NewsPage() {
           color="gray"
           iconStart={RefreshCw}
           onPress={() => {
-            void refetch()
+            void refetch();
           }}
           disabled={isLoading}
         >
           Refresh
         </Button>
-        <Button size="sm" variant="outline" color="gray" onPress={() => router.back()}>
+        <Button
+          size="sm"
+          variant="outline"
+          color="gray"
+          onPress={() => router.back()}
+        >
           Back
         </Button>
       </Row>
@@ -212,18 +231,18 @@ export default function NewsPage() {
       {isError ? (
         <Stack align="center" gap={12}>
           <AlertCircle size={32} color="red" />
-          <Text color="red" style={{ textAlign: 'center' }}>
+          <Text color="red" style={{ textAlign: "center" }}>
             Unable to load news at the moment.
           </Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
-            {error?.message || 'Please check your connection and try again.'}
+          <Text color="gray" style={{ textAlign: "center" }}>
+            {error?.message || "Please check your connection and try again."}
           </Text>
           <Button
             variant="filled"
             color="primary"
             size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
           >
             Retry
@@ -234,45 +253,48 @@ export default function NewsPage() {
       {!isLoading && !isError && newsItems.length === 0 ? (
         <Stack align="center" gap={12}>
           <Text color="gray">No articles found</Text>
-          <Text color="gray" style={{ textAlign: 'center' }}>
+          <Text color="gray" style={{ textAlign: "center" }}>
             Please check again soon for more industry updates.
           </Text>
         </Stack>
       ) : null}
 
       <Stack gap={16}>
-        {newsItems.map((item: NewsItem) => (
+        {newsItems.map((item) => {
+          const pubDate = item.pubDate instanceof Date ? item.pubDate : new Date(item.pubDate as string)
+          return (
           <NewsCard
             key={item.id}
-            title={item.title}
+            title={item.title ?? ''}
             description={item.description}
-            image={item.image}
-            onPress={() => handleOpenArticle(item)}
+            image={item.image ?? undefined}
+            onPress={() => void handleOpenArticle({ id: item.id, title: item.title ?? '', description: item.description, link: item.link ?? '', pubDate, image: item.image ?? undefined, readTime: item.readTime })}
             fullCardClickable
             minHeight={220}
             footer={
               <Row gap={12} align="center">
-                <Text color="gray">{formatTimeAgo(item.pubDate)}</Text>
+                <Text color="gray">{formatTimeAgo(pubDate)}</Text>
                 {item.readTime && (
                   <>
                     <Text color="gray">•</Text>
                     <Text color="gray">{item.readTime}</Text>
                   </>
                 )}
-                {item.author && (
-                  <>
-                    <Text color="gray">•</Text>
-                    <Text color="gray">{item.author}</Text>
-                  </>
-                )}
                 <ExternalLink size="lg" color="gray" />
               </Row>
             }
           />
-        ))}
+          )
+        })}
       </Stack>
     </Stack>
-  )
+  );
 
-  return <DashboardPage showBreadcrumb={false} pageTitle="Industry News" leftContent={content} />
+  return (
+    <DashboardPage
+      showBreadcrumb={false}
+      pageTitle="Industry News"
+      leftContent={content}
+    />
+  );
 }

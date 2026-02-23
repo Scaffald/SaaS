@@ -1,29 +1,31 @@
-import { Briefcase, Calendar, MapPin } from 'lucide-react-native'
-import { Card, Text, Row, Stack } from '@scaffald/ui'
+import { Briefcase, Calendar, MapPin } from "lucide-react-native";
+import { Card, Text, Row, Stack } from "@scaffald/ui";
 
 interface Experience {
-  id: string
-  job_title: string | null
-  company_name: string | null
-  location: string | null
-  start_date: string | null
-  end_date: string | null
-  is_current: boolean | null
-  description: string | null
+  id: string;
+  job_title: string | null;
+  company_name: string | null;
+  location: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  is_current: boolean | null;
+  description: string | null;
 }
 
 interface UserProfileExperienceProps {
-  experience: Experience[]
+  experience: Experience[];
 }
 
-export function UserProfileExperience({ experience }: UserProfileExperienceProps) {
+export function UserProfileExperience({
+  experience,
+}: UserProfileExperienceProps) {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return null
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-    })
-  }
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
+  };
 
   return (
     <Card elevate bordered>
@@ -39,7 +41,9 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
               <Stack gap={12} padding="md">
                 <Stack gap={4}>
                   <Text color="$gray11">{exp.job_title}</Text>
-                  {exp.company_name && <Text color="$gray11">{exp.company_name}</Text>}
+                  {exp.company_name && (
+                    <Text color="$gray11">{exp.company_name}</Text>
+                  )}
                 </Stack>
 
                 <Row gap={12} wrap>
@@ -47,8 +51,8 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                     <Row gap={8} align="center">
                       <Calendar size="md" color="$gray11" />
                       <Text color="$gray11">
-                        {formatDate(exp.start_date)} -{' '}
-                        {exp.is_current ? 'Present' : formatDate(exp.end_date)}
+                        {formatDate(exp.start_date)} -{" "}
+                        {exp.is_current ? "Present" : formatDate(exp.end_date)}
                       </Text>
                     </Row>
                   )}
@@ -61,7 +65,7 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                 </Row>
 
                 {exp.description && (
-                  <Text color="$gray11" lineHeight={20}>
+                  <Text color="$gray11" style={{ lineHeight: 20 }}>
                     {exp.description}
                   </Text>
                 )}
@@ -71,5 +75,5 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
         </Stack>
       </Stack>
     </Card>
-  )
+  );
 }

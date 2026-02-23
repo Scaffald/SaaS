@@ -1,0 +1,24 @@
+# Enable auto-merge for Dependabot PRs after required checks pass.
+# Requires: Repo Settings → General → Pull Requests → "Allow auto-merge" enabled.
+name: Dependabot automerge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  dependabot-automerge:
+    name: Enable automerge for Dependabot
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Enable pull request automerge
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash

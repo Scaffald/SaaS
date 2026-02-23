@@ -1,7 +1,7 @@
 import { Calendar, GraduationCap } from 'lucide-react-native'
 import { Card, Text, Row, Stack } from '@scaffald/ui'
 
-interface Education {
+export interface UserProfileEducationEntry {
   id: string
   degree_type: string | null
   institution_name: string | null
@@ -12,7 +12,7 @@ interface Education {
 }
 
 interface UserProfileEducationProps {
-  education: Education[]
+  education: UserProfileEducationEntry[]
 }
 
 export function UserProfileEducation({ education }: UserProfileEducationProps) {

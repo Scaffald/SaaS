@@ -1,306 +1,298 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { useOfficeListJobs, useOfficeDeleteJobMutation, useOfficeDuplicateJobMutation } from '@scf/core/utils/jobs-sdk-hooks'
-import { useTeams } from '@scf/core/utils/teams-sdk-hooks'
-import { useOfficeOrganizations } from '@scf/core/utils/office-organizations-sdk-hooks'
-import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
-import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
-import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
-import { Button, H2, Switch, Text, Row, Stack } from '@scaffald/ui'
-import { JobsKanbanBoard } from './components/JobsKanbanBoard'
-import { OfficePageLayout } from './components/OfficePageLayout'
-import { QuickActionsWidget } from './components/QuickActionsWidget'
-import { colors } from '@scaffald/ui/tokens'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import {
+  useOfficeListJobs,
+  useOfficeDeleteJobMutation,
+  useOfficeDuplicateJobMutation,
+} from "@scf/core/utils/jobs-sdk-hooks";
+import { useTeams } from "@scf/core/utils/teams-sdk-hooks";
+import { useOfficeOrganizations } from "@scf/core/utils/office-organizations-sdk-hooks";
+import { OfficeLayout } from "@scf/core/components/layouts";
+import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
+import { Button, H2, Toggle, Text, Row, Stack } from "@scaffald/ui";
+import type { OfficeJob } from "@scaffald/sdk";
+import { JobsKanbanBoard } from "./components/JobsKanbanBoard";
+import { OfficePageLayout } from "./components/OfficePageLayout";
+import { QuickActionsWidget } from "./components/QuickActionsWidget";
+import { colors } from "@scaffald/ui/tokens";
 
-type Job = {
-  id: string
-  title: string
-  description: string | null
-  status: string
-  employment_type: string | null
-  remote_option: string | null
-  location: string | null
-  pay_range_min_cents: number | null
-  pay_range_max_cents: number | null
-  pay_range_type: string | null
-  posted_at: string | null
-  created_at: string
-  updated_at: string
-  assigned_team_id: string | null
-  team_ids?: string[]
-  primary_team_id?: string | null
-  teamAssignments?: Array<{
-    teamId: string
-    isPrimary: boolean
-    team?: {
-      id?: string
-      name?: string | null
-      organization_id?: string | null
-    } | null
-  }>
-  organization: {
-    id: string
-    name: string
-    slug: string
-  } | null
-  team: {
-    id: string
-    name: string | null
-    organization_id?: string | null
-  } | null
-  created_by: {
-    id: string
-    username: string | null
-    display_name: string | null
-  } | null
-}
+type Job = OfficeJob;
 
-const columnHelper = createColumnHelper<Job>()
-type JobTeamAssignment = NonNullable<Job['teamAssignments']>[number]
+const columnHelper = createColumnHelper<Job>();
+type JobTeamAssignment = NonNullable<Job["teamAssignments"]>[number];
 
 const formatPayRange = (job: Job) => {
   if (!job.pay_range_min_cents || !job.pay_range_max_cents) {
-    return '-'
+    return "-";
   }
-  const min = (job.pay_range_min_cents / 100).toFixed(0)
-  const max = (job.pay_range_max_cents / 100).toFixed(0)
-  const type = job.pay_range_type || 'hourly'
-  return `$${min}-$${max} ${type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : ''}`
-}
+  const min = (job.pay_range_min_cents / 100).toFixed(0);
+  const max = (job.pay_range_max_cents / 100).toFixed(0);
+  const type = job.pay_range_type || "hourly";
+  return `$${min}-$${max} ${
+    type === "hourly" ? "/hr" : type === "salary" ? "/yr" : ""
+  }`;
+};
 
 const createColumns = (_router: ReturnType<typeof useRouter>) => [
-  columnHelper.accessor('title', {
-    header: 'Title',
+  columnHelper.accessor("title", {
+    header: "Title",
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('status', {
-    header: 'Status',
+  columnHelper.accessor("status", {
+    header: "Status",
     cell: (info) => {
-      const status = info.getValue()
-      return status.charAt(0).toUpperCase() + status.slice(1)
+      const status = info.getValue();
+      return status.charAt(0).toUpperCase() + status.slice(1);
     },
   }),
-  columnHelper.accessor('organization', {
-    header: 'Organization',
-    cell: (info) => info.getValue()?.name || '-',
+  columnHelper.accessor("organization", {
+    header: "Organization",
+    cell: (info) => info.getValue()?.name || "-",
   }),
   columnHelper.display({
-    id: 'team',
-    header: 'Team',
+    id: "team",
+    header: "Team",
     cell: (info) => {
-      const assignments = info.row.original.teamAssignments ?? []
+      const assignments = info.row.original.teamAssignments ?? [];
       if (assignments.length === 0) {
-        return info.row.original.team?.name ?? 'Unassigned'
+        return info.row.original.team?.name ?? "Unassigned";
       }
       return assignments
         .map((assignment: JobTeamAssignment) => {
-          const name = assignment.team?.name ?? 'Untitled team'
-          return assignment.isPrimary ? `${name} (Primary)` : name
+          const name = assignment.team?.name ?? "Untitled team";
+          return assignment.isPrimary ? `${name} (Primary)` : name;
         })
-        .join(', ')
+        .join(", ");
     },
   }),
-  columnHelper.accessor('location', {
-    header: 'Location',
-    cell: (info) => info.getValue() || 'Remote',
+  columnHelper.accessor("location", {
+    header: "Location",
+    cell: (info) => info.getValue() || "Remote",
   }),
   columnHelper.display({
-    id: 'pay',
-    header: 'Pay Range',
+    id: "pay",
+    header: "Pay Range",
     cell: (info) => formatPayRange(info.row.original),
   }),
-  columnHelper.accessor('created_at', {
-    header: 'Created',
+  columnHelper.accessor("created_at", {
+    header: "Created",
     cell: (info) => new Date(info.getValue()).toLocaleDateString(),
   }),
   // Actions column removed - using RowActionOverlay instead
-]
+];
 
 export interface OfficeJobsListProps {
-  showHeader?: boolean
+  showHeader?: boolean;
 }
 
 type SortOption =
-  | 'created_desc'
-  | 'created_asc'
-  | 'title_asc'
-  | 'title_desc'
-  | 'status_asc'
-  | 'status_desc'
+  | "created_desc"
+  | "created_asc"
+  | "title_asc"
+  | "title_desc"
+  | "status_asc"
+  | "status_desc";
 
-export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) {
-  const { theme } = useThemeContext()
-  const router = useRouter()
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
-  const [search, setSearch] = useState('')
-  const [teamFilter, setTeamFilter] = useState<string | null>(null)
-  const [myTeamsOnly, setMyTeamsOnly] = useState(false)
-  const [statusFilter, setStatusFilter] = useState<string | null>(null)
-  const [organizationFilter, setOrganizationFilter] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<SortOption>('created_desc')
+export function OfficeJobsList({
+  showHeader = true,
+}: OfficeJobsListProps = {}) {
+  const { theme } = useThemeContext();
+  const router = useRouter();
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [search, setSearch] = useState("");
+  const [teamFilter, setTeamFilter] = useState<string | null>(null);
+  const [myTeamsOnly, setMyTeamsOnly] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [organizationFilter, setOrganizationFilter] = useState<string | null>(
+    null
+  );
+  const [sortBy, setSortBy] = useState<SortOption>("created_desc");
 
-  const { data: teamsData, isLoading: teamsLoading } = useTeams({ includeArchived: false })
-  const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
+  const { data: teamsData, isLoading: teamsLoading } = useTeams({
+    includeArchived: false,
+  });
+  const teams = (teamsData?.teams ?? []) as Array<{
+    id: string;
+    name: string | null;
+  }>;
 
-  const { data: organizationsData } = useOfficeOrganizations()
+  const { data: organizationsData } = useOfficeOrganizations();
 
   const { data, isLoading, refetch } = useOfficeListJobs({
     limit: 100,
     offset: 0,
     team_id: teamFilter ?? undefined,
     myTeamsOnly,
-    status: statusFilter ? (statusFilter as 'draft' | 'open' | 'paused' | 'closed') : undefined,
-  })
+    status: statusFilter
+      ? (statusFilter as "draft" | "open" | "paused" | "closed")
+      : undefined,
+  });
 
   const deleteMutation = useOfficeDeleteJobMutation({
     onSuccess: () => {
-      refetch()
+      refetch();
     },
-  })
+  });
 
   const duplicateMutation = useOfficeDuplicateJobMutation({
     onSuccess: () => {
-      refetch()
+      refetch();
     },
-  })
+  });
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync(id)
-  }
+    await deleteMutation.mutateAsync(id);
+  };
 
   const handleDuplicate = async (id: string) => {
-    await duplicateMutation.mutateAsync(id)
-  }
+    await duplicateMutation.mutateAsync(id);
+  };
 
-  const jobs = data?.jobs ?? []
+  const jobs = (data?.jobs ?? []) as Job[];
   const filteredAndSortedJobs = useMemo(() => {
-    let filtered = jobs
+    let filtered = jobs;
 
     // Apply search filter
-    const query = search.trim().toLowerCase()
+    const query = search.trim().toLowerCase();
     if (query) {
       filtered = filtered.filter((job: Job) => {
         const teamNames = job.teamAssignments?.map(
-          (assignment: JobTeamAssignment) => assignment.team?.name ?? ''
-        ) ?? [job.team?.name ?? '']
-        const organizationName = job.organization?.name ?? ''
+          (assignment: JobTeamAssignment) => assignment.team?.name ?? ""
+        ) ?? [job.team?.name ?? ""];
+        const organizationName = job.organization?.name ?? "";
 
         return (
           job.title.toLowerCase().includes(query) ||
           teamNames.some((name) => name.toLowerCase().includes(query)) ||
           organizationName.toLowerCase().includes(query)
-        )
-      })
+        );
+      });
     }
 
     // Apply organization filter
     if (organizationFilter) {
-      filtered = filtered.filter((job: Job) => job.organization?.id === organizationFilter)
+      filtered = filtered.filter(
+        (job: Job) => job.organization?.id === organizationFilter
+      );
     }
 
     // Apply sorting
     const sorted = [...filtered].sort((a: Job, b: Job) => {
       switch (sortBy) {
-        case 'created_desc':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        case 'created_asc':
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        case 'title_asc':
-          return a.title.localeCompare(b.title)
-        case 'title_desc':
-          return b.title.localeCompare(a.title)
-        case 'status_asc':
-          return a.status.localeCompare(b.status)
-        case 'status_desc':
-          return b.status.localeCompare(a.status)
+        case "created_desc":
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        case "created_asc":
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
+        case "title_asc":
+          return a.title.localeCompare(b.title);
+        case "title_desc":
+          return b.title.localeCompare(a.title);
+        case "status_asc":
+          return a.status.localeCompare(b.status);
+        case "status_desc":
+          return b.status.localeCompare(a.status);
         default:
-          return 0
+          return 0;
       }
-    })
+    });
 
-    return sorted
-  }, [jobs, search, organizationFilter, sortBy])
+    return sorted;
+  }, [jobs, search, organizationFilter, sortBy]);
 
-  const teamFilterSelectValue = teamFilter ?? 'all'
-  const teamFilterPlaceholder = teamsLoading ? 'Loading teams...' : 'All teams'
+  const teamFilterSelectValue = teamFilter ?? "all";
+  const teamFilterPlaceholder = teamsLoading ? "Loading teams..." : "All teams";
 
-  const columns = createColumns(router)
+  const columns = createColumns(router);
 
   const handleRowEdit = (job: Job) => {
-    router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
-  }
+    router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }));
+  };
 
   const handleRowDelete = async (job: Job) => {
-    await handleDelete(job.id)
-  }
+    await handleDelete(job.id);
+  };
 
   const handleRowDuplicate = async (job: Job) => {
-    await handleDuplicate(job.id)
-  }
+    await handleDuplicate(job.id);
+  };
 
-  const getItemName = (job: Job) => job.title
+  const getItemName = (job: Job) => job.title;
 
   const filtersAccessory = (
     <Row gap={12} align="center" wrap>
       <Row gap={8} align="center">
         <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <ResponsiveSelect
-          value={statusFilter ?? 'all'}
-          onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
+          value={statusFilter ?? "all"}
+          onValueChange={(value: string) =>
+            setStatusFilter(value === "all" ? null : value)
+          }
           placeholder="All statuses"
           size="sm"
           options={[
-            { value: 'all', label: 'All statuses' },
-            { value: 'draft', label: 'Draft' },
-            { value: 'open', label: 'Open' },
-            { value: 'paused', label: 'Paused' },
-            { value: 'closed', label: 'Closed' },
+            { value: "all", label: "All statuses" },
+            { value: "draft", label: "Draft" },
+            { value: "open", label: "Open" },
+            { value: "paused", label: "Paused" },
+            { value: "closed", label: "Closed" },
           ]}
         />
       </Row>
-      {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
-        <Row gap={8} align="center">
-          <Text style={{ color: colors.text[theme].secondary }}>Organization</Text>
-          <ResponsiveSelect
-            value={organizationFilter ?? 'all'}
-            onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
-            placeholder="All organizations"
-            size="sm"
-            options={[
-              { value: 'all', label: 'All organizations' },
-              ...organizationsData.organizations.map(
-                (org: (typeof organizationsData.organizations)[0]) => ({
-                  value: org.id,
-                  label: org.name,
-                })
-              ),
-            ]}
-          />
-        </Row>
-      )}
+      {organizationsData?.organizations &&
+        organizationsData.organizations.length > 0 && (
+          <Row gap={8} align="center">
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Organization
+            </Text>
+            <ResponsiveSelect
+              value={organizationFilter ?? "all"}
+              onValueChange={(value: string) =>
+                setOrganizationFilter(value === "all" ? null : value)
+              }
+              placeholder="All organizations"
+              size="sm"
+              options={[
+                { value: "all", label: "All organizations" },
+                ...organizationsData.organizations.map(
+                  (org: (typeof organizationsData.organizations)[0]) => ({
+                    value: org.id,
+                    label: org.name,
+                  })
+                ),
+              ]}
+            />
+          </Row>
+        )}
       <Row gap={8} align="center">
         <Text style={{ color: colors.text[theme].secondary }}>Team</Text>
         <ResponsiveSelect
           value={teamFilterSelectValue}
-          onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
+          onValueChange={(value: string) =>
+            setTeamFilter(value === "all" ? null : value)
+          }
           placeholder={teamFilterPlaceholder}
           size="sm"
           disabled={teamsLoading}
           options={[
-            { value: 'all', label: 'All teams' },
+            { value: "all", label: "All teams" },
             ...teams.map((team) => ({
               value: team.id,
-              label: team.name ?? 'Untitled Team',
+              label: team.name ?? "Untitled Team",
             })),
           ]}
         />
       </Row>
       <Row gap={8} align="center">
-        <Text style={{ color: colors.text[theme].secondary }}>My teams only</Text>
-        <Switch size="sm" checked={myTeamsOnly} onChange={setMyTeamsOnly}>
-          <Switch.Thumb />
-        </Switch>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          My teams only
+        </Text>
+        <Toggle size="sm" checked={myTeamsOnly} onChange={setMyTeamsOnly} />
       </Row>
       <Row gap={8} align="center">
         <Text style={{ color: colors.text[theme].secondary }}>Sort</Text>
@@ -310,20 +302,20 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           placeholder="Sort by"
           size="sm"
           options={[
-            { value: 'created_desc', label: 'Newest first' },
-            { value: 'created_asc', label: 'Oldest first' },
-            { value: 'title_asc', label: 'Title A-Z' },
-            { value: 'title_desc', label: 'Title Z-A' },
-            { value: 'status_asc', label: 'Status A-Z' },
-            { value: 'status_desc', label: 'Status Z-A' },
+            { value: "created_desc", label: "Newest first" },
+            { value: "created_asc", label: "Oldest first" },
+            { value: "title_asc", label: "Title A-Z" },
+            { value: "title_desc", label: "Title Z-A" },
+            { value: "status_asc", label: "Status A-Z" },
+            { value: "status_desc", label: "Status Z-A" },
           ]}
         />
       </Row>
     </Row>
-  )
+  );
 
   // Kanban view
-  if (viewMode === 'kanban') {
+  if (viewMode === "kanban") {
     return (
       <OfficeLayout
         showBreadcrumb
@@ -339,15 +331,21 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                     </Text>
                   </Stack>
                   <Row gap={8}>
-                    <Button size="sm" onPress={() => setViewMode('kanban')} variant="outline">
+                    <Button
+                      size="sm"
+                      onPress={() => setViewMode("kanban")}
+                      variant="outline"
+                    >
                       Kanban
                     </Button>
-                    <Button size="sm" onPress={() => setViewMode('list')}>
+                    <Button size="sm" onPress={() => setViewMode("list")}>
                       List
                     </Button>
                     <Button
                       size="sm"
-                      onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+                      onPress={() =>
+                        router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)
+                      }
                     >
                       Create Job
                     </Button>
@@ -359,12 +357,19 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
               </Stack>
             )}
             <Stack flex={1}>
-              <JobsKanbanBoard jobs={filteredAndSortedJobs} onJobUpdate={() => refetch()} />
+              <JobsKanbanBoard
+                jobs={
+                  filteredAndSortedJobs as Parameters<
+                    typeof JobsKanbanBoard
+                  >[0]["jobs"]
+                }
+                onJobUpdate={() => refetch()}
+              />
             </Stack>
           </Stack>
         }
       />
-    )
+    );
   }
 
   return (
@@ -390,19 +395,23 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       itemType="job"
       actionBarConfig={{
         bar: {
-          addLabel: 'Create Job',
+          addLabel: "Create Job",
           onAddPress: () => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path),
           showDisabled: true,
           searchValue: search,
           onSearchChange: setSearch,
-          searchPlaceholder: 'Search jobs...',
+          searchPlaceholder: "Search jobs...",
           rightAccessory: (
             <Row gap={8} align="center">
               {filtersAccessory}
-              <Button size="sm" onPress={() => setViewMode('kanban')} variant="outline">
+              <Button
+                size="sm"
+                onPress={() => setViewMode("kanban")}
+                variant="outline"
+              >
                 Kanban
               </Button>
-              <Button size="sm" onPress={() => setViewMode('list')}>
+              <Button size="sm" onPress={() => setViewMode("list")}>
                 List
               </Button>
             </Row>
@@ -419,5 +428,5 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       }
     />
-  )
+  );
 }

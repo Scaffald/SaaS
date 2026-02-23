@@ -1,129 +1,147 @@
-import { usePaymentTransactions, useExportTransactions } from '@scf/core/utils/payments-sdk-hooks'
-import type { PaymentTransaction } from '@scaffald/sdk'
-import { columnsFromTanStack } from '@scf/core/utils/table-columns'
-import { ResponsiveSelect, Table, useThemeContext } from '@scaffald/ui'
-import { Download, FileText, RefreshCw } from 'lucide-react-native'
-import type { ColumnDef } from '@tanstack/react-table'
-import { createColumnHelper } from '@tanstack/react-table'
-import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { TransactionReceiptModal } from './TransactionReceiptModal'
-import { colors } from '@scaffald/ui/tokens'
+import {
+  usePaymentTransactions,
+  useExportTransactions,
+} from "@scf/core/utils/payments-sdk-hooks";
+import type { PaymentTransaction } from "@scaffald/sdk";
+import { columnsFromTanStack } from "@scf/core/utils/table-columns";
+import { ResponsiveSelect, Table, useThemeContext } from "@scaffald/ui";
+import { Download, FileText, RefreshCw } from "lucide-react-native";
+import type { ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
+import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { TransactionReceiptModal } from "./TransactionReceiptModal";
+import { colors } from "@scaffald/ui/tokens";
 
-type Transaction = PaymentTransaction
+type Transaction = PaymentTransaction;
 
-const columnHelper = createColumnHelper<Transaction>()
+const columnHelper = createColumnHelper<Transaction>();
 
 const formatCurrency = (cents: number, currency: string): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency: currency.toUpperCase(),
-  }).format(cents / 100)
-}
+  }).format(cents / 100);
+};
 
 const formatTransactionType = (type: string): string => {
   return type
-    .split('_')
+    .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
+    .join(" ");
+};
 
 const formatStatus = (status: string): string => {
-  return status.charAt(0).toUpperCase() + status.slice(1)
-}
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
 
-const getStatusColor = (status: string, theme: 'light' | 'dark') => {
+const getStatusColor = (status: string, theme: "light" | "dark") => {
   switch (status) {
-    case 'succeeded':
-      return theme === "light" ? colors.green[700] : colors.green[300]
-    case 'failed':
-      return theme === "light" ? colors.error[700] : colors.error[300]
-    case 'pending':
-      return theme === "light" ? colors.yellow[700] : colors.yellow[300]
-    case 'refunded':
-      return theme === "light" ? colors.blue[700] : colors.blue[300]
-    case 'cancelled':
-      return colors.text[theme].secondary
+    case "succeeded":
+      return theme === "light" ? colors.green[700] : colors.green[300];
+    case "failed":
+      return theme === "light" ? colors.error[700] : colors.error[300];
+    case "pending":
+      return theme === "light" ? colors.yellow[700] : colors.yellow[300];
+    case "refunded":
+      return theme === "light" ? colors.blue[700] : colors.blue[300];
+    case "cancelled":
+      return colors.text[theme].secondary;
     default:
-      return colors.text[theme].secondary
+      return colors.text[theme].secondary;
   }
-}
+};
 
 export function OfficeTransactionHistory() {
-  const { theme } = useThemeContext()
-  const [selectedOrganizationId, _setSelectedOrganizationId] = useState<string | undefined>()
-  const [statusFilter, setStatusFilter] = useState<string | undefined>()
-  const [transactionTypeFilter, setTransactionTypeFilter] = useState<string | undefined>()
-  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null)
+  const { theme } = useThemeContext();
+  const [selectedOrganizationId, _setSelectedOrganizationId] = useState<
+    string | undefined
+  >();
+  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [transactionTypeFilter, setTransactionTypeFilter] = useState<
+    string | undefined
+  >();
+  const [selectedTransactionId, setSelectedTransactionId] = useState<
+    string | null
+  >(null);
 
   const transactionsQuery = usePaymentTransactions({
     organizationId: selectedOrganizationId,
     status: statusFilter,
     transactionType: transactionTypeFilter,
-  })
+  });
 
   const exportCsvMutation = useExportTransactions({
-    format: 'csv',
+    format: "csv",
     organizationId: selectedOrganizationId,
     status: statusFilter,
     transactionType: transactionTypeFilter,
-  })
+  });
 
   const handleExportCsv = async () => {
-    const result = await exportCsvMutation.refetch()
+    const result = await exportCsvMutation.refetch();
     if (result.data?.data) {
-      const blob = new Blob([result.data.data], { type: result.data.contentType })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      const blob = new Blob([result.data.data], {
+        type: result.data.contentType,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `transactions-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-  }
+  };
 
   const transactionsColumnDefs = useMemo(() => {
     const defs = [
-      columnHelper.accessor('createdAt', {
-        header: 'Date',
+      columnHelper.accessor("createdAt", {
+        header: "Date",
         cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       }),
-      columnHelper.accessor('organizationName', {
-        header: 'Organization',
-        cell: (info) => info.getValue() ?? 'N/A',
+      columnHelper.accessor("organizationName", {
+        header: "Organization",
+        cell: (info) => info.getValue() ?? "N/A",
       }),
-      columnHelper.accessor('transactionType', {
-        header: 'Type',
+      columnHelper.accessor("transactionType", {
+        header: "Type",
         cell: (info) => formatTransactionType(info.getValue()),
       }),
-      columnHelper.accessor('amountCents', {
-        header: 'Amount',
+      columnHelper.accessor("amountCents", {
+        header: "Amount",
         cell: (info) => {
-          const row = info.row.original
-          return formatCurrency(info.getValue(), row.currency)
+          const row = info.row.original;
+          return formatCurrency(info.getValue(), row.currency);
         },
       }),
-      columnHelper.accessor('status', {
-        header: 'Status',
+      columnHelper.accessor("status", {
+        header: "Status",
         cell: (info) => {
-          const status = info.getValue()
+          const status = info.getValue();
           return (
-            <Text style={{ color: getStatusColor(status, theme) }}>{formatStatus(status)}</Text>
-          )
+            <Text style={{ color: getStatusColor(status, theme) }}>
+              {formatStatus(status)}
+            </Text>
+          );
         },
       }),
-      columnHelper.accessor('stripePaymentIntentId', {
-        header: 'Stripe ID',
+      columnHelper.accessor("stripePaymentIntentId", {
+        header: "Stripe ID",
         cell: (info) => (
-          <Text style={{ color: colors.text[theme].secondary, fontFamily: 'monospace' }}>
-            {info.getValue().slice(0, 20)}...
+          <Text
+            style={{
+              color: colors.text[theme].secondary,
+              fontFamily: "monospace",
+            }}
+          >
+            {info.getValue()?.slice(0, 20) ?? "—"}...
           </Text>
         ),
       }),
-      columnHelper.accessor('id', {
-        header: 'Actions',
+      columnHelper.accessor("id", {
+        header: "Actions",
         cell: (info) => (
           <Button
             size="sm"
@@ -135,14 +153,14 @@ export function OfficeTransactionHistory() {
           </Button>
         ),
       }),
-    ]
-    return defs as ColumnDef<Transaction, unknown>[]
-  }, [theme])
+    ];
+    return defs as ColumnDef<Record<string, unknown>, unknown>[];
+  }, [theme]);
 
   const tableColumns = useMemo(
-    () => columnsFromTanStack<Transaction>(transactionsColumnDefs),
+    () => columnsFromTanStack<Record<string, unknown>>(transactionsColumnDefs),
     [transactionsColumnDefs]
-  )
+  );
 
   return (
     <Stack flex={1} padding="md" gap={16}>
@@ -186,36 +204,43 @@ export function OfficeTransactionHistory() {
           <Stack gap={4} width={200}>
             <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
             <ResponsiveSelect
-              value={statusFilter ?? ''}
+              value={statusFilter ?? ""}
               onValueChange={(value) => setStatusFilter(value || undefined)}
               placeholder="All Statuses"
               options={[
-                { value: '', label: 'All Statuses' },
-                { value: 'succeeded', label: 'Succeeded' },
-                { value: 'failed', label: 'Failed' },
-                { value: 'pending', label: 'Pending' },
-                { value: 'refunded', label: 'Refunded' },
-                { value: 'cancelled', label: 'Cancelled' },
+                { value: "", label: "All Statuses" },
+                { value: "succeeded", label: "Succeeded" },
+                { value: "failed", label: "Failed" },
+                { value: "pending", label: "Pending" },
+                { value: "refunded", label: "Refunded" },
+                { value: "cancelled", label: "Cancelled" },
               ]}
             />
           </Stack>
           <Stack gap={4} width={200}>
             <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
             <ResponsiveSelect
-              value={transactionTypeFilter ?? ''}
-              onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
+              value={transactionTypeFilter ?? ""}
+              onValueChange={(value) =>
+                setTransactionTypeFilter(value || undefined)
+              }
               placeholder="All Types"
               options={[
-                { value: '', label: 'All Types' },
-                { value: 'success_fee_upfront', label: 'Success Fee (Upfront)' },
-                { value: 'success_fee_final', label: 'Success Fee (Final)' },
-                { value: 'background_check', label: 'Background Check' },
-                { value: 'background_check_shared', label: 'Background Check (Shared)' },
-                { value: 'id_verification', label: 'ID Verification' },
-                { value: 'credit_deposit', label: 'Credit Deposit' },
-                { value: 'credit_refund', label: 'Credit Refund' },
+                { value: "", label: "All Types" },
+                {
+                  value: "success_fee_upfront",
+                  label: "Success Fee (Upfront)",
+                },
+                { value: "success_fee_final", label: "Success Fee (Final)" },
+                { value: "background_check", label: "Background Check" },
+                {
+                  value: "background_check_shared",
+                  label: "Background Check (Shared)",
+                },
+                { value: "id_verification", label: "ID Verification" },
+                { value: "credit_deposit", label: "Credit Deposit" },
+                { value: "credit_refund", label: "Credit Refund" },
               ]}
-              triggerProps={{ width: 200 }}
             />
           </Stack>
         </Row>
@@ -224,7 +249,9 @@ export function OfficeTransactionHistory() {
       {transactionsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading transactions…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading transactions…
+          </Text>
         </Stack>
       ) : (
         <Card
@@ -235,21 +262,33 @@ export function OfficeTransactionHistory() {
         >
           <Table
             columns={tableColumns}
-            data={transactionsQuery.data?.items ?? []}
+            data={
+              (transactionsQuery.data?.items ??
+                []) as unknown as import("@scaffald/ui").TableRowData[]
+            }
             loading={transactionsQuery.isRefetching}
             renderLoading={() => (
-              <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+              <Stack
+                align="center"
+                justify="center"
+                paddingVertical={24}
+                gap={8}
+              >
                 <Spinner size="lg" />
-                <Text style={{ color: colors.text[theme].secondary }}>Loading…</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Loading…
+                </Text>
               </Stack>
             )}
             pageSize={25}
             emptyMessage="No transactions found."
           />
           {transactionsQuery.data && transactionsQuery.data.totalCount > 0 && (
-            <Text style={{ color: colors.text[theme].secondary }} marginTop={12}>
-              Showing {transactionsQuery.data.items.length} of {transactionsQuery.data.totalCount}{' '}
-              transactions
+            <Text
+              style={{ color: colors.text[theme].secondary, marginTop: 12 }}
+            >
+              Showing {transactionsQuery.data.items.length} of{" "}
+              {transactionsQuery.data.totalCount} transactions
             </Text>
           )}
         </Card>
@@ -260,10 +299,10 @@ export function OfficeTransactionHistory() {
           transactionId={selectedTransactionId}
           open={Boolean(selectedTransactionId)}
           onOpenChange={(open) => {
-            if (!open) setSelectedTransactionId(null)
+            if (!open) setSelectedTransactionId(null);
           }}
         />
       )}
     </Stack>
-  )
+  );
 }

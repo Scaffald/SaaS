@@ -9,6 +9,8 @@ export type EngagementEventType =
   | 'search'
   | 'filter_change'
   | 'occupation.searched'
+  | 'review_viewed'
+  | 'review.submitted'
 
 export type EngagementTargetType = 'user' | 'job' | 'organization'
 

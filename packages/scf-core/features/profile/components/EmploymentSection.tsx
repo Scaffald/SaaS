@@ -2,15 +2,15 @@ import {
   OpenToTravelCard,
   USPassportToggle,
   USResidentToggle,
-} from '@scf/core/features/profile/components/employment-fields'
+} from "@scf/core/features/profile/components/employment-fields";
 import {
   useOfficeUserEmployment,
   useOfficeUpdateUserEmploymentMutation,
-} from '@scf/core/utils/office-users-sdk-hooks'
+} from "@scf/core/utils/office-users-sdk-hooks";
 import {
   useEmployment,
   useUpdateEmploymentMutation,
-} from '@scf/core/utils/profile-employment-sdk-hooks'
+} from "@scf/core/utils/profile-employment-sdk-hooks";
 import {
   Button,
   Card,
@@ -18,13 +18,13 @@ import {
   DashboardWidget,
   LocationListInput,
   Toggle,
-} from '@scaffald/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, Shield } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
-import { useEffect, useState } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar, Car, Shield } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { Input, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
@@ -32,23 +32,23 @@ import {
   employmentProfileDefaults,
   employmentProfileSchema,
   MILITARY_STATUS_OPTIONS,
-} from '../config/employment-schema'
+} from "../config/employment-schema";
 
 interface EmploymentSectionProps {
   /**
    * User ID to edit. If not provided, edits the current user's profile.
    */
-  userId?: string
+  userId?: string;
   /**
    * Mode determines which tRPC endpoints to use
    * - 'user': Uses profile.* endpoints (current user)
    * - 'admin': Uses office.* endpoints (any user)
    */
-  mode?: 'user' | 'admin'
+  mode?: "user" | "admin";
   /**
    * Read-only mode (view only)
    */
-  readOnly?: boolean
+  readOnly?: boolean;
 }
 
 /**
@@ -57,64 +57,73 @@ interface EmploymentSectionProps {
  */
 export function EmploymentSection({
   userId,
-  mode = 'user',
+  mode = "user",
   readOnly = false,
 }: EmploymentSectionProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const toast = useToast()
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
 
   // Determine which endpoints to use based on mode
   const useQueryHook =
-    mode === 'admin' && userId
+    mode === "admin" && userId
       ? () => useOfficeUserEmployment(userId)
-      : useEmployment
+      : useEmployment;
 
   const useMutationHook =
-    mode === 'admin' && userId
+    mode === "admin" && userId
       ? () =>
           useOfficeUpdateUserEmploymentMutation({
             onSuccess: () => {
               toast.show({
-                title: 'Employment Updated',
-                message: 'Employment preferences have been saved successfully!',
-              })
-              refetch()
+                title: "Employment Updated",
+                message: "Employment preferences have been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving employment:', error)
+              console.error("Error saving employment:", error);
               const _message =
-                error instanceof Error ? error.message : 'Failed to save employment preferences.'
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save employment preferences.";
               toast.show({
-                title: 'Error',
-                message: '',
-                variant: 'error',
-              })
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
           })
       : () =>
           useUpdateEmploymentMutation({
             onSuccess: () => {
               toast.show({
-                title: 'Employment Updated',
-                message: 'Your employment preferences have been saved successfully!',
-              })
-              refetch()
+                title: "Employment Updated",
+                message:
+                  "Your employment preferences have been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving employment:', error)
+              console.error("Error saving employment:", error);
               const _message =
-                error instanceof Error ? error.message : 'Failed to save employment preferences.'
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save employment preferences.";
               toast.show({
-                title: 'Error',
-                message: '',
-                variant: 'error',
-              })
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
-          })
+          });
 
-  const { data: employmentData, isLoading: isLoadingEmployment, refetch } = useQueryHook()
+  const {
+    data: employmentData,
+    isLoading: isLoadingEmployment,
+    refetch,
+  } = useQueryHook();
 
-  const updateEmploymentMutation = useMutationHook()
+  const updateEmploymentMutation = useMutationHook();
 
   const {
     control,
@@ -125,50 +134,50 @@ export function EmploymentSection({
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(employmentProfileSchema),
     defaultValues: employmentProfileDefaults,
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
   const travelDistanceMiles = useWatch({
     control,
-    name: 'travel_distance_miles',
-  })
+    name: "travel_distance_miles",
+  });
 
   // Reset form when employment data is loaded
   useEffect(() => {
     if (employmentData) {
-      reset(employmentData)
+      reset(employmentData as unknown as EmploymentProfileFormData);
     }
-  }, [employmentData, reset])
+  }, [employmentData, reset]);
 
   const onSubmit = async (data: EmploymentProfileFormData) => {
-    if (readOnly) return
+    if (readOnly) return;
 
     // Use the user's selection for open_to_travel (defaults to true if not set)
     const updatedData = {
       ...data,
       open_to_travel: data.open_to_travel ?? true,
-    }
+    };
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      if (mode === 'admin' && userId) {
-        // Form schema is compatible with API schema but has slightly different structure
-        await updateEmploymentMutation.mutateAsync({
-          userId,
-          data: updatedData as unknown as Parameters<
-            typeof updateEmploymentMutation.mutateAsync
-          >[0]['data'],
-        })
+      if (mode === "admin" && userId) {
+        await (
+          updateEmploymentMutation.mutateAsync as (arg: {
+            userId: string;
+            data: unknown;
+          }) => Promise<unknown>
+        )({ userId, data: updatedData });
       } else {
-        // Form schema is compatible with API schema but has slightly different structure
-        await updateEmploymentMutation.mutateAsync(
-          updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0]
-        )
+        await (
+          updateEmploymentMutation.mutateAsync as (
+            arg: unknown
+          ) => Promise<unknown>
+        )(updatedData);
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (isLoadingEmployment) {
     return (
@@ -176,7 +185,7 @@ export function EmploymentSection({
         <Spinner size="lg" />
         <Text>Loading employment preferences...</Text>
       </Stack>
-    )
+    );
   }
 
   return (
@@ -193,10 +202,10 @@ export function EmploymentSection({
                 <Input
                   style={{ flex: 1, opacity: readOnly ? 0.7 : 1 }}
                   placeholder="Enter your hourly rate"
-                  value={field.value?.toString() || '0'}
+                  value={field.value?.toString() || "0"}
                   onChangeText={(text) => {
-                    const numValue = text ? Number.parseFloat(text) : 0
-                    field.onChange(Number.isNaN(numValue) ? 0 : numValue)
+                    const numValue = text ? Number.parseFloat(text) : 0;
+                    field.onChange(Number.isNaN(numValue) ? 0 : numValue);
                   }}
                   keyboardType="numeric"
                   editable={!readOnly}
@@ -204,7 +213,11 @@ export function EmploymentSection({
               </Row>
             )}
           />
-          {errors.hourly_rate && <Text style={{ color: '#ef4444' }}>{errors.hourly_rate.message}</Text>}
+          {errors.hourly_rate && (
+            <Text style={{ color: "#ef4444" }}>
+              {errors.hourly_rate.message}
+            </Text>
+          )}
         </Stack>
 
         {/* Preferred Work Locations */}
@@ -220,8 +233,6 @@ export function EmploymentSection({
                 maxLocations={3}
                 helpText="You can add up to three locations. This can be as broad as in a state or county, or specific to a city."
                 placeholder="Search for a work location..."
-                provider="mapbox"
-                apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
                 disabled={readOnly}
               />
             )}
@@ -240,13 +251,19 @@ export function EmploymentSection({
                 onChange={openToTravelField.onChange}
                 travelDistanceValue={travelDistanceMiles ?? 25}
                 onTravelDistanceChange={(value) => {
-                  setValue('travel_distance_miles', value, { shouldValidate: true })
+                  setValue("travel_distance_miles", value, {
+                    shouldValidate: true,
+                  });
                 }}
                 disabled={readOnly}
               />
             )}
           />
-          <Controller name="travel_distance_miles" control={control} render={() => <></>} />
+          <Controller
+            name="travel_distance_miles"
+            control={control}
+            render={() => <></>}
+          />
         </Stack>
 
         {/* Residency */}
@@ -285,7 +302,7 @@ export function EmploymentSection({
             render={({ field }) => {
               const [isExpanded, setIsExpanded] = useState(
                 !!(field.value && field.value.length > 0)
-              )
+              );
 
               return (
                 <Card variant="outlined" padding="md">
@@ -293,19 +310,20 @@ export function EmploymentSection({
                     <Car size={20} color="#414e62" />
                     <Stack gap={4} style={{ flex: 1 }}>
                       <Text>I have a valid driver's license</Text>
-                      <Text style={{ color: '#414e62' }}>
-                        Class D (standard license) is automatically selected. Add any additional classes below.
+                      <Text style={{ color: "#414e62" }}>
+                        Class D (standard license) is automatically selected.
+                        Add any additional classes below.
                       </Text>
                     </Stack>
                     <Toggle
                       checked={isExpanded}
                       onChange={(checked: boolean) => {
-                        if (readOnly) return
-                        setIsExpanded(checked)
+                        if (readOnly) return;
+                        setIsExpanded(checked);
                         if (checked) {
-                          field.onChange(['Class D'])
+                          field.onChange(["Class D"]);
                         } else {
-                          field.onChange([])
+                          field.onChange([]);
                         }
                       }}
                       disabled={readOnly}
@@ -320,36 +338,35 @@ export function EmploymentSection({
                           <Checkbox
                             checked={field.value?.includes(license) || false}
                             onChange={(checked: boolean) => {
-                              if (readOnly) return
-                              const current = field.value || []
+                              if (readOnly) return;
+                              const current = field.value || [];
                               if (checked) {
-                                field.onChange([...current, license])
+                                field.onChange([...current, license]);
                               } else {
-                                const filtered = current.filter((l) => l !== license)
-                                field.onChange(filtered)
+                                const filtered = current.filter(
+                                  (l) => l !== license
+                                );
+                                field.onChange(filtered);
                               }
                             }}
                             disabled={readOnly}
-                            accessibilityLabel={
-                              license === 'Class D'
-                                ? "Class D (standard driver's license)"
-                                : `Class ${license}`
-                            }
                           />
                           <Text
                             onPress={() => {
-                              if (readOnly) return
-                              const current = field.value || []
-                              const isChecked = current.includes(license)
+                              if (readOnly) return;
+                              const current = field.value || [];
+                              const isChecked = current.includes(license);
                               if (isChecked) {
-                                const filtered = current.filter((l) => l !== license)
-                                field.onChange(filtered)
+                                const filtered = current.filter(
+                                  (l) => l !== license
+                                );
+                                field.onChange(filtered);
                               } else {
-                                field.onChange([...current, license])
+                                field.onChange([...current, license]);
                               }
                             }}
                           >
-                            {license === 'Class D'
+                            {license === "Class D"
                               ? "Class D (standard driver's license)"
                               : `Class ${license}`}
                           </Text>
@@ -358,7 +375,7 @@ export function EmploymentSection({
                     </Stack>
                   )}
                 </Card>
-              )
+              );
             }}
           />
         </Stack>
@@ -372,7 +389,7 @@ export function EmploymentSection({
             render={({ field }) => {
               const [isExpanded, setIsExpanded] = useState(
                 !!(field.value && field.value.length > 0)
-              )
+              );
 
               return (
                 <Card variant="outlined" padding="md">
@@ -380,15 +397,17 @@ export function EmploymentSection({
                     <Shield size={20} color="#414e62" />
                     <Stack gap={4} style={{ flex: 1 }}>
                       <Text>Former/Current Military</Text>
-                      <Text style={{ color: '#414e62' }}>Select all that apply</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        Select all that apply
+                      </Text>
                     </Stack>
                     <Toggle
                       checked={isExpanded}
                       onChange={(checked: boolean) => {
-                        if (readOnly) return
-                        setIsExpanded(checked)
+                        if (readOnly) return;
+                        setIsExpanded(checked);
                         if (!checked) {
-                          field.onChange([])
+                          field.onChange([]);
                         }
                       }}
                       disabled={readOnly}
@@ -403,16 +422,17 @@ export function EmploymentSection({
                           <Checkbox
                             checked={field.value?.includes(status) || false}
                             onChange={(checked: boolean) => {
-                              if (readOnly) return
-                              const current = field.value || []
+                              if (readOnly) return;
+                              const current = field.value || [];
                               if (checked) {
-                                field.onChange([...current, status])
+                                field.onChange([...current, status]);
                               } else {
-                                field.onChange(current.filter((s) => s !== status))
+                                field.onChange(
+                                  current.filter((s) => s !== status)
+                                );
                               }
                             }}
                             disabled={readOnly}
-                            accessibilityLabel={status}
                           />
                           <Text>{status}</Text>
                         </Row>
@@ -420,7 +440,7 @@ export function EmploymentSection({
                     </Stack>
                   )}
                 </Card>
-              )
+              );
             }}
           />
         </Stack>
@@ -434,7 +454,7 @@ export function EmploymentSection({
             render={({ field }) => {
               const [isExpanded, setIsExpanded] = useState(
                 !!(field.value && field.value.length > 0)
-              )
+              );
 
               return (
                 <Card variant="outlined" padding="md">
@@ -442,15 +462,17 @@ export function EmploymentSection({
                     <Calendar size={20} color="#414e62" />
                     <Stack gap={4} style={{ flex: 1 }}>
                       <Text>I'm available for work</Text>
-                      <Text style={{ color: '#414e62' }}>Select all that apply</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        Select all that apply
+                      </Text>
                     </Stack>
                     <Toggle
                       checked={isExpanded}
                       onChange={(checked: boolean) => {
-                        if (readOnly) return
-                        setIsExpanded(checked)
+                        if (readOnly) return;
+                        setIsExpanded(checked);
                         if (!checked) {
-                          field.onChange([])
+                          field.onChange([]);
                         }
                       }}
                       disabled={readOnly}
@@ -465,16 +487,17 @@ export function EmploymentSection({
                           <Checkbox
                             checked={field.value?.includes(option) || false}
                             onChange={(checked: boolean) => {
-                              if (readOnly) return
-                              const current = field.value || []
+                              if (readOnly) return;
+                              const current = field.value || [];
                               if (checked) {
-                                field.onChange([...current, option])
+                                field.onChange([...current, option]);
                               } else {
-                                field.onChange(current.filter((a) => a !== option))
+                                field.onChange(
+                                  current.filter((a) => a !== option)
+                                );
                               }
                             }}
                             disabled={readOnly}
-                            accessibilityLabel={option}
                           />
                           <Text>{option}</Text>
                         </Row>
@@ -482,7 +505,7 @@ export function EmploymentSection({
                     </Stack>
                   )}
                 </Card>
-              )
+              );
             }}
           />
         </Stack>
@@ -491,7 +514,8 @@ export function EmploymentSection({
         {!readOnly && (
           <Row justify="flex-end" paddingTop={16}>
             <Button
-              variant="filled" color="primary"
+              variant="filled"
+              color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
@@ -501,11 +525,13 @@ export function EmploymentSection({
                   <Spinner size="sm" />
                   <Text>Saving...</Text>
                 </Row>
-              ) : 'Save Changes'}
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </Row>
         )}
       </Stack>
     </DashboardWidget>
-  )
+  );
 }

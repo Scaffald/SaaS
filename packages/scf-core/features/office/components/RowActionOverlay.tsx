@@ -1,29 +1,30 @@
-import { Eye, Pencil, X } from 'lucide-react-native'
-import { useEffect, useRef } from 'react'
-import { Button, Row, useThemeContext } from '@scaffald/ui'
-import { DeleteButton } from './DeleteButton'
-import { DuplicateButton } from './DuplicateButton'
-import { colors } from '@scaffald/ui/tokens'
+import { Eye, Pencil, X } from "lucide-react-native";
+import { useEffect, useRef } from "react";
+import { View } from "react-native";
+import { Button, Row, useThemeContext } from "@scaffald/ui";
+import { DeleteButton } from "./DeleteButton";
+import { DuplicateButton } from "./DuplicateButton";
+import { colors } from "@scaffald/ui/tokens";
 
 export interface RowActionOverlayProps<TData> {
   /** The row data */
-  row: TData
+  row: TData;
   /** View action handler */
-  onView?: (row: TData) => void
+  onView?: (row: TData) => void;
   /** Edit action handler */
-  onEdit: (row: TData) => void
+  onEdit: (row: TData) => void;
   /** Delete action handler */
-  onDelete: (row: TData) => Promise<void>
+  onDelete: (row: TData) => Promise<void>;
   /** Duplicate action handler */
-  onDuplicate?: (row: TData) => Promise<void>
+  onDuplicate?: (row: TData) => Promise<void>;
   /** Position of the overlay */
-  position: { x: number; y: number }
+  position: { x: number; y: number };
   /** Close handler */
-  onClose: () => void
+  onClose: () => void;
   /** Name of the item (for delete confirmation) */
-  itemName: string
+  itemName: string;
   /** Type of item (for delete confirmation) */
-  itemType: string
+  itemType: string;
 }
 
 /**
@@ -56,114 +57,118 @@ export function RowActionOverlay<TData>({
   itemName,
   itemType,
 }: RowActionOverlayProps<TData>) {
-  const { theme } = useThemeContext()
-  const overlayRef = useRef<HTMLDivElement>(null)
+  const { theme } = useThemeContext();
+  const overlayRef = useRef<View>(null);
 
   // Handle Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
+      if (e.key === "Escape") {
+        onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener("keydown", handleEscape);
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [onClose])
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [onClose]);
 
   // Handle outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
-        onClose()
+      const el = overlayRef.current as unknown as HTMLElement | null;
+      if (el && !el.contains(e.target as Node)) {
+        onClose();
       }
-    }
+    };
 
     // Use setTimeout to avoid immediate dismissal on the click that opened the overlay
     const timeoutId = setTimeout(() => {
-      document.addEventListener('click', handleClickOutside)
-    }, 0)
+      document.addEventListener("click", handleClickOutside);
+    }, 0);
 
     return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('click', handleClickOutside)
-    }
-  }, [onClose])
+      clearTimeout(timeoutId);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleDelete = async () => {
-    await onDelete(row)
-    onClose()
-  }
+    await onDelete(row);
+    onClose();
+  };
 
   const handleDuplicate = async () => {
     if (onDuplicate) {
-      await onDuplicate(row)
-      onClose()
+      await onDuplicate(row);
+      onClose();
     }
-  }
+  };
 
   return (
-    <Row
+    <View
       ref={overlayRef}
-      borderWidth={1}
-      borderColor={colors.border[theme].default}
-      borderRadius={16}
-      padding="xs"
-      gap={8}
       style={{
-        position: 'absolute',
-        backgroundColor: colors.bg[theme].subtle,
-        zIndex: 1000,
+        position: "absolute",
         left: position.x,
         top: position.y,
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-      } as object}
+        zIndex: 1000,
+        borderWidth: 1,
+        borderColor: colors.border[theme].default,
+        borderRadius: 16,
+        padding: 8,
+        backgroundColor: colors.bg[theme].subtle,
+        ...(typeof window !== "undefined"
+          ? { boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)" }
+          : {}),
+      }}
     >
-      {onView && (
+      <Row gap={8}>
+        {onView && (
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={Eye}
+            onPress={() => {
+              onView(row);
+              onClose();
+            }}
+          >
+            View
+          </Button>
+        )}
         <Button
           size="sm"
           variant="outline"
-          iconStart={Eye}
+          iconStart={Pencil}
           onPress={() => {
-            onView(row)
-            onClose()
+            onEdit(row);
+            onClose();
           }}
         >
-          View
+          Edit
         </Button>
-      )}
-      <Button
-        size="sm"
-        variant="outline"
-        iconStart={Pencil}
-        onPress={() => {
-          onEdit(row)
-          onClose()
-        }}
-      >
-        Edit
-      </Button>
-      {onDuplicate && (
-        <DuplicateButton
+        {onDuplicate && (
+          <DuplicateButton
+            itemName={itemName}
+            itemType={itemType}
+            onDuplicate={handleDuplicate}
+            size="sm"
+            variant="outline"
+          />
+        )}
+        <DeleteButton
           itemName={itemName}
           itemType={itemType}
-          onDuplicate={handleDuplicate}
+          onDelete={handleDelete}
           size="sm"
           variant="outline"
         />
-      )}
-      <DeleteButton
-        itemName={itemName}
-        itemType={itemType}
-        onDelete={handleDelete}
-        size="sm"
-        variant="outline"
-      />
-      <Button size="sm" variant="outline" iconStart={X} onPress={onClose}>
-        Close
-      </Button>
-    </Row>
-  )
+        <Button size="sm" variant="outline" iconStart={X} onPress={onClose}>
+          Close
+        </Button>
+      </Row>
+    </View>
+  );
 }

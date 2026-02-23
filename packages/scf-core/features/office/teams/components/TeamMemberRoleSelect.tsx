@@ -1,19 +1,19 @@
-import { useUpdateTeamMember } from '@scaffald/sdk/react'
-import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
-import { useToast } from '@scaffald/ui'
-import { useEffect, useMemo, useState } from 'react'
-import { Text, Stack } from '@scaffald/ui'
-import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
-import { colors } from '@scaffald/ui/tokens'
+import { useUpdateTeamMember } from "@scaffald/sdk/react";
+import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useMemo, useState } from "react";
+import { Text, Stack } from "@scaffald/ui";
+import type { TeamRoleOption } from "../hooks/useTeamFormOptions";
+import { colors } from "@scaffald/ui/tokens";
 
 interface TeamMemberRoleSelectProps {
-  teamId: string
-  userId: string
-  currentRoleId?: string | null
-  roles: TeamRoleOption[]
-  disabled?: boolean
-  onRoleChanged?: (roleId: string) => void
-  fullWidth?: boolean
+  teamId: string;
+  userId: string;
+  currentRoleId?: string | null;
+  roles: TeamRoleOption[];
+  disabled?: boolean;
+  onRoleChanged?: (roleId: string) => void;
+  fullWidth?: boolean;
 }
 
 export function TeamMemberRoleSelect({
@@ -23,54 +23,55 @@ export function TeamMemberRoleSelect({
   roles,
   disabled = false,
   onRoleChanged,
-  fullWidth = false,
+  fullWidth: _fullWidth = false,
 }: TeamMemberRoleSelectProps) {
-  const { theme } = useThemeContext()
-  const toast = useToast()
-  const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? '')
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? "");
 
   useEffect(() => {
-    setSelectedRoleId(currentRoleId ?? '')
-  }, [currentRoleId])
+    setSelectedRoleId(currentRoleId ?? "");
+  }, [currentRoleId]);
 
   const _roleLookup = useMemo(() => {
-    const map = new Map<string, TeamRoleOption>()
+    const map = new Map<string, TeamRoleOption>();
     for (const role of roles) {
-      map.set(role.id, role)
+      map.set(role.id, role);
     }
-    return map
-  }, [roles])
+    return map;
+  }, [roles]);
 
   const updateRoleMutation = useUpdateTeamMember({
     onSuccess: (_data, variables) => {
       toast.show({
-        title: 'Role updated',
-        message: 'Team member role changed successfully.',
-        variant: 'success',
-      })
+        title: "Role updated",
+        message: "Team member role changed successfully.",
+        variant: "success",
+      });
       if (variables?.params?.roleId) {
-        onRoleChanged?.(variables.params.roleId)
+        onRoleChanged?.(variables.params.roleId);
       }
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const message =
+        error instanceof Error ? error.message : "An error occurred";
       toast.show({
-        title: 'Unable to update role',
+        title: "Unable to update role",
         message,
-        variant: 'error',
-      })
-      setSelectedRoleId(currentRoleId ?? '')
+        variant: "error",
+      });
+      setSelectedRoleId(currentRoleId ?? "");
     },
-  })
+  });
 
   const handleRoleChange = async (roleId: string) => {
-    setSelectedRoleId(roleId)
+    setSelectedRoleId(roleId);
     await updateRoleMutation.mutateAsync({
       teamId,
       userId,
       params: { roleId },
-    })
-  }
+    });
+  };
 
   return (
     <Stack gap={8}>
@@ -84,10 +85,7 @@ export function TeamMemberRoleSelect({
           value: role.id,
           label: role.name,
         }))}
-        triggerProps={{
-          width: fullWidth ? '100%' : undefined,
-        }}
       />
     </Stack>
-  )
+  );
 }

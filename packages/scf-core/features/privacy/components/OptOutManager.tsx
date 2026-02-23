@@ -9,32 +9,30 @@
  * - GPC (Global Privacy Control) status display
  */
 
-import { useState, useEffect } from 'react'
-import { Pressable } from 'react-native'
-import { Button, Text, Row, Stack, Spinner } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { useCCPAMyOptOuts, useCCPASetOptOutMutation } from '@scf/core/utils/ccpa-sdk-hooks'
+import { useState, useEffect } from "react";
+import { Pressable } from "react-native";
+import { Button, Text, Row, Stack, Spinner } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import type { CCPAOptOutStatus } from "@scaffald/sdk";
+import {
+  useCCPAMyOptOuts,
+  useCCPASetOptOutMutation,
+} from "@scf/core/utils/ccpa-sdk-hooks";
 
 /**
- * Opt-out category type
+ * Opt-out category type (matches CCPA SDK)
  */
-export type OptOutCategory = 'sale' | 'sharing' | 'targeted_advertising' | 'sensitive_data'
-
-/**
- * Opt-out status structure
- */
-interface OptOutStatus {
-  category: OptOutCategory
-  opted_out: boolean
-  opted_out_at?: string
-  source: 'user' | 'gpc' | 'default'
-}
+export type OptOutCategory =
+  | "sale"
+  | "sharing"
+  | "targeted_advertising"
+  | "sensitive_data";
 
 /**
  * Props for OptOutManager
  */
 interface OptOutManagerProps {
-  onClose?: () => void
+  onClose?: () => void;
 }
 
 /**
@@ -43,49 +41,49 @@ interface OptOutManagerProps {
 const CATEGORY_INFO: Record<
   OptOutCategory,
   {
-    title: string
-    description: string
-    legalBasis: string
+    title: string;
+    description: string;
+    legalBasis: string;
   }
 > = {
   sale: {
-    title: 'Sale of Personal Information',
+    title: "Sale of Personal Information",
     description:
       'Opt-out of the sale of your personal information to third parties. Under CCPA, "sale" includes any exchange of personal information for valuable consideration.',
-    legalBasis: 'Cal. Civ. Code § 1798.120(a)',
+    legalBasis: "Cal. Civ. Code § 1798.120(a)",
   },
   sharing: {
-    title: 'Sharing for Cross-Context Behavioral Advertising',
+    title: "Sharing for Cross-Context Behavioral Advertising",
     description:
-      'Opt-out of sharing your personal information for cross-context behavioral advertising purposes.',
-    legalBasis: 'Cal. Civ. Code § 1798.120(a)',
+      "Opt-out of sharing your personal information for cross-context behavioral advertising purposes.",
+    legalBasis: "Cal. Civ. Code § 1798.120(a)",
   },
   targeted_advertising: {
-    title: 'Targeted Advertising',
+    title: "Targeted Advertising",
     description:
-      'Opt-out of the use of your personal information for targeted advertising based on your activities across different services.',
-    legalBasis: 'Cal. Civ. Code § 1798.120(a)',
+      "Opt-out of the use of your personal information for targeted advertising based on your activities across different services.",
+    legalBasis: "Cal. Civ. Code § 1798.120(a)",
   },
   sensitive_data: {
-    title: 'Use of Sensitive Personal Information',
+    title: "Use of Sensitive Personal Information",
     description:
-      'Limit the use of your sensitive personal information to only what is necessary for providing the services you requested.',
-    legalBasis: 'Cal. Civ. Code § 1798.121',
+      "Limit the use of your sensitive personal information to only what is necessary for providing the services you requested.",
+    legalBasis: "Cal. Civ. Code § 1798.121",
   },
-}
+};
 
 /**
  * Format date string
  */
 function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 /**
@@ -96,9 +94,9 @@ function ToggleSwitch({
   onChange,
   disabled,
 }: {
-  checked: boolean
-  onChange: (checked: boolean) => void
-  disabled?: boolean
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
 }) {
   return (
     <Pressable
@@ -110,8 +108,8 @@ function ToggleSwitch({
         backgroundColor: checked ? colors.green[500] : colors.gray[300],
         padding: 2,
         opacity: disabled ? 0.5 : 1,
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
       }}
     >
       <Stack
@@ -122,7 +120,7 @@ function ToggleSwitch({
         style={{ marginLeft: checked ? 22 : 0 }}
       />
     </Pressable>
-  )
+  );
 }
 
 /**
@@ -134,14 +132,14 @@ function OptOutRow({
   onToggle,
   isPending,
 }: {
-  category: OptOutCategory
-  status: OptOutStatus | undefined
-  onToggle: (category: OptOutCategory, optOut: boolean) => void
-  isPending: boolean
+  category: OptOutCategory;
+  status: CCPAOptOutStatus | undefined;
+  onToggle: (category: OptOutCategory, optOut: boolean) => void;
+  isPending: boolean;
 }) {
-  const info = CATEGORY_INFO[category]
-  const isOptedOut = status?.opted_out ?? false
-  const isGPCOptOut = status?.source === 'gpc'
+  const info = CATEGORY_INFO[category];
+  const isOptedOut = status?.opted_out ?? false;
+  const isGPCOptOut = status?.source === "gpc";
 
   return (
     <Stack
@@ -155,7 +153,9 @@ function OptOutRow({
       <Row justify="space-between" align="flex-start">
         <Stack flex={1} gap={4} marginRight={16}>
           <Text>{info.title}</Text>
-          <Text style={{ color: colors.text.light.secondary }}>{info.description}</Text>
+          <Text style={{ color: colors.text.light.secondary }}>
+            {info.description}
+          </Text>
         </Stack>
 
         <Stack align="center" gap={4}>
@@ -164,97 +164,111 @@ function OptOutRow({
             onChange={(checked) => onToggle(category, checked)}
             disabled={isPending || isGPCOptOut}
           />
-          <Text style={{ color: isOptedOut ? '#16a34a' : colors.text.light.tertiary }}>
-            {isOptedOut ? 'Opted Out' : 'Opted In'}
+          <Text
+            style={{
+              color: isOptedOut ? "#16a34a" : colors.text.light.tertiary,
+            }}
+          >
+            {isOptedOut ? "Opted Out" : "Opted In"}
           </Text>
         </Stack>
       </Row>
 
       {/* Status info */}
-      {status?.opted_out_at && (
+      {status?.opted_out_at != null && (
         <Row gap={8} align="center">
           <Text style={{ color: colors.text.light.secondary }}>
-            {isGPCOptOut ? 'Via GPC signal' : 'Manual opt-out'} on {formatDate(status.opted_out_at)}
+            {isGPCOptOut ? "Via GPC signal" : "Manual opt-out"} on{" "}
+            {formatDate(status.opted_out_at)}
           </Text>
         </Row>
       )}
 
       {isGPCOptOut && (
-        <Row
-          padding="xs"
-          backgroundColor={colors.blue[50]}
-          borderRadius={8}
-        >
+        <Row padding="xs" backgroundColor={colors.blue[50]} borderRadius={8}>
           <Text style={{ color: colors.blue[700] }}>
-            This opt-out was automatically applied based on your browser&apos;s Global Privacy
-            Control (GPC) signal. To change this setting, disable GPC in your browser.
+            This opt-out was automatically applied based on your browser&apos;s
+            Global Privacy Control (GPC) signal. To change this setting, disable
+            GPC in your browser.
           </Text>
         </Row>
       )}
 
       {/* Legal basis */}
-      <Text style={{ color: colors.text.light.secondary }}>Legal basis: {info.legalBasis}</Text>
+      <Text style={{ color: colors.text.light.secondary }}>
+        Legal basis: {info.legalBasis}
+      </Text>
     </Stack>
-  )
+  );
 }
 
 /**
  * Opt-Out Manager Component
  */
 export function OptOutManager({ onClose }: OptOutManagerProps) {
-  const [hasGPC, setHasGPC] = useState(false)
-  const [pendingCategory, setPendingCategory] = useState<OptOutCategory | null>(null)
+  const [hasGPC, setHasGPC] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<OptOutCategory | null>(
+    null
+  );
 
   // Detect GPC signal
   useEffect(() => {
     // Check for GPC signal in browser
     const gpcSignal =
-      typeof navigator !== 'undefined' &&
+      typeof navigator !== "undefined" &&
       // @ts-expect-error - GPC is not yet in TypeScript types
-      (navigator.globalPrivacyControl === true || navigator.doNotTrack === '1')
+      (navigator.globalPrivacyControl === true || navigator.doNotTrack === "1");
 
-    setHasGPC(gpcSignal)
-  }, [])
+    setHasGPC(gpcSignal);
+  }, []);
 
   // Fetch current opt-out status
-  const { data: optOutData, isLoading, error, refetch } = useCCPAMyOptOuts()
+  const { data: optOutData, isLoading, error, refetch } = useCCPAMyOptOuts();
 
   // Set opt-out mutation
   const setOptOut = useCCPASetOptOutMutation({
     onSuccess: () => {
-      refetch()
-      setPendingCategory(null)
+      refetch();
+      setPendingCategory(null);
     },
     onError: () => {
-      setPendingCategory(null)
+      setPendingCategory(null);
     },
-  })
+  });
 
   const handleToggle = (category: OptOutCategory, optOut: boolean) => {
-    setPendingCategory(category)
-    setOptOut.mutate({ category, optOut })
-  }
+    setPendingCategory(category);
+    setOptOut.mutate({ category, optOut });
+  };
 
   // Build status map from API response
-  const statusMap: Record<OptOutCategory, OptOutStatus | undefined> = {
-    sale: optOutData?.optOuts?.find((o: OptOutStatus) => o.category === 'sale'),
-    sharing: optOutData?.optOuts?.find((o: OptOutStatus) => o.category === 'sharing'),
-    targeted_advertising: optOutData?.optOuts?.find(
-      (o: OptOutStatus) => o.category === 'targeted_advertising'
+  const statusMap: Record<OptOutCategory, CCPAOptOutStatus | undefined> = {
+    sale: optOutData?.optOuts?.find(
+      (o: CCPAOptOutStatus) => o.category === "sale"
     ),
-    sensitive_data: optOutData?.optOuts?.find((o: OptOutStatus) => o.category === 'sensitive_data'),
-  }
+    sharing: optOutData?.optOuts?.find(
+      (o: CCPAOptOutStatus) => o.category === "sharing"
+    ),
+    targeted_advertising: optOutData?.optOuts?.find(
+      (o: CCPAOptOutStatus) => o.category === "targeted_advertising"
+    ),
+    sensitive_data: optOutData?.optOuts?.find(
+      (o: CCPAOptOutStatus) => o.category === "sensitive_data"
+    ),
+  };
 
   if (error) {
     return (
       <Stack padding="md" gap={16} align="center">
-        <Text style={{ color: '#ef4444' }}>Error loading opt-out preferences</Text>
-        <Text style={{ color: '#414e62' }}>{error.message}</Text>
+        <Text style={{ color: "#ef4444" }}>
+          Error loading opt-out preferences
+        </Text>
+        <Text style={{ color: "#414e62" }}>{error.message}</Text>
         <Button onPress={() => refetch()} variant="outline">
           Retry
         </Button>
       </Stack>
-    )
+    );
   }
 
   return (
@@ -262,9 +276,9 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       {/* Header */}
       <Stack gap={8}>
         <Text>Manage Opt-Out Preferences</Text>
-        <Text style={{ color: '#414e62' }}>
-          Control how your personal information is used and shared. Your choices here are protected
-          under the California Consumer Privacy Act (CCPA).
+        <Text style={{ color: "#414e62" }}>
+          Control how your personal information is used and shared. Your choices
+          here are protected under the California Consumer Privacy Act (CCPA).
         </Text>
       </Stack>
 
@@ -290,10 +304,13 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
             <Text style={{ color: colors.white }}>✓</Text>
           </Stack>
           <Stack flex={1}>
-            <Text style={{ color: colors.green[700] }}>Global Privacy Control Detected</Text>
             <Text style={{ color: colors.green[700] }}>
-              Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal and
-              have automatically opted you out of data sale and sharing.
+              Global Privacy Control Detected
+            </Text>
+            <Text style={{ color: colors.green[700] }}>
+              Your browser has sent a Global Privacy Control (GPC) signal. We
+              honor this signal and have automatically opted you out of data
+              sale and sharing.
             </Text>
           </Stack>
         </Row>
@@ -312,25 +329,25 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
               category="sale"
               status={statusMap.sale}
               onToggle={handleToggle}
-              isPending={pendingCategory === 'sale'}
+              isPending={pendingCategory === "sale"}
             />
             <OptOutRow
               category="sharing"
               status={statusMap.sharing}
               onToggle={handleToggle}
-              isPending={pendingCategory === 'sharing'}
+              isPending={pendingCategory === "sharing"}
             />
             <OptOutRow
               category="targeted_advertising"
               status={statusMap.targeted_advertising}
               onToggle={handleToggle}
-              isPending={pendingCategory === 'targeted_advertising'}
+              isPending={pendingCategory === "targeted_advertising"}
             />
             <OptOutRow
               category="sensitive_data"
               status={statusMap.sensitive_data}
               onToggle={handleToggle}
-              isPending={pendingCategory === 'sensitive_data'}
+              isPending={pendingCategory === "sensitive_data"}
             />
           </Stack>
 
@@ -341,16 +358,16 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
               onPress={() => {
                 // Opt out of all categories
                 const categories: OptOutCategory[] = [
-                  'sale',
-                  'sharing',
-                  'targeted_advertising',
-                  'sensitive_data',
-                ]
+                  "sale",
+                  "sharing",
+                  "targeted_advertising",
+                  "sensitive_data",
+                ];
                 categories.forEach((cat) => {
                   if (!statusMap[cat]?.opted_out) {
-                    setOptOut.mutate({ category: cat, optOut: true })
+                    setOptOut.mutate({ category: cat, optOut: true });
                   }
-                })
+                });
               }}
             >
               Opt Out of All
@@ -360,25 +377,36 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       )}
 
       {/* Non-discrimination notice */}
-      <Stack padding="sm" backgroundColor={colors.bg.light.muted} borderRadius={8} marginTop={8}>
-        <Text style={{ color: '#414e62' }}>
-          <Text>Non-Discrimination Notice:</Text> We will not discriminate against you for
-          exercising any of your privacy rights. You will receive the same service and pricing
-          regardless of your privacy choices.
+      <Stack
+        padding="sm"
+        backgroundColor={colors.bg.light.muted}
+        borderRadius={8}
+        marginTop={8}
+      >
+        <Text style={{ color: "#414e62" }}>
+          <Text>Non-Discrimination Notice:</Text> We will not discriminate
+          against you for exercising any of your privacy rights. You will
+          receive the same service and pricing regardless of your privacy
+          choices.
         </Text>
       </Stack>
 
       {/* Info about processing */}
       <Stack gap={8} marginTop={8}>
         <Text>How Opt-Outs Work</Text>
-        <Text style={{ color: '#414e62' }}>• Opt-out preferences take effect immediately</Text>
-        <Text style={{ color: '#414e62' }}>
-          • We will not sell or share your data with third parties while you are opted out
+        <Text style={{ color: "#414e62" }}>
+          • Opt-out preferences take effect immediately
         </Text>
-        <Text style={{ color: '#414e62' }}>• You can change your preferences at any time</Text>
-        <Text style={{ color: '#414e62' }}>
-          • If you use GPC, your opt-out will be automatically applied across all participating
-          sites
+        <Text style={{ color: "#414e62" }}>
+          • We will not sell or share your data with third parties while you are
+          opted out
+        </Text>
+        <Text style={{ color: "#414e62" }}>
+          • You can change your preferences at any time
+        </Text>
+        <Text style={{ color: "#414e62" }}>
+          • If you use GPC, your opt-out will be automatically applied across
+          all participating sites
         </Text>
       </Stack>
 
@@ -391,7 +419,7 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
         </Row>
       )}
     </Stack>
-  )
+  );
 }
 
-export default OptOutManager
+export default OptOutManager;

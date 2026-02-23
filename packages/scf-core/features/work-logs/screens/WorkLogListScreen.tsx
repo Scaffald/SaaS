@@ -1,10 +1,16 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { useWorkLogs } from '@scf/core/utils/work-logs-sdk-hooks'
-import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from 'lucide-react-native'
-import { useRouter } from 'expo-router'
-import { useCallback, useMemo } from 'react'
-import { RefreshControl, ScrollView } from 'react-native'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import { useWorkLogs } from "@scf/core/utils/work-logs-sdk-hooks";
+import {
+  Activity,
+  CloudOff,
+  DownloadCloud,
+  MessagesSquare,
+  Plus,
+} from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo } from "react";
+import { RefreshControl, ScrollView } from "react-native";
 import {
   Button,
   Card,
@@ -13,25 +19,27 @@ import {
   Text,
   Row,
   Stack,
-} from '@scaffald/ui'
+  useThemeContext,
+} from "@scaffald/ui";
 
-import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
-import { useWorkLogSync } from '../hooks/useWorkLogSync'
-import type { WorkLogListItem } from '@scf/schemas'
-import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
+import { useOfflineWorkLogs } from "../hooks/useOfflineWorkLogs";
+import { useWorkLogSync } from "../hooks/useWorkLogSync";
+import type { WorkLogListItem } from "@scaffald/sdk";
+import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
 
-type IconRenderer = typeof Activity
+type IconRenderer = typeof Activity;
 
 export function WorkLogListScreen() {
-  const router = useRouter()
+  const router = useRouter();
+  const { theme } = useThemeContext();
 
   const listQuery = useWorkLogs(
     {},
     {
       staleTime: 30_000,
-      refetchOnMount: 'always',
+      refetchOnMount: "always",
     }
-  )
+  );
 
   const {
     offlineWorkLogs,
@@ -39,38 +47,49 @@ export function WorkLogListScreen() {
     markWorkLogForSync,
     mutateOfflineWorkLog,
     removeOfflineWorkLog,
-  } = useOfflineWorkLogs()
+  } = useOfflineWorkLogs();
 
   const syncManager = useWorkLogSync({
     offlineWorkLogs,
     markWorkLogForSync,
     mutateOfflineWorkLog,
     removeOfflineWorkLog,
-  })
+  });
 
-  const hasOfflineQueue = offlineWorkLogs.length > 0
+  const hasOfflineQueue = offlineWorkLogs.length > 0;
 
   const handleRefresh = useCallback(() => {
-    void listQuery.refetch()
-  }, [listQuery])
+    void listQuery.refetch();
+  }, [listQuery]);
 
-  const aggregates = useMemo(() => listQuery.data?.aggregates ?? null, [listQuery.data])
-  const items: WorkLogListItem[] = listQuery.data?.workLogs ?? []
+  const aggregates = null as {
+    totalHours?: number;
+    statusSummary?: {
+      draft: { count: number; hours: number };
+      pending_verification: { count: number; hours: number };
+      verified: { count: number; hours: number };
+      disputed: { count: number; hours: number };
+    };
+  } | null;
+  const items: WorkLogListItem[] = listQuery.data?.workLogs ?? [];
 
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       refreshControl={
-        <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
+        <RefreshControl
+          refreshing={listQuery.isFetching}
+          onRefresh={handleRefresh}
+        />
       }
     >
       <Stack gap={16} style={{ padding: 16 }} flex={1}>
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Text>Work Logs</Text>
-            <Text style={{ color: '#414e62' }}>
-              Track and review your daily work history, collaborate with teammates, and manage
-              verification.
+            <Text style={{ color: "#414e62" }}>
+              Track and review your daily work history, collaborate with
+              teammates, and manage verification.
             </Text>
           </Stack>
           <Button
@@ -83,15 +102,24 @@ export function WorkLogListScreen() {
         </Row>
 
         {hasOfflineQueue && (
-          <Card style={{ backgroundColor: '#fef3c7', borderColor: '#fbbf24', borderWidth: 1 }}>
+          <Card
+            style={{
+              backgroundColor: "#fef3c7",
+              borderColor: "#fbbf24",
+              borderWidth: 1,
+            }}
+          >
             <Stack gap={12} style={{ padding: 8 }}>
               <Row gap={12} align="center">
                 <CloudOff color="#b45309" />
                 <Stack gap={4} flex={1}>
-                  <Text style={{ color: '#92400e' }}>Offline drafts ready to sync</Text>
-                  <Text style={{ color: '#92400e' }}>
-                    {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? '' : 's'} will
-                    sync once you are back online.
+                  <Text style={{ color: "#92400e" }}>
+                    Offline drafts ready to sync
+                  </Text>
+                  <Text style={{ color: "#92400e" }}>
+                    {offlineWorkLogs.length} draft
+                    {offlineWorkLogs.length === 1 ? "" : "s"} will sync once you
+                    are back online.
                   </Text>
                 </Stack>
               </Row>
@@ -102,7 +130,7 @@ export function WorkLogListScreen() {
                   disabled={syncManager.isSyncing || isOfflineLoading}
                   onPress={() => syncManager.syncNow()}
                 >
-                  {syncManager.isSyncing ? 'Syncing…' : 'Sync Now'}
+                  {syncManager.isSyncing ? "Syncing…" : "Sync Now"}
                 </Button>
               </Row>
             </Stack>
@@ -111,7 +139,7 @@ export function WorkLogListScreen() {
 
         <AnalyticsBanner
           isLoading={listQuery.isLoading}
-          totalLogs={listQuery.data?.pagination.totalItems ?? 0}
+          totalLogs={listQuery.data?.totalCount ?? 0}
           totalHours={aggregates?.totalHours ?? 0}
           statusSummary={aggregates?.statusSummary}
         />
@@ -121,10 +149,12 @@ export function WorkLogListScreen() {
         {listQuery.isLoading ? (
           <Stack flex={1} align="center" justify="center" gap={12}>
             <Spinner size="lg" />
-            <Text style={{ color: '#414e62' }}>Loading work logs…</Text>
+            <Text style={{ color: "#414e62" }}>Loading work logs…</Text>
           </Stack>
         ) : items.length === 0 ? (
-          <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
+          <EmptyState
+            onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
+          />
         ) : (
           <Stack gap={12} paddingBottom={24}>
             {items.map((item) => (
@@ -132,18 +162,24 @@ export function WorkLogListScreen() {
                 key={item.id}
                 style={{ borderWidth: 1 }}
                 onPress={() =>
-                  router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))
+                  router.push(
+                    buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                      workLogId: item.id,
+                    })
+                  )
                 }
               >
                 <Stack gap={12} style={{ padding: 8 }}>
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
-                      <Text>{item.project?.name ?? 'Unknown Project'}</Text>
-                      <Text style={{ color: '#414e62' }}>
-                        {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
+                      <Text>{"Work Log"}</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        {item.log_date
+                          ? formatDate(item.log_date)
+                          : "No date recorded"}
                       </Text>
                     </Stack>
-                    <Text style={{ color: getStatusColor(item.status) }}>
+                    <Text style={{ color: getStatusColor(item.status, theme) }}>
                       {getStatusLabel(item.status)}
                     </Text>
                   </Row>
@@ -154,18 +190,31 @@ export function WorkLogListScreen() {
                         paddingHorizontal: 8,
                         paddingVertical: 4,
                         borderRadius: 12,
-                        backgroundColor: item.visibility === 'public' ? '#dcfce7' : '#f3f4f6',
+                        backgroundColor:
+                          item.visibility === "public" ? "#dcfce7" : "#f3f4f6",
                       }}
                     >
-                      <Text style={{ color: item.visibility === 'public' ? '#16a34a' : '#414e62' }}>
-                        {item.visibility === 'public' ? 'Public' : 'Private'}
+                      <Text
+                        style={{
+                          color:
+                            item.visibility === "public"
+                              ? "#16a34a"
+                              : "#414e62",
+                        }}
+                      >
+                        {item.visibility === "public" ? "Public" : "Private"}
                       </Text>
                     </Stack>
-                    {item.showOnProfile && (
+                    {item.show_on_profile && (
                       <Stack
-                        style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, backgroundColor: '#dbeafe' }}
+                        style={{
+                          paddingHorizontal: 8,
+                          paddingVertical: 4,
+                          borderRadius: 12,
+                          backgroundColor: "#dbeafe",
+                        }}
                       >
-                        <Text style={{ color: '#1d4ed8' }}>On profile</Text>
+                        <Text style={{ color: "#1d4ed8" }}>On profile</Text>
                       </Stack>
                     )}
                   </Row>
@@ -174,7 +223,7 @@ export function WorkLogListScreen() {
                     <MetricPill
                       iconStart={Activity}
                       label="Hours"
-                      value={`${item.totalHours.toFixed(2)}h`}
+                      value={`${item.total_hours.toFixed(2)}h`}
                     />
                     <MetricPill
                       iconStart={MessagesSquare}
@@ -188,20 +237,27 @@ export function WorkLogListScreen() {
                     />
                   </Row>
 
-                  {item.descriptionPreview && (
-                    <Text style={{ color: '#414e62' }}>{item.descriptionPreview}</Text>
+                  {item.work_description && (
+                    <Text style={{ color: "#414e62" }}>
+                      {item.work_description}
+                    </Text>
                   )}
 
                   <Row justify="space-between" align="center">
-                    <Text style={{ color: '#414e62' }}>
-                      Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
+                    <Text style={{ color: "#414e62" }}>
+                      Updated{" "}
+                      {item.updated_at
+                        ? formatDate(item.updated_at)
+                        : "recently"}
                     </Text>
                     <Button
                       size="sm"
                       variant="outline"
                       onPress={() =>
                         router.push(
-                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id })
+                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                            workLogId: item.id,
+                          })
                         )
                       }
                     >
@@ -215,19 +271,19 @@ export function WorkLogListScreen() {
         )}
       </Stack>
     </ScrollView>
-  )
+  );
 }
 
 interface AnalyticsBannerProps {
-  isLoading: boolean
-  totalLogs: number
-  totalHours: number
+  isLoading: boolean;
+  totalLogs: number;
+  totalHours: number;
   statusSummary?: {
-    draft: { count: number; hours: number }
-    pending_verification: { count: number; hours: number }
-    verified: { count: number; hours: number }
-    disputed: { count: number; hours: number }
-  }
+    draft: { count: number; hours: number };
+    pending_verification: { count: number; hours: number };
+    verified: { count: number; hours: number };
+    disputed: { count: number; hours: number };
+  };
 }
 
 function AnalyticsBanner({
@@ -243,13 +299,16 @@ function AnalyticsBanner({
         {isLoading && !statusSummary ? (
           <Row gap={12} align="center">
             <Spinner size="sm" />
-            <Text style={{ color: '#414e62' }}>Calculating analytics…</Text>
+            <Text style={{ color: "#414e62" }}>Calculating analytics…</Text>
           </Row>
         ) : (
           <Stack gap={12}>
             <Row gap={16} wrap>
               <SummaryTile label="Total Logs" value={String(totalLogs)} />
-              <SummaryTile label="Total Hours" value={`${totalHours.toFixed(2)}h`} />
+              <SummaryTile
+                label="Total Hours"
+                value={`${totalHours.toFixed(2)}h`}
+              />
               <SummaryTile
                 label="Verified"
                 value={String(statusSummary?.verified.count ?? 0)}
@@ -264,7 +323,7 @@ function AnalyticsBanner({
                 )}
                 subtitle={`${(
                   (statusSummary?.pending_verification.hours ?? 0) +
-                    (statusSummary?.disputed.hours ?? 0)
+                  (statusSummary?.disputed.hours ?? 0)
                 ).toFixed(1)}h`}
                 color="#ea580c"
               />
@@ -273,14 +332,14 @@ function AnalyticsBanner({
         )}
       </Stack>
     </Card>
-  )
+  );
 }
 
 interface SummaryTileProps {
-  label: string
-  value: string
-  subtitle?: string
-  color?: string
+  label: string;
+  value: string;
+  subtitle?: string;
+  color?: string;
 }
 
 function SummaryTile({ label, value, subtitle, color }: SummaryTileProps) {
@@ -290,20 +349,24 @@ function SummaryTile({ label, value, subtitle, color }: SummaryTileProps) {
       gap={4}
       flexShrink={0}
     >
-      <Text style={{ color: '#414e62' }}>{label}</Text>
+      <Text style={{ color: "#414e62" }}>{label}</Text>
       <Text style={color ? { color } : undefined}>{value}</Text>
-      {subtitle && <Text style={{ color: '#414e62' }}>{subtitle}</Text>}
+      {subtitle && <Text style={{ color: "#414e62" }}>{subtitle}</Text>}
     </Stack>
-  )
+  );
 }
 
 interface MetricPillProps {
-  iconStart: IconRenderer
-  label: string
-  value: string
+  iconStart: IconRenderer;
+  label: string;
+  value: string;
 }
 
-function MetricPill({ iconStart: IconComponent, label, value }: MetricPillProps) {
+function MetricPill({
+  iconStart: IconComponent,
+  label,
+  value,
+}: MetricPillProps) {
   return (
     <Row
       style={{ borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8 }}
@@ -312,28 +375,38 @@ function MetricPill({ iconStart: IconComponent, label, value }: MetricPillProps)
     >
       <IconComponent size="md" color="#414e62" />
       <Text>{value}</Text>
-      <Text style={{ color: '#414e62' }}>{label}</Text>
+      <Text style={{ color: "#414e62" }}>{label}</Text>
     </Row>
-  )
+  );
 }
 
 interface EmptyStateProps {
-  onCreate: () => void
+  onCreate: () => void;
 }
 
 function EmptyState({ onCreate }: EmptyStateProps) {
   return (
     <Card style={{ borderWidth: 1 }}>
-      <Stack gap={12} align="center" style={{ paddingVertical: 32, paddingHorizontal: 16 }}>
+      <Stack
+        gap={12}
+        align="center"
+        style={{ paddingVertical: 32, paddingHorizontal: 16 }}
+      >
         <Text>No work logs yet</Text>
-        <Text style={{ color: '#414e62', textAlign: 'center', paddingHorizontal: 24 }}>
-          Create your first work log to start tracking hours, documenting tasks, and collaborating
-          with your team.
+        <Text
+          style={{
+            color: "#414e62",
+            textAlign: "center",
+            paddingHorizontal: 24,
+          }}
+        >
+          Create your first work log to start tracking hours, documenting tasks,
+          and collaborating with your team.
         </Text>
         <Button size="md" iconStart={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
       </Stack>
     </Card>
-  )
+  );
 }

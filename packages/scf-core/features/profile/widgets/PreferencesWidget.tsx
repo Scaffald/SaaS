@@ -1,8 +1,8 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { usePreferencesWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@scaffald/ui'
-import { useRouter } from 'expo-router'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { ROUTES } from "@scf/core/constants/routes";
+import { usePreferencesWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { Button, DashboardWidget, H4, LoadingState } from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import { Text, Row, Stack } from "@scaffald/ui";
 
 /**
  * PreferencesWidget
@@ -11,18 +11,22 @@ import { Text, Row, Stack } from '@scaffald/ui'
  *
  * @param showEdit - Show edit button for own profile
  */
-export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) {
-  const router = useRouter()
+export function PreferencesWidget({
+  showEdit = false,
+}: {
+  showEdit?: boolean;
+}) {
+  const router = useRouter();
   const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  })
+  });
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading preferences..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
@@ -33,7 +37,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           <Text color="$gray11">{error.message}</Text>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (!data) {
@@ -43,32 +47,34 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           <Text color="$gray11">No preferences data available</Text>
         </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   // Helper to format arrays
   const formatArray = (arr: string[] | null | undefined): string => {
-    if (!arr || arr.length === 0) return 'Not specified'
-    return arr.join(', ')
-  }
+    if (!arr || arr.length === 0) return "Not specified";
+    return arr.join(", ");
+  };
 
   // Helper to format currency
   const formatCurrency = (cents: number | null | undefined): string => {
-    if (!cents) return 'Not specified'
-    return `$${(cents / 100).toFixed(2)}/hr`
-  }
+    if (!cents) return "Not specified";
+    return `$${(cents / 100).toFixed(2)}/hr`;
+  };
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
         <Row justify="space-between" align="center">
-          <Heading variant="h4">Work Preferences</Heading>
+          <H4>Work Preferences</H4>
           {showEdit && (
             <Button
               variant="outline"
               size="sm"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)
+              }
             >
               Edit
             </Button>
@@ -77,21 +83,21 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
 
         <Stack gap={16}>
           {/* Availability */}
-          {data.availability && typeof data.availability === 'string' && (
+          {data.availability && typeof data.availability === "string" && (
             <Stack gap={8}>
               <Text>Availability</Text>
-              <Text color="$gray11" textTransform="capitalize">
-                {data.availability.replace('_', ' ')}
+              <Text color="$gray11" style={{ textTransform: "capitalize" }}>
+                {data.availability.replace("_", " ")}
               </Text>
             </Stack>
           )}
 
           {/* Career Level */}
-          {data.career_level && typeof data.career_level === 'string' && (
+          {data.career_level && typeof data.career_level === "string" && (
             <Stack gap={8}>
               <Text>Career Level</Text>
-              <Text color="$gray11" textTransform="capitalize">
-                {data.career_level.replace('_', ' ')}
+              <Text color="$gray11" style={{ textTransform: "capitalize" }}>
+                {data.career_level.replace("_", " ")}
               </Text>
             </Stack>
           )}
@@ -100,7 +106,9 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
           {data.hourly_rate_cents && (
             <Stack gap={8}>
               <Text>Hourly Rate</Text>
-              <Text color="$gray11">{formatCurrency(data.hourly_rate_cents)}</Text>
+              <Text color="$gray11">
+                {formatCurrency(data.hourly_rate_cents)}
+              </Text>
             </Stack>
           )}
 
@@ -134,10 +142,14 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               <Text>Travel</Text>
               <Row gap={8} align="center">
                 <Text color="$gray11">
-                  {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
+                  {data.open_to_travel
+                    ? "Willing to travel"
+                    : "Not willing to travel"}
                 </Text>
                 {data.travel_distance_miles && (
-                  <Text color="$gray11">• Up to {data.travel_distance_miles} miles</Text>
+                  <Text color="$gray11">
+                    • Up to {data.travel_distance_miles} miles
+                  </Text>
                 )}
               </Row>
             </Stack>
@@ -153,10 +165,14 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               <Text>Work Authorization</Text>
               <Stack gap={4}>
                 {data.us_resident !== null && (
-                  <Text color="$gray11">{data.us_resident ? '✓' : '✗'} US Resident</Text>
+                  <Text color="$gray11">
+                    {data.us_resident ? "✓" : "✗"} US Resident
+                  </Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text color="$gray11">{data.us_passport ? '✓' : '✗'} US Passport</Text>
+                  <Text color="$gray11">
+                    {data.us_passport ? "✓" : "✗"} US Passport
+                  </Text>
                 )}
                 {data.authorized_countries &&
                   Array.isArray(data.authorized_countries) &&
@@ -199,18 +215,24 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               <Text>Military Service</Text>
               <Stack gap={4}>
                 {data.veteran !== null && (
-                  <Text color="$gray11">{data.veteran ? 'Veteran' : 'Not a veteran'}</Text>
-                )}
-                {data.military_status && typeof data.military_status === 'string' && (
-                  <Text color="$gray11" textTransform="capitalize">
-                    Status: {data.military_status.replace('_', ' ')}
+                  <Text color="$gray11">
+                    {data.veteran ? "Veteran" : "Not a veteran"}
                   </Text>
                 )}
+                {data.military_status &&
+                  typeof data.military_status === "string" && (
+                    <Text
+                      color="$gray11"
+                      style={{ textTransform: "capitalize" }}
+                    >
+                      Status: {data.military_status.replace("_", " ")}
+                    </Text>
+                  )}
               </Stack>
             </Stack>
           )}
         </Stack>
       </Stack>
     </DashboardWidget>
-  )
+  );
 }
