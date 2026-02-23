@@ -96,7 +96,7 @@ app.get(
         .rpc('get_organizations_with_coords')
         .then(({ data, error }: { data: unknown; error: unknown }) => {
           if (error) { console.error('Error counting employers:', error); return 0 }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // biome-ignore lint/suspicious/noExplicitAny: Supabase RPC result
           return ((data as any) || []).filter(
             (org: { longitude: number; latitude: number }) =>
               org.longitude >= west && org.longitude <= east &&

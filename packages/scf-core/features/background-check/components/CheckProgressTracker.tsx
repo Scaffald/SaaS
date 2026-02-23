@@ -94,7 +94,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   }, [statusHistory])
 
   const statusMeta = getStatusMetadata(status)
-  const statusColors = getStatusToneColors(statusMeta.tone)
+  const _statusColors = getStatusToneColors(statusMeta.tone)
   const progress = getStatusProgress(
     status,
     normalizedComponents.map((component) => ({ status: component.status }))

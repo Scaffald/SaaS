@@ -39,6 +39,11 @@ import personalityAssessmentRouter from "./routes/personality-assessment.ts";
 import cmsRouter from "./routes/cms.ts";
 import feedbackRouter from "./routes/feedback.ts";
 import officeJobsRouter from "./routes/office-jobs.ts";
+import officeOrganizationsRouter from "./routes/office-organizations.ts";
+import officeStorageRouter from "./routes/office-storage.ts";
+import officeUsersRouter from "./routes/office-users.ts";
+import officeUniversitiesRouter from "./routes/office-universities.ts";
+import officeCertificationsRouter from "./routes/office-certifications.ts";
 import idVerificationRouter from "./routes/id-verification.ts";
 import successFeesRouter from "./routes/success-fees.ts";
 import stripeSettingsRouter from "./routes/stripe-settings.ts";
@@ -49,6 +54,11 @@ import notificationsAdminRouter from "./routes/notifications-admin.ts";
 import accountDeletionRouter from "./routes/account-deletion.ts";
 import mapRouter from "./routes/map.ts";
 import resumeRouter from "./routes/resume.ts";
+import profileWizardRouter from "./routes/profile-wizard.ts";
+import oauthManagementRouter from "./routes/oauth-management.ts";
+import organizationsExtendedRouter from "./routes/organizations-extended.ts";
+import ccpaRouter from "./routes/ccpa.ts";
+import paymentsRouter from "./routes/payments.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
@@ -80,6 +90,7 @@ app.use("*", trackApiKeyUsage); // Track API key usage
 // Routes
 app.route("/v1/jobs", jobsRouter);
 app.route("/oauth", oauthRouter); // OAuth 2.0 authorization server
+app.route("/v1/oauth", oauthManagementRouter); // OAuth app management
 app.route("/v1/applications", applicationsRouter);
 app.route("/v1/profiles", profilesRouter);
 app.route("/v1/api-keys", apiKeysRouter); // API key management
@@ -107,6 +118,9 @@ app.route("/v1/background-checks/admin", backgroundChecksAdminRouter); // Backgr
 app.route("/v1/inquiries", inquiriesRouter); // User inquiries
 app.route("/v1/work-logs", workLogsRouter); // Work logs
 app.route("/v1/organizations", organizationsRouter); // Organizations
+app.route("/v1/organizations", organizationsExtendedRouter); // Organizations extended (invitations, folders, locations, audit log, etc.)
+app.route("/v1/ccpa", ccpaRouter); // CCPA compliance
+app.route("/v1/payments", paymentsRouter); // Payment analytics, transactions, payment methods, credits
 app.route("/v1/webhooks", webhooksRouter); // Webhooks
 app.route("/reviews", reviewsRouter); // Reviews
 app.route("/v1/projects", projectsRouter); // Projects
@@ -117,6 +131,11 @@ app.route("/v1/personality-assessment", personalityAssessmentRouter);
 app.route("/v1/cms", cmsRouter); // Personality assessments
 app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role)
+app.route("/v1/office/organizations", officeOrganizationsRouter); // Office organizations management (office role)
+app.route("/v1/office/storage", officeStorageRouter); // Office storage analytics (office role)
+app.route("/v1/office/users", officeUsersRouter); // Office users management (office role)
+app.route("/v1/office/universities", officeUniversitiesRouter); // University catalog management (office role)
+app.route("/v1/office/certifications", officeCertificationsRouter); // Certification catalog management (office role)
 app.route("/v1/id-verification", idVerificationRouter); // ID verification (pricing, request, confirm, status, list, revoke)
 app.route("/v1/success-fees", successFeesRouter); // Success fees (status, create, confirm-upfront)
 app.route("/v1/stripe-settings", stripeSettingsRouter); // Stripe settings (office role)
@@ -127,6 +146,7 @@ app.route("/v1/notifications/admin", notificationsAdminRouter); // Notifications
 app.route("/v1/account-deletion", accountDeletionRouter); // Account deletion requests
 app.route("/v1/map", mapRouter); // Map location counts and nearest results
 app.route("/v1/resume", resumeRouter); // Resume upload, AI parsing, wizard state
+app.route("/v1/profile-wizard", profileWizardRouter); // Profile wizard progress
 
 // OpenAPI documentation
 app.route("/", openapi);

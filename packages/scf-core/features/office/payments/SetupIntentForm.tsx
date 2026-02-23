@@ -1,5 +1,5 @@
 import { useStripeConfig } from '@scf/core/features/payments/hooks/useStripeConfig'
-import { api } from '@scf/core/utils/api'
+import { useCreateSetupIntentMutation, useSavePaymentMethodMutation } from '@scf/core/utils/payments-sdk-hooks'
 import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
@@ -19,7 +19,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
   const toast = useToast()
   const config = useStripeConfig(true)
 
-  const createSetupIntentMutation = api.payments.createSetupIntent.useMutation()
+  const createSetupIntentMutation = useCreateSetupIntentMutation()
 
   const stripePromise = useMemo(() => {
     if (!config.publishableKey) return null
@@ -32,9 +32,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
   const handleInitialize = async () => {
     setIsInitializing(true)
     try {
-      const result = await createSetupIntentMutation.mutateAsync({
-        organizationId,
-      })
+      const result = await createSetupIntentMutation.mutateAsync(organizationId)
       setClientSecret(result.clientSecret)
     } catch (error) {
       const _message = error instanceof Error ? error.message : 'Failed to initialize payment form'
@@ -146,7 +144,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
   const { theme } = useThemeContext()
   const stripe = useStripe()
   const elements = useElements()
-  const savePaymentMethodMutation = api.payments.savePaymentMethod.useMutation()
+  const savePaymentMethodMutation = useSavePaymentMethodMutation()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)

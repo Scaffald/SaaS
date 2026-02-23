@@ -1,4 +1,3 @@
-import { api, createTrpcClient } from '@scf/core/utils/api'
 import NetInfo from '@react-native-community/netinfo'
 import {
   focusManager,
@@ -50,11 +49,7 @@ export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
     setGlobalQueryClient(client)
     return client
   })
-  const [trpcClient] = useState(() => createTrpcClient())
-
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProviderOG client={queryClient}>{children}</QueryClientProviderOG>
-    </api.Provider>
+    <QueryClientProviderOG client={queryClient}>{children}</QueryClientProviderOG>
   )
 }

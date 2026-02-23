@@ -129,7 +129,6 @@ Resume text to parse:
 ${truncationNote}${truncated}`
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: OpenAI response structure
 function extractJsonPayloadFromOpenAI(content: unknown): string | null {
   if (!content) return null
   const str = typeof content === 'string' ? content : JSON.stringify(content)

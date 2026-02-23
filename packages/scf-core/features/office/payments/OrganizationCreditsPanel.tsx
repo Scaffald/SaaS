@@ -1,4 +1,5 @@
-import { api } from '@scf/core/utils/api'
+import { useAccountCredits, useCreditLedger, useDepositCreditsMutation } from '@scf/core/utils/payments-sdk-hooks'
+import type { CreditLedgerEntry } from '@scaffald/sdk/types/payments'
 import { CreditCard, DollarSign, Plus } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
@@ -22,23 +23,11 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
   const [showDepositForm, setShowDepositForm] = useState(false)
   const [depositAmount, setDepositAmount] = useState('')
 
-  const creditsQuery = api.payments.getAccountCredits.useQuery(
-    { organizationId },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 30_000,
-    }
-  )
+  const creditsQuery = useAccountCredits(organizationId)
 
-  const ledgerQuery = api.payments.getCreditLedger.useQuery(
-    { organizationId, limit: 10 },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 30_000,
-    }
-  )
+  const ledgerQuery = useCreditLedger({ organizationId, limit: 10 })
 
-  const depositMutation = api.payments.depositCredits.useMutation({
+  const depositMutation = useDepositCreditsMutation({
     onSuccess: () => {
       toast.show({
         title: 'Credits deposited',
@@ -190,15 +179,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                 {ledgerQuery.data.items
                   .slice(0, 5)
                   .map(
-                    (entry: {
-                      id: string
-                      description?: string | null
-                      transactionType: string
-                      createdAt: string
-                      amountCents: number
-                      direction: 'credit' | 'debit'
-                      currency?: string
-                    }) => (
+                    (entry: CreditLedgerEntry) => (
                       <Row
                         key={entry.id}
                         justify="space-between"

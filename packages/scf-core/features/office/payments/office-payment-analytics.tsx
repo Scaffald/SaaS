@@ -1,17 +1,12 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { usePaymentAnalytics } from '@scf/core/utils/payments-sdk-hooks'
+import type { PaymentAnalytics, FailedTransactionRow } from '@scaffald/sdk/types/payments'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
 import { Button, Card, Spinner, Table, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-
-type PaymentAnalytics = inferRouterOutputs<AppRouter>['payments']['adminGetAnalytics']
-
-type FailedTransactionRow = PaymentAnalytics['failedQueue'][number]
 
 const columnHelper = createColumnHelper<FailedTransactionRow>()
 
@@ -32,9 +27,7 @@ const formatTransactionType = (type: string): string => {
 
 export function OfficePaymentAnalytics() {
   const { theme } = useThemeContext()
-  const analyticsQuery = api.payments.adminGetAnalytics.useQuery(undefined, {
-    staleTime: 60_000,
-  })
+  const analyticsQuery = usePaymentAnalytics()
 
   const analytics = analyticsQuery.data as PaymentAnalytics | undefined
 

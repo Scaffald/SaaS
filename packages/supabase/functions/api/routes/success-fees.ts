@@ -45,7 +45,7 @@ type SuccessFeeRecord = {
   created_at: string
 }
 
-// deno-lint-ignore no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: Supabase client/result typed as any
 async function loadStripeClient(supabaseAdmin: any): Promise<Stripe> {
   const { data: settings, error } = await supabaseAdmin
     .schema('core')
@@ -74,7 +74,7 @@ async function loadStripeClient(supabaseAdmin: any): Promise<Stripe> {
   })
 }
 
-// deno-lint-ignore no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: Supabase client/result typed as any
 async function ensureOrganizationAccess(supabaseAdmin: any, userId: string, organizationId: string): Promise<void> {
   const { data: roleData } = await supabaseAdmin
     .schema('core')
@@ -82,10 +82,9 @@ async function ensureOrganizationAccess(supabaseAdmin: any, userId: string, orga
     .select('role:roles(name, scope)')
     .eq('user_id', userId)
 
-  // deno-lint-ignore no-explicit-any
   const hasPlatformRole = Boolean(
     roleData?.some(
-      // deno-lint-ignore no-explicit-any
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase query result row
       (a: any) => a.role?.scope === 'platform' && ['office', 'super_admin'].includes(a.role?.name ?? ''),
     ),
   )

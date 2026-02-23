@@ -1,18 +1,16 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { usePaymentTransactions, useExportTransactions } from '@scf/core/utils/payments-sdk-hooks'
+import type { PaymentTransaction } from '@scaffald/sdk/types/payments'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { ResponsiveSelect, Table, useThemeContext } from '@scaffald/ui'
 import { Download, FileText, RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { TransactionReceiptModal } from './TransactionReceiptModal'
 import { colors } from '@scaffald/ui/tokens'
 
-type TransactionListOutput = inferRouterOutputs<AppRouter>['payments']['adminListTransactions']
-type Transaction = TransactionListOutput['items'][number]
+type Transaction = PaymentTransaction
 
 const columnHelper = createColumnHelper<Transaction>()
 
@@ -58,56 +56,18 @@ export function OfficeTransactionHistory() {
   const [transactionTypeFilter, setTransactionTypeFilter] = useState<string | undefined>()
   const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null)
 
-  const transactionsQuery = api.payments.adminListTransactions.useQuery(
-    {
-      organizationId: selectedOrganizationId,
-      status: statusFilter as
-        | 'pending'
-        | 'succeeded'
-        | 'failed'
-        | 'refunded'
-        | 'cancelled'
-        | undefined,
-      transactionType: transactionTypeFilter as
-        | 'success_fee_upfront'
-        | 'success_fee_final'
-        | 'background_check'
-        | 'background_check_shared'
-        | 'id_verification'
-        | 'credit_deposit'
-        | 'credit_refund'
-        | undefined,
-    },
-    {
-      staleTime: 30_000,
-    }
-  )
+  const transactionsQuery = usePaymentTransactions({
+    organizationId: selectedOrganizationId,
+    status: statusFilter,
+    transactionType: transactionTypeFilter,
+  })
 
-  const exportCsvMutation = api.payments.exportTransactions.useQuery(
-    {
-      format: 'csv',
-      organizationId: selectedOrganizationId,
-      status: statusFilter as
-        | 'pending'
-        | 'succeeded'
-        | 'failed'
-        | 'refunded'
-        | 'cancelled'
-        | undefined,
-      transactionType: transactionTypeFilter as
-        | 'success_fee_upfront'
-        | 'success_fee_final'
-        | 'background_check'
-        | 'background_check_shared'
-        | 'id_verification'
-        | 'credit_deposit'
-        | 'credit_refund'
-        | undefined,
-    },
-    {
-      enabled: false,
-    }
-  )
+  const exportCsvMutation = useExportTransactions({
+    format: 'csv',
+    organizationId: selectedOrganizationId,
+    status: statusFilter,
+    transactionType: transactionTypeFilter,
+  })
 
   const handleExportCsv = async () => {
     const result = await exportCsvMutation.refetch()

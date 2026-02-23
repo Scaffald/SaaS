@@ -10,7 +10,7 @@
 
 import { useState } from 'react'
 import { Button, Text, Row, Stack, Spinner } from '@scaffald/ui'
-import { api } from '@scf/core/utils/api'
+import { useCCPASubmitRequestMutation } from '@scf/core/utils/ccpa-sdk-hooks'
 
 /**
  * Request type options
@@ -185,7 +185,7 @@ export function DataRequestForm({
   const [step, setStep] = useState<'type' | 'categories' | 'confirm' | 'submitted'>('type')
 
   // Submit request mutation
-  const submitRequest = api.ccpa.submitRequest.useMutation({
+  const submitRequest = useCCPASubmitRequestMutation({
     onSuccess: (data) => {
       setStep('submitted')
       onSuccess?.(data.id)

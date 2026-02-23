@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button, Text, Row, Stack, Spinner } from '@scaffald/ui'
-import { api } from '@scf/core/utils/api'
+import { useCCPAMyOptOuts, useCCPASetOptOutMutation } from '@scf/core/utils/ccpa-sdk-hooks'
 
 /**
  * Opt-out category type
@@ -209,10 +209,10 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
   }, [])
 
   // Fetch current opt-out status
-  const { data: optOutData, isLoading, error, refetch } = api.ccpa.getMyOptOuts.useQuery()
+  const { data: optOutData, isLoading, error, refetch } = useCCPAMyOptOuts()
 
   // Set opt-out mutation
-  const setOptOut = api.ccpa.setOptOut.useMutation({
+  const setOptOut = useCCPASetOptOutMutation({
     onSuccess: () => {
       refetch()
       setPendingCategory(null)

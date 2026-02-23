@@ -19,7 +19,11 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { api } from '@scf/core/utils/api'
+import {
+  useCCPAComplianceMetrics,
+  useCCPAAdminRequests,
+  useCCPAProcessRequestMutation,
+} from '@scf/core/utils/ccpa-sdk-hooks'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
@@ -299,7 +303,7 @@ function FilterBar({
             <Button
               key={status}
               size="sm"
-              variant={statusFilter === status ? undefined : 'outlined'}
+              variant={statusFilter === status ? undefined : 'outline'}
               onPress={() => onStatusChange(status)}
             >
               {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -315,7 +319,7 @@ function FilterBar({
             <Button
               key={type}
               size="sm"
-              variant={typeFilter === type ? undefined : 'outlined'}
+              variant={typeFilter === type ? undefined : 'outline'}
               onPress={() => onTypeChange(type)}
             >
               {type === 'all'
@@ -333,7 +337,7 @@ function FilterBar({
             <Button
               key={priority}
               size="sm"
-              variant={priorityFilter === priority ? undefined : 'outlined'}
+              variant={priorityFilter === priority ? undefined : 'outline'}
               onPress={() => onPriorityChange(priority)}
             >
               {priority === 'all' ? 'All' : priority.charAt(0).toUpperCase() + priority.slice(1)}
@@ -360,7 +364,7 @@ export function CCPAAdminDashboard() {
     data: metrics,
     isLoading: isLoadingMetrics,
     error: metricsError,
-  } = api.ccpa.getComplianceMetrics.useQuery()
+  } = useCCPAComplianceMetrics()
 
   // Fetch all CCPA requests
   const {
@@ -368,7 +372,7 @@ export function CCPAAdminDashboard() {
     isLoading: isLoadingRequests,
     error: requestsError,
     refetch: refetchRequests,
-  } = api.ccpa.getAdminRequests.useQuery({
+  } = useCCPAAdminRequests({
     status: statusFilter === 'all' ? undefined : statusFilter,
     type: typeFilter === 'all' ? undefined : typeFilter,
     priority: priorityFilter === 'all' ? undefined : priorityFilter,
@@ -376,7 +380,7 @@ export function CCPAAdminDashboard() {
   })
 
   // Process request mutation
-  const processRequest = api.ccpa.processRequest.useMutation({
+  const processRequest = useCCPAProcessRequestMutation({
     onSuccess: () => {
       refetchRequests()
     },
@@ -409,7 +413,7 @@ export function CCPAAdminDashboard() {
   }
 
   const handleProcessRequest = (id: string) => {
-    processRequest.mutate({ requestId: id })
+    processRequest.mutate(id)
   }
 
   return (

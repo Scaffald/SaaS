@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useTransactionReceipt } from '@scf/core/utils/payments-sdk-hooks'
 import { Dialog, useThemeContext } from '@scaffald/ui'
 import { Download, X } from 'lucide-react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -16,12 +16,9 @@ export function TransactionReceiptModal({
   onOpenChange,
 }: TransactionReceiptModalProps) {
   const { theme } = useThemeContext()
-  const receiptQuery = api.payments.generateReceipt.useQuery(
-    { transactionId },
-    {
-      enabled: open && Boolean(transactionId),
-    }
-  )
+  const receiptQuery = useTransactionReceipt(transactionId, {
+    enabled: open && Boolean(transactionId),
+  })
 
   const handleDownloadReceipt = () => {
     // TODO: Generate PDF receipt

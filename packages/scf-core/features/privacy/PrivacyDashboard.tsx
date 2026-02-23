@@ -12,7 +12,12 @@
 
 import { useState } from 'react'
 import { Button, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { api } from '@scf/core/utils/api'
+import {
+  useCCPADataSummary,
+  useCCPAMyRequests,
+  useCCPAConnectedApps,
+  useCCPAMyOptOuts,
+} from '@scf/core/utils/ccpa-sdk-hooks'
 import { DataCategorySummary } from './components/DataCategorySummary'
 import { PrivacyRightsList } from './components/PrivacyRightsList'
 import { RequestHistoryTable } from './components/RequestHistoryTable'
@@ -30,26 +35,24 @@ export function PrivacyDashboard() {
     data: dataSummary,
     isLoading: isLoadingData,
     error: dataError,
-  } = api.ccpa.getDataSummary.useQuery()
+  } = useCCPADataSummary()
 
   // Fetch request history
   const {
     data: requestHistory,
     isLoading: isLoadingHistory,
     error: historyError,
-  } = api.ccpa.getMyRequests.useQuery({
-    limit: 10,
-  })
+  } = useCCPAMyRequests({ limit: 10 })
 
   // Fetch connected OAuth apps
   const {
     data: connectedApps,
     isLoading: isLoadingApps,
     error: appsError,
-  } = api.ccpa.getConnectedApps.useQuery()
+  } = useCCPAConnectedApps()
 
   // Fetch opt-out status
-  const { data: optOutStatus, isLoading: isLoadingOptOut } = api.ccpa.getMyOptOuts.useQuery()
+  const { data: optOutStatus, isLoading: isLoadingOptOut } = useCCPAMyOptOuts()
 
   const isLoading = isLoadingData || isLoadingHistory || isLoadingApps || isLoadingOptOut
   const hasError = dataError || historyError || appsError

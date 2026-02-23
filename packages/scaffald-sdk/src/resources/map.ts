@@ -33,6 +33,7 @@ export interface FindNearestResultsParams {
   radius?: number
 }
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: resource class named Map by design
 export class Map extends Resource {
   async getLocationCounts(params: GetLocationCountsParams): Promise<LocationCounts> {
     const query = new URLSearchParams({

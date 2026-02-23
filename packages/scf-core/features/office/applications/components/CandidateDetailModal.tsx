@@ -19,7 +19,7 @@ import { MessagesTab } from './MessagesTab'
 import { NotesTab } from './NotesTab'
 import { colors } from '@scaffald/ui/tokens'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: legacy inquiry record mapping
 const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInput => ({
   applicationId: inquiry.application_id,
   employmentType: (inquiry.employment_type as InquiryCreateInput['employmentType']) ?? undefined,

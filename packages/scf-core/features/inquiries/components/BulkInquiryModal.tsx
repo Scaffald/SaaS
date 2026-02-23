@@ -2,20 +2,24 @@ import { useCreateBulkInquiriesMutation } from '@scf/core/utils/inquiries-sdk-ho
 import { type BulkInquiryInput, bulkInquirySchema } from '@scf/schemas'
 import {
   Button,
-  CustomCheckbox,
+  Checkbox,
   Input,
   ScrollView,
   Separator,
   Sheet,
+  SheetHeader,
+  SheetContent,
+  SheetFooter,
   Text,
   Row,
   Stack,
+  ProgressBarBase,
+  TextArea,
 } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { Progress, TextArea } from '@scaffald/ui'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -147,72 +151,73 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
   if (showResults && bulkResults) {
     return (
-      <Sheet modal open={open} onOpenChange={handleClose}>
-        <Sheet.Frame>
-          <ScrollView>
-            <Stack gap={16} padding="md">
-              <Text>Bulk Inquiry Results</Text>
-
-              {/* Summary */}
-              <Stack gap={12} padding="md" backgroundColor="$color2" borderRadius={16}>
-                <Row gap={8} align="center">
-                  <Text color="$green10">✓ {bulkResults.successful} Successful</Text>
-                </Row>
-                {bulkResults.failed > 0 && (
-                  <Row gap={8} align="center">
-                    <Text color="$red10">✗ {bulkResults.failed} Failed</Text>
-                  </Row>
-                )}
-                <Text color="$gray11">Total: {bulkResults.total} candidates</Text>
-              </Stack>
-
-              {/* Failed details */}
-              {bulkResults.failed > 0 && (
-                <Stack gap={8}>
-                  <Text color="$red10">Failed Inquiries</Text>
-                  {bulkResults.results
-                    .filter((r) => !r.success)
-                    .map((result) => (
-                      <Stack
-                        key={result.applicationId}
-                        padding="sm"
-                        backgroundColor="$red2"
-                        borderRadius={12}
-                        gap={4}
-                      >
-                        <Text>Application: {result.applicationId}</Text>
-                        <Text color="$red11">{result.error || 'Unknown error'}</Text>
-                      </Stack>
-                    ))}
-                </Stack>
-              )}
-
-              {/* Actions */}
-              <Row gap={12} justify="flex-end" paddingTop={8}>
-                <Button variant="outline" onPress={handleClose}>
-                  Close
-                </Button>
+      <Sheet visible={open} onClose={handleClose} height="three-quarters">
+        <SheetHeader
+          title="Bulk Inquiry Results"
+          onClose={handleClose}
+        />
+        <SheetContent scrollable>
+          <Stack gap={16} padding="md">
+            {/* Summary */}
+            <Stack gap={12} padding="md" backgroundColor="$color2" borderRadius={16}>
+              <Row gap={8} align="center">
+                <Text color="$green10">✓ {bulkResults.successful} Successful</Text>
               </Row>
+              {bulkResults.failed > 0 && (
+                <Row gap={8} align="center">
+                  <Text color="$red10">✗ {bulkResults.failed} Failed</Text>
+                </Row>
+              )}
+              <Text color="$gray11">Total: {bulkResults.total} candidates</Text>
             </Stack>
-          </ScrollView>
-        </Sheet.Frame>
+
+            {/* Failed details */}
+            {bulkResults.failed > 0 && (
+              <Stack gap={8}>
+                <Text color="$red10">Failed Inquiries</Text>
+                {bulkResults.results
+                  .filter((r) => !r.success)
+                  .map((result) => (
+                    <Stack
+                      key={result.applicationId}
+                      padding="sm"
+                      backgroundColor="$red2"
+                      borderRadius={12}
+                      gap={4}
+                    >
+                      <Text>Application: {result.applicationId}</Text>
+                      <Text color="$red11">{result.error || 'Unknown error'}</Text>
+                    </Stack>
+                  ))}
+              </Stack>
+            )}
+          </Stack>
+        </SheetContent>
+        <SheetFooter>
+          <Button variant="outline" onPress={handleClose}>
+            Close
+          </Button>
+        </SheetFooter>
       </Sheet>
     )
   }
 
   return (
-    <Sheet modal open={open} onOpenChange={handleClose}>
-      <Sheet.Frame>
+    <Sheet visible={open} onClose={handleClose} height="full" maxHeight={0.9}>
+      <SheetHeader
+        title={`Send Inquiry to ${applicationIds.length} Candidates`}
+        onClose={handleClose}
+      />
+      <SheetContent scrollable={false}>
         <FormProvider {...form}>
-          <Stack padding="md" flex={1}>
-            <Row gap={16} flex={1}>
+          <Stack padding="md" style={{ flex: 1 }}>
+            <Row gap={16} style={{ flex: 1 }}>
               {/* Main Form */}
-              <Stack flex={1} gap={16}>
+              <Stack style={{ flex: 1 }} gap={16}>
                 <ScrollView>
                   <Stack gap={24} padding="md">
                     {/* Header */}
                     <Stack gap={8}>
-                      <Text>Send Inquiry to {applicationIds.length} Candidates</Text>
                       <Text color="$gray11">
                         The same inquiry will be sent to all selected candidates
                       </Text>
@@ -222,7 +227,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     {isSubmitting && (
                       <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
                         <Text>Sending inquiries...</Text>
-                        <Progress value={75} />
+                        <ProgressBarBase value={75} />
                         <Text color="$gray11">
                           Please wait while we send inquiries to all candidates
                         </Text>
@@ -248,9 +253,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                                 return (
                                   <Button
                                     key={option.value}
-                                    flex={1}
-                                    theme={isSelected ? 'blue' : 'gray'}
-                                    variant={isSelected ? undefined : 'outlined'}
+                                    style={{ flex: 1 }}
+                                    color={isSelected ? 'primary' : undefined}
+                                    variant={isSelected ? undefined : 'outline'}
                                     onPress={() => field.onChange(option.value)}
                                     size="md"
                                   >
@@ -266,9 +271,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                             control={control}
                             name="employmentTypeNegotiable"
                             render={({ field }) => (
-                              <CustomCheckbox
+                              <Checkbox
                                 checked={!field.value}
-                                onChange={(checked) => field.onChange(!checked)}
+                                onChange={(checked: boolean) => field.onChange(!checked)}
                                 size="md"
                               />
                             )}
@@ -290,9 +295,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                                 return (
                                   <Button
                                     key={option.value}
-                                    flex={1}
-                                    theme={isSelected ? 'blue' : 'gray'}
-                                    variant={isSelected ? undefined : 'outlined'}
+                                    style={{ flex: 1 }}
+                                    color={isSelected ? 'primary' : undefined}
+                                    variant={isSelected ? undefined : 'outline'}
                                     onPress={() => field.onChange(option.value)}
                                     size="md"
                                   >
@@ -321,18 +326,18 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                           render={({ field }) => (
                             <Row gap={8}>
                               <Button
-                                flex={1}
-                                theme={field.value === 'hourly' ? 'blue' : 'gray'}
-                                variant={field.value === 'hourly' ? undefined : 'outlined'}
+                                style={{ flex: 1 }}
+                                color={field.value === 'hourly' ? 'primary' : undefined}
+                                variant={field.value === 'hourly' ? undefined : 'outline'}
                                 onPress={() => field.onChange('hourly')}
                                 size="md"
                               >
                                 Hourly
                               </Button>
                               <Button
-                                flex={1}
-                                theme={field.value === 'salary' ? 'blue' : 'gray'}
-                                variant={field.value === 'salary' ? undefined : 'outlined'}
+                                style={{ flex: 1 }}
+                                color={field.value === 'salary' ? 'primary' : undefined}
+                                variant={field.value === 'salary' ? undefined : 'outline'}
                                 onPress={() => field.onChange('salary')}
                                 size="md"
                               >
@@ -401,49 +406,36 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                             placeholder="Add any additional information or requirements..."
                             value={field.value || ''}
                             onChangeText={field.onChange}
-                            height={120}
+                            style={{ minHeight: 120 }}
                           />
                         )}
                       />
                     </Stack>
 
-                    {/* Form Actions */}
-                    <Row
-                      gap={12}
-                      padding="md"
-                      backgroundColor="$background"
-                      borderTopWidth={1}
-                      borderTopColor="$borderColor"
-                      justify="flex-end"
-                    >
-                      <Button variant="outline" onPress={handleClose} disabled={isSubmitting}>
-                        Cancel
-                      </Button>
-                      <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
-                        {isSubmitting
-                          ? 'Sending...'
-                          : `Send to ${applicationIds.length} Candidates`}
-                      </Button>
-                    </Row>
                   </Stack>
                 </ScrollView>
               </Stack>
 
               {/* Help Sidebar */}
               <Stack
-                width={300}
-                padding="md"
-                backgroundColor="$color2"
-                borderLeftWidth={1}
-                borderLeftColor="$borderColor"
+                style={{ width: 300, padding: 16, backgroundColor: '$color2', borderLeftWidth: 1, borderLeftColor: '$borderColor' }}
               >
                 <InquiryHelpSidebar />
               </Stack>
             </Row>
           </Stack>
         </FormProvider>
-      </Sheet.Frame>
-      <Sheet.Overlay />
+      </SheetContent>
+      <SheetFooter align="space-between">
+        <Button variant="outline" onPress={handleClose} disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
+          {isSubmitting
+            ? 'Sending...'
+            : `Send to ${applicationIds.length} Candidates`}
+        </Button>
+      </SheetFooter>
     </Sheet>
   )
 }

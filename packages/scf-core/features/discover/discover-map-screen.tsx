@@ -15,7 +15,6 @@ import {
   Map as MapIcon,
   RotateCcw,
   SlidersHorizontal,
-  X,
 } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform, View } from 'react-native'

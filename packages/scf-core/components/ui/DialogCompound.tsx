@@ -40,7 +40,7 @@ function DialogOverlay(_props: Record<string, unknown>) {
 function DialogContent({
   children,
   style,
-  ...rest
+  ..._rest
 }: { children?: ReactNode; style?: object; [key: string]: unknown }) {
   return <View style={style as object}>{children}</View>
 }

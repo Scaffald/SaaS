@@ -29,6 +29,7 @@ export interface UpdateWebhookSecretParams {
   secret: string
 }
 
+// biome-ignore lint/suspicious/noUnsafeDeclarationMerging: return type matches class name by design
 export class StripeSettings extends Resource {
   async getSettings(): Promise<StripeSettings> {
     return this.get<StripeSettings>('/v1/stripe-settings')

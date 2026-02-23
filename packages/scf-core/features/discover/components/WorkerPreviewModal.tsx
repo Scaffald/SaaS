@@ -53,6 +53,7 @@ interface WorkerPreviewModalProps {
  * Enriched skill from API response
  * Based on EnrichedUserSkill from skill-enrichment
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type EnrichedSkill = {
   id: string
   name: string
@@ -65,6 +66,7 @@ type EnrichedSkill = {
 /**
  * Certification from API response
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type Certification = {
   id: string
   name: string
@@ -76,6 +78,7 @@ type Certification = {
 /**
  * Experience entry from API response
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type ExperienceEntry = {
   id: string
   job_title: string
@@ -89,6 +92,7 @@ type ExperienceEntry = {
 /**
  * Education entry from API response
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type EducationEntry = {
   id: string
   degree_type?: string | null

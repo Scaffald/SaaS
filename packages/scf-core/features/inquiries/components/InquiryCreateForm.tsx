@@ -8,12 +8,15 @@ import {
 import type { InquiryCreateInput } from '@scf/schemas'
 import {
   Button,
-  CustomCheckbox,
+  Checkbox,
   Input,
   ResponsiveSelect,
   ScrollView,
   Separator,
   Sheet,
+  SheetHeader,
+  SheetContent,
+  SheetFooter,
   Text,
   Row,
   Stack,
@@ -95,7 +98,7 @@ const TIMEZONE_OPTIONS = [
 
 const getDateInputProps = () => {
   if (Platform.OS === 'web') {
-    return { type: 'date' as const }
+    return { placeholder: 'YYYY-MM-DD' }
   }
   return {
     inputMode: 'numeric' as const,
@@ -105,7 +108,7 @@ const getDateInputProps = () => {
 
 const getTimeInputProps = () => {
   if (Platform.OS === 'web') {
-    return { type: 'time' as const, step: 300 }
+    return { placeholder: 'HH:MM' }
   }
   return {
     inputMode: 'numeric' as const,
@@ -204,10 +207,11 @@ export function InquiryCreateForm({
   )
   const smartDefaultsFieldCount = smartDefaultFields.length
   const smartDefaultsSourceDescription = useMemo(() => {
-    if (!smartDefaultsData?.job) {
+    if (!smartDefaultsData?.job || typeof smartDefaultsData.job !== 'object') {
       return 'job posting'
     }
-    return smartDefaultsData.job.title ?? 'job posting'
+    const job = smartDefaultsData.job as { title?: string }
+    return job.title ?? 'job posting'
   }, [smartDefaultsData])
   const autoFilledFields = useMemo(() => {
     if (!smartDefaultsApplied) {
@@ -309,7 +313,7 @@ export function InquiryCreateForm({
     async (templateId: string) => {
       try {
         setDeletingTemplateId(templateId)
-        await deleteTemplateMutation.mutateAsync({ templateId })
+        await deleteTemplateMutation.mutateAsync(templateId)
         toast.show({
           title: 'Template deleted',
           message: 'Removed from your organization templates.',
@@ -437,9 +441,9 @@ export function InquiryCreateForm({
   return (
     <>
       <FormProvider {...form}>
-        <Row gap={16} flex={1}>
+        <Row gap={16} style={{ flex: 1 }}>
           {/* Main Form */}
-          <Stack flex={1} gap={16}>
+          <Stack style={{ flex: 1 }} gap={16}>
             <ScrollView>
               <Stack gap={24} padding="md">
                 {/* Templates Section */}
@@ -476,7 +480,7 @@ export function InquiryCreateForm({
                   </Row>
 
                   <Row gap={8}>
-                    <Stack flex={1}>
+                    <Stack style={{ flex: 1 }}>
                       <ResponsiveSelect
                         value={selectedTemplateId || ''}
                         onValueChange={setSelectedTemplateId}
@@ -519,7 +523,7 @@ export function InquiryCreateForm({
                     borderRadius={16}
                   >
                     <Row justify="space-between" align="center" gap={12}>
-                      <Stack gap={4} flex={1}>
+                      <Stack gap={4} style={{ flex: 1 }}>
                         <Text>Smart defaults</Text>
                         {isSmartDefaultsLoading ? (
                           <Text color="$gray11">Loading job-based recommendations…</Text>
@@ -586,9 +590,9 @@ export function InquiryCreateForm({
                             return (
                               <Button
                                 key={option.value}
-                                flex={1}
-                                theme={isSelected ? 'blue' : 'gray'}
-                                variant={isSelected ? undefined : 'outlined'}
+                                style={{ flex: 1 }}
+                                color={isSelected ? 'primary' : undefined}
+                                variant={isSelected ? undefined : 'outline'}
                                 onPress={() => field.onChange(option.value)}
                                 size="md"
                               >
@@ -604,9 +608,9 @@ export function InquiryCreateForm({
                         control={control}
                         name="employmentTypeNegotiable"
                         render={({ field }) => (
-                          <CustomCheckbox
+                          <Checkbox
                             checked={!field.value}
-                            onChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked: boolean) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
@@ -628,9 +632,9 @@ export function InquiryCreateForm({
                             return (
                               <Button
                                 key={option.value}
-                                flex={1}
-                                theme={isSelected ? 'blue' : 'gray'}
-                                variant={isSelected ? undefined : 'outlined'}
+                                style={{ flex: 1 }}
+                                color={isSelected ? 'primary' : undefined}
+                                variant={isSelected ? undefined : 'outline'}
                                 onPress={() => field.onChange(option.value)}
                                 size="md"
                               >
@@ -646,9 +650,9 @@ export function InquiryCreateForm({
                         control={control}
                         name="workScheduleNegotiable"
                         render={({ field }) => (
-                          <CustomCheckbox
+                          <Checkbox
                             checked={!field.value}
-                            onChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked: boolean) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
@@ -679,7 +683,7 @@ export function InquiryCreateForm({
                       'workingHoursTimezone',
                     ])}
                     <Row gap={8}>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Controller
                           control={control}
                           name="workingHoursTimezone"
@@ -696,7 +700,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Controller
                           control={control}
                           name="workingHoursStart"
@@ -712,7 +716,7 @@ export function InquiryCreateForm({
                           <Text color="$red10">{errors.workingHoursStart.message}</Text>
                         )}
                       </Stack>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Controller
                           control={control}
                           name="workingHoursEnd"
@@ -734,9 +738,9 @@ export function InquiryCreateForm({
                         control={control}
                         name="workingHoursNegotiable"
                         render={({ field }) => (
-                          <CustomCheckbox
+                          <Checkbox
                             checked={!field.value}
-                            onChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked: boolean) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
@@ -758,8 +762,8 @@ export function InquiryCreateForm({
                             return (
                               <Button
                                 key={day.value}
-                                theme={isSelected ? 'blue' : 'gray'}
-                                variant={isSelected ? undefined : 'outlined'}
+                                color={isSelected ? 'primary' : undefined}
+                                variant={isSelected ? undefined : 'outline'}
                                 onPress={() => {
                                   const current = field.value || []
                                   if (isSelected) {
@@ -769,8 +773,7 @@ export function InquiryCreateForm({
                                   }
                                 }}
                                 size="sm"
-                                paddingHorizontal={12}
-                                borderRadius="$10"
+                                style={{ paddingHorizontal: 12, borderRadius: 10 }}
                               >
                                 {day.label}
                               </Button>
@@ -784,9 +787,9 @@ export function InquiryCreateForm({
                         control={control}
                         name="workdaysNegotiable"
                         render={({ field }) => (
-                          <CustomCheckbox
+                          <Checkbox
                             checked={!field.value}
-                            onChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked: boolean) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
@@ -799,7 +802,7 @@ export function InquiryCreateForm({
                   <Stack gap={8}>
                     {renderSmartLabel('Date of employment', 'employmentStartDate')}
                     <Row gap={8}>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Controller
                           control={control}
                           name="employmentStartDate"
@@ -819,7 +822,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Controller
                           control={control}
                           name="employmentEndDate"
@@ -844,9 +847,9 @@ export function InquiryCreateForm({
                         control={control}
                         name="employmentDatesNegotiable"
                         render={({ field }) => (
-                          <CustomCheckbox
+                          <Checkbox
                             checked={!field.value}
-                            onChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked: boolean) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
@@ -885,7 +888,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
@@ -893,7 +896,7 @@ export function InquiryCreateForm({
                             name="rateMinCents"
                             render={({ field }) => (
                               <Input
-                                flex={1}
+                                style={{ flex: 1 }}
                                 placeholder="30"
                                 value={formatCentsToDollars(field.value)}
                                 onChangeText={(text) => {
@@ -909,7 +912,7 @@ export function InquiryCreateForm({
                           <Text color="$red10">{errors.rateMinCents.message}</Text>
                         )}
                       </Stack>
-                      <Stack gap={8} flex={1}>
+                      <Stack gap={8} style={{ flex: 1 }}>
                         <Text color="$gray11">to</Text>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
@@ -918,7 +921,7 @@ export function InquiryCreateForm({
                             name="rateMaxCents"
                             render={({ field }) => (
                               <Input
-                                flex={1}
+                                style={{ flex: 1 }}
                                 placeholder="40 (optional)"
                                 value={formatCentsToDollars(field.value)}
                                 onChangeText={(text) => {
@@ -941,9 +944,9 @@ export function InquiryCreateForm({
                         control={control}
                         name="rateNegotiable"
                         render={({ field }) => (
-                          <CustomCheckbox
+                          <Checkbox
                             checked={!field.value}
-                            onChange={(checked) => field.onChange(!checked)}
+                            onChange={(checked: boolean) => field.onChange(!checked)}
                             size="md"
                           />
                         )}
@@ -966,7 +969,7 @@ export function InquiryCreateForm({
                     <Row justify="space-between" align="center">
                       <Row align="center" gap={8}>
                         <Text>Endurance</Text>
-                        <Button size="sm" chromeless iconStart={Info} aria-label="Endurance info" />
+                        <Button size="sm" variant="text" iconStart={Info} aria-label="Endurance info" />
                       </Row>
                       <Controller
                         control={control}
@@ -1012,7 +1015,7 @@ export function InquiryCreateForm({
                             name="travelDistanceMiles"
                             render={({ field }) => (
                               <Input
-                                flex={1}
+                                style={{ flex: 1 }}
                                 placeholder="50"
                                 value={field.value ? field.value.toString() : undefined}
                                 onChangeText={(text) => {
@@ -1077,7 +1080,7 @@ export function InquiryCreateForm({
                           onChangeText={field.onChange}
                           onBlur={field.onBlur}
                           placeholder="Add any additional notes..."
-                          height={100}
+                          style={{ minHeight: 100 }}
                           maxLength={2000}
                         />
                       )}
@@ -1095,9 +1098,7 @@ export function InquiryCreateForm({
               gap={12}
               padding="md"
               backgroundColor="$background"
-              borderTopWidth={1}
-              borderTopColor="$borderColor"
-              justify="flex-end"
+              style={{ borderTopWidth: 1, borderTopColor: '$borderColor', justifyContent: 'flex-end' }}
             >
               {onCancel && (
                 <Button variant="outline" onPress={onCancel} disabled={isSubmitting}>
@@ -1124,11 +1125,7 @@ export function InquiryCreateForm({
 
           {/* Help Sidebar */}
           <Stack
-            width={300}
-            padding="md"
-            backgroundColor="$color2"
-            borderLeftWidth={1}
-            borderLeftColor="$borderColor"
+            style={{ width: 300, padding: 16, backgroundColor: '$color2', borderLeftWidth: 1, borderLeftColor: '$borderColor' }}
           >
             <InquiryHelpSidebar />
           </Stack>
@@ -1136,113 +1133,111 @@ export function InquiryCreateForm({
       </FormProvider>
 
       <Sheet
-        modal
-        open={saveTemplateOpen}
-        onOpenChange={setSaveTemplateOpen}
-        snapPoints={[80]}
-        dismissOnSnapToBottom
+        visible={saveTemplateOpen}
+        onClose={() => setSaveTemplateOpen(false)}
+        height="three-quarters"
       >
-        <Sheet.Overlay />
-        <Sheet.Handle />
-        <Sheet.Frame padding="md" gap={16}>
-          <Text>Save template</Text>
-          <Text color="$gray11">Capture the current inquiry terms as a reusable template.</Text>
-          <Stack gap={8}>
-            <Text>Template name</Text>
-            <Input
-              placeholder="E.g., Standard day shift"
-              value={templateName}
-              onChangeText={setTemplateName}
-            />
+        <SheetHeader
+          title="Save template"
+          onClose={() => setSaveTemplateOpen(false)}
+        />
+        <SheetContent scrollable={false}>
+          <Stack gap={16} padding="md">
+            <Text color="$gray11">Capture the current inquiry terms as a reusable template.</Text>
+            <Stack gap={8}>
+              <Text>Template name</Text>
+              <Input
+                placeholder="E.g., Standard day shift"
+                value={templateName}
+                onChangeText={setTemplateName}
+              />
+            </Stack>
+            <Stack gap={8}>
+              <Text>Description (optional)</Text>
+              <TextArea
+                placeholder="Describe when to use this template..."
+                value={templateDescription}
+                onChangeText={setTemplateDescription}
+              />
+            </Stack>
           </Stack>
-          <Stack gap={8}>
-            <Text>Description (optional)</Text>
-            <TextArea
-              placeholder="Describe when to use this template..."
-              value={templateDescription}
-              onChangeText={setTemplateDescription}
-            />
-          </Stack>
-          <Row gap={12} justify="flex-end">
-            <Button
-              variant="outline"
-              onPress={() => setSaveTemplateOpen(false)}
-              disabled={createTemplateMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              onPress={handleSaveTemplate}
-              disabled={createTemplateMutation.isPending}
-            >
-              {createTemplateMutation.isPending ? 'Saving…' : 'Save template'}
-            </Button>
-          </Row>
-        </Sheet.Frame>
+        </SheetContent>
+        <SheetFooter>
+          <Button
+            variant="outline"
+            onPress={() => setSaveTemplateOpen(false)}
+            disabled={createTemplateMutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onPress={handleSaveTemplate}
+            disabled={createTemplateMutation.isPending}
+          >
+            {createTemplateMutation.isPending ? 'Saving…' : 'Save template'}
+          </Button>
+        </SheetFooter>
       </Sheet>
 
       <Sheet
-        modal
-        open={manageTemplatesOpen}
-        onOpenChange={setManageTemplatesOpen}
-        snapPoints={[90]}
-        dismissOnSnapToBottom
+        visible={manageTemplatesOpen}
+        onClose={() => setManageTemplatesOpen(false)}
+        height="full"
+        maxHeight={0.9}
       >
-        <Sheet.Overlay />
-        <Sheet.Handle />
-        <Sheet.Frame padding="md" gap={16}>
-          <Text>Manage templates</Text>
+        <SheetHeader
+          title="Manage templates"
+          onClose={() => setManageTemplatesOpen(false)}
+        />
+        <SheetContent scrollable>
           {templates.length === 0 ? (
             <Text color="$gray11">No templates saved yet. Create one from the inquiry form.</Text>
           ) : (
-            <Sheet.ScrollView>
-              <Stack gap={12} paddingVertical={8}>
-                {templateList.map((template) => {
-                  const templateId = template.id
-                  const usageCount = template.usage_count ?? 0
-                  const lastUsedAt = template.last_used_at ?? null
-                  return (
-                    <Stack
-                      key={templateId}
-                      padding="sm"
-                      gap={8}
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      borderRadius={16}
-                      backgroundColor="$background"
-                    >
-                      <Row gap={12} align="center" justify="space-between">
-                        <Stack flex={1} gap={4}>
-                          <Text>{template.name}</Text>
-                          {template.description && (
-                            <Text color="$gray11">{template.description}</Text>
-                          )}
-                          <Text color="$gray11">
-                            {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
-                            {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}
-                          </Text>
-                        </Stack>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          color="$red11"
-                          borderColor="$red8"
-                          onPress={() => handleDeleteTemplate(templateId)}
-                          disabled={
-                            deleteTemplateMutation.isPending && deletingTemplateId === templateId
-                          }
-                        >
-                          Delete
-                        </Button>
-                      </Row>
-                    </Stack>
-                  )
-                })}
-              </Stack>
-            </Sheet.ScrollView>
+            <Stack gap={12} paddingVertical={8}>
+              {templateList.map((template) => {
+                const templateId = template.id
+                const usageCount = template.usage_count ?? 0
+                const lastUsedAt = template.last_used_at ?? null
+                return (
+                  <Stack
+                    key={templateId}
+                    padding="sm"
+                    gap={8}
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius={16}
+                    backgroundColor="$background"
+                  >
+                    <Row gap={12} align="center" justify="space-between">
+                      <Stack style={{ flex: 1 }} gap={4}>
+                        <Text>{template.name}</Text>
+                        {template.description && (
+                          <Text color="$gray11">{template.description}</Text>
+                        )}
+                        <Text color="$gray11">
+                          {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
+                          {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}
+                        </Text>
+                      </Stack>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="error"
+                        onPress={() => handleDeleteTemplate(templateId)}
+                        disabled={
+                          deleteTemplateMutation.isPending && deletingTemplateId === templateId
+                        }
+                      >
+                        Delete
+                      </Button>
+                    </Row>
+                  </Stack>
+                )
+              })}
+            </Stack>
           )}
-        </Sheet.Frame>
+        </SheetContent>
       </Sheet>
     </>
   )

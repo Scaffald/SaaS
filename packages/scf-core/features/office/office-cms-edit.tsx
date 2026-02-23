@@ -20,7 +20,7 @@ export function OfficeCMSEdit() {
     const payload: UpdateWelcomeSlideParams =
       'id' in formData
         ? formData
-        : { ...formData, id: id! }
+        : { ...formData, id: id as string }
     await updateSlide.mutateAsync(payload)
     router.push(ROUTES.OFFICE.CMS.WELCOME.path)
   }

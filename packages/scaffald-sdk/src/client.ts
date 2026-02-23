@@ -34,6 +34,9 @@ import { Projects } from './resources/projects.js'
 import { ProfileViews } from './resources/profile-views.js'
 import { UserProfiles } from './resources/user-profiles.js'
 import { Workers } from './resources/workers.js'
+import { OfficeUsers } from './resources/office-users.js'
+import { OfficeUniversities } from './resources/office-universities.js'
+import { OfficeCertifications } from './resources/office-certifications.js'
 import { PersonalityAssessments } from './resources/personality-assessment.js'
 import { Feedback } from './resources/feedback.js'
 import { IdVerification } from './resources/id-verification.js'
@@ -44,8 +47,15 @@ import { DocumentsStorage } from './resources/documents-storage.js'
 import { LegalAgreements } from './resources/legal-agreements.js'
 import { NotificationsAdmin } from './resources/notifications-admin.js'
 import { AccountDeletion } from './resources/account-deletion.js'
+// biome-ignore lint/suspicious/noShadowRestrictedNames: resource class named Map by design
 import { Map } from './resources/map.js'
 import { Resume } from './resources/resume.js'
+import { OAuthManagement } from './resources/oauth-management.js'
+import { OfficeOrganizations } from './resources/office-organizations.js'
+import { OfficeStorage } from './resources/office-storage.js'
+import { ProfileWizard } from './resources/profile-wizard.js'
+import { CCPA } from './resources/ccpa.js'
+import { Payments } from './resources/payments.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -84,6 +94,9 @@ export class Scaffald {
   public readonly profileViews: ProfileViews
   public readonly userProfiles: UserProfiles
   public readonly workers: Workers
+  public readonly officeUsers: OfficeUsers
+  public readonly officeUniversities: OfficeUniversities
+  public readonly officeCertifications: OfficeCertifications
   public readonly personalityAssessments: PersonalityAssessments
   public readonly feedback: Feedback
   public readonly idVerification: IdVerification
@@ -96,6 +109,12 @@ export class Scaffald {
   public readonly accountDeletion: AccountDeletion
   public readonly map: Map
   public readonly resume: Resume
+  public readonly oauthManagement: OAuthManagement
+  public readonly officeOrganizations: OfficeOrganizations
+  public readonly officeStorage: OfficeStorage
+  public readonly profileWizard: ProfileWizard
+  public readonly ccpa: CCPA
+  public readonly payments: Payments
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -142,6 +161,9 @@ export class Scaffald {
     this.profileViews = new ProfileViews(this.http)
     this.userProfiles = new UserProfiles(this.http)
     this.workers = new Workers(this.http)
+    this.officeUsers = new OfficeUsers(this.http)
+    this.officeUniversities = new OfficeUniversities(this.http)
+    this.officeCertifications = new OfficeCertifications(this.http)
     this.personalityAssessments = new PersonalityAssessments(this.http)
     this.feedback = new Feedback(this.http)
     this.idVerification = new IdVerification(this.http)
@@ -154,6 +176,12 @@ export class Scaffald {
     this.accountDeletion = new AccountDeletion(this.http)
     this.map = new Map(this.http)
     this.resume = new Resume(this.http)
+    this.oauthManagement = new OAuthManagement(this.http)
+    this.officeOrganizations = new OfficeOrganizations(this.http)
+    this.officeStorage = new OfficeStorage(this.http)
+    this.profileWizard = new ProfileWizard(this.http)
+    this.ccpa = new CCPA(this.http)
+    this.payments = new Payments(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

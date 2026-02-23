@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { usePaymentMethod, useDeletePaymentMethodMutation } from '@scf/core/utils/payments-sdk-hooks'
 import { CreditCard, Plus, Trash2 } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
@@ -27,15 +27,9 @@ export function OrganizationPaymentMethodsPanel({
   const toast = useToast()
   const [showAddForm, setShowAddForm] = useState(false)
 
-  const paymentMethodQuery = api.payments.getPaymentMethod.useQuery(
-    { organizationId },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 60_000,
-    }
-  )
+  const paymentMethodQuery = usePaymentMethod(organizationId)
 
-  const deleteMutation = api.payments.deletePaymentMethod.useMutation({
+  const deleteMutation = useDeletePaymentMethodMutation({
     onSuccess: () => {
       toast.show({
         title: 'Payment method removed',
@@ -64,7 +58,7 @@ export function OrganizationPaymentMethodsPanel({
       return
     }
 
-    deleteMutation.mutate({ organizationPaymentMethodId: paymentMethod.id })
+    deleteMutation.mutate(paymentMethod.id)
   }
 
   const handleAddSuccess = () => {

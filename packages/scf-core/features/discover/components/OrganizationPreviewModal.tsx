@@ -186,7 +186,7 @@ export function OrganizationPreviewModal({
                     }
                   }}
                 >
-                  {(organization as { website_url?: string }).website_url!.replace(/^https?:\/\//, '')}
+                  {(organization as { website_url?: string }).website_url?.replace(/^https?:\/\//, '')}
                 </Text>
               </Row>
             </>

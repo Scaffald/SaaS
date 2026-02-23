@@ -32,6 +32,8 @@ export type {
   OfficeJob,
   OfficeListJobsParams,
   OfficeListJobsResponse,
+  OfficeCreateJobParams,
+  OfficeUpdateJobParams,
 } from './resources/jobs.js'
 
 export type {
@@ -563,6 +565,32 @@ export type {
 } from './resources/workers.js'
 
 export type {
+  OfficeUser,
+  OfficeListUsersResponse,
+  OfficeUpdateUserParams,
+  OfficeUserGeneral,
+  OfficeUpdateUserGeneralParams,
+  OfficeUserEmployment,
+  OfficeUpdateUserEmploymentParams,
+} from './resources/office-users.js'
+
+export type {
+  University,
+  UniversityListResponse,
+  UniversityListParams,
+  UniversitySearchParams,
+  UniversitySearchResponse,
+  CreateUniversityParams,
+  UpdateUniversityParams,
+} from './resources/office-universities.js'
+
+export type {
+  OfficeCertification,
+  CreateOfficeCertificationParams,
+  UpdateOfficeCertificationParams,
+} from './resources/office-certifications.js'
+
+export type {
   BackgroundCheckPackage,
   BackgroundCheck,
   ConsentDetails,
@@ -700,6 +728,7 @@ export type {
   SaveLuscherTestSessionResponse,
   AwardResultsViewXPResponse,
   PersonalityArchetype,
+  SharedPersonalityResults,
 } from './resources/personality-assessment.js'
 
 export {
@@ -735,6 +764,50 @@ export type {
   UpdateResumeProgressParams,
   UpdateResumeProgressResponse,
 } from './types/resume.js'
+
+export type {
+  OAuthAppDetails,
+  RegisterAppParams,
+  RegisterAppResponse,
+  GrantConsentParams,
+  GrantConsentResponse,
+  UserConsent,
+  ListUserConsentsResponse,
+  OAuthAppAdmin,
+  ListAppsParams,
+  ListAppsResponse,
+  OAuthScope,
+  ListScopesResponse,
+  ApproveAppParams,
+} from './resources/oauth-management.js'
+
+export type {
+  OfficeOrganization,
+  OfficeOrganizationSimple,
+  GetOfficeOrganizationsResponse,
+  ListOfficeOrganizationsParams,
+  ListOfficeOrganizationsResponse,
+  OfficeOrganizationRequest,
+  ListOrganizationRequestsParams,
+  ListOrganizationRequestsResponse,
+  ReviewOrganizationRequestParams,
+  CheckSlugResponse,
+  CreateOfficeOrganizationParams,
+  UpdateOfficeOrganizationParams,
+} from './resources/office-organizations.js'
+
+export type {
+  StorageTotals,
+  StorageTopUser,
+  StorageBreakdownEntry,
+  StorageAnalyticsResponse,
+} from './resources/office-storage.js'
+
+export type {
+  ProfileWizardProgress,
+  ProfileWizardSaveStepParams,
+  ProfileWizardCompleteParams,
+} from './resources/profile-wizard.js'
 
 import { Scaffald } from './client.js'
 export default Scaffald

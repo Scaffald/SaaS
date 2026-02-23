@@ -126,11 +126,10 @@ export function InquiryCommentThread({
                 borderWidth={1}
                 borderColor={isUnread ? '$blue9' : '$borderColor'}
               >
-                <Avatar size="sm">
-                  <Avatar.Fallback backgroundColor="$blue9">
-                    <Text color="white">{comment.sender_id.charAt(0).toUpperCase()}</Text>
-                  </Avatar.Fallback>
-                </Avatar>
+                <Avatar
+                  size={32}
+                  initials={comment.sender_id.charAt(0).toUpperCase()}
+                />
                 <Stack flex={1} gap={4}>
                   <Row justify="space-between" align="center">
                     <Text color="$gray11">{isFromCurrentUser ? 'You' : 'Organization'}</Text>
@@ -138,14 +137,15 @@ export function InquiryCommentThread({
                   </Row>
                   <Text color="$gray11">{comment.content}</Text>
                   {isUnread && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onPress={() => handleMarkRead(comment.id)}
-                      marginTop={4}
-                    >
-                      Mark as read
-                    </Button>
+                    <Stack style={{ marginTop: 4 }}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onPress={() => handleMarkRead(comment.id)}
+                      >
+                        Mark as read
+                      </Button>
+                    </Stack>
                   )}
                 </Stack>
               </Row>
@@ -168,13 +168,12 @@ export function InquiryCommentThread({
       <Stack gap={8}>
         <Row gap={8} align="flex-end">
           <Input
-            flex={1}
             placeholder="Add a comment..."
             value={newComment}
             onChangeText={setNewComment}
             multiline
-            height={60}
             maxLength={2000}
+            style={{ flex: 1, minHeight: 60 }}
           />
           <Button
             iconStart={Send}

@@ -25,18 +25,18 @@ export function CapabilityQuestionInput({
       <Text>{question}</Text>
       <Row gap={8} align="center">
         <Button
-          flex={1}
-          theme={localValue === true ? 'success' : undefined}
-          variant={localValue === true ? undefined : 'outlined'}
+          style={{ flex: 1 }}
+          color={localValue === true ? 'primary' : undefined}
+          variant={localValue === true ? undefined : 'outline'}
           onPress={() => handleValueChange(true)}
           iconStart={localValue === true ? Check : undefined}
         >
           Yes
         </Button>
         <Button
-          flex={1}
-          theme={localValue === false ? 'error' : undefined}
-          variant={localValue === false ? undefined : 'outlined'}
+          style={{ flex: 1 }}
+          color={localValue === false ? 'error' : undefined}
+          variant={localValue === false ? undefined : 'outline'}
           onPress={() => handleValueChange(false)}
           iconStart={localValue === false ? X : undefined}
         >
