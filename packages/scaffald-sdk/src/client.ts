@@ -39,6 +39,8 @@ import { Feedback } from './resources/feedback.js'
 import { IdVerification } from './resources/id-verification.js'
 import { SuccessFees } from './resources/success-fees.js'
 import { StripeSettings } from './resources/stripe-settings.js'
+import { News } from './resources/news.js'
+import { DocumentsStorage } from './resources/documents-storage.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -82,6 +84,8 @@ export class Scaffald {
   public readonly idVerification: IdVerification
   public readonly successFees: SuccessFees
   public readonly stripeSettings: StripeSettings
+  public readonly news: News
+  public readonly documentsStorage: DocumentsStorage
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -133,6 +137,8 @@ export class Scaffald {
     this.idVerification = new IdVerification(this.http)
     this.successFees = new SuccessFees(this.http)
     this.stripeSettings = new StripeSettings(this.http)
+    this.news = new News(this.http)
+    this.documentsStorage = new DocumentsStorage(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

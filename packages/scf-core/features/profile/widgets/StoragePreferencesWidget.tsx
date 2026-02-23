@@ -8,13 +8,17 @@
  * - Google Drive - Cloud storage via OAuth
  */
 
-import { api } from '@scf/core/utils/api'
 import { Cloud, Database, HardDrive } from 'lucide-react-native'
 import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@scaffald/ui'
 import type { ComponentType } from 'react'
 import { useState, useEffect } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
+import {
+  useStoragePreference,
+  useSetStoragePreferenceMutation,
+  STORAGE_PREFERENCE_QUERY_KEY,
+} from '@scf/core/utils/documents-storage-sdk-hooks'
 
 type StorageBackend = 'supabase' | 'dropbox' | 'google_drive'
 
@@ -54,12 +58,12 @@ export function StoragePreferencesWidget() {
   const [selectedPreference, setSelectedPreference] = useState<StorageBackend>('supabase')
   const [hasChanges, setHasChanges] = useState(false)
 
-  const { data, isLoading, error } = api.documents.getStoragePreference.useQuery()
+  const { data, isLoading, error } = useStoragePreference()
   const queryClient = useQueryClient()
 
-  const mutation = api.documents.setStoragePreference.useMutation({
+  const mutation = useSetStoragePreferenceMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['documents', 'getStoragePreference']] })
+      queryClient.invalidateQueries({ queryKey: STORAGE_PREFERENCE_QUERY_KEY })
       setHasChanges(false)
     },
   })

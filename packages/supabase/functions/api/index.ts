@@ -42,6 +42,8 @@ import officeJobsRouter from "./routes/office-jobs.ts";
 import idVerificationRouter from "./routes/id-verification.ts";
 import successFeesRouter from "./routes/success-fees.ts";
 import stripeSettingsRouter from "./routes/stripe-settings.ts";
+import newsRouter from "./routes/news.ts";
+import documentsStorageRouter from "./routes/documents-storage.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
@@ -113,6 +115,8 @@ app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role
 app.route("/v1/id-verification", idVerificationRouter); // ID verification (pricing, request, confirm, status, list, revoke)
 app.route("/v1/success-fees", successFeesRouter); // Success fees (status, create, confirm-upfront)
 app.route("/v1/stripe-settings", stripeSettingsRouter); // Stripe settings (office role)
+app.route("/v1/news", newsRouter); // Cached news articles by industry
+app.route("/v1/documents/storage-preference", documentsStorageRouter); // User document storage preference
 
 // OpenAPI documentation
 app.route("/", openapi);

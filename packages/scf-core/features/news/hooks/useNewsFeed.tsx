@@ -1,6 +1,6 @@
-import { api } from '@scf/core/utils/api'
 import { useMemo } from 'react'
 import { calculateReadingTime } from '../utils/rss-parser'
+import { useNewsByIndustry } from '@scf/core/utils/news-sdk-hooks'
 
 // Note: parseRSSFeed is no longer used but kept for backward compatibility
 // during migration period. It can be removed after confirming no other code uses it.
@@ -30,17 +30,12 @@ export function useNewsFeedByIndustry({
     industryId.length > 0 &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(industryId)
 
-  const query = api.news.getByIndustry.useQuery(
-    {
-      industryId,
-      limit: maxItems,
-      category,
-      region,
-    },
+  const query = useNewsByIndustry(
+    { industryId, limit: maxItems, category, region },
     {
       staleTime,
       retry: 2,
-      enabled: enabled !== undefined ? enabled && isValidUUID : isValidUUID, // Only run query if enabled (if provided) and industryId is a valid UUID
+      enabled: enabled !== undefined ? enabled && isValidUUID : isValidUUID,
     }
   )
 

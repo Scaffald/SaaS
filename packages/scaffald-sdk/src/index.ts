@@ -313,6 +313,18 @@ export type {
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export type {
+  NewsArticle,
+  GetNewsByIndustryParams,
+} from './resources/news.js'
+
+export type {
+  StorageBackend,
+  StoragePreferenceResponse,
+  SetStoragePreferenceParams,
+  SetStoragePreferenceResponse,
+} from './resources/documents-storage.js'
+
+export type {
   StripeSettings,
   UpdatePublishableKeyParams,
   UpdateTestModeParams,
