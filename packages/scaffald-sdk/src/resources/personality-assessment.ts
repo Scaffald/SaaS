@@ -125,6 +125,11 @@ export interface AwardResultsViewXPResponse {
   newXP?: number
 }
 
+export interface SharedPersonalityResults {
+  answers: unknown[]
+  archetype: { name: string; confidence: number } | null
+}
+
 export interface PersonalityArchetype {
   archetype: string
   confidence: number
@@ -143,15 +148,15 @@ export class PersonalityAssessments extends Resource {
    * Get assessment status or create new assessment
    * Returns current progress or creates a new assessment if none exists
    */
-  async getStatus(): Promise<AssessmentStatus> {
-    return this.get<AssessmentStatus>('/v1/personality-assessment/status')
+  async getStatus(): Promise<{ data: AssessmentStatus }> {
+    return this.get<{ data: AssessmentStatus }>('/v1/personality-assessment/status')
   }
 
   /**
    * Get IPIP assessment completion status
    */
-  async getIPIPStatus(): Promise<IPIPStatus> {
-    return this.get<IPIPStatus>('/v1/personality-assessment/ipip/status')
+  async getIPIPStatus(): Promise<{ data: IPIPStatus }> {
+    return this.get<{ data: IPIPStatus }>('/v1/personality-assessment/ipip/status')
   }
 
   /**
@@ -253,5 +258,12 @@ export class PersonalityAssessments extends Resource {
    */
   async getArchetype(): Promise<PersonalityArchetype | null> {
     return this.get<PersonalityArchetype | null>('/v1/personality-assessment/archetype')
+  }
+
+  /**
+   * Get shared IPIP results by token (public endpoint).
+   */
+  async getSharedResults(token: string): Promise<SharedPersonalityResults> {
+    return this.get<SharedPersonalityResults>(`/v1/personality-assessment/shared/${token}`)
   }
 }

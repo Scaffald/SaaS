@@ -75,17 +75,17 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   const _handleNotificationClick = (notification: NotificationItem) => {
     // Mark as read if unread
     if (!notification.read) {
-      markAsReadMutation.mutate({ id: notification.id })
+      markAsReadMutation.mutate(notification.id)
     }
   }
 
   // Handle mark as read
   const _handleMarkAsRead = (notificationId: string) => {
-    markAsReadMutation.mutate({ id: notificationId })
+    markAsReadMutation.mutate(notificationId)
   }
 
   // Transform notifications to match NotificationItem interface
-  const _transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
+  const _transformedNotifications: NotificationItem[] = (notificationsData?.data ?? []).map(
     (notification: unknown): NotificationItem => {
       const item = notification as {
         id: string

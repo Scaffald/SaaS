@@ -494,4 +494,159 @@ app.openapi(
   }
 )
 
+/**
+ * GET /v1/organizations/:id/projects-with-overrides
+ * Get projects that override the organization's default location visibility
+ */
+app.openapi(
+  createRoute({
+    method: 'get',
+    path: '/{id}/projects-with-overrides',
+    tags: ['Organizations'],
+    summary: 'Get projects with location visibility overrides',
+    request: {
+      params: z.object({ id: z.string().uuid() }),
+    },
+    responses: {
+      200: {
+        description: 'Projects with overrides',
+        content: { 'application/json': { schema: z.object({ projects: z.array(z.any()) }) } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get('supabase')
+    const user = c.get('user')
+    const { id } = c.req.valid('param')
+
+    if (!user) return c.json({ error: 'Unauthorized' }, 401)
+
+    const { data: org } = await supabase
+      .schema('core')
+      .from('organizations')
+      .select('owner_user_id')
+      .eq('id', id)
+      .single()
+
+    if (!org) return c.json({ error: 'Organization not found' }, 404)
+
+    const isOwner = org.owner_user_id === user.id
+    const { data: roleAssignments } = await supabase
+      .schema('core')
+      .from('role_assignments')
+      .select('role:roles(name, scope), scope_org_id')
+      .eq('user_id', user.id)
+
+    const isAdmin = roleAssignments?.some(
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      (assignment: any) =>
+        assignment.role &&
+        (assignment.scope_org_id === id ||
+          (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
+          (assignment.role.name === 'super_admin' && assignment.role.scope === 'platform'))
+    )
+
+    if (!isOwner && !isAdmin) return c.json({ error: 'Forbidden' }, 403)
+
+    const { data: projects, error } = await supabase
+      .schema('core')
+      .from('projects')
+      .select('id, name, status, location_visibility, location_visibility_override, created_at')
+      .eq('organization_id', id)
+      .eq('location_visibility_override', true)
+      .order('created_at', { ascending: false })
+
+    if (error) return c.json({ error: 'Failed to fetch projects', message: error.message }, 500)
+
+    return c.json({ projects: projects || [] })
+  }
+)
+
+/**
+ * PATCH /v1/organizations/:id/location-visibility
+ * Update the organization's default project location visibility
+ */
+app.openapi(
+  createRoute({
+    method: 'patch',
+    path: '/{id}/location-visibility',
+    tags: ['Organizations'],
+    summary: 'Update default project location visibility',
+    request: {
+      params: z.object({ id: z.string().uuid() }),
+      body: {
+        content: {
+          'application/json': {
+            schema: z.object({
+              default_project_location_visibility: z.enum([
+                'public',
+                'authenticated',
+                'organization_only',
+                'private',
+              ]),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: 'Updated organization',
+        content: { 'application/json': { schema: z.object({ organization: z.any() }) } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get('supabase')
+    const user = c.get('user')
+    const { id } = c.req.valid('param')
+    const body = c.req.valid('json')
+
+    if (!user) return c.json({ error: 'Unauthorized' }, 401)
+
+    const { data: org } = await supabase
+      .schema('core')
+      .from('organizations')
+      .select('owner_user_id')
+      .eq('id', id)
+      .single()
+
+    if (!org) return c.json({ error: 'Organization not found' }, 404)
+
+    const isOwner = org.owner_user_id === user.id
+    const { data: roleAssignments } = await supabase
+      .schema('core')
+      .from('role_assignments')
+      .select('role:roles(name, scope), scope_org_id')
+      .eq('user_id', user.id)
+
+    const isAdmin = roleAssignments?.some(
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      (assignment: any) =>
+        assignment.role &&
+        (assignment.scope_org_id === id ||
+          (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
+          (assignment.role.name === 'super_admin' && assignment.role.scope === 'platform'))
+    )
+
+    if (!isOwner && !isAdmin) return c.json({ error: 'Forbidden' }, 403)
+
+    const { data: organization, error } = await supabase
+      .schema('core')
+      .from('organizations')
+      .update({ default_project_location_visibility: body.default_project_location_visibility })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error || !organization) {
+      return c.json({ error: 'Failed to update location visibility', message: error?.message }, 500)
+    }
+
+    return c.json({ organization })
+  }
+)
+
 export default app

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, ProgressBar, Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { getChoices, getQuestions, type IPIPAnswer, type IPIPChoice } from '../lib/ipip'
 
@@ -122,9 +122,9 @@ export function CooldownStep({
           </Text>
           <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formatTime(timeRemaining)}</Text>
         </Stack>
-        <Progress value={cooldownProgress} max={100} size="sm">
-          <Progress.Indicator animation="quick" />
-        </Progress>
+        <ProgressBar value={cooldownProgress} max={100} size="sm">
+          <ProgressBar.Indicator animation="quick" />
+        </ProgressBar>
       </Stack>
 
       {/* IPIP Questions Section */}
@@ -160,7 +160,7 @@ export function CooldownStep({
                   disabled={isLoading}
                   width="100%"
                 >
-                  <Button.Text>{choice.text}</Button.Text>
+                  {choice.text}
                 </Button>
               ))}
             </Stack>

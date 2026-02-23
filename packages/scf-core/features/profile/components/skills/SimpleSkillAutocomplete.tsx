@@ -1,5 +1,6 @@
 import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Pressable } from 'react-native'
 import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
@@ -109,7 +110,7 @@ export function SimpleSkillAutocomplete({
 
   return (
     <Stack gap={8} style={{ zIndex: 1000 }}>
-      <Stack position="relative">
+      <Stack style={{ position: 'relative' }}>
         <Input
           value={value}
           onChangeText={(text) => {
@@ -117,20 +118,13 @@ export function SimpleSkillAutocomplete({
             if (text.length >= 2) setShowResults(true)
           }}
           placeholder={placeholder}
-          paddingRight={40}
-          size="md"
-          borderColor="$borderColor"
-          focusStyle={{ borderColor: '$blue9' }}
         />
 
         {value.length > 0 && (
           <Button
-            position="absolute"
-            right={4}
-            top={4}
-            bottom={4}
+            style={{ position: 'absolute', right: 4, top: 4, bottom: 4 }}
             size="sm"
-            chromeless
+            variant="text"
             onPress={() => {
               onChangeText('')
               setShowResults(false)
@@ -145,21 +139,14 @@ export function SimpleSkillAutocomplete({
         <Card
           bordered
           elevate
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          maxHeight={300}
-          zIndex={2000}
-          backgroundColor="$background"
+          style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, maxHeight: 300, zIndex: 2000 }}
         >
           <ScrollView>
             <Stack>
               {isLoading || isSearching ? (
                 <Stack padding="md" align="center" justify="center">
                   <Spinner size="sm" />
-                  <Text color="$gray11" marginTop={8}>
+                  <Text color="$gray11" style={{ marginTop: 8 }}>
                     Searching...
                   </Text>
                 </Stack>
@@ -167,14 +154,13 @@ export function SimpleSkillAutocomplete({
                 results.map((skill) => {
                   const isExisting = existingSkillIds.includes(skill.id)
                   return (
-                    <Stack
+                    <Pressable
                       key={skill.id}
-                      padding="sm"
-                      pressStyle={{ backgroundColor: '$backgroundHover' }}
                       onPress={() => handleSelect(skill)}
-                      borderBottomWidth={1}
-                      borderBottomColor="$borderColor"
-                      opacity={isExisting ? 0.6 : 1}
+                      style={{ opacity: isExisting ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
+                    >
+                    <Stack
+                      padding="sm"
                     >
                       <Row justify="space-between" align="center">
                         <Stack flex={1}>
@@ -184,6 +170,7 @@ export function SimpleSkillAutocomplete({
                         {isExisting && <Text color="$blue9">Added</Text>}
                       </Row>
                     </Stack>
+                    </Pressable>
                   )
                 })
               ) : (

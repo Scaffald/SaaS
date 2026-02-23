@@ -151,4 +151,18 @@ export class Inquiries extends Resource {
       inquiry_ids: inquiryIds,
     })
   }
+
+  /**
+   * Get templates for a specific application
+   */
+  async getTemplates(applicationId: string): Promise<any[]> {
+    return super.get<any[]>('/v1/inquiries/templates', { application_id: applicationId })
+  }
+
+  /**
+   * Get inquiry history / audit trail
+   */
+  async getHistory(inquiryId: string): Promise<any[]> {
+    return super.get<any[]>(`/v1/inquiries/${inquiryId}/history`)
+  }
 }

@@ -1,6 +1,6 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Card, CardHeader, Separator, Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface SkillProficiencySelectorProps {
@@ -39,7 +39,7 @@ export function SkillProficiencySelector({
 
       {/* Selected Skill */}
       <Card bordered style={{ backgroundColor: colors.bg[theme].muted }}>
-        <Card.Header>
+        <CardHeader>
           <Stack gap={4}>
             <Text>{skill.name}</Text>
             {skill.code && (
@@ -48,7 +48,7 @@ export function SkillProficiencySelector({
               </Text>
             )}
           </Stack>
-        </Card.Header>
+        </CardHeader>
       </Card>
 
       <Separator />
@@ -58,22 +58,16 @@ export function SkillProficiencySelector({
         <Text>Proficiency</Text>
 
         <Slider
-          value={[proficiency]}
-          onValueChange={(value) => onProficiencyChange(value.at(0) ?? proficiency)}
+          value={proficiency}
+          onValueChange={(value) => onProficiencyChange(value)}
           min={1}
           max={5}
           step={1}
-          size="sm"
-        >
-          <Slider.Track backgroundColor="$color4" height={6}>
-            <Slider.TrackActive backgroundColor="$green9" />
-          </Slider.Track>
-          <Slider.Thumb index={0} size="sm" />
-        </Slider>
+        />
 
         {/* Current Level Display */}
         <Card bordered style={{ backgroundColor: colors.bg[theme].muted }}>
-          <Card.Header>
+          <CardHeader>
             <Row justify="space-between" align="center">
               <Stack>
                 <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{currentLevel?.label}</Text>
@@ -81,7 +75,7 @@ export function SkillProficiencySelector({
               </Stack>
               <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{proficiency}</Text>
             </Row>
-          </Card.Header>
+          </CardHeader>
         </Card>
 
         {/* Level Guide */}
@@ -91,10 +85,10 @@ export function SkillProficiencySelector({
               key={level.value}
               gap={8}
               align="center"
-              opacity={proficiency === level.value ? 1 : 0.5}
+              style={{ opacity: proficiency === level.value ? 1 : 0.5 }}
             >
-              <Text minWidth={30}>{level.value}</Text>
-              <Text flex={1}>
+              <Text style={{ minWidth: 30 }}>{level.value}</Text>
+              <Text style={{ flex: 1 }}>
                 {level.label} - {level.description}
               </Text>
             </Row>
@@ -104,10 +98,10 @@ export function SkillProficiencySelector({
 
       {/* Actions */}
       <Row gap={12}>
-        <Button flex={1} variant="outline" onPress={onCancel}>
+        <Button style={{ flex: 1 }} variant="outline" onPress={onCancel}>
           Cancel
         </Button>
-        <Button flex={1} themeInverse onPress={onAdd}>
+        <Button style={{ flex: 1 }} variant="filled" color="primary" onPress={onAdd}>
           Add Skill
         </Button>
       </Row>

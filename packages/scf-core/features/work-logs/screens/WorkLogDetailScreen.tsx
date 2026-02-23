@@ -668,7 +668,7 @@ export function WorkLogDetailScreen() {
                 <Button
                   flex={1}
                   size="sm"
-                  variant={collaboratorPermission === 'view' ? 'default' : 'outlined'}
+                  variant={collaboratorPermission === 'view' ? 'default' : 'outline'}
                   onPress={() => setCollaboratorPermission('view')}
                 >
                   View
@@ -676,7 +676,7 @@ export function WorkLogDetailScreen() {
                 <Button
                   flex={1}
                   size="sm"
-                  variant={collaboratorPermission === 'edit' ? 'default' : 'outlined'}
+                  variant={collaboratorPermission === 'edit' ? 'default' : 'outline'}
                   onPress={() => setCollaboratorPermission('edit')}
                 >
                   Edit

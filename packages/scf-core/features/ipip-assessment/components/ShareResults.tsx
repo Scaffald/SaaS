@@ -228,33 +228,33 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
             <Row gap={8} align="center">
               <Button
                 size="sm"
-                variant={expiresInDays === 7 ? 'outlined' : 'outlined'}
+                variant="outline"
+                color={expiresInDays === 7 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(7)}
-                backgroundColor={expiresInDays === 7 ? '$blue3' : undefined}
               >
                 7 days
               </Button>
               <Button
                 size="sm"
                 variant="outline"
+                color={expiresInDays === 30 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(30)}
-                backgroundColor={expiresInDays === 30 ? '$blue3' : undefined}
               >
                 30 days
               </Button>
               <Button
                 size="sm"
                 variant="outline"
+                color={expiresInDays === 90 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(90)}
-                backgroundColor={expiresInDays === 90 ? '$blue3' : undefined}
               >
                 90 days
               </Button>
               <Button
                 size="sm"
                 variant="outline"
+                color={expiresInDays === 0 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(0)}
-                backgroundColor={expiresInDays === 0 ? '$blue3' : undefined}
               >
                 Never
               </Button>
@@ -263,7 +263,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
           <Button
             size="md"
-            theme="info"
+            color="primary"
             iconStart={Share2}
             onPress={handleGenerateShareLink}
             disabled={generateShareToken.isPending}
@@ -284,8 +284,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
             borderColor="$borderColor"
           >
             <Text
-              flex={1}
-              style={{ fontFamily: 'monospace' }}
+              style={{ flex: 1, fontFamily: 'monospace' }}
               color="$gray11"
               data-testid="share-link-url"
             >
@@ -299,7 +298,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
               iconStart={X}
               onPress={handleRevokeLink}
               variant="outline"
-              theme="error"
+              color="error"
               disabled={revokeShareToken.isPending}
             >
               Revoke

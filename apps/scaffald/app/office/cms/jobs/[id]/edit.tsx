@@ -1,5 +1,5 @@
 import { JobForm } from '@scf/core/features/office/components/JobForm'
-import { api } from '@scf/core/utils/api'
+import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
@@ -14,7 +14,7 @@ export default function EditJobPage() {
     )
   }
 
-  const { data, isLoading } = api.office.getJob.useQuery({ id }, { enabled: !!id })
+  const { data, isLoading } = useJobDetails(id || undefined, { enabled: !!id })
 
   if (isLoading) {
     return (
@@ -24,7 +24,7 @@ export default function EditJobPage() {
     )
   }
 
-  if (!data?.job) {
+  if (!data) {
     return (
       <Stack align="center" justify="center">
         <Stack>Job not found</Stack>
@@ -32,7 +32,7 @@ export default function EditJobPage() {
     )
   }
 
-  const job = data.job as Record<string, unknown>
+  const job = data as unknown as Record<string, unknown>
 
   return (
     <JobForm

@@ -8,6 +8,7 @@ import {
   AnimatePresence,
   Button,
   Card,
+  CardHeader,
   Progress,
   styled,
   Text,
@@ -190,7 +191,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         </Stack>
 
         <Card bordered backgroundColor="$color2">
-          <Card.Header padded gap={12}>
+          <CardHeader padded gap={12}>
             <Row justify="space-between" align="center">
               <Row gap={8} align="center">
                 <Sparkles size="lg" color="$blue10" />
@@ -297,7 +298,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                 </Row>
               )}
             </Stack>
-          </Card.Header>
+          </CardHeader>
         </Card>
 
         <Stack gap={12}>

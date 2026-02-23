@@ -3,7 +3,7 @@ import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { Button, Sheet, SheetContent, SheetHeader, spacing } from '@scaffald/ui'
+import { Button, Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
 import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
@@ -237,7 +237,7 @@ export function NewsWidget({
   const skillKeywords = useMemo(() => {
     if (!userSkills) return [] as string[]
     const keywords = new Set<string>()
-    for (const skill of userSkills as Array<Record<string, unknown>>) {
+    for (const skill of userSkills as unknown as Array<Record<string, unknown>>) {
       const label =
         typeof skill.label === 'string'
           ? sanitize(skill.label)
@@ -265,7 +265,9 @@ export function NewsWidget({
         : null
 
     const fallbackIndustry =
-      typeof generalInfo?.industry_name === 'string' ? generalInfo.industry_name : null
+      typeof (generalInfo as unknown as { industry_name?: string })?.industry_name === 'string'
+        ? (generalInfo as unknown as { industry_name: string }).industry_name
+        : null
 
     const resolved = industryFromRelation ?? fallbackIndustry
 
@@ -289,9 +291,10 @@ export function NewsWidget({
   )
 
   const enrichedNews = useMemo(() => {
-    if (!newsItems.length) return [] as EnrichedNewsItem[]
+    const items = newsItems as unknown as NewsItem[]
+    if (!items.length) return [] as EnrichedNewsItem[]
 
-    const scored = newsItems.map((item: NewsItem) => {
+    const scored = items.map((item: NewsItem) => {
       const { score, reasons, hoursSincePublished } = computeRelevance(
         item,
         relevanceContext,
@@ -325,7 +328,7 @@ export function NewsWidget({
       return sorted
     }
 
-    const fallback = newsItems
+    const fallback = items
       .filter(
         (item: NewsItem) => !sorted.some((existing: EnrichedNewsItem) => existing.id === item.id)
       )
@@ -348,10 +351,11 @@ export function NewsWidget({
 
   // Use fallback news (global ENR) when no matching news is found
   const fallbackEnrichedNews = useMemo(() => {
-    if (!fallbackNewsItems.length) return [] as EnrichedNewsItem[]
+    const items = fallbackNewsItems as unknown as NewsItem[]
+    if (!items.length) return [] as EnrichedNewsItem[]
 
     // For fallback, just sort by date (no relevance scoring needed)
-    return fallbackNewsItems
+    return items
       .sort((a: NewsItem, b: NewsItem) => {
         const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
         const dateB = b.pubDate instanceof Date ? b.pubDate : new Date(b.pubDate)
@@ -434,11 +438,11 @@ export function NewsWidget({
   }
 
   return (
-    <Stack gap={spacing.md}>
-      <Row justify="space-between" align="center" paddingTop={spacing.sm}>
+    <Stack gap={12}>
+      <Row justify="space-between" align="center" paddingTop={8}>
         <Text color="$gray11">News</Text>
 
-        <Row gap={spacing.xs} align="center">
+        <Row gap={4} align="center">
           {/* TODO: Implement and refine filter button functionality later */}
           {/* <Button
             size="sm"
@@ -453,20 +457,20 @@ export function NewsWidget({
               void refetch()
             }}
             disabled={isLoading}
-            iconStart={isLoading ? <Spinner size="sm" /> : <RefreshCw size="md" />}
+            iconStart={RefreshCw}
           />
         </Row>
       </Row>
 
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
-        <Stack align="center" gap={spacing.sm}>
-          <Spinner size="lg" color="$blue7" />
+        <Stack align="center" gap={8}>
+          <Spinner size="lg" color="primary" />
           <Text color="$gray11">Loading personalised news...</Text>
         </Stack>
       ) : null}
 
       {isError && displayNews.length === 0 ? (
-        <Stack align="center" gap={spacing.sm}>
+        <Stack align="center" gap={8}>
           <AlertCircle size={24} color="$red10" />
           <Text color="$red11" style={{ textAlign: 'center' }}>
             Failed to load news feed
@@ -497,11 +501,10 @@ export function NewsWidget({
                   backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$color4"
-                  opacity={pressed ? 0.7 : 1}
-                  style={{ borderRadius: 12 }}
+                  style={{ borderRadius: 12, opacity: pressed ? 0.7 : 1 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text color="$gray11" flex={1}>
+                    <Text color="$gray11" style={{ flex: 1 }}>
                       {item.title}
                     </Text>
                     <ExternalLink size="md" color="$gray11" />

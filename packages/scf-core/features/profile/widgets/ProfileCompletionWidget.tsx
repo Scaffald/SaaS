@@ -4,7 +4,7 @@ import { CheckCircle, ChevronRight, Circle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Button, H4, Progress, Text, Row, Stack } from '@scaffald/ui'
+import { Button, H4, ProgressBar, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -81,17 +81,17 @@ export function ProfileCompletionWidget({
               </Text>
             )}
           </Row>
-          <Progress
+          <ProgressBar
             value={completionData.completionPercentage}
             max={100}
             backgroundColor="$color4"
             size="sm"
           >
-            <Progress.Indicator
+            <ProgressBar.Indicator
               animation="bouncy"
               backgroundColor={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
             />
-          </Progress>
+          </ProgressBar>
         </Stack>
 
         {/* Next Steps */}

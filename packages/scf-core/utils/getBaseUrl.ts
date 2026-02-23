@@ -1,6 +1,8 @@
-import { isWeb } from '@scaffald/ui'
+import { Platform } from 'react-native'
 
 import { replaceLocalhost } from './getLocalhost.native'
+
+const isWeb = Platform.OS === 'web'
 
 export function _getBaseUrl() {
   if (isWeb && typeof window !== 'undefined') {

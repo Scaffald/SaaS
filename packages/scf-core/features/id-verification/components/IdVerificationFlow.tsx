@@ -11,6 +11,7 @@ import { useToast } from '@scaffald/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 type PricingRow = {
@@ -218,7 +219,7 @@ export function IdVerificationRight() {
 export function IdVerificationFlow() {
   return (
     <Stack flex={1} backgroundColor="$background">
-      <ScrollView flex={1}>
+      <ScrollView style={{ flex: 1 }}>
         <Stack gap={16} paddingHorizontal={16} paddingBottom={32}>
           <IdVerificationContent />
         </Stack>
@@ -349,9 +350,7 @@ function PricingSection({
               key={plan.id}
               padding="md"
               bordered
-              animation="quick"
-              backgroundColor={isActive ? '$blue2' : '$color1'}
-              borderColor={isActive ? '$blue8' : '$borderColor'}
+              style={{ backgroundColor: isActive ? colors.info[50] : undefined, borderColor: isActive ? colors.info[400] : colors.gray[200] }}
               onPress={() => onSelectPlan(plan.id)}
             >
               <Stack gap={8}>
@@ -362,8 +361,8 @@ function PricingSection({
                 {plan.description && <Text color="$gray11">{plan.description}</Text>}
                 <Button
                   size="sm"
-                  theme={isActive ? 'blue' : undefined}
-                  variant={isActive ? undefined : 'outlined'}
+                  color={isActive ? 'primary' : undefined}
+                  variant={isActive ? 'filled' : 'outline'}
                   onPress={() => onSelectPlan(plan.id)}
                 >
                   {isActive ? 'Selected' : 'Select this option'}

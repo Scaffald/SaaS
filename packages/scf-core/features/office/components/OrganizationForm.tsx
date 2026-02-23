@@ -1,13 +1,16 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationDeletionPanel } from '@scf/core/features/organizations/components/OrganizationDeletionPanel'
-import { api } from '@scf/core/utils/api'
 import { isSlugValid } from '@scf/core/utils/slugify'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { useScaffaldJobsClient } from '@scf/core/utils/jobs-sdk-context'
+import {
+  useCreateOfficeOrganizationMutation,
+  useUpdateOfficeOrganizationMutation,
+} from '@scf/core/utils/office-organizations-sdk-hooks'
 import { organizationCreateSchema, type OrganizationCreate } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast, useThemeContext } from '@scaffald/ui'
-import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -39,7 +42,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   const { theme } = useThemeContext()
   const router = useRouter()
   const toast = useToast()
-  const queryClient = useQueryClient()
+  const client = useScaffaldJobsClient()
   const [isLoading, setIsLoading] = useState(false)
   const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([])
   const [slugStatus, setSlugStatus] = useState<SlugAvailabilityState>({ state: 'idle' })
@@ -141,13 +144,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setSlugStatus({ state: 'checking' })
     const timeoutId = setTimeout(async () => {
       try {
-        // Fetch using queryClient to check slug availability
-        const result = await queryClient.fetchQuery({
-          queryKey: [
-            ['office', 'checkOrganizationSlug'],
-            { input: { slug: normalizedSlug, organizationId } },
-          ],
-        })
+        if (!client) throw new Error('Missing client')
+        const result = await client.officeOrganizations.checkSlug(normalizedSlug, organizationId)
 
         if (isCancelled) return
 
@@ -192,9 +190,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       isCancelled = true
       clearTimeout(timeoutId)
     }
-  }, [slugValue, queryClient, organizationId, mode, initialSlug])
+  }, [slugValue, client, organizationId, mode, initialSlug])
 
-  const createMutation = api.office.createOrganization.useMutation({
+  const createMutation = useCreateOfficeOrganizationMutation({
     onSuccess: () => {
       toast.show({
         title: 'Success',
@@ -212,7 +210,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     },
   })
 
-  const updateMutation = api.office.updateOrganization.useMutation({
+  const updateMutation = useUpdateOfficeOrganizationMutation({
     onSuccess: () => {
       toast.show({
         title: 'Success',
@@ -234,7 +232,6 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setIsLoading(true)
     try {
       if (mode === 'create') {
-        // Form data is compatible with mutation input but has extra fields
         await createMutation.mutateAsync(
           data as unknown as Parameters<typeof createMutation.mutateAsync>[0]
         )
@@ -242,10 +239,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         if (!organizationId) {
           throw new Error('Organization ID is required for update')
         }
-        // Form data is compatible with mutation input but has extra fields
-        await updateMutation.mutateAsync({ id: organizationId, ...data } as unknown as Parameters<
-          typeof updateMutation.mutateAsync
-        >[0])
+        await updateMutation.mutateAsync({
+          id: organizationId,
+          params: data as unknown as Parameters<typeof updateMutation.mutateAsync>[0]['params'],
+        })
       }
     } finally {
       setIsLoading(false)

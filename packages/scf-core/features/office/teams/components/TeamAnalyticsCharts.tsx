@@ -1,6 +1,6 @@
 import { useTeamAnalyticsOverview, useTeamWorkload } from '@scf/core/utils/teams-sdk-hooks'
 import type { TeamWorkloadSnapshot } from '@scaffald/sdk'
-import { BarChart, LineChart, PieChart, useThemeContext } from '@scaffald/ui'
+import { BarChart, LinearChart, PieChart, useThemeContext } from '@scaffald/ui'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
@@ -209,7 +209,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             accessibilityHint={timeToFirstReviewSummary ?? undefined}
             style={isSmallScreen ? { minWidth: Math.max(width - 48, 320) } : undefined}
           >
-            <LineChart
+            <LinearChart
               data={timeToFirstReviewTrend}
               height={220}
               width={isSmallScreen ? Math.max(width - 80, 360) : undefined}

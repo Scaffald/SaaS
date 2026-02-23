@@ -32,7 +32,7 @@ export function useAssessmentStatus() {
       nextAvailableAt: luscherAvailabilityQuery.data?.nextAvailableAt ?? null,
     },
     ipip: {
-      isCompleted: ipipQuery.data?.isCompleted ?? false,
+      isCompleted: (ipipQuery.data as { data?: { isCompleted?: boolean } } | undefined)?.data?.isCompleted ?? false,
       isLoading: ipipQuery.isLoading,
     },
     luscher2: {
@@ -40,11 +40,11 @@ export function useAssessmentStatus() {
       isLoading: luscher2Query.isLoading,
     },
     riasec: {
-      isCompleted: riasecQuery.data?.isCompleted ?? false,
+      isCompleted: (riasecQuery.data as { isCompleted?: boolean; complete?: boolean })?.isCompleted ?? (riasecQuery.data as { complete?: boolean })?.complete ?? false,
       isLoading: riasecQuery.isLoading,
     },
     occupation: {
-      isCompleted: occupationQuery.data?.isCompleted ?? false,
+      isCompleted: (occupationQuery.data as { isCompleted?: boolean; complete?: boolean })?.isCompleted ?? (occupationQuery.data as { complete?: boolean })?.complete ?? false,
       isLoading: occupationQuery.isLoading,
     },
   }

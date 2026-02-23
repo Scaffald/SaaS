@@ -10,7 +10,7 @@ export function ResumeUploadButton({
   onPress,
   label = 'Import from Resume',
   size = '$4',
-  variant = 'outlined',
+  variant = 'outline',
   icon = UploadCloud,
   ...rest
 }: ResumeUploadButtonProps) {

@@ -19,6 +19,39 @@ interface AcceptanceBadgeProps {
   acceptedAt?: string
 }
 
+interface InquiryRecord {
+  rate_min_cents?: number | null
+  rate_max_cents?: number | null
+  workdays?: string[] | null
+  employment_type?: string | null
+  employment_type_negotiable?: boolean
+  work_schedule?: string | null
+  work_schedule_negotiable?: boolean
+  working_hours_start?: string | null
+  working_hours_end?: string | null
+  working_hours_timezone?: string | null
+  working_hours_negotiable?: boolean
+  workdays_negotiable?: boolean
+  employment_start_date?: string | null
+  employment_end_date?: string | null
+  employment_dates_negotiable?: boolean
+  rate_type?: string | null
+  rate_negotiable?: boolean
+  endurance_required?: boolean
+  willing_to_travel?: boolean | null
+  travel_distance_miles?: number | null
+  willing_to_work_overtime?: boolean | null
+  has_drivers_license?: boolean | null
+  additional_notes?: string | null
+  [key: string]: unknown
+}
+
+interface InquirySectionRecord {
+  section_name: string
+  accepted_by?: string | null
+  accepted_at?: string | null
+}
+
 function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
   if (!acceptedBy) return null
 
@@ -73,16 +106,20 @@ export function InquiryViewOrganization({
     )
   }
 
-  const { inquiry, sections, comments } = data
+  const { comments } = data
+  const inquiry = data.inquiry as InquiryRecord
+  const sections = data.sections as InquirySectionRecord[]
 
   // Group comments by section
   const commentsBySection = useMemo(() => {
     const grouped: Record<string, typeof comments> = {}
     for (const comment of comments) {
-      if (!grouped[comment.section_name]) {
-        grouped[comment.section_name] = []
+      const sectionName = comment.section_name
+      if (sectionName == null) continue
+      if (!grouped[sectionName]) {
+        grouped[sectionName] = []
       }
-      grouped[comment.section_name].push(comment)
+      grouped[sectionName].push(comment)
     }
     return grouped
   }, [comments])
@@ -158,17 +195,17 @@ export function InquiryViewOrganization({
     children: ReactNode
   }) => {
     const section = sections.find(
-      (s: { section_name: InquirySectionName }) => s.section_name === sectionName
+      (s) => s.section_name === sectionName
     )
     const sectionComments = commentsBySection[sectionName] || []
 
     return (
-      <Card padding="md" gap={12}>
+      <Card padding="md" style={{ gap: 12 }}>
         {/* Section Header */}
         <Row justify="space-between" align="center">
           <Text>{title}</Text>
           {section && (
-            <AcceptanceBadge acceptedBy={section.accepted_by} acceptedAt={section.accepted_at} />
+            <AcceptanceBadge acceptedBy={section.accepted_by ?? undefined} acceptedAt={section.accepted_at ?? undefined} />
           )}
         </Row>
 
@@ -210,7 +247,7 @@ export function InquiryViewOrganization({
                   ? 'Temporary'
                   : null
             }
-            negotiable={inquiry.employment_type_negotiable}
+            negotiable={inquiry.employment_type_negotiable ?? true}
           />
           <InquiryField
             label="Work schedule"
@@ -223,7 +260,7 @@ export function InquiryViewOrganization({
                     ? 'Day-Week'
                     : null
             }
-            negotiable={inquiry.work_schedule_negotiable}
+            negotiable={inquiry.work_schedule_negotiable ?? true}
           />
           {inquiry.working_hours_start && inquiry.working_hours_end && (
             <InquiryField
@@ -231,24 +268,24 @@ export function InquiryViewOrganization({
               value={`${inquiry.working_hours_start} - ${inquiry.working_hours_end}${
                 inquiry.working_hours_timezone ? ` (${inquiry.working_hours_timezone})` : ''
               }`}
-              negotiable={inquiry.working_hours_negotiable}
+              negotiable={inquiry.working_hours_negotiable ?? true}
             />
           )}
           <InquiryField
             label="Workdays"
             value={formatWorkdays()}
-            negotiable={inquiry.workdays_negotiable}
+            negotiable={inquiry.workdays_negotiable ?? true}
           />
           <InquiryField
             label="Start date"
             value={formatDate(inquiry.employment_start_date)}
-            negotiable={inquiry.employment_dates_negotiable}
+            negotiable={inquiry.employment_dates_negotiable ?? true}
           />
           {inquiry.employment_end_date && (
             <InquiryField
               label="End date"
               value={formatDate(inquiry.employment_end_date)}
-              negotiable={inquiry.employment_dates_negotiable}
+              negotiable={inquiry.employment_dates_negotiable ?? true}
             />
           )}
         </InquirySection>
@@ -258,7 +295,7 @@ export function InquiryViewOrganization({
           <InquiryField
             label="Rate"
             value={`${formatRate()} ${inquiry.rate_type === 'hourly' ? '/hr' : '/yr'}`}
-            negotiable={inquiry.rate_negotiable}
+            negotiable={inquiry.rate_negotiable ?? true}
           />
         </InquirySection>
 

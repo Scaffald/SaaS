@@ -1,5 +1,5 @@
 import { Sparkles } from 'lucide-react-native'
-import { Progress, Text, Row, Stack } from '@scaffald/ui'
+import { ProgressBar, Text, Row, Stack } from '@scaffald/ui'
 
 interface SkillCompletionProgressProps {
   /** Current skill count */
@@ -47,9 +47,13 @@ export function SkillCompletionProgress({
           <Text color="$blue11">Skill section completeness</Text>
           <Text color="$blue11">{completionPercent}%</Text>
         </Row>
-        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="sm">
-          <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />
-        </Progress>
+        <ProgressBar
+          value={completionPercent}
+          color={completionPercent >= 100 ? 'success' : 'primary'}
+          showIndicator={false}
+          showLabel={false}
+          showHintMessage={false}
+        />
       </Stack>
     </Stack>
   )

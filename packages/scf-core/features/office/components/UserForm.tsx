@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useOfficeUpdateUserMutation } from '@scf/core/utils/office-users-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
@@ -63,12 +63,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
   const [currentTitle, setCurrentTitle] = useState(initialPrivateData?.current_title || '')
   const [currentEmployer, setCurrentEmployer] = useState(initialPrivateData?.current_employer || '')
 
-  const updateUserMutation = api.office.updateUser.useMutation({
+  const updateUserMutation = useOfficeUpdateUserMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [['office', 'getUser'], { input: { id: userId } }],
-      })
-      queryClient.invalidateQueries({ queryKey: [['office', 'listUsers']] })
+      queryClient.invalidateQueries({ queryKey: ['office', 'users'] })
       router.back()
     },
   })
@@ -101,8 +98,10 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
     updateUserMutation.mutate({
       id: userId,
-      profile: Object.keys(profileData).length > 0 ? profileData : undefined,
-      privateData: Object.keys(privateData).length > 0 ? privateData : undefined,
+      params: {
+        profile: Object.keys(profileData).length > 0 ? profileData : undefined,
+        privateData: Object.keys(privateData).length > 0 ? privateData : undefined,
+      },
     })
   }
 

@@ -1,6 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
-import { api } from '@scf/core/utils/api'
+import { useOfficeListJobs, useOfficeDeleteJobMutation, useOfficeDuplicateJobMutation } from '@scf/core/utils/jobs-sdk-hooks'
+import { useTeams } from '@scf/core/utils/teams-sdk-hooks'
+import { useOfficeOrganizations } from '@scf/core/utils/office-organizations-sdk-hooks'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
@@ -139,12 +140,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const [organizationFilter, setOrganizationFilter] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<SortOption>('created_desc')
 
-  const { data: teamsData, isLoading: teamsLoading } = api.teams.list.useQuery({
-    includeArchived: false,
-  })
+  const { data: teamsData, isLoading: teamsLoading } = useTeams({ includeArchived: false })
   const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
-  const { data: organizationsData } = api.office.getOrganizations.useQuery()
+  const { data: organizationsData } = useOfficeOrganizations()
 
   const { data, isLoading, refetch } = useOfficeListJobs({
     limit: 100,
@@ -154,24 +153,24 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
     status: statusFilter ? (statusFilter as 'draft' | 'open' | 'paused' | 'closed') : undefined,
   })
 
-  const deleteMutation = api.office.deleteJob.useMutation({
+  const deleteMutation = useOfficeDeleteJobMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
-  const duplicateMutation = api.office.duplicateJob.useMutation({
+  const duplicateMutation = useOfficeDuplicateJobMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync({ id })
+    await deleteMutation.mutateAsync(id)
   }
 
   const handleDuplicate = async (id: string) => {
-    await duplicateMutation.mutateAsync({ id })
+    await duplicateMutation.mutateAsync(id)
   }
 
   const jobs = data?.jobs ?? []

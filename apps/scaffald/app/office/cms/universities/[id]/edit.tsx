@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficeUniversitiesForm } from '@scf/core/features/office/office-universities-form'
-import { api } from '@scf/core/utils/api'
+import { useOfficeUniversity } from '@scf/core/utils/office-universities-sdk-hooks'
 import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 
@@ -16,10 +16,7 @@ export default function EditUniversityPage() {
     )
   }
 
-  const { data, isLoading } = api.office.universities.getUniversity.useQuery(
-    { id },
-    { enabled: !!id }
-  )
+  const { data, isLoading } = useOfficeUniversity(id || undefined, { enabled: !!id })
 
   if (isLoading) {
     return (

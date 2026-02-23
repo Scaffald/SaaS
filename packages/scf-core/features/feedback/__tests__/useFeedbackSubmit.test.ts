@@ -84,7 +84,7 @@ describe("useFeedbackSubmit", () => {
       attempts: 1,
     };
 
-    getPendingFeedbackQueueMock.mockResolvedValueOnce([pendingSubmission]);
+    storageMocks.getPendingFeedbackQueue.mockResolvedValueOnce([pendingSubmission]);
 
     submitMutation.mutateAsync.mockResolvedValue({ id: "feedback-id" });
 

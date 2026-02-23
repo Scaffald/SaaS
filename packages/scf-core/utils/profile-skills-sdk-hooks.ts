@@ -17,7 +17,7 @@ import type {
   UpdateSoftSkillsResponse,
   GetSoftSkillsHistoryResponse,
   GetSoftSkillsComparisonResponse,
-  GetIndustriesResponse,
+  GetSkillIndustriesResponse,
   SearchParentSkillsParams,
   SearchParentSkillsResponse,
   GetSkillChildrenParams,
@@ -111,7 +111,7 @@ export function useUpdateSoftSkillsMutation(
 // ============================================================================
 
 export function useIndustries(
-  options?: Omit<UseQueryOptions<GetIndustriesResponse, Error>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<GetSkillIndustriesResponse, Error>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffaldJobsClient()
   return useQuery({

@@ -4,10 +4,10 @@ import {
   FEEDBACK_MIN_LENGTH,
 } from '@scf/schemas/feedback'
 import type { UploadSelection } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   FieldError,
-  Image,
   Input,
   Paragraph,
   ResponsiveModal,
@@ -18,6 +18,7 @@ import {
   Row,
   Stack,
 } from '@scaffald/ui'
+import { Image } from 'expo-image'
 import { MessageCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -38,20 +39,9 @@ function formatCharacterCounter(current: number) {
 }
 
 function toScreenshotSource(selection: UploadSelection): FeedbackScreenshotSource {
-  if (selection.platform === 'web') {
-    return {
-      kind: 'web',
-      file: selection.file,
-    }
-  }
-
-  return {
-    kind: 'native',
-    uri: selection.asset.uri,
-    name: selection.asset.name ?? 'feedback-screenshot',
-    mimeType: selection.asset.type ?? 'image/png',
-    size: selection.asset.size,
-  }
+  const file = selection.files[0]
+  if (!file) throw new Error('No file selected')
+  return { kind: 'web', file }
 }
 
 export function FeedbackWidget() {
@@ -110,16 +100,11 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <Stack position="absolute" bottom={16} right={16} style={{ zIndex: 1000 }}>
+      <Stack style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 1000 }}>
         <Button
-          size={24}
+          size="sm"
           iconStart={MessageCircle}
-          backgroundColor="$blue9"
-          color="$gray11"
-          elevation="lg"
-          pressStyle={{ scale: 0.97 }}
-          hoverStyle={{ backgroundColor: '$blue10' }}
-          focusStyle={{ outlineColor: '$blue8' }}
+          variant="filled"
           onPress={() => setIsModalOpen(true)}
         >
           Feedback
@@ -167,8 +152,8 @@ export function FeedbackWidget() {
                         <Button
                           key={type}
                           size="sm"
-                          theme={isActive ? 'blue' : undefined}
-                          variant={isActive ? undefined : 'outlined'}
+                          color={isActive ? 'primary' : undefined}
+                          variant={isActive ? 'filled' : 'outline'}
                           onPress={() => onChange(type)}
                         >
                           {type === 'bug'
@@ -197,13 +182,8 @@ export function FeedbackWidget() {
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="Describe your feedback in detail..."
-                    backgroundColor="$color2"
-                    borderColor={isBelowMinimum ? '$red7' : '$color6'}
-                    textAlignVertical="top"
-                    focusStyle={{
-                      borderColor: '$blue7',
-                      outlineColor: '$blue7',
-                    }}
+                    error={isBelowMinimum}
+                    contentStyle={{ textAlignVertical: 'top' }}
                   />
                 )}
               />
@@ -235,25 +215,29 @@ export function FeedbackWidget() {
                 {({ open, getInputProps, getRootProps, isDragActive, isProcessing }) => (
                   <Stack
                     {...getRootProps()}
-                    borderWidth={1}
-                    borderStyle="dashed"
                     paddingHorizontal={16}
                     paddingVertical={24}
                     align="center"
                     justify="center"
                     gap={8}
-                    backgroundColor="$color2"
-                    borderColor={isDragActive ? '$blue7' : '$color6'}
                     borderRadius={16}
+                    style={{
+                      borderWidth: 1,
+                      borderStyle: 'dashed',
+                      backgroundColor: colors.gray[50],
+                      borderColor: isDragActive ? colors.info[200] : colors.gray[200],
+                    }}
                   >
                     <input {...getInputProps()} />
                     <Text>{isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}</Text>
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.gray[500] }}>
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
                     </Text>
-                    <Button size="sm" marginTop={8} onPress={open}>
-                      Choose File
-                    </Button>
+                    <Stack style={{ marginTop: 8 }}>
+                      <Button size="sm" onPress={open}>
+                        Choose File
+                      </Button>
+                    </Stack>
                   </Stack>
                 )}
               </UploadSurface>
@@ -262,16 +246,15 @@ export function FeedbackWidget() {
                 <Stack
                   marginTop={12}
                   borderWidth={1}
-                  borderColor="$color6"
-                  overflow="hidden"
+                  borderColor={colors.gray[200]}
                   borderRadius={16}
+                  style={{ overflow: 'hidden' }}
                 >
                   {screenshotPreview ? (
                     <Image
                       source={{ uri: screenshotPreview }}
-                      width="100%"
-                      height={200}
-                      resizeMode="cover"
+                      style={{ width: '100%', height: 200 }}
+                      contentFit="cover"
                     />
                   ) : null}
                   <Row
@@ -286,7 +269,7 @@ export function FeedbackWidget() {
                       <Text>
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
-                      <Text color="$gray11">
+                      <Text style={{ color: colors.gray[500] }}>
                         {screenshot.kind === 'web'
                           ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
@@ -304,9 +287,9 @@ export function FeedbackWidget() {
 
             <Row align="center" justify="space-between" gap={12}>
               <Stack gap={4}>
-                <Text color="$gray11">Captured context:</Text>
-                <Text color="$gray11">{context.pageUrl}</Text>
-                <Text color="$gray11">
+                <Text style={{ color: colors.gray[500] }}>Captured context:</Text>
+                <Text style={{ color: colors.gray[500] }}>{context.pageUrl}</Text>
+                <Text style={{ color: colors.gray[500] }}>
                   {context.browserName
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}

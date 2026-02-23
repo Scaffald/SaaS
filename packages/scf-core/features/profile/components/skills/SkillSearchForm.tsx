@@ -1,4 +1,4 @@
-import { CustomCheckbox } from '@scaffald/ui'
+import { Checkbox } from '@scaffald/ui'
 import { useCallback } from 'react'
 import { Label, Text, Row, Stack } from '@scaffald/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
@@ -61,21 +61,19 @@ export function SkillSearchForm({
         {/* Taxonomy Checkboxes */}
         <Row gap={12} align="center">
           <Row gap={8} align="center">
-            <CustomCheckbox
+            <Checkbox
               checked={searchCSI}
               onChange={onSearchCSIChange}
               aria-label="Filter CSI taxonomy"
-              testID="search-csi"
             />
             <Label onPress={() => onSearchCSIChange(!searchCSI)}>CSI</Label>
           </Row>
 
           <Row gap={8} align="center">
-            <CustomCheckbox
+            <Checkbox
               checked={searchONET}
               onChange={onSearchONETChange}
               aria-label="Filter O*NET taxonomy"
-              testID="search-onet"
             />
             <Label onPress={() => onSearchONETChange(!searchONET)}>O*NET</Label>
           </Row>

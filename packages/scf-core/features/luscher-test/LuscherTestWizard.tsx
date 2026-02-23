@@ -36,7 +36,7 @@ export function LuscherTestWizard() {
 
   const queryClient = useQueryClient()
 
-  const availability = availabilityData?.data
+  const availability = availabilityData
   const assessment = assessmentData?.data
 
   // Save Part 1 mutation

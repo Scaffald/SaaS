@@ -1,6 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useOfficeUpdateJobMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import { useThemeContext } from '@scaffald/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import {
@@ -12,7 +11,6 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ScrollView, View } from 'react-native'
@@ -20,9 +18,7 @@ import { Text, Row, Stack, useToast } from '@scaffald/ui'
 import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
 import { colors } from '@scaffald/ui/tokens'
-
-type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
-type Job = JobListOutput['jobs'][number]
+import type { Job } from '@scaffald/sdk/resources/jobs'
 
 export type JobStatus = 'draft' | 'open' | 'paused' | 'closed'
 
@@ -93,7 +89,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [updatingJobId, setUpdatingJobId] = useState<string | null>(null)
 
-  const updateJobMutation = api.office.updateJob.useMutation({
+  const updateJobMutation = useOfficeUpdateJobMutation({
     onSuccess: () => {
       setUpdatingJobId(null)
       onJobUpdate?.()
@@ -151,7 +147,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
     setUpdatingJobId(jobId)
     await updateJobMutation.mutateAsync({
       id: jobId,
-      status: newStatus,
+      params: { status: newStatus },
     })
   }
 

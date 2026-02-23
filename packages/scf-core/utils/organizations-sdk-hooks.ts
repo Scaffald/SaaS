@@ -32,7 +32,7 @@ import type {
   ExportAuditLogParams,
   AuditLogExportResponse,
   StorageUsageSummary,
-} from '@scaffald/sdk/types/organizations'
+} from '@scaffald/sdk'
 
 // ============================================================================
 // ORGANIZATION QUERY HOOKS

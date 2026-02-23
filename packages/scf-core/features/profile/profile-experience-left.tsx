@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
-  CustomCheckbox,
+  Checkbox,
   DashboardWidget,
   MonthYearPicker,
   ResponsiveSelect,
@@ -522,7 +522,7 @@ export function ProfileExperienceLeft() {
                   const isRemote = Boolean(field.value)
                   return (
                     <Row gap={8} align="center">
-                      <CustomCheckbox
+                      <Checkbox
                         checked={isRemote}
                         onChange={field.onChange}
                         testID={`remote-${index}`}
@@ -586,7 +586,7 @@ export function ProfileExperienceLeft() {
                   const isCurrent = Boolean(field.value)
                   return (
                     <Row gap={8} align="center">
-                      <CustomCheckbox
+                      <Checkbox
                         checked={isCurrent}
                         onChange={field.onChange}
                         testID={`current-${index}`}

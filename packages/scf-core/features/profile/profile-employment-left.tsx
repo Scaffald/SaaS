@@ -19,7 +19,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
-  CustomCheckbox,
+  Checkbox,
   DashboardWidget,
   LocationListInput,
   SkeletonForm,
@@ -124,7 +124,7 @@ function MultiSelectToggleField({
             const isChecked = selectedValues.includes(option)
             return (
               <Row key={option} gap={12} align="center">
-                <CustomCheckbox
+                <Checkbox
                   aria-label={option}
                   checked={isChecked}
                   onChange={(value) => handleOptionChange(option, value)}
@@ -550,20 +550,18 @@ export function ProfileEmploymentLeft() {
               >
                 <AnimatePresence>
                   {isSyncing && (
-                    <Button.Icon>
-                      <Spinner
-                        animation="bouncy"
-                        enterStyle={{
-                          scale: 0,
-                        }}
-                        exitStyle={{
-                          scale: 0,
-                        }}
-                      />
-                    </Button.Icon>
+                    <Spinner
+                      animation="bouncy"
+                      enterStyle={{
+                        scale: 0,
+                      }}
+                      exitStyle={{
+                        scale: 0,
+                      }}
+                    />
                   )}
                 </AnimatePresence>
-                <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
+                {isSyncing ? 'Saving...' : 'Save Changes'}
               </Button>
             </Row>
 

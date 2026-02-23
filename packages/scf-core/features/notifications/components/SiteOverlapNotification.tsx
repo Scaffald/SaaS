@@ -62,15 +62,15 @@ export function SiteOverlapNotification({
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
             <Row gap={8} wrap>
-              <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
+              <Card padding="sm" backgroundColor="$yellow3" radius="md">
                 <Row gap={8} align="center">
-                  <MapPin size="md" />
+                  <MapPin size={24} />
                   <Text>Site 1: {siteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
-              <Card padding="xs" backgroundColor="$yellow3" borderRadius={8}>
+              <Card padding="sm" backgroundColor="$yellow3" radius="md">
                 <Row gap={8} align="center">
-                  <MapPin size="md" />
+                  <MapPin size={24} />
                   <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>

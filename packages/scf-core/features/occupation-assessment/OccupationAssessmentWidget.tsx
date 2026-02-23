@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { Spinner, Text, Stack } from '@scaffald/ui'
 
@@ -16,8 +16,8 @@ export function OccupationAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="$blue7" />
+        <Stack gap={8} align="center" paddingVertical={40}>
+          <Spinner size="lg" color="primary" />
           <Text color="$gray11">Loading...</Text>
         </Stack>
       </DashboardWidget>
@@ -34,8 +34,8 @@ export function OccupationAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
-        <Stack gap={spacing.xs}>
+      <Stack gap={12}>
+        <Stack gap={4}>
           <Text color="$gray11">Occupation Preferences</Text>
           <Text color="$gray11">
             Tell us about your current occupation and target occupations to help us recommend

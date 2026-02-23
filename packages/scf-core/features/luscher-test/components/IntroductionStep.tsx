@@ -10,10 +10,10 @@ export interface IntroductionStepProps {
  */
 export function IntroductionStep({ onBegin }: IntroductionStepProps) {
   return (
-    <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto" padding="md">
+    <Stack gap={24} maxWidth={800} width="100%" padding="md" style={{ marginHorizontal: 'auto' }}>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="$gray11" lineHeight={4}>
+          <Text color="$gray11" style={{ lineHeight: 24 }}>
             This lightweight, weekly self-assessment helps you track your mood and encourages
             consistent, reflective engagement.
           </Text>
@@ -31,25 +31,25 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
           <Stack gap={8}>
             <Row gap={8} align="center">
               <Text color="$gray11">•</Text>
-              <Text color="$gray11" flex={1}>
+              <Text color="$gray11" style={{ flex: 1 }}>
                 Takes approximately 2–3 minutes to complete
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Text color="$gray11">•</Text>
-              <Text color="$gray11" flex={1}>
+              <Text color="$gray11" style={{ flex: 1 }}>
                 Two color selection rounds separated by a 60-second cooldown
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Text color="$gray11">•</Text>
-              <Text color="$gray11" flex={1}>
+              <Text color="$gray11" style={{ flex: 1 }}>
                 Produces quantitative state metrics for mood tracking
               </Text>
             </Row>
             <Row gap={8} align="center">
               <Text color="$gray11">•</Text>
-              <Text color="$gray11" flex={1}>
+              <Text color="$gray11" style={{ flex: 1 }}>
                 Earns Frequency XP for consistent engagement
               </Text>
             </Row>
@@ -74,7 +74,7 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
         </Stack>
       </Stack>
 
-      <Button size="lg" themeInverse onPress={onBegin}>
+      <Button size="lg" variant="light" color="primary" onPress={onBegin}>
         Begin Test
       </Button>
     </Stack>

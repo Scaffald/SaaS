@@ -9,6 +9,7 @@ import { Button, Input, ScrollView, Separator, Text, Row, Stack } from '@scaffal
 import { Check, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
+import { Pressable } from 'react-native'
 import { CapabilityQuestionInput } from './CapabilityQuestionInput'
 import { InquiryCommentThread } from './InquiryCommentThread'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
@@ -72,7 +73,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     onSuccess: () => {
       toast.show({
         title: 'Section accepted',
-        message: 'You have accepted this section of the inquiry.',
+        message: 'You have accepted this section of the inv.',
       })
     },
     onError: (error) => {
@@ -148,7 +149,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   if (isLoading) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text>Loading inquiry...</Text>
+        <Text>Loading inv...</Text>
       </Stack>
     )
   }
@@ -163,9 +164,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   // Format rate for display
   const formatRate = () => {
-    if (!inquiry.rate_min_cents) return 'Not specified'
-    const min = (inquiry.rate_min_cents / 100).toFixed(2)
-    const max = inquiry.rate_max_cents ? (inquiry.rate_max_cents / 100).toFixed(2) : null
+    const minCents = Number((inquiry as Record<string, unknown>).rate_min_cents)
+    if (!minCents || Number.isNaN(minCents)) return 'Not specified'
+    const min = (minCents / 100).toFixed(2)
+    const maxCents = Number((inquiry as Record<string, unknown>).rate_max_cents)
+    const max = maxCents && !Number.isNaN(maxCents) ? (maxCents / 100).toFixed(2) : null
     return max ? `$${min} - $${max}` : `$${min}`
   }
 
@@ -195,7 +198,8 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   // Format workdays
   const formatWorkdays = () => {
-    if (!inquiry.workdays || inquiry.workdays.length === 0) return 'Not specified'
+    const workdays = (inquiry as Record<string, unknown>).workdays
+    if (!Array.isArray(workdays) || workdays.length === 0) return 'Not specified'
     const dayLabels: Record<string, string> = {
       monday: 'Mon',
       tuesday: 'Tue',
@@ -205,7 +209,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
       saturday: 'Sat',
       sunday: 'Sun',
     }
-    return inquiry.workdays.map((day: string) => dayLabels[day] || day).join(', ')
+    return workdays.map((day: string) => dayLabels[day] || day).join(', ')
   }
 
   type JobPayRangeSource = {
@@ -284,17 +288,39 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     return status.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
   }
 
-  const { inquiry, sections: rawSections, comments } = data
+  const { sections: rawSections, comments } = data
+  const inquiry = data.inquiry as Record<string, unknown>
+  const inv = inquiry as Record<string, string | boolean | number | string[] | undefined>
   const sections = rawSections as InquirySectionStatus[]
-  const jobInfo = data.job ?? data.application?.job ?? null
-  const applicationInfo = data.application ?? null
+  type JobInfoSource = {
+    title?: string
+    location?: string
+    organizationName?: string
+    organization?: { name?: string }
+    employmentType?: string
+    remoteOption?: string
+    payRangeMinCents?: number | null
+    payRangeMaxCents?: number | null
+    payRangeType?: string | null
+  }
+  type ApplicationInfoSource = {
+    job?: JobInfoSource
+    status?: string
+    createdAt?: string
+    updatedAt?: string
+    stageChangedAt?: string
+    jobTitle?: string
+    applicationScore?: number | null
+  }
+  const jobInfo = (data.job ?? (data.application as ApplicationInfoSource | undefined)?.job ?? null) as JobInfoSource | null
+  const applicationInfo = (data.application ?? null) as ApplicationInfoSource | null
   const capabilityQuestions =
     (data.capabilityQuestions as CapabilityQuestionDefinition[] | undefined) ?? []
   const jobTitleDisplay =
     jobInfo?.title ??
     applicationInfo?.job?.title ??
     data.application?.jobTitle ??
-    inquiry.job_title ??
+    inv.job_title ??
     'Job'
   const jobOrganizationName =
     jobInfo?.organizationName ??
@@ -302,19 +328,19 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     applicationInfo?.job?.organization?.name ??
     null
   const jobLocation =
-    jobInfo?.location ?? applicationInfo?.job?.location ?? inquiry.working_hours_timezone ?? null
+    jobInfo?.location ?? applicationInfo?.job?.location ?? inv.working_hours_timezone ?? null
   const jobEmploymentType = formatEmploymentTypeLabel(
-    jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inquiry.employment_type
+    (jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inv.employment_type) as string | null | undefined
   )
   const jobRemoteOption = formatRemoteOptionLabel(
     jobInfo?.remoteOption ?? applicationInfo?.job?.remoteOption ?? null
   )
   const jobPayRange =
     formatJobPayRange(jobInfo) ?? formatJobPayRange(applicationInfo?.job ?? null) ?? null
-  const applicationStatus = formatStatus(applicationInfo?.status)
-  const submittedAtDisplay = formatDateTime(applicationInfo?.createdAt)
-  const updatedAtDisplay = formatDateTime(applicationInfo?.updatedAt)
-  const stageChangedDisplay = formatDateTime(applicationInfo?.stageChangedAt)
+  const applicationStatus = formatStatus(applicationInfo?.status ?? null)
+  const submittedAtDisplay = formatDateTime(applicationInfo?.createdAt ?? null)
+  const updatedAtDisplay = formatDateTime(applicationInfo?.updatedAt ?? null)
+  const stageChangedDisplay = formatDateTime(applicationInfo?.stageChangedAt ?? null)
 
   // Calculate progress
   const acceptedSections = sections.filter((s) => s.accepted_by).length
@@ -325,20 +351,33 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const commentsBySection = useMemo(() => {
     const grouped: Record<string, typeof comments> = {}
     for (const comment of comments) {
-      if (!grouped[comment.section_name]) {
-        grouped[comment.section_name] = []
+      const sectionName = comment.section_name
+      if (sectionName == null) continue
+      if (!grouped[sectionName]) {
+        grouped[sectionName] = []
       }
-      grouped[comment.section_name].push(comment)
+      grouped[sectionName].push(comment)
     }
     return grouped
   }, [comments])
 
-  const DetailRow = ({ label, value }: { label: string; value?: string | null }) => (
-    <Row justify="space-between" align="center">
-      <Text>{label}</Text>
-      <Text color="$gray11">{value && value.length > 0 ? value : 'Not specified'}</Text>
-    </Row>
-  )
+  const DetailRow = ({ label, value }: { label: string; value?: unknown }) => {
+    const display =
+      value == null
+        ? 'Not specified'
+        : typeof value === 'object' && !Array.isArray(value)
+          ? 'Not specified'
+          : Array.isArray(value)
+            ? value.join(', ')
+            : String(value)
+    const text = display.length > 0 ? display : 'Not specified'
+    return (
+      <Row justify="space-between" align="center">
+        <Text>{label}</Text>
+        <Text color="$gray11">{text}</Text>
+      </Row>
+    )
+  }
 
   const SectionHeader = ({
     title,
@@ -353,16 +392,15 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   }) => {
     const isExpanded = expandedSections.has(sectionName)
     return (
-      <Row
-        align="center"
-        justify="space-between"
-        padding="sm"
-        backgroundColor="$color2"
-        borderRadius={12}
-        cursor="pointer"
-        onPress={() => toggleSection(sectionName)}
-      >
-        <Row align="center" gap={8} flex={1}>
+      <Pressable onPress={() => toggleSection(sectionName)}>
+        <Row
+          align="center"
+          justify="space-between"
+          padding="sm"
+          backgroundColor="$color2"
+          borderRadius={12}
+        >
+        <Row align="center" gap={8} style={{ flex: 1 }}>
           {isExpanded ? (
             <ChevronUp size="md" color="$gray11" />
           ) : (
@@ -388,8 +426,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               <Text color="$gray11">{commentCount}</Text>
             </Row>
           )}
+          </Row>
         </Row>
-      </Row>
+      </Pressable>
     )
   }
 
@@ -403,19 +442,17 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     <ScrollView>
       <Stack gap={16} padding="md">
         {/* Progress Indicator */}
-        <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
+          <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
           <Row justify="space-between" align="center">
             <Text>Inquiry Progress</Text>
             <Text color="$blue11">
               {acceptedSections}/{totalSections}
             </Text>
           </Row>
-          <Stack height={8} backgroundColor="$color3" borderRadius="$10" overflow="hidden">
+          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 10 }} backgroundColor="$color3">
             <Stack
-              height="100%"
+              style={{ height: '100%', width: `${progress}%` }}
               backgroundColor="$blue9"
-              width={`${progress}%`}
-              animation="quick"
             />
           </Stack>
         </Stack>
@@ -510,68 +547,68 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             >
               {/* Employment Terms */}
               <Stack gap={8}>
-                {inquiry.employment_type && (
+                {inv.employment_type && (
                   <Row justify="space-between" align="center">
                     <Text>Employment type</Text>
                     <Row align="center" gap={8}>
                       <Text>
-                        {inquiry.employment_type === 'permanent' ? 'Permanent' : 'Temporary'}
+                        {inv.employment_type === 'permanent' ? 'Permanent' : 'Temporary'}
                       </Text>
-                      {!inquiry.employment_type_negotiable && <NonNegotiableBadge />}
+                      {!inv.employment_type_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
                 )}
-                {inquiry.work_schedule && (
+                {inv.work_schedule && (
                   <Row justify="space-between" align="center">
                     <Text>Work schedule</Text>
                     <Row align="center" gap={8}>
                       <Text>
-                        {inquiry.work_schedule === 'full_time'
+                        {inv.work_schedule === 'full_time'
                           ? 'Full time'
-                          : inquiry.work_schedule === 'part_time'
+                          : inv.work_schedule === 'part_time'
                             ? 'Part time'
                             : 'Day-Week'}
                       </Text>
-                      {!inquiry.work_schedule_negotiable && <NonNegotiableBadge />}
+                      {!inv.work_schedule_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
                 )}
-                {inquiry.working_hours_start && inquiry.working_hours_end && (
+                {inv.working_hours_start && inv.working_hours_end && (
                   <Row justify="space-between" align="center">
                     <Text>Working hours</Text>
                     <Row align="center" gap={8}>
                       <Text>
-                        {inquiry.working_hours_start} - {inquiry.working_hours_end}
-                        {inquiry.working_hours_timezone && ` (${inquiry.working_hours_timezone})`}
+                        {inv.working_hours_start} - {inv.working_hours_end}
+                        {inv.working_hours_timezone && ` (${inv.working_hours_timezone})`}
                       </Text>
-                      {!inquiry.working_hours_negotiable && <NonNegotiableBadge />}
+                      {!inv.working_hours_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
                 )}
-                {inquiry.workdays && inquiry.workdays.length > 0 && (
+                {Array.isArray(inv.workdays) && inv.workdays.length > 0 && (
                   <Row justify="space-between" align="center">
                     <Text>Workdays</Text>
                     <Row align="center" gap={8}>
                       <Text>{formatWorkdays()}</Text>
-                      {!inquiry.workdays_negotiable && <NonNegotiableBadge />}
+                      {!inv.workdays_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
                 )}
-                {inquiry.employment_start_date && (
+                {inv.employment_start_date && (
                   <Row justify="space-between" align="center">
                     <Text>Start date</Text>
                     <Row align="center" gap={8}>
-                      <Text>{formatDate(inquiry.employment_start_date)}</Text>
-                      {!inquiry.employment_dates_negotiable && <NonNegotiableBadge />}
+                      <Text>{formatDate(typeof inv.employment_start_date === 'string' ? inv.employment_start_date : null)}</Text>
+                      {!inv.employment_dates_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
                 )}
-                {inquiry.employment_end_date && (
+                {inv.employment_end_date && (
                   <Row justify="space-between" align="center">
                     <Text>End date</Text>
                     <Row align="center" gap={8}>
-                      <Text>{formatDate(inquiry.employment_end_date)}</Text>
-                      {!inquiry.employment_dates_negotiable && <NonNegotiableBadge />}
+                      <Text>{formatDate(typeof inv.employment_end_date === 'string' ? inv.employment_end_date : null)}</Text>
+                      {!inv.employment_dates_negotiable && <NonNegotiableBadge />}
                     </Row>
                   </Row>
                 )}
@@ -591,7 +628,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('employment')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Employment Terms'}
                 </Button>
@@ -640,9 +677,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Text>Rate</Text>
                 <Row align="center" gap={8}>
                   <Text>
-                    {formatRate()} {inquiry.rate_type === 'hourly' ? '/hr' : '/yr'}
+                    {formatRate()} {inv.rate_type === 'hourly' ? '/hr' : '/yr'}
                   </Text>
-                  {!inquiry.rate_negotiable && <NonNegotiableBadge />}
+                  {!inv.rate_negotiable && <NonNegotiableBadge />}
                 </Row>
               </Row>
 
@@ -660,7 +697,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('compensation')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Compensation Terms'}
                 </Button>
@@ -707,7 +744,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               borderColor="$borderColor"
             >
               {/* Endurance Requirement */}
-              {inquiry.endurance_required && (
+              {inv.endurance_required && (
                 <Stack gap={8}>
                   <Text>Endurance Required</Text>
                   <CapabilityQuestionInput
@@ -787,7 +824,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('capabilities')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Capabilities Terms'}
                 </Button>
@@ -833,32 +870,32 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             >
               {/* Other Terms */}
               <Stack gap={8}>
-                {inquiry.willing_to_travel !== null && (
+                {inv.willing_to_travel !== null && (
                   <Row justify="space-between" align="center">
                     <Text>Willing to travel</Text>
                     <Text>
-                      {inquiry.willing_to_travel ? 'Yes' : 'No'}
-                      {inquiry.travel_distance_miles &&
-                        ` (up to ${inquiry.travel_distance_miles} miles)`}
+                      {inv.willing_to_travel ? 'Yes' : 'No'}
+                      {inv.travel_distance_miles &&
+                        ` (up to ${inv.travel_distance_miles} miles)`}
                     </Text>
                   </Row>
                 )}
-                {inquiry.willing_to_work_overtime !== null && (
+                {inv.willing_to_work_overtime !== null && (
                   <Row justify="space-between" align="center">
                     <Text>Willing to work overtime</Text>
-                    <Text>{inquiry.willing_to_work_overtime ? 'Yes' : 'No'}</Text>
+                    <Text>{inv.willing_to_work_overtime ? 'Yes' : 'No'}</Text>
                   </Row>
                 )}
-                {inquiry.has_drivers_license !== null && (
+                {inv.has_drivers_license !== null && (
                   <Row justify="space-between" align="center">
                     <Text>Has driver's license</Text>
-                    <Text>{inquiry.has_drivers_license ? 'Yes' : 'No'}</Text>
+                    <Text>{inv.has_drivers_license ? 'Yes' : 'No'}</Text>
                   </Row>
                 )}
-                {inquiry.additional_notes && (
+                {inv.additional_notes && (
                   <Stack gap={8}>
                     <Text>Additional notes</Text>
-                    <Text color="$gray11">{inquiry.additional_notes}</Text>
+                    <Text color="$gray11">{inv.additional_notes}</Text>
                   </Stack>
                 )}
               </Stack>
@@ -877,7 +914,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('other')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Other Terms'}
                 </Button>

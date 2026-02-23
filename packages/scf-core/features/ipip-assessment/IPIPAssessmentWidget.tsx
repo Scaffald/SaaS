@@ -4,10 +4,10 @@ import {
   useAssessmentStatus,
   useIPIPStatus,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { ProgressBar, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useIPIPResults } from './hooks/useIPIPResults'
 import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/domainGrouping'
 
@@ -22,14 +22,14 @@ export function IPIPAssessmentWidget() {
   const { data: assessmentData } = useAssessmentStatus()
   const results = useIPIPResults()
 
-  const status = statusData?.data
-  const assessment = assessmentData?.data
+  const status = (statusData as { data?: { isCompleted?: boolean; progress?: number } } | undefined)?.data
+  const assessment = (assessmentData as { data?: { ipip_answers?: unknown } } | undefined)?.data
 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="$blue7" />
+        <Stack gap={8} align="center" paddingVertical={40}>
+          <Spinner size="lg" color="primary" />
           <Text color="$gray11">Loading...</Text>
         </Stack>
       </DashboardWidget>
@@ -55,20 +55,20 @@ export function IPIPAssessmentWidget() {
   if (isCompleted && results.isComplete && results.archetype) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md}>
+        <Stack gap={12}>
           <Row justify="space-between" align="center">
-            <Stack gap={spacing.xs} flex={1}>
+            <Stack gap={4} flex={1}>
               <Row align="center" gap={8}>
-                <CheckCircle2 size="sm" color="$green10" />
+                <CheckCircle2 size={16} color="$green10" />
                 <Text color="$gray11">Personality Assessment</Text>
               </Row>
-              <Text color="$gray11">Your Big Five personality profile is complete</Text>
+              <Text color="$gray11" style={{ flex: 1 }}>Your Big Five personality profile is complete</Text>
             </Stack>
           </Row>
 
           {/* Results Preview */}
           <Stack
-            gap={spacing.sm}
+            gap={8}
             padding="sm"
             backgroundColor="$color2"
             borderRadius={12}
@@ -99,12 +99,10 @@ export function IPIPAssessmentWidget() {
 
                   return (
                     <Row key={domain} justify="space-between" align="center" gap={8}>
-                      <Text color="$gray11" flex={1}>
+                      <Text color="$gray11" style={{ flex: 1 }}>
                         {domainName}
                       </Text>
-                      <Progress value={percentage} max={100} size="sm" width={100}>
-                        <Progress.Indicator animation="bouncy" />
-                      </Progress>
+                      <ProgressBar value={percentage} />
                       <Text color="$gray11" style={{ minWidth: 45 }}>
                         {percentage}%
                       </Text>
@@ -123,9 +121,8 @@ export function IPIPAssessmentWidget() {
             )}
           </Stack>
 
-          <Button variant="filled" color="primary" onPress={handleViewResults} size="lg">
-            <Button.Text>View Full Results</Button.Text>
-            <ArrowRight size="sm" />
+          <Button variant="filled" color="primary" onPress={handleViewResults} size="lg" iconEnd={ArrowRight}>
+            View Full Results
           </Button>
         </Stack>
       </DashboardWidget>
@@ -135,8 +132,8 @@ export function IPIPAssessmentWidget() {
   // Show progress/CTA when in progress or not started
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
-        <Stack gap={spacing.xs}>
+      <Stack gap={12}>
+        <Stack gap={4}>
           <Text color="$gray11">Personality Assessment</Text>
           <Text color="$gray11">
             Answer 120 questions to discover your personality traits using the Big Five personality
@@ -153,16 +150,7 @@ export function IPIPAssessmentWidget() {
                 {progress}/120 ({progressPercentage}%)
               </Text>
             </Row>
-            <Progress
-              value={progressPercentage}
-              max={100}
-              aria-label="Overall personality assessment progress"
-              aria-valuenow={progressPercentage}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <Progress.Indicator animation="bouncy" />
-            </Progress>
+            <ProgressBar value={progressPercentage} />
             {completedDomains > 0 && (
               <Text color="$gray11">{completedDomains} of 5 domains completed</Text>
             )}
@@ -170,7 +158,7 @@ export function IPIPAssessmentWidget() {
         )}
 
         <Button variant="filled" color="primary" onPress={handleStart} size="lg">
-          <Button.Text>{hasStarted ? 'Continue Questions' : 'Start Questions'}</Button.Text>
+          {hasStarted ? 'Continue Questions' : 'Start Questions'}
         </Button>
 
         <Text color="$gray11">

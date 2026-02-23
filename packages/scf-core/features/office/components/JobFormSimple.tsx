@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useOfficeCreateJobMutation,
+  useOfficeUpdateJobMutation,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
@@ -42,10 +45,11 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
     position_level: initialData?.position_level || '',
   })
 
-  const createJob = api.office.createJob.useMutation({
+  const createJob = useOfficeCreateJobMutation({
     onSuccess: () => {
       toast.show({
         title: 'Job created successfully',
+        message: '',
         variant: 'success',
       })
       onSuccess?.()
@@ -55,15 +59,17 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
         title: `Error: ${message}`,
+        message: '',
         variant: 'error',
       })
     },
   })
 
-  const updateJob = api.office.updateJob.useMutation({
+  const updateJob = useOfficeUpdateJobMutation({
     onSuccess: () => {
       toast.show({
         title: 'Job updated successfully',
+        message: '',
         variant: 'success',
       })
       onSuccess?.()
@@ -73,25 +79,45 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
         title: `Error: ${message}`,
+        message: '',
         variant: 'error',
       })
     },
   })
 
   const handleSubmit = (asDraft = true) => {
-    const submitData = {
-      ...formData,
-      status: asDraft ? ('draft' as const) : ('open' as const),
-    }
+    const status = asDraft ? ('draft' as const) : ('open' as const)
 
     if (mode === 'create') {
-      // Form data is compatible with mutation input but has slightly different structure
-      createJob.mutate(submitData as unknown as Parameters<typeof createJob.mutate>[0])
+      createJob.mutate({
+        organization_id: formData.organization_id,
+        title: formData.title,
+        description: formData.description,
+        status,
+        employment_type: formData.employment_type as 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern' | undefined,
+        remote_option: formData.remote_option as 'on_site' | 'hybrid' | 'remote' | undefined,
+        position_level: formData.position_level,
+        location: formData.location,
+        pay_range_min_cents: formData.pay_range_min_cents,
+        pay_range_max_cents: formData.pay_range_max_cents,
+        pay_range_type: formData.pay_range_type as 'hourly' | 'salary' | 'contract' | 'project' | undefined,
+      })
     } else if (jobId) {
-      // Form data is compatible with mutation input but has slightly different structure
-      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<
-        typeof updateJob.mutate
-      >[0])
+      updateJob.mutate({
+        id: jobId,
+        params: {
+          title: formData.title,
+          description: formData.description,
+          status,
+          employment_type: formData.employment_type as 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern' | undefined,
+          remote_option: formData.remote_option as 'on_site' | 'hybrid' | 'remote' | undefined,
+          position_level: formData.position_level,
+          location: formData.location,
+          pay_range_min_cents: formData.pay_range_min_cents,
+          pay_range_max_cents: formData.pay_range_max_cents,
+          pay_range_type: formData.pay_range_type as 'hourly' | 'salary' | 'contract' | 'project' | undefined,
+        },
+      })
     }
   }
 

@@ -25,7 +25,7 @@ interface DuplicateButtonProps {
   /**
    * Optional variant for the button
    */
-  variant?: 'outlined'
+  variant?: 'outline'
 }
 
 /**
@@ -50,7 +50,7 @@ export function DuplicateButton({
   itemType,
   onDuplicate,
   size = '$2',
-  variant = 'outlined',
+  variant = 'outline',
 }: DuplicateButtonProps) {
   const { theme } = useThemeContext()
   const [isOpen, setIsOpen] = useState(false)

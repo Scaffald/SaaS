@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useUpdateApplicationMutation } from '@scf/core/utils/applications-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
@@ -37,7 +37,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
   const [pendingChange, setPendingChange] = useState<StatusChangeParams | null>(null)
 
   const queryClient = useQueryClient()
-  const updateMutation = api.applications.update.useMutation({
+  const updateMutation = useUpdateApplicationMutation({
     onSuccess: () => {
       // Invalidate applications query to refetch
       queryClient.invalidateQueries({ queryKey: ['applications'] })
@@ -95,16 +95,18 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
 
       try {
         await updateMutation.mutateAsync({
-          application_id: applicationId,
-          status: STATUS_MAP[toStatus] as
-            | 'pending'
-            | 'reviewing'
-            | 'inquired'
-            | 'interview'
-            | 'offer'
-            | 'hired'
-            | 'rejected'
-            | 'withdrawn',
+          id: applicationId,
+          params: {
+            status: STATUS_MAP[toStatus] as
+              | 'pending'
+              | 'reviewing'
+              | 'inquired'
+              | 'interview'
+              | 'offer'
+              | 'hired'
+              | 'rejected'
+              | 'withdrawn',
+          },
         })
       } catch (err) {
         setError(err as Error)
@@ -122,17 +124,17 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
 
       try {
         await updateMutation.mutateAsync({
-          application_id: pendingChange.applicationId,
-          status: STATUS_MAP[pendingChange.toStatus] as
-            | 'pending'
-            | 'reviewing'
-            | 'interview'
-            | 'offer'
-            | 'hired'
-            | 'rejected'
-            | 'withdrawn',
-          // Note: The current tRPC schema doesn't include a reason field
-          // This would need to be added to the database schema if required
+          id: pendingChange.applicationId,
+          params: {
+            status: STATUS_MAP[pendingChange.toStatus] as
+              | 'pending'
+              | 'reviewing'
+              | 'interview'
+              | 'offer'
+              | 'hired'
+              | 'rejected'
+              | 'withdrawn',
+          },
         })
 
         setPendingChange(null)

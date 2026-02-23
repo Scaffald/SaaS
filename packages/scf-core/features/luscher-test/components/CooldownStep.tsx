@@ -1,6 +1,6 @@
 import { Clock } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Progress, Text, TextArea, Stack } from '@scaffald/ui'
+import { ProgressBar, Text, TextArea, Stack } from '@scaffald/ui'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends
@@ -93,9 +93,7 @@ export function CooldownStep({
           <Text color="$gray11">Please wait 60 seconds before taking the second color test</Text>
           <Text color="$blue10">{formatTime(timeRemaining)}</Text>
         </Stack>
-        <Progress value={cooldownProgress} max={100} size="sm">
-          <Progress.Indicator animation="quick" />
-        </Progress>
+        <ProgressBar value={cooldownProgress} />
       </Stack>
 
       {/* Diary Prompt Section */}

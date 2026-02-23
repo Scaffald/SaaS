@@ -14,14 +14,13 @@ import {
   Separator,
 } from '@scaffald/ui'
 import { useState } from 'react'
-import { api } from '@scf/core/utils/api'
-import type { OAuthApp } from '@scf/schemas/oauth'
+import { useUserConsents, useRevokeConsentMutation } from '@scf/core/utils/oauth-sdk-hooks'
 
 export function AuthorizedAppsList() {
   const [revokeAppId, setRevokeAppId] = useState<string | null>(null)
 
-  const consentsQuery = api.oauth.listUserConsents.useQuery()
-  const revokeConsent = api.oauth.revokeConsent.useMutation({
+  const consentsQuery = useUserConsents()
+  const revokeConsent = useRevokeConsentMutation({
     onSuccess: () => {
       consentsQuery.refetch()
       setRevokeAppId(null)
@@ -53,7 +52,7 @@ export function AuthorizedAppsList() {
       {consents.length > 0 ? (
         <Stack gap={12}>
           {consents.map((consent) => {
-            const app = consent.oauth_app as OAuthApp | undefined
+            const app = consent.oauth_app
             const grantedAt = new Date(consent.granted_at)
             const expiresAt = consent.expires_at ? new Date(consent.expires_at) : null
 
@@ -169,7 +168,7 @@ export function AuthorizedAppsList() {
                 <AlertDialog.Title>Revoke App Access</AlertDialog.Title>
                 <AlertDialog.Description>
                   Are you sure you want to revoke access for{' '}
-                  <strong>{(appToRevoke?.oauth_app as OAuthApp | undefined)?.display_name}</strong>?
+                  <strong>{appToRevoke?.oauth_app?.display_name}</strong>?
                   This will:
                 </AlertDialog.Description>
               </Stack>
@@ -187,7 +186,7 @@ export function AuthorizedAppsList() {
                   <Button variant="outline">Cancel</Button>
                 </AlertDialog.Cancel>
                 <Button
-                  onPress={() => revokeAppId && revokeConsent.mutate({ consent_id: revokeAppId })}
+                  onPress={() => revokeAppId && revokeConsent.mutate(revokeAppId)}
                   disabled={revokeConsent.isPending}
                   loading={revokeConsent.isPending}
                   backgroundColor="$red10"

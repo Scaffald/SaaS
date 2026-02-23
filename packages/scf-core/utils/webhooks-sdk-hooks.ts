@@ -13,7 +13,7 @@ import type {
   WebhookCreatedResponse,
   RetryDeliveryResponse,
   DeleteWebhookResponse,
-} from '@scaffald/sdk/types/webhooks-management'
+} from '@scaffald/sdk'
 
 // ============================================================================
 // QUERY HOOKS
@@ -26,7 +26,7 @@ export function useWebhooks(options?: { enabled?: boolean }) {
     queryKey: ['webhooks', 'list'],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
-      return client.webhooksManagement.list()
+      return client.webhooks.list()
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
@@ -40,7 +40,7 @@ export function useWebhook(id: string | undefined, options?: { enabled?: boolean
     queryKey: ['webhooks', 'retrieve', id],
     queryFn: async () => {
       if (!client || !id) throw new Error('Missing client or id')
-      return client.webhooksManagement.retrieve(id)
+      return client.webhooks.retrieve(id)
     },
     enabled: !!client && !!id && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
@@ -58,7 +58,7 @@ export function useWebhookDeliveries(
     queryKey: ['webhooks', 'deliveries', webhookId, params],
     queryFn: async () => {
       if (!client || !webhookId) throw new Error('Missing client or webhookId')
-      return client.webhooksManagement.listDeliveries(webhookId, params)
+      return client.webhooks.listDeliveries(webhookId, params)
     },
     enabled: !!client && !!webhookId && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - delivery status changes frequently
@@ -72,7 +72,7 @@ export function useWebhookEventTypes(options?: { enabled?: boolean }) {
     queryKey: ['webhooks', 'event-types'],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
-      return client.webhooksManagement.eventTypes()
+      return client.webhooks.eventTypes()
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 60 * 60 * 1000, // 1 hour - event types rarely change
@@ -91,7 +91,7 @@ export function useCreateWebhookMutation(
   return useMutation({
     mutationFn: async (params: CreateWebhookParams) => {
       if (!client) throw new Error('Missing client')
-      return client.webhooksManagement.create(params)
+      return client.webhooks.create(params)
     },
     ...options,
   })
@@ -105,7 +105,7 @@ export function useUpdateWebhookMutation(
   return useMutation({
     mutationFn: async ({ id, params }: { id: string; params: UpdateWebhookParams }) => {
       if (!client) throw new Error('Missing client')
-      return client.webhooksManagement.update(id, params)
+      return client.webhooks.update(id, params)
     },
     ...options,
   })
@@ -119,7 +119,7 @@ export function useDeleteWebhookMutation(
   return useMutation({
     mutationFn: async (id: string) => {
       if (!client) throw new Error('Missing client')
-      return client.webhooksManagement.delete(id)
+      return client.webhooks.delete(id)
     },
     ...options,
   })
@@ -133,7 +133,7 @@ export function useRetryDeliveryMutation(
   return useMutation({
     mutationFn: async (deliveryId: string) => {
       if (!client) throw new Error('Missing client')
-      return client.webhooksManagement.retryDelivery(deliveryId)
+      return client.webhooks.retryDelivery(deliveryId)
     },
     ...options,
   })

@@ -8,14 +8,14 @@ import {
   Card,
   Input,
   Paragraph,
-  SizableText,
+  Text,
   Row,
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
-import { api } from '@scf/core/utils/api'
+import { useRegisterAppMutation } from '@scf/core/utils/oauth-sdk-hooks'
 
 export function AppRegistrationForm() {
   const { theme } = useThemeContext()
@@ -33,7 +33,7 @@ export function AppRegistrationForm() {
     client_secret: string
   } | null>(null)
 
-  const registerApp = api.oauth.registerApp.useMutation()
+  const registerApp = useRegisterAppMutation()
 
   function addRedirectUri() {
     setRedirectUris([...redirectUris, ''])
@@ -79,7 +79,7 @@ export function AppRegistrationForm() {
       <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
         <Card padding="md" gap={16}>
           <Stack gap={12}>
-            <SizableText size={24}>App Registration Successful!</SizableText>
+            <Text size={24}>App Registration Successful!</Text>
             <Paragraph size="sm">
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
@@ -91,19 +91,19 @@ export function AppRegistrationForm() {
               borderRadius={8}
             >
               <Stack gap={4}>
-                <SizableText size="sm">Client ID</SizableText>
-                <SizableText size="sm" style={{ fontFamily: 'monospace' }}>
+                <Text size="sm">Client ID</Text>
+                <Text size="sm" style={{ fontFamily: 'monospace' }}>
                   {credentials.client_id}
-                </SizableText>
+                </Text>
               </Stack>
               <Stack gap={4}>
-                <SizableText size="sm">Client Secret</SizableText>
-                <SizableText
+                <Text size="sm">Client Secret</Text>
+                <Text
                   size="sm"
                   style={{ fontFamily: 'monospace', color: theme === "light" ? colors.error[700] : colors.error[300] }}
                 >
                   {credentials.client_secret}
-                </SizableText>
+                </Text>
               </Stack>
             </Stack>
 
@@ -112,7 +112,7 @@ export function AppRegistrationForm() {
             </Paragraph>
 
             <Stack gap={8}>
-              <SizableText size="md">Next Steps</SizableText>
+              <Text size="md">Next Steps</Text>
               <Paragraph size="sm">
                 1. Test your app with the limited scopes (openid, profile, email)
               </Paragraph>
@@ -132,7 +132,7 @@ export function AppRegistrationForm() {
       <Card padding="md" gap={16}>
         <Stack gap={16}>
           <Stack gap={8}>
-            <SizableText size={24}>Register OAuth Application</SizableText>
+            <Text size={24}>Register OAuth Application</Text>
             <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
@@ -140,7 +140,7 @@ export function AppRegistrationForm() {
 
           <Stack gap={12}>
             <Stack gap={4}>
-              <SizableText size="sm">App Name *</SizableText>
+              <Text size="sm">App Name *</Text>
               <Input
                 value={appName}
                 onChangeText={setAppName}
@@ -150,7 +150,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={4}>
-              <SizableText size="sm">Description *</SizableText>
+              <Text size="sm">Description *</Text>
               <Input
                 value={description}
                 onChangeText={setDescription}
@@ -161,7 +161,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={4}>
-              <SizableText size="sm">Homepage URL *</SizableText>
+              <Text size="sm">Homepage URL *</Text>
               <Input
                 value={homepageUrl}
                 onChangeText={setHomepageUrl}
@@ -171,7 +171,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={8}>
-              <SizableText size="sm">Redirect URIs *</SizableText>
+              <Text size="sm">Redirect URIs *</Text>
               {redirectUris.map((uri, index) => (
                 <Row key={index} gap={8}>
                   <Input
@@ -196,7 +196,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={4}>
-              <SizableText size="sm">Logo URL (optional)</SizableText>
+              <Text size="sm">Logo URL (optional)</Text>
               <Input
                 value={logoUrl}
                 onChangeText={setLogoUrl}
@@ -206,7 +206,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={4}>
-              <SizableText size="sm">Privacy Policy URL (optional)</SizableText>
+              <Text size="sm">Privacy Policy URL (optional)</Text>
               <Input
                 value={privacyPolicyUrl}
                 onChangeText={setPrivacyPolicyUrl}
@@ -216,7 +216,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={4}>
-              <SizableText size="sm">Terms of Service URL (optional)</SizableText>
+              <Text size="sm">Terms of Service URL (optional)</Text>
               <Input
                 value={termsUrl}
                 onChangeText={setTermsUrl}
@@ -226,7 +226,7 @@ export function AppRegistrationForm() {
             </Stack>
 
             <Stack gap={4}>
-              <SizableText size="sm">Developer Email *</SizableText>
+              <Text size="sm">Developer Email *</Text>
               <Input
                 value={developerEmail}
                 onChangeText={setDeveloperEmail}

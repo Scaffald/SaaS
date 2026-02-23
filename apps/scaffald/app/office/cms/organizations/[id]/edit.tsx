@@ -1,5 +1,5 @@
 import { OrganizationForm } from '@scf/core/features/office/components/OrganizationForm'
-import { api } from '@scf/core/utils/api'
+import { useOrganization } from '@scf/core/utils/organizations-sdk-hooks'
 import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
@@ -14,7 +14,7 @@ export default function EditOrganizationPage() {
     )
   }
 
-  const { data, isLoading } = api.office.getOrganization.useQuery({ id }, { enabled: !!id })
+  const { data, isLoading } = useOrganization(id || undefined, { enabled: !!id })
 
   if (isLoading) {
     return (
@@ -24,7 +24,7 @@ export default function EditOrganizationPage() {
     )
   }
 
-  if (!data?.organization) {
+  if (!data) {
     return (
       <Stack align="center" justify="center">
         <Stack>Organization not found</Stack>
@@ -37,13 +37,13 @@ export default function EditOrganizationPage() {
       mode="edit"
       organizationId={id}
       initialData={{
-        address: data.organization.address || undefined,
-        industry_id: data.organization.industry_id || undefined,
-        locations: data.organization.locations || [],
-        logo_url: data.organization.logo_url || undefined,
-        name: data.organization.name,
-        slug: data.organization.slug,
-        visibility: data.organization.visibility || 'public',
+        address: data.address || undefined,
+        industry_id: data.industry_id || undefined,
+        locations: [],
+        logo_url: data.logo_url || undefined,
+        name: data.name,
+        slug: data.slug,
+        visibility: (data.visibility === 'private' ? 'private' : 'public') as 'public' | 'private',
       }}
     />
   )

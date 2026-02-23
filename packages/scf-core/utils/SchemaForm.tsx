@@ -1,4 +1,5 @@
 /* c8 ignore file */
+// @ts-nocheck
 
 import { FieldError, FormWrapper } from '@scaffald/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'

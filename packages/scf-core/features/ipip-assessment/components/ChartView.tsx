@@ -1,5 +1,5 @@
 import type { IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
-import { BarChart, SkillsChart } from '@scaffald/ui'
+import { BarChart } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { View } from 'react-native'
 import { Text, Row, Stack } from '@scaffald/ui'
@@ -16,8 +16,6 @@ const VisuallyHidden = ({ children }: { children: React.ReactNode }) => (
       margin: -1,
       padding: 0,
       overflow: 'hidden',
-      clip: 'rect(0, 0, 0, 0)',
-      whiteSpace: 'nowrap',
       borderWidth: 0,
     }}
     accessibilityElementsHidden={false}
@@ -147,30 +145,11 @@ export function ChartView({
         <Text color="$gray11">Big Five Personality Traits</Text>
         <Text color="$gray11">Your scores across the five major personality domains (0-100%)</Text>
         <Stack align="center" padding="md">
-          <SkillsChart
-            datasets={[
-              {
-                label: 'Big Five',
-                data: radarData,
-                fillColor: '$blue4',
-                strokeColor: '$blue9',
-                strokeWidth: 2,
-                fillOpacity: 0.02,
-                gradient: {
-                  startColor: '$blue8',
-                  endColor: '$blue4',
-                },
-              },
-            ]}
+          <BarChart
+            data={radarData.map((d) => d.value)}
             height={300}
             width={300}
-            maxValue={100}
-            isAnimated={true}
-            backgroundColor="transparent"
-            gridColor="$color5"
-            labelColor="$color11"
-            labelTextSize={12}
-            showDots={true}
+            variant="3"
           />
         </Stack>
         {/* Domain Labels with Scores */}
@@ -217,8 +196,8 @@ export function ChartView({
                 borderRadius={16}
                 borderWidth={1}
                 borderColor="$gray7"
-                opacity={0.6}
-                aria-live="polite"
+                style={{ opacity: 0.6 }}
+                accessibilityLiveRegion="polite"
               >
                 <Text color="$gray10">{domainName} Facets</Text>
                 <Text color="$gray9">Complete {domainName} questions to see facet details.</Text>
@@ -255,16 +234,10 @@ export function ChartView({
               <Text color="$gray11">{domainName} Facets</Text>
               <Text color="$gray11">Six sub-traits within {domainName} (0-100%)</Text>
               <BarChart
-                data={facetData}
+                data={facetData.map((d) => d.value)}
                 height={200}
-                maxValue={100}
-                noOfSections={5}
-                isAnimated={true}
-                animationDuration={800}
-                spacing={8}
-                barWidth={30}
-                roundedTop={true}
-                roundedBottom={true}
+                width={280}
+                variant="3"
               />
               {/* Facet Labels */}
               <Row wrap gap={8} marginTop={8}>
@@ -309,7 +282,7 @@ export function ChartView({
           borderRadius={16}
           borderWidth={1}
           borderColor="$yellow7"
-          aria-live="polite"
+          accessibilityLiveRegion="polite"
         >
           <Text color="$yellow11">Complete Your Assessment</Text>
           <Text color="$yellow10">

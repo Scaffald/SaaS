@@ -36,6 +36,10 @@
     "./resources/*": {
       "types": "./src/resources/*.ts",
       "import": "./src/resources/*.ts"
+    },
+    "./types/*": {
+      "types": "./src/types/*.ts",
+      "import": "./src/types/*.ts"
     }
   },
   "main": "./dist/index.js",

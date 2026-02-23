@@ -417,14 +417,14 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           {/* View Toggle */}
           <Row gap={8} justify="center">
             <Button
-              variant={historyView === 'timeline' ? 'primary' : 'outlined'}
+              variant={historyView === 'timeline' ? 'primary' : 'outline'}
               size="sm"
               onPress={() => setHistoryView('timeline')}
             >
               Timeline
             </Button>
             <Button
-              variant={historyView === 'progression' ? 'primary' : 'outlined'}
+              variant={historyView === 'progression' ? 'primary' : 'outline'}
               size="sm"
               onPress={() => setHistoryView('progression')}
             >

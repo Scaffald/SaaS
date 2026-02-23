@@ -26,7 +26,7 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <Stack gap={16} padding="md" align="center" aria-live="polite">
+      <Stack gap={16} padding="md" align="center" accessibilityLiveRegion="polite">
         <Text color="$gray11">
           No results available yet. Complete at least one domain to see results.
         </Text>
@@ -50,7 +50,7 @@ export function NarrativeView({
           borderColor="$blue7"
         >
           <Text color="$blue11">Your Personality Profile</Text>
-          <Text color="$blue10" lineHeight={20}>
+          <Text color="$blue10" style={{ lineHeight: 20 }}>
             {overallSummary}
           </Text>
         </Stack>
@@ -65,7 +65,7 @@ export function NarrativeView({
           borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
-          aria-live="polite"
+          accessibilityLiveRegion="polite"
         >
           <Text color="$blue11">Partial Results</Text>
           <Text color="$blue10">

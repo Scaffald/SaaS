@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { createClient, type SupabaseClient, type SupabaseClientOptions } from '@supabase/supabase-js'
+import { createClient as createSupabaseClient, type SupabaseClient, type SupabaseClientOptions } from '@supabase/supabase-js'
 
 export interface SupabaseTestClientOptions {
   readonly supabaseUrl?: string
@@ -41,11 +41,11 @@ const DEFAULT_SERVICE_ROLE_KEY =
 let cachedServiceClient: SupabaseClient | undefined
 let cachedAnonClient: SupabaseClient | undefined
 
-// Supabase is already imported above, so we can use createClient directly
+// Supabase is already imported above, so we can use createSupabaseClient directly
 // This function is kept for backwards compatibility but now just returns the module
 async function importSupabase() {
   try {
-    return { createClient }
+    return { createClient: createSupabaseClient }
   } catch (error) {
     throw new Error(
       'The @supabase/supabase-js package is required to use the test database helpers. Ensure it is installed in the workspace.',
@@ -86,8 +86,7 @@ async function createClient(
   options: SupabaseTestClientOptions,
   serviceRole: boolean
 ): Promise<SupabaseClient> {
-  const supabaseModule = await importSupabase()
-  const { createClient: createSupabaseClient } = supabaseModule
+  await importSupabase()
   const supabaseUrl = resolveUrl(options.supabaseUrl)
   const supabaseKey = serviceRole
     ? resolveServiceRoleKey(options.serviceRoleKey)

@@ -9,6 +9,7 @@ export interface University {
   domains: string[]
   web_pages: string[]
   state_province: string | null
+  is_active: boolean
   metadata: Record<string, unknown>
   created_at?: string
   updated_at?: string

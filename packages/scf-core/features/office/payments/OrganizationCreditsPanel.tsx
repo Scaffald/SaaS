@@ -1,5 +1,5 @@
 import { useAccountCredits, useCreditLedger, useDepositCreditsMutation } from '@scf/core/utils/payments-sdk-hooks'
-import type { CreditLedgerEntry } from '@scaffald/sdk/types/payments'
+import type { CreditLedgerEntry } from '@scaffald/sdk'
 import { CreditCard, DollarSign, Plus } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'

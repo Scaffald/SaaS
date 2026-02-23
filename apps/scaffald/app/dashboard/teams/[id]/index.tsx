@@ -9,18 +9,15 @@ import {
   TeamMembersList,
   TeamOverviewCard,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useTeam, useTeamMembers, useTeamAnalyticsOverview } from '@scf/core/utils/teams-sdk-hooks'
+import type { Team, TeamMember } from '@scaffald/sdk'
 import { AlertTriangle, RefreshCw, UserPlus } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
-type TeamMembersOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type TeamMemberRecord = NonNullable<TeamMembersOutput['members']>[number]
+type TeamRecord = Team
+type TeamMemberRecord = TeamMember
 
 type MentionOption = {
   id: string
@@ -40,24 +37,21 @@ export default function DashboardTeamDetailPage() {
     isLoading: teamLoading,
     error: teamError,
     refetch: refetchTeam,
-  } = api.teams.byId.useQuery({ teamId }, { enabled: Boolean(teamId), retry: false })
+  } = useTeam(teamId || undefined, { enabled: Boolean(teamId) })
 
   const {
     data: membersData,
     isLoading: membersLoading,
     error: membersError,
     refetch: refetchMembers,
-  } = api.teams.members.list.useQuery({ teamId }, { enabled: Boolean(teamId), retry: false })
+  } = useTeamMembers(teamId || undefined, { enabled: Boolean(teamId) })
 
   const {
     data: analyticsData,
     isLoading: analyticsLoading,
     error: analyticsError,
     refetch: refetchAnalytics,
-  } = api.teams.analytics.overview.useQuery(
-    { limit: 30, teamId },
-    { enabled: Boolean(teamId), retry: false }
-  )
+  } = useTeamAnalyticsOverview(teamId || undefined, { limit: 30 }, { enabled: Boolean(teamId) })
 
   const team = teamData?.team as TeamRecord | undefined
   const members = useMemo<TeamMemberRecord[]>(

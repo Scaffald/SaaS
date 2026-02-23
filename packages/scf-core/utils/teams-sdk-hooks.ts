@@ -402,7 +402,7 @@ export function useResendTeamInvitationMutation(
  */
 export function useRespondToTeamInvitationMutation(
   options?: UseMutationOptions<
-    TeamMemberResponse,
+    TeamInvitationResponse,
     Error,
     { invitationId: string; params: RespondToInvitationParams }
   >

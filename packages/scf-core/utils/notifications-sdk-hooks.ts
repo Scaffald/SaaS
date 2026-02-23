@@ -1,6 +1,6 @@
 /**
  * Notifications SDK Hooks
- * React Query hooks for notifications, preferences, and device management
+ * React Query hooks for notifications and preferences
  */
 
 import {
@@ -14,20 +14,42 @@ import {
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   ListNotificationsParams,
-  ListNotificationsResponse,
+  NotificationsListResponse,
   UnreadCountResponse,
-  Notification,
-  MarkAsReadParams,
-  MarkAsUnreadParams,
-  BulkIdsParams,
-  SuccessResponse,
+  NotificationResponse,
   MarkAllAsReadResponse,
   PreferencesResponse,
-  SavePreferencesParams,
-  NotificationDevice,
-  RegisterDeviceParams,
-  RemoveDeviceParams,
+  UpdatePreferencesParams,
 } from '@scaffald/sdk'
+
+// ============================================================================
+// Local types for functionality not yet in the SDK
+// ============================================================================
+
+interface SuccessResponse {
+  success: boolean
+}
+
+interface BulkIdsParams {
+  ids: string[]
+}
+
+interface NotificationDevice {
+  id: string
+  token: string
+  platform: 'ios' | 'android' | 'web'
+  metadata?: Record<string, unknown>
+}
+
+interface RegisterDeviceParams {
+  token: string
+  platform: 'ios' | 'android' | 'web'
+  metadata?: Record<string, unknown>
+}
+
+interface RemoveDeviceParams {
+  token: string
+}
 
 // ============================================================================
 // Query Hooks
@@ -38,7 +60,7 @@ import type {
  */
 export function useNotifications(
   params?: ListNotificationsParams,
-  options?: Omit<UseQueryOptions<ListNotificationsResponse>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<NotificationsListResponse>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffaldJobsClient()
 
@@ -57,9 +79,9 @@ export function useNotifications(
  * List notifications with infinite scroll pagination
  */
 export function useInfiniteNotifications(
-  params?: Omit<ListNotificationsParams, 'cursor'>,
+  params?: ListNotificationsParams,
   options?: Omit<
-    UseInfiniteQueryOptions<ListNotificationsResponse>,
+    UseInfiniteQueryOptions<NotificationsListResponse>,
     'queryKey' | 'queryFn' | 'getNextPageParam' | 'initialPageParam'
   >
 ) {
@@ -69,9 +91,12 @@ export function useInfiniteNotifications(
     queryKey: ['scaffald', 'notifications', 'list-infinite', params],
     queryFn: async ({ pageParam }) => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.list({ ...params, cursor: pageParam as string | undefined })
+      return client.notifications.list({ ...params, page: pageParam as number | undefined })
     },
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    getNextPageParam: (lastPage) => {
+      const { page, total_pages } = lastPage.pagination
+      return page < total_pages ? page + 1 : undefined
+    },
     initialPageParam: undefined,
     enabled: !!client && (options?.enabled ?? true),
     ...options,
@@ -118,6 +143,7 @@ export function useNotificationPreferences(
 
 /**
  * List registered notification devices
+ * NOTE: Device management is not yet supported by the SDK.
  */
 export function useNotificationDevices(
   options?: Omit<UseQueryOptions<NotificationDevice[]>, 'queryKey' | 'queryFn'>
@@ -126,9 +152,9 @@ export function useNotificationDevices(
 
   return useQuery({
     queryKey: ['scaffald', 'notifications', 'devices'],
-    queryFn: async () => {
+    queryFn: async (): Promise<NotificationDevice[]> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.listDevices()
+      throw new Error('Device management is not yet supported by the notifications SDK')
     },
     enabled: !!client && (options?.enabled ?? true),
     ...options,
@@ -143,14 +169,14 @@ export function useNotificationDevices(
  * Mark a notification as read
  */
 export function useMarkAsReadMutation(
-  options?: UseMutationOptions<Notification, Error, MarkAsReadParams>
+  options?: UseMutationOptions<NotificationResponse, Error, string>
 ) {
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: MarkAsReadParams) => {
+    mutationFn: async (id: string) => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.markAsRead(params)
+      return client.notifications.markAsRead(id)
     },
     ...options,
   })
@@ -160,14 +186,14 @@ export function useMarkAsReadMutation(
  * Mark a notification as unread
  */
 export function useMarkAsUnreadMutation(
-  options?: UseMutationOptions<Notification, Error, MarkAsUnreadParams>
+  options?: UseMutationOptions<NotificationResponse, Error, string>
 ) {
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: MarkAsUnreadParams) => {
+    mutationFn: async (id: string) => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.markAsUnread(params)
+      return client.notifications.markAsUnread(id)
     },
     ...options,
   })
@@ -175,6 +201,7 @@ export function useMarkAsUnreadMutation(
 
 /**
  * Mark multiple notifications as read
+ * NOTE: Bulk operations are not yet supported by the SDK.
  */
 export function useMarkManyReadMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
@@ -182,9 +209,9 @@ export function useMarkManyReadMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: BulkIdsParams) => {
+    mutationFn: async (_params: BulkIdsParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.markManyRead(params)
+      throw new Error('Bulk mark-as-read is not yet supported by the notifications SDK')
     },
     ...options,
   })
@@ -192,6 +219,7 @@ export function useMarkManyReadMutation(
 
 /**
  * Mark multiple notifications as unread
+ * NOTE: Bulk operations are not yet supported by the SDK.
  */
 export function useMarkManyUnreadMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
@@ -199,9 +227,9 @@ export function useMarkManyUnreadMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: BulkIdsParams) => {
+    mutationFn: async (_params: BulkIdsParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.markManyUnread(params)
+      throw new Error('Bulk mark-as-unread is not yet supported by the notifications SDK')
     },
     ...options,
   })
@@ -209,6 +237,7 @@ export function useMarkManyUnreadMutation(
 
 /**
  * Archive multiple notifications
+ * NOTE: Archive operations are not yet supported by the SDK.
  */
 export function useArchiveManyMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
@@ -216,9 +245,9 @@ export function useArchiveManyMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: BulkIdsParams) => {
+    mutationFn: async (_params: BulkIdsParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.archiveMany(params)
+      throw new Error('Archive is not yet supported by the notifications SDK')
     },
     ...options,
   })
@@ -226,6 +255,7 @@ export function useArchiveManyMutation(
 
 /**
  * Restore multiple notifications from archive
+ * NOTE: Restore operations are not yet supported by the SDK.
  */
 export function useRestoreManyMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
@@ -233,9 +263,9 @@ export function useRestoreManyMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: BulkIdsParams) => {
+    mutationFn: async (_params: BulkIdsParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.restoreMany(params)
+      throw new Error('Restore is not yet supported by the notifications SDK')
     },
     ...options,
   })
@@ -259,7 +289,8 @@ export function useMarkAllAsReadMutation(
 }
 
 /**
- * Delete multiple notifications (soft delete)
+ * Delete multiple notifications
+ * NOTE: Bulk delete is not yet supported by the SDK.
  */
 export function useDeleteManyMutation(
   options?: UseMutationOptions<SuccessResponse, Error, BulkIdsParams>
@@ -267,9 +298,9 @@ export function useDeleteManyMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: BulkIdsParams) => {
+    mutationFn: async (_params: BulkIdsParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.deleteMany(params)
+      throw new Error('Bulk delete is not yet supported by the notifications SDK')
     },
     ...options,
   })
@@ -277,16 +308,34 @@ export function useDeleteManyMutation(
 
 /**
  * Save notification preferences
+ * NOTE: Uses SDK's updatePreferences under the hood.
  */
 export function useSavePreferencesMutation(
-  options?: UseMutationOptions<SuccessResponse, Error, SavePreferencesParams>
+  options?: UseMutationOptions<PreferencesResponse, Error, UpdatePreferencesParams>
 ) {
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: SavePreferencesParams) => {
+    mutationFn: async (params: UpdatePreferencesParams) => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.savePreferences(params)
+      return client.notifications.updatePreferences(params)
+    },
+    ...options,
+  })
+}
+
+/**
+ * Update notification preferences
+ */
+export function useUpdatePreferencesMutation(
+  options?: UseMutationOptions<PreferencesResponse, Error, UpdatePreferencesParams>
+) {
+  const client = useScaffaldJobsClient()
+
+  return useMutation({
+    mutationFn: async (params: UpdatePreferencesParams) => {
+      if (!client) throw new Error('Scaffald client not available')
+      return client.notifications.updatePreferences(params)
     },
     ...options,
   })
@@ -294,6 +343,7 @@ export function useSavePreferencesMutation(
 
 /**
  * Register a device for push notifications
+ * NOTE: Device management is not yet supported by the SDK.
  */
 export function useRegisterDeviceMutation(
   options?: UseMutationOptions<SuccessResponse, Error, RegisterDeviceParams>
@@ -301,9 +351,9 @@ export function useRegisterDeviceMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: RegisterDeviceParams) => {
+    mutationFn: async (_params: RegisterDeviceParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.registerDevice(params)
+      throw new Error('Device registration is not yet supported by the notifications SDK')
     },
     ...options,
   })
@@ -311,6 +361,7 @@ export function useRegisterDeviceMutation(
 
 /**
  * Remove a registered device
+ * NOTE: Device management is not yet supported by the SDK.
  */
 export function useRemoveDeviceMutation(
   options?: UseMutationOptions<SuccessResponse, Error, RemoveDeviceParams>
@@ -318,9 +369,9 @@ export function useRemoveDeviceMutation(
   const client = useScaffaldJobsClient()
 
   return useMutation({
-    mutationFn: async (params: RemoveDeviceParams) => {
+    mutationFn: async (_params: RemoveDeviceParams): Promise<SuccessResponse> => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.notifications.removeDevice(params)
+      throw new Error('Device removal is not yet supported by the notifications SDK')
     },
     ...options,
   })

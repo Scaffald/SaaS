@@ -5,7 +5,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { flexRender } from '@tanstack/react-table'
-import type { TableColumn } from '@scaffald/ui'
+import type { TableColumn, TableRowData } from '@scaffald/ui'
 
 /**
  * Convert TanStack ColumnDef array to @scaffald/ui TableColumn array
@@ -24,7 +24,7 @@ export function columnsFromTanStack<TData extends Record<string, unknown>>(
       title: typeof def.header === 'string' ? def.header : (accessorKey ?? id),
       width: meta?.width,
       sortable: (def as { enableSorting?: boolean }).enableSorting !== false,
-      render: (value: unknown, row: TData & Record<string, unknown>, rowIndex: number) => {
+      render: (value: unknown, row: TableRowData, rowIndex: number) => {
         if (!def.cell) {
           return value !== null && value !== undefined ? String(value) : ''
         }

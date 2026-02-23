@@ -9,7 +9,7 @@ import {
 import {
   Button,
   Card,
-  CustomCheckbox,
+  Checkbox,
   ResponsiveModal,
   Spinner,
   Text,
@@ -232,6 +232,7 @@ export const ApplicationStatusChangeModal = ({
       setPaymentError(message)
       toast.show({
         title: 'Payment confirmation failed',
+        message: '',
         variant: 'error',
       })
     } finally {
@@ -312,12 +313,12 @@ export const ApplicationStatusChangeModal = ({
                     borderWidth={1}
                   >
                     <Row gap={8} align="center">
-                      <CustomCheckbox
+                      <Checkbox
                         aria-label="Acknowledge success-fee agreement"
                         checked={legalAccepted}
                         onChange={(next) => setLegalAccepted(Boolean(next))}
                       />
-                      <Text flex={1} style={{ color: colors.text[theme].secondary }}>
+                      <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                         {legalCopy}
                       </Text>
                     </Row>
@@ -350,7 +351,7 @@ export const ApplicationStatusChangeModal = ({
             }
             value={reason}
             onChangeText={setReason}
-            height={120}
+            style={{ minHeight: 120 }}
           />
           {isRejection && !reason.trim() && (
             <Text data-testid="reason-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
@@ -360,7 +361,7 @@ export const ApplicationStatusChangeModal = ({
         </Stack>
 
         {/* Action buttons */}
-        <Row gap={12} marginLeft="auto">
+        <Row gap={12} style={{ marginLeft: 'auto' }}>
           <Button
             data-testid="status-change-cancel-button"
             variant="outline"
@@ -372,16 +373,10 @@ export const ApplicationStatusChangeModal = ({
           {!isHire && (
             <Button
               data-testid="status-change-confirm-button"
+              color={isRejection ? 'error' : 'success'}
+              variant="light"
               onPress={handleConfirm}
               disabled={confirmDisabled}
-              style={{
-                backgroundColor: isRejection ? theme === "light" ? colors.error[50] : colors.error[900] : theme === "light" ? colors.green[50] : colors.green[900],
-              }}
-              hoverStyle={{
-                backgroundColor: isRejection
-                  ? theme === "light" ? colors.error[700] : colors.error[300]
-                  : theme === "light" ? colors.green[700] : colors.green[300],
-              }}
             >
               {isLoading ? 'Processing...' : isRejection ? 'Reject Application' : 'Confirm Hire'}
             </Button>
@@ -526,7 +521,7 @@ function HireSummaryCard({
         <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
           Add pay range information to this job before marking the hire.
         </Text>
-        <Text marginTop={4} style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+        <Text style={{ marginTop: 4, color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
           We use the job&apos;s pay range to calculate success fees and payment schedules.
         </Text>
       </Card>

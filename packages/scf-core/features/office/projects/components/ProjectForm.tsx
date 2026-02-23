@@ -1,11 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
 import {
   useProject,
   useCreateProjectMutation,
   useUpdateProjectMutation,
 } from '@scf/core/utils/projects-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
+import { useOrganization } from '@scf/core/utils/organizations-sdk-hooks'
 import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
@@ -81,15 +81,15 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
       false,
   })
 
-  const { data: orgData } = api.organizations.getOrganization.useQuery(
-    { id: formData.organization_id },
-    { enabled: !!formData.organization_id }
-  )
+  const { data: orgData } = useOrganization(formData.organization_id || undefined, {
+    enabled: !!formData.organization_id,
+  })
 
   // Update visibility when organization changes
   useEffect(() => {
-    if (orgData?.default_project_location_visibility && !formData.location_visibility_override) {
-      const orgVisibility = orgData.default_project_location_visibility
+    const defaultVisibility = (orgData as unknown as { default_project_location_visibility?: string })?.default_project_location_visibility
+    if (defaultVisibility && !formData.location_visibility_override) {
+      const orgVisibility = defaultVisibility
       if (
         orgVisibility === 'public' ||
         orgVisibility === 'authenticated' ||
@@ -102,7 +102,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
         }))
       }
     }
-  }, [orgData?.default_project_location_visibility, formData.location_visibility_override])
+  }, [(orgData as unknown as { default_project_location_visibility?: string })?.default_project_location_visibility, formData.location_visibility_override])
 
   const createMutation = useCreateProjectMutation()
   const updateMutation = useUpdateProjectMutation()

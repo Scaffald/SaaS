@@ -4,7 +4,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { NetInfoStateType } from '@react-native-community/netinfo';
 
 import { useWorkLogSync } from '../useWorkLogSync';
-import * as api from '@scf/core/utils/api';
+import * as workLogSdkHooks from '@scf/core/utils/work-logs-sdk-hooks';
 import * as offlineStorage from '../../utils/offline-storage';
 import type { OfflineWorkLog } from '../../types/offline';
 import type { CreateWorkLogInput } from '@scf/schemas';
@@ -23,26 +23,19 @@ const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkL
   ...overrides,
 });
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    workLogs: {
-      create: {
-        useMutation: vi.fn(() => ({
-          mutateAsync: vi.fn(),
-        })),
-      },
-      update: {
-        useMutation: vi.fn(() => ({
-          mutateAsync: vi.fn(),
-        })),
-      },
-      uploadPhoto: {
-        useMutation: vi.fn(() => ({
-          mutateAsync: vi.fn(),
-        })),
-      },
-    },
-  },
+vi.mock('@scf/core/utils/work-logs-sdk-hooks', () => ({
+  useCreateWorkLogMutation: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  })),
+  useUpdateWorkLogMutation: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  })),
+  useUploadWorkLogPhotoMutation: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  })),
 }));
 
 vi.mock('@react-native-community/netinfo', () => ({
@@ -96,14 +89,17 @@ describe('useWorkLogSync', () => {
       maxRetries: 3,
       lastSyncedAt: null,
     });
-    vi.mocked(api.api.workLogs.create.useMutation).mockReturnValue({
+    vi.mocked(workLogSdkHooks.useCreateWorkLogMutation).mockReturnValue({
       mutateAsync: mockCreateMutation,
+      isPending: false,
     } as never);
-    vi.mocked(api.api.workLogs.update.useMutation).mockReturnValue({
+    vi.mocked(workLogSdkHooks.useUpdateWorkLogMutation).mockReturnValue({
       mutateAsync: mockUpdateMutation,
+      isPending: false,
     } as never);
-    vi.mocked(api.api.workLogs.uploadPhoto.useMutation).mockReturnValue({
+    vi.mocked(workLogSdkHooks.useUploadWorkLogPhotoMutation).mockReturnValue({
       mutateAsync: mockUploadPhotoMutation,
+      isPending: false,
     } as never);
   });
 

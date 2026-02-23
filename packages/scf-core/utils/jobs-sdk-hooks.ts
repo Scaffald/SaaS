@@ -3,9 +3,10 @@
  * Requires ScaffaldJobsSdkProviderFromSession (client from context).
  */
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
-import type { OfficeListJobsParams } from '@scaffald/sdk'
+import type { OfficeListJobsParams, OfficeCreateJobParams, OfficeUpdateJobParams, ListApplicationsParams, OfficeJob, GetUploadUrlParams, ConfirmUploadParams, SendMessageParams, CreateApplicationParams, UpdateApplicationParams } from '@scaffald/sdk'
+import type { Job } from '@scaffald/sdk/resources/jobs'
 
 /** Office list jobs (office role). Organization/team filtering. */
 export function useOfficeListJobs(
@@ -139,7 +140,7 @@ export function useCreateJobApplicationMutation(
 ) {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: Parameters<typeof client.applications.create>[0]) => {
+    mutationFn: async (params: CreateApplicationParams) => {
       if (!client) throw new Error('Missing client')
       return client.applications.create(params)
     },
@@ -150,24 +151,7 @@ export function useCreateJobApplicationMutation(
 export function useUpdateJobApplicationMutation() {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async ({
-      id,
-      params,
-    }: {
-      id: string
-      params: {
-        status?: string
-        current_location?: string
-        willing_to_relocate?: boolean
-        years_experience?: number
-        is_authorized_to_work?: boolean
-        earliest_start_date?: string
-        custom_question_answers?: unknown[]
-        attachments?: Record<string, unknown>
-        completed_steps?: string[]
-        is_complete?: boolean
-      }
-    }) => {
+    mutationFn: async ({ id, params }: { id: string; params: UpdateApplicationParams }) => {
       if (!client) throw new Error('Missing client')
       return client.applications.update(id, params)
     },
@@ -175,7 +159,7 @@ export function useUpdateJobApplicationMutation() {
 }
 
 export function useUserApplications(
-  params?: { status?: string; limit?: number; offset?: number },
+  params?: ListApplicationsParams,
   options?: { enabled?: boolean }
 ) {
   const client = useScaffaldJobsClient()
@@ -216,7 +200,7 @@ export function useWithdrawApplicationMutation() {
 export function useGetUploadUrlMutation() {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: Parameters<typeof client.applications.getUploadUrl>[0]) => {
+    mutationFn: async (params: GetUploadUrlParams) => {
       if (!client) throw new Error('Missing client')
       return client.applications.getUploadUrl(params)
     },
@@ -226,7 +210,7 @@ export function useGetUploadUrlMutation() {
 export function useConfirmUploadMutation() {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: Parameters<typeof client.applications.confirmUpload>[0]) => {
+    mutationFn: async (params: ConfirmUploadParams) => {
       if (!client) throw new Error('Missing client')
       return client.applications.confirmUpload(params)
     },
@@ -252,9 +236,65 @@ export function useApplicationMessages(
 export function useSendApplicationMessageMutation() {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: Parameters<typeof client.applications.sendMessage>[0]) => {
+    mutationFn: async (params: SendMessageParams) => {
       if (!client) throw new Error('Missing client')
       return client.applications.sendMessage(params)
     },
+  })
+}
+
+/** Office: Create a new job (admin role required) */
+export function useOfficeCreateJobMutation(
+  options?: UseMutationOptions<Job, Error, OfficeCreateJobParams>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation<Job, Error, OfficeCreateJobParams>({
+    mutationFn: async (params: OfficeCreateJobParams) => {
+      if (!client) throw new Error('Missing client')
+      return client.jobs.officeCreateJob(params)
+    },
+    ...options,
+  })
+}
+
+/** Office: Delete a job (admin role required) */
+export function useOfficeDeleteJobMutation(
+  options?: UseMutationOptions<{ success: boolean }, Error, string>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation<{ success: boolean }, Error, string>({
+    mutationFn: async (id: string) => {
+      if (!client) throw new Error('Missing client')
+      return client.jobs.officeDeleteJob(id)
+    },
+    ...options,
+  })
+}
+
+/** Office: Duplicate a job (admin role required) */
+export function useOfficeDuplicateJobMutation(
+  options?: UseMutationOptions<{ job: OfficeJob }, Error, string>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation<{ job: OfficeJob }, Error, string>({
+    mutationFn: async (id: string) => {
+      if (!client) throw new Error('Missing client')
+      return client.jobs.officeDuplicateJob(id)
+    },
+    ...options,
+  })
+}
+
+/** Office: Update an existing job (admin role required) */
+export function useOfficeUpdateJobMutation(
+  options?: UseMutationOptions<Job, Error, { id: string; params: OfficeUpdateJobParams }>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation<Job, Error, { id: string; params: OfficeUpdateJobParams }>({
+    mutationFn: async ({ id, params }: { id: string; params: OfficeUpdateJobParams }) => {
+      if (!client) throw new Error('Missing client')
+      return client.jobs.officeUpdateJob(id, params)
+    },
+    ...options,
   })
 }

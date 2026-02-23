@@ -130,7 +130,7 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
 
         const uploadRequest = await uploadUrlMutation.mutateAsync({
           fileName: screenshot.name,
-          fileType: screenshot.mimeType,
+          fileType: screenshot.mimeType as 'image/jpeg' | 'image/png' | 'image/jpg' | 'image/gif' | 'image/webp',
           fileSize,
         })
 
@@ -223,12 +223,12 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
       }
 
       if (successCount > 0) {
-        toast.show('Feedback Submitted', {
+        toast.show({
           message:
             successCount === 1
               ? 'One pending feedback submission synced successfully.'
               : `${successCount} feedback submissions synced successfully.`,
-          type: 'success',
+          variant: 'success',
         })
       }
 

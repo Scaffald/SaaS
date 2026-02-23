@@ -4,6 +4,7 @@ import {
   useAssessmentStatus,
   useGetArchetype,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
+import type { AssessmentStatus } from '@scaffald/sdk'
 import { useMemo } from 'react'
 import { normalizeScores } from '../utils/scoreNormalizer'
 
@@ -47,7 +48,7 @@ export function useIPIPResults(): IPIPResultsData {
     error: assessmentError,
   } = useAssessmentStatus()
 
-  const assessment = assessmentData?.data
+  const assessment = (assessmentData as { data?: AssessmentStatus } | undefined)?.data
 
   const { data: archetypeData, isLoading: archetypeLoading } = useGetArchetype({
     enabled: !!assessment?.ipip_completed_at,

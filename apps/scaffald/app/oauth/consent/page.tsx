@@ -4,7 +4,7 @@
  */
 
 import { ConsentScreen } from '@scf/core/features/oauth/components/ConsentScreen'
-import { api } from '@scf/core/utils/api'
+import { useOAuthAppDetails } from '@scf/core/utils/oauth-sdk-hooks'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 
@@ -24,6 +24,8 @@ export default function OAuthConsentPage() {
     redirect_uri: string
     state: string
     scope: string
+    code_challenge?: string
+    code_challenge_method?: string
   }>()
   const [appDetails, setAppDetails] = useState<AppDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -35,10 +37,7 @@ export default function OAuthConsentPage() {
   const codeChallenge = params.code_challenge as string
   const codeChallengeMethod = (params.code_challenge_method as string) || 'S256'
 
-  const getAppDetails = api.oauth.getAppDetails.useQuery(
-    { client_id: clientId },
-    { enabled: !!clientId }
-  )
+  const getAppDetails = useOAuthAppDetails(clientId || undefined, { enabled: !!clientId })
 
   useEffect(() => {
     if (getAppDetails.data) {

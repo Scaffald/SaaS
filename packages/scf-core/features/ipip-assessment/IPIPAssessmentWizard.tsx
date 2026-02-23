@@ -14,11 +14,6 @@ import { useState } from 'react'
 import { Button, Text, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
 
-interface SaveIPIPProgressResult {
-  success: boolean
-  isComplete: boolean
-}
-
 /**
  * IPIPAssessmentWizard - Standalone wizard for IPIP
  */
@@ -31,22 +26,20 @@ export function IPIPAssessmentWizard() {
   const { data: assessmentData } = useAssessmentStatus()
   const queryClient = useQueryClient()
 
-  const status = statusData?.data
-  const assessment = assessmentData?.data
+  const status = (statusData as { data?: { progress?: number } } | undefined)?.data
+  const assessment = (assessmentData as { data?: { ipip_answers?: unknown; ipip_language?: string; ipip_current_index?: number | null } } | undefined)?.data
 
   const saveMutation = useSaveIPIPProgressMutation({
-    onSuccess: (result: SaveIPIPProgressResult) => {
+    onSuccess: (_data, _variables, _context) => {
       // Invalidate status queries to update drawer checkmarks
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'ipip', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
-      if (result.isComplete) {
-        toast.show({
-          title: 'Questions Complete',
-          message: 'Your personality assessment has been saved!',
-          variant: 'success',
-        })
-        router.push(ROUTES.DASHBOARD.path)
-      }
+      toast.show({
+        title: 'Questions Complete',
+        message: 'Your personality assessment has been saved!',
+        variant: 'success',
+      })
+      router.push(ROUTES.DASHBOARD.path)
     },
     onError: (error: { message?: string }) => {
       // Enhanced error handling with retry option
@@ -75,7 +68,8 @@ export function IPIPAssessmentWizard() {
     setCompletedDomain(domain)
 
     // Show XP toast
-    toast.show('Domain Complete!', {
+    toast.show({
+      title: 'Domain Complete!',
       message: `+5 XP - ${DOMAIN_NAMES[domain]} complete!`,
       duration: 3000,
     })
@@ -118,17 +112,17 @@ export function IPIPAssessmentWizard() {
         >
           <Stack gap={16} align="center">
             <Text color="$green10">✓ {DOMAIN_NAMES[completedDomain]} Complete!</Text>
-            <Text color="$gray11" textAlign="center">
+            <Text color="$gray11" align="center">
               You've completed {completedDomains} of 5 domains
             </Text>
-            <Text color="$gray11" textAlign="center">
+            <Text color="$gray11" align="center">
               Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
               assessment.
             </Text>
           </Stack>
 
           <Stack gap={12} width="100%" maxWidth={400}>
-            <Button size="lg" theme="info" onPress={handleContinueToNextDomain}>
+            <Button size="lg" color="primary" onPress={handleContinueToNextDomain}>
               Continue to Next Domain
             </Button>
             <Button size="md" variant="outline" onPress={handleTakeBreak}>

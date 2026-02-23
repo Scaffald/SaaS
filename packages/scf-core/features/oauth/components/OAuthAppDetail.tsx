@@ -17,7 +17,13 @@ import {
   Input,
 } from '@scaffald/ui'
 import { useState } from 'react'
-import { api } from '@scf/core/utils/api'
+import {
+  useAdminOAuthAppDetail,
+  useAdminOAuthScopes,
+  useAdminApproveAppMutation,
+  useAdminRejectAppMutation,
+  useAdminSuspendAppMutation,
+} from '@scf/core/utils/oauth-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@scf/core/constants/routes'
 
@@ -35,18 +41,18 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   const [showSuspendDialog, setShowSuspendDialog] = useState(false)
 
   // Queries
-  const appQuery = api.oauth.admin.getAppDetail.useQuery({ app_id: appId })
-  const scopesQuery = api.oauth.admin.listScopes.useQuery()
+  const appQuery = useAdminOAuthAppDetail(appId)
+  const scopesQuery = useAdminOAuthScopes()
 
   // Mutations
-  const approveApp = api.oauth.admin.approveApp.useMutation({
+  const approveApp = useAdminApproveAppMutation({
     onSuccess: () => {
       appQuery.refetch()
       setShowApproveDialog(false)
     },
   })
 
-  const rejectApp = api.oauth.admin.rejectApp.useMutation({
+  const rejectApp = useAdminRejectAppMutation({
     onSuccess: () => {
       appQuery.refetch()
       setShowRejectDialog(false)
@@ -54,7 +60,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
     },
   })
 
-  const suspendApp = api.oauth.admin.suspendApp.useMutation({
+  const suspendApp = useAdminSuspendAppMutation({
     onSuccess: () => {
       appQuery.refetch()
       setShowSuspendDialog(false)
@@ -345,14 +351,14 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                 <SizableText size="md">Trust Level</SizableText>
                 <Row gap={8}>
                   <Button
-                    variant={trustLevel === 'active' ? 'default' : 'outlined'}
+                    variant={trustLevel === 'active' ? 'default' : 'outline'}
                     onPress={() => setTrustLevel('active')}
                     flex={1}
                   >
                     Active
                   </Button>
                   <Button
-                    variant={trustLevel === 'trusted' ? 'default' : 'outlined'}
+                    variant={trustLevel === 'trusted' ? 'default' : 'outline'}
                     onPress={() => setTrustLevel('trusted')}
                     flex={1}
                   >

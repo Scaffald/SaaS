@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useOfficeUserGeneral,
+  useOfficeUpdateUserGeneralMutation,
+} from '@scf/core/utils/office-users-sdk-hooks'
 import {
   useGeneralInfo,
   useUpdateGeneralInfoMutation,
@@ -64,16 +67,16 @@ export function GeneralProfileSection({
   }
 
   // Determine which endpoints to use based on mode
-  // Admin mode uses tRPC (api.office.*), user mode uses SDK
+  // Admin mode uses SDK office-users hooks, user mode uses profile SDK
   const useQuery =
     mode === 'admin' && userId
-      ? () => api.office.getUserGeneral.useQuery({ userId })
+      ? () => useOfficeUserGeneral(userId)
       : () => useGeneralInfo()
 
   const useMutation =
     mode === 'admin' && userId
       ? () =>
-          api.office.updateUserGeneral.useMutation({
+          useOfficeUpdateUserGeneralMutation({
             onSuccess: () => {
               toast.show({
                 title: 'Profile Updated',
@@ -87,6 +90,7 @@ export function GeneralProfileSection({
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
               toast.show({
                 title: 'Error',
+                message: '',
                 variant: 'error',
               })
             },
@@ -106,6 +110,7 @@ export function GeneralProfileSection({
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
               toast.show({
                 title: 'Error',
+                message: '',
                 variant: 'error',
               })
             },
@@ -130,6 +135,7 @@ export function GeneralProfileSection({
         error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.'
       toast.show({
         title: 'Upload Error',
+        message: '',
         variant: 'error',
       })
     },
@@ -417,16 +423,14 @@ export function GeneralProfileSection({
             >
               <AnimatePresence>
                 {isLoading && (
-                  <Button.Icon>
-                    <Spinner
-                      animation="bouncy"
-                      enterStyle={{ scale: 0 }}
-                      exitStyle={{ scale: 0 }}
-                    />
-                  </Button.Icon>
+                  <Spinner
+                    animation="bouncy"
+                    enterStyle={{ scale: 0 }}
+                    exitStyle={{ scale: 0 }}
+                  />
                 )}
               </AnimatePresence>
-              <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </Row>
         )}

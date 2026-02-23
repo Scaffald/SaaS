@@ -1,6 +1,6 @@
 import { X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, Card, type CardProps, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, CardHeader, type CardProps, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */
@@ -59,7 +59,7 @@ export function ProfileResultCard({
       animation={isNew ? 'quick' : undefined}
       {...props}
     >
-      <Card.Header gap={8}>
+      <CardHeader gap={8}>
         <Stack gap={12} flex={1}>
           {children}
         </Stack>
@@ -88,7 +88,7 @@ export function ProfileResultCard({
             )}
           </Row>
         )}
-      </Card.Header>
+      </CardHeader>
     </Card>
   )
 }

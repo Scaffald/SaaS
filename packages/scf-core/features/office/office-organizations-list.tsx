@@ -1,5 +1,10 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useOfficeOrganizationsList,
+  useOfficeOrganizationRequests,
+  useDeleteOfficeOrganizationMutation,
+  useReviewOrganizationRequestMutation,
+} from '@scf/core/utils/office-organizations-sdk-hooks'
 import { DashboardWidget, Dialog, useThemeContext } from '@scaffald/ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
@@ -101,27 +106,21 @@ export function OfficeOrganizationsList() {
   const [rejectError, setRejectError] = useState<string | null>(null)
   const toast = useToast()
 
-  const { data, isLoading, refetch } = api.office.listOrganizations.useQuery({
-    limit: 50,
-    offset: 0,
-  })
+  const { data, isLoading, refetch } = useOfficeOrganizationsList({ limit: 50, offset: 0 })
   const {
     data: requestData,
     isLoading: isRequestsLoading,
     isRefetching: isRequestsRefetching,
     refetch: refetchRequests,
-  } = api.office.listOrganizationRequests.useQuery({
-    status: 'pending',
-    limit: 25,
-  })
+  } = useOfficeOrganizationRequests({ status: 'pending', limit: 25 })
 
-  const deleteMutation = api.office.deleteOrganization.useMutation({
+  const deleteMutation = useDeleteOfficeOrganizationMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
-  const reviewMutation = api.office.reviewOrganizationRequest.useMutation({
+  const reviewMutation = useReviewOrganizationRequestMutation({
     onSuccess: async () => {
       await Promise.all([refetch(), refetchRequests()])
     },
@@ -135,7 +134,7 @@ export function OfficeOrganizationsList() {
   })
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync({ id })
+    await deleteMutation.mutateAsync(id)
   }
 
   const resetRejectDialog = () => {
@@ -151,7 +150,7 @@ export function OfficeOrganizationsList() {
   const handleApprove = async (request: OrganizationRequestRow) => {
     setProcessingId(request.id)
     try {
-      await reviewMutation.mutateAsync({ id: request.id, action: 'approve' })
+      await reviewMutation.mutateAsync({ id: request.id, params: { action: 'approve' } })
       toast.show('Organization approved', {
         message: `${request.name} is now available for office management.`,
       })
@@ -189,8 +188,7 @@ export function OfficeOrganizationsList() {
     try {
       await reviewMutation.mutateAsync({
         id: rejectDialog.requestId,
-        action: 'reject',
-        rejectionReason: rejectDialog.reason.trim(),
+        params: { action: 'reject', rejectionReason: rejectDialog.reason.trim() },
       })
       toast.show('Request rejected', {
         message: `${rejectDialog.name} has been rejected.`,

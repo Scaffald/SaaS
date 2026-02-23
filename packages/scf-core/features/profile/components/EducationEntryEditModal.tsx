@@ -1,10 +1,10 @@
-import { api } from '@scf/core/utils/api'
+import { useSearchUniversities } from '@scf/core/utils/office-universities-sdk-hooks'
 import { useEducation, useSaveEducationMutation } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
-  CustomCheckbox,
+  Checkbox,
   FieldError,
   MonthYearPicker,
   ResponsiveModal,
@@ -67,7 +67,7 @@ export function EducationEntryEditModal({
 
   // Queries
   const educationQuery = useEducation()
-  const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
+  const searchUniversitiesQuery = useSearchUniversities(
     {
       query: searchQuery,
       country: 'United States',
@@ -75,7 +75,6 @@ export function EducationEntryEditModal({
     },
     {
       enabled: searchQuery.length >= 3,
-      placeholderData: (previousData) => previousData,
     }
   )
 
@@ -454,7 +453,7 @@ export function EducationEntryEditModal({
 
                 return (
                   <Row gap={8} align="center">
-                    <CustomCheckbox
+                    <Checkbox
                       checked={isCurrent}
                       onChange={handleChange}
                       testID="education-modal-current"

@@ -4,7 +4,7 @@ import {
   useQueryClient,
   type UseMutationOptions,
 } from '@tanstack/react-query'
-import type { PersonalityArchetype } from '@scaffald/sdk'
+import type { PersonalityArchetype, SharedPersonalityResults } from '@scaffald/sdk'
 import type {
   AwardResultsViewXPResponse,
   GenerateReportParams,
@@ -298,6 +298,27 @@ export function useAwardResultsViewXPMutation(
       return client.personalityAssessments.awardResultsViewXP()
     },
     ...options,
+  })
+}
+
+/**
+ * Get shared IPIP results by token (public, no auth required).
+ */
+export function useSharedPersonalityResults(
+  token: string | undefined,
+  options?: { enabled?: boolean; gcTime?: number; staleTime?: number; retry?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery<SharedPersonalityResults>({
+    queryKey: ['personality-assessment', 'shared', token],
+    queryFn: async () => {
+      if (!client || !token) throw new Error('Missing client or token')
+      return client.personalityAssessments.getSharedResults(token)
+    },
+    enabled: !!client && !!token && options?.enabled !== false,
+    gcTime: options?.gcTime,
+    staleTime: options?.staleTime ?? 5 * 60 * 1000,
+    retry: options?.retry ?? false,
   })
 }
 

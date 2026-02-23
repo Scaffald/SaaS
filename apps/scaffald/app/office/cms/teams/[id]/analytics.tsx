@@ -4,17 +4,13 @@ import {
   TeamAnalyticsCharts,
   TeamAnalyticsSummary,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useTeam, useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
+import type { TeamMember } from '@scaffald/sdk'
 import { ArrowLeft, BarChart3 } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
-
-type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type MemberRecord = NonNullable<MembersListOutput['members']>[number]
 
 export default function TeamAnalyticsPage() {
   const { id } = useLocalSearchParams<{ id?: string }>()
@@ -22,27 +18,16 @@ export default function TeamAnalyticsPage() {
 
   const teamId = typeof id === 'string' ? id : ''
 
-  const teamQuery = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-    }
-  )
+  const teamQuery = useTeam(teamId || undefined, { enabled: Boolean(teamId) })
 
-  const membersQuery = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      staleTime: 60_000,
-    }
-  )
+  const membersQuery = useTeamMembers(teamId || undefined, { enabled: Boolean(teamId) })
 
   const team = teamQuery.data?.team ?? null
 
   const mentionOptions = useMemo((): Array<{ id: string; label: string }> => {
     if (!membersQuery.data?.members) return []
-    return (membersQuery.data.members as MemberRecord[])
-      .map((member: MemberRecord) => ({
+    return (membersQuery.data.members as TeamMember[])
+      .map((member: TeamMember) => ({
         id: member.user?.id ?? '',
         label:
           member.user?.displayName ??
@@ -57,7 +42,7 @@ export default function TeamAnalyticsPage() {
 
     const directory: Record<string, { displayName?: string | null; username?: string | null }> = {}
 
-    for (const member of membersQuery.data.members as MemberRecord[]) {
+    for (const member of membersQuery.data.members as TeamMember[]) {
       if (!member.user?.id) continue
       directory[member.user.id] = {
         displayName: member.user.displayName ?? null,

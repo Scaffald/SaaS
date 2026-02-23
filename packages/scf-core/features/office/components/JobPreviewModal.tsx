@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { ResponsiveModal, useThemeContext } from '@scaffald/ui'
 import { extractPlainText } from '@scaffald/ui'
 import {
@@ -57,12 +57,9 @@ interface JobPreviewModalProps {
 export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalProps) {
   const { theme } = useThemeContext()
   // Fetch job data using office endpoint
-  const { data, isLoading } = api.office.getJob.useQuery(
-    { id: jobId || '' },
-    { enabled: !!jobId && open }
-  )
+  const { data, isLoading } = useJobDetails(jobId || undefined, { enabled: !!jobId && open })
 
-  const job = (data?.job ?? {}) as JobData
+  const job = (data ?? {}) as JobData
 
   const formatPayRange = (
     minCents: number | null,

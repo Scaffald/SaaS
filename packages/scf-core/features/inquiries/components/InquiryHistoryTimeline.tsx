@@ -32,7 +32,7 @@ interface AuditLogEntry {
   } | null
 }
 
-const getEventColor = (eventType: EventType): `$${string}` => {
+const getEventColor = (eventType: EventType): string => {
   switch (eventType) {
     case 'inquiry_created':
     case 'inquiry_sent':
@@ -135,7 +135,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   const sortedHistory = useMemo(() => {
     if (!history) return []
     // Already sorted by created_at ascending from the query
-    return [...history].reverse() // Show most recent first
+    return [...(history as unknown as AuditLogEntry[])].reverse() // Show most recent first
   }, [history])
 
   if (isLoading) {

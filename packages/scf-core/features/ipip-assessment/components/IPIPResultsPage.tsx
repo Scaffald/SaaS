@@ -52,10 +52,10 @@ export function IPIPResultsPage() {
   // Handle critical errors (network, API failures)
   if (results.error && !results.hasPartialResults) {
     return (
-      <Stack gap={16} padding={32} align="center" aria-live="assertive">
+      <Stack gap={16} padding={32} align="center" accessibilityLiveRegion="assertive">
         <AlertCircle size="sm" color="$red10" />
         <Text color="$red10">Error Loading Results</Text>
-        <Text color="$gray11" textAlign="center">
+        <Text color="$gray11" align="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
         <Row gap={12}>
@@ -75,7 +75,7 @@ export function IPIPResultsPage() {
     return (
       <Stack gap={16} padding={32} align="center">
         <Text color="$gray11">No Results Yet</Text>
-        <Text color="$gray11" textAlign="center">
+        <Text color="$gray11" align="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
@@ -104,20 +104,19 @@ export function IPIPResultsPage() {
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
       >
         <Tabs.Item value="narrative">
-          <Tabs.Trigger flex={1}>Narrative View</Tabs.Trigger>
+          <Tabs.Trigger containerStyle={{ flex: 1 }}>Narrative View</Tabs.Trigger>
         </Tabs.Item>
         <Tabs.Item value="chart">
-          <Tabs.Trigger flex={1}>Chart View</Tabs.Trigger>
+          <Tabs.Trigger containerStyle={{ flex: 1 }}>Chart View</Tabs.Trigger>
         </Tabs.Item>
 
         <Tabs.Content value="narrative">
           <Stack
             padding="md"
             backgroundColor="$color1"
-            borderBottomLeftRadius={16}
-            borderBottomRightRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
+            style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
           >
             <NarrativeView
               scores={results.scores}
@@ -133,10 +132,9 @@ export function IPIPResultsPage() {
           <Stack
             padding="md"
             backgroundColor="$color1"
-            borderBottomLeftRadius={16}
-            borderBottomRightRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
+            style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
           >
             <ChartView
               scores={results.scores}
@@ -182,7 +180,7 @@ export function IPIPResultsPage() {
             variant="outline"
             iconStart={RefreshCcw}
             onPress={handleRetry}
-            marginTop={8}
+            style={{ marginTop: 8 }}
           >
             Refresh Data
           </Button>

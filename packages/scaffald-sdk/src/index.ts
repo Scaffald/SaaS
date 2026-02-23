@@ -20,6 +20,9 @@ export type {
 export type {
   WelcomeSlide,
   GetActiveWelcomeSlidesResponse,
+  ListWelcomeSlidesParams,
+  CreateWelcomeSlideParams,
+  UpdateWelcomeSlideParams,
 } from './resources/cms.js'
 
 export type {
@@ -58,6 +61,16 @@ export type {
   OrganizationProfile,
   EmployerProfile,
   Certification,
+  CurrentUser,
+  GeneralInfo,
+  UpdateGeneralInfoParams,
+  ProfileBySlug,
+  SlugAvailability,
+  UpdateSlugResponse,
+  SlugHistoryEntry,
+  SlugHistory,
+  UploadAvatarParams,
+  UploadAvatarResponse,
 } from './resources/profiles.js'
 
 export type {
@@ -101,6 +114,7 @@ export type {
   LegacySkill,
   GetSkillsLegacyResponse,
   UpdateSkillsLegacyParams,
+  SuccessResponse,
 } from './resources/skills.js'
 
 export type {
@@ -231,6 +245,21 @@ export type {
   MembersListResponse,
   DocumentsListResponse,
   InvitationResponse,
+  OrganizationInvitation,
+  InviteStatus,
+  DocumentVersion,
+  CommitDocumentVersionParams,
+  DocumentShare,
+  ShareDocumentParams,
+  UpdateDocumentShareParams,
+  OrganizationFolder,
+  FolderUpsertParams,
+  OrganizationLocation,
+  LocationUpsertParams,
+  AuditLogListParams,
+  ExportAuditLogParams,
+  AuditLogExportResponse,
+  StorageUsageSummary,
 } from './types/organizations.js'
 
 export type {
@@ -288,6 +317,26 @@ export type {
   CompletePrerequisitesParams,
   CompletePrerequisitesResponse,
 } from './types/prerequisites.js'
+
+export type {
+  CCPARequestType,
+  CCPAOptOutCategory,
+  CCPADataCategory,
+  CCPADataSummaryResponse,
+  CCPAUserRequest,
+  CCPAMyRequestsResponse,
+  CCPAOptOutStatus,
+  CCPAOptOutsResponse,
+  CCPASubmitRequestParams,
+  CCPASubmitRequestResponse,
+  CCPASetOptOutParams,
+  CCPASetOptOutResponse,
+  CCPAComplianceMetrics,
+  AdminCCPARequest,
+  CCPAAdminRequestsParams,
+  CCPAAdminRequestsResponse,
+  CCPAProcessRequestResponse,
+} from './types/ccpa.js'
 
 export type {
   ApiKey,
@@ -378,6 +427,21 @@ export type {
 } from './resources/stripe-settings.js'
 
 export type {
+  PaymentAnalytics,
+  TransactionsListParams,
+  TransactionsListResponse,
+  TransactionExportResponse,
+  PaymentMethod,
+  SetupIntentResponse,
+  SavePaymentMethodParams,
+  TransactionReceipt,
+  AccountCredits,
+  DepositCreditsParams,
+  DepositCreditsResponse,
+  CreditLedgerResponse,
+} from './types/payments.js'
+
+export type {
   SuccessFeeSchedule,
   SuccessFeeStatus,
   CreateSuccessFeeParams,
@@ -450,6 +514,15 @@ export type {
   KnowledgeResponse,
   AbilitiesResponse,
   AutocompleteResponse,
+  SearchOccupationsParams,
+  SearchOccupationsResponse,
+  GetOccupationParams,
+  OccupationData,
+  CareerAssessmentStatus,
+  RIASECStatus,
+  OccupationStatus,
+  SaveCareerAssessmentParams,
+  SaveCareerAssessmentResponse,
 } from './resources/onet.js'
 
 export type {
@@ -473,6 +546,7 @@ export type {
   ReviewSkillRating,
   ReviewSoftSkillVote,
   GetSoftSkillsByCategoryResponse,
+  GetReviewSoftSkillsParams,
   CreateReviewDraftParams,
   SaveDraftParams,
   SaveDraftResponse,

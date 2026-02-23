@@ -436,20 +436,18 @@ export function ProfileGeneralLeft() {
           >
             <AnimatePresence>
               {isSyncing && (
-                <Button.Icon>
-                  <Spinner
-                    animation="bouncy"
-                    enterStyle={{
-                      scale: 0,
-                    }}
-                    exitStyle={{
-                      scale: 0,
-                    }}
-                  />
-                </Button.Icon>
+                <Spinner
+                  animation="bouncy"
+                  enterStyle={{
+                    scale: 0,
+                  }}
+                  exitStyle={{
+                    scale: 0,
+                  }}
+                />
               )}
             </AnimatePresence>
-            <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
+            {isSyncing ? 'Saving...' : 'Save Changes'}
           </Button>
         </Row>
 

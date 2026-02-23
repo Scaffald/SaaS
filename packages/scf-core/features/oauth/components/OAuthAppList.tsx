@@ -5,7 +5,7 @@
 
 import { Button, Card, SizableText, Row, Stack } from '@scaffald/ui'
 import { useState } from 'react'
-import { api } from '@scf/core/utils/api'
+import { useAdminOAuthApps } from '@scf/core/utils/oauth-sdk-hooks'
 
 type AppStatus = 'all' | 'pending' | 'active' | 'trusted' | 'suspended' | 'revoked'
 
@@ -13,7 +13,7 @@ export function OAuthAppList() {
   const [statusFilter, setStatusFilter] = useState<AppStatus>('all')
   const [searchQuery] = useState('')
 
-  const listApps = api.oauth.admin.listApps.useQuery({
+  const listApps = useAdminOAuthApps({
     status: statusFilter === 'all' ? undefined : statusFilter,
     search: searchQuery || undefined,
   })
@@ -32,7 +32,7 @@ export function OAuthAppList() {
           (status) => (
             <Button
               key={status}
-              variant={statusFilter === status ? 'default' : 'outlined'}
+              variant={statusFilter === status ? 'default' : 'outline'}
               onPress={() => setStatusFilter(status)}
               size="sm"
             >

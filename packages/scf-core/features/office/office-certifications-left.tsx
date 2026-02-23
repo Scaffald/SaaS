@@ -1,6 +1,9 @@
-import { api } from '@scf/core/utils/api'
 import {
-  CustomCheckbox,
+  useCreateOfficeCertificationMutation,
+  useUpdateOfficeCertificationMutation,
+} from '@scf/core/utils/office-certifications-sdk-hooks'
+import {
+  Checkbox,
   DashboardWidget,
   ResponsiveSelect,
   useThemeContext,
@@ -103,7 +106,7 @@ export function OfficeCertificationsLeft({
   const requiresRenewal = watch('requires_renewal')
 
   // Mutations
-  const createMutation = api.office.createCertification.useMutation({
+  const createMutation = useCreateOfficeCertificationMutation({
     onSuccess: () => {
       toast.show({
         title: 'Success',
@@ -123,7 +126,7 @@ export function OfficeCertificationsLeft({
     },
   })
 
-  const updateMutation = api.office.updateCertification.useMutation({
+  const updateMutation = useUpdateOfficeCertificationMutation({
     onSuccess: () => {
       toast.show({
         title: 'Success',
@@ -177,7 +180,7 @@ export function OfficeCertificationsLeft({
       if (selectedCertification) {
         await updateMutation.mutateAsync({
           id: selectedCertification.id,
-          ...data,
+          params: data,
         })
       } else {
         await createMutation.mutateAsync(data)
@@ -339,7 +342,7 @@ export function OfficeCertificationsLeft({
                 const isChecked = Boolean(field.value)
                 return (
                   <Row gap={12} align="center">
-                    <CustomCheckbox
+                    <Checkbox
                       checked={isChecked}
                       onChange={field.onChange}
                       aria-label="Requires renewal"

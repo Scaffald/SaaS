@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useOfficeUniversities, useDeleteUniversityMutation } from '@scf/core/utils/office-universities-sdk-hooks'
 import { Text } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
@@ -43,7 +43,7 @@ export function OfficeUniversitiesList() {
   const router = useRouter()
   const [search, setSearch] = useState('')
 
-  const { data, isLoading, refetch } = api.office.universities.getUniversities.useQuery({
+  const { data, isLoading, refetch } = useOfficeUniversities({
     page: 1,
     pageSize: 100,
     search: search || undefined,
@@ -51,14 +51,14 @@ export function OfficeUniversitiesList() {
     sortOrder: 'asc',
   })
 
-  const deleteMutation = api.office.universities.deleteUniversity.useMutation({
+  const deleteMutation = useDeleteUniversityMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync({ id })
+    await deleteMutation.mutateAsync(id)
   }
 
   const universities = data?.universities ?? []

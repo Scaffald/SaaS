@@ -116,16 +116,16 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
           <Text color="$gray11">This test can be taken once every 7 days.</Text>
           {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
             <>
-              <Text color="$gray11" marginTop={8}>
+              <Text color="$gray11" style={{ marginTop: 8 }}>
                 You can take the test again on:
               </Text>
               <Text color="$blue11">{formatDate(nextAvailableAt)}</Text>
-              <Text color="$blue10" marginTop={8}>
+              <Text color="$blue10" style={{ marginTop: 8 }}>
                 Available in {formatCountdown(timeUntilAvailable)}
               </Text>
             </>
           ) : (
-            <Text color="$green11" marginTop={8}>
+            <Text color="$green11" style={{ marginTop: 8 }}>
               The test is available now.
             </Text>
           )}

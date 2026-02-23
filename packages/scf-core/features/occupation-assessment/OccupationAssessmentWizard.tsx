@@ -27,8 +27,9 @@ export function OccupationAssessmentWizard() {
   // Load existing occupations when status is available
   useEffect(() => {
     if (status) {
-      setCurrentOccupation(status.currentOccupationCode || '')
-      setTargetOccupations(status.targetOccupationCodes || [])
+      const s = status as { currentOccupationCode?: string; targetOccupationCodes?: string[] }
+      setCurrentOccupation(s.currentOccupationCode || '')
+      setTargetOccupations(s.targetOccupationCodes || [])
     }
   }, [status])
 
@@ -54,9 +55,11 @@ export function OccupationAssessmentWizard() {
 
   const handleComplete = () => {
     saveMutation.mutate({
-      riasec_scores: undefined, // Don't override existing RIASEC scores
-      current_occupation_code: currentOccupation || undefined,
-      target_occupation_codes: targetOccupations.length > 0 ? targetOccupations : undefined,
+      riasec_scores: undefined,
+      selected_occupations:
+        currentOccupation || targetOccupations.length > 0
+          ? [currentOccupation, ...targetOccupations].filter(Boolean)
+          : undefined,
     })
   }
 
@@ -91,7 +94,7 @@ export function OccupationAssessmentWizard() {
       error={error ? new Error(error.message ?? 'Failed to load assessment status.') : null}
       showNext={false}
     >
-      <Stack gap={16} width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack gap={16} width="100%" maxWidth={800} style={{ marginHorizontal: 'auto' }}>
         {/* Current Occupation */}
         <Stack gap={12}>
           <Stack gap={4}>
@@ -142,7 +145,7 @@ export function OccupationAssessmentWizard() {
           </Button>
         </Stack>
 
-        <Button size="lg" themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
+        <Button size="lg" variant="light" color="primary" onPress={handleComplete} disabled={saveMutation.isPending}>
           Save Preferences
         </Button>
       </Stack>

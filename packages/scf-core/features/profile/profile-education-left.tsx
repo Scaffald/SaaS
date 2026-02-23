@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
-  CustomCheckbox,
+  Checkbox,
   DashboardWidget,
   FieldError,
   MonthYearPicker,
@@ -907,7 +907,7 @@ export function ProfileEducationLeft({
 
                       return (
                         <Row gap={8} align="center">
-                          <CustomCheckbox
+                          <Checkbox
                             checked={isCurrent}
                             onChange={handleChange}
                             testID={`education-current-${index}`}

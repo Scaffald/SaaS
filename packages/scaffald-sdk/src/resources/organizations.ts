@@ -16,6 +16,24 @@ import type {
   MembersListResponse,
   DocumentsListResponse,
   InvitationResponse,
+  OrganizationInvitation,
+  InviteStatus,
+  MemberActivityEntry,
+  DocumentVersion,
+  CommitDocumentVersionParams,
+  DocumentShare,
+  ShareDocumentParams,
+  UpdateDocumentShareParams,
+  DocumentSearchResult,
+  OrganizationFolder,
+  FolderUpsertParams,
+  OrganizationLocation,
+  LocationUpsertParams,
+  AuditLogListParams,
+  AuditLogListResponse,
+  ExportAuditLogParams,
+  AuditLogExportResponse,
+  StorageUsageSummary,
 } from '../types/organizations.js'
 
 /**
@@ -355,5 +373,165 @@ export class Organizations extends Resource {
     reminderDays: number
   }> {
     return this.put(`/v1/organizations/${id}/reminder-settings`, params)
+  }
+
+  async getProjectsWithOverrides(id: string): Promise<{
+    projects: Array<{
+      id: string
+      name: string | null
+      status: string | null
+      location_visibility: string | null
+      location_visibility_override: boolean | null
+      created_at: string
+    }>
+  }> {
+    return this.get(`/v1/organizations/${id}/projects-with-overrides`)
+  }
+
+  async updateLocationVisibility(
+    id: string,
+    default_project_location_visibility: 'public' | 'authenticated' | 'organization_only' | 'private'
+  ): Promise<{ organization: unknown }> {
+    return this.patch(`/v1/organizations/${id}/location-visibility`, {
+      default_project_location_visibility,
+    })
+  }
+
+  // ===== Invitation Management =====
+
+  async listInvitations(id: string, statuses?: InviteStatus[]): Promise<OrganizationInvitation[]> {
+    const params: Record<string, string> = {}
+    if (statuses?.length) params.statuses = statuses.join(',')
+    return this.get<OrganizationInvitation[]>(`/v1/organizations/${id}/invitations`, params)
+  }
+
+  async resendInvitation(id: string, inviteId: string): Promise<OrganizationInvitation> {
+    return this.post<OrganizationInvitation>(`/v1/organizations/${id}/invitations/${inviteId}/resend`, {})
+  }
+
+  async cancelInvitation(id: string, inviteId: string): Promise<{ id: string; status: string }> {
+    return this.post<{ id: string; status: string }>(`/v1/organizations/${id}/invitations/${inviteId}/cancel`, {})
+  }
+
+  async acceptInvitation(token: string, reason?: string): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>('/v1/organizations/invitations/accept', { token, reason })
+  }
+
+  async declineInvitation(token: string, reason?: string): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>('/v1/organizations/invitations/decline', { token, reason })
+  }
+
+  // ===== Extended Member Management =====
+
+  async getMemberActivity(id: string, lookbackDays = 30): Promise<MemberActivityEntry[]> {
+    return this.get<MemberActivityEntry[]>(`/v1/organizations/${id}/member-activity`, { lookbackDays: String(lookbackDays) })
+  }
+
+  async transferOwnership(id: string, newOwnerUserId: string): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/organizations/${id}/transfer-ownership`, { newOwnerUserId })
+  }
+
+  // ===== Document Versions =====
+
+  async commitDocumentVersion(
+    id: string,
+    documentId: string,
+    params: CommitDocumentVersionParams
+  ): Promise<DocumentVersion> {
+    return this.post<DocumentVersion>(`/v1/organizations/${id}/documents/${documentId}/commit-version`, params)
+  }
+
+  async listDocumentVersions(id: string, documentId: string): Promise<DocumentVersion[]> {
+    return this.get<DocumentVersion[]>(`/v1/organizations/${id}/documents/${documentId}/versions`)
+  }
+
+  // ===== Document Shares =====
+
+  async listDocumentShares(id: string, documentId: string): Promise<DocumentShare[]> {
+    return this.get<DocumentShare[]>(`/v1/organizations/${id}/documents/${documentId}/shares`)
+  }
+
+  async shareDocument(id: string, documentId: string, params: ShareDocumentParams): Promise<DocumentShare> {
+    return this.post<DocumentShare>(`/v1/organizations/${id}/documents/${documentId}/shares`, params)
+  }
+
+  async updateDocumentShare(
+    id: string,
+    documentId: string,
+    shareId: string,
+    params: UpdateDocumentShareParams
+  ): Promise<DocumentShare> {
+    return this.patch<DocumentShare>(`/v1/organizations/${id}/documents/${documentId}/shares/${shareId}`, params)
+  }
+
+  async revokeDocumentShare(id: string, documentId: string, shareId: string): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(
+      `/v1/organizations/${id}/documents/${documentId}/shares/${shareId}/revoke`,
+      {}
+    )
+  }
+
+  async searchDocuments(id: string, query: string, limit = 10): Promise<DocumentSearchResult[]> {
+    return this.get<DocumentSearchResult[]>(`/v1/organizations/${id}/documents/search`, {
+      query,
+      limit: String(limit),
+    })
+  }
+
+  // ===== Folders =====
+
+  async listFolders(id: string): Promise<OrganizationFolder[]> {
+    return this.get<OrganizationFolder[]>(`/v1/organizations/${id}/folders`)
+  }
+
+  async upsertFolder(id: string, params: FolderUpsertParams): Promise<OrganizationFolder> {
+    return this.post<OrganizationFolder>(`/v1/organizations/${id}/folders`, params)
+  }
+
+  async deleteFolder(id: string, folderId: string): Promise<{ success: boolean }> {
+    return this.del<{ success: boolean }>(`/v1/organizations/${id}/folders/${folderId}`)
+  }
+
+  // ===== Locations =====
+
+  async listLocations(id: string, includeInactive = false): Promise<OrganizationLocation[]> {
+    return this.get<OrganizationLocation[]>(`/v1/organizations/${id}/locations`, {
+      includeInactive: String(includeInactive),
+    })
+  }
+
+  async upsertLocation(id: string, params: LocationUpsertParams): Promise<OrganizationLocation> {
+    return this.post<OrganizationLocation>(`/v1/organizations/${id}/locations`, params)
+  }
+
+  async archiveLocation(
+    id: string,
+    locationId: string,
+    isActive: boolean
+  ): Promise<{ id: string; is_active: boolean }> {
+    return this.patch<{ id: string; is_active: boolean }>(
+      `/v1/organizations/${id}/locations/${locationId}/archive`,
+      { isActive }
+    )
+  }
+
+  // ===== Audit Log =====
+
+  async listAuditLog(id: string, params?: AuditLogListParams): Promise<AuditLogListResponse> {
+    const queryParams: Record<string, string> = {}
+    if (params?.limit) queryParams.limit = String(params.limit)
+    if (params?.cursor) queryParams.cursor = params.cursor
+    if (params?.actionTypes?.length) queryParams.actionTypes = params.actionTypes.join(',')
+    return this.get<AuditLogListResponse>(`/v1/organizations/${id}/audit-log`, queryParams)
+  }
+
+  async exportAuditLog(id: string, params?: ExportAuditLogParams): Promise<AuditLogExportResponse> {
+    return this.post<AuditLogExportResponse>(`/v1/organizations/${id}/audit-log/export`, params ?? {})
+  }
+
+  // ===== Storage =====
+
+  async getStorageUsageSummary(id: string): Promise<StorageUsageSummary> {
+    return this.get<StorageUsageSummary>(`/v1/organizations/${id}/storage-usage`)
   }
 }

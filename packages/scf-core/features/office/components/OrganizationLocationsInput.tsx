@@ -189,13 +189,10 @@ export function OrganizationLocationsInput({
                   disabled={disabled || value.length === 1}
                   backgroundColor="transparent"
                   borderColor={colors.border[theme].default}
+                  iconStart={X}
+                  style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
                 >
-                  <Button.Icon>
-                    <X size="md" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
-                  </Button.Icon>
-                  <Button.Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                    Remove Location
-                  </Button.Text>
+                  Remove Location
                 </Button>
               </Row>
             </Stack>
@@ -211,13 +208,10 @@ export function OrganizationLocationsInput({
               disabled={disabled}
               backgroundColor="transparent"
               borderColor={colors.border[theme].default}
+              iconStart={Plus}
+              style={{ color: colors.text[theme].secondary }}
             >
-              <Button.Icon>
-                <Plus size="md" style={{ color: colors.text[theme].secondary }} />
-              </Button.Icon>
-              <Button.Text style={{ color: colors.text[theme].secondary }}>
-                Add First Location
-              </Button.Text>
+              Add First Location
             </Button>
           </Stack>
         )}
@@ -233,13 +227,10 @@ export function OrganizationLocationsInput({
           alignSelf="flex-start"
           backgroundColor="transparent"
           borderColor={colors.border[theme].default}
+          iconStart={Plus}
+          style={{ color: colors.text[theme].secondary }}
         >
-          <Button.Icon>
-            <Plus size="md" style={{ color: colors.text[theme].secondary }} />
-          </Button.Icon>
-          <Button.Text style={{ color: colors.text[theme].secondary }}>
-            Add Another Location
-          </Button.Text>
+          Add Another Location
         </Button>
       )}
 

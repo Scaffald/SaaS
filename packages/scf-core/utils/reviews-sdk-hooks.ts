@@ -14,7 +14,7 @@ import type {
   SoftSkill,
   Review,
   ReviewAnalytics,
-  GetSoftSkillsParams,
+  GetReviewSoftSkillsParams,
   GetSoftSkillsByCategoryResponse,
   CreateReviewDraftParams,
   SaveDraftParams,
@@ -46,7 +46,7 @@ import type {
  * Get soft skills (optionally filtered by category)
  */
 export function useSoftSkills(
-  params?: GetSoftSkillsParams,
+  params?: GetReviewSoftSkillsParams,
   options?: Omit<UseQueryOptions<SoftSkill[]>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffaldJobsClient()

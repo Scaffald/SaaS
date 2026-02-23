@@ -1,5 +1,5 @@
 import { usePaymentAnalytics } from '@scf/core/utils/payments-sdk-hooks'
-import type { PaymentAnalytics, FailedTransactionRow } from '@scaffald/sdk/types/payments'
+import type { PaymentAnalytics, FailedTransactionRow } from '@scaffald/sdk'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'

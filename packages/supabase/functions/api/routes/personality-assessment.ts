@@ -1835,4 +1835,79 @@ app.openapi(getArchetypeRoute, async (c) => {
   })
 })
 
+/**
+ * GET /v1/personality-assessment/shared/:token
+ * Get shared IPIP results by token (public endpoint, no auth required)
+ */
+app.get('/shared/:token', async (c) => {
+  const { token } = c.req.param()
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+
+  const { createClient } = await import('jsr:@supabase/supabase-js@2')
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+  // Look up share token
+  const { data: tokenData, error: tokenError } = await supabaseAdmin
+    .schema('core')
+    .from('ipip_share_tokens')
+    .select('assessment_id, expires_at, is_revoked')
+    .eq('token', token)
+    .single()
+
+  if (tokenError || !tokenData) {
+    return c.json({ error: 'Share link not found or invalid' }, 404)
+  }
+
+  if (tokenData.is_revoked) {
+    return c.json({ error: 'This share link has been revoked' }, 410)
+  }
+
+  if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
+    return c.json({ error: 'This share link has expired' }, 410)
+  }
+
+  // Fetch the assessment data
+  const { data: assessment, error: assessmentError } = await supabaseAdmin
+    .schema('core')
+    .from('personality_assessments')
+    .select('ipip_answers, archetype_id')
+    .eq('id', tokenData.assessment_id)
+    .single()
+
+  if (assessmentError || !assessment) {
+    return c.json({ error: 'Assessment not found' }, 404)
+  }
+
+  // Fetch archetype if present
+  let archetype = null
+  if (assessment.archetype_id) {
+    const { data: archetypeData } = await supabaseAdmin
+      .schema('core')
+      .from('user_archetypes')
+      .select('confidence_score, archetype:archetypes(name)')
+      .eq('id', assessment.archetype_id)
+      .single()
+
+    if (archetypeData) {
+      const archetypeRow = Array.isArray(archetypeData.archetype)
+        ? archetypeData.archetype[0]
+        : archetypeData.archetype
+      archetype = {
+        name: archetypeRow?.name ?? '',
+        confidence: archetypeData.confidence_score ?? 0,
+      }
+    }
+  }
+
+  return c.json({
+    answers: assessment.ipip_answers || [],
+    archetype,
+  })
+})
+
 export default app

@@ -7,7 +7,7 @@ import {
   QUESTIONS_PER_DOMAIN,
 } from '@scf/core/features/ipip-assessment/utils/domainGrouping'
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, ProgressBar, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import {
   getChoices,
@@ -199,9 +199,9 @@ export function IPIPTestStep({
           </Text>
           <Text style={{ color: colors.text[theme].secondary }}>{overallProgress}%</Text>
         </Row>
-        <Progress value={overallProgress} max={100}>
-          <Progress.Indicator animation="bouncy" />
-        </Progress>
+        <ProgressBar value={overallProgress} max={100}>
+          <ProgressBar.Indicator animation="bouncy" />
+        </ProgressBar>
       </Stack>
 
       {/* Question */}

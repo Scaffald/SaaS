@@ -214,14 +214,14 @@ export const OfficeApplicationsScreen = () => {
           <Button
             size="sm"
             onPress={() => setViewMode('kanban')}
-            variant={viewMode === 'kanban' ? 'outlined' : undefined}
+            variant={viewMode === 'kanban' ? 'outline' : undefined}
           >
             Kanban
           </Button>
           <Button
             size="sm"
             onPress={() => setViewMode('list')}
-            variant={viewMode === 'list' ? 'outlined' : undefined}
+            variant={viewMode === 'list' ? 'outline' : undefined}
           >
             List
           </Button>

@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useCreateUniversityMutation, useUpdateUniversityMutation } from '@scf/core/utils/office-universities-sdk-hooks'
 import { DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from 'lucide-react-native'
@@ -70,7 +70,7 @@ export function OfficeUniversitiesForm({
   })
 
   // Mutations
-  const createMutation = api.office.universities.createUniversity.useMutation({
+  const createMutation = useCreateUniversityMutation({
     onSuccess: () => {
       toast.show({
         title: 'Success',
@@ -90,7 +90,7 @@ export function OfficeUniversitiesForm({
     },
   })
 
-  const updateMutation = api.office.universities.updateUniversity.useMutation({
+  const updateMutation = useUpdateUniversityMutation({
     onSuccess: () => {
       toast.show({
         title: 'Success',
@@ -168,7 +168,7 @@ export function OfficeUniversitiesForm({
       if (selectedUniversity) {
         await updateMutation.mutateAsync({
           id: selectedUniversity.id,
-          ...payload,
+          params: payload,
         })
       } else {
         await createMutation.mutateAsync(payload)

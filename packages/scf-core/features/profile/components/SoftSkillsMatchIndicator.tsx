@@ -39,7 +39,7 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
           {userRating !== null && userRating > 0 ? (
             <Text color="$gray11">Your rating: {userRating}/5</Text>
           ) : (
-            <Text color="$gray11" fontStyle="italic">
+            <Text color="$gray11" style={{ fontStyle: 'italic' }}>
               Not assessed
             </Text>
           )}

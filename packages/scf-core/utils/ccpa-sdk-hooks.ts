@@ -12,7 +12,7 @@ import type {
   CCPAAdminRequestsParams,
   CCPAAdminRequestsResponse,
   CCPAProcessRequestResponse,
-} from '@scaffald/sdk/types/ccpa'
+} from '@scaffald/sdk'
 
 // ===== User Hooks =====
 

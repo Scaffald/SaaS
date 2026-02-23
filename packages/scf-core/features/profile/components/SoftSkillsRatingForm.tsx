@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Slider, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Separator, Slider, Text, Row, Stack } from '@scaffald/ui'
 import { softSkillsUpdateSchema, type SoftSkillsUpdateInput } from '@scf/schemas/profile'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
 import { colors } from '@scaffald/ui/tokens'
@@ -201,6 +201,7 @@ export const SoftSkillsRatingForm: FC = () => {
           error instanceof Error ? error.message : 'Failed to save assessment. Please try again.'
         toast.show({
           title: 'Error',
+          message: '',
           variant: 'error',
         })
       }
@@ -243,7 +244,7 @@ export const SoftSkillsRatingForm: FC = () => {
     <Stack gap={16}>
       {/* Header */}
       <Row justify="space-between" align="center">
-        <Heading variant="h3">Rate Your Soft Skills</Heading>
+        <Heading level={3}>Rate Your Soft Skills</Heading>
         <SaveStatusIndicator
           status={autoSaveStatus}
           lastSavedAt={lastSavedAt}
@@ -304,26 +305,13 @@ export const SoftSkillsRatingForm: FC = () => {
                       return (
                         <Stack gap={8}>
                           <Slider
-                            value={[sliderValue]}
-                            onValueChange={(newValue) => onChange(newValue.at(0) ?? sliderValue)}
+                            value={sliderValue}
+                            onValueChange={(newValue) => onChange(newValue)}
                             min={1}
                             max={5}
                             step={1}
-                            size="sm"
-                            marginTop={16}
-                            marginBottom={8}
-                          >
-                            <Slider.Track backgroundColor="$color4" height={6} borderRadius={10}>
-                              <Slider.TrackActive backgroundColor="$blue9" borderRadius={10} />
-                            </Slider.Track>
-                            <Slider.Thumb
-                              index={0}
-                              size="sm"
-                              backgroundColor="$blue9"
-                              borderWidth={2}
-                              borderColor="$blue11"
-                            />
-                          </Slider>
+                            style={{ marginTop: 16, marginBottom: 8 }}
+                          />
 
                           <Row justify="space-between" gap={8} wrap>
                             {SOFT_SKILL_LEVELS.map((level) => (
@@ -331,8 +319,7 @@ export const SoftSkillsRatingForm: FC = () => {
                                 key={level.value}
                                 flex={1}
                                 minWidth={64}
-                                style={{ alignItems: 'center' }}
-                                opacity={sliderValue === level.value ? 1 : 0.6}
+                                style={{ alignItems: 'center', opacity: sliderValue === level.value ? 1 : 0.6 }}
                               >
                                 <Text style={{ color: colors.text[theme].secondary }}>{level.value}</Text>
                                 <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
@@ -361,8 +348,8 @@ export const SoftSkillsRatingForm: FC = () => {
           size="md"
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
+          loading={updateMutation.isPending}
           iconStart={updateMutation.isPending ? undefined : CheckCircle2}
-          iconAfter={updateMutation.isPending ? <Spinner size="sm" /> : undefined}
         >
           {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}
         </Button>
@@ -374,13 +361,12 @@ export const SoftSkillsRatingForm: FC = () => {
         onOpenChange={setShowSuccessModal}
         title="Assessment Complete!"
         size="md"
-        showCloseButton={true}
       >
         <Stack gap={16} padding="md" align="center">
           <Stack
             width={80}
             height={80}
-            borderRadius="$12"
+            borderRadius={12}
             backgroundColor="$green2"
             borderWidth={2}
             borderColor="$green9"

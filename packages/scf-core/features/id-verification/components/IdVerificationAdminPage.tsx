@@ -12,13 +12,13 @@ import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   Card,
-  type GetThemeValueForKey,
   Spinner,
   Tabs,
   Text,
   Row,
   Stack,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
@@ -26,28 +26,20 @@ type StatusFilter = 'all' | 'active' | 'expired' | 'revoked'
 
 const STATUS_META: Record<
   Exclude<StatusFilter, 'all'>,
-  {
-    label: string
-    color: GetThemeValueForKey<'color'>
-    backgroundColor: GetThemeValueForKey<'backgroundColor'>
-  }
+  { label: string; color: string; backgroundColor: string }
 > = {
-  active: { label: 'Active', color: '$green11', backgroundColor: '$green4' },
-  expired: { label: 'Expired', color: '$orange11', backgroundColor: '$orange4' },
-  revoked: { label: 'Revoked', color: '$red11', backgroundColor: '$red4' },
+  active: { label: 'Active', color: colors.success[700], backgroundColor: colors.success[100] },
+  expired: { label: 'Expired', color: colors.warning[700], backgroundColor: colors.warning[100] },
+  revoked: { label: 'Revoked', color: colors.error[600], backgroundColor: colors.error[100] },
 }
 
 const SOURCE_META: Record<
   'worker' | 'organization' | 'platform',
-  {
-    label: string
-    color: GetThemeValueForKey<'color'>
-    backgroundColor: GetThemeValueForKey<'backgroundColor'>
-  }
+  { label: string; color: string; backgroundColor: string }
 > = {
-  worker: { label: 'Worker self-serve', color: '$color11', backgroundColor: '$color4' },
-  organization: { label: 'Organization', color: '$blue11', backgroundColor: '$blue4' },
-  platform: { label: 'Platform initiated', color: '$purple11', backgroundColor: '$purple4' },
+  worker: { label: 'Worker self-serve', color: colors.gray[800], backgroundColor: colors.gray[100] },
+  organization: { label: 'Organization', color: colors.info[700], backgroundColor: colors.info[100] },
+  platform: { label: 'Platform initiated', color: colors.primary[700], backgroundColor: colors.primary[100] },
 }
 
 interface IdVerificationAdminPageProps {
@@ -142,11 +134,13 @@ export function IdVerificationAdminPage({
           }
           return (
             <Text
-              color={meta.color}
-              backgroundColor={meta.backgroundColor}
-              paddingHorizontal={8}
-              paddingVertical={4}
-              borderRadius={12}
+              style={{
+                color: meta.color,
+                backgroundColor: meta.backgroundColor,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
             >
               {meta.label}
             </Text>
@@ -185,11 +179,13 @@ export function IdVerificationAdminPage({
           const meta = SOURCE_META[sourceKey]
           return (
             <Text
-              color={meta.color}
-              backgroundColor={meta.backgroundColor}
-              paddingHorizontal={8}
-              paddingVertical={4}
-              borderRadius={12}
+              style={{
+                color: meta.color,
+                backgroundColor: meta.backgroundColor,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
             >
               {meta.label}
             </Text>
@@ -227,34 +223,31 @@ export function IdVerificationAdminPage({
             {
               label: 'Active badges',
               value: summary.active,
-              color: '$green12' as GetThemeValueForKey<'color'>,
+              color: colors.success[800],
             },
             {
               label: 'Expired badges',
               value: summary.expired,
-              color: '$orange12' as GetThemeValueForKey<'color'>,
+              color: colors.warning[800],
             },
             {
               label: 'Revoked badges',
               value: summary.revoked,
-              color: '$red12' as GetThemeValueForKey<'color'>,
+              color: colors.error[700],
             },
             {
               label: 'Total verifications',
               value: summary.total,
-              color: '$color12' as GetThemeValueForKey<'color'>,
+              color: colors.gray[900],
             },
           ].map((item) => (
             <Card
               key={item.label}
-              flex={1}
-              minWidth={200}
               padding="sm"
-              borderColor="$borderColor"
-              borderWidth={1}
+              style={{ flex: 1, minWidth: 200, borderColor: colors.gray[200], borderWidth: 1 }}
             >
-              <Text color="$gray11">{item.label}</Text>
-              <Text color={item.color}>{item.value}</Text>
+              <Text style={{ color: colors.gray[600] }}>{item.label}</Text>
+              <Text style={{ color: item.color }}>{item.value}</Text>
             </Card>
           ))}
         </Row>
@@ -262,11 +255,11 @@ export function IdVerificationAdminPage({
         <Stack gap={8}>
           <Text color="$gray11">Badge status filter</Text>
           <Row
-            backgroundColor="$color2"
+            backgroundColor={colors.gray[50]}
             borderRadius={16}
             borderWidth={1}
-            borderColor="$borderColor"
-            overflow="hidden"
+            borderColor={colors.gray[200]}
+            style={{ overflow: 'hidden' }}
           >
             <Tabs
               value={statusFilter}
@@ -274,7 +267,7 @@ export function IdVerificationAdminPage({
             >
               {STATUS_TABS.map((tab) => (
                 <Tabs.Item key={tab.value} value={tab.value}>
-                  <Tabs.Trigger flex={1}>{tab.label}</Tabs.Trigger>
+                  <Tabs.Trigger containerStyle={{ flex: 1 }}>{tab.label}</Tabs.Trigger>
                 </Tabs.Item>
               ))}
             </Tabs>

@@ -45,7 +45,7 @@ export function useProject(
     queryKey: ['scaffald', 'projects', 'detail', projectId],
     queryFn: async () => {
       if (!client || !projectId) throw new Error('Scaffald client or project ID not available')
-      return client.projects.get({ id: projectId })
+      return client.projects.getById({ id: projectId })
     },
     enabled: !!client && !!projectId && (options?.enabled ?? true),
     ...options,

@@ -45,7 +45,8 @@ export function useNewsFeedByIndustry({
 
     return query.data.map((item: (typeof query.data)[0]) => {
       // Ensure pubDate is a Date object (tRPC serializes Date to string)
-      const pubDate = item.pubDate instanceof Date ? item.pubDate : new Date(item.pubDate)
+      const pubDate =
+        (item.pubDate as unknown) instanceof Date ? item.pubDate : new Date(item.pubDate as string)
 
       return {
         ...item,

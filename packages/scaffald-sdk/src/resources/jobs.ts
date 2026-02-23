@@ -71,6 +71,36 @@ export interface CreateJobParams {
   employment_type?: 'full_time' | 'part_time' | 'contract' | 'temporary'
 }
 
+/** Params for office (admin) job creation */
+export interface OfficeCreateJobParams {
+  organization_id: string
+  title: string
+  description: string
+  status?: 'draft' | 'open' | 'paused' | 'closed'
+  employment_type?: 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern'
+  remote_option?: 'on_site' | 'hybrid' | 'remote'
+  position_level?: string
+  location?: string
+  pay_range_min_cents?: number
+  pay_range_max_cents?: number
+  pay_range_type?: 'hourly' | 'salary' | 'contract' | 'project'
+}
+
+/** Params for office (admin) job update */
+export interface OfficeUpdateJobParams {
+  title?: string
+  description?: string
+  status?: 'draft' | 'open' | 'paused' | 'closed'
+  employment_type?: 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern'
+  remote_option?: 'on_site' | 'hybrid' | 'remote'
+  position_level?: string
+  location?: string
+  pay_range_min_cents?: number
+  pay_range_max_cents?: number
+  pay_range_type?: 'hourly' | 'salary' | 'contract' | 'project'
+  organization_id?: string
+}
+
 /** API response shape for single job */
 interface JobApiResponse {
   data: Job
@@ -244,6 +274,16 @@ export class Jobs extends Resource {
     return res.data ?? { jobs: [], total: 0 }
   }
 
+  async officeCreateJob(params: OfficeCreateJobParams): Promise<Job> {
+    const res = await this.post<{ data: { job: Job } }>('/v1/office/jobs', params)
+    return res.data.job
+  }
+
+  async officeUpdateJob(id: string, params: OfficeUpdateJobParams): Promise<Job> {
+    const res = await this.patch<{ data: { job: Job } }>(`/v1/office/jobs/${id}`, params)
+    return res.data.job
+  }
+
   async filterOptions(): Promise<{
     employmentTypes: string[]
     locations: string[]
@@ -369,5 +409,15 @@ export class Jobs extends Resource {
       needsSelfAssessment: data.needsSelfAssessment,
       jobs: data.jobs,
     }
+  }
+
+  async officeDeleteJob(id: string): Promise<{ success: boolean }> {
+    return this.del<{ success: boolean }>(`/v1/office/jobs/${id}`)
+  }
+
+  async officeDuplicateJob(id: string): Promise<{ job: OfficeJob }> {
+    return this.post<{ data: { job: OfficeJob } }>(`/v1/office/jobs/${id}/duplicate`, {}).then(
+      (res) => (res as unknown as { data: { job: OfficeJob } }).data
+    )
   }
 }

@@ -1,4 +1,3 @@
-import { api } from '@scf/core/utils/api'
 import {
   useInviteOrganizationMemberMutation,
   useOrganizationMembers as useOrgMembersSdk,
@@ -8,41 +7,63 @@ import {
   useCreateDocumentDownloadUrlMutation,
   useOrganizationSettings as useOrgSettingsSdk,
   useUpdateOrganizationSettingsMutation,
+  useOrganizationInvitations,
+  useResendOrganizationInvitationMutation,
+  useCancelOrganizationInvitationMutation,
+  useAcceptOrganizationInvitationMutation,
+  useDeclineOrganizationInvitationMutation,
+  useOrganizationMemberActivity as useOrgMemberActivitySdk,
+  useTransferOrganizationOwnershipMutation,
+  useCommitDocumentVersionMutation,
+  useOrganizationDocumentVersions,
+  useOrganizationDocumentShares,
+  useShareDocumentMutation,
+  useUpdateDocumentShareMutation,
+  useRevokeDocumentShareMutation,
+  useOrganizationFolders as useOrgFoldersSdk,
+  useUpsertOrganizationFolderMutation,
+  useDeleteOrganizationFolderMutation,
+  useSearchOrganizationDocuments as useSearchOrgDocumentsSdk,
+  useOrganizationLocations as useOrgLocationsSdk,
+  useUpsertOrganizationLocationMutation,
+  useArchiveOrganizationLocationMutation,
+  useOrganizationAuditLog as useOrgAuditLogSdk,
+  useExportOrganizationAuditLogMutation,
+  useOrganizationStorageUsage as useOrgStorageUsageSdk,
 } from '@scf/core/utils/organizations-sdk-hooks'
+
+import type { InviteStatus } from '@scaffald/sdk'
 
 export const useOrganizationInvites = (
   organizationId: string,
-  statuses?: Array<'pending' | 'sent' | 'viewed' | 'accepted' | 'declined' | 'expired' | 'canceled'>
+  statuses?: Array<InviteStatus>
 ) => {
-  return api.organizations.listInvitations.useQuery(
-    { organizationId, statuses },
-    { enabled: Boolean(organizationId) }
-  )
+  return useOrganizationInvitations(organizationId || undefined, statuses, {
+    enabled: Boolean(organizationId),
+  })
 }
 
 export const useInviteOrganizationMember = () => useInviteOrganizationMemberMutation()
 
-export const useResendOrganizationInvite = () => api.organizations.resendInvitation.useMutation()
+export const useResendOrganizationInvite = () => useResendOrganizationInvitationMutation()
 
-export const useCancelOrganizationInvite = () => api.organizations.cancelInvitation.useMutation()
+export const useCancelOrganizationInvite = () => useCancelOrganizationInvitationMutation()
 
-export const useAcceptOrganizationInvite = () => api.organizations.acceptInvitation.useMutation()
+export const useAcceptOrganizationInvite = () => useAcceptOrganizationInvitationMutation()
 
-export const useDeclineOrganizationInvite = () => api.organizations.declineInvitation.useMutation()
+export const useDeclineOrganizationInvite = () => useDeclineOrganizationInvitationMutation()
 
 export const useOrganizationMembers = (organizationId: string, search?: string) =>
   useOrgMembersSdk(organizationId || undefined, { search }, { enabled: Boolean(organizationId) })
 
 export const useOrganizationMemberActivity = (organizationId: string, lookbackDays = 30) =>
-  api.organizations.getMemberActivity.useQuery(
-    { organizationId, lookbackDays },
-    { enabled: Boolean(organizationId) }
-  )
+  useOrgMemberActivitySdk(organizationId || undefined, lookbackDays, {
+    enabled: Boolean(organizationId),
+  })
 
 export const useRemoveOrganizationMember = () => useRemoveOrganizationMemberMutation()
 
-export const useTransferOrganizationOwnership = () =>
-  api.organizations.transferOwnership.useMutation()
+export const useTransferOrganizationOwnership = () => useTransferOrganizationOwnershipMutation()
 
 export const useOrganizationDocuments = (
   organizationId: string,
@@ -51,50 +72,46 @@ export const useOrganizationDocuments = (
 
 export const useDocumentUploadSession = () => useCreateDocumentUploadSessionMutation()
 
-export const useCommitDocumentVersion = () => api.organizations.commitDocumentVersion.useMutation()
+export const useCommitDocumentVersion = () => useCommitDocumentVersionMutation()
 
 export const useDocumentVersions = (organizationId: string, documentId: string) =>
-  api.organizations.listDocumentVersions.useQuery(
-    { organizationId, documentId },
-    { enabled: Boolean(organizationId && documentId) }
-  )
+  useOrganizationDocumentVersions(organizationId || undefined, documentId || undefined, {
+    enabled: Boolean(organizationId && documentId),
+  })
 
 export const useDocumentDownloadUrl = () => useCreateDocumentDownloadUrlMutation()
 
 export const useDocumentShares = (organizationId: string, documentId: string) =>
-  api.organizations.listDocumentShares.useQuery(
-    { organizationId, documentId },
-    { enabled: Boolean(organizationId && documentId) }
-  )
+  useOrganizationDocumentShares(organizationId || undefined, documentId || undefined, {
+    enabled: Boolean(organizationId && documentId),
+  })
 
-export const useShareDocument = () => api.organizations.shareDocument.useMutation()
+export const useShareDocument = () => useShareDocumentMutation()
 
-export const useUpdateDocumentShare = () => api.organizations.updateDocumentShare.useMutation()
+export const useUpdateDocumentShare = () => useUpdateDocumentShareMutation()
 
-export const useRevokeDocumentShare = () => api.organizations.revokeDocumentShare.useMutation()
+export const useRevokeDocumentShare = () => useRevokeDocumentShareMutation()
 
 export const useOrganizationFolders = (organizationId: string) =>
-  api.organizations.listFolders.useQuery({ organizationId }, { enabled: Boolean(organizationId) })
+  useOrgFoldersSdk(organizationId || undefined, { enabled: Boolean(organizationId) })
 
-export const useUpsertOrganizationFolder = () => api.organizations.upsertFolder.useMutation()
+export const useUpsertOrganizationFolder = () => useUpsertOrganizationFolderMutation()
 
-export const useDeleteOrganizationFolder = () => api.organizations.deleteFolder.useMutation()
+export const useDeleteOrganizationFolder = () => useDeleteOrganizationFolderMutation()
 
 export const useSearchOrganizationDocuments = (organizationId: string, query: string) =>
-  api.organizations.searchDocuments.useQuery(
-    { organizationId, query },
-    { enabled: Boolean(organizationId) && query.length > 0 }
-  )
+  useSearchOrgDocumentsSdk(organizationId || undefined, query, {
+    enabled: Boolean(organizationId) && query.length > 0,
+  })
 
 export const useOrganizationLocations = (organizationId: string, includeInactive = false) =>
-  api.organizations.listLocations.useQuery(
-    { organizationId, includeInactive },
-    { enabled: Boolean(organizationId) }
-  )
+  useOrgLocationsSdk(organizationId || undefined, includeInactive, {
+    enabled: Boolean(organizationId),
+  })
 
-export const useUpsertOrganizationLocation = () => api.organizations.upsertLocation.useMutation()
+export const useUpsertOrganizationLocation = () => useUpsertOrganizationLocationMutation()
 
-export const useArchiveOrganizationLocation = () => api.organizations.archiveLocation.useMutation()
+export const useArchiveOrganizationLocation = () => useArchiveOrganizationLocationMutation()
 
 export const useOrganizationSettings = (organizationId: string) =>
   useOrgSettingsSdk(organizationId || undefined, { enabled: Boolean(organizationId) })
@@ -105,20 +122,16 @@ export const useOrganizationAuditLog = (
   organizationId: string,
   params?: { cursor?: string; actionTypes?: string[]; limit?: number }
 ) =>
-  api.organizations.listAuditLog.useQuery(
-    {
-      organizationId,
-      cursor: params?.cursor,
-      actionTypes: params?.actionTypes,
-      limit: params?.limit,
-    },
+  useOrgAuditLogSdk(
+    organizationId || undefined,
+    { cursor: params?.cursor, actionTypes: params?.actionTypes, limit: params?.limit },
     { enabled: Boolean(organizationId) }
   )
 
-export const useExportOrganizationAuditLog = () => api.organizations.exportAuditLog.useMutation()
+export const useExportOrganizationAuditLog = () => useExportOrganizationAuditLogMutation()
 
 export const useOrganizationStorageUsage = (organizationId: string) =>
-  api.organizations.getStorageUsageSummary.useQuery(
-    { organizationId },
-    { enabled: Boolean(organizationId), refetchInterval: 60_000 }
-  )
+  useOrgStorageUsageSdk(organizationId || undefined, {
+    enabled: Boolean(organizationId),
+    refetchInterval: 60_000,
+  })

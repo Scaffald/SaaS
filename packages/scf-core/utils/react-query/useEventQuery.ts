@@ -26,7 +26,8 @@ function useEventsQuery() {
   const queryFn = async () => {
     if (!user?.id) return []
 
-    const result = await (supabase.schema('core').from('events' as string) as EventsQueryBuilder)
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase schema type doesn't include 'events' table
+    const result = await ((supabase.schema('core') as any).from('events') as EventsQueryBuilder)
       .select('*')
       .eq('profile_id', user.id)
       .order('created_at', { ascending: false })

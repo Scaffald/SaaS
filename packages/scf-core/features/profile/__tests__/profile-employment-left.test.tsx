@@ -1,4 +1,4 @@
-import type { EmploymentProfileFormData } from '@scf/core/utils/api'
+import type { EmploymentProfileFormData } from '@scf/core/features/profile/config/employment-schema'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native'
 import { type ComponentPropsWithoutRef, forwardRef, type ReactElement, type ReactNode } from 'react'
 import type { Mock } from 'vitest'

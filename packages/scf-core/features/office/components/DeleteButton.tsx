@@ -25,7 +25,7 @@ interface DeleteButtonProps {
   /**
    * Optional variant for the button
    */
-  variant?: 'outlined'
+  variant?: 'outline'
 }
 
 /**
@@ -50,7 +50,7 @@ export function DeleteButton({
   itemType,
   onDelete,
   size = '$2',
-  variant = 'outlined',
+  variant = 'outline',
 }: DeleteButtonProps) {
   const { theme } = useThemeContext()
   const [isOpen, setIsOpen] = useState(false)

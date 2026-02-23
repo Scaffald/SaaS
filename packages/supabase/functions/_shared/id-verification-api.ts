@@ -72,10 +72,15 @@ function createMockStripeClient(): Stripe {
   } as unknown as Stripe
 }
 
+type SupabaseQueryBuilder = {
+  maybeSingle: () => Promise<{ data: unknown; error: unknown }>
+  then: (onfulfilled: (value: { data: unknown; error: unknown }) => unknown) => Promise<unknown>
+}
+
 type SupabaseLike = {
   schema: (s: string) => {
     from: (t: string) => {
-      select: (cols: string) => { eq: (k: string, v: string) => { maybeSingle: () => Promise<{ data: unknown; error: unknown }> } }
+      select: (cols: string) => { eq: (k: string, v: string) => SupabaseQueryBuilder }
     }
     rpc: (name: string, params: Record<string, string>) => Promise<{ data: unknown; error: unknown }>
   }
@@ -90,9 +95,9 @@ export async function loadStripeClient(supabaseAdmin: SupabaseLike): Promise<Str
     .from('stripe_settings')
     .select('api_key_secret_id')
     .eq('settings_name', 'stripe')
-    .maybeSingle()
+    .maybeSingle() as { data: { api_key_secret_id: string } | null; error: { message: string } | null }
 
-  if (error) throw new Error(`Failed to load Stripe settings: ${(error as { message: string }).message}`)
+  if (error) throw new Error(`Failed to load Stripe settings: ${error.message}`)
   if (!settings?.api_key_secret_id) throw new Error('Stripe API key is not configured.')
 
   const { data: secretValue, error: secretError } = await supabaseAdmin
@@ -113,15 +118,16 @@ export async function loadStripeClient(supabaseAdmin: SupabaseLike): Promise<Str
 }
 
 export async function userHasPlatformRole(supabaseAdmin: SupabaseLike, userId: string): Promise<boolean> {
-  const { data, error } = await supabaseAdmin
+  type RoleRow = { role?: { scope?: string; name?: string | null } | null }
+  const { data, error } = (await supabaseAdmin
     .schema('core')
     .from('role_assignments')
     .select('role:roles(name, scope)')
-    .eq('user_id', userId)
+    .eq('user_id', userId)) as { data: RoleRow[] | null; error: { message: string } | null }
 
-  if (error) throw new Error(`Unable to verify platform roles: ${(error as { message: string }).message}`)
+  if (error) throw new Error(`Unable to verify platform roles: ${error.message}`)
   return Boolean(
-    (data as Array<{ role?: { scope?: string; name?: string | null } | null }> | null)?.some(
+    data?.some(
       (a) =>
         a.role?.scope === 'platform' && ['office', 'super_admin'].includes(a.role?.name ?? '')
     )

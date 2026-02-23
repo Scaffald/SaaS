@@ -1,5 +1,5 @@
 import { usePaymentTransactions, useExportTransactions } from '@scf/core/utils/payments-sdk-hooks'
-import type { PaymentTransaction } from '@scaffald/sdk/types/payments'
+import type { PaymentTransaction } from '@scaffald/sdk'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { ResponsiveSelect, Table, useThemeContext } from '@scaffald/ui'
 import { Download, FileText, RefreshCw } from 'lucide-react-native'

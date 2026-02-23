@@ -1,10 +1,9 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useOfficeStorageAnalytics } from '@scf/core/utils/office-storage-sdk-hooks'
+import type { StorageAnalyticsResponse } from '@scf/core/utils/office-storage-sdk-hooks'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
 import { colors } from '@scaffald/ui/tokens'
 import {
@@ -20,8 +19,6 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-
-type StorageAnalytics = inferRouterOutputs<AppRouter>['office']['storage']['analytics']
 
 type StorageTableRow = {
   userId: string
@@ -61,20 +58,18 @@ const formatPercent = (value: number | null | undefined): string => {
 export function OfficeStorageDashboard() {
   const { theme } = useThemeContext()
   const [search, setSearch] = useState('')
-  const analyticsQuery = api.office.storage.analytics.useQuery(undefined, {
-    staleTime: 60_000,
-  })
+  const analyticsQuery = useOfficeStorageAnalytics({ staleTime: 60_000 })
 
-  const analytics = analyticsQuery.data as StorageAnalytics | undefined
+  const analytics = analyticsQuery.data as StorageAnalyticsResponse | undefined
 
-  const topUsers: StorageAnalytics['topUsers'] = analytics?.topUsers ?? []
+  const topUsers: StorageAnalyticsResponse['topUsers'] = analytics?.topUsers ?? []
 
   const tableRows = useMemo<StorageTableRow[]>(() => {
     if (topUsers.length === 0) {
       return []
     }
 
-    return topUsers.map((user: StorageAnalytics['topUsers'][number]) => {
+    return topUsers.map((user: StorageAnalyticsResponse['topUsers'][number]) => {
       const displayName =
         user.displayName?.trim() || user.username?.trim() || user.userId.slice(0, 8)
 
@@ -198,7 +193,7 @@ export function OfficeStorageDashboard() {
   )
 
   const totals = analytics?.totals
-  const breakdown = (analytics?.breakdown ?? []) as StorageAnalytics['breakdown']
+  const breakdown = (analytics?.breakdown ?? []) as StorageAnalyticsResponse['breakdown']
 
   const summaryCards = useMemo(() => {
     if (!totals) {
@@ -299,7 +294,7 @@ export function OfficeStorageDashboard() {
             <Stack gap={12}>
               <Text>Usage breakdown</Text>
               <Stack gap={12}>
-                {breakdown.map((entry: StorageAnalytics['breakdown'][number]) => (
+                {breakdown.map((entry: StorageAnalyticsResponse['breakdown'][number]) => (
                   <Stack key={entry.label} gap={4}>
                     <Row justify="space-between" align="center">
                       <Text>{entry.label}</Text>

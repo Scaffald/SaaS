@@ -10,7 +10,7 @@ import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUser } from '@scf/core/utils/useUser'
 import { DashboardWidget, ResponsiveModal } from '@scaffald/ui'
 import { useState } from 'react'
-import { Avatar, H4, Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, H4, ProgressBar, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { CertificationsWidget } from '../profile/widgets/CertificationsWidget'
 import { ExperienceWidget } from '../profile/widgets/ExperienceWidget'
 import { SkillsWidget } from '../profile/widgets/SkillsWidget'
@@ -183,9 +183,9 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     <Text color="$gray11">Completion</Text>
                     <Text>{completion}%</Text>
                   </Row>
-                  <Progress value={completion} max={100}>
-                    <Progress.Indicator animation="bouncy" backgroundColor="$green9" />
-                  </Progress>
+                  <ProgressBar value={completion} max={100}>
+                    <ProgressBar.Indicator animation="bouncy" backgroundColor="$green9" />
+                  </ProgressBar>
                 </Stack>
 
                 {/* Stats Row */}

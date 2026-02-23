@@ -376,6 +376,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     onSuccess: () => {
       toast.show({
         title: 'Job created successfully',
+        message: '',
         variant: 'success',
       })
       onSuccess?.()
@@ -385,6 +386,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
         title: `Error: ${message}`,
+        message: '',
         variant: 'error',
       })
     },
@@ -394,6 +396,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     onSuccess: () => {
       toast.show({
         title: 'Job updated successfully',
+        message: '',
         variant: 'success',
       })
       onSuccess?.()
@@ -403,6 +406,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
         title: `Error: ${message}`,
+        message: '',
         variant: 'error',
       })
     },

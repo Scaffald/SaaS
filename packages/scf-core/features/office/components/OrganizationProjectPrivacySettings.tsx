@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useOrganization,
+  useOrganizationProjectsWithOverrides,
+  useUpdateOrganizationLocationVisibilityMutation,
+} from '@scf/core/utils/organizations-sdk-hooks'
 import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
 import { ExternalLink } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
@@ -36,19 +40,15 @@ export function OrganizationProjectPrivacySettings({
 }: OrganizationProjectPrivacySettingsProps) {
   const { theme } = useThemeContext()
   const toast = useToast()
-  const { data: orgData, isLoading } = api.organizations.getOrganization.useQuery(
-    { id: organizationId },
-    { enabled: !!organizationId }
-  )
+  const { data: orgData, isLoading } = useOrganization(organizationId, { enabled: !!organizationId })
 
-  const { data: projectsWithOverrides } = api.organizations.getProjectsWithOverrides.useQuery(
-    { organization_id: organizationId },
-    { enabled: !!organizationId }
-  )
+  const { data: projectsWithOverrides } = useOrganizationProjectsWithOverrides(organizationId, {
+    enabled: !!organizationId,
+  })
 
   const [selectedVisibility, setSelectedVisibility] =
     useState<ProjectLocationVisibility>('organization_only')
-  const updateMutation = api.organizations.updateLocationVisibility.useMutation()
+  const updateMutation = useUpdateOrganizationLocationVisibilityMutation()
 
   useEffect(() => {
     if (orgData?.default_project_location_visibility) {
@@ -59,7 +59,7 @@ export function OrganizationProjectPrivacySettings({
   const handleSave = async () => {
     try {
       await updateMutation.mutateAsync({
-        organization_id: organizationId,
+        organizationId,
         default_project_location_visibility: selectedVisibility as ProjectLocationVisibility,
       })
       toast.show({

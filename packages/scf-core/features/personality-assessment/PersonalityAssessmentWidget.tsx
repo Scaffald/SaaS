@@ -3,7 +3,7 @@ import { useAssessmentStatus } from '@scf/core/utils/personality-assessment-sdk-
 import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { ProgressBar, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * PersonalityAssessmentWidget - Dashboard widget for personality assessment
@@ -81,9 +81,9 @@ export function PersonalityAssessmentWidget() {
               </Text>
               <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{completionScore}%</Text>
             </Row>
-            <Progress value={completionScore} max={100}>
-              <Progress.Indicator animation="bouncy" />
-            </Progress>
+            <ProgressBar value={completionScore} max={100}>
+              <ProgressBar.Indicator animation="bouncy" />
+            </ProgressBar>
             <Text style={{ color: colors.text[theme].secondary }}>
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
             </Text>
@@ -97,7 +97,7 @@ export function PersonalityAssessmentWidget() {
           size="lg"
           marginTop={hasStarted ? spacing.xs : spacing.md}
         >
-          <Button.Text>{hasStarted ? 'Continue Assessment' : 'Start Assessment'}</Button.Text>
+          {hasStarted ? 'Continue Assessment' : 'Start Assessment'}
         </Button>
 
         {!hasStarted && (

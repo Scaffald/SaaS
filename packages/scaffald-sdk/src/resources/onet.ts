@@ -112,6 +112,52 @@ export interface AutocompleteResponse {
   data: AutocompleteSuggestion[]
 }
 
+// Type aliases for backward compatibility with hooks
+export interface SearchOccupationsParams {
+  query?: string
+  keyword?: string
+  page?: number
+  limit?: number
+}
+export interface SearchOccupationsResponse {
+  occupations: Occupation[]
+  data?: Occupation[]
+  pagination?: { total: number; page: number; limit: number; total_pages: number }
+}
+export interface GetOccupationParams { onetCode: string }
+export type OccupationData = OccupationDetailsResponse
+
+// Career assessment types
+export interface CareerAssessmentStatus {
+  hasCompleted: boolean
+  riasec_complete: boolean
+  occupations_selected: boolean
+  completed_at: string | null
+}
+
+export interface RIASECStatus {
+  isCompleted: boolean
+  complete: boolean
+  scores: Record<string, number> | null
+  completed_at: string | null
+}
+
+export interface OccupationStatus {
+  isCompleted: boolean
+  selected: boolean
+  occupations: Occupation[]
+  updated_at: string | null
+}
+
+export interface SaveCareerAssessmentParams {
+  riasec_scores?: Record<string, number>
+  selected_occupations?: string[]
+}
+
+export interface SaveCareerAssessmentResponse {
+  success: boolean
+}
+
 // ============================================================================
 // ONET Resource
 // ============================================================================
@@ -131,7 +177,8 @@ export class ONET extends Resource {
   /**
    * Get occupation details by O*NET code
    */
-  async getOccupation(onetCode: string): Promise<OccupationDetailsResponse> {
+  async getOccupation(onetCodeOrParams: string | GetOccupationParams): Promise<OccupationDetailsResponse> {
+    const onetCode = typeof onetCodeOrParams === 'string' ? onetCodeOrParams : onetCodeOrParams.onetCode
     return super.get<OccupationDetailsResponse>(`/v1/onet/occupations/${onetCode}`)
   }
 
@@ -172,5 +219,31 @@ export class ONET extends Resource {
    */
   async autocomplete(params: AutocompleteParams): Promise<AutocompleteResponse> {
     return super.get<AutocompleteResponse>('/v1/onet/autocomplete', params)
+  }
+
+  /** Search occupations (alias for search, supports query or keyword) */
+  async searchOccupations(params: SearchOccupationsParams): Promise<SearchOccupationsResponse> {
+    const searchParams: SearchParams = { keyword: params.query ?? params.keyword ?? '', page: params.page, limit: params.limit }
+    return super.get<SearchOccupationsResponse>('/v1/onet/search', searchParams as unknown as Record<string, string>)
+  }
+
+  /** Get career assessment status */
+  async getCareerAssessmentStatus(): Promise<CareerAssessmentStatus> {
+    return super.get<CareerAssessmentStatus>('/v1/onet/career-assessment/status')
+  }
+
+  /** Get RIASEC assessment status */
+  async getRIASECStatus(): Promise<RIASECStatus> {
+    return super.get<RIASECStatus>('/v1/onet/riasec/status')
+  }
+
+  /** Get occupation selection status */
+  async getOccupationStatus(): Promise<OccupationStatus> {
+    return super.get<OccupationStatus>('/v1/onet/occupation/status')
+  }
+
+  /** Save career assessment data */
+  async saveCareerAssessment(params: SaveCareerAssessmentParams): Promise<SaveCareerAssessmentResponse> {
+    return super.post<SaveCareerAssessmentResponse>('/v1/onet/career-assessment', params)
   }
 }

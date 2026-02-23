@@ -1,14 +1,14 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { DiscoverEmployerDetailScreen } from '@scf/core/features/discover/discover-employer-detail-screen'
-import { api } from '@scf/core/utils/api'
+import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
 import type { DashboardBreadcrumbSegment } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
 import { useMemo } from 'react'
 
 export default function EmployerDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { data: employer, isLoading } = api.employers.getEmployerById.useQuery(
+  const { data: employer, isLoading } = useEmployer(
     { id: id || '' },
     {
       enabled: Boolean(id),

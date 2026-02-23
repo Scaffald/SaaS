@@ -4,7 +4,8 @@ import { Button, Text, Row, Stack } from '@scaffald/ui'
 import { Check, MessageSquare } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
-import { Avatar, Card, type GetThemeValueForKey, Separator } from '@scaffald/ui'
+import { Avatar, Card, Separator } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { ComparisonField } from './ComparisonField'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 
@@ -136,12 +137,11 @@ export function ComparisonColumn({
       {/* Candidate Header */}
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Avatar size="md">
-            <Avatar.Image src={candidateAvatar || undefined} />
-            <Avatar.Fallback backgroundColor="$blue9">
-              <Text color="white">{candidateName.charAt(0).toUpperCase()}</Text>
-            </Avatar.Fallback>
-          </Avatar>
+          <Avatar
+            size={40}
+            src={candidateAvatar ? { uri: candidateAvatar } : undefined}
+            initials={candidateName.charAt(0).toUpperCase()}
+          />
           <Stack flex={1}>
             <Text>{candidateName}</Text>
             {jobTitle && <Text color="$gray11">{jobTitle}</Text>}
@@ -150,8 +150,7 @@ export function ComparisonColumn({
             <Button
               size="sm"
               variant="outline"
-              color="$red11"
-              borderColor="$red8"
+              color="error"
               onPress={() => onRemove(inquiry.id)}
             >
               Remove
@@ -200,8 +199,9 @@ export function ComparisonColumn({
       <Separator />
 
       {/* Employment Section */}
-      <Card padding="sm" gap={8}>
-        <Text>Employment</Text>
+      <Card padding="sm">
+        <Stack gap={8}>
+          <Text>Employment</Text>
         <ComparisonField
           label="Type"
           value={formatEmploymentType()}
@@ -264,11 +264,13 @@ export function ComparisonColumn({
             </Text>
           </Row>
         )}
+        </Stack>
       </Card>
 
       {/* Compensation Section */}
-      <Card padding="sm" gap={8}>
-        <Text>Compensation</Text>
+      <Card padding="sm">
+        <Stack gap={8}>
+          <Text>Compensation</Text>
         <ComparisonField
           label="Rate"
           value={formatRate()}
@@ -294,11 +296,13 @@ export function ComparisonColumn({
             </Text>
           </Row>
         )}
+        </Stack>
       </Card>
 
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
-        <Card padding="sm" gap={8}>
+        <Card padding="sm">
+          <Stack gap={8}>
           <Text>Capabilities</Text>
           {capabilityResponses.map((response: CapabilityResponseRecord) => (
             <ComparisonField
@@ -327,10 +331,12 @@ export function ComparisonColumn({
               </Text>
             </Row>
           )}
+          </Stack>
         </Card>
       )}
 
-      <Card padding="sm" gap={8}>
+      <Card padding="sm">
+        <Stack gap={8}>
         <Text>Other Terms</Text>
         <ComparisonField
           label="Travel"
@@ -369,6 +375,7 @@ export function ComparisonColumn({
           }
           isDifferent={highlightDifferences.has('hasDriversLicense')}
         />
+        </Stack>
       </Card>
 
       {/* View Full Inquiry Button */}
@@ -392,14 +399,14 @@ export function ComparisonColumn({
   )
 }
 
-const statusColors: Record<string, GetThemeValueForKey<'color'>> = {
-  draft: '$gray10',
-  sent: '$blue10',
-  candidate_responded: '$purple10',
-  organization_responded: '$yellow10',
-  accepted: '$green10',
-  rejected: '$red10',
-  withdrawn: '$gray10',
+const statusColors: Record<string, string> = {
+  draft: colors.gray[500],
+  sent: colors.info[600],
+  candidate_responded: colors.primary[600],
+  organization_responded: colors.warning[600],
+  accepted: colors.success[600],
+  rejected: colors.error[600],
+  withdrawn: colors.gray[500],
 }
 
 function StatusBadge({ label }: { label: string }) {

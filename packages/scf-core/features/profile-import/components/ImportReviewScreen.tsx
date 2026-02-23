@@ -16,6 +16,7 @@ import { useMemo, useState } from 'react'
 import {
   Button,
   Card,
+  CardHeader,
   H5,
   Paragraph,
   ScrollView,
@@ -294,7 +295,7 @@ export function ImportReviewScreen() {
   return (
     <Stack gap={16} padding="md">
       <Card bordered backgroundColor="$color2">
-        <Card.Header padded gap={12}>
+        <CardHeader padded gap={12}>
           <Row gap={12} align="flex-start" wrap>
             <Info size="lg" color="$blue10" />
             <Stack flex={1} gap={8}>
@@ -328,7 +329,7 @@ export function ImportReviewScreen() {
               </Row>
             </Stack>
           </Row>
-        </Card.Header>
+        </CardHeader>
       </Card>
 
       <Stack gap={8}>
@@ -350,9 +351,9 @@ export function ImportReviewScreen() {
         <Stack gap={12} marginTop={12}>
           {currentSection?.items.length === 0 && (
             <Card bordered padding="md" backgroundColor="$color2">
-              <Card.Header>
+              <CardHeader>
                 <Text color="$gray11">No items were detected for this section.</Text>
-              </Card.Header>
+              </CardHeader>
             </Card>
           )}
 
@@ -363,12 +364,12 @@ export function ImportReviewScreen() {
             )
             return (
               <Card bordered key={item.id} backgroundColor={isSelected ? '$color3' : '$background'}>
-                <Card.Header gap={12}>
+                <CardHeader gap={12}>
                   <Row justify="space-between" align="center">
                     <ConfidenceBadge level={confidenceLevel} />
                     <Button
                       size="sm"
-                      variant={isSelected ? 'outlined' : undefined}
+                      variant={isSelected ? 'outline' : undefined}
                       onPress={() => handleToggleItem(currentSection.id, item.id)}
                     >
                       {isSelected ? 'Selected' : 'Select'}
@@ -425,7 +426,7 @@ export function ImportReviewScreen() {
                       />
                     )}
                   </Stack>
-                </Card.Header>
+                </CardHeader>
               </Card>
             )
           })}

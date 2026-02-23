@@ -22,7 +22,7 @@ export function ReviewStep8Recommendation({
         <Button
           size={24}
           theme={recommendation === true ? 'success' : undefined}
-          variant={recommendation === true ? undefined : 'outlined'}
+          variant={recommendation === true ? undefined : 'outline'}
           iconStart={ThumbsUp}
           onPress={() => onChange(true)}
           flex={1}
@@ -34,7 +34,7 @@ export function ReviewStep8Recommendation({
         <Button
           size={24}
           theme={recommendation === false ? 'error' : undefined}
-          variant={recommendation === false ? undefined : 'outlined'}
+          variant={recommendation === false ? undefined : 'outline'}
           iconStart={ThumbsDown}
           onPress={() => onChange(false)}
           flex={1}

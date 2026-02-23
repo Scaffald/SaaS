@@ -110,7 +110,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (isLoading) {
     return (
       <Stack gap={16} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="$blue10" />
+        <Spinner size="lg" color="primary" />
         <Text color="$gray11">Loading progression data...</Text>
       </Stack>
     )
@@ -183,7 +183,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const stableSkills = skillProgression.filter((s) => s.trend === 'stable').length
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text color="$gray11">Skill Progression</Text>

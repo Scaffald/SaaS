@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useOfficeListUsers, useOfficeDeleteUserMutation } from '@scf/core/utils/office-users-sdk-hooks'
 import type { TableColumnVisibilityOption } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
@@ -72,16 +72,16 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
   const [columnModalOpen, setColumnModalOpen] = useState(false)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  const { data, isLoading, refetch } = api.office.listUsers.useQuery()
+  const { data, isLoading, refetch } = useOfficeListUsers()
 
-  const deleteMutation = api.office.deleteUser.useMutation({
+  const deleteMutation = useOfficeDeleteUserMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync({ id })
+    await deleteMutation.mutateAsync(id)
   }
 
   const users = data?.users ?? []

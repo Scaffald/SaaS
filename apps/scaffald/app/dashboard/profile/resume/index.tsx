@@ -5,7 +5,7 @@ import {
   ResumeUploadButton,
   ResumeUploadModal,
 } from '@scf/core/features/resume'
-import { api } from '@scf/core/utils/api'
+import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { Button, Paragraph, Row, Spinner, Stack, Text } from '@scaffald/ui'
@@ -23,7 +23,7 @@ function ResumeImportContent() {
     },
     [router]
   )
-  const { data, isLoading } = api.resume.hasUploaded.useQuery(undefined, {
+  const { data, isLoading } = useHasUploadedResume({
     refetchOnWindowFocus: false,
   })
 

@@ -100,6 +100,18 @@ export interface InquiryDetails {
   inquiry: Record<string, unknown>
   sections: unknown[]
   comments: InquiryComment[]
+  /** Capability question responses (when present from API) */
+  capabilityResponses?: Array<{
+    capability_name: string
+    response_value?: boolean
+    response_text?: string
+  }>
+  /** Capability question definitions (when present from API) */
+  capabilityQuestions?: Array<{ name: string; label?: string; type?: string; unit?: string; required?: boolean }>
+  /** Job summary (when joined from API) */
+  job?: { id?: string; title?: string; location?: string; [key: string]: unknown }
+  /** Application summary (when joined from API) */
+  application?: { id?: string; [key: string]: unknown }
 }
 
 /** Smart defaults derived from associated job */
@@ -131,14 +143,37 @@ export interface UpdateTemplateParams {
   templateData?: Record<string, unknown>
 }
 
-/** Params for creating a simple inquiry (from SDK) */
+/** Params for creating a capability-based inquiry (matches InquiryCreateInput from @scf/schemas) */
 export interface CreateInquiryParams {
-  recipient_id: string
-  subject?: string
-  message?: string
-  inquiry_type?: string
-  job_id?: string
-  template_id?: string
+  applicationId: string
+  // Employment terms
+  employmentType?: 'permanent' | 'temporary'
+  employmentTypeNegotiable: boolean
+  workSchedule?: 'full_time' | 'part_time' | 'day_week'
+  workScheduleNegotiable: boolean
+  scheduleShifts: boolean
+  workingHoursStart?: string
+  workingHoursEnd?: string
+  workingHoursTimezone?: string
+  workingHoursNegotiable: boolean
+  workdays: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday')[]
+  workdaysNegotiable: boolean
+  employmentStartDate: string
+  employmentEndDate?: string
+  employmentDatesNegotiable: boolean
+  // Compensation
+  rateType: 'hourly' | 'salary'
+  rateMinCents: number
+  rateMaxCents?: number
+  rateNegotiable: boolean
+  // Capabilities
+  enduranceRequired: boolean
+  // Other
+  willingToTravel?: boolean
+  travelDistanceMiles?: number
+  willingToWorkOvertime?: boolean
+  hasDriversLicense?: boolean
+  additionalNotes?: string
 }
 
 /** Base inquiry (compatible with SDK) */

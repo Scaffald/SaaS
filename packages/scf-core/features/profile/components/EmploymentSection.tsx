@@ -3,14 +3,17 @@ import {
   USPassportToggle,
   USResidentToggle,
 } from '@scf/core/features/profile/components/employment-fields'
-import { api } from '@scf/core/utils/api'
+import {
+  useOfficeUserEmployment,
+  useOfficeUpdateUserEmploymentMutation,
+} from '@scf/core/utils/office-users-sdk-hooks'
 import {
   useEmployment,
   useUpdateEmploymentMutation,
 } from '@scf/core/utils/profile-employment-sdk-hooks'
 import {
   Button,
-  CustomCheckbox,
+  Checkbox,
   DashboardWidget,
   LocationListInput,
   ToggleCard,
@@ -62,13 +65,13 @@ export function EmploymentSection({
   // Determine which endpoints to use based on mode
   const useQueryHook =
     mode === 'admin' && userId
-      ? () => api.office.getUserEmployment.useQuery({ userId })
+      ? () => useOfficeUserEmployment(userId)
       : useEmployment
 
   const useMutationHook =
     mode === 'admin' && userId
       ? () =>
-          api.office.updateUserEmployment.useMutation({
+          useOfficeUpdateUserEmploymentMutation({
             onSuccess: () => {
               toast.show({
                 title: 'Employment Updated',
@@ -82,6 +85,7 @@ export function EmploymentSection({
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
               toast.show({
                 title: 'Error',
+                message: '',
                 variant: 'error',
               })
             },
@@ -101,6 +105,7 @@ export function EmploymentSection({
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
               toast.show({
                 title: 'Error',
+                message: '',
                 variant: 'error',
               })
             },
@@ -304,7 +309,7 @@ export function EmploymentSection({
                     <Stack gap={8} paddingTop={8}>
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
                         <Row key={license} gap={12} align="center">
-                          <CustomCheckbox
+                          <Checkbox
                             checked={field.value?.includes(license) || false}
                             onChange={(checked: boolean) => {
                               if (readOnly) return
@@ -379,7 +384,7 @@ export function EmploymentSection({
                     <Stack gap={8} paddingTop={8}>
                       {MILITARY_STATUS_OPTIONS.map((status) => (
                         <Row key={status} gap={12} align="center">
-                          <CustomCheckbox
+                          <Checkbox
                             checked={field.value?.includes(status) || false}
                             onChange={(checked: boolean) => {
                               if (readOnly) return
@@ -433,7 +438,7 @@ export function EmploymentSection({
                     <Stack gap={8} paddingTop={8}>
                       {AVAILABILITY_OPTIONS.map((option) => (
                         <Row key={option} gap={12} align="center">
-                          <CustomCheckbox
+                          <Checkbox
                             checked={field.value?.includes(option) || false}
                             onChange={(checked: boolean) => {
                               if (readOnly) return
@@ -470,16 +475,14 @@ export function EmploymentSection({
             >
               <AnimatePresence>
                 {isLoading && (
-                  <Button.Icon>
-                    <Spinner
-                      animation="bouncy"
-                      enterStyle={{ scale: 0 }}
-                      exitStyle={{ scale: 0 }}
-                    />
-                  </Button.Icon>
+                  <Spinner
+                    animation="bouncy"
+                    enterStyle={{ scale: 0 }}
+                    exitStyle={{ scale: 0 }}
+                  />
                 )}
               </AnimatePresence>
-              <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </Row>
         )}

@@ -1,6 +1,6 @@
 import { ArrowRight, Star, Trophy } from 'lucide-react-native'
 import { memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, CardHeader, H3, Paragraph, Text, Row, Stack } from '@scaffald/ui'
 
 export interface WizardSuccessModalProps {
   completionPercentage: number
@@ -35,7 +35,7 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
       </Stack>
 
       <Card bordered backgroundColor="$color2" style={{ maxWidth: 440, width: '100%' }}>
-        <Card.Header padded gap={12}>
+        <CardHeader padded gap={12}>
           <Text color="$gray11">Benefits Unlocked</Text>
           <Stack gap={8}>
             {benefitsToShow.map((benefit) => (
@@ -45,7 +45,7 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
               </Row>
             ))}
           </Stack>
-        </Card.Header>
+        </CardHeader>
       </Card>
 
       <Stack gap={12} style={{ width: '100%', maxWidth: 440 }}>

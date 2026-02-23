@@ -180,7 +180,7 @@ export function ResultsStep({
         borderColor="$borderColor"
       >
         <Text color="$gray11">Test Complete</Text>
-        <Text color="$gray11" lineHeight={20}>
+        <Text color="$gray11" style={{ lineHeight: 20 }}>
           {feedbackMessage}
         </Text>
       </Stack>
@@ -209,20 +209,20 @@ export function ResultsStep({
 
               if (paragraph.startsWith('## ')) {
                 return (
-                  <Text key={paragraphKey} color="$gray11" marginTop={index > 0 ? '$4' : '$0'}>
+                  <Text key={paragraphKey} color="$gray11" style={{ marginTop: index > 0 ? 16 : 0 }}>
                     {paragraph.replace('## ', '')}
                   </Text>
                 )
               }
               if (paragraph.startsWith('### ')) {
                 return (
-                  <Text key={paragraphKey} color="$gray11" marginTop={index > 0 ? '$3' : '$0'}>
+                  <Text key={paragraphKey} color="$gray11" style={{ marginTop: index > 0 ? 12 : 0 }}>
                     {paragraph.replace('### ', '')}
                   </Text>
                 )
               }
               return (
-                <Text key={paragraphKey} color="$gray11" lineHeight={20}>
+                <Text key={paragraphKey} color="$gray11" style={{ lineHeight: 20 }}>
                   {paragraph}
                 </Text>
               )

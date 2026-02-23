@@ -11,6 +11,7 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { useQueryClient } from '@tanstack/react-query'
+import type { Ref } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import {
@@ -99,9 +100,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
       for (const app of selectedApplications) {
         try {
-          const inquiryData = await queryClient.fetchQuery({
+          const inquiryData = (await queryClient.fetchQuery({
             queryKey: ['inquiries', 'detail', app.id],
-          })
+          })) as { inquiry?: { id?: string } } | null
           if (inquiryData?.inquiry?.id) {
             ids.push(inquiryData.inquiry.id)
             map[inquiryData.inquiry.id] = app.id
@@ -282,7 +283,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           >
             {STATUSES.map((status) => (
               <Tabs.Item key={status} value={status}>
-                <Tabs.Trigger flex={1} minWidth={100}>
+                <Tabs.Trigger containerStyle={{ flex: 1, minWidth: 100 }}>
                   <Stack align="center">
                     <Text>{STATUS_LABELS[status]}</Text>
                     <Stack
@@ -436,7 +437,7 @@ function InquiryComparisonModal({
     <Stack
       style={{
         backgroundColor: colors.bg[theme].default,
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
@@ -472,7 +473,7 @@ function DroppableColumn({
 }) {
   const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
   return (
-    <View ref={setNodeRef} style={isOver ? { opacity: 0.9 } : undefined}>
+    <View ref={setNodeRef as Ref<View>} style={isOver ? { opacity: 0.9 } : undefined}>
       <KanbanColumn
         id={id}
         title={title}
@@ -510,7 +511,11 @@ function DraggableCard({
   const { attributes, listeners, setNodeRef } = useDraggable({ id, data: { type: 'card' } })
   const { theme } = useThemeContext()
   return (
-    <View ref={setNodeRef} {...attributes} {...listeners}>
+    <View
+      ref={setNodeRef as Ref<View>}
+      {...(attributes as unknown as Record<string, unknown>)}
+      {...(listeners as unknown as Record<string, unknown>)}
+    >
       <KanbanCard id={id} isDragging={false}>
         <Pressable onPress={kanbanCardProps.onView}>
           <Stack gap={8} padding="sm">

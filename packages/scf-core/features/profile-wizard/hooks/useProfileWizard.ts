@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useProfileWizardProgress,
+  useSaveProfileWizardStepMutation,
+  useCompleteProfileWizardMutation,
+} from '@scf/core/utils/profile-wizard-sdk-hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   DEFAULT_WIZARD_PROGRESS,
@@ -7,7 +11,6 @@ import {
   type ProfileWizardProgress,
   type ProfileWizardStepId,
 } from '../utils/wizardSteps'
-import { useQueryClient } from '@tanstack/react-query'
 
 export interface GeneralInfoStepData {
   firstName: string
@@ -80,36 +83,6 @@ export interface SaveStepInput<TStep extends ProfileWizardStepId = ProfileWizard
   skip?: boolean
 }
 
-interface UseQueryLike<TData> {
-  data: TData | undefined
-  isLoading: boolean
-  isError: boolean
-  refetch: () => Promise<unknown>
-}
-
-interface UseMutationLike<TData, TVariables> {
-  mutateAsync: (variables: TVariables) => Promise<TData>
-  isPending: boolean
-}
-
-interface ProfileWizardApi {
-  getProgress: {
-    useQuery: (
-      input?: undefined,
-      options?: {
-        enabled?: boolean
-        staleTime?: number
-      }
-    ) => UseQueryLike<ProfileWizardProgressResponse>
-  }
-  saveStep: {
-    useMutation: () => UseMutationLike<ProfileWizardProgressResponse, SaveStepInput>
-  }
-  complete: {
-    useMutation: () => UseMutationLike<ProfileWizardProgressResponse, { celebrate?: boolean }>
-  }
-}
-
 export interface ProfileWizardProgressResponse extends ProfileWizardProgress {
   stepData: WizardStepData
 }
@@ -147,8 +120,6 @@ const DEFAULT_STATE: WizardState = {
   isCompleting: false,
   lastSavedAt: null,
 }
-
-const profileWizardApi = (api as unknown as { profileWizard: ProfileWizardApi }).profileWizard
 
 function getAdjacentStep(current: ProfileWizardStepId, direction: 1 | -1): ProfileWizardStepId {
   const currentIndex = PROFILE_WIZARD_STEPS.indexOf(current)
@@ -192,10 +163,7 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
     currentStep: initialStep ?? DEFAULT_STATE.currentStep,
   })
 
-  const queryClient = useQueryClient()
-  const { data, isLoading, isError, refetch } = profileWizardApi.getProgress.useQuery(undefined, {
-    staleTime: 60_000,
-  })
+  const { data, isLoading, isError, refetch } = useProfileWizardProgress({ staleTime: 60_000 })
 
   useEffect(() => {
     if (!data) return
@@ -230,7 +198,7 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
     }))
   }, [])
 
-  const saveStepMutation = profileWizardApi.saveStep.useMutation()
+  const saveStepMutation = useSaveProfileWizardStepMutation()
 
   const saveStep = useCallback(
     async <TStep extends ProfileWizardStepId>(input: SaveStepInput<TStep>) => {
@@ -250,11 +218,9 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
         isSaving: false,
       }))
 
-      await queryClient.invalidateQueries({ queryKey: [['profileWizard', 'getProgress']] })
-
       return result
     },
-    [saveStepMutation, queryClient]
+    [saveStepMutation]
   )
 
   const markStepSkipped = useCallback((step: ProfileWizardStepId) => {
@@ -267,7 +233,7 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
     }))
   }, [])
 
-  const completeMutation = profileWizardApi.complete.useMutation()
+  const completeMutation = useCompleteProfileWizardMutation()
 
   const completeWizard = useCallback(
     async (options?: { celebrate?: boolean }) => {
@@ -285,11 +251,9 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
         isCompleting: false,
       }))
 
-      await queryClient.invalidateQueries({ queryKey: [['profileWizard', 'getProgress']] })
-
       return result
     },
-    [completeMutation, queryClient]
+    [completeMutation]
   )
 
   const refresh = useCallback(async () => {

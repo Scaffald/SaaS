@@ -4,7 +4,7 @@ import { NarrativeView } from '@scf/core/features/ipip-assessment/components/Nar
 import { normalizeScores } from '@scf/core/features/ipip-assessment/utils/scoreNormalizer'
 import type { IPIPAnswer } from '@scf/core/features/personality-assessment/lib/ipip'
 import { getResults, getScore } from '@scf/core/features/personality-assessment/lib/ipip'
-import { api } from '@scf/core/utils/api'
+import { useSharedPersonalityResults } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, Tabs, Text, Stack } from '@scaffald/ui'
@@ -22,16 +22,12 @@ export default function SharedIPIPResultsRoute() {
     data: sharedResults,
     isLoading,
     error,
-  } = api.personalityAssessment.getSharedResults.useQuery(
-    { token: token || '' },
-    {
-      enabled: !!token,
-      gcTime: 1000 * 60 * 30,
-      refetchOnWindowFocus: false,
-      retry: false,
-      staleTime: 1000 * 60 * 5,
-    }
-  )
+  } = useSharedPersonalityResults(token || undefined, {
+    enabled: !!token,
+    gcTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
 
   // Process shared results data
   const processedResults = useMemo(() => {

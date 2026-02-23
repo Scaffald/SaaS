@@ -68,7 +68,7 @@ export interface ReviewSoftSkillVote {
 // Request/Response Types
 // ============================================================================
 
-export interface GetSoftSkillsParams {
+export interface GetReviewSoftSkillsParams {
   category?: 'reliability' | 'collaboration' | 'professionalism' | 'technical'
 }
 
@@ -243,7 +243,7 @@ export class Reviews extends Resource {
   /**
    * Get all soft skills (optionally filtered by category)
    */
-  async getSoftSkills(params?: GetSoftSkillsParams): Promise<SoftSkill[]> {
+  async getSoftSkills(params?: GetReviewSoftSkillsParams): Promise<SoftSkill[]> {
     return this.get('/reviews/soft-skills', params)
   }
 

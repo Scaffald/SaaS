@@ -13,7 +13,7 @@ import type {
   DepositCreditsParams,
   DepositCreditsResponse,
   CreditLedgerResponse,
-} from '@scaffald/sdk/types/payments'
+} from '@scaffald/sdk'
 
 export function usePaymentAnalytics(options?: UseQueryOptions<PaymentAnalytics, Error>) {
   const client = useScaffaldJobsClient()

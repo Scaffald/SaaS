@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const translate = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
 
-export const zodErrorMap: ZodErrorMap = (issue, ctx) => {
+export const zodErrorMap: ZodErrorMap = (issue) => {
   if (issue.code === 'invalid_type' && issue.received === 'undefined') {
     if (issue.expected === 'string') {
       return { message: translate('validation.string.required') }
@@ -13,12 +13,12 @@ export const zodErrorMap: ZodErrorMap = (issue, ctx) => {
     return { message: translate('validation.string.required') }
   }
 
-  if (issue.code === 'invalid_string') {
-    if (issue.validation === 'email') {
+  if (issue.code === 'invalid_format') {
+    if (issue.format === 'email') {
       return { message: translate('validation.email.invalid') }
     }
 
-    if (issue.validation === 'uuid') {
+    if (issue.format === 'uuid') {
       return { message: translate('validation.string.required') }
     }
   }
@@ -42,7 +42,7 @@ export const zodErrorMap: ZodErrorMap = (issue, ctx) => {
     }
   }
 
-  return { message: ctx.defaultError }
+  return { message: issue.message ?? '' }
 }
 
 export const applyZodErrorMap = () => {

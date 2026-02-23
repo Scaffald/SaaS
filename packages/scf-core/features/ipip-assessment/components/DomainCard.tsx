@@ -5,7 +5,7 @@ import type {
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { ChevronDown, ChevronUp } from 'lucide-react-native'
 import { memo, useState } from 'react'
-import { Button, Progress, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ProgressBar, Text, Row, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'
 import { FacetList } from './FacetList'
 
@@ -42,7 +42,7 @@ export const DomainCard = memo(function DomainCard({
         borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
-        opacity={0.6}
+        style={{ opacity: 0.6 }}
       >
         <Row justify="space-between" align="center">
           <Text color="$gray11">{domainName}</Text>
@@ -89,9 +89,7 @@ export const DomainCard = memo(function DomainCard({
       </Row>
 
       {/* Progress Bar */}
-      <Progress value={percentage} max={100}>
-        <Progress.Indicator animation="bouncy" />
-      </Progress>
+      <ProgressBar value={percentage} />
 
       {/* Domain Result Text */}
       {domainResult && <Text color="$gray11">{domainResult.text}</Text>}
