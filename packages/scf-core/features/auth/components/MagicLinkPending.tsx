@@ -167,10 +167,9 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
               justify="center"
               style={{
                 backgroundColor: colors.bg[theme].default,
-                color: colors.icon[theme].secondary,
               }}
             >
-              <Spinner />
+              <Spinner color="gray" />
             </Box>
           )}
         </Box>

@@ -77,8 +77,6 @@ export function CodeConfirmationInput({
           autoComplete="one-time-code"
           secureTextEntry={secureTextEntry}
           style={{
-            textAlign: 'center',
-            fontSize: 24,
             borderRadius: 12,
             width: 50,
             aspectRatio: 1,
@@ -87,6 +85,10 @@ export function CodeConfirmationInput({
               : value
                 ? colors.bg[theme].subtle
                 : colors.bg[theme].muted,
+          }}
+          contentStyle={{
+            textAlign: 'center',
+            fontSize: 24,
           }}
         />
       )}

@@ -109,10 +109,18 @@ export function AdminBackgroundChecksPage() {
     { enabled: isAdmin && activeTab === 'audit', staleTime: 30_000 }
   )
 
+  type WorkerRecord = {
+    display_name?: string | null
+    username?: string | null
+    email?: string | null
+    id?: string | null
+  }
+  type OrgRecord = { name?: string | null }
+
   const checkRows = useMemo<CheckRow[]>(() => {
     return (checksQuery.data ?? []).map((check: AdminCheckSummary) => {
-      const worker = check.worker ?? {}
-      const organization = check.organization ?? {}
+      const worker = (check.worker ?? {}) as WorkerRecord
+      const organization = (check.organization ?? {}) as OrgRecord
       const statusMeta = getStatusMetadata(check.status as BackgroundCheckStatus)
       return {
         id: check.id,
@@ -146,14 +154,14 @@ export function AdminBackgroundChecksPage() {
 
   const disputeRows = useMemo<DisputeRow[]>(() => {
     return (disputesQuery.data ?? []).map((dispute: AdminDisputeSummary) => {
-      const worker = dispute.background_check?.worker ?? {}
-      const organization = dispute.background_check?.organization ?? {}
+      const worker = (dispute.background_check?.worker ?? {}) as WorkerRecord
+      const organization = (dispute.background_check?.organization ?? {}) as OrgRecord
       return {
         id: dispute.id,
         workerName: deriveWorkerName(worker),
         workerEmail: worker.email ?? null,
         organizationName: organization?.name ?? null,
-        status: dispute.status,
+        status: dispute.status ?? 'unknown',
         filedAt: dispute.created_at ?? null,
         raw: dispute,
       }

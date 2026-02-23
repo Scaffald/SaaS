@@ -142,9 +142,15 @@ export function AdminCheckReviewDialog({
 
   useEffect(() => {
     if (detailedCheck && open) {
-      setStatus(detailedCheck.status)
-      setSummary(detailedCheck.summary ?? '')
-      setExpiresAt(dateToInputValue(detailedCheck.expires_at))
+      setStatus(
+        (typeof detailedCheck.status === 'string' ? detailedCheck.status : 'under_review') as BackgroundCheckStatus
+      )
+      setSummary(typeof detailedCheck.summary === 'string' ? detailedCheck.summary : '')
+      setExpiresAt(
+        dateToInputValue(
+          typeof detailedCheck.expires_at === 'string' ? detailedCheck.expires_at : null
+        )
+      )
       setNotes('')
       const privacy = parsePrivacySettings(detailedCheck.metadata)
       setSharePublicly(privacy.sharePublicly)
@@ -239,7 +245,7 @@ export function AdminCheckReviewDialog({
         }
       )
     },
-    [detailedCheck, privacyMutation, sharePublicly, sharedOrganizations, toast, queryClient]
+    [detailedCheck, privacyMutation, sharePublicly, sharedOrganizations, toast]
   )
 
   const openSignedUrl = useCallback((url: string) => {

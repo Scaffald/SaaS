@@ -32,7 +32,12 @@ export function SuccessView({ isVisible }: SuccessViewProps) {
         <Box flex={1} align="center" justify="space-between" style={{ paddingTop: 24 }}>
           <Stack flex={1} justify="center" align="center" gap={8} style={{ width: '100%' }}>
             <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{t('auth.success.title')}</Text>
-            <Paragraph style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            <Paragraph
+              style={{
+                color: colors.text[theme === 'dark' ? 'dark' : 'light'].secondary,
+                textAlign: 'center',
+              }}
+            >
               {t('auth.success.description')}
             </Paragraph>
             <Spinner size="lg" style={{ marginTop: 24 }} />
