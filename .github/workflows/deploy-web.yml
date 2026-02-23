@@ -127,7 +127,7 @@ jobs:
 
       # ===== UPLOAD ARTIFACT =====
       - name: 📦 Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: web-build-${{ github.sha }}
           path: apps/expo/dist/
