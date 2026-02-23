@@ -1,0 +1,5 @@
+# Enables standalone use when this package is synced to Scaffald/ui.
+# In the monorepo, the root pnpm-workspace.yaml takes precedence.
+packages:
+  - '.'
+  - 'docs-site'

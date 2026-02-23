@@ -769,6 +769,12 @@ Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in Git
 3. Push to `main` — CI runs semantic-release, publishes to npm, and creates `ui-vX.Y.Z` tag
 4. Manual trigger: GitHub Actions → "Release @scaffald/ui" → "Run workflow"
 
+### scaffald-ui Docs (GitHub Pages)
+
+- **Docs site** (e.g. https://ui.scaffald.com) is **not** deployed from this monorepo. It is built and deployed from the **[Scaffald/ui](https://github.com/Scaffald/ui)** repo.
+- **Sync**: Pushing to `main` with `packages/scaffald-ui/**` changes runs **Sync @scaffald/ui to Public Repository**, which updates Scaffald/ui. The workflow **Deploy Docs** (`.github/workflows/deploy-docs.yml`) lives inside `packages/scaffald-ui` and runs in Scaffald/ui after sync.
+- **Enable Pages**: In the Scaffald/ui repo, set Settings → Pages → Source to **GitHub Actions**. See `packages/scaffald-ui/RELEASE.md` and `packages/scaffald-ui/AGENTINFO.md` (synced to Scaffald/ui) for details.
+
 ### Root Release (App Version)
 
 - **Workflow**: `release.yml` on every push to `main`
