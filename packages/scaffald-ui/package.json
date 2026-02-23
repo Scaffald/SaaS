@@ -72,6 +72,8 @@
     "format:fix": "biome format --write ./src",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run",
     "storybook": "storybook dev -p 6006",
     "storybook:serve": "npx http-server storybook-static -p 6007",
     "test": "vitest run",
