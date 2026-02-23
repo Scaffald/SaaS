@@ -1,6 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import path from 'path';
 
 const config: Config = {
   title: 'Scaffald UI',
@@ -40,6 +41,46 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+  ],
+
+  plugins: [
+    function reactNativeWebPlugin() {
+      return {
+        name: 'react-native-web-docusaurus-plugin',
+        configureWebpack() {
+          return {
+            resolve: {
+              extensions: [
+                '.web.tsx', '.web.ts', '.web.jsx', '.web.js',
+                '.tsx', '.ts', '.jsx', '.js', '.json',
+              ],
+              alias: {
+                'react-native$': 'react-native-web',
+                'react-native-svg': path.resolve(__dirname, '../.storybook/mocks/react-native-svg.jsx'),
+                'lucide-react-native': 'lucide-react',
+                'react-native/Libraries/ReactNative/requireNativeComponent': path.resolve(__dirname, '../.storybook/mocks/requireNativeComponent.js'),
+                'react-native/Libraries/Alert/RCTAlertManager': path.resolve(__dirname, '../.storybook/mocks/RCTAlertManager.js'),
+                'react-native/Libraries/TurboModule/TurboModuleRegistry': path.resolve(__dirname, '../.storybook/mocks/TurboModuleRegistry.js'),
+              },
+            },
+            module: {
+              rules: [
+                {
+                  test: /\.(js|jsx|ts|tsx)$/,
+                  include: /node_modules\/(react-native-web|@scaffald\/ui)/,
+                  use: {
+                    loader: 'babel-loader',
+                    options: {
+                      presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
+                    },
+                  },
+                },
+              ],
+            },
+          };
+        },
+      };
+    },
   ],
 
   themeConfig: {
