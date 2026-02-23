@@ -1,17 +1,15 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
 import { Button, Card, Spinner, Table, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-
-type ViolationReportsOutput =
-  inferRouterOutputs<AppRouter>['legalAgreements']['listViolationReports']
-type ViolationReport = ViolationReportsOutput['items'][number]
+import {
+  useViolationReports,
+  useUpdateViolationReportMutation,
+} from '@scf/core/utils/legal-agreements-sdk-hooks'
+import type { ViolationReport } from '@scaffald/sdk'
 
 const columnHelper = createColumnHelper<ViolationReport>()
 
@@ -48,11 +46,9 @@ const getStatusColor = (status: string, theme: 'light' | 'dark') => {
 
 export function OfficeViolationReports() {
   const { theme } = useThemeContext()
-  const reportsQuery = api.legalAgreements.listViolationReports.useQuery(undefined, {
-    staleTime: 30_000,
-  })
+  const reportsQuery = useViolationReports(undefined, { staleTime: 30_000 })
 
-  const updateMutation = api.legalAgreements.updateViolationReport.useMutation({
+  const updateMutation = useUpdateViolationReportMutation({
     onSuccess: () => {
       reportsQuery.refetch()
     },

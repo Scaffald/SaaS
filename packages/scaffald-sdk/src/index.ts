@@ -313,6 +313,21 @@ export type {
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export type {
+  ViolationReport,
+  ListViolationReportsParams,
+  ListViolationReportsResponse,
+  UpdateViolationReportParams,
+  UpdateViolationReportResponse,
+} from './resources/legal-agreements.js'
+
+export type {
+  NotificationDelivery,
+  DigestQueueItem,
+  AdminListDeliveriesParams,
+  AdminListDigestQueueParams,
+} from './resources/notifications-admin.js'
+
+export type {
   NewsArticle,
   GetNewsByIndustryParams,
 } from './resources/news.js'

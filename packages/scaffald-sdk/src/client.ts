@@ -41,6 +41,8 @@ import { SuccessFees } from './resources/success-fees.js'
 import { StripeSettings } from './resources/stripe-settings.js'
 import { News } from './resources/news.js'
 import { DocumentsStorage } from './resources/documents-storage.js'
+import { LegalAgreements } from './resources/legal-agreements.js'
+import { NotificationsAdmin } from './resources/notifications-admin.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -86,6 +88,8 @@ export class Scaffald {
   public readonly stripeSettings: StripeSettings
   public readonly news: News
   public readonly documentsStorage: DocumentsStorage
+  public readonly legalAgreements: LegalAgreements
+  public readonly notificationsAdmin: NotificationsAdmin
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -139,6 +143,8 @@ export class Scaffald {
     this.stripeSettings = new StripeSettings(this.http)
     this.news = new News(this.http)
     this.documentsStorage = new DocumentsStorage(this.http)
+    this.legalAgreements = new LegalAgreements(this.http)
+    this.notificationsAdmin = new NotificationsAdmin(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

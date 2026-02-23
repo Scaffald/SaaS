@@ -1,5 +1,8 @@
-import { api } from '@scf/core/utils/api'
 import { NotificationTag, useThemeContext } from '@scaffald/ui'
+import {
+  useNotificationDeliveries,
+  useNotificationDigestQueue,
+} from '@scf/core/utils/notifications-admin-sdk-hooks'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -71,11 +74,8 @@ export function OfficeNotificationsConsole() {
   const { theme } = useThemeContext()
   const [status, setStatus] = useState<DeliveryStatus>('queued')
 
-  const deliveriesQuery = api.notifications.admin.deliveries.useQuery({
-    status,
-    limit: 50,
-  })
-  const digestQuery = api.notifications.admin.digestQueue.useQuery({ limit: 50 })
+  const deliveriesQuery = useNotificationDeliveries({ status, limit: 50 })
+  const digestQuery = useNotificationDigestQueue({ limit: 50 })
 
   const deliveries = (deliveriesQuery.data ?? []) as NotificationDelivery[]
   const digestItems = (digestQuery.data ?? []) as DigestQueueItem[]
