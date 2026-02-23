@@ -59,6 +59,7 @@ export function TeamActivityFeed({
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
         title: 'Unable to post comment',
+        message: 'Please try again.',
         variant: 'error',
       })
     },
@@ -259,15 +260,9 @@ export function TeamActivityFeed({
 
   return (
     <Stack gap={16} paddingHorizontal={12}>
-      <Row
-        gap={8}
-        align="flex-start"
-        justify="space-between"
-        wrap
-        flexDirection="column"
-      >
+      <Stack gap={8}>
         <Row gap={8} align="center">
-          <MessageCircle size="lg" accessibilityLabel="Team activity icon" />
+          <MessageCircle size={18} accessibilityLabel="Team activity icon" />
           <Text accessibilityRole="header">Team activity</Text>
         </Row>
         <Button
@@ -277,11 +272,11 @@ export function TeamActivityFeed({
           disabled={activityQuery.isFetching}
           accessibilityLabel="Refresh team activity feed"
           accessibilityHint="Reloads the most recent team events"
-          width="100%"
+          fullWidth
         >
           Refresh
         </Button>
-      </Row>
+      </Stack>
 
       <Stack gap={12}>
         <Text accessibilityRole="header">Share an update</Text>
@@ -293,7 +288,7 @@ export function TeamActivityFeed({
           accessibilityLabel="Team update message"
           accessibilityHint="Enter the update you want to share with your team"
           disabled={isPosting}
-          width="100%"
+          style={{ width: '100%' }}
         />
 
         {mentionOptions.length > 0 ? (
@@ -301,7 +296,7 @@ export function TeamActivityFeed({
             <Text style={{ color: colors.text[theme].secondary }}>
               Mention a teammate (optional)
             </Text>
-            <Row gap={8} wrap flexDirection="column" align="stretch">
+            <Stack gap={8}>
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}
@@ -309,7 +304,7 @@ export function TeamActivityFeed({
                   variant="outline"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
-                  width="100%"
+                  fullWidth
                 >
                   @{mention.label}
                 </Button>
@@ -329,29 +324,22 @@ export function TeamActivityFeed({
                   ]}
                 />
               ) : null}
-            </Row>
+            </Stack>
           </Stack>
         ) : null}
 
         <Row justify="flex-end">
           <Button
             size="sm"
-            style={{
-              backgroundColor: colors.bg[theme].primary,
-              color: colors.text[theme].secondary,
-            }}
+            color="primary"
             iconStart={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}
             accessibilityLabel="Post update"
             accessibilityHint="Shares your message with the team"
-            width="100%"
+            fullWidth
           >
-            {isPosting ? (
-              <Spinner size="sm" style={{ color: colors.text[theme].secondary }} />
-            ) : (
-              'Post update'
-            )}
+            {isPosting ? <Spinner size="sm" /> : 'Post update'}
           </Button>
         </Row>
       </Stack>
@@ -382,7 +370,6 @@ export function TeamActivityFeed({
                 borderBottomWidth={index === events.length - 1 ? 0 : 1}
                 borderColor={colors.border[theme].default}
                 accessible
-                accessibilityRole="summary"
                 accessibilityLabel={eventContent.accessibilityLabel}
               >
                 {eventContent.content}

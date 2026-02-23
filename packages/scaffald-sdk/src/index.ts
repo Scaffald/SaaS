@@ -428,6 +428,8 @@ export type {
 
 export type {
   PaymentAnalytics,
+  FailedTransactionRow,
+  PaymentTransaction,
   TransactionsListParams,
   TransactionsListResponse,
   TransactionExportResponse,
@@ -438,6 +440,7 @@ export type {
   AccountCredits,
   DepositCreditsParams,
   DepositCreditsResponse,
+  CreditLedgerEntry,
   CreditLedgerResponse,
 } from './types/payments.js'
 

@@ -71,6 +71,7 @@ export function OrganizationProjectPrivacySettings({
       const _message = error instanceof Error ? error.message : 'Failed to update setting'
       toast.show({
         title: 'Error',
+        message: _message,
         variant: 'error',
       })
     }

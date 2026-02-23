@@ -197,7 +197,6 @@ export function OfficeTransactionHistory() {
                 { value: 'refunded', label: 'Refunded' },
                 { value: 'cancelled', label: 'Cancelled' },
               ]}
-              triggerProps={{ width: 200 }}
             />
           </Stack>
           <Stack gap={4} width={200}>

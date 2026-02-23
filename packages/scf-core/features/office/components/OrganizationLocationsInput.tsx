@@ -41,9 +41,10 @@ export function OrganizationLocationsInput({
   apiKey,
 }: OrganizationLocationsInputProps) {
   const { theme } = useThemeContext()
-  const resolvedProvider = provider === 'google' ? 'mapbox' : provider
-  const resolvedApiKey =
-    apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
+  // provider and apiKey props are kept for API compatibility but AddressAutocomplete
+  // requires a GeocodingProvider object — pass null to use default behaviour
+  void provider
+  void apiKey
 
   // Maintain stable IDs across renders - only generate new IDs for new items
   const locationIdsRef = useRef<string[]>([])
@@ -135,7 +136,7 @@ export function OrganizationLocationsInput({
       {/* Label and Help Text */}
       <Stack gap={8}>
         <Text>Locations *</Text>
-        <Text style={{ color: colors.text[theme].secondary }} lineHeight={4}>
+        <Text style={{ color: colors.text[theme].secondary, lineHeight: 24 }}>
           Add one or more locations for this organization
         </Text>
       </Stack>
@@ -171,8 +172,7 @@ export function OrganizationLocationsInput({
                   value={getAddressString(location.address ?? {})}
                   onAddressSelect={(address: AddressResult) => handleAddressSelect(index, address)}
                   placeholder="Search for an address..."
-                  provider={resolvedProvider}
-                  apiKey={resolvedApiKey}
+                  provider={null}
                   disabled={disabled}
                   debounceMs={300}
                   minLength={3}
@@ -185,12 +185,10 @@ export function OrganizationLocationsInput({
                 <Button
                   variant="outline"
                   size="sm"
+                  color="error"
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled || value.length === 1}
-                  backgroundColor="transparent"
-                  borderColor={colors.border[theme].default}
                   iconStart={X}
-                  style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}
                 >
                   Remove Location
                 </Button>
@@ -206,10 +204,7 @@ export function OrganizationLocationsInput({
               size="sm"
               onPress={handleAddLocation}
               disabled={disabled}
-              backgroundColor="transparent"
-              borderColor={colors.border[theme].default}
               iconStart={Plus}
-              style={{ color: colors.text[theme].secondary }}
             >
               Add First Location
             </Button>
@@ -224,11 +219,8 @@ export function OrganizationLocationsInput({
           size="sm"
           onPress={handleAddLocation}
           disabled={disabled}
-          alignSelf="flex-start"
-          backgroundColor="transparent"
-          borderColor={colors.border[theme].default}
+          style={{ alignSelf: 'flex-start' }}
           iconStart={Plus}
-          style={{ color: colors.text[theme].secondary }}
         >
           Add Another Location
         </Button>

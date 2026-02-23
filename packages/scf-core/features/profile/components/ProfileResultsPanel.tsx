@@ -1,8 +1,8 @@
 import { DashboardWidget } from '@scaffald/ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, Stack, type YStackProps } from '@scaffald/ui'
+import { ScrollView, Spinner, Text, Stack, type StackProps } from '@scaffald/ui'
 
-interface ProfileResultsPanelProps extends YStackProps {
+interface ProfileResultsPanelProps extends StackProps {
   /** Child content for results */
   children?: ReactNode
   /** Title for the results section */
@@ -55,12 +55,12 @@ export function ProfileResultsPanel({
           {isLoading ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
               <Spinner size="lg" />
-              <Text color="$gray11">Loading...</Text>
+              <Text style={{ color: '#414e62' }}>Loading...</Text>
             </Stack>
           ) : isEmpty ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
               {EmptyIcon && <EmptyIcon size={48} color="$gray11" />}
-              <Text color="$gray11" textAlign="center">
+              <Text style={{ color: '#414e62', textAlign: 'center' }}>
                 {emptyMessage || 'No items added yet'}
               </Text>
             </Stack>

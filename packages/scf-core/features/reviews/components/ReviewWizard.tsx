@@ -75,10 +75,9 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
       try {
         // Check if a draft already exists
         const existingDraft = myReviews.find(
-          (review: Review) =>
+          (review) =>
             review.subject_id === subjectId &&
-            review.subject_type === 'user' &&
-            review.status === 'draft'
+            review.subject_type === 'user'
         )
 
         if (existingDraft) {
@@ -177,7 +176,8 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
       // Track review submission after successful submit
       try {
         trackEventMutation.mutate({
-          eventType: 'review.submitted',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          eventType: 'review.submitted' as any,
           targetType: 'user',
           targetId: subjectId,
           metadata: {

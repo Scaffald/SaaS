@@ -1,8 +1,8 @@
 import { DashboardWidget } from '@scaffald/ui'
 import type { ReactNode } from 'react'
-import { ScrollView, Stack, type YStackProps } from '@scaffald/ui'
+import { ScrollView, Stack, type StackProps } from '@scaffald/ui'
 
-interface ProfileFormPanelProps extends YStackProps {
+interface ProfileFormPanelProps extends StackProps {
   /** Child content for the form panel */
   children: ReactNode
   /** Whether to show scrollbar */

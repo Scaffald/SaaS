@@ -20,25 +20,23 @@ export function ReviewStep8Recommendation({
       {/* Recommendation Buttons */}
       <Row gap={16} justify="center">
         <Button
-          size={24}
-          theme={recommendation === true ? 'success' : undefined}
+          size="md"
+          color={recommendation === true ? 'success' : 'gray'}
           variant={recommendation === true ? undefined : 'outline'}
           iconStart={ThumbsUp}
           onPress={() => onChange(true)}
-          flex={1}
-          maxWidth={300}
+          style={{ flex: 1, maxWidth: 300 }}
         >
           Yes, Recommend
         </Button>
 
         <Button
-          size={24}
-          theme={recommendation === false ? 'error' : undefined}
+          size="md"
+          color={recommendation === false ? 'error' : 'gray'}
           variant={recommendation === false ? undefined : 'outline'}
           iconStart={ThumbsDown}
           onPress={() => onChange(false)}
-          flex={1}
-          maxWidth={300}
+          style={{ flex: 1, maxWidth: 300 }}
         >
           No, Don't Recommend
         </Button>
@@ -76,7 +74,7 @@ export function ReviewStep8Recommendation({
       )}
 
       {/* Helper Text */}
-      <Text color="$gray11" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         This is your final assessment. Please be honest and fair in your recommendation.
       </Text>
     </Stack>

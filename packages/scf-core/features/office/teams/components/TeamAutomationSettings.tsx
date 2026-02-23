@@ -186,7 +186,7 @@ export function TeamAutomationSettings({
         </Text>
       </Stack>
 
-      <Stack gap={12} opacity={canEdit ? 1 : 0.6}>
+      <Stack gap={12} style={{ opacity: canEdit ? 1 : 0.6 }}>
         <SettingsToggle
           label="Allow members to join without an invite"
           description="Let anyone with the link join the team without approval."
@@ -249,8 +249,7 @@ export function TeamAutomationSettings({
           <Stack
             gap={12}
             paddingLeft={8}
-            borderLeftWidth={2}
-            borderColor={colors.border[theme].default}
+            style={{ borderLeftWidth: 2, borderColor: colors.border[theme].default }}
           >
             <Text>Load balance settings</Text>
             <Stack gap={8}>

@@ -75,7 +75,7 @@ export function RIASECAssessmentWizard() {
       error={queryError}
       showNext={false}
     >
-      <Stack gap={16} width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack gap={16} width="100%" maxWidth={800} style={{ marginHorizontal: 'auto' }}>
         <RiasecQuickAssessment
           value={scores}
           onChange={setScores}

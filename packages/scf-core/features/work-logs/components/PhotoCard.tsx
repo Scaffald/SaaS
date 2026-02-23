@@ -140,30 +140,21 @@ export function PhotoCard({
           <Image source={{ uri: photo.signedUrl }} width="100%" height="100%" resizeMode="cover" />
         ) : (
           <Stack
-            position="absolute"
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
             justify="center"
             align="center"
-            top={0}
-            right={0}
-            bottom={0}
-            left={0}
           >
-            <Spinner color="#414e62" />
+            <Spinner color="gray" />
           </Stack>
         )}
         {(photo.isRefreshingUrl || isDeleting) && (
           <Stack
-            position="absolute"
-            top={0}
-            right={0}
-            bottom={0}
-            left={0}
-            backgroundColor="rgba(0,0,0,0.35)"
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,0,0,0.35)' }}
             align="center"
             justify="center"
             gap={8}
           >
-            <Spinner color="white" size="lg" />
+            <Spinner size="lg" />
             <Text style={{ color: 'white' }}>
               {isDeleting ? 'Removing…' : 'Refreshing…'}
             </Text>
@@ -240,7 +231,7 @@ export function PhotoCard({
             </Stack>
           ) : canEditCaption ? (
             <Row gap={8} align="center">
-              <Text flex={1} style={{ color: photo.caption ? undefined : '#414e62' }}>
+              <Text style={{ flex: 1, color: photo.caption ? undefined : '#414e62' }}>
                 {photo.caption ?? 'No caption provided.'}
               </Text>
               <Button
@@ -254,7 +245,7 @@ export function PhotoCard({
               </Button>
             </Row>
           ) : (
-            <Text flex={1} style={{ color: photo.caption ? undefined : '#414e62' }}>
+            <Text style={{ flex: 1, color: photo.caption ? undefined : '#414e62' }}>
               {photo.caption ?? 'No caption provided.'}
             </Text>
           )}

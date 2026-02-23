@@ -27,7 +27,7 @@ export function ReviewStepCategoryRating({
       <StarRating label={`Overall ${category}`} value={rating} onChange={onChange} />
 
       {/* Helper Text */}
-      <Text color="$gray11" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         Rate from 1-5 stars based on your overall assessment
       </Text>
     </Stack>

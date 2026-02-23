@@ -241,7 +241,7 @@ export function VanityUrlSection() {
       <Stack gap={16}>
         <Stack gap={8}>
           <H4>Vanity URL</H4>
-          <Text color="$gray11">Customize your public profile URL to make it easier to share</Text>
+          <Text style={{ color: '#414e62' }}>Customize your public profile URL to make it easier to share</Text>
         </Stack>
 
         {/* Current URL Display */}
@@ -257,7 +257,7 @@ export function VanityUrlSection() {
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text flex={1} style={{ fontFamily: 'monospace' }} color="$gray11">
+              <Text style={{ flex: 1, fontFamily: 'monospace', color: '#414e62' }}>
                 {typeof window !== 'undefined' && window.location
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}
@@ -287,21 +287,14 @@ export function VanityUrlSection() {
           {isEditing ? (
             <Stack gap={8}>
               <Row gap={8} align="center">
-                <Text color="$gray11">/u/</Text>
+                <Text style={{ color: '#414e62' }}>/u/</Text>
                 <Input
-                  flex={1}
+                  style={{ flex: 1 }}
                   value={slugInput}
                   onChangeText={setSlugInput}
                   placeholder="your-username"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  borderColor={
-                    availabilityStatus.available === false
-                      ? '$red8'
-                      : availabilityStatus.available === true
-                        ? '$green8'
-                        : '$borderColor'
-                  }
                 />
                 {isCheckingAvailability && <Spinner size="sm" />}
               </Row>
@@ -310,22 +303,22 @@ export function VanityUrlSection() {
               {slugInput && (
                 <Stack gap={4}>
                   {availabilityStatus.checking ? (
-                    <Text color="$gray11">Checking availability...</Text>
+                    <Text style={{ color: '#414e62' }}>Checking availability...</Text>
                   ) : availabilityStatus.available === true ? (
                     <Row gap={8} align="center">
-                      <Check size="md" color="$green10" />
-                      <Text color="$green10">Available</Text>
+                      <Check size={16} color="#16a34a" />
+                      <Text style={{ color: '#16a34a' }}>Available</Text>
                     </Row>
                   ) : availabilityStatus.available === false ? (
                     <Stack gap={4}>
                       <Row gap={8} align="center">
-                        <AlertCircle size="md" color="$red10" />
-                        <Text color="$red10">Not available</Text>
+                        <AlertCircle size={16} color="#ef4444" />
+                        <Text style={{ color: '#ef4444' }}>Not available</Text>
                       </Row>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
-                          <Stack gap={4} marginLeft={16}>
-                            <Text color="$gray11">Suggestions:</Text>
+                          <Stack gap={4} style={{ marginLeft: 16 }}>
+                            <Text style={{ color: '#414e62' }}>Suggestions:</Text>
                             {availabilityStatus.suggestions.map((suggestion) => (
                               <Button
                                 key={suggestion}
@@ -342,11 +335,11 @@ export function VanityUrlSection() {
                         )}
                     </Stack>
                   ) : !isSlugValid(slugInput.toLowerCase().trim()) ? (
-                    <Text color="$red10">
+                    <Text style={{ color: '#ef4444' }}>
                       Invalid format. Use 3-50 characters, alphanumeric and dashes only.
                     </Text>
                   ) : isReservedSlug(slugInput.toLowerCase().trim()) ? (
-                    <Text color="$red10">This vanity URL is reserved and cannot be used.</Text>
+                    <Text style={{ color: '#ef4444' }}>This vanity URL is reserved and cannot be used.</Text>
                   ) : null}
                 </Stack>
               )}
@@ -381,7 +374,7 @@ export function VanityUrlSection() {
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text flex={1} style={{ fontFamily: 'monospace' }} color="$gray11">
+              <Text style={{ flex: 1, fontFamily: 'monospace', color: '#414e62' }}>
                 {currentSlug || 'No vanity URL set'}
               </Text>
             </Row>
@@ -399,10 +392,10 @@ export function VanityUrlSection() {
             borderWidth={1}
             borderColor="$yellow7"
           >
-            <Clock size="md" color="$orange10" />
-            <Stack flex={1} gap={4}>
-              <Text color="$yellow11">Vanity URL Change Cooldown</Text>
-              <Text color="$yellow10">
+            <Clock size={16} color="#f97316" />
+            <Stack style={{ flex: 1 }} gap={4}>
+              <Text>Vanity URL Change Cooldown</Text>
+              <Text style={{ color: '#414e62' }}>
                 You can change your vanity URL again in {daysRemaining} day
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
                 )
@@ -432,10 +425,10 @@ export function VanityUrlSection() {
                     backgroundColor="$color3"
                     borderRadius={8}
                   >
-                    <Text color="$gray11" flex={1}>
+                    <Text style={{ color: '#414e62', flex: 1 }}>
                       {entry.old_slug || '(initial)'} → {entry.new_slug}
                     </Text>
-                    <Text color="$gray11">{new Date(entry.changed_at).toLocaleDateString()}</Text>
+                    <Text style={{ color: '#414e62' }}>{new Date(entry.changed_at).toLocaleDateString()}</Text>
                   </Row>
                 ))}
             </Stack>

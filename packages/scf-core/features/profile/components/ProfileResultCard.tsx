@@ -51,15 +51,11 @@ export function ProfileResultCard({
 }: ProfileResultCardProps) {
   return (
     <Card
-      bordered={bordered}
-      size="md"
-      backgroundColor={isNew ? '$green2' : undefined}
-      borderColor={isNew ? '$green9' : undefined}
-      borderWidth={isNew ? 2 : undefined}
-      animation={isNew ? 'quick' : undefined}
+      variant={bordered ? 'outlined' : undefined}
+      style={isNew ? { backgroundColor: '#f0fdf4', borderColor: '#4ade80', borderWidth: 2 } : undefined}
       {...props}
     >
-      <CardHeader gap={8}>
+      <CardHeader>
         <Stack gap={12} flex={1}>
           {children}
         </Stack>

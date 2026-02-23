@@ -222,9 +222,9 @@ export function TeamSettingsForm({
       padding="md"
       borderWidth={1}
       borderColor={colors.border[theme].default}
-      gap={16}
       style={{ backgroundColor: colors.bg[theme].subtle }}
     >
+      <Stack gap={16}>
       <Stack gap={8}>
         <Text>Team settings</Text>
         <Text style={{ color: colors.text[theme].secondary }}>
@@ -237,7 +237,7 @@ export function TeamSettingsForm({
 
       <Separator />
 
-      <Stack gap={16} opacity={canEdit ? 1 : 0.6}>
+      <Stack gap={16} style={{ opacity: canEdit ? 1 : 0.6 }}>
         <Stack gap={8}>
           <Text>Default role for new members</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -332,6 +332,7 @@ export function TeamSettingsForm({
           Reset to defaults
         </Button>
       </Row>
+      </Stack>
     </Card>
   )
 }
@@ -403,8 +404,8 @@ function SettingsToggle({
           borderColor={colors.border[theme].default}
           style={{ backgroundColor: colors.bg[theme].muted }}
           padding="sm"
-          gap={8}
         >
+          <Stack gap={8}>
           <Row justify="space-between" align="center" gap={12}>
             <Stack flex={1} gap={4}>
               <Text>{label}</Text>
@@ -415,10 +416,9 @@ function SettingsToggle({
               onChange={(value) => field.onChange(Boolean(value))}
               disabled={disabled}
               size="sm"
-            >
-              <Switch.Thumb />
-            </Switch>
+            />
           </Row>
+          </Stack>
         </Card>
       )}
     />
@@ -438,7 +438,7 @@ function PermissionBanner() {
       paddingHorizontal={12}
       paddingVertical={8}
     >
-      <Info size={18} style={{ color: colors.text[theme].secondary }} />
+      <Info size={18} color={colors.text[theme].secondary} />
       <Stack gap={4}>
         <Text>View only</Text>
         <Text style={{ color: colors.text[theme].secondary }}>

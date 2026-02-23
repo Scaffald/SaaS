@@ -150,10 +150,8 @@ export function OfficePaymentAnalytics() {
                 key={card.label}
                 borderWidth={1}
                 borderColor={colors.border[theme].default}
-                style={{ backgroundColor: colors.bg[theme].subtle }}
+                style={{ backgroundColor: colors.bg[theme].subtle, width: '100%', maxWidth: 280 }}
                 padding="md"
-                width="100%"
-                maxWidth={280}
               >
                 <Stack gap={8}>
                   <Text style={{ color: colors.text[theme].secondary }}>{card.label}</Text>
@@ -212,7 +210,7 @@ export function OfficePaymentAnalytics() {
                 </Row>
                 <Table
                   columns={tableColumns}
-                  data={failedQueue}
+                  data={failedQueue as unknown as import('@scaffald/ui').TableRowData[]}
                   pageSize={10}
                   emptyMessage="No failed transactions"
                   getRowId={(row, i) => (row as { id?: string }).id ?? String(i)}

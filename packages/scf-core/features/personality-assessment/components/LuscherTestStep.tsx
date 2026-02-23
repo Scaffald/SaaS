@@ -1,6 +1,7 @@
 import { Button } from '@scaffald/ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
+import { Pressable } from 'react-native'
 import { Text, Row, Stack } from '@scaffald/ui'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
@@ -73,7 +74,7 @@ export function LuscherTestStep({
   const remaining = 8 - selectedOrder.length
 
   return (
-    <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto">
+    <Stack gap={24} maxWidth={800} width="100%" style={{ marginHorizontal: 'auto' }}>
       <Stack gap={8} align="center">
         <Text style={{ color: '#414e62', textAlign: 'center' }}>
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
@@ -95,23 +96,16 @@ export function LuscherTestStep({
             const isSelected = selectedOrder.includes(color.value)
 
             return (
-              <Stack
+              <Pressable
                 key={String(color.key)}
-                gap={8}
-                align="center"
-                style={{
-                  opacity: isSelected ? 0 : 1,
-                  cursor: isSelected ? 'default' : 'pointer',
-                  maxWidth: 200,
-                  minWidth: 120,
-                  pointerEvents: isSelected ? 'none' : 'auto',
-                }}
+                disabled={isSelected || isLoading}
                 onPress={() => !isSelected && handleColorPress(color.value)}
+                style={{ opacity: isSelected ? 0 : 1, maxWidth: 200, minWidth: 120 }}
               >
                 <Stack
                   width="100%"
-                  aspectRatio={1}
                   style={{
+                    aspectRatio: 1,
                     backgroundColor: color.hex,
                     borderRadius: 16,
                     maxWidth: 200,
@@ -124,7 +118,7 @@ export function LuscherTestStep({
                   justify="center"
                   align="center"
                 />
-              </Stack>
+              </Pressable>
             )
           })}
         </Row>

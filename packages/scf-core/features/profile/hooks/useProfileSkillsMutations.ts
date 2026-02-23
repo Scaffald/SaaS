@@ -93,8 +93,9 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
     },
     onError: (error, _variables, context) => {
       // Rollback optimistic update
-      if (context?.previousSkills !== undefined) {
-        queryClient.setQueryData(['scaffald', 'skills', 'multi-taxonomy'], context.previousSkills)
+      const ctx = context as { previousSkills?: unknown } | undefined
+      if (ctx?.previousSkills !== undefined) {
+        queryClient.setQueryData(['scaffald', 'skills', 'multi-taxonomy'], ctx.previousSkills)
       }
       // Clear ref on error
       pendingSkillDetailsRef.current = null

@@ -4,10 +4,9 @@ import { useUser } from '@scf/core/utils/useUser'
 import {
   Button,
   DashboardWidget,
-  Heading,
+  H4,
   LoadingState,
   ResponsiveModal,
-  spacing,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
@@ -90,9 +89,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (error) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.md} align="center" paddingVertical={24}>
-          <Text color="$red10">Failed to load reviews</Text>
-          <Text color="$gray11">{error.message}</Text>
+        <Stack gap={16} align="center" paddingVertical={24}>
+          <Text style={{ color: '#ef4444' }}>Failed to load reviews</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -112,14 +111,14 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     return (
       <>
         <DashboardWidget>
-          <Stack gap={spacing.md}>
+          <Stack gap={16}>
             <Row justify="space-between" align="center">
-              <Heading variant="h4">Reviews & Ratings</Heading>
+              <H4>Reviews & Ratings</H4>
               {canLeaveReview && (
                 <Button
                   variant="filled" color="primary"
                   size="sm"
-                  iconStart={<MessageSquarePlus size="md" />}
+                  iconStart={MessageSquarePlus}
                   onPress={handleLeaveReview}
                 >
                   Leave Review
@@ -127,8 +126,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               )}
             </Row>
             <Stack align="center" justify="center" minHeight={150} gap={8}>
-              <Text color="$gray11">No reviews yet</Text>
-              {canLeaveReview && <Text color="$gray11">Be the first to leave a review</Text>}
+              <Text style={{ color: '#414e62' }}>No reviews yet</Text>
+              {canLeaveReview && <Text style={{ color: '#414e62' }}>Be the first to leave a review</Text>}
             </Stack>
           </Stack>
         </DashboardWidget>
@@ -182,15 +181,15 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   return (
     <>
       <DashboardWidget>
-        <Stack gap={spacing.md}>
+        <Stack gap={16}>
           {/* Header */}
           <Row justify="space-between" align="center">
-            <Heading variant="h4">Reviews & Ratings</Heading>
+            <H4>Reviews & Ratings</H4>
             {canLeaveReview && (
               <Button
                 variant="filled" color="primary"
                 size="sm"
-                iconStart={<MessageSquarePlus size="md" />}
+                iconStart={MessageSquarePlus}
                 onPress={handleLeaveReview}
               >
                 Leave Review
@@ -199,22 +198,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           </Row>
 
           {/* Rating Summary */}
-          <Card bordered backgroundColor="$color2">
+          <Card variant="outlined" backgroundColor="#f9fafb">
             <Stack gap={12} padding="md">
               <Row gap={16} align="center">
                 <Stack align="center">
-                  <Text color="$gray11">{overallRating.toFixed(1)}</Text>
+                  <Text style={{ color: '#414e62' }}>{overallRating.toFixed(1)}</Text>
                   <Row gap={4}>
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={randomUUID()}
-                        size="md"
-                        color="$yellow10"
-                        fill={i < Math.floor(overallRating) ? '$yellow10' : 'transparent'}
+                        size={16}
+                        color="#d97706"
+                        fill={i < Math.floor(overallRating) ? '#d97706' : 'transparent'}
                       />
                     ))}
                   </Row>
-                  <Text color="$gray11">
+                  <Text style={{ color: '#414e62' }}>
                     {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                   </Text>
                 </Stack>
@@ -225,22 +224,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                       const categoryData = data as { sum: number; count: number }
                       return (
                         <Row key={category} gap={8} align="center">
-                          <Text color="$gray11" width={100} textTransform="capitalize">
+                          <Text style={{ color: '#414e62', width: 100, textTransform: 'capitalize' }}>
                             {category}
                           </Text>
                           <Row
                             flex={1}
                             height={6}
-                            backgroundColor="$color3"
+                            backgroundColor="#f3f4f6"
                             borderRadius={8}
-                            overflow="hidden"
+                            style={{ overflow: 'hidden' }}
                           >
                             <Row
                               width={`${(categoryData.sum / categoryData.count / 5) * 100}%`}
-                              backgroundColor="$yellow10"
+                              backgroundColor="#d97706"
                             />
                           </Row>
-                          <Text color="$gray11" width={30}>
+                          <Text style={{ color: '#414e62', width: 30 }}>
                             {(categoryData.sum / categoryData.count).toFixed(1)}
                           </Text>
                         </Row>
@@ -257,22 +256,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   align="center"
                   paddingHorizontal={12}
                   paddingVertical={8}
-                  backgroundColor="$green3"
+                  backgroundColor="#dcfce7"
                   borderRadius={12}
                 >
-                  <ThumbsUp size="md" color="$green11" />
-                  <Text color="$green11">{recommendCount} Recommend</Text>
+                  <ThumbsUp size={16} color="#16a34a" />
+                  <Text style={{ color: '#16a34a' }}>{recommendCount} Recommend</Text>
                 </Row>
                 <Row
                   gap={8}
                   align="center"
                   paddingHorizontal={12}
                   paddingVertical={8}
-                  backgroundColor="$red3"
+                  backgroundColor="#fef2f2"
                   borderRadius={12}
                 >
-                  <ThumbsDown size="md" color="$red11" />
-                  <Text color="$red11">{notRecommendCount} Don't Recommend</Text>
+                  <ThumbsDown size={16} color="#ef4444" />
+                  <Text style={{ color: '#ef4444' }}>{notRecommendCount} Don't Recommend</Text>
                 </Row>
               </Row>
             </Stack>
@@ -280,28 +279,28 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
 
           {/* Reviews List */}
           <Stack gap={12}>
-            <Text color="$gray11">Reviews ({totalReviews})</Text>
+            <Text style={{ color: '#414e62' }}>Reviews ({totalReviews})</Text>
             {reviewsToShow.map((review: Review) => (
-              <Card key={review.id} bordered backgroundColor="$color2">
+              <Card key={review.id} variant="outlined" backgroundColor="#f9fafb">
                 <Stack gap={12} padding="md">
                   <Row justify="space-between" align="flex-start">
                     <Stack gap={4}>
                       <Row gap={8} align="center">
-                        <Text color="$gray11">Anonymous Reviewer</Text>
+                        <Text style={{ color: '#414e62' }}>Anonymous Reviewer</Text>
                         <Row
                           gap={4}
                           align="center"
                           paddingHorizontal={8}
                           paddingVertical={2}
-                          backgroundColor="$blue2"
+                          backgroundColor="#dbeafe"
                           borderRadius={8}
                         >
-                          <Shield size="sm" color="$blue11" />
-                          <Text color="$blue11">VERIFIED</Text>
+                          <Shield size={14} color="#2563eb" />
+                          <Text style={{ color: '#2563eb' }}>VERIFIED</Text>
                         </Row>
                       </Row>
                     </Stack>
-                    <Text color="$gray11">{new Date(review.created_at).toLocaleDateString()}</Text>
+                    <Text style={{ color: '#414e62' }}>{new Date(review.created_at).toLocaleDateString()}</Text>
                   </Row>
 
                   {/* Overall Rating */}
@@ -316,9 +315,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                         return (
                           <Star
                             key={randomUUID()}
-                            size="md"
-                            color="$yellow10"
-                            fill={i < Math.floor(avgRating) ? '$yellow10' : 'transparent'}
+                            size={16}
+                            color="#d97706"
+                            fill={i < Math.floor(avgRating) ? '#d97706' : 'transparent'}
                           />
                         )
                       })}
@@ -326,20 +325,20 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   )}
 
                   {/* Comment */}
-                  {review.comment && <Text color="$gray11">{review.comment}</Text>}
+                  {review.comment && <Text style={{ color: '#414e62' }}>{review.comment}</Text>}
 
                   {/* Recommendation */}
                   {review.reaction !== null && (
                     <Row gap={8} align="center">
                       {review.reaction === 1 ? (
                         <>
-                          <ThumbsUp size="md" color="$green11" />
-                          <Text color="$green11">Recommends this person</Text>
+                          <ThumbsUp size={16} color="#16a34a" />
+                          <Text style={{ color: '#16a34a' }}>Recommends this person</Text>
                         </>
                       ) : (
                         <>
-                          <ThumbsDown size="md" color="$red11" />
-                          <Text color="$red11">Does not recommend</Text>
+                          <ThumbsDown size={16} color="#ef4444" />
+                          <Text style={{ color: '#ef4444' }}>Does not recommend</Text>
                         </>
                       )}
                     </Row>
@@ -349,7 +348,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text color="$blue7" cursor="pointer">
+              <Text style={{ color: '#3b82f6', cursor: 'pointer' }}>
                 + {reviews.length - 2} more reviews
               </Text>
             )}

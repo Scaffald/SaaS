@@ -427,8 +427,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         render={({ field }) => (
           <Stack data-testid="org-form-locations">
             <OrganizationLocationsInput
-              value={field.value}
-              onChange={field.onChange}
+              value={(field.value ?? []) as Parameters<typeof OrganizationLocationsInput>[0]['value']}
+              onChange={field.onChange as Parameters<typeof OrganizationLocationsInput>[0]['onChange']}
               errors={errors.locations?.message}
               disabled={isLoading}
               provider="mapbox"
@@ -472,7 +472,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading || slugAvailabilityBlocksSubmit}
-          iconStart={isLoading ? <Spinner /> : undefined}
+          loading={isLoading}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>

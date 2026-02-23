@@ -54,6 +54,7 @@ export function TeamCommentThread({
       const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
         title: 'Unable to post comment',
+        message: 'Please try again.',
         variant: 'error',
       })
     },

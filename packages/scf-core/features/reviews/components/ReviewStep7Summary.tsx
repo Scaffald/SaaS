@@ -18,15 +18,11 @@ export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProp
         placeholder="Share your experience working with this person..."
         value={comment}
         onChangeText={onChange}
-        minHeight={200}
-        padding="md"
-        borderWidth={2}
-        borderColor="$color5"
-        focusStyle={{ borderColor: '$blue8' }}
+        style={{ minHeight: 200 }}
       />
 
       {/* Helper Text */}
-      <Text color="$gray11" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         This field is optional. You can skip it or add details about your experience working
         together.
       </Text>

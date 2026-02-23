@@ -72,7 +72,7 @@ function DraggableCard({
   })
   const { tabIndex: _tabIndex, role: _role, ...restAttributes } = attributes
   return (
-    <View ref={(el) => setNodeRef(el as unknown as HTMLElement | null)} {...restAttributes} {...listeners}>
+    <View ref={(el) => setNodeRef(el as unknown as HTMLElement | null)} {...(restAttributes as object)} {...listeners}>
       {children}
     </View>
   )

@@ -60,7 +60,7 @@ export function QuickActionsWidget({
   const renderListActions = () => (
     <Stack gap={8}>
       {onCreate && (
-        <Button theme="info" iconStart={ArrowRightCircle} onPress={onCreate}>
+        <Button color="primary" variant="filled" iconStart={ArrowRightCircle} onPress={onCreate}>
           Create {resourceName}
         </Button>
       )}
@@ -76,7 +76,7 @@ export function QuickActionsWidget({
   const renderCreateActions = () => (
     <Stack gap={8}>
       {onSave && (
-        <Button theme="info" iconStart={Save} onPress={onSave} disabled={isLoading}>
+        <Button color="primary" variant="filled" iconStart={Save} onPress={onSave} disabled={isLoading}>
           Save
         </Button>
       )}
@@ -92,7 +92,7 @@ export function QuickActionsWidget({
   const renderEditActions = () => (
     <Stack gap={8}>
       {onSave && (
-        <Button theme="info" iconStart={Save} onPress={onSave} disabled={isLoading}>
+        <Button color="primary" variant="filled" iconStart={Save} onPress={onSave} disabled={isLoading}>
           Save Changes
         </Button>
       )}
@@ -102,7 +102,7 @@ export function QuickActionsWidget({
         </Button>
       )}
       {onDelete && (
-        <Button theme="error" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
+        <Button color="error" variant="filled" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
@@ -113,7 +113,7 @@ export function QuickActionsWidget({
   const renderDetailActions = () => (
     <Stack gap={8}>
       {onEdit && (
-        <Button theme="info" iconStart={Pencil} onPress={onEdit}>
+        <Button color="primary" variant="filled" iconStart={Pencil} onPress={onEdit}>
           Edit
         </Button>
       )}
@@ -123,7 +123,7 @@ export function QuickActionsWidget({
         </Button>
       )}
       {onDelete && (
-        <Button theme="error" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
+        <Button color="error" variant="filled" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
