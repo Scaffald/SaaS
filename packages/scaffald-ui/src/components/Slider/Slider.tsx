@@ -134,7 +134,7 @@ export function Slider({
         }
       })
     },
-    [disabled, trackWidth, calculateValue, isRange, currentRange, min, max, step, isControlled, onRangeChange, onValueChange, clampValue]
+    [disabled, trackWidth, calculateValue, isRange, currentRange, min, max, step, isControlled, onRangeChange, onValueChange, clampValue, haptics]
   )
 
   // Handle drag start

@@ -12,10 +12,9 @@ import { useMemo } from 'react'
  * @example
  * const styles = useStyles(getButtonStyles, [variant, size, theme])
  */
-export function useStyles<T, Deps extends readonly any[]>(
+export function useStyles<T, Deps extends readonly unknown[]>(
   factory: (...args: Deps) => T,
   deps: Deps
 ): T {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => factory(...deps), deps)
+  return useMemo(() => factory(...deps), [factory, deps])
 }

@@ -3,7 +3,7 @@
  * Clickable tab button
  */
 
-import { View, Pressable, Text, Platform } from 'react-native'
+import { View, Pressable, Text } from 'react-native'
 import type { TabTriggerProps } from './Tabs.types'
 import { useTabsContext } from './Tabs'
 import { useTabItemContext } from './TabItem'

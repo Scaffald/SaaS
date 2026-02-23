@@ -6,7 +6,7 @@
 
 import type React from 'react'
 import { createContext, useState, useEffect, useCallback, useContext } from 'react'
-import { View, StyleSheet, Platform, Appearance, ColorSchemeName } from 'react-native'
+import { View, StyleSheet, Platform, Appearance, type ColorSchemeName } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { ThemeMode, ResolvedThemeMode } from '../tokens/colors'
 import { colors } from '../tokens/colors'
