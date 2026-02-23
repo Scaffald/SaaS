@@ -1,5 +1,6 @@
-import { api } from '@scf/core/utils/api'
+import { useOfficeListUsers } from '@scf/core/utils/office-users-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
+import type { OfficeUser } from '@scaffald/sdk'
 import { useEffect, useState } from 'react'
 import { Pressable } from 'react-native'
 import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -13,21 +14,12 @@ export interface UserSearchProps {
   disabled?: boolean
 }
 
-interface User {
-  id: string
-  username: string
-  display_name: string | null
-  first_name: string
-  last_name: string
-  avatar_path: string | null
-}
-
-const getUserDisplayName = (user: User): string => {
+const getUserDisplayName = (user: OfficeUser): string => {
   if (user.first_name || user.last_name) {
     const name = `${user.first_name || ''} ${user.last_name || ''}`.trim()
-    return name ? `${name} (${user.username})` : user.username
+    return name ? `${name} (${user.username || ''})` : (user.username || '')
   }
-  return user.display_name || user.username
+  return user.display_name || user.username || ''
 }
 
 /**
@@ -55,19 +47,14 @@ export function UserSearch({
   const [selectedUserName, setSelectedUserName] = useState('')
   const [showResults, setShowResults] = useState(false)
 
-  // Fetch all users (office.listUsers doesn't support search, so we filter client-side)
-  // Note: api.office typed via AppRouter; use type assertion if TS complains due to router collision
-  const { data, isLoading } = (
-    api as unknown as { office: { listUsers: { useQuery: (input?: undefined, opts?: { enabled?: boolean }) => { data?: { users: User[] }; isLoading: boolean } } } }
-  ).office.listUsers.useQuery(undefined, {
-    enabled: true, // Always fetch users for filtering
-  })
+  // Fetch all users (filter client-side)
+  const { data, isLoading } = useOfficeListUsers()
 
   // Debounce search term for filtering
   const debouncedSearch = useDebounce(searchTerm, 300)
 
   // Filter users based on search term
-  const filteredUsers = (data?.users || []).filter((user: User) => {
+  const filteredUsers = (data?.users || []).filter((user: OfficeUser) => {
     if (!debouncedSearch || debouncedSearch.length < 2) return false
 
     const searchLower = debouncedSearch.toLowerCase()
@@ -86,7 +73,7 @@ export function UserSearch({
   })
 
   // Get selected user details when value is provided (for edit mode)
-  const selectedUser = value ? (data?.users || []).find((u: User) => u.id === value) : null
+  const selectedUser = value ? (data?.users || []).find((u: OfficeUser) => u.id === value) : null
 
   // Update display name when value changes (edit mode)
   useEffect(() => {
@@ -103,7 +90,7 @@ export function UserSearch({
     }
   }, [value, selectedUser, selectedUserName])
 
-  const handleSelect = (user: User) => {
+  const handleSelect = (user: OfficeUser) => {
     const userName = getUserDisplayName(user)
     setSearchTerm(userName)
     setSelectedUserName(userName)
@@ -197,7 +184,7 @@ export function UserSearch({
           }}
         >
           {filteredUsers.length > 0 ? (
-            filteredUsers.map((user: User) => {
+            filteredUsers.map((user: OfficeUser) => {
               return (
                 <Pressable key={user.id} onPress={() => handleSelect(user)}>
                   <Row padding="sm" gap={8}>

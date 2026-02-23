@@ -18,7 +18,7 @@ export function InquiryOverviewWidget() {
   })
 
   if (isLoading) {
-    return <SkeletonCard variant="profile" />
+    return <SkeletonCard hasAvatar textLines={2} />
   }
 
   const data = response?.data ?? []

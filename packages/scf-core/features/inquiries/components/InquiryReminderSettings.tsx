@@ -35,9 +35,10 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
       })
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Failed to save settings'
+      const message = error instanceof Error ? error.message : 'Failed to save settings'
       toast.show({
         title: 'Failed to save settings',
+        message,
         variant: 'error',
       })
     },
@@ -64,61 +65,63 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
   }
 
   return (
-    <Card bordered padding="md" gap={12}>
-      <H4>Inquiry Reminders</H4>
-      <Separator />
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <Stack gap={16}>
-          <Row align="center" justify="space-between" gap={12}>
-            <Stack flex={1} gap={4}>
-              <Text>Send automatic reminders</Text>
-              <Text color="$gray11">
-                Automatically remind candidates to respond to pending inquiries
-              </Text>
-            </Stack>
-            <Switch
-              checked={reminderEnabled}
-              onChange={setReminderEnabled}
-              disabled={updateMutation.isPending}
-            />
-          </Row>
-
-          {reminderEnabled && (
-            <Stack gap={8}>
-              <Text>Remind after (days)</Text>
-              <Input
-                keyboardType="numeric"
-                value={String(reminderDays)}
-                onChangeText={(value) => {
-                  const num = Number.parseInt(value, 10)
-                  if (!Number.isNaN(num) && num >= 1 && num <= 14) {
-                    setReminderDays(num)
-                  }
-                }}
-                placeholder="3"
-                maxLength={2}
+    <Card bordered padding="md">
+      <Stack gap={12}>
+        <H4>Inquiry Reminders</H4>
+        <Separator />
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <Stack gap={16}>
+            <Row align="center" justify="space-between" gap={12}>
+              <Stack style={{ flex: 1 }} gap={4}>
+                <Text>Send automatic reminders</Text>
+                <Text color="$gray11">
+                  Automatically remind candidates to respond to pending inquiries
+                </Text>
+              </Stack>
+              <Switch
+                checked={reminderEnabled}
+                onChange={setReminderEnabled}
+                disabled={updateMutation.isPending}
               />
-              <Text color="$gray11">
-                Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
-                after an inquiry is sent if they haven't responded. Reminders are limited to once
-                every 3 days.
-              </Text>
-            </Stack>
-          )}
+            </Row>
 
-          <Button
-            onPress={handleSave}
-            disabled={
-              updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14
-            }
-            color="primary"
-          >
-            {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
-          </Button>
-        </Stack>
-      )}
+            {reminderEnabled && (
+              <Stack gap={8}>
+                <Text>Remind after (days)</Text>
+                <Input
+                  keyboardType="numeric"
+                  value={String(reminderDays)}
+                  onChangeText={(value) => {
+                    const num = Number.parseInt(value, 10)
+                    if (!Number.isNaN(num) && num >= 1 && num <= 14) {
+                      setReminderDays(num)
+                    }
+                  }}
+                  placeholder="3"
+                  maxLength={2}
+                />
+                <Text color="$gray11">
+                  Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
+                  after an inquiry is sent if they haven't responded. Reminders are limited to once
+                  every 3 days.
+                </Text>
+              </Stack>
+            )}
+
+            <Button
+              onPress={handleSave}
+              disabled={
+                updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14
+              }
+              color="primary"
+            >
+              {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
+            </Button>
+          </Stack>
+        )}
+      </Stack>
     </Card>
   )
 }

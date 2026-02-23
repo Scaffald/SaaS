@@ -1,8 +1,9 @@
 import { useInquiryHistory } from '@scf/core/utils/inquiries-sdk-hooks'
 import { Text, Row, Stack } from '@scaffald/ui'
+import type { ReactNode } from 'react'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Avatar, type GetThemeValueForKey } from '@scaffald/ui'
+import { Avatar } from '@scaffald/ui'
 
 interface InquiryHistoryTimelineProps {
   inquiryId: string
@@ -183,12 +184,12 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                 <Stack
                   width={12}
                   height={12}
-                  borderRadius="$10"
-                  backgroundColor={eventColor as GetThemeValueForKey<'backgroundColor'>}
+                  borderRadius={10}
+                  style={{ backgroundColor: eventColor }}
                   align="center"
                   justify="center"
                 >
-                  <EventIcon size="sm" color="white" />
+                  <EventIcon size={16} color="white" />
                 </Stack>
                 {!isLast && <Stack flex={1} width={2} backgroundColor="$gray5" height={40} />}
               </Stack>
@@ -196,26 +197,24 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
               {/* Event details */}
               <Stack flex={1} gap={4}>
                 <Row gap={8} align="center">
-                  <Avatar size="sm">
-                    <Avatar.Image src={event.actor?.avatar_path || undefined} />
-                    <Avatar.Fallback backgroundColor="$blue9">
-                      <Text color="white">
-                        {actorDisplayName(event.actor).charAt(0).toUpperCase()}
-                      </Text>
-                    </Avatar.Fallback>
-                  </Avatar>
-                  <Text>{actorDisplayName(event.actor)}</Text>
+                  <Avatar
+                    size={32}
+                    src={(event.actor as AuditLogEntry['actor'])?.avatar_path ?? undefined}
+                    initials={actorDisplayName(event.actor as AuditLogEntry['actor']).charAt(0).toUpperCase()}
+                  />
+                  <Text>{actorDisplayName(event.actor as AuditLogEntry['actor'])}</Text>
                   <Text color="$gray11">{formatEventType(event.event_type as EventType)}</Text>
                 </Row>
 
-                <Text color="$gray11">{formatTimestamp(event.created_at)}</Text>
+                <Text color="$gray11">{formatTimestamp(event.created_at as string)}</Text>
 
                 {/* Event-specific details */}
-                {event.event_data && (
-                  <Text color="$gray11" marginTop={4}>
-                    {formatEventData(event.event_type as EventType, event.event_data)}
-                  </Text>
-                )}
+                {event.event_data
+                  ? ((): ReactNode => {
+                      const msg = formatEventData(event.event_type as EventType, event.event_data as Record<string, unknown>)
+                      return msg != null ? <Text color="$gray11" style={{ marginTop: 4 }}>{msg}</Text> : null
+                    })()
+                  : null}
               </Stack>
             </Row>
           )
