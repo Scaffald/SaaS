@@ -22,15 +22,15 @@ type SupportedMimeType = (typeof SUPPORTED_MIME_TYPES)[number]
 
 export type BackgroundCheckDispute = {
   id: string
-  background_check_id: string
-  user_id: string
-  reason: string
-  details?: string
-  status: 'pending' | 'under_review' | 'resolved' | 'rejected'
-  resolution?: string
-  resolved_at?: string
-  created_at: string
-  updated_at: string
+  dispute_reason?: string | null
+  dispute_details?: string | null
+  supporting_documents?: unknown
+  status: string
+  created_at?: string | null
+  updated_at?: string | null
+  resolved_at?: string | null
+  resolution?: string | null
+  resolution_notes?: string | null
 }
 
 export interface DisputeReasonOption {
@@ -249,7 +249,13 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
         return
       }
 
-      const asset = selection.asset
+      // Native: selection has asset (expo-image-picker or similar)
+      const asset = 'asset' in selection ? selection.asset : null
+      if (!asset) {
+        setAttachmentError('File uploads are not available on this platform.')
+        return
+      }
+
       const fileSystem = await ensureFileSystem()
 
       if (!fileSystem) {

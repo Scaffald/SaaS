@@ -116,7 +116,7 @@ export function CareerAssessmentWidget() {
           control={control}
           render={({ field }) => (
             <RiasecQuickAssessment
-              value={field.value}
+              value={field.value ?? careerAssessmentDefaults.riasec_scores}
               onChange={field.onChange}
               disabled={isSubmitting}
             />

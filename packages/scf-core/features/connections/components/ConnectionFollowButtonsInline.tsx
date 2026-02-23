@@ -14,10 +14,13 @@ import { useMemo } from 'react'
 import { Button, Text, Row } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
+type SizeToken = '$3' | '$4' | '$5'
+const SIZE_TO_BUTTON: Record<SizeToken, 'sm' | 'md' | 'lg'> = { $3: 'sm', $4: 'md', $5: 'lg' }
+
 interface ConnectionFollowButtonsInlineProps {
   targetUserId: string
   isOwnProfile?: boolean
-  size?: '$3' | '$4' | '$5'
+  size?: SizeToken
 }
 
 /**
@@ -250,19 +253,17 @@ export function ConnectionFollowButtonsInline({
       {connectionButtonState.type === 'connected' && (
         <>
           <Button
-            size={size}
+            size={buttonSize}
             iconStart={UserCheck}
-            theme="success"
             variant="outline"
             disabled={isConnectionMutating}
           >
             <Text>Connected</Text>
           </Button>
           <Button
-            size={size}
+            size={buttonSize}
             iconStart={UserMinus}
             variant="outline"
-            theme="error"
             onPress={handleRemoveConnection}
             disabled={isConnectionMutating}
           >
@@ -272,7 +273,7 @@ export function ConnectionFollowButtonsInline({
       )}
 
       {connectionButtonState.type === 'pending_sent' && (
-        <Button size={size} iconStart={Loader2} variant="outline" disabled={isConnectionMutating}>
+        <Button size={buttonSize} iconStart={Loader2} variant="outline" disabled={isConnectionMutating}>
           <Text>Pending</Text>
         </Button>
       )}
@@ -280,19 +281,17 @@ export function ConnectionFollowButtonsInline({
       {connectionButtonState.type === 'pending_received' && (
         <>
           <Button
-            size={size}
+            size={buttonSize}
             iconStart={CheckCircle2}
-            theme="success"
             onPress={handleAcceptRequest}
             disabled={isConnectionMutating}
           >
             <Text>Accept</Text>
           </Button>
           <Button
-            size={size}
+            size={buttonSize}
             iconStart={X}
             variant="outline"
-            theme="error"
             onPress={handleDeclineRequest}
             disabled={isConnectionMutating}
           >
@@ -303,7 +302,7 @@ export function ConnectionFollowButtonsInline({
 
       {connectionButtonState.type === 'none' && (
         <Button
-          size={size}
+          size={buttonSize}
           iconStart={isConnectionMutating ? Loader2 : UserPlus}
           color="primary"
           onPress={handleConnect}
@@ -316,10 +315,9 @@ export function ConnectionFollowButtonsInline({
       {/* Follow Button */}
       {!connectionStatus.isConnected && (
         <Button
-          size={size}
+          size={buttonSize}
           iconStart={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
           variant="outline"
-          theme={followStatus.isFollowing ? 'error' : 'blue'}
           onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}
           disabled={isFollowMutating || followStatus.isLoading}
         >

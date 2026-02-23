@@ -266,7 +266,6 @@ variant="outline"
               size="md"
               iconStart={UserMinus}
               variant="outline"
-"error"
               onPress={handleRemoveConnection}
               disabled={isConnectionMutating}
             >

@@ -191,10 +191,7 @@ describe('useDispute hook', () => {
     const file = new File(['test'], 'evidence.pdf', { type: 'application/pdf' })
 
     await act(async () => {
-      await result.current.addAttachment({
-        platform: 'web',
-        file,
-      })
+      await result.current.addAttachment({ files: [file] })
     })
 
     expect(result.current.attachments).toHaveLength(1)
@@ -223,10 +220,7 @@ describe('useDispute hook', () => {
     }
 
     await act(async () => {
-      await result.current.addAttachment({
-        platform: 'web',
-        file,
-      })
+      await result.current.addAttachment({ files: [file] })
     })
 
     expect(result.current.attachments).toHaveLength(1)

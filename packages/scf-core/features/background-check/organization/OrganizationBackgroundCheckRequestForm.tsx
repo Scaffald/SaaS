@@ -323,8 +323,7 @@ export function OrganizationBackgroundCheckRequestForm() {
               onValueChange={(value) => setSelectedWorkerId(value)}
               placeholder={
                 selectedWorker
-                  ? (selectedWorker.name ??
-                    `${selectedWorker.first_name ?? ''} ${selectedWorker.last_name ?? ''}`.trim())
+                  ? selectedWorker.display_name
                   : workersQuery.isLoading
                     ? 'Loading workers…'
                     : 'Select worker'
@@ -334,9 +333,8 @@ export function OrganizationBackgroundCheckRequestForm() {
                 workers.length === 0
                   ? [{ value: 'placeholder', label: 'No workers found', disabled: true }]
                   : workers.map((worker) => {
-                      const fullName = `${worker.first_name ?? ''} ${worker.last_name ?? ''}`.trim()
                       const displayName =
-                        worker.name ?? (fullName.length > 0 ? fullName : worker.id.substring(0, 8))
+                        worker.display_name || worker.id.substring(0, 8)
                       return {
                         value: worker.id as string,
                         label: displayName,
@@ -385,8 +383,8 @@ export function OrganizationBackgroundCheckRequestForm() {
             borderRadius={16}
           >
             <Row gap={8} align="center">
-              <CircleAlert size={18} style={{ color: colors.text[theme].secondary }} />
-              <Text style={{ color: colors.text[theme].secondary }}>Cost summary</Text>
+              <CircleAlert size={18} color={colors.text[theme].secondary} />
+              <Text color={colors.text[theme].secondary}>Cost summary</Text>
             </Row>
             <Text style={{ color: colors.text[theme].secondary }}>
               Package cost:{' '}
@@ -416,7 +414,7 @@ export function OrganizationBackgroundCheckRequestForm() {
               <PaymentIntentForm
                 clientSecret={paymentSession.clientSecret}
                 amountCents={paymentSession.amountCents}
-                description={`Background check for ${selectedWorker?.name ?? 'selected worker'}`}
+                description={`Background check for ${selectedWorker?.display_name ?? 'selected worker'}`}
                 submitLabel={confirmPaymentMutation.isPending ? 'Processing…' : 'Pay & send invite'}
                 disabled={confirmPaymentMutation.isPending}
                 onSuccess={handlePaymentSuccess}

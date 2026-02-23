@@ -70,6 +70,50 @@ export function useUpdateBackgroundCheckPrivacyMutation() {
   return api.backgroundChecks.updatePrivacy.useMutation()
 }
 
+/** List background check packages (user-facing). Uses tRPC. */
+export function useBackgroundCheckPackages(options?: { enabled?: boolean; staleTime?: number }) {
+  return api.backgroundChecks.listPackages.useQuery(undefined, {
+    enabled: options?.enabled !== false,
+    staleTime: options?.staleTime ?? 60_000,
+  })
+}
+
+/** Request a background check (creates payment session). Uses tRPC. */
+export function useRequestBackgroundCheckMutation() {
+  return api.backgroundChecks.requestCheck.useMutation()
+}
+
+/** Confirm background check payment. Uses tRPC. */
+export function useConfirmCheckPaymentMutation() {
+  return api.backgroundChecks.confirmCheckPayment.useMutation()
+}
+
+/** Create document upload URL. Uses tRPC. */
+export function useCreateDocumentUploadUrlMutation() {
+  return api.backgroundChecks.createUploadUrl.useMutation()
+}
+
+/** Add document metadata after upload. Uses tRPC. */
+export function useAddDocumentMetadataMutation() {
+  return api.backgroundChecks.addDocumentMetadata.useMutation()
+}
+
+/** List disputes for a specific background check. Uses tRPC. */
+export function useBackgroundCheckDisputes(
+  checkId: string | undefined,
+  options?: { enabled?: boolean }
+) {
+  return api.backgroundChecks.listDisputesForCheck.useQuery(
+    { background_check_id: checkId ?? '' },
+    { enabled: !!checkId && options?.enabled !== false }
+  )
+}
+
+/** Submit background check dispute. Uses tRPC. */
+export function useSubmitBackgroundCheckDisputeMutation() {
+  return api.backgroundChecks.submitDispute.useMutation()
+}
+
 // ===== Admin SDK hooks =====
 
 /** List admin packages (office/platform) */
