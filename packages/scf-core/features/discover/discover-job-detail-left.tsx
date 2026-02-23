@@ -123,8 +123,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   if (isLoading) {
     return (
       <Stack style={{ flex: 1 }} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="$blue10" />
-        <Text color="$gray11" style={{ marginTop: 8 }}>
+        <Spinner size="lg" color="primary" />
+        <Text color="secondary" style={{ marginTop: 8 }}>
           Loading...
         </Text>
       </Stack>
@@ -229,13 +229,13 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
       <Stack style={{ flex: 1, height: '100%' }}>
         <ApplicationWizard
           jobId={job.id}
-          jobTitle={job.title}
-          organizationName={job.organization?.name || 'Unknown Organization'}
+          jobTitle={job.title ?? 'Job'}
+          organizationName={job.organization?.name ?? 'Unknown Organization'}
           onSuccess={(applicationId) => {
             // Track application submitted for full wizard flow
             try {
               trackEventMutation.mutate({
-                eventType: 'application.submitted',
+                eventType: 'application_complete',
                 targetType: 'job',
                 targetId: job.id,
                 metadata: {
@@ -277,7 +277,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
         <Button
           size="lg"
-          theme="info"
+          color="primary"
           onPress={() => {
             captureEvent('job_external_link_clicked', {
               job_id: job.id,

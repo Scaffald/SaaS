@@ -362,7 +362,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         </Button>
         <Button
           size="md"
-          theme="success"
+          color="success"
           iconStart={employmentButtonIcon}
           onPress={handleWorkHere}
           disabled={isEmploymentButtonDisabled}

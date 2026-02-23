@@ -3,7 +3,16 @@ import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { DashboardWidget, ResponsiveSelect } from '@scaffald/ui'
 import { ChevronsUpDown, Filter, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import {
+  Button,
+  Input,
+  RangeSlider,
+  Row,
+  ScrollView,
+  Spinner,
+  Stack,
+  Text,
+} from '@scaffald/ui'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void
@@ -143,7 +152,7 @@ export function DiscoverJobsRight({
               <Button
                 size="sm"
                 variant="outline"
-                theme={jobSource === 'all' ? 'blue' : undefined}
+                color={jobSource === 'all' ? 'primary' : 'gray'}
                 onPress={() => onJobSourceChange('all')}
               >
                 All Jobs
@@ -245,7 +254,7 @@ export function DiscoverJobsRight({
                 </Text>
                 <RangeSlider
                   value={minSoftSkillsMatch ?? 0}
-                  onValueChange={(value) => {
+                  onValueChange={(value: number) => {
                     onMinSoftSkillsMatchChange(value > 0 ? value : null)
                   }}
                   min={0}
