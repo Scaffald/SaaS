@@ -1,19 +1,16 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { OfficeJob } from '@scaffald/sdk'
 import { AlertTriangle, ArrowRight, RefreshCcw } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
-type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
-type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
-type TeamAssignment = NonNullable<TeamJobRecord['teamAssignments']>[number]
+type TeamAssignment = NonNullable<OfficeJob['teamAssignments']>[number]
 
 interface TeamJobsListProps {
   teamId: string
-  jobs: TeamJobRecord[]
+  jobs: OfficeJob[]
   isLoading: boolean
   error?: Error | null
   onRefresh?: () => void

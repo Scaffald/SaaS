@@ -5,6 +5,25 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
+import type { OfficeListJobsParams } from '@scaffald/sdk'
+
+/** Office list jobs (office role). Organization/team filtering. */
+export function useOfficeListJobs(
+  params?: OfficeListJobsParams,
+  options?: { enabled?: boolean; staleTime?: number; retry?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['jobs', 'office', params],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing client')
+      return client.jobs.officeListJobs(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 60 * 1000,
+    retry: options?.retry ?? true,
+  })
+}
 
 export function useJobDetails(jobId: string | undefined, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()

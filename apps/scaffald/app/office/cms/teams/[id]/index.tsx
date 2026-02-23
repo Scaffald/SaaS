@@ -6,20 +6,16 @@ import {
   TeamMembersList,
   TeamOverviewCard,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
+import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { useTeam, useTeamMembers, useTeamInvitations } from '@scaffald/sdk/react'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { OfficeJob } from '@scaffald/sdk'
 import { ArrowLeft, BarChart3, Briefcase, Pencil, RefreshCcw, UserPlus } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
-
-type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
-type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
 
 export default function OfficeTeamDetailPage() {
   const { id } = useLocalSearchParams<{ id?: string }>()
@@ -64,16 +60,13 @@ export default function OfficeTeamDetailPage() {
     isLoading: isJobsLoading,
     error: jobsError,
     refetch: refetchJobs,
-  } = api.office.listJobs.useQuery(
+  } = useOfficeListJobs(
     {
       limit: 20,
       offset: 0,
       team_id: teamId || undefined,
     },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
+    { enabled: Boolean(teamId), staleTime: 60_000, retry: false }
   )
 
   const { roles } = useUserRoles()
@@ -122,7 +115,7 @@ export default function OfficeTeamDetailPage() {
   const pendingInvitationsCount = pendingInvitations.length
 
   const teamJobs = useMemo(() => {
-    return ((jobsData?.jobs ?? []) as TeamJobRecord[]) ?? []
+    return (jobsData?.jobs ?? []) as OfficeJob[]
   }, [jobsData?.jobs])
   const jobCount = teamJobs.length
 

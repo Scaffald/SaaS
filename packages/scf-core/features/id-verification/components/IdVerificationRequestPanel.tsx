@@ -1,7 +1,9 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { api } from '@scf/core/utils/api'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
+import { useWorkers } from '@scf/core/utils/workers-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
+import type { Worker } from '@scaffald/sdk'
 import { CreditCard, RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -12,7 +14,6 @@ import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
-type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
 type PricingOption = RouterOutputs['idVerification']['getPricing'][number]
 
 interface IdVerificationRequestPanelProps {
@@ -60,11 +61,11 @@ export function IdVerificationRequestPanel({
   }
 
   const [workerSearch, setWorkerSearch] = useState('')
-  const workersQuery = api.workers.getWorkers.useQuery(
+  const workersQuery = useWorkers(
     { search: workerSearch || undefined, limit: 50 },
     { staleTime: 60_000 }
   )
-  const workers = useMemo<WorkerSummary[]>(
+  const workers = useMemo<Worker[]>(
     () => workersQuery.data?.workers ?? [],
     [workersQuery.data?.workers]
   )
@@ -218,10 +219,9 @@ export function IdVerificationRequestPanel({
             workers.length === 0
               ? [{ value: '__empty__', label: 'No workers found', disabled: true }]
               : workers.map((worker) => ({
-                  value: worker.id as string,
+                  value: worker.id,
                   label:
                     worker.display_name ??
-                    worker.email ??
                     worker.username ??
                     `Worker ${String(worker.id).slice(0, 8)}`,
                 }))

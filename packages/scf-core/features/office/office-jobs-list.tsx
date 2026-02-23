@@ -1,4 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
@@ -145,8 +146,8 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
 
   const { data: organizationsData } = api.office.getOrganizations.useQuery()
 
-  const { data, isLoading, refetch } = api.office.listJobs.useQuery({
-    limit: 100, // Increased to support better filtering
+  const { data, isLoading, refetch } = useOfficeListJobs({
+    limit: 100,
     offset: 0,
     team_id: teamFilter ?? undefined,
     myTeamsOnly,

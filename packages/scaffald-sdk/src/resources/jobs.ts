@@ -137,6 +137,51 @@ export interface ExternalJobFilterOptions {
   industries: string[]
 }
 
+/** Office list jobs params (office role required) */
+export interface OfficeListJobsParams {
+  organization_id?: string
+  status?: 'draft' | 'open' | 'paused' | 'closed'
+  team_id?: string
+  myTeamsOnly?: boolean
+  limit?: number
+  offset?: number
+}
+
+/** Office job with team assignments (office listJobs response) */
+export interface OfficeJob {
+  id: string
+  title: string
+  description: string
+  status: string
+  employment_type?: string | null
+  remote_option?: string | null
+  location?: string | null
+  pay_range_min_cents?: number | null
+  pay_range_max_cents?: number | null
+  pay_range_type?: string | null
+  posted_at?: string | null
+  created_at: string
+  updated_at: string
+  organization?: { id: string; name: string; slug?: string } | null
+  team?: { id: string; name: string | null; organization_id: string } | null
+  teamAssignments?: Array<{
+    teamId: string
+    isPrimary: boolean
+    roleKey: string
+    assignedAt: string
+    team: { id: string; name: string | null; organization_id: string } | null
+  }>
+  team_ids?: string[]
+  primary_team_id?: string | null
+  created_by?: { id: string; username: string | null; display_name: string | null } | null
+}
+
+/** Office list jobs response */
+export interface OfficeListJobsResponse {
+  jobs: OfficeJob[]
+  total: number
+}
+
 export class Jobs extends Resource {
   async list(params?: JobListParams): Promise<JobListResponse> {
     const res = await this.get<JobListApiResponse>('/v1/jobs', params as Record<string, unknown>)
@@ -186,6 +231,17 @@ export class Jobs extends Resource {
       limit: limit ?? 5,
       offset: 0,
     }
+  }
+
+  /**
+   * List jobs (office role). Supports organization_id, status, team_id, myTeamsOnly filters.
+   */
+  async officeListJobs(params?: OfficeListJobsParams): Promise<OfficeListJobsResponse> {
+    const res = await this.get<{ data: OfficeListJobsResponse }>(
+      '/v1/office/jobs',
+      params as Record<string, unknown>
+    )
+    return res.data ?? { jobs: [], total: 0 }
   }
 
   async filterOptions(): Promise<{

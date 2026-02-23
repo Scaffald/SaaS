@@ -1,6 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
-import { api } from '@scf/core/utils/api'
 import {
   useBackgroundCheckPackages,
   useRequestBackgroundCheckMutation,
@@ -24,7 +23,7 @@ import { Button, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@scaf
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
 type WorkerSummary = Worker
-type JobSummary = RouterOutputs['office']['listJobs']['jobs'][number]
+type JobSummary = OfficeJob
 type OrganizationSummary = RouterOutputs['office']['getOrganizations']['organizations'][number]
 
 type PaymentSession = {
@@ -93,19 +92,14 @@ export function OrganizationBackgroundCheckRequestForm() {
     [workersQuery.data?.workers]
   )
 
-  // NOTE: Keep in tRPC - office.listJobs supports organization_id filtering (admin operation)
-  // Public SDK Jobs resource doesn't support organization_id filter yet
-  const jobsQuery = api.office.listJobs.useQuery(
+  const jobsQuery = useOfficeListJobs(
     {
       organization_id: organizationId ?? undefined,
       status: 'open',
       limit: 100,
       offset: 0,
     },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 60 * 1000,
-    }
+    { enabled: Boolean(organizationId), staleTime: 60 * 1000 }
   )
   const jobs = useMemo<JobSummary[]>(() => jobsQuery.data?.jobs ?? [], [jobsQuery.data?.jobs])
 

@@ -11,7 +11,10 @@ import type { GetWorkersParams } from '@scaffald/sdk/resources/workers'
  * Get all workers with optional filtering
  * Public endpoint for worker discovery
  */
-export function useWorkers(params?: GetWorkersParams, options?: { enabled?: boolean }) {
+export function useWorkers(
+  params?: GetWorkersParams,
+  options?: { enabled?: boolean; staleTime?: number }
+) {
   const client = useScaffaldJobsClient()
   return useQuery({
     queryKey: ['workers', 'list', params],
@@ -20,7 +23,7 @@ export function useWorkers(params?: GetWorkersParams, options?: { enabled?: bool
       return client.workers.getWorkers(params)
     },
     enabled: !!client && options?.enabled !== false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: options?.staleTime ?? 5 * 60 * 1000,
   })
 }
 
