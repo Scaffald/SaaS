@@ -233,6 +233,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace packages
+        run: |
+          pnpm --filter @scaffald/sdk build
+          pnpm --filter @scaffald/ui build
+
       - name: Run TypeScript type check
         run: |
           cd apps/scaffald
