@@ -8,6 +8,7 @@ packages:
 
 catalog:
   '@biomejs/biome': ~2.3.14
+  '@react-native-async-storage/async-storage': 2.2.0
   react-dropzone: ~14.3.8
   react-dom: ^19.2.0
   typescript: ~5.9.3
