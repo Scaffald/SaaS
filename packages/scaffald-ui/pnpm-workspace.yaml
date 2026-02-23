@@ -1,5 +1,13 @@
 # Enables standalone use when this package is synced to Scaffald/ui.
-# In the monorepo, the root pnpm-workspace.yaml takes precedence.
+# Catalog entries are required because package.json uses "catalog:" and
+# the standalone repo has no monorepo catalog. In the monorepo, the root
+# pnpm-workspace.yaml takes precedence.
 packages:
   - '.'
   - 'docs-site'
+
+catalog:
+  '@biomejs/biome': ~2.3.14
+  react-dropzone: ~14.3.8
+  react-dom: ^19.2.0
+  typescript: ~5.9.3
