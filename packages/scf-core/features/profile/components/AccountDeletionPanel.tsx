@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
 import { useToast } from '@scaffald/ui'
+import { useRequestWorkerDeletionMutation } from '@scf/core/utils/account-deletion-sdk-hooks'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -19,7 +19,7 @@ export function AccountDeletionPanel() {
   const [confirmText, setConfirmText] = useState('')
   const toast = useToast()
 
-  const deletionMutation = api.accountDeletion.requestWorkerDeletion.useMutation({
+  const deletionMutation = useRequestWorkerDeletionMutation({
     onSuccess: () => {
       toast.show('Account deletion requested', {
         message:

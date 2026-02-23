@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
 import { useToast, useThemeContext } from '@scaffald/ui'
+import { useRequestOrganizationDeletionMutation } from '@scf/core/utils/account-deletion-sdk-hooks'
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -25,7 +25,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
   const toast = useToast()
   const { theme } = useThemeContext()
 
-  const deletionMutation = api.accountDeletion.requestOrganizationDeletion.useMutation({
+  const deletionMutation = useRequestOrganizationDeletionMutation({
     onSuccess: () => {
       toast.show('Organization deletion requested', {
         message:

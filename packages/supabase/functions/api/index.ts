@@ -46,6 +46,7 @@ import newsRouter from "./routes/news.ts";
 import documentsStorageRouter from "./routes/documents-storage.ts";
 import legalAgreementsRouter from "./routes/legal-agreements.ts";
 import notificationsAdminRouter from "./routes/notifications-admin.ts";
+import accountDeletionRouter from "./routes/account-deletion.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
@@ -121,6 +122,7 @@ app.route("/v1/news", newsRouter); // Cached news articles by industry
 app.route("/v1/documents/storage-preference", documentsStorageRouter); // User document storage preference
 app.route("/v1/legal-agreements", legalAgreementsRouter); // Legal agreements / violation reports (office)
 app.route("/v1/notifications/admin", notificationsAdminRouter); // Notifications admin (office)
+app.route("/v1/account-deletion", accountDeletionRouter); // Account deletion requests
 
 // OpenAPI documentation
 app.route("/", openapi);
