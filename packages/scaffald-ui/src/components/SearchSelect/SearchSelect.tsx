@@ -22,7 +22,6 @@
  * ```
  */
 
-import { useState, useMemo, useCallback, useRef } from 'react'
 import {
   View,
   TextInput,
@@ -34,6 +33,8 @@ import {
 } from 'react-native'
 import type { SearchSelectProps, SearchSelectOption } from './SearchSelect.types'
 import { useThemeContext } from '../../theme'
+import { useStyles } from '../../hooks'
+import { useSearchSelect } from './useSearchSelect'
 import { colors } from '../../tokens/colors'
 import { borderRadius, borderWidth } from '../../tokens/borders'
 import { spacing } from '../../tokens/spacing'
@@ -70,103 +71,19 @@ export function SearchSelect({
   testID,
 }: SearchSelectProps) {
   const { theme } = useThemeContext()
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const inputRef = useRef<TextInput>(null)
+  
+  const select = useSearchSelect({
+    options,
+    value,
+    onChange,
+    multiple,
+    searchable,
+    disabled,
+    filterFunction,
+  })
 
-  // Normalize value to array for consistent handling
-  const selectedValues = useMemo(() => {
-    if (!value) return []
-    return Array.isArray(value) ? value : [value]
-  }, [value])
-
-  // Filter options based on search query
-  const filteredOptions = useMemo(() => {
-    if (!searchQuery) return options
-
-    const query = searchQuery.toLowerCase()
-
-    if (filterFunction) {
-      return options.filter((option) => filterFunction(option, searchQuery))
-    }
-
-    return options.filter(
-      (option) =>
-        option.label.toLowerCase().includes(query) ||
-        option.description?.toLowerCase().includes(query)
-    )
-  }, [options, searchQuery, filterFunction])
-
-  // Group options if they have group property
-  const groupedOptions = useMemo(() => {
-    const groups: Record<string, SearchSelectOption[]> = {}
-    const ungrouped: SearchSelectOption[] = []
-
-    filteredOptions.forEach((option) => {
-      if (option.group) {
-        if (!groups[option.group]) {
-          groups[option.group] = []
-        }
-        groups[option.group].push(option)
-      } else {
-        ungrouped.push(option)
-      }
-    })
-
-    return { groups, ungrouped }
-  }, [filteredOptions])
-
-  // Get display text for selected values
-  const displayText = useMemo(() => {
-    if (selectedValues.length === 0) return ''
-
-    if (multiple && selectedValues.length > 1) {
-      return `${selectedValues.length} selected`
-    }
-
-    const selectedOption = options.find((o) => o.value === selectedValues[0])
-    return selectedOption?.label || ''
-  }, [selectedValues, options, multiple])
-
-  // Handle option selection
-  const handleSelect = useCallback(
-    (optionValue: string) => {
-      if (multiple) {
-        const newValues = selectedValues.includes(optionValue)
-          ? selectedValues.filter((v) => v !== optionValue)
-          : [...selectedValues, optionValue]
-        onChange?.(newValues)
-      } else {
-        onChange?.(optionValue)
-        setIsOpen(false)
-        setSearchQuery('')
-      }
-    },
-    [multiple, selectedValues, onChange]
-  )
-
-  // Handle clear
-  const handleClear = useCallback(() => {
-    onChange?.(multiple ? [] : '')
-    setSearchQuery('')
-  }, [multiple, onChange])
-
-  // Handle open/close
-  const handleToggle = useCallback(() => {
-    if (disabled) return
-    setIsOpen((prev) => !prev)
-    if (!isOpen && searchable) {
-      setTimeout(() => inputRef.current?.focus(), 100)
-    }
-  }, [disabled, isOpen, searchable])
-
-  const handleClose = useCallback(() => {
-    setIsOpen(false)
-    setSearchQuery('')
-  }, [])
-
-  const styles = getStyles(theme, size, disabled, error || !!errorMessage, isOpen)
   const hasError = error || !!errorMessage
+  const styles = useStyles(getStyles, [theme, size, disabled, hasError, select.isOpen] as const)
 
   return (
     <View style={[styles.container, style]} testID={testID}>
@@ -179,45 +96,45 @@ export function SearchSelect({
       {/* Trigger */}
       <Pressable
         style={styles.trigger}
-        onPress={handleToggle}
+        onPress={select.handleToggle}
         disabled={disabled}
         accessibilityRole="button"
-        accessibilityState={{ expanded: isOpen, disabled }}
+        accessibilityState={{ expanded: select.isOpen, disabled }}
       >
-        {isOpen && searchable ? (
+        {select.isOpen && searchable ? (
           <TextInput
-            ref={inputRef}
+            ref={select.inputRef}
             style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
+            value={select.searchQuery}
+            onChangeText={select.setSearchQuery}
             placeholder={searchPlaceholder}
             placeholderTextColor={colors.text[theme].tertiary}
             autoFocus
           />
         ) : (
           <RNText
-            style={displayText ? styles.displayText : [styles.displayText, styles.placeholder]}
+            style={select.displayText ? styles.displayText : [styles.displayText, styles.placeholder]}
             numberOfLines={1}
           >
-            {displayText || placeholder}
+            {select.displayText || placeholder}
           </RNText>
         )}
 
         <View style={styles.icons}>
-          {clearable && selectedValues.length > 0 && !disabled && (
-            <Pressable onPress={handleClear} hitSlop={8}>
+          {clearable && select.selectedValues.length > 0 && !disabled && (
+            <Pressable onPress={select.handleClear} hitSlop={8}>
               <Text style={styles.clearIcon}>×</Text>
             </Pressable>
           )}
-          <Text style={styles.chevron}>{isOpen ? '▲' : '▼'}</Text>
+          <Text style={styles.chevron}>{select.isOpen ? '▲' : '▼'}</Text>
         </View>
       </Pressable>
 
       {/* Dropdown */}
-      {isOpen && (
+      {select.isOpen && (
         <>
           {/* Backdrop */}
-          <Pressable style={styles.backdrop} onPress={handleClose} />
+          <Pressable style={styles.backdrop} onPress={select.handleClose} />
 
           {/* Options list */}
           <View style={styles.dropdown}>
@@ -232,7 +149,7 @@ export function SearchSelect({
                     {loadingText}
                   </Text>
                 </View>
-              ) : filteredOptions.length === 0 ? (
+              ) : select.filteredOptions.length === 0 ? (
                 <View style={styles.noResults}>
                   <Text size="sm" color="secondary">
                     {noResultsText}
@@ -241,12 +158,12 @@ export function SearchSelect({
               ) : (
                 <>
                   {/* Ungrouped options */}
-                  {groupedOptions.ungrouped.map((option) => (
+                  {select.groupedOptions.ungrouped.map((option) => (
                     <OptionItem
                       key={option.value}
                       option={option}
-                      isSelected={selectedValues.includes(option.value)}
-                      onSelect={handleSelect}
+                      isSelected={select.selectedValues.includes(option.value)}
+                      onSelect={select.handleSelect}
                       theme={theme}
                       multiple={multiple}
                       renderOption={renderOption}
@@ -254,7 +171,7 @@ export function SearchSelect({
                   ))}
 
                   {/* Grouped options */}
-                  {Object.entries(groupedOptions.groups).map(([group, groupOptions]) => (
+                  {Object.entries(select.groupedOptions.groups).map(([group, groupOptions]) => (
                     <View key={group}>
                       <View style={styles.groupHeader}>
                         <Text size="xs" weight="medium" color="secondary">
@@ -265,8 +182,8 @@ export function SearchSelect({
                         <OptionItem
                           key={option.value}
                           option={option}
-                          isSelected={selectedValues.includes(option.value)}
-                          onSelect={handleSelect}
+                          isSelected={select.selectedValues.includes(option.value)}
+                          onSelect={select.handleSelect}
                           theme={theme}
                           multiple={multiple}
                           renderOption={renderOption}
@@ -315,7 +232,7 @@ function OptionItem({
   multiple,
   renderOption,
 }: OptionItemProps) {
-  const styles = getOptionStyles(theme, isSelected, option.disabled)
+  const styles = useStyles(getOptionStyles, [theme, isSelected, option.disabled] as const)
 
   if (renderOption) {
     return (

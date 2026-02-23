@@ -28,6 +28,7 @@ import {
 } from 'lucide-react-native'
 import type { TableCellProps } from './TableCell.types'
 import { getTableCellStyles } from './TableCell.styles'
+import { useStyles } from '../../hooks'
 import { useThemeContext } from '../../theme'
 import { Checkbox } from '../Checkbox'
 import { Radio } from '../Radio'
@@ -108,13 +109,13 @@ export function TableCell(props: TableCellProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   // Get styles for current type, state, and theme
-  const styles = getTableCellStyles(
+  const styles = useStyles(getTableCellStyles, [
     type,
     isHovered && state === 'default' ? 'hover' : state,
     align,
     theme,
     width
-  )
+  ] as const)
 
   // Handle selection change
   const handleSelectionChange = (newChecked: boolean) => {

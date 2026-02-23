@@ -14,6 +14,7 @@ import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../theme'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
+import { useHaptics } from '../../platform/useHaptics'
 
 export function ToggleStatic({
   checked: checkedProp,
@@ -42,6 +43,7 @@ export function ToggleStatic({
 
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
+  const haptics = useHaptics()
 
   const sizeConfig = {
     sm: {
@@ -62,6 +64,7 @@ export function ToggleStatic({
 
   const handlePress = () => {
     if (disabled) return
+    haptics.impact('light')
     const newValue = !checked
     if (!isControlled) setInternalChecked(newValue)
     onChange?.(newValue)

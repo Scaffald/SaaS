@@ -33,6 +33,7 @@ import { useState, useMemo } from 'react'
 import { View, Text, ScrollView, Pressable, Platform } from 'react-native'
 import type { TableProps, TableSortConfig, TableSelectionConfig, TableExpansionConfig } from './Table.types'
 import { getTableStyles } from './Table.styles'
+import { useStyles } from '../../hooks'
 import { useThemeContext } from '../../theme'
 import { TableColumnHeader } from './TableColumnHeader'
 import { TableCell } from './TableCell'
@@ -81,7 +82,7 @@ export function Table({
   getRowId: getRowIdProp,
 }: TableProps) {
   const { theme } = useThemeContext()
-  const styles = getTableStyles(theme)
+  const styles = useStyles(getTableStyles, [theme] as const)
 
   // Internal state for uncontrolled mode
   const [internalSearchValue, setInternalSearchValue] = useState('')

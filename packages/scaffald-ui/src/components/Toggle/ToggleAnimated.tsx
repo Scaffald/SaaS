@@ -15,6 +15,7 @@ import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../theme'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
+import { useHaptics } from '../../platform/useHaptics'
 import { AnimatedView } from '../../animation'
 import {
   useSharedValueAsserted,
@@ -52,6 +53,7 @@ export function ToggleAnimated({
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
   const prefersReducedMotion = useReducedMotion()
+  const haptics = useHaptics()
 
   const sizeConfig = {
     sm: {
@@ -89,6 +91,7 @@ export function ToggleAnimated({
 
   const handlePress = () => {
     if (disabled) return
+    haptics.impact('light')
     const newValue = !checked
     if (!isControlled) setInternalChecked(newValue)
     onChange?.(newValue)

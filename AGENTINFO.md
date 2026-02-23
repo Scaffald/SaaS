@@ -16,6 +16,7 @@
 - [Testing](#testing)
 - [Code Quality](#code-quality)
 - [Deployment](#deployment)
+- [Publishing](#publishing)
 
 ---
 
@@ -41,6 +42,7 @@
 - **Main App**: `apps/scaffald` - Expo app (iOS, Android, Web)
 - **Web Apps**: `apps/forsured-web` - Vite web app
 - **SDK**: `packages/scaffald-sdk` - Published npm package
+- **UI**: `packages/scaffald-ui` - Published npm package (`@scaffald/ui`)
 - **Core**: `packages/scf-core` - Shared business logic
 - **Supabase**: `packages/supabase` - Database, migrations, edge functions
 
@@ -58,6 +60,7 @@ UNI-Construct/
 │
 ├── packages/
 │   ├── scaffald-sdk/          # @scaffald/sdk - Published SDK
+│   ├── scaffald-ui/           # @scaffald/ui - Published UI framework
 │   ├── scf-core/              # @scf/core - Shared features
 │   ├── scf-schemas/           # Zod schemas
 │   ├── scf-trpc/              # tRPC routers (internal API)
@@ -706,7 +709,7 @@ pnpm preview:forsured
 
 ```bash
 # EAS build
-cd apps/expo
+cd apps/scaffald
 eas build --platform ios
 eas build --platform android
 
@@ -742,11 +745,44 @@ pnpm --filter @scaffald/sdk publish --access public
 
 ---
 
+## Publishing
+
+### Published Packages
+
+| Package | Location | CI Workflow | Trigger |
+|---------|----------|-------------|---------|
+| `@scaffald/ui` | `packages/scaffald-ui` | `semantic-release-ui.yml` | Push to `main` when `packages/scaffald-ui/**` changes |
+| `@scaffald/sdk` | `packages/scaffald-sdk` | `semantic-release-sdk.yml` | Push to `main` when `packages/scaffald-sdk/**` changes |
+
+### NPM_TOKEN Requirement
+
+Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in GitHub repository secrets.
+
+- **Verify**: GitHub repo → Settings → Secrets and variables → Actions → ensure `NPM_TOKEN` exists
+- **Scope**: Automation token with publish access for `@scaffald` org/package
+- **Used by**: `semantic-release-ui.yml`, `semantic-release-sdk.yml`
+
+### scaffald-ui Release Workflow
+
+1. Make changes in `packages/scaffald-ui/` (exclude `docs-site/` and `.md`-only changes to trigger release)
+2. Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, or `BREAKING CHANGE:` for version bumps
+3. Push to `main` — CI runs semantic-release, publishes to npm, and creates `ui-vX.Y.Z` tag
+4. Manual trigger: GitHub Actions → "Release @scaffald/ui" → "Run workflow"
+
+### Root Release (App Version)
+
+- **Workflow**: `release.yml` on every push to `main`
+- **Updates**: `apps/scaffald/package.json` version, `CHANGELOG.md`, GitHub release
+- **Concurrency**: All release workflows use `release-${{ github.ref }}` to avoid overlapping git pushes
+
+---
+
 ## Additional Resources
 
 - **Main README**: `/README.md`
 - **Supabase README**: `/packages/supabase/README.md`
 - **SDK README**: `/packages/scaffald-sdk/README.md`
+- **UI README**: `/packages/scaffald-ui/README.md`
 - **O*NET Database**: `/packages/supabase/onet/README.md`
 - **Tests README**: `/tests/README.md`
 

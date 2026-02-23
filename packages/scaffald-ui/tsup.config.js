@@ -4,6 +4,9 @@ module.exports = defineConfig({
   entry: {
     index: 'src/index.ts',
     'tokens/index': 'src/tokens/index.ts',
+    chart: 'src/chart.ts',
+    'rich-text-editor': 'src/rich-text-editor.ts',
+    maps: 'src/maps.ts',
   },
   format: ['esm', 'cjs'],
   dts: true,

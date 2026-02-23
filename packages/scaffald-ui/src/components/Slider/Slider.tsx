@@ -11,6 +11,7 @@ import type { SliderProps } from './Slider.types'
 import { SliderTrack } from './SliderTrack'
 import { SliderHandle } from './SliderHandle'
 import { SliderTooltip } from './SliderTooltip'
+import { useHaptics } from '../../platform/useHaptics'
 
 export function Slider({
   value: valueProp,
@@ -47,6 +48,9 @@ export function Slider({
   // Track layout state
   const [trackWidth, setTrackWidth] = useState(0)
   const trackRef = useRef<View>(null)
+
+  // Haptics
+  const haptics = useHaptics()
 
   // Drag state
   const [isDragging, setIsDragging] = useState(false)
@@ -93,6 +97,7 @@ export function Slider({
       trackRef.current?.measureInWindow((trackX, _pageY, _width, _height) => {
         const relativeX = pageX - trackX
         const newValue = calculateValue(relativeX)
+        haptics.impact('light')
 
         if (isRange) {
           // For range: determine which handle is closer and update that one
@@ -138,8 +143,9 @@ export function Slider({
       if (disabled) return
       setIsDragging(true)
       setActiveHandle(handleType === 'single' ? null : handleType)
+      haptics.selection()
     },
-    [disabled]
+    [disabled, haptics]
   )
 
   // Handle drag move

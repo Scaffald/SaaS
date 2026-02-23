@@ -22,6 +22,7 @@ import {
   getCardFooterStyles,
   getCardMediaStyles,
 } from './Card.styles'
+import { useStyles } from '../../hooks'
 
 // ============================================================================
 // Card Component
@@ -98,7 +99,7 @@ export function Card({
   }, [onPressOut])
 
   // Get styles from factory function
-  const styles = getCardStyles(variant, padding, radius, elevation, isPressed, disabled)
+  const styles = useStyles(getCardStyles, [variant, padding, radius, elevation, isPressed, disabled] as const)
   const deprecatedStyle = [
     backgroundColor !== undefined && { backgroundColor },
     borderColor !== undefined && { borderColor },
@@ -159,7 +160,7 @@ export function CardHeader({
   action,
   style,
 }: CardHeaderProps): React.ReactElement {
-  const styles = getCardHeaderStyles()
+  const styles = useStyles(getCardHeaderStyles, [] as const)
 
   // If custom children provided, render them
   if (children && !title) {
@@ -201,7 +202,7 @@ export function CardContent({
   padding = 'md',
   style,
 }: CardContentProps): React.ReactElement {
-  const styles = getCardContentStyles(padding)
+  const styles = useStyles(getCardContentStyles, [padding] as const)
   return <View style={[styles.content, style]}>{children}</View>
 }
 
@@ -223,7 +224,7 @@ export function CardFooter({
   align = 'right',
   style,
 }: CardFooterProps): React.ReactElement {
-  const styles = getCardFooterStyles(align)
+  const styles = useStyles(getCardFooterStyles, [align] as const)
   return (
     <View style={[styles.footer, style]}>
       <View style={styles.footerInner}>{children}</View>
@@ -250,7 +251,7 @@ export function CardMedia({
   height = 200,
   style,
 }: CardMediaProps): React.ReactElement {
-  const styles = getCardMediaStyles(height)
+  const styles = useStyles(getCardMediaStyles, [height] as const)
   return (
     <Image
       source={source}

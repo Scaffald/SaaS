@@ -32,6 +32,7 @@ import { ChevronRight, ArrowUpRight, Check } from 'lucide-react-native'
 import type { ListItemProps } from './ListItem.types'
 import { getListItemStyles } from './ListItem.styles'
 import { useThemeContext } from '../../theme'
+import { useStyles } from '../../hooks'
 import { Avatar } from '../Avatar'
 import { Button } from '../Button'
 import { Chip } from '../Chip'
@@ -44,7 +45,7 @@ import { typographyVariants } from '../../tokens/typography'
 export function ListItem(props: ListItemProps) {
   const { theme } = useThemeContext()
   const { variant, onPress, style, accessibilityLabel } = props
-  const styles = getListItemStyles(variant, theme)
+  const styles = useStyles(getListItemStyles, [variant, theme] as const)
 
   // Render based on variant
   const renderContent = () => {

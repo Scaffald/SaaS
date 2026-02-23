@@ -18,7 +18,7 @@ const packageConfig = {
     ],
   },
   test: {
-    include: ['packages/beyond-ui/src/**/*.{test,spec}.{ts,tsx}'],
+    include: ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**'],
     setupFiles: [resolve(packageRoot, 'vitest.setup.ts')],
     coverage: {

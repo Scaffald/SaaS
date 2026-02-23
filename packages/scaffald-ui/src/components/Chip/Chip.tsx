@@ -32,7 +32,8 @@
  */
 
 import { useMemo } from 'react'
-import { View, Pressable, Text, StyleSheet, type GestureResponderEvent } from 'react-native'
+import { View, Text, StyleSheet, type GestureResponderEvent } from 'react-native'
+import { AnimatedPressable } from '../../animation'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -265,16 +266,15 @@ export function Chip({
         : colors.icon.dark.default
 
     return (
-      <Pressable
+      <AnimatedPressable
         onPress={handleClose}
         disabled={disabled}
-        style={({ pressed }) => [
+        style={[
           styles.closeButton,
           {
             width: sizeConfig.iconSize,
             height: sizeConfig.iconSize,
           },
-          pressed && !disabled && { opacity: 0.7 },
         ]}
         hitSlop={4}
       >
@@ -299,15 +299,15 @@ export function Chip({
             ]}
           />
         </View>
-      </Pressable>
+      </AnimatedPressable>
     )
   }
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={handlePress}
       disabled={disabled}
-      style={[...chipStyles, style]}
+      style={style ? [...chipStyles, style] : chipStyles}
       {...interactiveProps}
       {...pressableProps}
     >
@@ -322,7 +322,7 @@ export function Chip({
       )}
 
       {renderCloseIcon()}
-    </Pressable>
+    </AnimatedPressable>
   )
 }
 

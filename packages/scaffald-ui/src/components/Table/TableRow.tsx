@@ -19,6 +19,7 @@
 import { useState } from 'react'
 import { Pressable, } from 'react-native'
 import { getTableStyles } from './Table.styles'
+import { useStyles } from '../../hooks'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 
@@ -60,8 +61,8 @@ export function TableRow({
   const expanded =
     controlledExpanded !== undefined ? controlledExpanded : internalExpanded
 
-  const _styles = getTableStyles(theme)
-  const rowStyles = getRowStyles(selected, expanded, theme)
+  const _styles = useStyles(getTableStyles, [theme] as const)
+  const rowStyles = useStyles(getRowStyles, [selected, expanded, theme] as const)
 
   const handlePress = () => {
     if (onPress) {
