@@ -337,3 +337,38 @@ export interface DeleteResponse {
 export interface RolesListResponse {
   roles: TeamRole[]
 }
+
+/**
+ * A daily analytics metric record for a team
+ */
+export interface TeamDailyMetric {
+  id: string
+  teamId: string
+  organizationId: string
+  date: string
+  members: { total: number; active: number; pending: number }
+  jobs: { active: number }
+  applications: { active: number; reviewed: number; escalated: number }
+  invitations: { pending: number }
+  timeToFirstReview: { averageSeconds: number | null; medianSeconds: number | null }
+  workloadPressureScore: number | null
+  metadata: Record<string, unknown>
+  capturedAt: string
+  createdAt: string
+}
+
+/**
+ * Params for getting team analytics overview
+ */
+export interface GetTeamAnalyticsOverviewParams {
+  startDate?: string
+  endDate?: string
+  limit?: number
+}
+
+/**
+ * Response from team analytics overview
+ */
+export interface TeamAnalyticsOverviewResponse {
+  metrics: TeamDailyMetric[]
+}

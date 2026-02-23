@@ -1110,4 +1110,67 @@ app.openapi(deleteJobAssignmentRoute, async (c) => {
   }
 })
 
+// ============================================================================
+// Analytics
+// ============================================================================
+
+app.get('/:teamId/analytics/overview', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  const { startDate, endDate, limit: limitStr } = c.req.query()
+  const limit = limitStr ? Math.min(Number(limitStr), 90) : 30
+
+  let query = supabaseAdmin
+    .schema('core')
+    .from('team_daily_metrics')
+    .select(
+      `id, organization_id, team_id, metric_date, members_total, members_active,
+       members_pending, jobs_active, applications_active, applications_reviewed,
+       applications_escalated, pending_invitations, avg_time_to_first_review_seconds,
+       median_time_to_first_review_seconds, workload_pressure_score, metadata,
+       created_at, updated_at`
+    )
+    .eq('team_id', teamId)
+    .order('metric_date', { ascending: false })
+    .limit(limit)
+
+  if (startDate) query = query.gte('metric_date', startDate.slice(0, 10))
+  if (endDate) query = query.lte('metric_date', endDate.slice(0, 10))
+
+  const { data, error } = await query
+  if (error) return c.json({ error: 'Failed to load analytics', message: error.message }, 500)
+
+  const metrics = (data ?? []).map((record: Record<string, unknown>) => ({
+    id: record.id as string,
+    teamId: record.team_id as string,
+    organizationId: record.organization_id as string,
+    date: record.metric_date as string,
+    members: {
+      total: Number(record.members_total ?? 0),
+      active: Number(record.members_active ?? 0),
+      pending: Number(record.members_pending ?? 0),
+    },
+    jobs: { active: Number(record.jobs_active ?? 0) },
+    applications: {
+      active: Number(record.applications_active ?? 0),
+      reviewed: Number(record.applications_reviewed ?? 0),
+      escalated: Number(record.applications_escalated ?? 0),
+    },
+    invitations: { pending: Number(record.pending_invitations ?? 0) },
+    timeToFirstReview: {
+      averageSeconds: record.avg_time_to_first_review_seconds as number | null,
+      medianSeconds: record.median_time_to_first_review_seconds as number | null,
+    },
+    workloadPressureScore: record.workload_pressure_score as number | null,
+    metadata: (record.metadata as Record<string, unknown> | null) ?? {},
+    capturedAt: record.updated_at as string,
+    createdAt: record.created_at as string,
+  }))
+
+  return c.json({ metrics })
+})
+
 export default app

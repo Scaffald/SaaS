@@ -1,19 +1,14 @@
 import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
 
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { InquiryDetails } from '@scf/core/utils/inquiry-capability-types'
 import { Button, Stack } from '@scaffald/ui'
-import type { inferRouterOutputs } from '@trpc/server'
-
-type InquiryQueryOutput = NonNullable<
-  inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
->
 
 interface InquiryTabProps {
   applicationId: string
   candidateName: string
   jobTitle: string
-  data: InquiryQueryOutput
+  data: InquiryDetails
   onEditInquiry?: () => void
   editLabel?: string
 }
@@ -40,12 +35,12 @@ export function InquiryTab({
 
       <InquiryViewOrganization
         applicationId={applicationId}
-        inquiryId={inquiry.id}
+        inquiryId={inquiry.id as string}
         candidateName={candidateName}
         jobTitle={jobTitle}
       />
 
-      <InquiryHistoryTimeline inquiryId={inquiry.id} />
+      <InquiryHistoryTimeline inquiryId={inquiry.id as string} />
     </Stack>
   )
 }

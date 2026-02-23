@@ -25,6 +25,8 @@ import type {
   TeamInvitationResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  GetTeamAnalyticsOverviewParams,
+  TeamAnalyticsOverviewResponse,
 } from '@scaffald/sdk'
 
 // ============================================================================
@@ -440,5 +442,26 @@ export function useDeleteTeamJobAssignmentMutation(
       queryClient.invalidateQueries({ queryKey: ['teams', id, 'job-assignments'] })
     },
     ...options,
+  })
+}
+
+/**
+ * Get analytics overview for a team
+ */
+export function useTeamAnalyticsOverview(
+  teamId: string | undefined,
+  params?: GetTeamAnalyticsOverviewParams,
+  options?: { enabled?: boolean; placeholderData?: (prev: TeamAnalyticsOverviewResponse | undefined) => TeamAnalyticsOverviewResponse | undefined }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['teams', teamId, 'analytics', 'overview', params],
+    queryFn: async () => {
+      if (!client || !teamId) throw new Error('Missing client or teamId')
+      return client.teams.getAnalyticsOverview(teamId, params)
+    },
+    enabled: !!client && !!teamId && options?.enabled !== false,
+    staleTime: 5 * 60 * 1000,
+    placeholderData: options?.placeholderData,
   })
 }

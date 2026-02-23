@@ -1,14 +1,15 @@
 import { InquiryCreateForm } from '@scf/core/features/inquiries/components/InquiryCreateForm'
 import { api } from '@scf/core/utils/api'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useSuccessFeeStatus } from '@scf/core/utils/success-fees-sdk-hooks'
+import { useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
 import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { TeamMember } from '@scaffald/sdk'
 import { ResponsiveModal } from '@scaffald/ui'
 import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Button, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
@@ -19,13 +20,8 @@ import { MessagesTab } from './MessagesTab'
 import { NotesTab } from './NotesTab'
 import { colors } from '@scaffald/ui/tokens'
 
-type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type MemberRecord = NonNullable<MembersListOutput['members']>[number]
-type InquiryQueryOutput = inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
-
-const mapInquiryToFormValues = (
-  inquiry: NonNullable<InquiryQueryOutput>['inquiry']
-): InquiryCreateInput => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInput => ({
   applicationId: inquiry.application_id,
   employmentType: (inquiry.employment_type as InquiryCreateInput['employmentType']) ?? undefined,
   employmentTypeNegotiable: inquiry.employment_type_negotiable ?? true,
@@ -99,11 +95,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       : 'This candidate does not have a linked worker account yet.'
 
   // Check if there's an inquiry for this application
-  const { data: inquiryData, isLoading: isInquiryLoading } =
-    api.inquiries.getByApplication.useQuery(
-      { applicationId: application?.id || '' },
-      { enabled: !!application?.id && open }
-    )
+  const { data: inquiryData, isLoading: isInquiryLoading } = useInquiryByApplication(
+    application?.id,
+    { enabled: !!application?.id && open }
+  )
   const hasInquiry = !!inquiryData?.inquiry
   const [inquiryMode, setInquiryMode] = useState<'view' | 'create' | 'edit'>(
     hasInquiry ? 'view' : 'create'
@@ -129,16 +124,13 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const toast = useToast()
   const queryClient = useQueryClient()
 
-  const membersQuery = api.teams.members.list.useQuery(
-    { teamId: teamIdForQuery },
-    { enabled: Boolean(teamId) }
-  )
+  const membersQuery = useTeamMembers(teamIdForQuery, { enabled: Boolean(teamId) })
 
   const mentionOptions = useMemo((): Array<{ id: string; label: string }> => {
     if (!membersQuery.data?.members) return []
-    return (membersQuery.data.members as MemberRecord[])
-      .filter((member: MemberRecord) => Boolean(member.user?.id))
-      .map((member: MemberRecord) => ({
+    return membersQuery.data.members
+      .filter((member: TeamMember) => Boolean(member.user?.id))
+      .map((member: TeamMember) => ({
         id: member.user?.id as string,
         label:
           member.user?.displayName ??
@@ -387,7 +379,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
             {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
               <InquiryCreateForm
                 applicationId={application.id}
-                inquiryId={inquiryData.inquiry.id}
+                inquiryId={inquiryData.inquiry.id as string}
                 mode="edit"
                 initialData={inquiryFormValues}
                 onSuccess={handleInquirySuccess}

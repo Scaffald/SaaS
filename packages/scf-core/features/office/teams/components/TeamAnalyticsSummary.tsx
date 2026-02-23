@@ -1,7 +1,6 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useTeamAnalyticsOverview } from '@scf/core/utils/teams-sdk-hooks'
+import type { TeamDailyMetric } from '@scaffald/sdk'
 import { RefreshCw } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
 import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -15,9 +14,6 @@ const RANGE_OPTIONS = [
   { label: 'Last 7 days', value: 7 },
   { label: 'Last 30 days', value: 30 },
 ]
-
-type TeamAnalyticsOverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
-type TeamDailyMetric = NonNullable<TeamAnalyticsOverviewOutput['metrics']>[number]
 
 function formatDuration(seconds?: number | null) {
   if (!seconds || seconds <= 0) {
@@ -56,16 +52,10 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
     return end.toISOString()
   }, [now])
 
-  const analyticsQuery = api.teams.analytics.overview.useQuery(
-    {
-      teamId,
-      startDate: startDateIso,
-      endDate: endDateIso,
-      limit: range,
-    },
-    {
-      placeholderData: (previousData) => previousData,
-    }
+  const analyticsQuery = useTeamAnalyticsOverview(
+    teamId,
+    { startDate: startDateIso, endDate: endDateIso, limit: range },
+    { placeholderData: (previousData) => previousData }
   )
 
   const metrics = (analyticsQuery.data?.metrics ?? []) as TeamDailyMetric[]

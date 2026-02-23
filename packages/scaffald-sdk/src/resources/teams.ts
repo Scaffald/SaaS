@@ -23,6 +23,8 @@ import type {
   TeamJobAssignmentResponse,
   DeleteResponse,
   RolesListResponse,
+  GetTeamAnalyticsOverviewParams,
+  TeamAnalyticsOverviewResponse,
 } from '../types/teams.js'
 
 /**
@@ -448,5 +450,22 @@ export class Teams extends Resource {
    */
   async deleteJobAssignment(id: string, assignmentId: string): Promise<DeleteResponse> {
     return this.del<DeleteResponse>(`/v1/teams/${id}/jobs/${assignmentId}`)
+  }
+
+  /**
+   * Get analytics overview for a team
+   */
+  async getAnalyticsOverview(
+    id: string,
+    params?: GetTeamAnalyticsOverviewParams
+  ): Promise<TeamAnalyticsOverviewResponse> {
+    const query = new URLSearchParams()
+    if (params?.startDate) query.set('startDate', params.startDate)
+    if (params?.endDate) query.set('endDate', params.endDate)
+    if (params?.limit) query.set('limit', String(params.limit))
+    const qs = query.toString()
+    return this.get<TeamAnalyticsOverviewResponse>(
+      `/v1/teams/${id}/analytics/overview${qs ? `?${qs}` : ''}`
+    )
   }
 }

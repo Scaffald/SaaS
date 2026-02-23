@@ -261,6 +261,9 @@ export type {
   TeamJobAssignmentResponse,
   DeleteResponse,
   RolesListResponse,
+  TeamDailyMetric,
+  GetTeamAnalyticsOverviewParams,
+  TeamAnalyticsOverviewResponse,
 } from './types/teams.js'
 
 export type {
