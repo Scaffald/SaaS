@@ -76,7 +76,7 @@ export function DiscoverJobsLeft({
   // If soft skills filter is active, filter internal jobs to only matching ones
   if (shouldUseSoftSkillsMatch && matchingJobs.length > 0) {
     const matchingJobIds = new Set(matchingJobs.map((j: { jobId: string }) => j.jobId))
-    internalJobs = internalJobs.filter((job: InternalJob) => matchingJobIds.has(job.id))
+    internalJobs = internalJobs.filter((job) => matchingJobIds.has(job.id))
   }
 
   // Create a set of job IDs user has applied to
@@ -100,8 +100,8 @@ export function DiscoverJobsLeft({
 
   // Combine and filter both job types
   const mixedJobs: MixedJob[] = [
-    ...externalJobs.map((job: ExternalJob): MixedJob => ({ type: 'external', job })),
-    ...internalJobs.map((job: InternalJob): MixedJob => ({ type: 'internal', job })),
+    ...externalJobs.map((job) => ({ type: 'external' as const, job: job as ExternalJob })),
+    ...internalJobs.map((job) => ({ type: 'internal' as const, job: job as InternalJob })),
   ]
 
   // If soft skills sort is active, sort internal jobs by match score
@@ -218,7 +218,7 @@ export function DiscoverJobsLeft({
   }
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={12} padding="md">
         <Text color="$gray11">
           {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available

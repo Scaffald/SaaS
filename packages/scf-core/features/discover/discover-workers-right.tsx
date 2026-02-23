@@ -3,12 +3,12 @@ import { useState } from 'react'
 import {
   Button,
   Input,
+  RangeSlider,
+  Row,
   ScrollView,
   Separator,
-  Slider,
-  Text,
-  Row,
   Stack,
+  Text,
 } from '@scaffald/ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
@@ -116,7 +116,7 @@ export function DiscoverWorkersRight({
   )
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
         <SearchFilterWidget
           title="Search & Filter"
@@ -140,22 +140,16 @@ export function DiscoverWorkersRight({
           {/* Scaffald Score Filter */}
           <Stack gap={12}>
             <Row justify="space-between" align="center">
-              <Text color="$gray11">Scaffald Score</Text>
-              <Text color="$blue10">{minScore}</Text>
+              <Text color="secondary">Scaffald Score</Text>
+              <Text color="primary">{minScore}</Text>
             </Row>
-            <Slider
-              value={[minScore]}
-              onValueChange={([val]) => onMinScoreChange(val)}
+            <RangeSlider
+              value={minScore}
+              onValueChange={onMinScoreChange}
               min={0}
               max={100}
               step={5}
-              width="100%"
-            >
-              <Slider.Track>
-                <Slider.TrackActive />
-              </Slider.Track>
-              <Slider.Thumb index={0} size="$0.75" />
-            </Slider>
+            />
           </Stack>
 
           <Separator />
@@ -169,12 +163,11 @@ export function DiscoverWorkersRight({
 
             <Row gap={8}>
               <Input
-                flex={1}
+                style={{ flex: 1 }}
                 placeholder="Add skill..."
                 value={skillInput}
                 onChangeText={setSkillInput}
                 onSubmitEditing={handleAddSkill}
-                size="sm"
               />
               <Button size="sm" onPress={handleAddSkill} disabled={!skillInput.trim()}>
                 Add
@@ -194,8 +187,8 @@ export function DiscoverWorkersRight({
                     align="center"
                   >
                     <Text color="$blue11">{skill}</Text>
-                    <Button size="sm" unstyled onPress={() => handleRemoveSkill(skill)}>
-                      <X size="sm" color="$blue11" />
+                    <Button size="sm" variant="text" onPress={() => handleRemoveSkill(skill)}>
+                      <X size={16} color="#1d4ed8" />
                     </Button>
                   </Row>
                 ))}
@@ -214,12 +207,11 @@ export function DiscoverWorkersRight({
 
             <Row gap={8}>
               <Input
-                flex={1}
+                style={{ flex: 1 }}
                 placeholder="Add certification..."
                 value={certificationInput}
                 onChangeText={setCertificationInput}
                 onSubmitEditing={handleAddCertification}
-                size="sm"
               />
               <Button
                 size="sm"
@@ -243,8 +235,8 @@ export function DiscoverWorkersRight({
                     align="center"
                   >
                     <Text color="$green11">{cert}</Text>
-                    <Button size="sm" unstyled onPress={() => handleRemoveCertification(cert)}>
-                      <X size="sm" color="$green11" />
+                    <Button size="sm" variant="text" onPress={() => handleRemoveCertification(cert)}>
+                      <X size={16} color="#22c55e" />
                     </Button>
                   </Row>
                 ))}

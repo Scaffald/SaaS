@@ -81,7 +81,7 @@ export function DiscoverWorkersLeft({
   }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications, currentUserId])
 
   return (
-    <Stack flex={1} overflow="hidden">
+    <Stack style={{ flex: 1, overflow: 'hidden' }}>
       <ResultList
         ref={resultListRef}
         profiles={filteredProfiles}

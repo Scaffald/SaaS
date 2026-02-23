@@ -60,7 +60,7 @@ export function usePublishedJobs(
     queryKey: ['jobs', 'published', params],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
-      return client.jobs.list({ status: 'open', ...params })
+      return client.jobs.list({ status: 'published', ...params })
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,

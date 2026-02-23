@@ -40,7 +40,7 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
   }
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={12} padding="md">
         <Text color="secondary">
           {employers.length} {employers.length === 1 ? 'Employer' : 'Employers'}
