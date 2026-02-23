@@ -920,6 +920,9 @@ importers:
 
   packages/scaffald-ui:
     dependencies:
+      '@react-native-async-storage/async-storage':
+        specifier: 'catalog:'
+        version: 2.2.0(react-native@0.83.1(@babel/core@7.29.0)(@types/react@19.2.7)(react@19.2.0))
       lucide-react-native:
         specifier: ^0.562.0
         version: 0.562.0(react-native-svg@15.15.1(react-native@0.83.1(@babel/core@7.29.0)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.83.1(@babel/core@7.29.0)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
@@ -18489,7 +18492,6 @@ snapshots:
     dependencies:
       merge-options: 3.0.4
       react-native: 0.83.1(@babel/core@7.29.0)(@types/react@19.2.7)(react@19.2.0)
-    optional: true
 
   '@react-native-community/datetimepicker@8.6.0(expo@55.0.0-preview.9)(react-native@0.83.1(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)':
     dependencies:
