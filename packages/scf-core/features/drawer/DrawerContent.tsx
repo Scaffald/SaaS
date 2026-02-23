@@ -157,7 +157,7 @@ export const DrawerContent = ({
     <Stack
       flex={1}
       backgroundColor="$color3"
-      paddingHorizontal={isCollapsed ? '$2' : '$6'}
+      paddingHorizontal={isCollapsed ? 8 : 24}
       paddingVertical={20}
       align={isCollapsed ? 'center' : 'stretch'}
     >
@@ -209,10 +209,7 @@ export const DrawerContent = ({
         </Stack>
 
         <Stack
-          paddingTop={16}
-          borderTopWidth={1}
-          borderColor="$color5"
-          width="100%"
+          style={{ paddingTop: 16, borderTopWidth: 1, borderColor: '#94a3b8', width: '100%' }}
           align={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
@@ -299,15 +296,17 @@ const DrawerProfileCard = ({
     >
       {avatarUri ? (
         <Stack
-          width={avatarSize}
-          height={avatarSize}
-          overflow="hidden"
-          borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
-          align="center"
-          justify="center"
-          style={{ borderRadius: avatarSize / 2, width: '100%', height: '100%' }}
+          style={{
+            width: avatarSize,
+            height: avatarSize,
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: '#e2e8f0',
+            backgroundColor: '#f1f5f9',
+            borderRadius: avatarSize / 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           <Image source={{ uri: avatarUri }} contentFit="cover" />
         </Stack>
@@ -329,24 +328,16 @@ const DrawerProfileCard = ({
       <Stack flex={1} gap={8}>
         <Text color="$gray11">{displayName}</Text>
         <Row gap={16}>
-          <Text
-            color="$blue10"
-            textDecorationLine="underline"
-            cursor="pointer"
-            onPress={onProfilePress}
-            pressStyle={{ opacity: 0.7 }}
-          >
-            My Profile
-          </Text>
-          <Text
-            color="$red10"
-            textDecorationLine="underline"
-            cursor="pointer"
-            onPress={onLogoutPress}
-            pressStyle={{ opacity: 0.7 }}
-          >
-            Logout
-          </Text>
+          <Pressable onPress={onProfilePress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+            <Text color="primary" style={{ textDecorationLine: 'underline' }}>
+              My Profile
+            </Text>
+          </Pressable>
+          <Pressable onPress={onLogoutPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+            <Text color="error" style={{ textDecorationLine: 'underline' }}>
+              Logout
+            </Text>
+          </Pressable>
         </Row>
       </Stack>
     </Row>

@@ -264,6 +264,18 @@ export type {
   TeamDailyMetric,
   GetTeamAnalyticsOverviewParams,
   TeamAnalyticsOverviewResponse,
+  TeamWorkloadSnapshot,
+  GetTeamWorkloadParams,
+  TeamWorkloadResponse,
+  TeamActivityEvent,
+  GetTeamActivityFeedParams,
+  TeamActivityFeedResponse,
+  TeamComment,
+  GetTeamCommentsParams,
+  TeamCommentsResponse,
+  PostTeamCommentParams,
+  TransferTeamOwnershipParams,
+  SelfRemoveFromTeamParams,
 } from './types/teams.js'
 
 export type {

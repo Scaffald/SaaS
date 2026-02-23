@@ -547,27 +547,58 @@ const listMembersRoute = createRoute({
 })
 
 app.openapi(listMembersRoute, async (c) => {
-  const supabase = c.get('supabase')
+  const supabaseAdmin = c.get('supabaseAdmin')
   const user = c.get('user')
   const { id } = c.req.valid('param')
 
-  if (!user) {
+  if (!user || !supabaseAdmin) {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .schema('core')
       .from('team_members')
-      .select('*')
+      .select(
+        `id, team_id, user_id, role_id, status, joined_at, invited_by, removed_at, metadata, created_at,
+         role:team_roles(id, key, name),
+         user:users(id, display_name, username, avatar_path)`
+      )
       .eq('team_id', id)
-      .order('joined_at', { ascending: false })
+      .neq('status', 'removed')
+      .order('created_at', { ascending: true })
 
     if (error) {
       return c.json({ error: 'Failed to fetch members', message: error.message }, 500)
     }
 
-    return c.json({ members: data || [] })
+    const members = (data ?? []).map((record: Record<string, unknown>) => {
+      const role = record.role as Record<string, unknown> | null
+      const userRecord = record.user as Record<string, unknown> | null
+      return {
+        id: record.id as string,
+        teamId: record.team_id as string,
+        userId: record.user_id as string,
+        roleId: record.role_id as string | null,
+        status: record.status as string,
+        joinedAt: (record.joined_at as string) ?? null,
+        invitedBy: (record.invited_by as string) ?? null,
+        removedAt: (record.removed_at as string) ?? null,
+        metadata: (record.metadata as Record<string, unknown>) ?? {},
+        createdAt: record.created_at as string,
+        role: role ? { id: role.id as string, key: role.key as string, name: role.name as string } : null,
+        user: userRecord
+          ? {
+              id: userRecord.id as string,
+              displayName: (userRecord.display_name as string) ?? null,
+              username: (userRecord.username as string) ?? null,
+              avatarPath: (userRecord.avatar_path as string) ?? null,
+            }
+          : null,
+      }
+    })
+
+    return c.json({ members })
   } catch (error) {
     console.error('Error listing members:', error)
     return c.json(
@@ -1163,6 +1194,336 @@ app.post('/:teamId/applications/:applicationId/assign', async (c) => {
 // ============================================================================
 // Analytics
 // ============================================================================
+
+// GET /:teamId/analytics/workload - Get workload snapshots
+app.get('/:teamId/analytics/workload', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  const { includeHistorical: includeHistoricalStr, asOf } = c.req.query()
+  const includeHistorical = includeHistoricalStr === 'true'
+
+  const baseQuery = includeHistorical
+    ? supabaseAdmin.schema('core').from('team_member_workloads')
+    : supabaseAdmin.schema('core').from('v_team_member_workloads_latest' as never)
+
+  let query = (baseQuery as ReturnType<typeof supabaseAdmin.schema>)
+    .select(
+      `id, organization_id, team_id, team_member_id, user_id, captured_at,
+       pending_assignments, active_assignments, overdue_assignments, completed_reviews,
+       weekly_capacity, availability_score, metadata`
+    )
+    .eq('team_id', teamId)
+    .order('captured_at', { ascending: false })
+
+  if (asOf) query = query.lte('captured_at', asOf)
+  if (includeHistorical) query = query.limit(200)
+
+  const { data, error } = await query
+  if (error) return c.json({ error: 'Failed to load workloads', message: error.message }, 500)
+
+  const snapshots = (data ?? []).map((record: Record<string, unknown>) => ({
+    id: record.id as string,
+    teamId: record.team_id as string,
+    organizationId: record.organization_id as string,
+    teamMemberId: record.team_member_id as string,
+    userId: record.user_id as string,
+    capturedAt: record.captured_at as string,
+    pendingAssignments: Number(record.pending_assignments ?? 0),
+    activeAssignments: Number(record.active_assignments ?? 0),
+    overdueAssignments: Number(record.overdue_assignments ?? 0),
+    completedReviews: Number(record.completed_reviews ?? 0),
+    weeklyCapacity: record.weekly_capacity as number | null,
+    availabilityScore: record.availability_score as number | null,
+    metadata: (record.metadata as Record<string, unknown> | null) ?? {},
+  }))
+
+  return c.json({ snapshots })
+})
+
+// GET /:teamId/analytics/activity - Get activity feed (cursor-paginated)
+app.get('/:teamId/analytics/activity', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  const { pageSize: pageSizeStr, cursor, startDate, endDate } = c.req.query()
+  const pageSize = Math.min(Number(pageSizeStr ?? 20), 100)
+
+  let query = supabaseAdmin
+    .schema('core')
+    .from('team_activity_events')
+    .select(
+      `id, organization_id, team_id, event_type, actor_user_id, subject_user_id,
+       related_member_id, related_job_id, related_application_id, payload, occurred_at, created_at`
+    )
+    .eq('team_id', teamId)
+    .order('occurred_at', { ascending: false })
+    .limit(pageSize)
+
+  if (startDate) query = query.gte('occurred_at', startDate)
+  if (endDate) query = query.lte('occurred_at', endDate)
+  if (cursor) query = query.lt('occurred_at', cursor)
+
+  const { data, error } = await query
+  if (error) return c.json({ error: 'Failed to load activity', message: error.message }, 500)
+
+  const events = (data ?? []).map((record: Record<string, unknown>) => ({
+    id: record.id as string,
+    teamId: record.team_id as string,
+    organizationId: record.organization_id as string,
+    eventType: record.event_type as string,
+    actorUserId: record.actor_user_id as string | null,
+    subjectUserId: record.subject_user_id as string | null,
+    relatedMemberId: record.related_member_id as string | null,
+    relatedJobId: record.related_job_id as string | null,
+    relatedApplicationId: record.related_application_id as string | null,
+    payload: (record.payload as Record<string, unknown> | null) ?? {},
+    occurredAt: record.occurred_at as string,
+    createdAt: record.created_at as string,
+  }))
+
+  return c.json({
+    events,
+    nextCursor:
+      events.length === pageSize ? (events[events.length - 1]?.occurredAt ?? null) : null,
+  })
+})
+
+// GET /:teamId/analytics/comments - Get team comments
+app.get('/:teamId/analytics/comments', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  const { applicationId, limit: limitStr, cursor } = c.req.query()
+  const limit = Math.min(Number(limitStr ?? 50), 100)
+
+  let query = supabaseAdmin
+    .schema('core')
+    .from('team_activity_events')
+    .select(
+      `id, team_id, organization_id, event_type, actor_user_id, related_application_id,
+       payload, occurred_at, created_at,
+       actor:users(id, display_name, username)`
+    )
+    .eq('team_id', teamId)
+    .eq('event_type', 'discussion.comment' as never)
+    .order('occurred_at', { ascending: false })
+    .limit(limit)
+
+  if (applicationId) query = query.eq('related_application_id', applicationId)
+  if (cursor) query = query.lt('occurred_at', cursor)
+
+  const { data, error } = await query
+  if (error) return c.json({ error: 'Failed to load comments', message: error.message }, 500)
+
+  const comments = (data ?? []).map((record: Record<string, unknown>) => {
+    const payload = (record.payload as Record<string, unknown> | null) ?? {}
+    const actor = record.actor as Record<string, unknown> | null
+    return {
+      id: record.id as string,
+      teamId: record.team_id as string,
+      organizationId: record.organization_id as string,
+      eventType: record.event_type as string,
+      actorUserId: record.actor_user_id as string | null,
+      actorDisplayName: actor
+        ? ((actor.display_name as string | null) ?? (actor.username as string | null) ?? null)
+        : null,
+      relatedApplicationId: record.related_application_id as string | null,
+      body: typeof payload.body === 'string' ? payload.body : '',
+      mentions: Array.isArray(payload.mentions) ? (payload.mentions as string[]) : [],
+      occurredAt: record.occurred_at as string,
+      createdAt: record.created_at as string,
+    }
+  })
+
+  return c.json({
+    comments,
+    nextCursor:
+      comments.length === limit ? (comments[comments.length - 1]?.occurredAt ?? null) : null,
+  })
+})
+
+// POST /:teamId/analytics/comments - Post a team comment
+app.post('/:teamId/analytics/comments', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  let body: { body?: string; mentions?: string[]; applicationId?: string }
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ error: 'Invalid JSON' }, 400)
+  }
+
+  if (!body.body?.trim()) return c.json({ error: 'body is required' }, 400)
+
+  const { data: teamRecord, error: teamError } = await supabaseAdmin
+    .schema('core')
+    .from('teams')
+    .select('id, organization_id')
+    .eq('id', teamId)
+    .maybeSingle()
+  if (teamError || !teamRecord) return c.json({ error: 'Team not found' }, 404)
+
+  const { error } = await supabaseAdmin
+    .schema('core')
+    .from('team_activity_events')
+    .insert({
+      organization_id: teamRecord.organization_id,
+      team_id: teamId,
+      event_type: 'discussion.comment' as never,
+      actor_user_id: user.id,
+      related_application_id: body.applicationId ?? null,
+      payload: { body: body.body.trim(), mentions: body.mentions ?? [] } as never,
+    })
+
+  if (error) return c.json({ error: 'Failed to post comment', message: error.message }, 500)
+
+  return c.json({ success: true })
+})
+
+// POST /:teamId/members/transfer-ownership - Transfer team ownership
+app.post('/:teamId/members/transfer-ownership', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  let body: { memberId?: string; roleKey?: string; notify?: boolean }
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ error: 'Invalid JSON' }, 400)
+  }
+
+  if (!body.memberId) return c.json({ error: 'memberId is required' }, 400)
+
+  const { data: targetMember, error: memberError } = await supabaseAdmin
+    .schema('core')
+    .from('team_members')
+    .select('id, user_id, role_id, status')
+    .eq('id', body.memberId)
+    .eq('team_id', teamId)
+    .maybeSingle()
+
+  if (memberError || !targetMember) return c.json({ error: 'Member not found' }, 404)
+  if ((targetMember.status as string) === 'removed')
+    return c.json({ error: 'Cannot transfer ownership to a removed member' }, 400)
+
+  // Resolve the admin role ID for this team
+  const { data: teamRecord, error: teamError } = await supabaseAdmin
+    .schema('core')
+    .from('teams')
+    .select('id, organization_id')
+    .eq('id', teamId)
+    .maybeSingle()
+  if (teamError || !teamRecord) return c.json({ error: 'Team not found' }, 404)
+
+  const roleKey = body.roleKey ?? 'admin'
+  const { data: roleRecord } = await supabaseAdmin
+    .schema('core')
+    .from('team_roles')
+    .select('id')
+    .eq('organization_id', teamRecord.organization_id)
+    .eq('key', roleKey)
+    .maybeSingle()
+
+  if (roleRecord?.id && roleRecord.id !== targetMember.role_id) {
+    const { error: updateError } = await supabaseAdmin
+      .schema('core')
+      .from('team_members')
+      .update({ role_id: roleRecord.id })
+      .eq('id', body.memberId)
+    if (updateError)
+      return c.json({ error: 'Failed to promote member', message: updateError.message }, 500)
+  }
+
+  // Record activity event
+  await supabaseAdmin
+    .schema('core')
+    .from('team_activity_events')
+    .insert({
+      organization_id: teamRecord.organization_id,
+      team_id: teamId,
+      event_type: 'team.ownership_transferred' as never,
+      actor_user_id: user.id,
+      subject_user_id: targetMember.user_id as string,
+      payload: { roleKey, notify: body.notify ?? false } as never,
+    })
+
+  return c.json({ success: true })
+})
+
+// POST /:teamId/members/self-remove - Leave a team
+app.post('/:teamId/members/self-remove', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  let body: { reason?: string } = {}
+  try {
+    body = await c.req.json()
+  } catch {
+    // body is optional
+  }
+
+  const { data: existingMember, error: fetchError } = await supabaseAdmin
+    .schema('core')
+    .from('team_members')
+    .select('id, team_id, status, metadata')
+    .eq('team_id', teamId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (fetchError || !existingMember) return c.json({ error: 'Member not found' }, 404)
+  if ((existingMember.status as string) === 'removed')
+    return c.json({ error: 'Already removed from team' }, 400)
+
+  const metadata = ((existingMember.metadata as Record<string, unknown>) ?? {}) as Record<string, unknown>
+  metadata.selfRemovedAt = new Date().toISOString()
+  metadata.selfRemovedReason = body.reason ?? null
+
+  const { error: updateError } = await supabaseAdmin
+    .schema('core')
+    .from('team_members')
+    .update({ status: 'removed', metadata: metadata as never })
+    .eq('id', existingMember.id)
+
+  if (updateError)
+    return c.json({ error: 'Failed to leave team', message: updateError.message }, 500)
+
+  // Get team for activity event
+  const { data: teamRecord } = await supabaseAdmin
+    .schema('core')
+    .from('teams')
+    .select('id, organization_id')
+    .eq('id', teamId)
+    .maybeSingle()
+
+  if (teamRecord) {
+    await supabaseAdmin
+      .schema('core')
+      .from('team_activity_events')
+      .insert({
+        organization_id: teamRecord.organization_id,
+        team_id: teamId,
+        event_type: 'member.self_removed' as never,
+        actor_user_id: user.id,
+        payload: { reason: body.reason ?? null } as never,
+      })
+  }
+
+  return c.json({ success: true })
+})
 
 app.get('/:teamId/analytics/overview', async (c) => {
   const supabaseAdmin = c.get('supabaseAdmin')

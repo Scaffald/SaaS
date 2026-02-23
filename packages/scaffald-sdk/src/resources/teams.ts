@@ -25,6 +25,15 @@ import type {
   RolesListResponse,
   GetTeamAnalyticsOverviewParams,
   TeamAnalyticsOverviewResponse,
+  GetTeamWorkloadParams,
+  TeamWorkloadResponse,
+  GetTeamActivityFeedParams,
+  TeamActivityFeedResponse,
+  GetTeamCommentsParams,
+  TeamCommentsResponse,
+  PostTeamCommentParams,
+  TransferTeamOwnershipParams,
+  SelfRemoveFromTeamParams,
 } from '../types/teams.js'
 
 /**
@@ -481,5 +490,73 @@ export class Teams extends Resource {
     return this.get<TeamAnalyticsOverviewResponse>(
       `/v1/teams/${id}/analytics/overview${qs ? `?${qs}` : ''}`
     )
+  }
+
+  /**
+   * Get workload snapshots for team members
+   */
+  async getWorkload(id: string, params?: GetTeamWorkloadParams): Promise<TeamWorkloadResponse> {
+    const query = new URLSearchParams()
+    if (params?.includeHistorical !== undefined)
+      query.set('includeHistorical', String(params.includeHistorical))
+    if (params?.asOf) query.set('asOf', params.asOf)
+    const qs = query.toString()
+    return this.get<TeamWorkloadResponse>(`/v1/teams/${id}/analytics/workload${qs ? `?${qs}` : ''}`)
+  }
+
+  /**
+   * Get activity feed for a team (paginated)
+   */
+  async getActivityFeed(
+    id: string,
+    params?: GetTeamActivityFeedParams
+  ): Promise<TeamActivityFeedResponse> {
+    const query = new URLSearchParams()
+    if (params?.pageSize) query.set('pageSize', String(params.pageSize))
+    if (params?.cursor) query.set('cursor', params.cursor)
+    if (params?.startDate) query.set('startDate', params.startDate)
+    if (params?.endDate) query.set('endDate', params.endDate)
+    const qs = query.toString()
+    return this.get<TeamActivityFeedResponse>(
+      `/v1/teams/${id}/analytics/activity${qs ? `?${qs}` : ''}`
+    )
+  }
+
+  /**
+   * Get comments for a team
+   */
+  async getComments(id: string, params?: GetTeamCommentsParams): Promise<TeamCommentsResponse> {
+    const query = new URLSearchParams()
+    if (params?.applicationId) query.set('applicationId', params.applicationId)
+    if (params?.limit) query.set('limit', String(params.limit))
+    if (params?.cursor) query.set('cursor', params.cursor)
+    const qs = query.toString()
+    return this.get<TeamCommentsResponse>(
+      `/v1/teams/${id}/analytics/comments${qs ? `?${qs}` : ''}`
+    )
+  }
+
+  /**
+   * Post a comment to the team discussion
+   */
+  async postComment(id: string, params: PostTeamCommentParams): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/analytics/comments`, params)
+  }
+
+  /**
+   * Transfer team ownership to another member
+   */
+  async transferOwnership(
+    id: string,
+    params: TransferTeamOwnershipParams
+  ): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/members/transfer-ownership`, params)
+  }
+
+  /**
+   * Remove yourself from a team
+   */
+  async selfRemove(id: string, params?: SelfRemoveFromTeamParams): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/members/self-remove`, params ?? {})
   }
 }

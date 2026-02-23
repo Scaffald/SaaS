@@ -372,3 +372,132 @@ export interface GetTeamAnalyticsOverviewParams {
 export interface TeamAnalyticsOverviewResponse {
   metrics: TeamDailyMetric[]
 }
+
+/**
+ * A workload snapshot for a single team member
+ */
+export interface TeamWorkloadSnapshot {
+  id: string
+  teamId: string
+  organizationId: string
+  teamMemberId: string
+  userId: string
+  capturedAt: string
+  pendingAssignments: number
+  activeAssignments: number
+  overdueAssignments: number
+  completedReviews: number
+  weeklyCapacity: number | null
+  availabilityScore: number | null
+  metadata: Record<string, unknown>
+}
+
+/**
+ * Params for getting team member workloads
+ */
+export interface GetTeamWorkloadParams {
+  includeHistorical?: boolean
+  asOf?: string
+}
+
+/**
+ * Response from team workload query
+ */
+export interface TeamWorkloadResponse {
+  snapshots: TeamWorkloadSnapshot[]
+}
+
+/**
+ * A team activity event
+ */
+export interface TeamActivityEvent {
+  id: string
+  teamId: string
+  organizationId: string
+  eventType: string
+  actorUserId: string | null
+  subjectUserId: string | null
+  relatedMemberId: string | null
+  relatedJobId: string | null
+  relatedApplicationId: string | null
+  payload: Record<string, unknown>
+  occurredAt: string
+  createdAt: string
+}
+
+/**
+ * Params for getting team activity feed
+ */
+export interface GetTeamActivityFeedParams {
+  pageSize?: number
+  cursor?: string
+  startDate?: string
+  endDate?: string
+}
+
+/**
+ * Response from team activity feed query
+ */
+export interface TeamActivityFeedResponse {
+  events: TeamActivityEvent[]
+  nextCursor: string | null
+}
+
+/**
+ * A team comment (discussion.comment activity event)
+ */
+export interface TeamComment {
+  id: string
+  teamId: string
+  organizationId: string
+  eventType: string
+  actorUserId: string | null
+  actorDisplayName: string | null
+  relatedApplicationId: string | null
+  body: string
+  mentions: string[]
+  occurredAt: string
+  createdAt: string
+}
+
+/**
+ * Params for getting team comments
+ */
+export interface GetTeamCommentsParams {
+  applicationId?: string
+  limit?: number
+  cursor?: string
+}
+
+/**
+ * Response from team comments query
+ */
+export interface TeamCommentsResponse {
+  comments: TeamComment[]
+  nextCursor: string | null
+}
+
+/**
+ * Params for posting a team comment
+ */
+export interface PostTeamCommentParams {
+  body: string
+  mentions?: string[]
+  applicationId?: string
+}
+
+/**
+ * Params for transferring team ownership
+ */
+export interface TransferTeamOwnershipParams {
+  memberId: string
+  roleKey?: string
+  notify?: boolean
+}
+
+/**
+ * Params for self-removing from a team
+ */
+export interface SelfRemoveFromTeamParams {
+  reason?: string
+}

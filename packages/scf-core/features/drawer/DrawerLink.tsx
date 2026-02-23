@@ -2,6 +2,7 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { Check, ChevronRight, Clock } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useCallback, useMemo } from 'react'
+import { Pressable } from 'react-native'
 import { Paragraph, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { DrawerLinkProps } from './types'
@@ -40,7 +41,7 @@ export const DrawerLink = ({
   const renderIcon = useCallback(() => {
     if (!Icon) return null
     return (
-      <Icon size="lg" color={active ? colors.icon[theme].active : colors.icon[theme].primary} />
+      <Icon size="lg" color={active ? colors.icon[theme].active : colors.icon[theme].default} />
     )
   }, [Icon, active, theme])
 
@@ -55,8 +56,8 @@ export const DrawerLink = ({
         style={{
           backgroundColor: collapsed
             ? active
-              ? colors.bg[theme].primary
-              : colors.bg[theme].inactive
+              ? colors.bg[theme].selected
+              : colors.bg[theme].subtle
             : 'transparent',
         }}
       >
@@ -74,7 +75,7 @@ export const DrawerLink = ({
         <Paragraph
           size="md"
           style={{
-            color: active ? colors.text[theme].active : colors.text[theme].primary,
+            color: active ? colors.info[500] : colors.text[theme].primary,
           }}
         >
           {title}
@@ -102,7 +103,7 @@ export const DrawerLink = ({
             <Paragraph
               size="sm"
               style={{
-                color: active ? colors.text[theme].active : colors.text[theme].primary,
+                color: active ? colors.info[500] : colors.text[theme].primary,
               }}
             >
               {item.badge}
@@ -110,7 +111,7 @@ export const DrawerLink = ({
           </Row>
         )}
         {!item.isExpandable && item.hasChevron && (
-          <ChevronRight size="md" color={colors.icon[theme].secondary} />
+          <ChevronRight size="md" color={colors.icon[theme].subtle} />
         )}
       </Row>
     )
@@ -129,9 +130,7 @@ export const DrawerLink = ({
           width={56}
           height={56}
           borderRadius={32}
-          opacity={0.4}
-          backgroundColor="$color4"
-          cursor="not-allowed"
+          style={{ opacity: 0.4, backgroundColor: colors.gray[100] }}
         >
           {renderIcon()}
         </Row>
@@ -144,12 +143,10 @@ export const DrawerLink = ({
         gap={12}
         paddingHorizontal={12}
         paddingVertical={8}
-        opacity={0.5}
-        cursor="not-allowed"
-        flex={1}
+        style={{ opacity: 0.5, flex: 1 }}
       >
-        {Icon && <Icon size={18} color="$gray11" />}
-        <Paragraph size="sm" color="$gray11">
+        {Icon && <Icon size={18} color={colors.gray[500]} />}
+        <Paragraph size="sm" style={{ color: colors.gray[500] }}>
           {title}
         </Paragraph>
       </Row>
@@ -159,19 +156,22 @@ export const DrawerLink = ({
   if (collapsed && depth === 0) {
     return (
       <Link href={item.href} asChild>
-        <Row
-          width={56}
-          height={56}
-          borderRadius={32}
-          align="center"
-          justify="center"
-          backgroundColor={active ? '$blue9' : 'transparent'}
-          hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
-          pressStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
-          cursor="pointer"
+        <Pressable
+          style={({ pressed }) => ({
+            width: 56,
+            height: 56,
+            borderRadius: 32,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: active
+              ? colors.info[900]
+              : pressed
+                ? colors.info[100]
+                : 'transparent',
+          })}
         >
           {renderIcon()}
-        </Row>
+        </Pressable>
       </Link>
     )
   }
@@ -179,27 +179,31 @@ export const DrawerLink = ({
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
-        <Row
-          align="center"
-          borderRadius={16}
-          gap={12}
-          paddingHorizontal={12}
-          paddingVertical={8}
-          paddingLeft="$9"
-          pressStyle={{ backgroundColor: '$color1' }}
-          hoverStyle={{ backgroundColor: '$blue4' }}
-          cursor="pointer"
-          flex={1}
+        <Pressable
+          style={({ pressed }: { pressed: boolean }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 16,
+            columnGap: 12,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            paddingLeft: 36,
+            backgroundColor: pressed ? colors.gray[50] : undefined,
+            flex: 1,
+          })}
         >
-          <Paragraph size="md" color={active ? '$blue9' : '$color12'}>
+          <Paragraph
+            size="md"
+            style={{ color: active ? colors.info[900] : colors.gray[900], flex: 1 }}
+          >
             {title}
           </Paragraph>
           {item.isOnCooldown ? (
-            <Clock size="md" color="$blue9" />
+            <Clock size="md" color={colors.info[900]} />
           ) : item.isCompleted ? (
-            <Check size="md" color="$green9" />
+            <Check size="md" color={colors.success[600]} />
           ) : null}
-        </Row>
+        </Pressable>
       </Link>
     )
   }
@@ -208,21 +212,25 @@ export const DrawerLink = ({
     return (
       <Stack flex={1}>
         <Link href={item.href} asChild>
-          <Row
-            align="center"
-            justify="space-between"
-            paddingHorizontal={12}
-            paddingVertical={8}
-            borderRadius={16}
-            marginVertical={4}
-            backgroundColor={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            cursor="pointer"
+          <Pressable
+            style={({ pressed }: { pressed: boolean }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              marginVertical: 4,
+              backgroundColor: active
+                ? colors.info[900]
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
-          </Row>
+          </Pressable>
         </Link>
         {shouldShowSubItems && item.subItems && (
           <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
@@ -248,21 +256,25 @@ export const DrawerLink = ({
     return (
       <Stack flex={1}>
         <Link href={item.href} asChild>
-          <Row
-            align="center"
-            justify="space-between"
-            paddingHorizontal={12}
-            paddingVertical={8}
-            borderRadius={16}
-            marginVertical={4}
-            backgroundColor={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            cursor="pointer"
+          <Pressable
+            style={({ pressed }: { pressed: boolean }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              marginVertical: 4,
+              backgroundColor: active
+                ? colors.info[900]
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
-          </Row>
+          </Pressable>
         </Link>
         {shouldShowSubItems && item.subItems && (
           <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
@@ -288,21 +300,25 @@ export const DrawerLink = ({
     return (
       <Stack flex={1}>
         <Link href={item.href} asChild>
-          <Row
-            align="center"
-            justify="space-between"
-            paddingHorizontal={12}
-            paddingVertical={8}
-            borderRadius={16}
-            marginVertical={4}
-            backgroundColor={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
-            pressStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
-            cursor="pointer"
+          <Pressable
+            style={({ pressed }: { pressed: boolean }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              marginVertical: 4,
+              backgroundColor: active
+                ? colors.info[900]
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
-          </Row>
+          </Pressable>
         </Link>
         <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
           {item.subItems.map((subItem) => (
@@ -324,21 +340,25 @@ export const DrawerLink = ({
 
   return (
     <Link href={item.href} asChild>
-      <Row
-        align="center"
-        justify="space-between"
-        paddingHorizontal={12}
-        paddingVertical={12}
-        borderRadius={8}
-        marginVertical={4}
-        backgroundColor={active ? '$blue9' : 'transparent'}
-        hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-        pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-        cursor="pointer"
+      <Pressable
+        style={({ pressed }: { pressed: boolean }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 12,
+          paddingVertical: 12,
+          borderRadius: 8,
+          marginVertical: 4,
+          backgroundColor: active
+            ? colors.info[900]
+            : pressed
+              ? colors.gray[200]
+              : 'transparent',
+        })}
       >
         {renderContent()}
         {renderRightSide()}
-      </Row>
+      </Pressable>
     </Link>
   )
 }

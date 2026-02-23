@@ -4,6 +4,7 @@
  */
 
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -27,6 +28,15 @@ import type {
   DeleteResponse,
   GetTeamAnalyticsOverviewParams,
   TeamAnalyticsOverviewResponse,
+  GetTeamWorkloadParams,
+  TeamWorkloadResponse,
+  GetTeamActivityFeedParams,
+  TeamActivityFeedResponse,
+  GetTeamCommentsParams,
+  TeamCommentsResponse,
+  PostTeamCommentParams,
+  TransferTeamOwnershipParams,
+  SelfRemoveFromTeamParams,
 } from '@scaffald/sdk'
 
 export function useAssignApplicationMutation(
@@ -488,5 +498,118 @@ export function useTeamAnalyticsOverview(
     enabled: !!client && !!teamId && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
     placeholderData: options?.placeholderData,
+  })
+}
+
+/**
+ * Get workload snapshots for team members
+ */
+export function useTeamWorkload(
+  teamId: string | undefined,
+  params?: GetTeamWorkloadParams,
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['teams', teamId, 'analytics', 'workload', params],
+    queryFn: async () => {
+      if (!client || !teamId) throw new Error('Missing client or teamId')
+      return client.teams.getWorkload(teamId, params)
+    },
+    enabled: !!client && !!teamId && options?.enabled !== false,
+    staleTime: 60 * 1000,
+  })
+}
+
+/**
+ * Get activity feed for a team (cursor-paginated infinite query)
+ */
+export function useTeamActivityFeed(
+  teamId: string | undefined,
+  params?: Omit<GetTeamActivityFeedParams, 'cursor'>,
+  options?: { enabled?: boolean; staleTime?: number }
+) {
+  const client = useScaffaldJobsClient()
+  return useInfiniteQuery({
+    queryKey: ['teams', teamId, 'analytics', 'activity', params],
+    queryFn: async ({ pageParam }) => {
+      if (!client || !teamId) throw new Error('Missing client or teamId')
+      return client.teams.getActivityFeed(teamId, {
+        ...params,
+        cursor: pageParam as string | undefined,
+      })
+    },
+    getNextPageParam: (lastPage: TeamActivityFeedResponse) => lastPage.nextCursor ?? undefined,
+    initialPageParam: undefined as string | undefined,
+    enabled: !!client && !!teamId && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 30_000,
+  })
+}
+
+/**
+ * Get comments for a team
+ */
+export function useTeamComments(
+  teamId: string | undefined,
+  params?: GetTeamCommentsParams,
+  options?: { enabled?: boolean; staleTime?: number }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['teams', teamId, 'analytics', 'comments', params],
+    queryFn: async () => {
+      if (!client || !teamId) throw new Error('Missing client or teamId')
+      return client.teams.getComments(teamId, params)
+    },
+    enabled: !!client && !!teamId && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 30_000,
+  })
+}
+
+/**
+ * Post a comment to the team discussion
+ */
+export function usePostTeamCommentMutation(
+  options?: UseMutationOptions<{ success: boolean }, Error, { teamId: string } & PostTeamCommentParams>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({ teamId, ...params }: { teamId: string } & PostTeamCommentParams) => {
+      if (!client) throw new Error('Missing client')
+      return client.teams.postComment(teamId, params)
+    },
+    ...options,
+  })
+}
+
+/**
+ * Transfer team ownership to another member
+ */
+export function useTransferTeamOwnershipMutation(
+  options?: UseMutationOptions<{ success: boolean }, Error, { teamId: string } & TransferTeamOwnershipParams>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({ teamId, ...params }: { teamId: string } & TransferTeamOwnershipParams) => {
+      if (!client) throw new Error('Missing client')
+      return client.teams.transferOwnership(teamId, params)
+    },
+    ...options,
+  })
+}
+
+/**
+ * Remove yourself from a team
+ */
+export function useSelfRemoveFromTeamMutation(
+  options?: UseMutationOptions<{ success: boolean }, Error, { teamId: string } & SelfRemoveFromTeamParams>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({ teamId, ...params }: { teamId: string } & SelfRemoveFromTeamParams) => {
+      if (!client) throw new Error('Missing client')
+      return client.teams.selfRemove(teamId, params)
+    },
+    ...options,
   })
 }

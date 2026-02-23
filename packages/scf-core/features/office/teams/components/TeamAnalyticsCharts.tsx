@@ -1,17 +1,11 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useTeamAnalyticsOverview, useTeamWorkload } from '@scf/core/utils/teams-sdk-hooks'
+import type { TeamWorkloadSnapshot } from '@scaffald/sdk'
 import { BarChart, LineChart, PieChart, useThemeContext } from '@scaffald/ui'
-import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
 import { Card, Spinner, Text, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-
-type OverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
-type MetricRecord = NonNullable<OverviewOutput['metrics']>[number]
-type WorkloadOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['workload']
-type WorkloadSnapshot = WorkloadOutput['snapshots'][number]
 
 interface TeamAnalyticsChartsProps {
   teamId: string
@@ -38,30 +32,20 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     return endDate.toISOString()
   }, [now])
 
-  const overviewQuery = api.teams.analytics.overview.useQuery(
-    {
-      teamId,
-      startDate: start,
-      endDate: end,
-      limit: rangeDays,
-    },
-    {
-      placeholderData: (previousData) => previousData,
-    }
+  const overviewQuery = useTeamAnalyticsOverview(
+    teamId,
+    { startDate: start, endDate: end, limit: rangeDays },
+    { placeholderData: (previousData) => previousData }
   )
 
-  const workloadQuery = api.teams.analytics.workload.useQuery(
-    {
-      teamId,
-      includeHistorical: false,
-    },
-    {
-      staleTime: 60_000,
-    }
+  const workloadQuery = useTeamWorkload(
+    teamId,
+    { includeHistorical: false },
+    { enabled: Boolean(teamId) }
   )
 
-  const metrics = (overviewQuery.data?.metrics ?? []) as MetricRecord[]
-  const workloads = (workloadQuery.data?.snapshots ?? []) as WorkloadSnapshot[]
+  const metrics = overviewQuery.data?.metrics ?? []
+  const workloads = (workloadQuery.data?.snapshots ?? []) as TeamWorkloadSnapshot[]
 
   const applicationsTrend = useMemo((): Array<{ value: number; label: string }> => {
     if (metrics.length === 0) return []

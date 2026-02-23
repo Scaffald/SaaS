@@ -48,9 +48,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
     refetchOnMount: false,
   })
 
-  const pushEnabled = preferencesData
-    ? preferencesData.globalEnabled && preferencesData.channelEnabled.push
-    : true
+  const pushEnabled = preferencesData?.data?.push_notifications ?? true
 
   useNotificationDeviceRegistration(pushEnabled)
 
@@ -61,7 +59,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
 
   // Fetch unread count
   const { data: unreadCountData } = useUnreadCount()
-  const _unreadCount = unreadCountData?.count || 0
+  const _unreadCount = unreadCountData?.data?.unread_count ?? 0
 
   // Mark as read mutation
   const queryClient = useQueryClient()
@@ -160,7 +158,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             maxWidth: drawerWidth,
             minWidth: drawerWidth,
           },
-          overlayColor: shadows.shadowColor,
+          overlayColor: shadows.xs.shadowColor,
           headerLeft: () => {
             return isSmall ? (
               <Pressable

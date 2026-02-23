@@ -119,12 +119,13 @@ export const buildTalentProfilesQuery = (options: TalentProfilesQueryOptions = {
         badgeMap = new Map(
           badgeRows
             .filter(
-              (row: {
-                worker_user_id: string | null
-              }): row is VerificationBadgeRow & { worker_user_id: string } =>
+              (row: { worker_user_id: string | null }): row is { worker_user_id: string } & typeof row =>
                 typeof row.worker_user_id === 'string' && row.worker_user_id.length > 0
             )
-            .map((row: { worker_user_id: string }) => [row.worker_user_id as string, row])
+            .map((row): [string, VerificationBadgeRow] => [
+              row.worker_user_id as string,
+              row as VerificationBadgeRow,
+            ])
         )
       }
     }
