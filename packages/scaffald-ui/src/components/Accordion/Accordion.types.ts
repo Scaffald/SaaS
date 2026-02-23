@@ -90,4 +90,11 @@ export interface AccordionItemContextValue {
   isExpanded: boolean
   disabled: boolean
   value: string
+  isFocused: boolean
+  isHovered: boolean
+  setIsFocused: (focused: boolean) => void
+  setIsHovered: (hovered: boolean) => void
+  toggle: () => void
+  getRootProps: () => any
+  getTriggerProps: () => any
 }

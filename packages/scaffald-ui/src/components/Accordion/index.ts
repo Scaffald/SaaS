@@ -13,6 +13,12 @@ export const Accordion = Object.assign(AccordionRoot, {
   Content: AccordionContent,
 })
 
+export { useAccordion } from './useAccordion'
+export { useAccordionItem } from './useAccordionItem'
+
+export type { UseAccordionProps } from './useAccordion'
+export type { UseAccordionItemProps } from './useAccordionItem'
+
 export type {
   AccordionProps,
   AccordionItemProps,

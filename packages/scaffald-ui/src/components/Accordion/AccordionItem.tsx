@@ -3,10 +3,11 @@
  * Individual item within an accordion
  */
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
 import { View, StyleSheet, Platform } from 'react-native'
 import type { AccordionItemProps, AccordionItemContextValue } from './Accordion.types'
 import { useAccordionContext } from './Accordion'
+import { useAccordionItem } from './useAccordionItem'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -32,35 +33,25 @@ export function AccordionItem({
 }: AccordionItemProps) {
   const accordionContext = useAccordionContext()
   const { theme } = useThemeContext()
-  const [isFocused, setIsFocused] = useState(false)
 
-  // Check if this item is expanded
-  const isExpanded = Array.isArray(accordionContext.value)
-    ? accordionContext.value.includes(value)
-    : accordionContext.value === value
-
-  // Item is disabled if parent is disabled or if explicitly disabled
-  const disabled = accordionContext.disabled || disabledProp
-
-  const contextValue: AccordionItemContextValue = {
-    isExpanded,
-    disabled,
+  const itemContext = useAccordionItem({
     value,
-  }
+    disabled: disabledProp,
+    context: accordionContext,
+  })
 
   // Focus ring style (web only) - applied to entire item, not just trigger
   const focusRing =
-    isFocused && !disabled
+    itemContext.isFocused && !itemContext.disabled
       ? Platform.OS === 'web'
         ? { boxShadow: `${boxShadows.focusBase}, ${boxShadows.button}` }
         : {}
       : {}
 
   return (
-    <AccordionItemContext.Provider value={contextValue}>
+    <AccordionItemContext.Provider value={itemContext}>
       <View
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        {...itemContext.getRootProps()}
         style={[
           styles.container,
           {
@@ -70,7 +61,7 @@ export function AccordionItem({
             ...focusRing,
           },
           accordionContext.width === 'constrained' && styles.constrained,
-          disabled && styles.disabled,
+          itemContext.disabled && styles.disabled,
           containerStyle,
         ]}
       >

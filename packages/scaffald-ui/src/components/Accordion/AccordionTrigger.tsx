@@ -3,10 +3,8 @@
  * Clickable header for accordion items
  */
 
-import { useState } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
+import { View, Pressable, Text, StyleSheet } from 'react-native'
 import type { AccordionTriggerProps } from './Accordion.types'
-import { useAccordionContext } from './Accordion'
 import { useAccordionItemContext } from './AccordionItem'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -24,35 +22,17 @@ export function AccordionTrigger({
   titleStyle,
   hintStyle,
 }: AccordionTriggerProps) {
-  const accordionContext = useAccordionContext()
   const itemContext = useAccordionItemContext()
   const { theme } = useThemeContext()
 
-  const [isHovered, setIsHovered] = useState(false)
-
-  const handlePress = () => {
-    if (itemContext.disabled) return
-    accordionContext.onValueChange(itemContext.value)
-  }
-
   return (
     <Pressable
-      onPress={handlePress}
-      disabled={itemContext.disabled}
-      accessibilityRole="button"
-      accessibilityState={{
-        expanded: itemContext.isExpanded,
-        disabled: itemContext.disabled,
-      }}
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      })}
+      {...itemContext.getTriggerProps()}
       style={({ pressed }) => [
         styles.trigger,
         {
           backgroundColor:
-            isHovered && !itemContext.disabled ? colors.bg[theme].subtle : 'transparent',
+            itemContext.isHovered && !itemContext.disabled ? colors.bg[theme].subtle : 'transparent',
         },
         // Apply pressed effect
         pressed && !itemContext.disabled && { opacity: 0.8 },

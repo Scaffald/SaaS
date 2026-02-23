@@ -30,10 +30,11 @@
  * ```
  */
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
 import { View, StyleSheet } from 'react-native'
-import type { AccordionProps, AccordionContextValue, AccordionValue } from './Accordion.types'
+import type { AccordionProps, AccordionContextValue } from './Accordion.types'
 import { spacing } from '../../tokens/spacing'
+import { useAccordion } from './useAccordion'
 
 // Accordion context
 const AccordionContext = createContext<AccordionContextValue | null>(null)
@@ -47,7 +48,7 @@ export function useAccordionContext() {
 }
 
 export function Accordion({
-  value: valueProp,
+  value,
   defaultValue,
   onValueChange,
   mode = 'single',
@@ -56,48 +57,17 @@ export function Accordion({
   children,
   containerStyle,
 }: AccordionProps) {
-  // Support both controlled and uncontrolled mode
-  const [internalValue, setInternalValue] = useState<AccordionValue>(
-    defaultValue ?? (mode === 'single' ? '' : [])
-  )
-  const isControlled = valueProp !== undefined
-  const value = isControlled ? valueProp : internalValue
-
-  const handleValueChange = (itemValue: string) => {
-    if (disabled) return
-
-    let newValue: AccordionValue
-
-    if (mode === 'single') {
-      // Single mode: toggle the item or set new item
-      newValue = value === itemValue ? '' : itemValue
-    } else {
-      // Multiple mode: toggle item in array
-      const currentArray = Array.isArray(value) ? value : []
-      newValue = currentArray.includes(itemValue)
-        ? currentArray.filter((v) => v !== itemValue)
-        : [...currentArray, itemValue]
-    }
-
-    // Update internal state if uncontrolled
-    if (!isControlled) {
-      setInternalValue(newValue)
-    }
-
-    // Always call onChange if provided
-    onValueChange?.(newValue)
-  }
-
-  const contextValue: AccordionContextValue = {
+  const accordion = useAccordion({
     value,
-    onValueChange: handleValueChange,
+    defaultValue,
+    onValueChange,
     mode,
     width,
     disabled,
-  }
+  })
 
   return (
-    <AccordionContext.Provider value={contextValue}>
+    <AccordionContext.Provider value={accordion}>
       <View style={[styles.container, containerStyle]}>{children}</View>
     </AccordionContext.Provider>
   )
