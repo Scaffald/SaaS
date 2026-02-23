@@ -5,6 +5,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import Svg, { Circle, Path } from 'react-native-svg'
 import { Tabs } from '../../../components/Tabs'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
@@ -24,29 +25,29 @@ type Story = StoryObj<typeof meta>
 
 // Example icon components
 const SettingsIcon = ({ size, color }: { size: number; color: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" role="img" aria-label="Settings icon">
-    <circle cx="12" cy="12" r="2" fill={color} />
-    <path
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx="12" cy="12" r="2" fill={color} />
+    <Path
       d="M12 4V2M12 22V20M4 12H2M22 12H20M19.07 4.93L17.66 6.34M6.34 17.66L4.93 19.07M19.07 19.07L17.66 17.66M6.34 6.34L4.93 4.93"
       stroke={color}
       strokeWidth="2"
       strokeLinecap="round"
     />
-  </svg>
+  </Svg>
 )
 
 const HomeIcon = ({ size, color }: { size: number; color: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" role="img" aria-label="Home icon">
-    <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M9 22V12H15V22" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <Path d="M9 22V12H15V22" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </Svg>
 )
 
 const UserIcon = ({ size, color }: { size: number; color: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" role="img" aria-label="User icon">
-    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="7" r="4" stroke={color} strokeWidth="2" />
-  </svg>
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <Circle cx="12" cy="7" r="4" stroke={color} strokeWidth="2" />
+  </Svg>
 )
 
 // Basic tabs (uncontrolled)

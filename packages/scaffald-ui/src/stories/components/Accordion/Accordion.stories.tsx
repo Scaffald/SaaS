@@ -5,6 +5,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import Svg, { Rect, Path, Circle } from 'react-native-svg'
 import { Accordion } from '../../../components/Accordion'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
@@ -24,46 +25,46 @@ type Story = StoryObj<typeof meta>
 
 // Example icon components
 const DeviceIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-label="Device icon">
-    <rect x="6" y="4" width="12" height="16" rx="1" stroke="#141c25" strokeWidth="1.5" />
-    <path d="M10 18H14" stroke="#141c25" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Rect x="6" y="4" width="12" height="16" rx="1" stroke="#141c25" strokeWidth="1.5" />
+    <Path d="M10 18H14" stroke="#141c25" strokeWidth="1.5" strokeLinecap="round" />
+  </Svg>
 )
 
 const ClockIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-label="Clock icon">
-    <circle cx="12" cy="12" r="8" stroke="#1a232d" strokeWidth="1.5" />
-    <path d="M12 8V12L14 14" stroke="#1a232d" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Circle cx="12" cy="12" r="8" stroke="#1a232d" strokeWidth="1.5" />
+    <Path d="M12 8V12L14 14" stroke="#1a232d" strokeWidth="1.5" strokeLinecap="round" />
+  </Svg>
 )
 
 const CardIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-label="Card icon">
-    <rect x="4" y="7" width="16" height="10" rx="2" stroke="#ff4d4d" strokeWidth="1.5" />
-    <path d="M4 11H20" stroke="#ff4d4d" strokeWidth="1.5" />
-  </svg>
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Rect x="4" y="7" width="16" height="10" rx="2" stroke="#ff4d4d" strokeWidth="1.5" />
+    <Path d="M4 11H20" stroke="#ff4d4d" strokeWidth="1.5" />
+  </Svg>
 )
 
 const WarningIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" aria-label="Warning icon">
-    <path
+  <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <Path
       d="M8 2L14 14H2L8 2Z"
       fill="#f59e0b"
       stroke="#637083"
       strokeWidth="1.5"
       strokeLinejoin="round"
     />
-    <path d="M8 6V9" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="8" cy="11" r="0.5" fill="white" />
-  </svg>
+    <Path d="M8 6V9" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <Circle cx="8" cy="11" r="0.5" fill="white" />
+  </Svg>
 )
 
 const InfoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" aria-label="Info icon">
-    <circle cx="8" cy="8" r="6" fill="#f59e0b" stroke="#637083" strokeWidth="1.5" />
-    <path d="M8 7V11" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="8" cy="5" r="0.5" fill="white" />
-  </svg>
+  <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <Circle cx="8" cy="8" r="6" fill="#f59e0b" stroke="#637083" strokeWidth="1.5" />
+    <Path d="M8 7V11" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <Circle cx="8" cy="5" r="0.5" fill="white" />
+  </Svg>
 )
 
 // Basic uncontrolled accordion (single mode)

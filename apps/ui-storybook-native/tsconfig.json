@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-native",
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "bundler",
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../../packages/scaffald-ui/src/**/*.ts",
+    "../../packages/scaffald-ui/src/**/*.tsx"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
