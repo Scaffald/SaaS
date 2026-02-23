@@ -1,26 +1,32 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import {
+  useAdminCheckTypes,
+  useAdminPackages,
+  useAdminSetCheckTypeActiveMutation,
+  useAdminSetPackageActiveMutation,
+  useAdminUpsertCheckTypeMutation,
+  useAdminUpsertPackageMutation,
+} from '@scf/core/utils/background-checks-sdk-hooks'
+import type { AdminCheckType, AdminPackage } from '@scaffald/sdk'
 import {
   Button,
+  Card,
+  Checkbox,
   Dialog,
   Input,
+  Row,
   ScrollView,
   Separator,
   Spinner,
-  Text,
-  Row,
   Stack,
+  Text,
+  TextArea,
+  useToast,
 } from '@scaffald/ui'
-import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
-import type { inferRouterOutputs } from '@trpc/server'
-import { useCallback, useMemo, useState } from 'react'
-import { Card, Checkbox, TextArea } from '@scaffald/ui'
-import { useQueryClient } from '@tanstack/react-query'
+import { Edit3, PackagePlus, Plus, RefreshCcw, Shield } from 'lucide-react-native'
+import { useMemo, useState } from 'react'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type AdminPackageRecord = RouterOutputs['backgroundChecks']['adminListPackages'][number]
-type AdminCheckTypeRecord = RouterOutputs['backgroundChecks']['adminListCheckTypes'][number]
+type AdminPackageRecord = AdminPackage
+type AdminCheckTypeRecord = AdminCheckType
 
 interface PackageDialogState {
   mode: 'create' | 'edit'
@@ -111,19 +117,14 @@ const formatDocuments = (documents: string[]) => {
 
 export function AdminCatalogManager() {
   const toast = useToast()
-  const queryClient = useQueryClient()
 
-  const packagesQuery = api.backgroundChecks.adminListPackages.useQuery(undefined, {
-    staleTime: 60_000,
-  })
-  const checkTypesQuery = api.backgroundChecks.adminListCheckTypes.useQuery(undefined, {
-    staleTime: 60_000,
-  })
+  const packagesQuery = useAdminPackages({ staleTime: 60_000 })
+  const checkTypesQuery = useAdminCheckTypes({ staleTime: 60_000 })
 
-  const upsertPackageMutation = api.backgroundChecks.adminUpsertPackage.useMutation()
-  const upsertCheckTypeMutation = api.backgroundChecks.adminUpsertCheckType.useMutation()
-  const setPackageActiveMutation = api.backgroundChecks.adminSetPackageActive.useMutation()
-  const setCheckTypeActiveMutation = api.backgroundChecks.adminSetCheckTypeActive.useMutation()
+  const upsertPackageMutation = useAdminUpsertPackageMutation()
+  const upsertCheckTypeMutation = useAdminUpsertCheckTypeMutation()
+  const setPackageActiveMutation = useAdminSetPackageActiveMutation()
+  const setCheckTypeActiveMutation = useAdminSetCheckTypeActiveMutation()
 
   const [packageDialog, setPackageDialog] = useState<PackageDialogState | null>(null)
   const [checkTypeDialog, setCheckTypeDialog] = useState<CheckTypeDialogState | null>(null)
@@ -137,13 +138,6 @@ export function AdminCatalogManager() {
 
   const packages: AdminPackageRecord[] = packagesQuery.data ?? []
   const checkTypes: AdminCheckTypeRecord[] = checkTypesQuery.data ?? []
-
-  const invalidateCatalog = useCallback(async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListPackages']] }),
-      queryClient.invalidateQueries({ queryKey: [['backgroundChecks', 'adminListCheckTypes']] }),
-    ])
-  }, [queryClient])
 
   const resetPackageDialog = () => {
     setPackageDialog(null)
@@ -299,7 +293,6 @@ export function AdminCatalogManager() {
         check_type_ids: Array.from(selectedPackageTypeIds),
         is_active: packageForm.isActive,
       })
-      await invalidateCatalog()
       toast.show({
         title: 'Package saved',
         message: 'Background check package catalog updated.',
@@ -308,10 +301,7 @@ export function AdminCatalogManager() {
       resetPackageDialog()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to save package.'
-      toast.show({
-        title: 'Failed to save package',
-        variant: 'error',
-      })
+      toast.error('Failed to save package', { title: 'Failed to save package' })
       setPackageFormError(message)
     }
   }
@@ -394,7 +384,6 @@ export function AdminCatalogManager() {
         metadata,
         is_active: checkTypeForm.isActive,
       })
-      await invalidateCatalog()
       toast.show({
         title: 'Check type saved',
         message: 'Background check components updated.',
@@ -403,10 +392,7 @@ export function AdminCatalogManager() {
       resetCheckTypeDialog()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to save check type.'
-      toast.show({
-        title: 'Failed to save check type',
-        variant: 'error',
-      })
+      toast.error('Failed to save check type', { title: 'Failed to save check type' })
       setCheckTypeFormError(message)
     }
   }
@@ -418,16 +404,12 @@ export function AdminCatalogManager() {
         id: record.id,
         is_active: !record.is_active,
       })
-      await invalidateCatalog()
-      toast.show('Package status updated', {
-        message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
+      toast.success(`${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`, {
+        title: 'Package status updated',
       })
     } catch (error) {
       const _message = error instanceof Error ? error.message : 'Unable to update package status.'
-      toast.show({
-        title: 'Failed to update package',
-        variant: 'error',
-      })
+      toast.error('Failed to update package', { title: 'Failed to update package' })
     } finally {
       setPackageToggleId(null)
     }
@@ -440,17 +422,13 @@ export function AdminCatalogManager() {
         id: record.id,
         is_active: !record.is_active,
       })
-      await invalidateCatalog()
-      toast.show('Check type status updated', {
-        message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
+      toast.success(`${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`, {
+        title: 'Check type status updated',
       })
     } catch (error) {
       const _message =
         error instanceof Error ? error.message : 'Unable to update check type status.'
-      toast.show({
-        title: 'Failed to update check type',
-        variant: 'error',
-      })
+      toast.error('Failed to update check type', { title: 'Failed to update check type' })
     } finally {
       setCheckTypeToggleId(null)
     }
@@ -769,7 +747,7 @@ export function AdminCatalogManager() {
 
                 <Row gap={12} wrap>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Platform cost (USD cents)
                     </Text>
                     <Input
@@ -779,7 +757,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Retail price (USD cents)
                     </Text>
                     <Input
@@ -789,7 +767,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Estimated completion (days)
                     </Text>
                     <Input
@@ -840,18 +818,16 @@ export function AdminCatalogManager() {
                               size="sm"
                               checked={selected}
                               onChange={(value) => handleTogglePackageType(type.id, value === true)}
-                            >
-                              <Checkbox.Indicator>
-                                <Check size="md" />
-                              </Checkbox.Indicator>
-                            </Checkbox>
-                            <Stack gap={4} flex={1}>
-                              <Text color="$gray11">{type.display_name}</Text>
-                              <Text color="$gray11">
-                                {type.category ?? 'General'} ·{' '}
-                                {formatCurrency(type.platform_cost_cents)}
-                              </Text>
-                            </Stack>
+                              labelElement={
+                                <Stack gap={4} flex={1}>
+                                  <Text color="$gray11">{type.display_name}</Text>
+                                  <Text color="$gray11">
+                                    {type.category ?? 'General'} ·{' '}
+                                    {formatCurrency(type.platform_cost_cents)}
+                                  </Text>
+                                </Stack>
+                              }
+                            />
                           </Row>
                         )
                       })
@@ -863,12 +839,8 @@ export function AdminCatalogManager() {
                   <Checkbox
                     checked={packageForm.isActive}
                     onChange={(value) => handlePackageFieldChange('isActive', value === true)}
-                  >
-                    <Checkbox.Indicator>
-                      <Check size="md" />
-                    </Checkbox.Indicator>
-                  </Checkbox>
-                  <Text color="$gray11">Package is active and selectable</Text>
+                    label="Package is active and selectable"
+                  />
                 </Row>
 
                 <TextArea
@@ -962,7 +934,7 @@ export function AdminCatalogManager() {
 
                 <Row gap={12} wrap>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Platform cost (USD cents)
                     </Text>
                     <Input
@@ -972,7 +944,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Retail price (USD cents, optional)
                     </Text>
                     <Input
@@ -982,7 +954,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Validity period (days, optional)
                     </Text>
                     <Input
@@ -992,7 +964,7 @@ export function AdminCatalogManager() {
                     />
                   </Stack>
                   <Stack flex={1}>
-                    <Text color="$gray11" marginBottom={4}>
+                    <Text color="$gray11" style={{ marginBottom: 4 }}>
                       Estimated completion (days)
                     </Text>
                     <Input
@@ -1016,12 +988,8 @@ export function AdminCatalogManager() {
                   <Checkbox
                     checked={checkTypeForm.isActive}
                     onChange={(value) => handleCheckTypeFieldChange('isActive', value === true)}
-                  >
-                    <Checkbox.Indicator>
-                      <Check size="md" />
-                    </Checkbox.Indicator>
-                  </Checkbox>
-                  <Text color="$gray11">Check type is active</Text>
+                    label="Check type is active"
+                  />
                 </Row>
 
                 <TextArea

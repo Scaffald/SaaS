@@ -501,6 +501,11 @@ export type {
   UpdatePrivacyParams,
   SubmitDisputeParams,
   Dispute,
+  AdminCheckType,
+  AdminCheckTypeComponent,
+  AdminPackage,
+  AdminUpsertCheckTypeParams,
+  AdminUpsertPackageParams,
 } from './resources/background-checks.js'
 
 export type {

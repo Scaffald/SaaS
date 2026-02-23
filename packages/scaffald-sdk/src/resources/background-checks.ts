@@ -126,6 +126,88 @@ export interface Dispute {
   updated_at: string
 }
 
+// Admin catalog types (office/platform role)
+export interface AdminCheckTypeComponent {
+  id: string
+  slug: string
+  display_name: string
+  category: string | null
+  validity_days: number | null
+  estimated_completion_days: number | null
+  platform_cost_cents: number
+  retail_cost_cents: number | null
+  is_active: boolean
+}
+
+export interface AdminCheckType {
+  id: string
+  slug: string
+  display_name: string
+  description: string | null
+  category: string | null
+  provider_check_code: string | null
+  validity_days: number | null
+  platform_cost_cents: number
+  retail_cost_cents: number | null
+  estimated_completion_days: number | null
+  required_documents: string[]
+  provider_configuration: Record<string, unknown>
+  metadata: Record<string, unknown>
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface AdminPackage {
+  id: string
+  slug: string
+  display_name: string
+  description: string | null
+  provider_package_code: string | null
+  check_type_ids: string[]
+  component_overrides: Record<string, unknown>[]
+  platform_cost_cents: number
+  retail_cost_cents: number
+  estimated_completion_days: number | null
+  is_active: boolean
+  metadata: Record<string, unknown>
+  created_at: string
+  updated_at: string
+  components: AdminCheckTypeComponent[]
+}
+
+export interface AdminUpsertCheckTypeParams {
+  id?: string
+  slug: string
+  display_name: string
+  description?: string | null
+  category?: string | null
+  provider_check_code?: string | null
+  validity_days?: number | null
+  platform_cost_cents: number
+  retail_cost_cents?: number | null
+  estimated_completion_days?: number | null
+  required_documents?: string[]
+  provider_configuration?: Record<string, unknown>
+  metadata?: Record<string, unknown>
+  is_active?: boolean
+}
+
+export interface AdminUpsertPackageParams {
+  id?: string
+  slug: string
+  display_name: string
+  description?: string | null
+  provider_package_code?: string | null
+  check_type_ids: string[]
+  platform_cost_cents: number
+  retail_cost_cents: number
+  estimated_completion_days?: number | null
+  metadata?: Record<string, unknown>
+  component_overrides?: Record<string, unknown>[]
+  is_active?: boolean
+}
+
 // ============================================================================
 // BACKGROUND CHECKS RESOURCE
 // ============================================================================
@@ -374,5 +456,71 @@ export class BackgroundChecks extends Resource {
    */
   async organizationGet(organizationId: string, checkId: string): Promise<BackgroundCheck> {
     return this.get<BackgroundCheck>(`/v1/organizations/${organizationId}/background-checks/${checkId}`)
+  }
+
+  // ===== Admin Catalog (office/platform role) =====
+
+  /**
+   * List admin packages (office/platform role)
+   */
+  async adminListPackages(): Promise<AdminPackage[]> {
+    const response = (await this.get<{ data: AdminPackage[] }>(
+      '/v1/background-checks/admin/packages'
+    )) as { data: AdminPackage[] }
+    return response.data
+  }
+
+  /**
+   * List admin check types (office/platform role)
+   */
+  async adminListCheckTypes(): Promise<AdminCheckType[]> {
+    const response = (await this.get<{ data: AdminCheckType[] }>(
+      '/v1/background-checks/admin/check-types'
+    )) as { data: AdminCheckType[] }
+    return response.data
+  }
+
+  /**
+   * Upsert check type (office/platform role)
+   */
+  async adminUpsertCheckType(params: AdminUpsertCheckTypeParams): Promise<AdminCheckType> {
+    const response = (await this.post<{ data: AdminCheckType }>(
+      '/v1/background-checks/admin/check-types',
+      params
+    )) as { data: AdminCheckType }
+    return response.data
+  }
+
+  /**
+   * Upsert package (office/platform role)
+   */
+  async adminUpsertPackage(params: AdminUpsertPackageParams): Promise<AdminPackage> {
+    const response = (await this.post<{ data: AdminPackage }>(
+      '/v1/background-checks/admin/packages',
+      params
+    )) as { data: AdminPackage }
+    return response.data
+  }
+
+  /**
+   * Set check type active status (office/platform role)
+   */
+  async adminSetCheckTypeActive(id: string, is_active: boolean): Promise<{ success: boolean }> {
+    const response = (await this.patch<{ data: { success: boolean } }>(
+      `/v1/background-checks/admin/check-types/${id}/active`,
+      { is_active }
+    )) as { data: { success: boolean } }
+    return response.data
+  }
+
+  /**
+   * Set package active status (office/platform role)
+   */
+  async adminSetPackageActive(id: string, is_active: boolean): Promise<{ success: boolean }> {
+    const response = (await this.patch<{ data: { success: boolean } }>(
+      `/v1/background-checks/admin/packages/${id}/active`,
+      { is_active }
+    )) as { data: { success: boolean } }
+    return response.data
   }
 }
