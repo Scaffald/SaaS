@@ -10,7 +10,7 @@ import {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from '@scf/core/utils/api'
+} from '@scf/supabase/client-types'
 import {
   useEmployment,
   useUpdateEmploymentMutation,
