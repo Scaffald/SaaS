@@ -38,6 +38,7 @@ import { PersonalityAssessments } from './resources/personality-assessment.js'
 import { Feedback } from './resources/feedback.js'
 import { IdVerification } from './resources/id-verification.js'
 import { SuccessFees } from './resources/success-fees.js'
+import { StripeSettings } from './resources/stripe-settings.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -80,6 +81,7 @@ export class Scaffald {
   public readonly feedback: Feedback
   public readonly idVerification: IdVerification
   public readonly successFees: SuccessFees
+  public readonly stripeSettings: StripeSettings
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -130,6 +132,7 @@ export class Scaffald {
     this.feedback = new Feedback(this.http)
     this.idVerification = new IdVerification(this.http)
     this.successFees = new SuccessFees(this.http)
+    this.stripeSettings = new StripeSettings(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

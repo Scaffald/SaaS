@@ -313,6 +313,14 @@ export type {
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export type {
+  StripeSettings,
+  UpdatePublishableKeyParams,
+  UpdateTestModeParams,
+  UpdateStripeApiKeyParams,
+  UpdateWebhookSecretParams,
+} from './resources/stripe-settings.js'
+
+export type {
   SuccessFeeSchedule,
   SuccessFeeStatus,
   CreateSuccessFeeParams,

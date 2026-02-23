@@ -1,7 +1,14 @@
-import { api } from '@scf/core/utils/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
+import {
+  useStripeSettings,
+  useUpdatePublishableKeyMutation,
+  useUpdateTestModeMutation,
+  useUpdateApiKeyMutation,
+  useUpdateWebhookSecretMutation,
+  useTestConnectionMutation,
+} from '@scf/core/utils/stripe-settings-sdk-hooks'
 import {
   Button,
   Card,
@@ -30,21 +37,18 @@ export function StripeSettingsPage() {
   const toast = useToast()
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = api.stripeSettings.getSettings.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
+  const { data, isLoading } = useStripeSettings({ refetchOnWindowFocus: false })
 
-  const updatePublishableKey = api.stripeSettings.updatePublishableKey.useMutation({
+  const updatePublishableKey = useUpdatePublishableKeyMutation({
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
       toast.show({
         title: 'Success',
         message: 'Publishable key updated',
         variant: 'success',
       })
     },
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Failed to update publishable key'
+    onError: () => {
       toast.show({
         title: 'Error',
         variant: 'error',
@@ -52,17 +56,16 @@ export function StripeSettingsPage() {
     },
   })
 
-  const updateApiKey = api.stripeSettings.updateApiKey.useMutation({
+  const updateApiKey = useUpdateApiKeyMutation({
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
       toast.show({
         title: 'Success',
         message: 'Secret key stored securely',
         variant: 'success',
       })
     },
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Failed to store API secret'
+    onError: () => {
       toast.show({
         title: 'Error',
         variant: 'error',
@@ -70,17 +73,16 @@ export function StripeSettingsPage() {
     },
   })
 
-  const updateWebhookSecret = api.stripeSettings.updateWebhookSecret.useMutation({
+  const updateWebhookSecret = useUpdateWebhookSecretMutation({
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
       toast.show({
         title: 'Success',
         message: 'Webhook secret stored securely',
         variant: 'success',
       })
     },
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Failed to store webhook secret'
+    onError: () => {
       toast.show({
         title: 'Error',
         variant: 'error',
@@ -88,12 +90,11 @@ export function StripeSettingsPage() {
     },
   })
 
-  const updateTestMode = api.stripeSettings.updateTestMode.useMutation({
+  const updateTestMode = useUpdateTestModeMutation({
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
     },
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Failed to update mode'
+    onError: () => {
       toast.show({
         title: 'Error',
         variant: 'error',
@@ -101,17 +102,16 @@ export function StripeSettingsPage() {
     },
   })
 
-  const testConnection = api.stripeSettings.testConnection.useMutation({
+  const testConnection = useTestConnectionMutation({
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [['stripeSettings', 'getSettings']] })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
       toast.show({
         title: 'Success',
         message: 'Stripe connection verified',
         variant: 'success',
       })
     },
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Stripe connection test failed'
+    onError: () => {
       toast.show({
         title: 'Error',
         variant: 'error',
