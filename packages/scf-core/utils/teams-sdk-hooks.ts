@@ -29,6 +29,31 @@ import type {
   TeamAnalyticsOverviewResponse,
 } from '@scaffald/sdk'
 
+export function useAssignApplicationMutation(
+  options?: UseMutationOptions<
+    { success: boolean },
+    Error,
+    { teamId: string; applicationId: string; assigneeUserId: string }
+  >
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({
+      teamId,
+      applicationId,
+      assigneeUserId,
+    }: {
+      teamId: string
+      applicationId: string
+      assigneeUserId: string
+    }) => {
+      if (!client) throw new Error('Missing client')
+      return client.teams.assignApplication(teamId, applicationId, { assigneeUserId })
+    },
+    ...options,
+  })
+}
+
 // ============================================================================
 // Query Hooks
 // ============================================================================

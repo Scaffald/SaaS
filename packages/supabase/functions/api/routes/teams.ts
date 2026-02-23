@@ -1111,6 +1111,56 @@ app.openapi(deleteJobAssignmentRoute, async (c) => {
 })
 
 // ============================================================================
+// Application Assignment
+// ============================================================================
+
+app.post('/:teamId/applications/:applicationId/assign', async (c) => {
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const user = c.get('user')
+  const { teamId, applicationId } = c.req.param()
+  if (!supabaseAdmin || !user?.id) return c.json({ error: 'Unauthorized' }, 401)
+
+  let body: { assigneeUserId?: string }
+  try { body = await c.req.json() } catch { return c.json({ error: 'Invalid JSON' }, 400) }
+  const { assigneeUserId } = body
+  if (!assigneeUserId) return c.json({ error: 'assigneeUserId is required' }, 400)
+
+  const { data: applicationRecord, error: applicationError } = await supabaseAdmin
+    .schema('core').from('applications').select('id, job_id').eq('id', applicationId).maybeSingle()
+  if (applicationError || !applicationRecord) return c.json({ error: 'Application not found' }, 404)
+
+  const jobId = applicationRecord.job_id as string
+  const { data: jobRecord, error: jobError } = await supabaseAdmin
+    .schema('core').from('jobs').select('id, assigned_team_id, organization_id').eq('id', jobId).maybeSingle()
+  if (jobError || !jobRecord) return c.json({ error: 'Job not found' }, 404)
+
+  const { data: jobTeams } = await supabaseAdmin.schema('core').from('job_teams' as never).select('team_id').eq('job_id', jobId)
+  const teamIds = new Set(((jobTeams ?? []) as unknown as Array<{ team_id: string }>).map((r) => r.team_id))
+  if (jobRecord.assigned_team_id) teamIds.add(jobRecord.assigned_team_id as string)
+
+  if (!teamIds.has(teamId)) return c.json({ error: 'Team is not assigned to this job' }, 403)
+
+  const { error: updateError } = await supabaseAdmin
+    .schema('core').from('applications').update({
+      assigned_to: assigneeUserId,
+      assigned_at: new Date().toISOString(),
+      assigned_by: user.id,
+    }).eq('id', applicationId)
+  if (updateError) return c.json({ error: 'Failed to assign application', message: updateError.message }, 500)
+
+  await supabaseAdmin.schema('core').from('application_assignment_history').insert({
+    application_id: applicationId,
+    team_id: teamId,
+    assigned_to: assigneeUserId,
+    assigned_by: user.id,
+    source: 'manual',
+    metadata: {},
+  })
+
+  return c.json({ success: true })
+})
+
+// ============================================================================
 // Analytics
 // ============================================================================
 

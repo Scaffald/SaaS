@@ -453,6 +453,20 @@ export class Teams extends Resource {
   }
 
   /**
+   * Assign an application to a team member
+   */
+  async assignApplication(
+    teamId: string,
+    applicationId: string,
+    params: { assigneeUserId: string }
+  ): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(
+      `/v1/teams/${teamId}/applications/${applicationId}/assign`,
+      params
+    )
+  }
+
+  /**
    * Get analytics overview for a team
    */
   async getAnalyticsOverview(

@@ -1,8 +1,7 @@
 import { InquiryCreateForm } from '@scf/core/features/inquiries/components/InquiryCreateForm'
-import { api } from '@scf/core/utils/api'
 import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useSuccessFeeStatus } from '@scf/core/utils/success-fees-sdk-hooks'
-import { useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
+import { useAssignApplicationMutation, useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
 import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
@@ -139,15 +138,15 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       }))
   }, [membersQuery.data?.members])
 
-  const assignMutation = api.teams.applications.assign.useMutation({
+  const assignMutation = useAssignApplicationMutation({
     onSuccess: async () => {
       toast.show({
         title: 'Application assigned',
         message: 'You are now responsible for follow-up.',
       })
       if (teamId) {
-        await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
-        await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'comments']] })
+        await queryClient.invalidateQueries({ queryKey: ['teams', 'analytics', 'activity'] })
+        await queryClient.invalidateQueries({ queryKey: ['teams', 'analytics', 'comments'] })
       }
     },
     onError: (error: unknown) => {
