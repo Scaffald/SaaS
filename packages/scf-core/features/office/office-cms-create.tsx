@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { WelcomeSlideCreate } from '@scf/schemas'
+import { useCreateWelcomeSlideMutation } from '@scf/core/utils/cms-sdk-hooks'
+import type { CreateWelcomeSlideParams } from '@scaffald/sdk'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { useRouter } from 'expo-router'
 import { Text, Stack } from '@scaffald/ui'
@@ -8,9 +8,9 @@ import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSCreate() {
   const router = useRouter()
-  const createSlide = api.cms.createWelcomeSlide.useMutation()
+  const createSlide = useCreateWelcomeSlideMutation()
 
-  const handleSubmit = async (data: WelcomeSlideCreate) => {
+  const handleSubmit = async (data: CreateWelcomeSlideParams) => {
     await createSlide.mutateAsync(data)
     router.push(ROUTES.OFFICE.CMS.WELCOME.path)
   }

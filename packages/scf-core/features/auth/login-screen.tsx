@@ -2,7 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { i18n } from '@scf/core/locales'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { captureEventWithQueue } from '@scf/core/utils/analytics/queue'
-import { api } from '@scf/core/utils/api'
+import { useRequestMagicLinkMutation } from '@scf/core/utils/auth-sdk-hooks'
 import { translateError } from '@scf/core/utils/errors/translateError'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
@@ -11,7 +11,6 @@ import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
 import { Button, Card, Form, H5, Input, Paragraph, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 import type { AuthChangeEvent } from '@supabase/auth-js'
-import { TRPCClientError } from '@trpc/client'
 import { Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -35,7 +34,7 @@ export const LoginScreen = () => {
   useRedirectAfterSignIn()
   const { isLoadingSession } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const requestMagicLink = api.auth.requestMagicLink.useMutation()
+  const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
   const { theme } = useThemeContext()
   const textSecondary = colors.text[theme].secondary
@@ -90,13 +89,9 @@ export const LoginScreen = () => {
       })
     } catch (error) {
       console.error('Error sending magic link:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      const errorCode =
-        error instanceof TRPCClientError
-          ? (error.data?.code ?? error.name)
-          : error instanceof Error
-            ? error.name
-            : 'unknown'
+      const err = error as Error & { data?: { code?: string } }
+      const errorMessage = err?.message ?? 'Unknown error'
+      const errorCode = err?.data?.code ?? err?.name ?? 'unknown'
 
       captureEvent('auth_magic_link_failed', {
         email_domain: emailDomain || null,
@@ -104,13 +99,6 @@ export const LoginScreen = () => {
         message: errorMessage ?? null,
       })
 
-      if (error instanceof TRPCClientError) {
-        form.setError('email', {
-          type: 'custom',
-          message: translateError(error),
-        })
-        return
-      }
       form.setError('email', {
         type: 'custom',
         message: translateError(error),

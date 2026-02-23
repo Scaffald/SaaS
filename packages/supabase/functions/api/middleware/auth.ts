@@ -214,11 +214,14 @@ export async function requireAuth(c: Context, next: Next) {
 
 /**
  * Require specific role - throws 403 if user doesn't have required role
+ * When scope is provided and user has the role, adds supabaseAdmin to context for office operations
  */
 export async function requireRole(roleName: string, scope?: string) {
   return async (c: Context, next: Next) => {
     const user = c.get('user')
     const supabase = c.get('supabase')
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
@@ -250,6 +253,12 @@ export async function requireRole(roleName: string, scope?: string) {
         },
         403
       )
+    }
+
+    // Add supabaseAdmin for office operations (bypasses RLS)
+    if (supabaseUrl && supabaseServiceKey) {
+      const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+      c.set('supabaseAdmin', supabaseAdmin)
     }
 
     await next()

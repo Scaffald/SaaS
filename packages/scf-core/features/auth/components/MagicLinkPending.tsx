@@ -1,11 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useRequestMagicLinkMutation } from '@scf/core/utils/auth-sdk-hooks'
 import { translateError } from '@scf/core/utils/errors/translateError'
 import { getBaseUrl } from '@scf/core/utils/getBaseUrl'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { CheckCircle2 } from 'lucide-react-native'
-import { TRPCClientError } from '@trpc/client'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { Box, Card, Paragraph, Spinner, Stack, useThemeContext } from '@scaffald/ui'
@@ -25,7 +24,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const [verified, setVerified] = useState(false)
   const [_isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const requestMagicLink = api.auth.requestMagicLink.useMutation()
+  const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
   const { theme } = useThemeContext()
 
@@ -88,10 +87,6 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         redirectTo: getBaseUrl(),
       })
     } catch (err) {
-      if (err instanceof TRPCClientError) {
-        setError(translateError(err))
-        return
-      }
       setError(translateError(err))
     }
   }, [email, requestMagicLink])

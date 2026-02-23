@@ -35,6 +35,7 @@ import employersRouter from "./routes/employers.ts";
 import onetRouter from "./routes/onet.ts";
 import workersRouter from "./routes/workers.ts";
 import personalityAssessmentRouter from "./routes/personality-assessment.ts";
+import cmsRouter from "./routes/cms.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
@@ -98,7 +99,8 @@ app.route("/v1/projects", projectsRouter); // Projects
 app.route("/v1/employers", employersRouter); // Employers
 app.route("/v1/onet", onetRouter); // O*NET data
 app.route("/v1/workers", workersRouter); // Workers discovery
-app.route("/v1/personality-assessment", personalityAssessmentRouter); // Personality assessments
+app.route("/v1/personality-assessment", personalityAssessmentRouter);
+app.route("/v1/cms", cmsRouter); // Personality assessments
 
 // OpenAPI documentation
 app.route("/", openapi);

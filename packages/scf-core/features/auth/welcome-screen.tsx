@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useActiveWelcomeSlides } from '@scf/core/utils/cms-sdk-hooks'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import type { WelcomeSlide } from '@scf/schemas'
 import {
@@ -55,7 +55,7 @@ const createDefaultSlides = (
 ]
 
 export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
-  const { data, isLoading } = api.cms.getActiveWelcomeSlides.useQuery()
+  const { data, isLoading } = useActiveWelcomeSlides()
   const { t } = useTranslation()
 
   if (isLoading) {

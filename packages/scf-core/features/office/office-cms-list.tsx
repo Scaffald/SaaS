@@ -1,5 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useWelcomeSlidesList,
+  useUpdateWelcomeSlideMutation,
+  useDeleteWelcomeSlideMutation,
+} from '@scf/core/utils/cms-sdk-hooks'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react-native'
 import { Link } from 'expo-router'
@@ -11,17 +15,17 @@ export function OfficeCMSList() {
   const { theme } = useThemeContext()
   const [includeInactive, setIncludeInactive] = useState(false)
 
-  const { data, isLoading, refetch } = api.cms.listWelcomeSlides.useQuery({
+  const { data, isLoading, refetch } = useWelcomeSlidesList({
     include_inactive: includeInactive,
   })
 
-  const deleteSlide = api.cms.deleteWelcomeSlide.useMutation({
+  const deleteSlide = useDeleteWelcomeSlideMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
-  const toggleActive = api.cms.updateWelcomeSlide.useMutation({
+  const toggleActive = useUpdateWelcomeSlideMutation({
     onSuccess: () => {
       refetch()
     },
@@ -29,7 +33,7 @@ export function OfficeCMSList() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      await deleteSlide.mutateAsync({ id })
+      await deleteSlide.mutateAsync(id)
     }
   }
 

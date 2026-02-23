@@ -1,6 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@scf/schemas'
+import {
+  useWelcomeSlide,
+  useUpdateWelcomeSlideMutation,
+} from '@scf/core/utils/cms-sdk-hooks'
+import type { UpdateWelcomeSlideParams } from '@scaffald/sdk'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Spinner, Text, Stack } from '@scaffald/ui'
@@ -10,12 +13,15 @@ export function OfficeCMSEdit() {
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { data, isLoading } = api.cms.getWelcomeSlide.useQuery({ id: id || '' })
-  const updateSlide = api.cms.updateWelcomeSlide.useMutation()
+  const { data, isLoading } = useWelcomeSlide(id || undefined)
+  const updateSlide = useUpdateWelcomeSlideMutation()
 
-  const handleSubmit = async (formData: WelcomeSlideCreate | WelcomeSlideUpdate) => {
-    // In edit mode, we always have an id, so this is always WelcomeSlideUpdate
-    await updateSlide.mutateAsync(formData as WelcomeSlideUpdate)
+  const handleSubmit = async (formData: UpdateWelcomeSlideParams | Omit<UpdateWelcomeSlideParams, 'id'>) => {
+    const payload: UpdateWelcomeSlideParams =
+      'id' in formData
+        ? formData
+        : { ...formData, id: id! }
+    await updateSlide.mutateAsync(payload)
     router.push(ROUTES.OFFICE.CMS.WELCOME.path)
   }
 

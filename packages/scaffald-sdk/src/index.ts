@@ -12,6 +12,17 @@ export {
 } from './http/errors.js'
 
 export type {
+  RequestMagicLinkParams,
+  RequestMagicLinkResponse,
+  GetUserRolesResponse,
+} from './resources/auth.js'
+
+export type {
+  WelcomeSlide,
+  GetActiveWelcomeSlidesResponse,
+} from './resources/cms.js'
+
+export type {
   Job,
   JobListParams,
   JobListResponse,
