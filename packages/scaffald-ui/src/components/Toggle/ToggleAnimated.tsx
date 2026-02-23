@@ -42,6 +42,7 @@ export function ToggleAnimated({
   contentStyle,
   labelStyle,
   helperTextStyle,
+  accessibilityLabel,
 }: ToggleProps) {
   const [internalChecked, setInternalChecked] = useState(false)
   const isControlled = checkedProp !== undefined
@@ -150,6 +151,7 @@ export function ToggleAnimated({
         disabled={disabled}
         accessibilityRole="switch"
         accessibilityState={{ checked, disabled }}
+        accessibilityLabel={accessibilityLabel}
         {...interactiveProps}
         style={({ pressed }) => [
           styles.pressable,

@@ -3,19 +3,16 @@
  * Interactive slider for single value or range selection
  */
 
-import type React from 'react'
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
-import { View, StyleSheet, PanResponder, Platform, type LayoutChangeEvent, Pressable } from 'react-native'
-import type { GestureResponderEvent } from 'react-native'
+import { View, StyleSheet, Platform, Pressable } from 'react-native'
 import type { SliderProps } from './Slider.types'
 import { SliderTrack } from './SliderTrack'
 import { SliderHandle } from './SliderHandle'
 import { SliderTooltip } from './SliderTooltip'
-import { useHaptics } from '../../platform/useHaptics'
+import { useSlider } from './useSlider'
 
 export function Slider({
-  value: valueProp,
-  range: rangeProp,
+  value,
+  range,
   min = 0,
   max = 100,
   step = 1,
@@ -31,285 +28,47 @@ export function Slider({
   handleStyle,
   tooltipStyle,
 }: SliderProps) {
-  // Internal state for uncontrolled mode
-  const [internalValue, setInternalValue] = useState(min)
-  const [internalRange, setInternalRange] = useState<[number, number]>([min, max])
-
-  // Determine if controlled
-  const isControlled = valueProp !== undefined || rangeProp !== undefined
-  const isRange = rangeProp !== undefined
-
-  // Get current value(s)
-  const currentValue = isControlled ? (valueProp ?? min) : internalValue
-  const currentRange: [number, number] = isControlled
-    ? (rangeProp ?? [min, max])
-    : internalRange
-
-  // Track layout state
-  const [trackWidth, setTrackWidth] = useState(0)
-  const trackRef = useRef<View>(null)
-
-  // Haptics
-  const haptics = useHaptics()
-
-  // Drag state
-  const [isDragging, setIsDragging] = useState(false)
-  const [activeHandle, setActiveHandle] = useState<'start' | 'end' | null>(null)
-
-  // Calculate handle position(s)
-  const calculatePosition = useCallback(
-    (val: number): number => {
-      if (trackWidth === 0) return 0
-      const percentage = ((val - min) / (max - min)) * 100
-      return (percentage / 100) * trackWidth
-    },
-    [trackWidth, min, max]
-  )
-
-  // Calculate value from position
-  const calculateValue = useCallback(
-    (x: number): number => {
-      if (trackWidth === 0) return min
-      const percentage = Math.max(0, Math.min(1, x / trackWidth))
-      const rawValue = min + percentage * (max - min)
-      // Snap to step
-      return Math.round(rawValue / step) * step
-    },
-    [trackWidth, min, max, step]
-  )
-
-  // Clamp and snap value
-  const clampValue = useCallback(
-    (val: number): number => {
-      const clamped = Math.max(min, Math.min(max, val))
-      return Math.round(clamped / step) * step
-    },
-    [min, max, step]
-  )
-
-  // Handle track press (click/tap on track)
-  const handleTrackPress = useCallback(
-    (event: GestureResponderEvent | React.MouseEvent) => {
-      if (disabled || trackWidth === 0) return
-
-      const pageX = 'nativeEvent' in event ? event.nativeEvent.pageX : (event as React.MouseEvent).pageX
-
-      trackRef.current?.measureInWindow((trackX, _pageY, _width, _height) => {
-        const relativeX = pageX - trackX
-        const newValue = calculateValue(relativeX)
-        haptics.impact('light')
-
-        if (isRange) {
-          // For range: determine which handle is closer and update that one
-          const [start, end] = currentRange
-          const distanceToStart = Math.abs(newValue - start)
-          const distanceToEnd = Math.abs(newValue - end)
-
-          if (distanceToStart < distanceToEnd) {
-            // Update start handle, but don't cross end
-            const clampedValue = Math.max(min, Math.min(newValue, end - step))
-            const newRange: [number, number] = [clampedValue, end]
-
-            if (!isControlled) {
-              setInternalRange(newRange)
-            }
-            onRangeChange?.(newRange)
-          } else {
-            // Update end handle, but don't cross start
-            const clampedValue = Math.max(start + step, Math.min(newValue, max))
-            const newRange: [number, number] = [start, clampedValue]
-
-            if (!isControlled) {
-              setInternalRange(newRange)
-            }
-            onRangeChange?.(newRange)
-          }
-        } else {
-          const clampedValue = clampValue(newValue)
-
-          if (!isControlled) {
-            setInternalValue(clampedValue)
-          }
-          onValueChange?.(clampedValue)
-        }
-      })
-    },
-    [disabled, trackWidth, calculateValue, isRange, currentRange, min, max, step, isControlled, onRangeChange, onValueChange, clampValue, haptics]
-  )
-
-  // Handle drag start
-  const handleDragStart = useCallback(
-    (handleType: 'start' | 'end' | 'single') => {
-      if (disabled) return
-      setIsDragging(true)
-      setActiveHandle(handleType === 'single' ? null : handleType)
-      haptics.selection()
-    },
-    [disabled, haptics]
-  )
-
-  // Handle drag move
-  const handleDragMove = useCallback(
-    (gestureX: number, handleType: 'start' | 'end' | 'single') => {
-      if (disabled || trackWidth === 0 || !isDragging) return
-
-      trackRef.current?.measureInWindow((trackX, _pageY, _width, _height) => {
-        const relativeX = gestureX - trackX
-        const newValue = calculateValue(relativeX)
-
-        if (isRange && handleType !== 'single') {
-          const [start, end] = currentRange
-
-          if (handleType === 'start') {
-            // Update start handle, don't cross end
-            const clampedValue = Math.max(min, Math.min(newValue, end - step))
-            const newRange: [number, number] = [clampedValue, end]
-
-            if (!isControlled) {
-              setInternalRange(newRange)
-            }
-            onRangeChange?.(newRange)
-          } else if (handleType === 'end') {
-            // Update end handle, don't cross start
-            const clampedValue = Math.max(start + step, Math.min(newValue, max))
-            const newRange: [number, number] = [start, clampedValue]
-
-            if (!isControlled) {
-              setInternalRange(newRange)
-            }
-            onRangeChange?.(newRange)
-          }
-        } else {
-          const clampedValue = clampValue(newValue)
-
-          if (!isControlled) {
-            setInternalValue(clampedValue)
-          }
-          onValueChange?.(clampedValue)
-        }
-      })
-    },
-    [disabled, trackWidth, calculateValue, isRange, currentRange, min, max, step, isControlled, onRangeChange, onValueChange, clampValue, isDragging]
-  )
-
-  // Handle drag end
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false)
-    setActiveHandle(null)
-  }, [])
-
-  // Create PanResponder for a specific handle
-  const createHandlePanResponder = useCallback(
-    (handleType: 'start' | 'end' | 'single') => {
-      if (Platform.OS === 'web' || disabled) return null
-
-      return PanResponder.create({
-        onStartShouldSetPanResponder: () => !disabled,
-        onMoveShouldSetPanResponder: () => !disabled,
-        onPanResponderGrant: () => {
-          handleDragStart(handleType)
-        },
-        onPanResponderMove: (_, gesture) => {
-          handleDragMove(gesture.moveX, handleType)
-        },
-        onPanResponderRelease: handleDragEnd,
-        onPanResponderTerminate: handleDragEnd,
-      })
-    },
-    [disabled, handleDragStart, handleDragMove, handleDragEnd]
-  )
-
-  // PanResponders for each handle
-  const singleHandlePanResponder = useMemo(() => createHandlePanResponder('single'), [createHandlePanResponder])
-  const startHandlePanResponder = useMemo(() => createHandlePanResponder('start'), [createHandlePanResponder])
-  const endHandlePanResponder = useMemo(() => createHandlePanResponder('end'), [createHandlePanResponder])
-
-  // PanResponder for track (click to jump)
-  const trackPanResponder = useMemo(
-    () =>
-      Platform.OS !== 'web'
-        ? PanResponder.create({
-            onStartShouldSetPanResponder: () => false,
-            onMoveShouldSetPanResponder: () => false,
-            onPanResponderTerminationRequest: () => true,
-          })
-        : null,
-    []
-  )
-
-  // Track layout handler
-  const handleTrackLayout = useCallback((event: LayoutChangeEvent) => {
-    const { width } = event.nativeEvent.layout
-    setTrackWidth(width)
-  }, [])
-
-  // Web mouse event handlers
-  useEffect(() => {
-    if (Platform.OS !== 'web' || disabled) return
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return
-      handleDragMove(e.pageX, activeHandle ?? (isRange ? 'end' : 'single'))
-    }
-
-    const handleMouseUp = () => {
-      if (isDragging) {
-        handleDragEnd()
-      }
-    }
-
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [isDragging, activeHandle, isRange, handleDragMove, handleDragEnd, disabled])
-
-  // Handle web mouse down on handle
-  const handleWebMouseDown = useCallback(
-    (e: React.MouseEvent, handleType: 'start' | 'end' | 'single') => {
-      if (disabled || e.button !== 0) return
-      e.preventDefault()
-      e.stopPropagation()
-      handleDragStart(handleType)
-    },
-    [disabled, handleDragStart]
-  )
+  const slider = useSlider({
+    value,
+    range,
+    min,
+    max,
+    step,
+    disabled,
+    onValueChange,
+    onRangeChange,
+  })
 
   // Determine indicator position
   const actualIndicatorPosition = showIndicator === false ? 'none' : indicatorPosition
 
   // Calculate handle positions
-  const handlePosition = isRange ? undefined : calculatePosition(currentValue)
-  const handleStartPosition = isRange ? calculatePosition(currentRange[0]) : undefined
-  const handleEndPosition = isRange ? calculatePosition(currentRange[1]) : undefined
+  const handlePosition = slider.isRange ? undefined : slider.calculatePosition(slider.currentValue)
+  const handleStartPosition = slider.isRange ? slider.calculatePosition(slider.currentRange[0]) : undefined
+  const handleEndPosition = slider.isRange ? slider.calculatePosition(slider.currentRange[1]) : undefined
 
   // Determine handle state
-  const handleState = isDragging ? 'active' : 'default'
+  const handleState = slider.isDragging ? 'active' : 'default'
 
   return (
     <View style={[styles.container, style]}>
       <View
-        ref={trackRef}
+        ref={slider.trackRef}
         style={styles.trackContainer}
-        onLayout={handleTrackLayout}
-        {...(trackPanResponder?.panHandlers ?? {})}
+        onLayout={slider.handleTrackLayout}
+        {...(slider.trackPanResponder?.panHandlers ?? {})}
       >
         <Pressable
           style={StyleSheet.absoluteFill}
-          onPress={handleTrackPress}
-          disabled={disabled || isDragging}
+          onPress={slider.handleTrackPress}
+          disabled={disabled || slider.isDragging}
           hitSlop={{ top: 8, bottom: 8, left: 0, right: 0 }} // Increase touchable area
         >
           <View style={styles.trackPressArea} pointerEvents="box-only" />
         </Pressable>
         <SliderTrack
-          value={isRange ? undefined : currentValue}
-          range={isRange ? currentRange : undefined}
+          value={slider.isRange ? undefined : slider.currentValue}
+          range={slider.isRange ? slider.currentRange : undefined}
           min={min}
           max={max}
           color={color}
@@ -319,7 +78,7 @@ export function Slider({
         />
 
         {/* Render handle(s) */}
-        {isRange ? (
+        {slider.isRange ? (
           <>
             {/* Start handle */}
             <View
@@ -329,22 +88,22 @@ export function Slider({
                   left: handleStartPosition,
                 },
               ]}
-              {...(startHandlePanResponder?.panHandlers ?? {})}
+              {...(slider.startHandlePanResponder?.panHandlers ?? {})}
               {...(Platform.OS === 'web'
                 ? {
-                    onMouseDown: (e: any) => handleWebMouseDown(e, 'start'),
+                    onMouseDown: (e: any) => slider.handleWebMouseDown(e, 'start'),
                   }
                 : {})}
             >
               <SliderHandle
-                state={activeHandle === 'start' ? handleState : 'default'}
+                state={slider.activeHandle === 'start' ? handleState : 'default'}
                 color={color}
                 disabled={disabled}
                 style={handleStyle}
               />
               {actualIndicatorPosition !== 'none' && (
                 <SliderTooltip
-                  value={currentRange[0]}
+                  value={slider.currentRange[0]}
                   color={color}
                   position={actualIndicatorPosition}
                   style={tooltipStyle}
@@ -360,22 +119,22 @@ export function Slider({
                   left: handleEndPosition,
                 },
               ]}
-              {...(endHandlePanResponder?.panHandlers ?? {})}
+              {...(slider.endHandlePanResponder?.panHandlers ?? {})}
               {...(Platform.OS === 'web'
                 ? {
-                    onMouseDown: (e: any) => handleWebMouseDown(e, 'end'),
+                    onMouseDown: (e: any) => slider.handleWebMouseDown(e, 'end'),
                   }
                 : {})}
             >
               <SliderHandle
-                state={activeHandle === 'end' ? handleState : 'default'}
+                state={slider.activeHandle === 'end' ? handleState : 'default'}
                 color={color}
                 disabled={disabled}
                 style={handleStyle}
               />
               {actualIndicatorPosition !== 'none' && (
                 <SliderTooltip
-                  range={currentRange}
+                  range={slider.currentRange}
                   color={color}
                   position={actualIndicatorPosition}
                   style={tooltipStyle}
@@ -391,10 +150,10 @@ export function Slider({
                 left: handlePosition,
               },
             ]}
-            {...(singleHandlePanResponder?.panHandlers ?? {})}
+            {...(slider.singleHandlePanResponder?.panHandlers ?? {})}
             {...(Platform.OS === 'web'
               ? {
-                  onMouseDown: (e: any) => handleWebMouseDown(e, 'single'),
+                  onMouseDown: (e: any) => slider.handleWebMouseDown(e, 'single'),
                 }
               : {})}
           >
@@ -406,7 +165,7 @@ export function Slider({
             />
             {actualIndicatorPosition !== 'none' && (
               <SliderTooltip
-                value={currentValue}
+                value={slider.currentValue}
                 color={color}
                 position={actualIndicatorPosition}
                 style={tooltipStyle}

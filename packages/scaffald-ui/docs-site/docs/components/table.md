@@ -49,6 +49,28 @@ See component props for available variants.
 </Table>
 ```
 
+## Headless Hook (`useTable`)
+
+For complete control over data grids, virtualization, and sorting logic, use the `useTable` hook. It handles complex SaaS table interactions (filtering, selecting, expanding) entirely independent of the view layer.
+
+```tsx
+import { useTable } from '@scaffald/ui';
+
+function CustomDataGrid({ data, columns }) {
+  const table = useTable({
+    data,
+    columns,
+    pageSize: 50,
+  });
+
+  return (
+    <View>
+      {/* Build your own virtualized grid here using table.displayData */}
+    </View>
+  );
+}
+```
+
 ## Accessibility
 
 - ✅ Keyboard navigation support

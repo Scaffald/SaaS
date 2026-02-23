@@ -4,7 +4,7 @@
  * Features virtualization and sticky headers for high-performance SaaS data grids.
  */
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { View, Text, ScrollView, Pressable, Platform, FlatList } from 'react-native'
 import type { TableProps, TableRowData } from './Table.types'
 import { getTableStyles } from './Table.styles'
@@ -73,14 +73,16 @@ export function Table({
   })
 
   // Calculate total column width for proper horizontal scrolling
-  const totalColumnWidth = useCallback(() => {
-    return table.visibleColumns.reduce((sum, col) => {
-      if (typeof col.width === 'number') {
-        return sum + col.width
-      }
-      return sum + 150 // Default width
-    }, 0)
-  }, [table.visibleColumns])()
+  const totalColumnWidth = useMemo(
+    () =>
+      table.visibleColumns.reduce((sum, col) => {
+        if (typeof col.width === 'number') {
+          return sum + col.width
+        }
+        return sum + 150 // Default width
+      }, 0),
+    [table.visibleColumns]
+  )
 
   const renderRow = useCallback(({ item: row, index: rowIndex }: { item: TableRowData; index: number }) => {
     const getRowId = getRowIdProp ?? ((r, i) => r.id ?? String(i))
@@ -189,17 +191,13 @@ export function Table({
       </View>
     )
   }, [
-    getRowIdProp, 
-    table.expansionConfig.expandedIds, 
-    table.selectionConfig.selectedIds, 
-    table.visibleColumns, 
-    table.handleRowSelect, 
-    table.handleRowExpand, 
-    onRowPress, 
-    rowPressable, 
-    selectableRows, 
-    expandableRows, 
-    renderExpandedRow
+    getRowIdProp,
+    table,
+    onRowPress,
+    rowPressable,
+    selectableRows,
+    expandableRows,
+    renderExpandedRow,
   ])
 
   const renderHeader = useCallback(() => (
@@ -228,7 +226,7 @@ export function Table({
         )
       })}
     </View>
-  ), [table.visibleColumns, table.sortConfig, table.selectionConfig.allSelected, table.handleSort, table.handleSelectAll, selectableRows, theme])
+  ), [table, selectableRows, theme])
 
   if (loading && renderLoading) {
     return <View style={[styles.container, style]}>{renderLoading()}</View>

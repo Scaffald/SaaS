@@ -73,6 +73,7 @@ import { PasswordStrength } from '../PasswordStrength/PasswordStrength'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { useThemeContext } from '../../theme'
+import { useStyles } from '../../hooks'
 
 export const Input = forwardRef<TextInputType, InputProps>(function Input(
   {
@@ -131,7 +132,7 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
   }
 
   const hasExternalAddon = !!externalAddon
-  const styles = getInputStyles(actualState || 'default', type, disabled, hasExternalAddon, theme)
+  const styles = useStyles(getInputStyles, [actualState || 'default', type, disabled, hasExternalAddon, theme] as const)
 
   const handleFocus: RNTextInputProps['onFocus'] = (e) => {
     if (!disabled) {

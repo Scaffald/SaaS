@@ -10,6 +10,8 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import { useThemeContext } from '../../theme'
+import { AnimatedView } from '../../animation'
+import { FadeIn, FadeOut, LinearTransition } from '../../animation/reanimated.types'
 
 export function AccordionContent({
   children,
@@ -25,7 +27,12 @@ export function AccordionContent({
   }
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <AnimatedView 
+      style={[styles.container, containerStyle]}
+      entering={FadeIn ? FadeIn.duration(200) : undefined}
+      exiting={FadeOut ? FadeOut.duration(200) : undefined}
+      layout={LinearTransition ? LinearTransition.springify().damping(20).stiffness(150) : undefined}
+    >
       {/* Divider */}
       <View
         style={[
@@ -52,7 +59,7 @@ export function AccordionContent({
       ) : (
         <View style={styles.customContent}>{children}</View>
       )}
-    </View>
+    </AnimatedView>
   )
 }
 

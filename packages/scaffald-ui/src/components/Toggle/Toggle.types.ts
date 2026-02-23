@@ -89,4 +89,9 @@ export interface ToggleProps {
    * Additional helper text styles
    */
   helperTextStyle?: object
+
+  /**
+   * Accessibility label for screen readers
+   */
+  accessibilityLabel?: string
 }

@@ -49,6 +49,25 @@ See component props for available variants.
 </Accordion>
 ```
 
+## Headless Hook (`useAccordion`)
+
+For power users who need complete control over the visual presentation but want to leverage the robust state management and accessibility logic of the Accordion, you can use the `useAccordion` and `useAccordionItem` headless hooks.
+
+```tsx
+import { useAccordion, useAccordionItem } from '@scaffald/ui';
+
+function CustomAccordion() {
+  const accordion = useAccordion({ mode: 'multiple' });
+
+  return (
+    <CustomProvider value={accordion}>
+      <CustomAccordionItem value="1" />
+      <CustomAccordionItem value="2" />
+    </CustomProvider>
+  );
+}
+```
+
 ## Accessibility
 
 - ✅ Keyboard navigation support

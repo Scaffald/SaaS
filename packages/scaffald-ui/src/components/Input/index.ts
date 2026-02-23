@@ -8,7 +8,9 @@
 // Main Input component
 export { Input } from "./Input";
 export { PasswordInput } from "./PasswordInput";
+export { TextArea } from "./TextArea";
 export type { InputProps, InputState, InputType } from "./Input.types";
+export type { TextAreaProps } from "./TextArea";
 export type { PasswordInputProps } from "./PasswordInput";
 
 // Composable sub-components (can be used independently)

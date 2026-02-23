@@ -35,6 +35,8 @@ import { useThemeContext } from '../../theme'
 import { Input } from '../Input'
 import { TableCell } from './TableCell'
 import { spacing } from '../../tokens/spacing'
+import { AnimatedView } from '../../animation'
+import { FadeIn, FadeOut, LinearTransition } from '../../animation/reanimated.types'
 
 /**
  * ExpandedTableRow component
@@ -53,20 +55,26 @@ export function ExpandedTableRow({
   const { theme } = useThemeContext()
   const styles = getExpandedTableRowStyles(variant, theme)
 
+  const animatedProps = {
+    entering: FadeIn ? FadeIn.duration(200) : undefined,
+    exiting: FadeOut ? FadeOut.duration(200) : undefined,
+    layout: LinearTransition ? LinearTransition.springify().damping(20).stiffness(150) : undefined,
+  }
+
   // Render custom content if provided
   if (children) {
     return (
-      <View style={[styles.container, style]}>
+      <AnimatedView style={[styles.container, style]} {...animatedProps}>
         <TableCell type="guideline-vertical-half" width={40} />
         <View style={[styles.contentArea, contentStyle]}>{children}</View>
-      </View>
+      </AnimatedView>
     )
   }
 
   // Render variant2 (info items)
   if (variant === 'variant2') {
     return (
-      <View style={[styles.container, style]}>
+      <AnimatedView style={[styles.container, style]} {...animatedProps}>
         {/* Guideline cell - uses guideline-vertical-f-h type */}
         <TableCell type="guideline-vertical-f-h" width={40} />
 
@@ -85,7 +93,7 @@ export function ExpandedTableRow({
             </View>
           )}
         </View>
-      </View>
+      </AnimatedView>
     )
   }
 
@@ -94,7 +102,7 @@ export function ExpandedTableRow({
   const _columnWidthPercent = 100 / columns
 
   return (
-    <View style={[styles.container, style]}>
+    <AnimatedView style={[styles.container, style]} {...animatedProps}>
       {/* Guideline cell - uses guideline-vertical-full type for default variant */}
       <TableCell type="guideline-vertical-full" width={40} />
 
@@ -130,6 +138,6 @@ export function ExpandedTableRow({
           )
         })}
       </View>
-    </View>
+    </AnimatedView>
   )
 }

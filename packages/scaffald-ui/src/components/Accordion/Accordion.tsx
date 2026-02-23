@@ -35,6 +35,8 @@ import { View, StyleSheet } from 'react-native'
 import type { AccordionProps, AccordionContextValue } from './Accordion.types'
 import { spacing } from '../../tokens/spacing'
 import { useAccordion } from './useAccordion'
+import { AnimatedView } from '../../animation'
+import { LinearTransition } from '../../animation/reanimated.types'
 
 // Accordion context
 const AccordionContext = createContext<AccordionContextValue | null>(null)
@@ -68,7 +70,12 @@ export function Accordion({
 
   return (
     <AccordionContext.Provider value={accordion}>
-      <View style={[styles.container, containerStyle]}>{children}</View>
+      <AnimatedView 
+        style={[styles.container, containerStyle]}
+        layout={LinearTransition ? LinearTransition.springify().damping(20).stiffness(150) : undefined}
+      >
+        {children}
+      </AnimatedView>
     </AccordionContext.Provider>
   )
 }

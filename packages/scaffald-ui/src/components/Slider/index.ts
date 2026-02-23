@@ -4,6 +4,8 @@
 
 export { Slider } from './Slider'
 export { RangeSlider } from './RangeSlider'
+export { useSlider } from './useSlider'
+export type { UseSliderProps } from './useSlider'
 export type {
   SliderProps,
   SliderColor,

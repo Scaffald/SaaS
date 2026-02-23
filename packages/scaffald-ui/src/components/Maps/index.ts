@@ -10,6 +10,7 @@ export { MapFallback } from './MapFallback'
 
 export type {
   MapContainerProps,
+  MapContainerRef,
   MapPinProps,
   MapTooltipProps,
   MapTooltipData,
