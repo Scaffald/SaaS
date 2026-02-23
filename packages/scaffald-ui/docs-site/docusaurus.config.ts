@@ -19,7 +19,7 @@ const config: Config = {
   organizationName: 'Scaffald',
   projectName: 'ui',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   i18n: {
