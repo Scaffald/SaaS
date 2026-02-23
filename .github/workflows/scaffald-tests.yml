@@ -79,9 +79,7 @@ jobs:
           version: latest
 
       - name: Start Supabase local instance
-        run: |
-          cd apps/scaffald
-          pnpm supa start
+        run: pnpm supa start
 
       - name: Wait for Supabase to be ready
         run: |
@@ -106,9 +104,7 @@ jobs:
 
       - name: Stop Supabase
         if: always()
-        run: |
-          cd apps/scaffald
-          pnpm supa stop || true
+        run: pnpm supa stop || true
 
   e2e-web:
     name: E2E Web Tests (Playwright)
@@ -176,9 +172,7 @@ jobs:
           version: latest
 
       - name: Start Supabase local instance
-        run: |
-          cd apps/scaffald
-          pnpm supa start
+        run: pnpm supa start
 
       - name: Wait for Supabase to be ready
         run: |
@@ -201,9 +195,7 @@ jobs:
 
       - name: Stop Supabase
         if: always()
-        run: |
-          cd apps/scaffald
-          pnpm supa stop || true
+        run: pnpm supa stop || true
 
   typecheck:
     name: TypeScript Type Check
